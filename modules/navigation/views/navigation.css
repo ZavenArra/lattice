@@ -1,0 +1,214 @@
+/*Navigation*/
+
+#navigation{
+	font-size: 12px;
+	width: 900px;
+	position:relative;
+	overflow: auto;
+	overflow:hidden;
+	border-top:1px #ccc solid;
+	border-bottom:1px #ccc solid;
+	height:22em;
+	background: #f8f8f8 url( images/nav_bg.gif );
+	clear: both;
+}
+
+.breadCrumb{
+	list-style:none;
+	font-family: georgia, helvetica, sans-serif;
+	margin:1em 0 .25em 0;
+	padding:0;
+}
+
+.breadCrumb li{
+	margin:0 .5em 0 0;
+	padding:0;
+	float:left;
+	font-size: 1.2em;
+}
+
+/*.breadCrumb li:after{ content: "/" }*/
+
+.breadCrumb li.clear{
+	visibility: hidden;
+}
+
+.breadCrumb li a{
+	color:#fff;
+	background:#ccc;
+	cursor: pointer;
+	text-decoration:none;
+	padding: .25em .5em;
+}
+.breadCrumb li a:hover{
+	background:#0af;
+	color:#fff;
+}
+
+#navigation h5{
+	width: 210px !important;
+	font-size: 1em;
+	white-space: normal !important;
+	line-height:1.2em;
+	float: left;
+	margin: 0 0 0 0;
+	padding:.5em 0 .5em 2.5em;
+}
+
+#navigation>ul{
+	list-style:none;
+	margin: 0;
+	padding: 0;
+}
+
+#navigation>ul>li{
+	border-right:1px #dedede solid;
+	float: left;
+	background: #f8f8f8 url( images/nav_bg.gif ) repeat-y;
+}
+
+#navigation>ul ul{
+	margin: 0;
+	padding: 0;
+	list-style:none;
+}
+#navigation>ul ul.tier{
+	overflow: auto;
+	height: 20em;
+	background: #f8f8f8 url( images/nav_bg.gif ) repeat-y;
+}
+
+#navigation ul li ul.utlity li{
+}
+
+#navigation ul li ul li {
+	line-height: 24px;
+	padding:0;
+/*	background: #f8f8f8 url( images/nav_bg.gif ) repeat-y;
+*/	border-bottom:1px #cdf solid;
+}
+
+#navigation ul li ul li .methods{
+	float: right;
+}
+
+#navigation ul li ul li.leaf,
+#navigation ul li ul li.category{
+	cursor:pointer;
+}
+
+#navigation ul li ul li.leaf:hover,
+#navigation ul li ul li.leaf[ class~="active" ],
+#navigation ul li ul li.category:hover,
+#navigation ul li ul li.category[ class~="active" ]{
+	cursor: pointer;
+	background: #0af;
+	color:#fff;
+}
+
+#navigation  a.icon{
+	display:block;
+	float:left;
+	width: 12px;
+	height: 12px;
+	margin:.5em .25em;
+}
+
+#navigation  a.icon[class~="hidden"]{
+	display:none;
+}
+
+#navigation li.utility{
+	background: url( images/bg_util.png );
+}
+#navigation li.placeHolder h5{
+	background: url( images/icon_spinner.gif ) 1em .5em no-repeat;
+}
+
+#navigation li.leaf h5{
+	background-image: url( images/icon_leaf.png );
+	background-position: 1em .5em;
+	background-repeat: no-repeat;
+}
+
+#navigation li.leaf[class ~= "active"] h5,
+#navigation li.leaf:hover h5{
+	background-image: url( images/icon_leaf_hover.png );
+	background-position: 1em .5em;
+	background-repeat: no-repeat;
+}
+
+#navigation li.category h5{
+	background-image: url( images/icon_category.png );
+	background-position: 1em .5em;
+	background-repeat: no-repeat;
+}
+
+#navigation li.category[class ~= "active"] h5,
+#navigation li.category:hover h5{
+	background-image: url( images/icon_category_hover.png );	
+	background-position: 1em .5em;
+	background-repeat: no-repeat;
+}
+
+#navigation li.utility .icon.spinner{
+	background-image: url( images/icon_utility_spinner.gif );
+	background-position: 0 0;
+	background-repeat: no-repeat;
+}
+
+#navigation li.utility a{
+	display:block;
+	cursor: pointer;
+	float:left;
+	font-size: .8em;
+	color:#aaa;
+	text-decoration:none;
+}
+
+#navigation li.utility a:hover{
+	color:#0af;
+	text-decoration:underline;
+}
+
+#navigation li.utility.label{
+	padding:0 0 0 1em;
+}
+
+#navigation li.utility .addLeaf{
+	background: url( images/icon_add_leaf.png ) no-repeat 1em .5em;
+	padding:0 0 0 3em;
+}
+
+#navigation li.utility .addCategory{
+	background: url( images/icon_add_category.png ) no-repeat 1em .5em;
+	padding:0 0 0 3em;
+}
+
+#navigation li a.delete{
+	background: url(images/icon_delete.png);
+}
+
+#navigation li a.delete:hover,
+#navigation li.active a.delete{
+	background: url(images/icon_delete_hover.png);
+}
+
+
+#navigation a.published{
+	background: url(images/icon_published.png);	
+}
+
+#navigation a.unpublished{
+	background: url(images/icon_unpublished.png);	
+}
+
+#navigation .active a.published,
+#navigation a.published:hover{
+	background: url(images/icon_published_hover.png);	
+}
+
+#navigation .active a.unpublished,
+#navigation a.unpublished:hover{
+	background: url(images/icon_unpublished_hover.png);	
+}
