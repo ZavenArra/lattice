@@ -1,0 +1,5 @@
+<?
+
+$config = array(
+	'profiler'=>false,
+);
