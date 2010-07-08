@@ -1,0 +1,3 @@
+<?
+
+$config['imagequality'] = 75;
