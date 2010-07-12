@@ -35,7 +35,7 @@ $config['default'] = array
 		'host'     => 'localhost',
 		'port'     => FALSE,
 		'socket'   => FALSE,
-		'database' => 'mop_test'
+		'database' => 'frontendYamlExpr_dev'
 	),
 	'character_set' => 'utf8',
 	'table_prefix'  => '',
@@ -55,7 +55,7 @@ $config['staging'] = array
 		'host'     => 'localhost',
 		'port'     => FALSE,
 		'socket'   => FALSE,
-		'database' => 'madeofpe_ntvb'
+		'database' => 'frontendYamlExpr_dev'
 	),
   'character_set' => 'utf8',
   'table_prefix'  => '',
@@ -76,7 +76,7 @@ $config['testing'] = array
 		'host'     => 'mysqldev.madeofpeople.org',
 		'port'     => FALSE,
 		'socket'   => FALSE,
-		'database' => 'newframework_testing'
+		'database' => 'frontendYamlExpr_dev'
 	),
 	'character_set' => 'utf8',
 	'table_prefix'  => '',
