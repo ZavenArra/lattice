@@ -1,4 +1,6 @@
 <?
+require('/home/deepwinter/dev/deepwinter/yaml/lib/sfYaml.php');
+require('/home/deepwinter/dev/deepwinter/yaml/lib/sfYamlParser.php');
 /*
  * Class: Site_Controller
  * Responsible for handing default behaviour of CMS driven sites,
@@ -37,7 +39,10 @@ Class Site_Controller extends Controller{
 			throw new Kohana_User_Exception('Page not availabled', 'The page with identifier '.$id.' is does not exist or is not available');
 		}
 
+		//keep this first line for backwards compatibility
 		$this->content = array_merge($this->content, $page->getPageContent());
+		//but this is the real deal
+		$this->content['main'] = $page->getPageContent();
 
 		//look for the template, if it's not there just print out all the data raw
 		$view = 'site/'.$page->template->templatename;
@@ -45,6 +50,42 @@ Class Site_Controller extends Controller{
 			$this->template = new View( 'site/'.$page->template->templatename);
 		} else {
 			$this->template = new View( 'site/default');
+		}
+
+
+		$yaml = new sfYamlParser();
+		try {
+			$configArray = $yaml->parse(file_get_contents('application/config/frontend.yaml'));
+		}
+		catch (InvalidArgumentException $e) {
+			// an error occurred during parsing
+			echo "Unable to parse the YAML string: ".$e->getMessage();
+			flush();
+			ob_flush();
+			exit;
+		}
+		$newConfig = array('views'=>array());
+		foreach($configArray['views'] as $view){
+			$newConfig['views'][$view['view']] = $view;	
+		}
+		$configArray = $newConfig;
+		
+		if(isset($configArray['views'][$page->template->templatename])){
+			foreach($configArray['views'][$page->template->templatename]['extendeddata'] as $edata){
+				
+				$objects = ORM::Factory('page');
+				if(isset($edata['parent'])){
+					$parent = ORM::Factory('page', $edata['parent']);
+					$objects->where('parentid', $parent->id);	
+				}
+				$objects = $objects->find_all();
+
+				$this->content[$edata['label']] = array();
+				foreach($objects as $object){
+					$this->content[$edata['label']][] = $object->getContent();
+				}
+
+			}
 		}
 
 		$this->template->content = $this->content;
