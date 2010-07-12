@@ -1,125 +1,41 @@
 <?
 
-$config['basiccategory'] = array (
-);
-
-$config['singleipe'] = array (
+$config['stuff'] = array (
 );
 
 $config['modules'] = array (
-  'singleipe' => 
+  'stuff' => 
   array (
     array (
       'type' => 'ipe',
-      'field' => 'singleIPE',
-      'label' => 'Single IPE',
-      'class' => NULL,
-      'tag' => NULL,
+      'field' => 'blurb',
+      'label' => 'Blurb',
+      'class' => 'rows-4',
+      'tag' => 'p',
     ),
   ),
-  'singleradiogroup' => 
+  'stuffItem' => 
   array (
     array (
-      'type' => 'radioGroup',
-      'field' => 'singleRadioGroup',
-      'label' => NULL,
-      'class' => NULL,
-      'tag' => NULL,
-      'radios' => 
-      array (
-        'one' => 'one',
-        'two' => 'two',
-        'three' => 'three',
-      ),
-      'groupLabel' => NULL,
-      'radioname' => NULL,
+      'type' => 'ipe',
+      'field' => 'text',
+      'label' => 'Text',
+      'class' => 'rows-4',
+      'tag' => 'p',
     ),
-  ),
-  'singlecheckbox' => 
-  array (
     array (
-      'type' => 'checkbox',
-      'field' => 'singleCheckbox',
-      'label' => 'Single Checkbox',
-      'class' => NULL,
-      'tag' => NULL,
-    ),
-  ),
-  'singledate' => 
-  array (
-    array (
-      'type' => 'date',
-      'field' => 'singleDate',
-      'label' => 'Single Date',
-      'class' => NULL,
-      'tag' => NULL,
-    ),
-  ),
-  'singletime' => 
-  array (
-    array (
-      'type' => 'time',
-      'field' => 'singleTime',
-      'label' => 'Single Time',
-      'class' => NULL,
-      'tag' => NULL,
-    ),
-  ),
-  'simplelistmodulepage' => 
-  array (
-    array (
-      'type' => 'module',
-      'modulename' => 'simplelistmodule',
-      'controllertype' => 'listmodule',
-    ),
-  ),
-  'imagelistmodulepage' => 
-  array (
-    array (
-      'type' => 'module',
-      'modulename' => 'imagelistmodule',
-      'controllertype' => 'listmodule',
-    ),
-  ),
-  'filelistmodulepage' => 
-  array (
-    array (
-      'type' => 'module',
-      'modulename' => 'filelistmodule',
-      'controllertype' => 'listmodule',
-    ),
-  ),
-  'complexlistmodulepage' => 
-  array (
-    array (
-      'type' => 'module',
-      'modulename' => 'complexlistmodule',
-      'controllertype' => 'listmodule',
+      'type' => 'ipe',
+      'field' => 'more',
+      'label' => 'MORE',
+      'class' => 'rows-4',
+      'tag' => 'p',
     ),
   ),
 );
 
-$config['singleradiogroup'] = array (
+$config['stuffItem'] = array (
 );
 
-$config['singlecheckbox'] = array (
-);
-
-$config['singledate'] = array (
-);
-
-$config['singletime'] = array (
-);
-
-$config['simplelistmodulepage'] = array (
-);
-
-$config['imagelistmodulepage'] = array (
-);
-
-$config['filelistmodulepage'] = array (
-);
-
-$config['complexlistmodulepage'] = array (
+$config['home'] = array (
 );
 

@@ -1,37 +1,14 @@
 <?
 
-$config['basiccategory'] = array (
+$config['stuff'] = array (
+  'blurb' => 'field1',
 );
 
-$config['singleipe'] = array (
-  'singleIPE' => 'field1',
+$config['stuffItem'] = array (
+  'text' => 'field1',
+  'more' => 'field2',
 );
 
-$config['singleradiogroup'] = array (
-  'singleRadioGroup' => 'field1',
-);
-
-$config['singlecheckbox'] = array (
-  'singleCheckbox' => 'flag1',
-);
-
-$config['singledate'] = array (
-  'singleDate' => 'field1',
-);
-
-$config['singletime'] = array (
-  'singleTime' => 'field1',
-);
-
-$config['simplelistmodulepage'] = array (
-);
-
-$config['imagelistmodulepage'] = array (
-);
-
-$config['filelistmodulepage'] = array (
-);
-
-$config['complexlistmodulepage'] = array (
+$config['home'] = array (
 );
 
