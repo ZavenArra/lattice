@@ -12,3 +12,4 @@
 </ul>
 <?endforeach;?>
 
+<?=$listing;?>

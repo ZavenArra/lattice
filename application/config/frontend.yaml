@@ -5,7 +5,8 @@ views:
     - label: stuffs # variable in the supplied content array
       parent: stuff # specifying a slug means to use the slug as a parent,
    subviews: #used to specify view-level sub-items, i.e. full html controller/view to load in addition.
-    - listing
+    - view: publicheader
+      label: listing
 
  - view: stuff 
    loadpage: false # whether or not to load content specified by slug in the URL

@@ -23,6 +23,11 @@ Class Site_Controller extends Controller{
 		$this->page(substr(get_class($this), 0, -11));
 	}
 
+	public function createIndexView(){
+		$this->page(substr(get_class($this), 0, -11));
+	}
+
+
 	/*
 	 * Function: page($pageidorslug)
 	 * By default called after a rewrite of routing by slugs hooks, gets all content
@@ -64,11 +69,14 @@ Class Site_Controller extends Controller{
 			ob_flush();
 			exit;
 		}
-		$newConfig = array('views'=>array());
+		$newConfig = $configArray;
+		$newConfig['views'] = array();
 		foreach($configArray['views'] as $view){
 			$newConfig['views'][$view['view']] = $view;	
 		}
 		$configArray = $newConfig;
+
+		$this->template->content = $this->content;
 		
 		if(isset($configArray['views'][$page->template->templatename])){
 			foreach($configArray['views'][$page->template->templatename]['extendeddata'] as $edata){
@@ -80,15 +88,22 @@ Class Site_Controller extends Controller{
 				}
 				$objects = $objects->find_all();
 
-				$this->content[$edata['label']] = array();
+				$this->template->content[$edata['label']] = array();
 				foreach($objects as $object){
-					$this->content[$edata['label']][] = $object->getContent();
+					$this->template->content[$edata['label']][] = $object->getContent();
 				}
+			}
 
+			if(isset($configArray['views'][$page->template->templatename]['subviews'])){
+				foreach($configArray['views'][$page->template->templatename]['subviews'] as $subview){
+					$this->buildModule(array('modulename'=>$subview['view']/*, 'controllertype'=>'object'*/), $subview['label']);
+				}
 			}
 		}
 
-		$this->template->content = $this->content;
+
+		
+
 
 		if($this->responseFormat=='AJAX'){
 			return $this->template->render();
