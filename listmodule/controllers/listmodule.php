@@ -5,7 +5,7 @@
 	object paradigm.
 */
 
-class ListModule_Controller extends Controller implements CMS_Services_Interface{
+class ListModule_Controller extends Controller {
 
 	/*
 	*  Variable: page_id
