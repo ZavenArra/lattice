@@ -1,2 +1,0 @@
-<?
-$config['_default'] = 'homepage';
