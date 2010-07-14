@@ -31,6 +31,16 @@ $config['modules'] = array (
       'tag' => 'p',
     ),
   ),
+  'home' => 
+  array (
+    array (
+      'type' => 'ipe',
+      'field' => 'text',
+      'label' => 'Text',
+      'class' => 'rows-4',
+      'tag' => 'p',
+    ),
+  ),
 );
 
 $config['stuffItem'] = array (

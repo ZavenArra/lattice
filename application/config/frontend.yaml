@@ -3,11 +3,11 @@ views:
    loadpage: false # whether or not to load content specified by slug in the URL
    extendeddata:   # extra data to load on this page beyond the data linked to the URL slug
     - label: stuffs # variable in the supplied content array
-      parent: stuff # specifying a slug means to use the slug as a parent,
+      templatename: stuffitem # specifying a slug means to use the slug as a parent,
    subviews: #used to specify view-level sub-items, i.e. full html controller/view to load in addition.
     - view: publicheader
       label: listing
-    - view: publicheader
+    - view: listing2
       label: listing2
 
  - view: stuff 
@@ -15,4 +15,11 @@ views:
    extendeddata:   # extra data to load on this page beyond the data linked to the URL slug
     - label: stuffs # variable in the supplied content array
       parent: stuff # specifying a slug means to use the slug as a parent,
+   subviews: #used to specify view-level sub-items, i.e. full html controller/view to load in addition.
+
+ - view: virtual 
+   loadpage: false # whether or not to load content specified by slug in the URL
+   extendeddata:   # extra data to load on this page beyond the data linked to the URL slug
+    - label: stuffs # variable in the supplied content array
+      templatename: all
    subviews: #used to specify view-level sub-items, i.e. full html controller/view to load in addition.

@@ -29,6 +29,11 @@ templates:
     - templatename: home
       nodetype: LEAF
       parameters:
+          - type: ipe
+            field: text
+            label: Text
+            tag: p
+            rows: 4
      
             
 data:

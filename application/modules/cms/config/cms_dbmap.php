@@ -10,5 +10,6 @@ $config['stuffItem'] = array (
 );
 
 $config['home'] = array (
+  'text' => 'field1',
 );
 
