@@ -429,8 +429,8 @@ class MOP_Controller_Core extends Controller_Core {
 		Kohana::log('debug', 'Loading module: ' . $module['modulename']);
 
     if((Kohana::find_file('controllers', $module['modulename'])) !== FALSE){
-      Kohana::log('debug', 'Loading controller: ' . $modulename);
-      $fullname = $modulename.'_Controller';
+      Kohana::log('debug', 'Loading controller: ' . $module['modulename']);
+      $fullname = $module['modulename'].'_Controller';
       $module = new $fullname();
       $module->createIndexView();
 			$module->template->loadResources();

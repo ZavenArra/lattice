@@ -33,12 +33,14 @@ Class Frontend_Controller extends Controller {
 		foreach($configArray['views'] as $view ){
 			touch('application/modules/site/views/site/'.$view['view'].'.php');
 			ob_start();
+			if($view['loadpage']=='true'){
 			echo "<p>Main Content</p>";
 			echo "<ul>\n".
-				    "<?foreach(\$content['main'] as \$field => \$value):?>\n".
-							"<li><?=\$field;?>: <?=\$value;?></li>\n".
-					  "<?endforeach;?>\n".
-						"</ul>\n\n";
+				   " <?foreach(\$content['main'] as \$field => \$value):?>\n".
+					 "  <li><?=\$field;?>: <?=\$value;?></li>\n".
+					 " <?endforeach;?>\n".
+					"</ul>\n\n";
+			}
 			if(is_array($view['extendeddata'])){
 				foreach($view['extendeddata'] as $edata){
 					echo "<p>{$edata['label']} Content</p>";

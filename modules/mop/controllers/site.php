@@ -38,26 +38,6 @@ Class Site_Controller extends Controller{
 	 */
 	public function page($pageidorslug=null) {
 
-		$page = ORM::Factory('page', $pageidorslug);
-		//some access control
-		if(!$page->loaded || $page->published==false || $page->activity!=null){
-			throw new Kohana_User_Exception('Page not availabled', 'The page with identifier '.$id.' is does not exist or is not available');
-		}
-
-		//keep this first line for backwards compatibility
-		$this->content = array_merge($this->content, $page->getPageContent());
-		//but this is the real deal
-		$this->content['main'] = $page->getPageContent();
-
-		//look for the template, if it's not there just print out all the data raw
-		$view = 'site/'.$page->template->templatename;
-		if(Kohana::find_file('views', $view)){
-			$this->template = new View( 'site/'.$page->template->templatename);
-		} else {
-			$this->template = new View( 'site/default');
-		}
-
-
 		$yaml = new sfYamlParser();
 		try {
 			$configArray = $yaml->parse(file_get_contents('application/config/frontend.yaml'));
@@ -76,17 +56,74 @@ Class Site_Controller extends Controller{
 		}
 		$configArray = $newConfig;
 
+
+
+
+		$page = ORM::Factory('page', $pageidorslug);
+		//some access control
+		if($page->loaded){
+			if($page->published==false || $page->activity!=null){
+				throw new Kohana_User_Exception('Page not availabled', 'The page with identifier '.$id.' is does not exist or is not available');
+			}
+
+			//keep this first line for backwards compatibility
+			$this->content = array_merge($this->content, $page->getPageContent());
+			//but this is the real deal
+			$this->content['main'] = $page->getPageContent();
+
+			$view = 'site/'.$page->template->templatename;
+			if(Kohana::find_file('views', $view)){
+				$this->template = new View( 'site/'.$page->template->templatename);
+			}
+
+		} else {
+			//check for a virtual page specified in frontend.yaml
+			if(!isset($configArray['views'][$page->template->templatename])){
+				throw new Kohana_User_Exception('Page not availabled', 'The page with identifier '.$id.' is does not exist or is not available');
+			}
+		}
+
+				//look for the template, if it's not there just print out all the data raw
+		if(!$this->template){
+			$this->template = new View( 'site/default');
+		}
+
+
 		$this->template->content = $this->content;
 		
 		if(isset($configArray['views'][$page->template->templatename])){
 			foreach($configArray['views'][$page->template->templatename]['extendeddata'] as $edata){
 				
 				$objects = ORM::Factory('page');
+
+				//apply optional parent filter
 				if(isset($edata['parent'])){
 					$parent = ORM::Factory('page', $edata['parent']);
 					$objects->where('parentid', $parent->id);	
 				}
+
+				//apply optional template filter
+				if(isset($edata['templatename'])){
+					if(is_array($edata['templatename'])){
+						$tIds = array();
+						foreach($edata['templatename'] as $tname){
+							$t = ORM::Factory('template', $edata['templatename']);
+							$tIds[] = $t->id;
+						}
+						$objects->in('template_id', $tIds);
+					} else if ($edata['templatename'] == 'all'){
+						//set no filter
+					} else {
+						$t = ORM::Factory('template', $edata['templatename']);
+						$objects->where('template_id', $t->id);
+					}
+				}
 				$objects = $objects->find_all();
+
+				//apply optional SQL where filter
+				if(isset($edata['where'])){
+					$objects->where($edata['where']);
+				}
 
 				$this->template->content[$edata['label']] = array();
 				foreach($objects as $object){
