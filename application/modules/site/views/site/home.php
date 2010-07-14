@@ -12,3 +12,7 @@
 </ul>
 <?endforeach;?>
 
+
+<?=$listing;?>
+
+<?=$listing2;?>
