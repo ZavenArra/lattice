@@ -38,16 +38,23 @@ Class Frontend_Controller extends Controller {
 				    "<?foreach(\$content['main'] as \$field => \$value):?>\n".
 							"<li><?=\$field;?>: <?=\$value;?></li>\n".
 					  "<?endforeach;?>\n".
-					 "</ul>\n\n";
-			foreach($view['extendeddata'] as $edata){
-			echo "<p>{$edata['label']} Content</p>";
-				echo "<?foreach(\$content['{$edata['label']}'] as \$item):?>\n".
+						"</ul>\n\n";
+			if(is_array($view['extendeddata'])){
+				foreach($view['extendeddata'] as $edata){
+					echo "<p>{$edata['label']} Content</p>";
+					echo "<?foreach(\$content['{$edata['label']}'] as \$item):?>\n".
 						"<ul>\n".
 						"<?foreach(\$item as \$field=>\$value):?>\n".
-							"<li><?=\$field;?>: <?=\$value;?></li>\n".
+						"<li><?=\$field;?>: <?=\$value;?></li>\n".
 						"<?endforeach;?>\n".
 						"</ul>\n".
-					"<?endforeach;?>\n\n";
+						"<?endforeach;?>\n\n";
+				}
+			}
+			if(is_array($view['subviews'])){
+				foreach($view['subviews'] as $sview){
+					echo "\n<?=\${$sview['label']};?>\n";
+				}
 			}
 			$html = ob_get_contents();
 			ob_end_clean();

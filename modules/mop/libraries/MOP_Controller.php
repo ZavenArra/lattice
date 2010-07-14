@@ -427,35 +427,43 @@ class MOP_Controller_Core extends Controller_Core {
 	*/
 	public function buildModule($module, $templatevar=NULL, $arguments=NULL){
 		Kohana::log('debug', 'Loading module: ' . $module['modulename']);
-	//	if((Kohana::find_file('controllers', $module['modulename'])) !== FALSE){
-			Kohana::log('debug', 'Loading controller: ' . $module['modulename']);
 
-			if(!Kohana::find_file('controllers', $module['modulename'] ) ){
-				$includeclass = 'class '.$module['modulename'].'_Controller extends '.$module['controllertype'].'_Controller { } ';
-				eval($includeclass);
-			}
-
-			$fullname = $module['modulename'].'_Controller';
-			$module = new $fullname($arguments);
-
-			//create Main View is a suspect function..
-			//why doesn't this just happen in the controllers constructor
-			$module->createIndexView();
+    if((Kohana::find_file('controllers', $module['modulename'])) !== FALSE){
+      Kohana::log('debug', 'Loading controller: ' . $modulename);
+      $fullname = $modulename.'_Controller';
+      $module = new $fullname();
+      $module->createIndexView();
 			$module->template->loadResources();
-			//and load resources for it's possible parents
 			$parentclass = get_parent_class($module);
 			$parentname = str_replace('_Controller', '', $parentclass);
 			$module->template->loadResources(strtolower($parentname));
+      if($templatevar==NULL){
+        $this->template->$modulename = $module->template->render();
+      } else {
+        $this->template->$templatevar = $module->template->render();
+      }
+		} else if (isset($module['controllertype'])){
+				$includeclass = 'class '.$module['modulename'].'_Controller extends '.$module['controllertype'].'_Controller { } ';
+				eval($includeclass);
+				$fullname = $module['modulename'].'_Controller';
+				$module = new $fullname($arguments);
+				$module->template->loadResources();
+				$parentclass = get_parent_class($module);
+				$parentname = str_replace('_Controller', '', $parentclass);
+				$module->template->loadResources(strtolower($parentname));
 
-			//build submodules of this module (if any)
-			$module->buildModules();
 
-			//render some html
-			if($templatevar==NULL){
-				$this->template->$module['modulename'] = $module->template->render();
-			} else {
-				$this->template->$templatevar = $module->template->render();
-			}
+    } else { 
+      //just load the view
+      Kohana::log('debug', 'No Controller, just Loading View: ' . $module['modulename']);
+      $view = new View($module['modulename']);
+      if($templatevar==NULL){
+        $this->template->$modulename = $view->render();
+      } else {
+        $this->template->$templatevar = $view->render();
+      }
+    }
+
 	}
 
 	/*
