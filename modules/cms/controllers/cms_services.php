@@ -157,7 +157,6 @@ class CMS_Services_Controller{
 		}
 		
 
-		Kohana::log('info', 'finished with saveFile '.$file->id);
 
 		$parse = explode('.', $savename);
 		$ext = $parse[count($parse)-1];
@@ -168,6 +167,7 @@ class CMS_Services_Controller{
 			'ext'=>$ext,
 			'result'=>'success',
 		);
+		Kohana::log('info', 'finished with saveFile '.var_export($result, true));
 		return $result;
 
 	}
@@ -231,6 +231,7 @@ class CMS_Services_Controller{
 	
 
 	public function saveImage($parameters){
+		Kohana::log('info', 'Saving Image '.var_export($parameters, true) );
 		if(!isset($_POST['field'])){
 			Kohana::log('error', 'No field in Post');
 			throw new Kohana_User_Exception('no field in POST', 'no field in POST');
@@ -270,101 +271,124 @@ class CMS_Services_Controller{
 
 		//do the saving of the file
 		$result = $this->saveFile();
+		Kohana::log('info', 'Returning to saveImage');
+
+
+		$ext = substr(strrchr($result['filename'], '.'), 1);
+		switch($ext){
+		case 'tiff':
+		case 'tif':
+		case 'TIFF':
+		case 'TIF':
+			Kohana::log('info', 'Converting TIFF image to JPG for resize');
+
+			$imageFilename =  $result['filename'].'_converted.jpg';
+			$command = sprintf('convert %s %s',$this->mediapath.$result['filename'], $this->mediapath.$imageFilename);
+			Kohana::log('info', $command);
+			system(sprintf('convert %s %s',$this->mediapath.$result['filename'], $this->mediapath.$imageFilename));
+			break;
+		default:
+			$imageFilename = $result['filename'];
+			break;
+		}
+		Kohana::log('info', $imageFilename);
 
 
 		$quality = Kohana::config('cms_services.imagequality');
 
 		//do the resizing
 		if(is_array($parameters)){
-		$image = new Image($this->mediapath.$result['filename']);
-		foreach($parameters['imagesizes'] as $resize){
+			Kohana::log('info', 'poor man');
+			$image = new Image($this->mediapath.$imageFilename);
+			Kohana::log('info', 'poor man');
+			foreach($parameters['imagesizes'] as $resize){
 
-			if(isset($resize['prefix']) && $resize['prefix']){
-				$prefix = $resize['prefix'].'_';
-			} else {
-				$prefix = '';
-			}
-			$newFilename = $prefix.$result['filename'];
-			$savename = $this->mediapath.$newFilename;
-
-			if(isset($resize['noresample']) && $resize['noresample']==true){
-				$image->save($savename);
-				continue;
-			}
-
-
-			//set up dimenion to key off of
-			if( isset($resize['forcewidth']) && $resize['forcewidth']){
-				$keydimension = Image::WIDTH;
-			} else if ( isset($resize['forceheight']) && $resize['forceheight']){
-				$keydimension = Image::HEIGHT;
-			} else {
-				$keydimension = Image::AUTO;
-			}
-
-
-			if(isset($resize['crop'])) {
-				//resample with crop
-				//set up sizes, and crop
-				if( ($image->width / $image->height) > ($image->height / $image->width) ){
-					$cropKeyDimension = Image::HEIGHT;
+				if(isset($resize['prefix']) && $resize['prefix']){
+					$prefix = $resize['prefix'].'_';
 				} else {
-					$cropKeyDimension = Image::WIDTH;
+					$prefix = '';
 				}
-				$image->resize($resize['width'], $resize['height'], $cropKeyDimension)->crop($resize['width'], $resize['height']);
-				$image->quality($quality);
-				$image->save($savename);
+				$newFilename = $prefix.$imageFilename;
+				$savename = $this->mediapath.$newFilename;
+
+				if(isset($resize['noresample']) && $resize['noresample']==true){
+					$image->save($savename);
+					continue;
+				}
 
 
-			} else {
-				//just do the resample
-				//set up sizes
-				$resizewidth = $resize['width'];
-				$resizeheight = $resize['height'];
+				//set up dimenion to key off of
+				if( isset($resize['forcewidth']) && $resize['forcewidth']){
+					$keydimension = Image::WIDTH;
+				} else if ( isset($resize['forceheight']) && $resize['forceheight']){
+					$keydimension = Image::HEIGHT;
+				} else {
+					$keydimension = Image::AUTO;
+				}
 
-				if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
-					$osize = getimagesize($this->mediapath.$result['filename']);
-					$horizontal = false;
-					if($osize[0] > $osize[1]){
-						//horizontal
-						$horizontal = true;	
-					}
-					$newsize = array($resizewidth, $resizeheight);
-					sort($newsize);
-					if($horizontal){
-						$resizewidth = $newsize[1];
-						$resizeheight = $newsize[0];
+
+				if(isset($resize['crop'])) {
+					//resample with crop
+					//set up sizes, and crop
+					if( ($image->width / $image->height) > ($image->height / $image->width) ){
+						$cropKeyDimension = Image::HEIGHT;
 					} else {
-						$resizewidth = $newsize[0];
-						$resizeheight = $newsize[1];
+						$cropKeyDimension = Image::WIDTH;
 					}
-				}
+					$image->resize($resize['width'], $resize['height'], $cropKeyDimension)->crop($resize['width'], $resize['height']);
+					$image->quality($quality);
+					$image->save($savename);
 
-				//maintain aspect ratio
-				//use the forcing when it applied
-				//forcing with aspectfolloworientation is gonna give weird results!
-				$image->resize($resizewidth, $resizeheight, $keydimension);
 
-				$image->quality($quality);
-				$image->save($savename);
+				} else {
+					//just do the resample
+					//set up sizes
+					$resizewidth = $resize['width'];
+					$resizeheight = $resize['height'];
 
-				if(isset($oldFilename) && $newFilename != $prefix.$oldFilename){
-					if(file_exists($this->mediapath.$oldFilename)){
-						unlink($this->mediapath.$oldFilename);
+					if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
+						$osize = getimagesize($this->mediapath.$imageFilename);
+						$horizontal = false;
+						if($osize[0] > $osize[1]){
+							//horizontal
+							$horizontal = true;	
+						}
+						$newsize = array($resizewidth, $resizeheight);
+						sort($newsize);
+						if($horizontal){
+							$resizewidth = $newsize[1];
+							$resizeheight = $newsize[0];
+						} else {
+							$resizewidth = $newsize[0];
+							$resizeheight = $newsize[1];
+						}
 					}
-				}
 
-				
+					//maintain aspect ratio
+					//use the forcing when it applied
+					//forcing with aspectfolloworientation is gonna give weird results!
+					$image->resize($resizewidth, $resizeheight, $keydimension);
+
+					$image->quality($quality);
+					$image->save($savename);
+
+					if(isset($oldFilename) && $newFilename != $prefix.$oldFilename){
+						if(file_exists($this->mediapath.$oldFilename)){
+							unlink($this->mediapath.$oldFilename);
+						}
+					}
+
+
 			}
 		}
 		}
 
-		if(file_exists($this->mediapath.'uithumb_'.$result['filename'])){
-			$resultpath = $this->mediapath.'uithumb_'.$result['filename'];
-			$thumbSrc = $this->basemediapath.'uithumb_'.$result['filename'];
+		if(file_exists($this->mediapath.'uithumb_'.$imageFilename)){
+			$resultpath = $this->mediapath.'uithumb_'.$imageFilename;
+			$thumbSrc = $this->basemediapath.'uithumb_'.$imageFilename;
 		} else {
-			$resultpath = $this->mediapath.$result['filename'];
-			$thumbSrc = $this->basemediapath.$result['filename'];
+			$resultpath = $this->mediapath.$imageFilename;
+			$thumbSrc = $this->basemediapath.$imageFilename;
 		}
 		$size = getimagesize($resultpath);
 		$result['width'] = $size[0];

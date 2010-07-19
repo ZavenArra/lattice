@@ -47,7 +47,20 @@ Class mopui{
 		switch($element['type']){
 
 		case 'singleImage':
-			$thumbSrc = 'uithumb_'.$fieldvalue['filename'];
+			$ext = substr(strrchr($fieldvalue['filename'], '.'), 1);
+			switch($ext){
+			case 'tif':
+			case 'tiff':
+			case 'TIF':
+			case 'TIFF':
+				$thumbSrc = 'uithumb_'.$fieldvalue['filename'].'_converted.jpg';
+				break;
+			default:
+				$thumbSrc = 'uithumb_'.$fieldvalue['filename'];
+				break;
+			}
+
+
 			$sitePath = '';
 			if(Kohana::config('mop.staging')){
 				$sitePath = 'staging/';
