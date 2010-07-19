@@ -1,125 +1,179 @@
 <?
 
-$config['basiccategory'] = array (
+$config['plants'] = array (
 );
 
-$config['singleipe'] = array (
+$config['plant'] = array (
 );
 
 $config['modules'] = array (
-  'singleipe' => 
+  'plant' => 
   array (
     array (
       'type' => 'ipe',
-      'field' => 'singleIPE',
-      'label' => 'Single IPE',
-      'class' => NULL,
-      'tag' => NULL,
+      'field' => 'scientificName',
+      'label' => 'Scientific Name',
+      'class' => 'rows-1',
+      'tag' => 'p',
     ),
-  ),
-  'singleradiogroup' => 
-  array (
     array (
-      'type' => 'radioGroup',
-      'field' => 'singleRadioGroup',
-      'label' => NULL,
+      'type' => 'ipe',
+      'field' => 'group',
+      'label' => 'Group',
+      'class' => 'rows-1',
+      'tag' => 'p',
+    ),
+    array (
+      'type' => 'multiSelect',
+      'field' => 'seasonsEdible',
+      'label' => 'Seasons this Plant is Edible',
       'class' => NULL,
       'tag' => NULL,
-      'radios' => 
+      'options' => 
       array (
-        'one' => 'one',
-        'two' => 'two',
-        'three' => 'three',
+        'spring' => 'Spring',
+        'summer' => 'Summer',
+        'autumn' => 'Autumn',
+        'winter' => 'Winter',
       ),
-      'groupLabel' => NULL,
-      'radioname' => NULL,
+      'unsetLabel' => 'Select Seasons',
     ),
-  ),
-  'singlecheckbox' => 
-  array (
+    array (
+      'type' => 'ipe',
+      'field' => 'season',
+      'label' => 'Season Text',
+      'class' => 'rows-2',
+      'tag' => 'p',
+    ),
+    array (
+      'type' => 'ipe',
+      'field' => 'habitat',
+      'label' => 'Habitat',
+      'class' => 'rows-2',
+      'tag' => 'p',
+    ),
+    array (
+      'type' => 'ipe',
+      'field' => 'range',
+      'label' => 'Range',
+      'class' => 'rows-2',
+      'tag' => 'p',
+    ),
+    array (
+      'type' => 'ipe',
+      'field' => 'howToSpot',
+      'label' => 'How to Spot',
+      'class' => 'rows-2',
+      'tag' => 'p',
+    ),
+    array (
+      'type' => 'ipe',
+      'field' => 'generalInfo',
+      'label' => 'General Info',
+      'class' => 'rows-20',
+      'tag' => 'p',
+    ),
+    array (
+      'type' => 'ipe',
+      'field' => 'harvesting',
+      'label' => 'Harvesting',
+      'class' => 'rows-20',
+      'tag' => 'p',
+    ),
+    array (
+      'type' => 'ipe',
+      'field' => 'cooking',
+      'label' => 'Food Preparation',
+      'class' => 'rows-20',
+      'tag' => 'p',
+    ),
+    array (
+      'type' => 'ipe',
+      'field' => 'nutrition',
+      'label' => 'Nutrition',
+      'class' => 'rows-10',
+      'tag' => 'p',
+    ),
+    array (
+      'type' => 'ipe',
+      'field' => 'medicinalUses',
+      'label' => 'Medicinal Uses',
+      'class' => 'rows-10',
+      'tag' => 'p',
+    ),
+    array (
+      'type' => 'ipe',
+      'field' => 'positiveId',
+      'label' => 'Positive Id Checklist',
+      'class' => 'rows-8',
+      'tag' => 'p',
+    ),
     array (
       'type' => 'checkbox',
-      'field' => 'singleCheckbox',
-      'label' => 'Single Checkbox',
+      'field' => 'hasPoisonousLookalikes',
+      'label' => 'This plant has poisonous lookalikes',
       'class' => NULL,
       'tag' => NULL,
     ),
+    array (
+      'type' => 'ipe',
+      'field' => 'poisonousLookalikes',
+      'label' => 'Poisonous Lookalikes',
+      'class' => 'rows-5',
+      'tag' => 'p',
+    ),
+    array (
+      'type' => 'ipe',
+      'field' => 'similarPlants',
+      'label' => 'Similar Plants and Confusing Factors',
+      'class' => 'rows-5',
+      'tag' => 'p',
+    ),
   ),
-  'singledate' => 
+  'plantImage' => 
   array (
     array (
-      'type' => 'date',
-      'field' => 'singleDate',
-      'label' => 'Single Date',
+      'type' => 'ipe',
+      'field' => 'caption',
+      'label' => 'Caption',
+      'class' => 'rows-5',
+      'tag' => 'p',
+    ),
+    array (
+      'type' => 'checkbox',
+      'field' => 'poisonous',
+      'label' => 'Poisonous Plant',
+    ),
+    array (
+      'type' => 'singleImage',
+      'field' => 'image',
+      'label' => 'Image',
       'class' => NULL,
       'tag' => NULL,
+      'extensions' => 
+      array (
+        'jpg',
+        'tiff',
+        'tif',
+      ),
+      'maxlength' => NULL,
     ),
   ),
-  'singletime' => 
+  'recipe' => 
   array (
     array (
-      'type' => 'time',
-      'field' => 'singleTime',
-      'label' => 'Single Time',
-      'class' => NULL,
-      'tag' => NULL,
-    ),
-  ),
-  'simplelistmodulepage' => 
-  array (
-    array (
-      'type' => 'module',
-      'modulename' => 'simplelistmodule',
-      'controllertype' => 'listmodule',
-    ),
-  ),
-  'imagelistmodulepage' => 
-  array (
-    array (
-      'type' => 'module',
-      'modulename' => 'imagelistmodule',
-      'controllertype' => 'listmodule',
-    ),
-  ),
-  'filelistmodulepage' => 
-  array (
-    array (
-      'type' => 'module',
-      'modulename' => 'filelistmodule',
-      'controllertype' => 'listmodule',
-    ),
-  ),
-  'complexlistmodulepage' => 
-  array (
-    array (
-      'type' => 'module',
-      'modulename' => 'complexlistmodule',
-      'controllertype' => 'listmodule',
+      'type' => 'ipe',
+      'field' => 'directions',
+      'label' => 'Directions',
+      'class' => 'rows-20',
+      'tag' => 'p',
     ),
   ),
 );
 
-$config['singleradiogroup'] = array (
+$config['plantImage'] = array (
 );
 
-$config['singlecheckbox'] = array (
-);
-
-$config['singledate'] = array (
-);
-
-$config['singletime'] = array (
-);
-
-$config['simplelistmodulepage'] = array (
-);
-
-$config['imagelistmodulepage'] = array (
-);
-
-$config['filelistmodulepage'] = array (
-);
-
-$config['complexlistmodulepage'] = array (
+$config['recipe'] = array (
 );
 

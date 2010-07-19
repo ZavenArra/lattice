@@ -1,32 +1,14 @@
 <?
 
-$config['basiccategory'] = array (
+$config['plants'] = array (
 );
 
-$config['singleipe'] = array (
+$config['plant'] = array (
 );
 
-$config['singleradiogroup'] = array (
+$config['plantImage'] = array (
 );
 
-$config['singlecheckbox'] = array (
-);
-
-$config['singledate'] = array (
-);
-
-$config['singletime'] = array (
-);
-
-$config['simplelistmodulepage'] = array (
-);
-
-$config['imagelistmodulepage'] = array (
-);
-
-$config['filelistmodulepage'] = array (
-);
-
-$config['complexlistmodulepage'] = array (
+$config['recipe'] = array (
 );
 

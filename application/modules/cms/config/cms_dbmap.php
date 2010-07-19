@@ -1,37 +1,34 @@
 <?
 
-$config['basiccategory'] = array (
+$config['plants'] = array (
 );
 
-$config['singleipe'] = array (
-  'singleIPE' => 'field1',
+$config['plant'] = array (
+  'scientificName' => 'field1',
+  'group' => 'field2',
+  'seasonsEdible' => 'field3',
+  'season' => 'field4',
+  'habitat' => 'field5',
+  'range' => 'field6',
+  'howToSpot' => 'field7',
+  'generalInfo' => 'field8',
+  'harvesting' => 'field9',
+  'cooking' => 'field10',
+  'positiveId' => 'field11',
+  'hasPoisonousLookalikes' => 'flag1',
+  'poisonousLookalikes' => 'field12',
+  'similarPlants' => 'field13',
+	'nutrition'=>'field14',
+	'medicinalUses'=>'field15',
 );
 
-$config['singleradiogroup'] = array (
-  'singleRadioGroup' => 'field1',
+$config['plantImage'] = array (
+  'caption' => 'field1',
+  'image' => 'file1',
+	'poisonous'=>'flag1',
 );
 
-$config['singlecheckbox'] = array (
-  'singleCheckbox' => 'flag1',
-);
-
-$config['singledate'] = array (
-  'singleDate' => 'field1',
-);
-
-$config['singletime'] = array (
-  'singleTime' => 'field1',
-);
-
-$config['simplelistmodulepage'] = array (
-);
-
-$config['imagelistmodulepage'] = array (
-);
-
-$config['filelistmodulepage'] = array (
-);
-
-$config['complexlistmodulepage'] = array (
+$config['recipe'] = array (
+  'directions' => 'field1',
 );
 
