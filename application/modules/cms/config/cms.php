@@ -172,7 +172,7 @@ $config['modules'] = array (
       'type' => 'ipe',
       'field' => 'directions',
       'label' => 'Directions',
-      'class' => 'rows-20',
+      'class' => 'rows-40',
       'tag' => 'p',
     ),
   ),
