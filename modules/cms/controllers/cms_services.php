@@ -7,7 +7,7 @@
  * @package Kororor
  */
 
-class CMS_Services_Controller{
+class CMS_Services_Controller extends Controller{
 
 	/*
 	Variable: loaded container model
@@ -31,11 +31,13 @@ class CMS_Services_Controller{
 	Parameters:
 	$model - the name of the model this item is stored in
 	*/
-	public function __construct($model){
-		if(!$model->loaded){
-			throw new Kohana_User_Exception('model is not loaded', 'model is not loaded: invalid reference to item');
+	public function __construct($model = null){
+		if($model){
+			if(!$model->loaded){
+				throw new Kohana_User_Exception('model is not loaded', 'model is not loaded: invalid reference to item');
+			}
+			$this->model = $model;
 		}
-		$this->model = $model;
 
 		if(Kohana::config('mop.staging')){
 			$this->mediapath = $this->stagingmediapath;
@@ -274,7 +276,36 @@ class CMS_Services_Controller{
 		Kohana::log('info', 'Returning to saveImage');
 
 
-		$ext = substr(strrchr($result['filename'], '.'), 1);
+		$imageFilename = $this->processImage($result['filename'], $parameters);
+		
+
+		if(file_exists($this->mediapath.'uithumb_'.$imageFilename)){
+			$resultpath = $this->mediapath.'uithumb_'.$imageFilename;
+			$thumbSrc = $this->basemediapath.'uithumb_'.$imageFilename;
+		} else {
+			$resultpath = $this->mediapath.$imageFilename;
+			$thumbSrc = $this->basemediapath.$imageFilename;
+		}
+		$size = getimagesize($resultpath);
+		$result['width'] = $size[0];
+		$result['height'] = $size[1];
+		$result['thumbSrc']= $thumbSrc;
+
+		//get rid of the old ones
+		//but how to find them ???
+
+
+
+		return $result;
+	}
+
+
+	/*
+	 * Funciton: processImage($filename, $parameters)
+	 * Create all automatice resizes on this image
+	 */
+	public function processImage($filename, $parameters){
+		$ext = substr(strrchr($filename, '.'), 1);
 		switch($ext){
 		case 'tiff':
 		case 'tif':
@@ -282,13 +313,13 @@ class CMS_Services_Controller{
 		case 'TIF':
 			Kohana::log('info', 'Converting TIFF image to JPG for resize');
 
-			$imageFilename =  $result['filename'].'_converted.jpg';
-			$command = sprintf('convert %s %s',$this->mediapath.$result['filename'], $this->mediapath.$imageFilename);
+			$imageFilename =  $filename.'_converted.jpg';
+			$command = sprintf('convert %s %s',addcslashes($this->mediapath.$filename, "'\"\\ "), addcslashes($this->mediapath.$imageFilename, "'\"\\ "));
 			Kohana::log('info', $command);
-			system(sprintf('convert %s %s',$this->mediapath.$result['filename'], $this->mediapath.$imageFilename));
+			system(sprintf('convert %s %s',addcslashes($this->mediapath.$filename, "'\"\\ "),addcslashes($this->mediapath.$imageFilename, "'\"\\ ")));
 			break;
 		default:
-			$imageFilename = $result['filename'];
+			$imageFilename = $filename;
 			break;
 		}
 		Kohana::log('info', $imageFilename);
@@ -379,30 +410,36 @@ class CMS_Services_Controller{
 					}
 
 
+				}
 			}
 		}
-		}
 
-		if(file_exists($this->mediapath.'uithumb_'.$imageFilename)){
-			$resultpath = $this->mediapath.'uithumb_'.$imageFilename;
-			$thumbSrc = $this->basemediapath.'uithumb_'.$imageFilename;
-		} else {
-			$resultpath = $this->mediapath.$imageFilename;
-			$thumbSrc = $this->basemediapath.$imageFilename;
-		}
-		$size = getimagesize($resultpath);
-		$result['width'] = $size[0];
-		$result['height'] = $size[1];
-		$result['thumbSrc']= $thumbSrc;
-
-		//get rid of the old ones
-		//but how to find them ???
-
-
-
-		return $result;
+		return $imageFilename;
 	}
 
+
+  public function regenerateImages(){
+		//find all images
+		//calculate resize array for images
+		$uiimagesize = array('uithumb'=>Kohana::config('cms.uiresize'));
+		$parameters['imagesizes'] = $uiimagesize;
+
+		foreach(Kohana::config('cms.modules') as $templatename => $templateconfig){
+			foreach($templateconfig as $field){
+				if($field['type'] == 'singleImage'){
+					$objects = ORM::Factory('template', $templatename)->getPublishedMembers();
+					$fieldname = $field['field'];
+					foreach($objects as $object){
+						if( $object->contenttable->$fieldname->filename && file_exists($this->mediapath . $object->contenttable->$fieldname->filename)){
+							$this->processImage($object->contenttable->$fieldname->filename, $parameters);
+						}
+					}
+				}
+			}
+		}
+		//loop through and call $this->saveImage on it
+		//
+	}
 
 
 	/*
