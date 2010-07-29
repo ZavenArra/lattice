@@ -1,7 +1,14 @@
 <?
 
-$config['plants'] = array (
+$config['uiresize'] =  array(
+	'width'=>300,
+	'height'=>300,
+	'prefix' => 'uithumb',
+	'forcewidth'=>true,
 );
+
+$config['plants'] = array (
+	);
 
 $config['plant'] = array (
 );
