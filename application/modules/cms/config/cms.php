@@ -1,7 +1,14 @@
 <?
 
-$config['plants'] = array (
+$config['uiresize'] =  array(
+	'width'=>300,
+	'height'=>300,
+	'prefix' => 'uithumb',
+	'forcewidth'=>true,
 );
+
+$config['plants'] = array (
+	);
 
 $config['plant'] = array (
 );
@@ -42,7 +49,7 @@ $config['modules'] = array (
       'type' => 'ipe',
       'field' => 'season',
       'label' => 'Season Text',
-      'class' => 'rows-2',
+      'class' => 'rows-6',
       'tag' => 'p',
     ),
     array (
@@ -63,7 +70,7 @@ $config['modules'] = array (
       'type' => 'ipe',
       'field' => 'howToSpot',
       'label' => 'How to Spot',
-      'class' => 'rows-2',
+      'class' => 'rows-5',
       'tag' => 'p',
     ),
     array (
