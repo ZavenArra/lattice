@@ -1337,18 +1337,38 @@ mop.ui.MultiSelect = new Class({
 		this.saveButton = new Element( "a", { 
 			"class" : "icon submit"
 		}).inject( this.controls );
-		this.saveButton.addEvent( "click", this.updateAndClose.bindWithEvent( this ) );;
+		this.saveButton.addEvent( "click", this.onSaveClicked.bindWithEvent( this ) );;
 
 		this.cancelButton = new Element( "a", { 
 			"class" : "icon cancel"
 		}).inject( this.controls )
-		this.cancelButton.addEvent( "click", this.hideMultiSelect.bindWithEvent( this ) );
-
+		this.cancelButton.addEvent( "click", this.onCancelClicked.bindWithEvent( this ) );
 
 		this.multiBox.adopt( this.list );
 		this.multiBox.adopt( this.controls );
 		this.element.adopt( this.multiBox );
 
+	},
+	
+	onSaveClicked: function( e ){
+		mop.util.stopEvent( e );
+//	    console.log( "onSaveClicked" );
+        this.updateAndClose( e );
+        this.submit();
+	},
+
+	onCancelClicked: function( e ){
+		mop.util.stopEvent( e );
+//	    console.log( "onCancelClicked" );
+	    this.hideMultiSelect();
+	},
+
+	onDocumentClicked: function( e ){
+		mop.util.stopEvent( e );
+	    if( e.target == this.saveButton || e.target == this.cancelButton ) return;
+	    if(	$chk( e ) && ( e.target == this.multiBox || this.multiBox.hasChild( e.target ) ) ) return;
+//	    console.log( "onDocumentClicked" );
+	    this.updateAndClose( e );
 	},
 	
 	updateMultiBoxList: function(){
@@ -1422,11 +1442,8 @@ mop.ui.MultiSelect = new Class({
 //	console.log( "A", this.ogSelect.get("html"), this.ogSelect.getSelected() );
 	},
 	
-	updateAndClose: function( e ){
-		
+	updateAndClose: function(){
 //		console.log( 'updateAndClose', e, e.target, this.multiBox, this.multiBox.hasChild( e.target ) );
-
-		if(	$chk( e ) && ( e.target == this.multiBox || this.multiBox.hasChild( e.target ) ) && e.target != this.saveButton ) return;
 		this.ogSelect.removeEvents();
 		this.updateOgSelect();
 //		console.log( "updateAndClose", this.ogSelect.getSelected().length );
@@ -1440,20 +1457,15 @@ mop.ui.MultiSelect = new Class({
 	},
 	
 	showMultiSelect: function( e ){
-
 		mop.util.stopEvent( e );
-
-		this.documentBoundUpdateAndClose = this.updateAndClose.bindWithEvent( this );
+		this.documentBoundUpdateAndClose = this.onDocumentClicked.bindWithEvent( this );
 		document.addEvent( "mousedown", this.documentBoundUpdateAndClose );
 		this.updateMultiBoxList();
 		this.multiBox.removeClass("hidden");
 		this.multiBox.focus();
 	},
 	
-	hideMultiSelect: function( e ){
-
-		mop.util.stopEvent( e );
-
+	hideMultiSelect: function(){
 		this.multiBox.addClass( "hidden" );
 		document.removeEvent( 'mousedown', this.documentBoundUpdateAndClose );
 	},
@@ -1968,7 +1980,7 @@ mop.ui.DateRangePicker = new Class({
 	
 	onSelect: function( e ){
 		mop.util.stopEvent( e );
-		this.submit();
+        this.submit();
 	},
 	
 	onShow: function( scrollData ){
