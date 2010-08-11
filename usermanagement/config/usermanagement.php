@@ -1,5 +1,7 @@
 <?
 
+$config['displaycontroller'] = 'DisplayAdmin';
+$config['authrole'] = 'admin';
 /*
  * Config: ['resources']['css']
  */
