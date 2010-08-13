@@ -108,6 +108,15 @@ Class mopui{
 					}
 				}
 			}	
+			if($fieldvalue){
+				$prepFieldValue = array();
+				foreach($fieldvalue as $name => $selected){
+					if($selected){
+						$prepFieldValue[] = $name;
+					}
+				}
+				$fieldvalue = $prepFieldValue;
+			}
 			break;
 		}
 

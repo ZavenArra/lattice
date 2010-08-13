@@ -51,9 +51,19 @@ class ContentBase_Model extends ORM {
 		if(in_array($column, $this->nonmappedfields)){
 			return parent::__get($column);
 		}
+
 		//check for dbmap
 		if($map = Kohana::config('cms_dbmap.'.$this->templatename)){
 			$column = $map[$column];
+		}
+
+		if(in_array($column, $this->objectFields)){
+			$sub = ORM::Factory('page', parent::__get($column));
+			$values = array();
+			foreach(Kohana::config('cms_dbmap.'.$sub->template->templatename) as $fieldname=>$mapColumn){
+				$values[$fieldname] = $sub->contenttable->$fieldname;
+			}
+			return $values;
 		}
 
 		if(in_array($column, $this->fileFields) && !is_object(parent::__get($column)) ){
