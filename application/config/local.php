@@ -1,5 +1,0 @@
-<?
-
-$config = array(
-	'profiler'=>false,
-);
