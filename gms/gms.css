@@ -1,0 +1,130 @@
+.filemanager{
+	float:left;
+	font-family:helvetica,arial,sans-serif;
+	position:relative;
+	left: -175px;
+	margin:0 -175px 0 0;
+	height:504px;
+	width:175px;	
+}
+
+.filebrowser{
+	height:480px;
+	overflow:auto;
+}
+
+.recepticle{
+	width:700px;
+	height:504px;
+	margin:0;
+	padding-left:10px;
+	padding-top:14px;
+	list-style:none;
+	overflow:auto;
+	background: #f8f8f8 url( "images/navbg.gif" ) repeat-y;
+}
+
+
+.filelisting{
+	list-style:none;
+	margin:0;
+	padding:0;
+} 
+
+.filelisting h4{
+	width:105px;
+	overflow:hidden;
+	white-space:nowrap;
+	float:left;
+}
+
+.recepticle h4,
+.filelisting h4{
+	color:#666;
+	margin:0;
+	padding:0;
+	font-size:10px;
+	font-weight:normal;
+}
+
+.filelisting .deletelink{
+	position:relative;
+	margin-bottom: -16px;
+	top:100px;
+	left:100px;
+}
+
+.filelisting img.icon{
+	display:block;
+	float:left;
+	margin:4px 10px 0 0;
+}
+
+.recepticle img.icon{
+	float:left;
+}
+
+/*
+.uploadform{
+	border:2px #f00 solid;
+	z-index:250;
+	position:absolute;
+	top:153px;
+	left:270px;
+}
+.uploadformdiv{
+	z-index:250;
+	position:absolute;
+	top:153px;
+	left:270px;
+	width:320px;
+	padding:10px;
+	background:#fff;
+	font-family: helvetica, arial, sans-serif;
+	border: 3px #000 solid;
+}
+
+.uploadelements{
+	margin:10px;
+	padding:20px;
+	height: 150px;
+	border:1px dotted #000;
+	background: url( "../images/90percent.png" );
+	border:10px #f00 solid;
+}
+
+.uploadelements input{
+	border:1px #f00 solid;
+	margin:0 0 10px 0;
+}
+
+.uploadelements h4{
+	border: 2px #f00 solid;
+	margin:0 0 15px 0;
+	font-family: helvetica, arial, sans-serif;
+}*/
+
+.recepticle li.thumbnail{
+	float:left;	
+	margin:0 10px 10px 0;
+	padding:0;
+	width:160px;
+	height:170px;
+	overflow:hidden;
+}
+
+.filelisting li{
+	clear:both;
+	margin:0;
+	padding:0 0 0 10px;
+	height:25px;
+	line-height:25px;
+	border-bottom:1px #cecece solid;
+	background-image: url( "../images/navbg.gif" );
+	color:#333;
+}
+
+.filelisting li .title{
+	white-space:nowrap;
+	margin:0 0 2px 0;
+}
