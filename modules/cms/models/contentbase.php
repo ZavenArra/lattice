@@ -17,6 +17,13 @@ class ContentBase_Model extends ORM {
 	 */
 	protected $fileFields = array('file', 'file1', 'file2', 'file3', 'file4');
 
+
+	/*
+	 * Variable: objectFields 
+	 * Array of possible fields to use for saving objects
+	 */
+	protected $objectFields = array('object1', 'object2', 'object3', 'object4');
+
 	/*
 	 * Variable: templatename
 	 * Private variable storing the name of the temple the current object is using.

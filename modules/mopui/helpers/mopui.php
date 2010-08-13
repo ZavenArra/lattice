@@ -97,6 +97,18 @@ Class mopui{
 		case 'radioGroup':
 			$element['radioname'] = $id; 
 			break;
+
+		case 'multiSelect':
+			if(isset($element['object'])){
+				$object = Kohana::config('cms.modules.'.$element['object']);
+				$element['options'] = array();
+				foreach($object as $field){
+					if($field['type'] == 'checkbox'){
+						$element['options'][$field['field']] = $field['label'];
+					}
+				}
+			}	
+			break;
 		}
 
 		if(!isset($element['class'])){

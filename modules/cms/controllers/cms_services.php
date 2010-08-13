@@ -60,7 +60,15 @@ class CMS_Services_Controller extends Controller{
 	}
 
 	public function saveField($field, $value){
-		$this->model->$field = CMS_Services_Controller::convertNewlines($value);
+		switch(Kohana::config('cms.modules.'.$this->model->template->templatename.'.'.$field.'.type')){
+		case 'multiSelect':
+			$this->saveObject();
+			break;	
+		default:
+			$this->model->$field = CMS_Services_Controller::convertNewlines($value);
+			break;
+		}
+
 		$this->model->save();
 		return array('value'=>$this->model->$field);
 	}
@@ -92,6 +100,31 @@ class CMS_Services_Controller extends Controller{
 		return true;
 	}
 
+	//this is gonna change a lot!
+	//this only supports a very special case of multiSelect objects
+	public function saveObject(){
+		$object = ORM::Factory('page', $this->model->$_POST['field']);
+		if(!$object->template_id){
+			$object->template_id = 0;
+		}
+
+		$element['options'] = array();
+		echo $object->template->templatename;
+		foreach(Kohana::config('cms.modules.'.$object->template->templatename) as $field){
+			if($field['type'] == 'checkbox'){
+				$options = $field['field'];
+			}
+		}
+		foreach($options as $field){
+			$object->contenttable->$field  = 0;
+		}
+
+		foreach($_POST['values'] as $value){
+			$object->contenttable->$value = 1;
+		}
+		$object->save();
+		return true;
+	}
 
 	public function saveFile(){
 		//check for valid file upload
