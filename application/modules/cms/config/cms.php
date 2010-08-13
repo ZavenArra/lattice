@@ -36,6 +36,8 @@ $config['modules'] = array (
       'label' => 'Seasons this Plant is Edible',
       'class' => NULL,
       'tag' => NULL,
+			'object'=>'seasonsEdible',
+			/*
       'options' => 
       array (
         'spring' => 'Spring',
@@ -43,6 +45,7 @@ $config['modules'] = array (
         'autumn' => 'Autumn',
         'winter' => 'Winter',
       ),
+			 */
       'unsetLabel' => 'Select Seasons',
     ),
     array (
@@ -176,6 +179,59 @@ $config['modules'] = array (
       'tag' => 'p',
     ),
   ),
+	'seasonsEdible'=>
+	array(
+		array (
+			'type' => 'checkbox',
+			'field' => 'earlySpring',
+			'label' => 'Early Spring',
+		),
+		array (
+			'type' => 'checkbox',
+			'field' => 'midSpring',
+			'label' => 'Mid Spring',
+		),
+		array (
+			'type' => 'checkbox',
+			'field' => 'lateSpring',
+			'label' => 'Late Spring',
+		),
+		array (
+			'type' => 'checkbox',
+			'field' => 'earlySummer',
+			'label' => 'Early Summer',
+		),
+		array (
+			'type' => 'checkbox',
+			'field' => 'midSummer',
+			'label' => 'Mid Summer',
+		),
+		array (
+			'type' => 'checkbox',
+			'field' => 'lateSummer',
+			'label' => 'Late Summer',
+		),
+		array (
+			'type' => 'checkbox',
+			'field' => 'earlyFall',
+			'label' => 'Early Fall',
+		),
+		array (
+			'type' => 'checkbox',
+			'field' => 'midFall',
+			'label' => 'Mid Fall',
+		),
+		array (
+			'type' => 'checkbox',
+			'field' => 'lateFall',
+			'label' => 'Late Fall',
+		),
+		array (
+			'type' => 'checkbox',
+			'field' => 'winter',
+			'label' => 'Winter',
+		),
+	),
 );
 
 $config['plantImage'] = array (

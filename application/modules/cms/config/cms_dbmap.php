@@ -6,7 +6,7 @@ $config['plants'] = array (
 $config['plant'] = array (
   'scientificName' => 'field1',
   'group' => 'field2',
-  'seasonsEdible' => 'field3',
+  'seasonsEdible' => 'object1',
   'season' => 'field4',
   'habitat' => 'field5',
   'range' => 'field6',
@@ -30,5 +30,18 @@ $config['plantImage'] = array (
 
 $config['recipe'] = array (
   'directions' => 'field1',
+);
+
+$config['seasonsEdible'] = array(
+	'earlySpring'=>'flag1',
+	'midSpring'=>'flag2',
+	'lateSpring'=>'flag3',
+	'earlySummer'=>'flag4',
+	'midSummer'=>'flag5',
+	'lateSummer'=>'flag6',
+	'earlyFall'=>'flag7',
+	'midFall'=>'flag8',
+	'lateFall'=>'flag9',
+	'winter'=>'flag10',
 );
 
