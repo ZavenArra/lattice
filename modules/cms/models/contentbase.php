@@ -59,6 +59,9 @@ class ContentBase_Model extends ORM {
 
 		if(in_array($column, $this->objectFields)){
 			$sub = ORM::Factory('page', parent::__get($column));
+			if(!$sub->loaded){
+				return array();
+			}
 			$values = array();
 			foreach(Kohana::config('cms_dbmap.'.$sub->template->templatename) as $fieldname=>$mapColumn){
 				$values[$fieldname] = $sub->contenttable->$fieldname;
