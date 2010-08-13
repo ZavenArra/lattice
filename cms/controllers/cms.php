@@ -279,8 +279,40 @@ class CMS_Controller extends Controller {
 			$page->$_POST['field'] = $_POST['value'];
 			$page->save();
 		} else if($_POST['field']) {
-			$page->contenttable->$_POST['field'] = CMS_Services_Controller::convertNewlines($_POST['value']);
-			$page->contenttable->save();
+			$fields = Kohana::config('cms.modules.'.$page->template->templatename); //this is annoying and experimental
+			$lookup = array();
+			foreach($fields as $f){
+				$lookup[$f['field']] = $f;
+			}
+			switch($lookup[$_POST['field']]['type']){
+			case 'multiSelect':
+				$object = ORM::Factory('page', $page->contenttable->$_POST['field']);
+				if(!$object->loaded){
+					$object->template_id = ORM::Factory('template', $lookup[$_POST['field']]['object'])->id;
+					$object->save();
+					$page->contenttable->$_POST['field'] = $object->id;
+					$page->contenttable->save();
+				}
+				$options = array();
+				foreach(Kohana::config('cms.modules.'.$object->template->templatename) as $field){
+					if($field['type'] == 'checkbox'){
+						$options[] = $field['field'];
+					}
+				}
+				foreach($options as $field){
+					$object->contenttable->$field  = 0;
+				}
+
+				foreach($_POST['value'] as $value){
+					$object->contenttable->$value = 1;
+				}
+				$object->contenttable->save();
+				break;	
+			default:
+				$page->contenttable->$_POST['field'] = CMS_Services_Controller::convertNewlines($_POST['value']);
+				$page->contenttable->save();
+				break;
+			}
 		} else {
 			throw new Kohana_User_Exception('Invalid POST', 'Invalid POST Arguments');
 		}
