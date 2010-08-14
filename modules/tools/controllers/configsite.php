@@ -1,8 +1,8 @@
 <?
 set_error_handler(array('Cli', 'error_handler'), E_ALL);
 //set_exception_handler(('Cli::exception_handler'));
-require('/home/deepwinter/dev/deepwinter/yaml/lib/sfYaml.php');
-require('/home/deepwinter/dev/deepwinter/yaml/lib/sfYamlParser.php');
+require('modules/yaml/lib/sfYaml.php');
+require('modules/yaml/lib/sfYamlParser.php');
 
 Class ConfigSite_Controller extends Controller {
 
