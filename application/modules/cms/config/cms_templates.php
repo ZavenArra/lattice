@@ -1,11 +1,11 @@
 <?
 
-$config['plants'] = array (
+$config['stuff'] = array (
   'addable_objects' => 
   array (
     array (
-      'templateId' => 'plant',
-      'templateAddText' => 'Add a Plant',
+      'templateId' => 'stuffItem',
+      'templateAddText' => 'Add a Stuff',
     ),
   ),
   'allow_delete' => NULL,
@@ -14,39 +14,21 @@ $config['plants'] = array (
   'allow_sort' => NULL,
 );
 
-$config['plant'] = array (
+$config['stuffItem'] = array (
   'addable_objects' => 
   array (
-    array (
-      'templateId' => 'recipe',
-      'templateAddText' => 'Add a Recipe',
-    ),
-    array (
-      'templateId' => 'plantImage',
-      'templateAddText' => 'Add an Image',
-    ),
   ),
-  'allow_delete' => true,
+  'allow_delete' => NULL,
   'allow_toggle_publish' => NULL,
   'landing' => 'DEFAULT',
-  'allow_sort' => NULL,
+  'allow_sort' => true,
 );
 
-$config['plantImage'] = array (
+$config['home'] = array (
   'addable_objects' => 
   array (
   ),
-  'allow_delete' => true,
-  'allow_toggle_publish' => NULL,
-  'landing' => 'DEFAULT',
-  'allow_sort' => NULL,
-);
-
-$config['recipe'] = array (
-  'addable_objects' => 
-  array (
-  ),
-  'allow_delete' => true,
+  'allow_delete' => NULL,
   'allow_toggle_publish' => NULL,
   'landing' => 'DEFAULT',
   'allow_sort' => NULL,

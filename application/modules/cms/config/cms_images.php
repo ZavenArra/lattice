@@ -1,14 +1,11 @@
 <?
 
-$config['plants'] = array (
+$config['stuff'] = array (
 );
 
-$config['plant'] = array (
+$config['stuffItem'] = array (
 );
 
-$config['plantImage'] = array (
-);
-
-$config['recipe'] = array (
+$config['home'] = array (
 );
 
