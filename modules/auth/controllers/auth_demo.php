@@ -21,13 +21,13 @@ class Auth_Demo_Controller extends Template_Controller {
 	public function index()
 	{
 		// Display the install page
-		$this->template->title   = 'Auth Module Installation';
-		$this->template->content = View::factory('auth/install');
+		$this->view->title   = 'Auth Module Installation';
+		$this->view->content = View::factory('auth/install');
 	}
 
 	public function create()
 	{
-		$this->template->title = 'Create User';
+		$this->view->title = 'Create User';
 
 		$form = new Forge;
 		$form->input('email')->label(TRUE)->rules('required|length[4,32]|valid_email');
@@ -59,21 +59,21 @@ class Auth_Demo_Controller extends Template_Controller {
 		}
 
 		// Display the form
-		$this->template->content = $form->render();
+		$this->view->content = $form->render();
 	}
 
 	public function login()
 	{
 		if (Auth::instance()->logged_in())
 		{
-			$this->template->title = 'User Logout';
+			$this->view->title = 'User Logout';
 
 			$form = new Forge('auth_demo/logout');
 			$form->submit('Logout Now');
 		}
 		else
 		{
-			$this->template->title = 'User Login';
+			$this->view->title = 'User Login';
 
 			$form = new Forge;
 			$form->input('username')->label(TRUE)->rules('required|length[4,32]');
@@ -98,7 +98,7 @@ class Auth_Demo_Controller extends Template_Controller {
 		}
 
 		// Display the form
-		$this->template->content = $form->render();
+		$this->view->content = $form->render();
 	}
 
 	public function logout()

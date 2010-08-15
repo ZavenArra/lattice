@@ -74,12 +74,12 @@ class ListModule_Controller extends Controller implements CMS_Services_Interface
 	public function createIndexView(){
 		$custom = $this->instance.'_listmodule';
 		if(Kohana::find_file('views', $custom)){
-			$this->template = new View($custom);
+			$this->view = new View($custom);
 		} else {
-			$this->template = new View('listmodule');		
+			$this->view = new View('listmodule');		
 		}
 
-		$this->template->label = Kohana::config($this->instance.'.modulelabel');
+		$this->view->label = Kohana::config($this->instance.'.modulelabel');
 
 		$this->buildIndexData();
 		return $this->render();
@@ -92,10 +92,10 @@ class ListModule_Controller extends Controller implements CMS_Services_Interface
 			'moduleClass',
 		);
 		foreach($templatevars as $var){
-			$this->template->$var = Kohana::config($this->instance.'.'.$var);
+			$this->view->$var = Kohana::config($this->instance.'.'.$var);
 		}
-		//$this->template->moduleClass =  $this->template->moduleClass . ' sortDirection-'.$this->sortdirection;
-		$this->template->class =  $this->template->moduleClass . ' sortDirection-'.$this->sortdirection;
+		//$this->view->moduleClass =  $this->view->moduleClass . ' sortDirection-'.$this->sortdirection;
+		$this->view->class =  $this->view->moduleClass . ' sortDirection-'.$this->sortdirection;
 
 		//load out of database
 		//possibley should be contained within the mode, not totally sure
@@ -138,11 +138,11 @@ class ListModule_Controller extends Controller implements CMS_Services_Interface
 			$html.=$itemt->render();
 		}
 	
-		$this->template->items = $html;
-		$this->template->instance = $this->instance;
-		$this->template->fields = $this->fields;
-		$this->template->labels = $this->labels;
-		$this->template->className = $this->template->moduleClass;
+		$this->view->items = $html;
+		$this->view->instance = $this->instance;
+		$this->view->fields = $this->fields;
+		$this->view->labels = $this->labels;
+		$this->view->className = $this->view->moduleClass;
 
 	}
 
@@ -259,20 +259,20 @@ class ListModule_Controller extends Controller implements CMS_Services_Interface
 		}
 
 
-		$this->template = new View($this->itemview);
-		$this->template->instance = $this->instance;
-		$this->template->data = $data;
-		$this->template->fields = $this->fields;
-		$this->template->labels = $this->labels;
-		$this->template->files = array();
+		$this->view = new View($this->itemview);
+		$this->view->instance = $this->instance;
+		$this->view->data = $data;
+		$this->view->fields = $this->fields;
+		$this->view->labels = $this->labels;
+		$this->view->files = array();
 		if(count(Kohana::config($this->instance.'.files'))){
-			$this->template->files['file'] = $this->makeFileArgs('file');
+			$this->view->files['file'] = $this->makeFileArgs('file');
 		}
-		$this->template->singleimages = array();
+		$this->view->singleimages = array();
 		if(count(Kohana::config($this->instance.'.singleimages'))){
-			$this->template->singleimages['file'] = $this->makeFileArgs('singleimage');
+			$this->view->singleimages['file'] = $this->makeFileArgs('singleimage');
 		}
-		return $this->template->render();
+		return $this->view->render();
 	}
 
 	public function makeFileArgs($type, $id=null){

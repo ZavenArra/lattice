@@ -42,15 +42,15 @@ Class Site_Controller extends Controller{
 		//look for the template, if it's not there just print out all the data raw
 		$view = 'site/'.$page->template->templatename;
 		if(Kohana::find_file('views', $view)){
-			$this->template = new View( 'site/'.$page->template->templatename);
+			$this->view = new View( 'site/'.$page->template->templatename);
 		} else {
-			$this->template = new View( 'site/default');
+			$this->view = new View( 'site/default');
 		}
 
-		$this->template->content = $this->content;
+		$this->view->content = $this->content;
 
 		if($this->responseFormat=='AJAX'){
-			return $this->template->render();
+			return $this->view->render();
 		} else {
 			$customDisplayController = null;
 			if( Kohana::find_file('config', $page->slug)){

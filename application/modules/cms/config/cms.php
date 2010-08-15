@@ -3,7 +3,7 @@
 $config['stuff'] = array (
 );
 
-$config['modules'] = array (
+$config['objects'] = array (
   'stuff' => 
   array (
     array (
@@ -12,6 +12,11 @@ $config['modules'] = array (
       'label' => 'Blurb',
       'class' => 'rows-4',
       'tag' => 'p',
+    ),
+    array (
+      'type' => 'list',
+      'label' => 'List of things',
+      'object' => 'stuffItem',
     ),
   ),
   'stuffItem' => 

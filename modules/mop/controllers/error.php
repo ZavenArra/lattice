@@ -8,7 +8,7 @@
 Class Error_Controller extends MOP_Controller_Core {
 
 	public function __construct($template){
-		$this->template = new View($template);
+		$this->view = new View($template);
 		parent::__construct();
 	}
 

@@ -40,7 +40,7 @@ Class UserManagement_Controller extends Controller {
 	 * Function: createIndexView()
 	 * Subclassed function to build the top view
 	 * Parameters: none
-	 * Returns: nothing, sets up view to render in this->template
+	 * Returns: nothing, sets up view to render in this->view
 	 */
 	public function createIndexView(){
 		//cleanup on an initial load
@@ -49,9 +49,9 @@ Class UserManagement_Controller extends Controller {
 			$incomplete->delete();
 		}
 
-		$this->template = new View($this->viewName);
-		$this->template->instance = $this->viewName;
-		$this->template->class = $this->viewName;
+		$this->view = new View($this->viewName);
+		$this->view->instance = $this->viewName;
+		$this->view->class = $this->viewName;
 
 		$users = ORM::Factory($this->table)->find_all();
 		$html = '';
@@ -80,7 +80,7 @@ Class UserManagement_Controller extends Controller {
 			$html .= $usertemplate->render();
 		}
 
-		$this->template->items = $html;
+		$this->view->items = $html;
 
 	}	
 
@@ -98,10 +98,10 @@ Class UserManagement_Controller extends Controller {
 		//set no managedRole
 		$data['role'] = null;
 
-		$this->template = new View($this->viewName.'_item');
-		$this->template->data = $data;
-		$this->template->managedRoles = $this->managedRoles;
-		return $this->template->render();
+		$this->view = new View($this->viewName.'_item');
+		$this->view->data = $data;
+		$this->view->managedRoles = $this->managedRoles;
+		return $this->view->render();
 	}
 
 	/*

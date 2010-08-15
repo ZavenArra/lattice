@@ -10,9 +10,9 @@ class MOP_Auth_Controller extends Controller {
 	 * Implements abstract function in base assigning the main view 
 	 */
 	public function createIndexView(){
-		$this->template = new View('logged_in_as');
+		$this->view = new View('logged_in_as');
 		if(Session::instance()->get('auth_user')){
-			$this->template->username = $_SESSION['auth_user']->username;
+			$this->view->username = $_SESSION['auth_user']->username;
 		}
 	}
 }

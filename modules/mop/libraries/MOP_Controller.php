@@ -152,15 +152,15 @@ class MOP_Controller_Core extends Controller_Core {
 		$parentclass = get_parent_class($this);
 		$parentname = str_replace('_Controller', '', $parentclass);
 		Kohana::log('debug', 'Loading Resources for parent');
-		$this->template->loadResources(strtolower($parentname));
+		$this->view->loadResources(strtolower($parentname));
 		//load css and js for the page
 		Kohana::log('debug', 'Loading Resources for template name');
-		$this->template->loadResources();
-		if($this->template->name != strtolower($this->controllername)){
+		$this->view->loadResources();
+		if($this->view->name != strtolower($this->controllername)){
 			Kohana::log('debug', 'Loading Library Resources for controller');
-			$this->template->loadLibraryResources(strtolower($this->controllername));
+			$this->view->loadLibraryResources(strtolower($this->controllername));
 		}
-		return $this->template->render();
+		return $this->view->render();
 	}
 
 	/*
@@ -196,15 +196,15 @@ class MOP_Controller_Core extends Controller_Core {
 		//load resources for it's possible parents
 		$parentclass = get_parent_class($this);
 		$parentname = str_replace('_Controller', '', $parentclass);
-		$this->template->loadResources(strtolower($parentname));
+		$this->view->loadResources(strtolower($parentname));
 		//load css and js for the page
-		$this->template->loadResources();
-		if($this->template->name != strtolower($this->controllername)){
-			$this->template->loadLibraryResources(strtolower($this->controllername));
+		$this->view->loadResources();
+		if($this->view->name != strtolower($this->controllername)){
+			$this->view->loadLibraryResources(strtolower($this->controllername));
 		}
 
 		//output the page
-		$displaycontroller->outputPage($this->template);
+		$displaycontroller->outputPage($this->view);
 	}
 
 	/*
@@ -233,11 +233,11 @@ class MOP_Controller_Core extends Controller_Core {
 
 		$content = call_user_func_array(array($this,$function), $arguments);
 		if(is_object($content) && is_subclass_of($content, 'View_Core')){
-			$this->template = $content;
+			$this->view = $content;
 		}
 
 		//If there is a template view set, output as a web page
-		if(is_object($this->template) && is_subclass_of($this->template, 'View_Core')){
+		if(is_object($this->view) && is_subclass_of($this->view, 'View_Core')){
 			$this->toWebpage();
 		}
 	}
@@ -401,9 +401,9 @@ class MOP_Controller_Core extends Controller_Core {
 	 */
 	public function createIndexView(){
 		if(isset($this->defaulttemplate)){
-			$this->template = new View(strtolower($this->defaulttemplate));
+			$this->view = new View(strtolower($this->defaulttemplate));
 		} else {
-			$this->template = new View(strtolower($this->controllername));
+			$this->view = new View(strtolower($this->controllername));
 		}
 	}
 
@@ -452,9 +452,9 @@ class MOP_Controller_Core extends Controller_Core {
 
 			//render some html
 			if($templatevar==NULL){
-				$this->template->$module['modulename'] = $module->template->render();
+				$this->view->$module['modulename'] = $module->template->render();
 			} else {
-				$this->template->$templatevar = $module->template->render();
+				$this->view->$templatevar = $module->template->render();
 			}
 	}
 

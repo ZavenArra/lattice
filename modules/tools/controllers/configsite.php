@@ -95,24 +95,27 @@ Class ConfigSite_Controller extends Controller {
 			if(is_array($template['parameters'])){
 			//loop through items
 				foreach($template['parameters'] as $item){
-					if($item['type'] == 'module'){
+					switch($item['type']){
+					case 'module':
 						$entry = array(
 							'type'=>$item['type'],
 							'modulename'=>$item['modulename'],
 							'controllertype'=>$item['controllertype'],
 						);
-						$this->config['cms']['modules'][$template['templatename']][] = $entry;
+						$this->config['cms']['templates'][$template['templatename']][] = $entry;
 
 						switch($item['controllertype']){
 						case 'listmodule':
 							$this->buildListModuleConfig($item);
 							break;
 						}
+					case 'list':
+						$this->config['cms']['templates'][$template['templatename']][] = $item;
+						break;
 
+					default:
 
-					} else {
-
-						//cms mopui elements
+						//base cms elements
 
 						//handle dbmap
 						$index = null;
@@ -177,7 +180,7 @@ Class ConfigSite_Controller extends Controller {
 							break;
 						}
 
-						$this->config['cms']['modules'][$template['templatename']][] = $entry;
+						$this->config['cms']['templates'][$template['templatename']][] = $entry;
 
 						//cms images
 						if($item['type']=='singleImage'){

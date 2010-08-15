@@ -17,12 +17,12 @@ class Kodoc_Controller extends Template_Controller {
 		$active = $this->uri->segment(2) ? $this->uri->segment(2) : 'core';
 
 		// Add the menu to the template
-		$this->template->menu = new View('kodoc/menu', array('active' => $active));
+		$this->view->menu = new View('kodoc/menu', array('active' => $active));
 	}
 
 	public function index()
 	{
-		$this->template->content = 'hi';
+		$this->view->content = 'hi';
 	}
 
 	public function media()
@@ -99,10 +99,10 @@ class Kodoc_Controller extends Template_Controller {
 				$this->kodoc = new Kodoc($type, $file);
 
 				// Set the title
-				$this->template->title = implode('/', $this->uri->segment_array(1));
+				$this->view->title = implode('/', $this->uri->segment_array(1));
 
 				// Load documentation for this file
-				$this->template->content = new View('kodoc/documentation');
+				$this->view->content = new View('kodoc/documentation');
 
 				// Exit this method
 				return;

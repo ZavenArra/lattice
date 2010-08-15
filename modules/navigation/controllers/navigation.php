@@ -33,9 +33,9 @@ class Navigation_Controller extends Controller{
 
 	public function createIndexView($deeplink=null){
 		
-		//$this->template = new View(strtolower($this->controllername));
+		//$this->view = new View(strtolower($this->controllername));
 		////this should check and extend
-		$this->template = new View('navigation');
+		$this->view = new View('navigation');
 
 	}
 

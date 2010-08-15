@@ -23,7 +23,7 @@ class Auth_Controller extends Controller {
 
 	public function __construct(){
 		parent::__construct();
-		$this->template = new View($this->defaulttemplate);
+		$this->view = new View($this->defaulttemplate);
 
 	}
 
@@ -34,7 +34,7 @@ class Auth_Controller extends Controller {
 
 	public function create()
 	{
-		$this->template->title = 'Create User';
+		$this->view->title = 'Create User';
 
 		$form = new Forge('auth/create');
 		$form->input('email')->label(TRUE)->rules('required|length[4,32]|valid_email');
@@ -68,7 +68,7 @@ class Auth_Controller extends Controller {
 		}
 
 		// Display the form
-		$this->template->content = $form->render();
+		$this->view->content = $form->render();
 	}
 
 	public function login($redirect = null)
@@ -76,11 +76,11 @@ class Auth_Controller extends Controller {
 		if (Auth::instance()->logged_in())
 		{
 			if($this->message){
-				$this->template->title = $this->message;
+				$this->view->title = $this->message;
 			} else if($redirect = Kohana::config('auth.redirect')){
 				url::redirect($redirect);
 			} else {
-				$this->template->title = 'User Logout';
+				$this->view->title = 'User Logout';
 			}
 
 			$form = new Forge('auth/logout');
@@ -89,10 +89,10 @@ class Auth_Controller extends Controller {
 		else
 		{
 			if($redirect == 'resetPasswordSuccess'){
-				$this->template->message = Kohana::lang('auth.resetPasswordSuccess');
+				$this->view->message = Kohana::lang('auth.resetPasswordSuccess');
 				$redirect = null;
 			}
-			$this->template->title = 'User Login';
+			$this->view->title = 'User Login';
 
 			$form = new Forge('auth/login');
 			$form->input('username')->label(TRUE)->rules('required|length[4,32]');
@@ -126,7 +126,7 @@ class Auth_Controller extends Controller {
 		}
 
 		// Display the form
-		$this->template->content = $form->render();
+		$this->view->content = $form->render();
 	}
 
 	public function logout()
@@ -157,12 +157,12 @@ class Auth_Controller extends Controller {
 				url::redirect('auth/login/resetPasswordSuccess');
 				
 			} else {
-				$this->template = new View('auth/forgot');
-				$this->template->message = Kohana::lang('auth.resetPasswordFailed');
+				$this->view = new View('auth/forgot');
+				$this->view->message = Kohana::lang('auth.resetPasswordFailed');
 
 			}
 		} else {
-			$this->template = new View('auth/forgot');
+			$this->view = new View('auth/forgot');
 		}
 	}
 

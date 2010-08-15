@@ -11,7 +11,7 @@ Class AccessDenied_Controller extends Controller {
 	 */
 	public function index(){
 		//the default access denied view can be overridden in each application
-		$this->template = new View('accessdenied');
+		$this->view = new View('accessdenied');
 		$this->toWebPage();
 	}
 }

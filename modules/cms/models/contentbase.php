@@ -39,7 +39,7 @@ class ContentBase_Model extends ORM {
 	$templatename - the text name of the template being used by the current object.
 	*/
 	public function setTemplateName($templatename){
-		$this->templatename = $templatename;
+		$this->viewname = $templatename;
 	}
 
 	/*
@@ -53,7 +53,7 @@ class ContentBase_Model extends ORM {
 		}
 
 		//check for dbmap
-		if($map = Kohana::config('cms_dbmap.'.$this->templatename)){
+		if($map = Kohana::config('cms_dbmap.'.$this->viewname)){
 			$column = $map[$column];
 		}
 
@@ -92,7 +92,7 @@ class ContentBase_Model extends ORM {
 		}
 
 		//check for dbmap
-		if($map = Kohana::config('cms_dbmap.'.$this->templatename)){
+		if($map = Kohana::config('cms_dbmap.'.$this->viewname)){
 			return parent::__set($map[$column], $value);
 		} else {
 			return parent::__set($column, $value);

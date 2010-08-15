@@ -23,8 +23,8 @@ Class TestBed_Controller extends Controller {
 	}
 
 	public function index(){
-		$this->template = new View('testbedIndex');
-		$this->template->render(true);
+		$this->view = new View('testbedIndex');
+		$this->view->render(true);
 		exit;
 	}
 	

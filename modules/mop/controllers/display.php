@@ -49,8 +49,8 @@ class Display_Controller{
 	 * and turns profiler on if requested in config
 	 */
 	public function __construct(){
-		$this->template = new DisplayView($this->template);
-		$this->template->loadResources();
+		$this->view = new DisplayView($this->view);
+		$this->view->loadResources();
 
 		//get the default 
 		if(!self::$primaryId){ //this allows for the controller to force it, 
@@ -157,7 +157,7 @@ class Display_Controller{
 	 * Function: buildModules()
 	 * Build all sub-modules and set variables in template via buildModule()
 	 * Parameters: none, uses $this->modules
-	 * Returns: nothing, sets variables on $this->template
+	 * Returns: nothing, sets variables on $this->view
 	*/
 	public function buildModules(){
 		foreach($this->modules as $templatevar => $module){
@@ -199,10 +199,10 @@ class Display_Controller{
 	 * Returns: nothing, renders webpage to browser
 	 */
 	public function outputPage($mainview){
-		$this->template->content = $mainview->render();
+		$this->view->content = $mainview->render();
 		//set the overall ID for this view (defines what data we are looking at)
-		$this->template->primaryId = self::$primaryId;
-		$this->template->render(TRUE);
+		$this->view->primaryId = self::$primaryId;
+		$this->view->render(TRUE);
 	}
 
 	/*
@@ -221,18 +221,18 @@ class Display_Controller{
 			$module = new $fullname();
 			$module->createIndexView();
 			if($templatevar==NULL){
-				$this->template->$modulename = $module->template->render();
+				$this->view->$modulename = $module->template->render();
 			} else {
-				$this->template->$templatevar = $module->template->render();
+				$this->view->$templatevar = $module->template->render();
 			}
 		} else {
 			//just load the view
 			Kohana::log('debug', 'No Controller, just Loading View: ' . $modulename);
 			$view = new View($modulename);	
 			if($templatevar==NULL){
-				$this->template->$modulename = $view->render();
+				$this->view->$modulename = $view->render();
 			} else {
-				$this->template->$templatevar = $view->render();
+				$this->view->$templatevar = $view->render();
 			}
 		}
 

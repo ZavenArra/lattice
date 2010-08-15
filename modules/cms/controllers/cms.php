@@ -115,8 +115,8 @@ class CMS_Controller extends Controller {
 
 		//2 generate all IPEs
 		//3 build and include all modules
-		$this->template = new View();
-		$modules = Kohana::config(strtolower($this->controllername).'.modules.'.$page->template->templatename);
+		$this->view = new View();
+		$templateitems = Kohana::config(strtolower($this->controllername).'.objects.'.$page->template->templatename);
 
 		$customview = 'templates/'.$page->template->templatename; //check for custom view for this template
 		$usecustomview = false;
@@ -124,25 +124,34 @@ class CMS_Controller extends Controller {
 			$usecustomview = true;	
 		}
 		$htmlChunks = array();
-		if(is_array($modules)){
-			foreach($modules as $module){
-				if($module['type']=='module'){
-					if(isset($module['arguments'])){
-						$this->buildModule($module, $module['modulename'], $module['arguments']);
+		if(is_array($objects)){
+			foreach($objects as $object){
+				switch($object['type']){
+				case 'module':
+					if(isset($object['arguments'])){
+						$this->buildModule($object, $object['objectname'], $object['arguments']);
 					} else {
-						$this->buildModule($module, $module['modulename']);
+						$this->buildModule($object, $object['modulename']);
 					}
-					$htmlChunks[$module['modulename']] = $this->template->$module['modulename'];
-				} else {
+					$htmlChunks[$object['modulename']] = $this->view->$object['modulename'];
+					break;
+				case 'list':
+					$module = $object;
+					$module['modulename'] = $object['instance'];
+					$module['controllertype'] = 'list';
+					$this->buildModule($object, 'list');
+					break;
+				default:
 					$element = false;
 					//deal with html template elements
-					if(!isset($module['field'])){
-						$element = mopui::buildUIElement($module, null);
-						$module['field'] = CMS_Controller::$unique++;
-					} else if(!$element = mopui::buildUIElement($module, $page->contenttable->$module['field'])){
+					if(!isset($object['field'])){
+						$element = mopui::buildUIElement($object, null);
+						$object['field'] = CMS_Controller::$unique++;
+					} else if(!$element = mopui::buildUIElement($object, $page->contenttable->$object['field'])){
 						throw new Kohana_User_Exception('bad config in cms', 'bad ui element');
 					}
-					$htmlChunks[$module['type'].'_'.$module['field']] = $element;
+					$htmlChunks[$object['type'].'_'.$object['field']] = $element;
+					break;
 				}
 			}
 		}
@@ -279,7 +288,7 @@ class CMS_Controller extends Controller {
 			$page->$_POST['field'] = $_POST['value'];
 			$page->save();
 		} else if($_POST['field']) {
-			$fields = Kohana::config('cms.modules.'.$page->template->templatename); //this is annoying and experimental
+			$fields = Kohana::config('cms.objects.'.$page->template->templatename); //this is annoying and experimental
 			$lookup = array();
 			foreach($fields as $f){
 				$lookup[$f['field']] = $f;
@@ -294,7 +303,7 @@ class CMS_Controller extends Controller {
 					$page->contenttable->save();
 				}
 				$options = array();
-				foreach(Kohana::config('cms.modules.'.$object->template->templatename) as $field){
+				foreach(Kohana::config('cms.objects.'.$object->template->templatename) as $field){
 					if($field['type'] == 'checkbox'){
 						$options[] = $field['field'];
 					}
@@ -392,7 +401,7 @@ class CMS_Controller extends Controller {
 
 		//check for enabled publish/unpublish. 
 		//if not enabled, insert as published
-		if(!Kohana::config('cms.modules.'.$newpage->template->templatename.'.allow_toggle_publish')){
+		if(!Kohana::config('cms.objects.'.$newpage->template->templatename.'.allow_toggle_publish')){
 			$newpage->published = 1;
 		}
 		$newpage->save();
@@ -478,9 +487,9 @@ class CMS_Controller extends Controller {
 		public function delete($id){
 			$this->cascade_delete($id);
 
-			$this->template = new View('cms_undelete');
-			$this->template->id=$id;
-			return $this->template->render();
+			$this->view = new View('cms_undelete');
+			$this->view->id=$id;
+			return $this->view->render();
 		}
 
 
