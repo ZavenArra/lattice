@@ -13,10 +13,10 @@ class Display_Controller{
 	protected $modules = array();
 
 	/*
-	 * Variable: template
+	 * Variable: view 
 	 * The base name of the layout template to use
 	 */
-	protected $template = 'default';
+	protected $view = 'default';
 
 	/*
 	 * Variable: resources

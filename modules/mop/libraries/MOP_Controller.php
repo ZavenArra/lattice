@@ -441,20 +441,20 @@ class MOP_Controller_Core extends Controller_Core {
 			//create Main View is a suspect function..
 			//why doesn't this just happen in the controllers constructor
 			$module->createIndexView();
-			$module->template->loadResources();
+			$module->view->loadResources();
 			//and load resources for it's possible parents
 			$parentclass = get_parent_class($module);
 			$parentname = str_replace('_Controller', '', $parentclass);
-			$module->template->loadResources(strtolower($parentname));
+			$module->view->loadResources(strtolower($parentname));
 
 			//build submodules of this module (if any)
 			$module->buildModules();
 
 			//render some html
 			if($templatevar==NULL){
-				$this->view->$module['modulename'] = $module->template->render();
+				$this->view->$module['modulename'] = $module->view->render();
 			} else {
-				$this->view->$templatevar = $module->template->render();
+				$this->view->$templatevar = $module->view->render();
 			}
 	}
 
