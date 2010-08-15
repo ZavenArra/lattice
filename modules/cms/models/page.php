@@ -70,6 +70,20 @@ class Page_Model extends ORM {
 			$this->object[$column] = $this->load_type($column, $value);
 
 		} else {
+
+			switch(Kohana::config('cms.modules.'.$this->template->templatename.'.'.$column.'.type')){
+			case 'multiSelect':
+				$this->saveObject();
+				break;	
+			default:
+				parent::__set($column, cms::convertNewlines($value));
+				break;
+			}
+
+	}
+
+
+
 			return parent::__set($column, $value);
 		}
 	}
@@ -293,17 +307,8 @@ class Page_Model extends ORM {
 	}
 
 	public function saveField($field, $value){
-		switch(Kohana::config('cms.modules.'.$this->template->templatename.'.'.$field.'.type')){
-		case 'multiSelect':
-			$this->saveObject();
-			break;	
-		default:
-			parent::__set($field, cms::convertNewlines($value));
-			break;
-		}
-
+		$this->$field = $value;
 		$this->save();
-
 	}
 
 
