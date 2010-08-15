@@ -109,8 +109,40 @@ Class ConfigSite_Controller extends Controller {
 							$this->buildListModuleConfig($item);
 							break;
 						}
+
 					case 'list':
-						$this->config['cms']['templates'][$template['templatename']][$item['collectionName']] = $item;
+						
+						//add entry 
+						$this->config['cms']['templates'][$template['templatename']][$item['class']] = $item;
+
+						//add a template for the list container
+						$this->config['cms']['templates'][$item['class']] = array();
+						$this->config['cms_templates'][$item['class']] = array(
+							'templatename'=>$item['class'],
+							'type'=>'CATEGORY',
+							'addable_objects'=>array(
+								array(
+									'templateId'=>$item['templateId'],
+									'templateAddText'=>$item['templateAddText']
+								),
+							),
+						);
+
+						$tRecord = ORM::Factory('template');
+						$tRecord->templatename = $item['class'];
+						$tRecord->contenttable = 'content_small';
+						$tRecord->nodetype = 'CATEGORY';
+						$tRecord->save();
+
+						//set up component
+						$this->config['cms']['settings'][$template['templatename']]['components'] = array(
+							array(
+								'templateId'=>$item['class'],
+								'data'=>array(
+									'title'=>$item['label']
+								)
+							)
+						);
 						break;
 
 					default:
@@ -214,7 +246,7 @@ Class ConfigSite_Controller extends Controller {
 				&& is_array($template['addable_objects']) 
 					&& count($template['addable_objects']) )
 			{
-			print_r($template['addable_objects']);
+				print_r($template['addable_objects']);
 				$entry['addable_objects'] = $template['addable_objects'];
 			}
 

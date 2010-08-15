@@ -73,18 +73,13 @@ class Page_Model extends ORM {
 
 			switch(Kohana::config('cms.modules.'.$this->template->templatename.'.'.$column.'.type')){
 			case 'multiSelect':
-				$this->saveObject();
+				return $this->saveObject();
 				break;	
 			default:
-				parent::__set($column, cms::convertNewlines($value));
+				return parent::__set($column, cms::convertNewlines($value));
 				break;
 			}
 
-	}
-
-
-
-			return parent::__set($column, $value);
 		}
 	}
 
@@ -115,6 +110,7 @@ class Page_Model extends ORM {
 		parent::save();
 		//if inserting, we add a record to the content table if one does not already exists
 		if($inserting){
+			$this->related['template'] = ORM::Factory('template', $this->template_id);
 			$content = ORM::Factory($this->template->contenttable);
 			if(!$content->where('page_id',$this->id)->find()->loaded){
 				$this->db->insert(inflector::plural($this->template->contenttable), array('page_id'=>$this->id));

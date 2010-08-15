@@ -136,7 +136,10 @@ class CMS_Controller extends Controller {
 					$htmlChunks[$module['modulename']] = $this->view->$module['modulename'];
 					break;
 				case 'list':
-					$module['modulename'] = $module['collectionName'];
+					if(isset($module['display']) && $module['display'] != 'inline'){
+						break; //module is being displayed via navi, skip
+					}
+					$module['modulename'] = $module['class'];
 					$module['controllertype'] = 'list';
 					$this->buildModule($module, 'list');
 					break;
@@ -408,10 +411,10 @@ class CMS_Controller extends Controller {
 		if(is_array($components = Kohana::config('cms.settings.'.$newpage->template->templatename.'.components'))){
 			foreach($components as $arguments){
 				$template = ORM::Factory('template')
-				->where('templatename', $arguments['templatename'])
+				->where('templatename', $arguments['templateId'])
 				->find();
 				if(!$template->loaded){
-					throw new Kohana_User_Exception('BAD CMS CONFIG', 'No template found with name '.$arguments['templatename']);
+					throw new Kohana_User_Exception('BAD CMS CONFIG', 'No template found with name '.$arguments['templateId']);
 				}
 				$this->__addObject($newpage->id, $template->id, $arguments['data']);
 			}
