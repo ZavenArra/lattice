@@ -221,9 +221,9 @@ class Display_Controller{
 			$module = new $fullname();
 			$module->createIndexView();
 			if($templatevar==NULL){
-				$this->view->$modulename = $module->template->render();
+				$this->view->$modulename = $module->view->render();
 			} else {
-				$this->view->$templatevar = $module->template->render();
+				$this->view->$templatevar = $module->view->render();
 			}
 		} else {
 			//just load the view

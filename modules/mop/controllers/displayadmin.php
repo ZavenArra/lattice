@@ -12,7 +12,7 @@ class DisplayAdmin_Controller extends Display_Controller{
 										'mop_auth',
 										'adminfooter',
 										);
-	protected $template = 'adminpage';
+	protected $view = 'adminpage';
 
 
 	public function __construct(){

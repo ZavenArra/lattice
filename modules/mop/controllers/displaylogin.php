@@ -12,7 +12,7 @@ class DisplayLogin_Controller extends Display_Controller{
 											'publicheader',
 											'publicfooter',
 										);
-	protected $template = 'loginpage';
+	protected $view = 'loginpage';
 
 
 	public function __construct(){

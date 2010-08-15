@@ -36,9 +36,9 @@ class Page_Model extends ORM {
 	public function __get($column){
 
 		if($column=='contenttable' && !isset($this->related[$column])){
-			if($this->view->contenttable){
-				$content = ORM::factory( inflector::singular($this->view->contenttable) );
-				$content->setTemplateName($this->view->templatename); //set the templatename for dbmapping
+			if($this->template->contenttable){
+				$content = ORM::factory( inflector::singular($this->template->contenttable) );
+				$content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
 				$this->related[$column]=$content->where('page_id',$this->id)->find();
 				if(!$this->related[$column]->loaded){
 					throw new Kohana_User_Exception('BAD_MOP_DB', 'no content record for page '.$this->id);
@@ -101,11 +101,11 @@ class Page_Model extends ORM {
 		parent::save();
 		//if inserting, we add a record to the content table if one does not already exists
 		if($inserting){
-			$content = ORM::Factory($this->view->contenttable);
+			$content = ORM::Factory($this->template->contenttable);
 			if(!$content->where('page_id',$this->id)->find()->loaded){
-				$this->db->insert(inflector::plural($this->view->contenttable), array('page_id'=>$this->id));
+				$this->db->insert(inflector::plural($this->template->contenttable), array('page_id'=>$this->id));
 				$content = ORM::factory( inflector::singular($this->__get('template')->contenttable) );
-				$content->setTemplateName($this->view->templatename); //set the templatename for dbmapping
+				$content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
 				$this->related['contenttable']=$content->where('page_id', $this->id)->find();
 			}
 		}
@@ -113,7 +113,7 @@ class Page_Model extends ORM {
 
 	public function getContentAsArray(){
 
-		if($fields = Kohana::config('cms_dbmap.'.$this->view->templatename)){
+		if($fields = Kohana::config('cms_dbmap.'.$this->template->templatename)){
 			foreach($fields as $key=>$value){
 				$content[$key] = $this->contenttable->$key;
 			}
@@ -138,7 +138,7 @@ class Page_Model extends ORM {
 		$content['slug'] = $this->slug;
 		$content['dateadded'] = $this->dateadded;
 
-		if($fields = Kohana::config('cms_dbmap.'.$this->view->templatename)){ 
+		if($fields = Kohana::config('cms_dbmap.'.$this->template->templatename)){ 
 			foreach($fields as $key=>$value){
 				$content[$key] = $this->__get('contenttable')->$key;
 			}

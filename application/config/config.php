@@ -125,6 +125,7 @@ $enabledmodules = array(
 	'mop_auth',
 	'golive',
 	'tools',
+	'list',
 	);
 
 foreach($enabledmodules as $module){

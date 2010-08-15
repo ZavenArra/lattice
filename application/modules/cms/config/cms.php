@@ -3,9 +3,10 @@
 $config['stuff'] = array (
 );
 
-$config['objects'] = array (
+$config['templates'] = array (
   'stuff' => 
   array (
+    'blurb' => 
     array (
       'type' => 'ipe',
       'field' => 'blurb',
@@ -13,14 +14,17 @@ $config['objects'] = array (
       'class' => 'rows-4',
       'tag' => 'p',
     ),
+    'listOfThings' => 
     array (
       'type' => 'list',
+      'collectionName' => 'listOfThings',
       'label' => 'List of things',
       'object' => 'stuffItem',
     ),
   ),
   'stuffItem' => 
   array (
+    'text' => 
     array (
       'type' => 'ipe',
       'field' => 'text',
@@ -28,6 +32,7 @@ $config['objects'] = array (
       'class' => 'rows-4',
       'tag' => 'p',
     ),
+    'more' => 
     array (
       'type' => 'ipe',
       'field' => 'more',

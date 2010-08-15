@@ -43,7 +43,7 @@ class Forge_Core {
 		$this->attr['method'] = empty($method) ? 'post' : $method;
 
 		// Set template variables
-		$this->view['title'] = $title;
+		$this->template['title'] = $title;
 
 		// Empty attributes sets the class to "form"
 		empty($attr) and $attr = array('class' => 'form');
@@ -271,7 +271,7 @@ class Forge_Core {
 		{
 			// Using a template view
 
-			$form->set($this->view);
+			$form->set($this->template);
 			$hidden = array();
 			if ( ! empty($this->hidden))
 			{

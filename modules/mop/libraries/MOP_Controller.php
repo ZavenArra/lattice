@@ -32,10 +32,10 @@ class MOP_Controller_Core extends Controller_Core {
 	public $basetemplate = 'default';
 
 	/*
-	 * Variable: template
+	 * Variable: view
 	 * the main view itself
 	 */
-	public $template;
+	public $view;
 
 	/*
 	 * Variable: resources
@@ -427,7 +427,6 @@ class MOP_Controller_Core extends Controller_Core {
 	*/
 	public function buildModule($module, $templatevar=NULL, $arguments=NULL){
 		Kohana::log('debug', 'Loading module: ' . $module['modulename']);
-	//	if((Kohana::find_file('controllers', $module['modulename'])) !== FALSE){
 			Kohana::log('debug', 'Loading controller: ' . $module['modulename']);
 
 			if(!Kohana::find_file('controllers', $module['modulename'] ) ){

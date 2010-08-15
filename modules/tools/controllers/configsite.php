@@ -102,7 +102,7 @@ Class ConfigSite_Controller extends Controller {
 							'modulename'=>$item['modulename'],
 							'controllertype'=>$item['controllertype'],
 						);
-						$this->config['cms']['templates'][$template['templatename']][] = $entry;
+						$this->config['cms']['templates'][$template['templatename']][$item['modulename']] = $entry;
 
 						switch($item['controllertype']){
 						case 'listmodule':
@@ -110,7 +110,7 @@ Class ConfigSite_Controller extends Controller {
 							break;
 						}
 					case 'list':
-						$this->config['cms']['templates'][$template['templatename']][] = $item;
+						$this->config['cms']['templates'][$template['templatename']][$item['collectionName']] = $item;
 						break;
 
 					default:
@@ -180,7 +180,7 @@ Class ConfigSite_Controller extends Controller {
 							break;
 						}
 
-						$this->config['cms']['templates'][$template['templatename']][] = $entry;
+						$this->config['cms']['templates'][$template['templatename']][$entry['field']] = $entry;
 
 						//cms images
 						if($item['type']=='singleImage'){

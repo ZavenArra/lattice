@@ -10,7 +10,7 @@ class DisplayPublic_Controller extends Display_Controller{
 											'publicheader',
 											'publicfooter',
 										);
-	protected $template = 'publicpage';
+	protected $view = 'publicpage';
 
 
 	public function __construct(){

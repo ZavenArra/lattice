@@ -126,7 +126,7 @@ class CMS_Controller extends Controller {
 		$htmlChunks = array();
 		if(is_array($modules)){
 			foreach($modules as $module){
-				switch($object['type']){
+				switch($module['type']){
 				case 'module':
 					if(isset($module['arguments'])){
 						$this->buildModule($module, $module['modulename'], $module['arguments']);
