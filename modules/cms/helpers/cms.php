@@ -6,6 +6,7 @@
 
 class CMS {
 
+	private static $mediapath;
 
 	/*
 	 * Variable: createSlug($title, $forPageId)
@@ -58,6 +59,144 @@ class CMS {
 			return 'No_Title_'.microtime(); //try something else
 		}
 	}
+
+	public static function convertNewlines($value){
+		$value = preg_replace('/(<.*>)[ ]*\n/', "$1------MOP_NEWLINE------", $value);
+		$value = preg_replace('/[ ]*\n/', '<br />', $value);
+		$value = preg_replace('/------MOP_NEWLINE------/', "\n", $value);
+		return $value;
+	}
+
+	public static function mediapath(){
+		if(self::$mediapath){
+			return self::$mediapath;
+		}
+		if(Kohana::config('mop.staging')){
+			self::$mediapath = Kohana::config('cms.stagingmediapath');
+		} else {
+			self::$mediapath = Kohana::config('cms.basemediapath');
+		}
+		return self::$mediapath;
+	}
+
+	/*
+	 * Functon: processImage($filename, $parameters)
+	 * Create all automatice resizes on this image
+	 */
+	public static function processImage($filename, $parameters){
+		$ext = substr(strrchr($filename, '.'), 1);
+		switch($ext){
+		case 'tiff':
+		case 'tif':
+		case 'TIFF':
+		case 'TIF':
+			Kohana::log('info', 'Converting TIFF image to JPG for resize');
+
+			$imageFilename =  $filename.'_converted.jpg';
+			$command = sprintf('convert %s %s',addcslashes(cms::mediapath().$filename, "'\"\\ "), addcslashes(cms::mediapath().$imageFilename, "'\"\\ "));
+			Kohana::log('info', $command);
+			system(sprintf('convert %s %s',addcslashes(cms::mediapath().$filename, "'\"\\ "),addcslashes(cms::mediapath().$imageFilename, "'\"\\ ")));
+			break;
+		default:
+			$imageFilename = $filename;
+			break;
+		}
+		Kohana::log('info', $imageFilename);
+
+
+		$quality = Kohana::config('cms_services.imagequality');
+
+		//do the resizing
+		if(is_array($parameters)){
+			Kohana::log('info', 'poor man');
+			$image = new Image(cms::mediapath().$imageFilename);
+			Kohana::log('info', 'poor man');
+			foreach($parameters['imagesizes'] as $resize){
+
+				if(isset($resize['prefix']) && $resize['prefix']){
+					$prefix = $resize['prefix'].'_';
+				} else {
+					$prefix = '';
+				}
+				$newFilename = $prefix.$imageFilename;
+				$savename = cms::mediapath().$newFilename;
+
+				if(isset($resize['noresample']) && $resize['noresample']==true){
+					$image->save($savename);
+					continue;
+				}
+
+
+				//set up dimenion to key off of
+				if( isset($resize['forcewidth']) && $resize['forcewidth']){
+					$keydimension = Image::WIDTH;
+				} else if ( isset($resize['forceheight']) && $resize['forceheight']){
+					$keydimension = Image::HEIGHT;
+				} else {
+					$keydimension = Image::AUTO;
+				}
+
+
+				if(isset($resize['crop'])) {
+					//resample with crop
+					//set up sizes, and crop
+					if( ($image->width / $image->height) > ($image->height / $image->width) ){
+						$cropKeyDimension = Image::HEIGHT;
+					} else {
+						$cropKeyDimension = Image::WIDTH;
+					}
+					$image->resize($resize['width'], $resize['height'], $cropKeyDimension)->crop($resize['width'], $resize['height']);
+					$image->quality($quality);
+					$image->save($savename);
+
+
+				} else {
+					//just do the resample
+					//set up sizes
+					$resizewidth = $resize['width'];
+					$resizeheight = $resize['height'];
+
+					if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
+						$osize = getimagesize(cms::mediapath().$imageFilename);
+						$horizontal = false;
+						if($osize[0] > $osize[1]){
+							//horizontal
+							$horizontal = true;	
+						}
+						$newsize = array($resizewidth, $resizeheight);
+						sort($newsize);
+						if($horizontal){
+							$resizewidth = $newsize[1];
+							$resizeheight = $newsize[0];
+						} else {
+							$resizewidth = $newsize[0];
+							$resizeheight = $newsize[1];
+						}
+					}
+
+					//maintain aspect ratio
+					//use the forcing when it applied
+					//forcing with aspectfolloworientation is gonna give weird results!
+					$image->resize($resizewidth, $resizeheight, $keydimension);
+
+					$image->quality($quality);
+					$image->save($savename);
+
+					if(isset($oldFilename) && $newFilename != $prefix.$oldFilename){
+						if(file_exists(cms::mediapath().$oldFilename)){
+							unlink(cms::mediapath().$oldFilename);
+						}
+					}
+
+
+				}
+			}
+		}
+
+		return $imageFilename;
+	}
+
+
 
 }
 

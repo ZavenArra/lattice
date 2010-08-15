@@ -17,6 +17,11 @@ $config['uiresize'] =  array(
 );
 
 $config['subModules'] =  array(
-		'navigation'=>'navigation',
+	'navigation'=>'navigation',
+);
 
-	);
+
+$config['stagingmediapath'] = 'staging/application/media/';
+$config['basemediapath'] = 'application/media/';
+
+

@@ -136,7 +136,7 @@ class CMS_Controller extends Controller {
 					$htmlChunks[$module['modulename']] = $this->view->$module['modulename'];
 					break;
 				case 'list':
-					$module['modulename'] = $module['instance'];
+					$module['modulename'] = $module['collectionName'];
 					$module['controllertype'] = 'list';
 					$this->buildModule($module, 'list');
 					break;
@@ -205,7 +205,6 @@ class CMS_Controller extends Controller {
 	public function saveFile($pageid){
 
 		$page = ORM::Factory('page', $pageid);
-		$cmss = new CMS_Services_Controller($page->contenttable);
 
 		//check the file extension
 		Kohana::log('info', var_export($_POST, true));
@@ -236,37 +235,21 @@ class CMS_Controller extends Controller {
 			}
 
 			if($parameters){
-				return $cmss->saveImage($parameters);
+				return $page->saveImage($_POST['field'], $_FILES, $parameters);
 			} else {
-				return $cmss->saveFile();
+				return $page->saveFile($_POST['field'], $_FILES);
 			}
 			break;
 
 		default:
-			return $cmss->saveFile();
+			return $page->saveFile($_POST['field'], $_FILES);
 		}
 
 	}
 
 	/*
-	 * Function: saveField($pageid)
-	 * Deprecated wrapper to save() function
-	 */
-	public function saveField($pageid){
-		return $this->save($pageid);
-	}
-
-
-	/*
-	 * Function: saveIPE($pageid)
-	 * Deprecated wrapper to save() function
-	 */
-	public function saveIPE($pageid){
-		return $this->save($pageid);
-	}
-	/*
 	*
-	* Function: save()
+	* Function: savefield()
 	* Saves data to a field via ajax.  Call this using /cms/ajax/save/{pageid}/
 	* Parameters:
 	* $id - the id of the object currently being edited
@@ -274,7 +257,7 @@ class CMS_Controller extends Controller {
 	* $_POST['value'] - the value to save
 	* Returns: array('value'=>{value})
 	 */
-	public function save($id){
+	public function savefield($id){
 		$page = ORM::Factory('page')->find($id);
 		if($_POST['field']=='title'){ //update slug, but actually we may not want to have slug updatable
 			$page->slug = cms::createSlug($_REQUEST['value'], $page->id);
@@ -317,7 +300,7 @@ class CMS_Controller extends Controller {
 				$object->contenttable->save();
 				break;	
 			default:
-				$page->contenttable->$_POST['field'] = CMS_Services_Controller::convertNewlines($_POST['value']);
+				$page->contenttable->$_POST['field'] = cms::convertNewlines($_POST['value']);
 				$page->contenttable->save();
 				break;
 			}
@@ -552,6 +535,28 @@ class CMS_Controller extends Controller {
 		}
 
 	}
+
+	public function regenerateImages(){
+		//find all images
+		//calculate resize array for images
+		$uiimagesize = array('uithumb'=>Kohana::config('cms.uiresize'));
+		$parameters['imagesizes'] = $uiimagesize;
+
+		foreach(Kohana::config('cms.modules') as $templatename => $templateconfig){
+			foreach($templateconfig as $field){
+				if($field['type'] == 'singleImage'){
+					$objects = ORM::Factory('template', $templatename)->getPublishedMembers();
+					$fieldname = $field['field'];
+					foreach($objects as $object){
+						if( $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
+							$this->processImage($object->contenttable->$fieldname->filename, $parameters);
+						}
+					}
+				}
+			}
+		}
+	}
+
 
 }
 

@@ -291,5 +291,266 @@ class Page_Model extends ORM {
 		$parent = ORM::Factory('page', $this->parentid);
 		return $parent;
 	}
+
+	public function saveField($field, $value){
+		switch(Kohana::config('cms.modules.'.$this->template->templatename.'.'.$field.'.type')){
+		case 'multiSelect':
+			$this->saveObject();
+			break;	
+		default:
+			parent::__set($field, cms::convertNewlines($value));
+			break;
+		}
+
+		$this->save();
+
+	}
+
+
+	public function saveFile($field, $postFiles){
+		//check for valid file upload
+		if(!isset($field)){
+			Kohana::log('error', 'No field in Post');
+			throw new Kohana_User_Exception('no field in POST', 'no field in POST');
+		}
+		Kohana::log('info', 'proceeding with saveFile');
+
+		$file = ORM::Factory('file', $this->$field);
+		
+		$xarray = explode('.', $_postFiles[$field]['name']);
+		$nr = count($xarray);
+		$ext = $xarray[$nr-1];
+		$name = array_slice($xarray, 0, $nr-1);
+		$name = implode('.', $name);
+		$i=1;
+		if(!file_exists(cms::mediapath()."$name".'.'.$ext)){
+			$i='';
+		} else {
+			for(; file_exists(cms::mediapath()."$name".$i.'.'.$ext); $i++){}
+		}
+
+		//clean up extension
+		$ext = strtolower($ext);
+		if($ext=='jpeg'){ $ext = 'jpg'; }
+
+		$savename = $name.$i.'.'.$ext;
+
+		if($this->savelocalfile){ //allow bypass of move_uploaded_file
+			copy($this->savelocalfile, cms::mediapath().$savename);
+		} else if(!move_uploaded_file($postFiles[$field]['tmp_name'], cms::mediapath().$savename)){
+			$result = array(
+					'result'=>'failed',
+					'error'=>'internal error, contact system administrator',
+				);
+			return $result;
+		}
+		Kohana::log('info', 'moved file to '.cms::mediapath().$savename);
+
+		if(!is_object($file = $this->contenttable->$field)){
+			$file = ORM::Factory('file', $this->contenttable->$field);
+		}	
+
+		if($file->loaded){
+			$oldFilename = $file->filename;
+		}
+
+		$file->filename = $savename;	
+		$file->mime = $_FILES[$field]['type'];
+		$file->save(); //inserts or updates depending on if it got loaded above
+
+		$this->contenttable->$field = $file->id;
+		$this->contenttable->save();
+
+		if(isset($oldFilename) && ($savename != $oldFilename) ){
+			Kohana::log('info', 'trying to unlink file');
+			//then we have to get rid of the old file
+			if(file_exists(cms::mediapath().$oldFilename)){
+				Kohana::log('info', 'unlinking '.cms::mediapath().$oldFilename);
+				unlink(cms::mediapath().$oldFilename);
+			}
+		}
+		
+
+
+		$parse = explode('.', $savename);
+		$ext = $parse[count($parse)-1];
+		$result = array(
+			'id'=>$file->id,
+			'src'=>$this->basemediapath.$savename,
+			'filename'=>$savename,
+			'ext'=>$ext,
+			'result'=>'success',
+		);
+		Kohana::log('info', 'finished with saveFile '.var_export($result, true));
+		return $result;
+
+	}
+
+	public function saveImage($field, $postFiles, $parameters){
+		Kohana::log('info', 'Saving Image '.var_export($parameters, true) );
+		if(!isset($field)){
+			Kohana::log('error', 'No field in Post');
+			throw new Kohana_User_Exception('no field in POST', 'no field in POST');
+		}
+
+		if($this->savelocalfile){
+			$size = @getimagesize($this->savelocalfile);
+		} else if(!$size = @getimagesize($postFiles[$field]['tmp_name'])){
+			Kohana::log('error', 'Bad upload tmp image');
+			throw new Kohana_User_Exception('bad upload tmp image', 'bad upload tmp image');
+		}
+
+		$origwidth = $size[0];
+		$origheight = $size[1];
+		Kohana::log('info', var_export($parameters, true));
+		if(isset($parameters['minheight']) &&  $origheight < $parameters['minheight']){
+			$result = array(
+				'result'=>'failed',
+				'error'=>'Image height less than minimum height',
+			);
+			return $result;
+		}
+		if(isset($parameters['minwidth']) && $origwidth < $parameters['minwidth']){
+			$result = array(
+				'result'=>'failed',
+				'error'=>'Image width less than minimum width',
+			);
+			return $result;
+		}
+		Kohana::log('info', "passed min tests with {$origwidth} x {$origheight}");
+
+		//get original file names so we can delete them
+		$file = ORM::Factory('file', $this->contenttable->$field);
+		if($file->loaded){
+			$oldFilename = $file->filename;
+		}
+
+		//do the saving of the file
+		$result = $this->saveFile();
+		Kohana::log('info', 'Returning to saveImage');
+
+
+		$imageFilename = cms::processImage($result['filename'], $parameters);
+		
+
+		if(file_exists(cms::mediapath().'uithumb_'.$imageFilename)){
+			$resultpath = cms::mediapath().'uithumb_'.$imageFilename;
+			$thumbSrc = Kohana::config('cms.basemediapath').'uithumb_'.$imageFilename;
+		} else {
+			$resultpath = cms::mediapath().$imageFilename;
+			$thumbSrc = Kohana::config('cms.basemediapath').$imageFilename;
+		}
+		$size = getimagesize($resultpath);
+		$result['width'] = $size[0];
+		$result['height'] = $size[1];
+		$result['thumbSrc']= $thumbSrc;
+
+		//get rid of the old ones
+		//but how to find them ???
+
+		return $result;
+	}
+
+	public function saveMappedPDF(){
+		$result = $this->saveFile();
+		if($result['result'] == 'success'){
+			//rebuild the associations
+
+			$associations = unserialize($this->contenttable->field_associations);
+			if(!is_array($associations)){
+				$associations = array();
+			}
+			//get fields from pdf
+			$p = PDF_new();
+			$indoc = PDF_open_pdi_document($p, $result['src'], "");
+			if ($indoc == 0) {
+				die("Error: " . PDF_get_errmsg($p));
+			}
+			$blockcount = PDF_pcos_get_number($p, $indoc, "length:pages[0]/blocks");
+			/* Loop over all blocks on the $page */
+			$blocks = array();
+			for ($i = 0; $i <  $blockcount; $i++) {
+				$blocks[PDF_pcos_get_string($p, $indoc, "pages[0]/blocks[" . $i . "]/Name")] = true;
+			}
+			//take out blocks that have been removed
+			$remove = array();
+			foreach($associations as $key=>$value){
+				if(!isset($blocks[$key])){
+					$remove[] = $key;
+				}
+			}
+			foreach($remove as $removal){
+				unset($associations[$removal]);
+			}
+			//add in any new blocks
+			$keys = array_keys($associations);
+			foreach($blocks as $key=>$value){
+				if(!in_array($key, $keys)){
+					$associations[$key] = '';
+				}
+			}
+			//and save serialized value
+			$this->contenttable->field_associations = serialize($associations);
+			$this->contenttable->save();
+			//$result['fieldAssociations'] = $associations;
+
+			//and build the html
+			$fieldmapView = new View('ui_fieldmap');
+			$fieldmapView->options = $this->contenttable->getFieldmapOptions();
+			$fieldmapView->values = $this->contenttable->field_associations;
+			$result['html'] = str_replace("\n", '',$fieldmapView->render() ) ;
+			$result['html'] = str_replace("\t", '', $result['html']);
+			$result['html'] = str_replace('"', 'mop_token_2009', $result['html']);
+			//$result['html'] = 'date_completed select id="date_completed" name="date_completed" class="pulldown field-date_completed"';
+		
+		}
+		return $result;
+	}
+
+	//this is gonna change a lot!
+	//this only supports a very special case of multiSelect objects
+	public function saveObject(){
+		$object = ORM::Factory('page', $this->contenttable->$_POST['field']);
+		if(!$object->template_id){
+			$object->template_id = 0;
+		}
+
+		$element['options'] = array();
+		foreach(Kohana::config('cms.modules.'.$object->template->templatename) as $field){
+			if($field['type'] == 'checkbox'){
+				$options = $field['field'];
+			}
+		}
+		foreach($options as $field){
+			$object->contenttable->$field  = 0;
+		}
+
+		foreach($_POST['values'] as $value){
+			$object->contenttable->$value = 1;
+		}
+		$object->save();
+		return true;
+	}
+
+	
+	public function saveFieldMapping($field, $value){
+		$this->contenttable->trans_start();
+		$map = false;
+		if($this->contenttable->field_associations){
+			$map = unserialize($this->contenttable->field_associations);
+		}
+		if(!$map){
+			$map = array();
+		}
+		$map[$field] = $value;
+		$this->contenttable->field_associations = serialize($map);
+		$this->contenttable->save();
+		$this->contenttable->trans_complete();
+		return true;
+	}
+
+
+
+
 }
 ?>
