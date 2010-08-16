@@ -114,7 +114,9 @@ class List_Controller extends Controller{
 	//this is the new one
 	public function savefield($itemid){
 		$object = ORM::Factory($this->model, $itemid);
-		return $object->saveField($_POST['field'], $_POST['value']);
+		$object->contenttable->$_POST['field'] = $_POST['value'];
+		$object->contenttable->save();
+		return array('value'=>$object->contenttable->$_POST['field']);
 	}
 
 

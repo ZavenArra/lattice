@@ -304,7 +304,7 @@ class Page_Model extends ORM {
 
 	public function saveField($field, $value){
 		$this->contenttable->$field = $value;
-		$this->save();
+		$this->contenttable->save();
 		return $this->contenttable->$field;
 	}
 
