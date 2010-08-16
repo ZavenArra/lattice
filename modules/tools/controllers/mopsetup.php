@@ -5,7 +5,7 @@ class mopSetup_Controller extends Controller {
 
 	public function buildFrontendTemplates ($template=null) {
 
-		$setup = Kohana::config('cms.modules');
+		$setup = Kohana::config('cms.templates');
 		if($template){
 			$filtered = array();
 			$filtered[$template] = $setup[$template];

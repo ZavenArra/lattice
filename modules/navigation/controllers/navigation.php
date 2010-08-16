@@ -111,6 +111,7 @@ class Navigation_Controller extends Controller{
 		foreach($this->navDataFields_template as $send=>$field){
 			$sendItem[$send] = $item->template->$field;
 		}
+
 		//this part should get removed or not
 		try {
 			if(!is_object($item->contenttable)){
@@ -151,6 +152,15 @@ class Navigation_Controller extends Controller{
 			$sendItemFolders = array(); //these will go first
 			$sendItemObjects = array();
 			foreach($iitems as $child){
+				if($child->template->nodetype == 'CONTAINER'){
+					//we might be skipping this node
+					$parent = ORM::Factory($this->objectModel, $parentid); //it would be nice to be able to just look up the heap
+					//echo 'cms.templates.'.$parent->template->templatename.'.parameters.'.$child->template->templatename.'.display';
+					$display = Kohana::config('cms.templates.'.$parent->template->templatename.'.'.$child->template->templatename.'.display');
+					if($display == 'inline'){
+						continue;
+					}
+				}
 				$sendItem = $this->_loadNode($child);
 		
 				//implementation of deeplinking
@@ -169,7 +179,7 @@ class Navigation_Controller extends Controller{
 				}
 				$sendItem['children'] = $children;
 
-				if($child->template->nodetype=='CATEGORY'){
+				if($child->template->nodetype=='CATEGORY' || $child->template->nodetype=='CONTAINER'){
 					$sendItemFolders[] = $sendItem;
 				} else {
 					$sendItemObjects[] = $sendItem;

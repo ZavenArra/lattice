@@ -11,7 +11,7 @@ class RouteVirtualModulesHook{
 		$module = Router::$rsegments[0];
 
 		//what we'll try doing is to look up the class in cms.php and create the module
-		$config = Kohana::config('cms.modules');
+		$config = Kohana::config('cms.templates');
 		$modules = array();
 		foreach($config as $template){
 			foreach($template as $block){

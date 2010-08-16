@@ -100,7 +100,7 @@ Class mopui{
 
 		case 'multiSelect':
 			if(isset($element['object'])){
-				$object = Kohana::config('cms.modules.'.$element['object']);
+				$object = Kohana::config('cms.templates.'.$element['object']);
 				$element['options'] = array();
 				foreach($object as $field){
 					if($field['type'] == 'checkbox'){

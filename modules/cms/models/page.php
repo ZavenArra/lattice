@@ -71,7 +71,7 @@ class Page_Model extends ORM {
 
 		} else {
 
-			switch(Kohana::config('cms.modules.'.$this->template->templatename.'.'.$column.'.type')){
+			switch(Kohana::config('cms.templates.'.$this->template->templatename.'.'.$column.'.type')){
 			case 'multiSelect':
 				return $this->saveObject();
 				break;	
@@ -157,7 +157,7 @@ class Page_Model extends ORM {
 		}
 
 		//get data from lists
-		$blocks = Kohana::config('cms.modules.'.$this->__get('template')->templatename);
+		$blocks = Kohana::config('cms.templates.'.$this->__get('template')->templatename);
 		if($blocks) {
 			$modules = array();
 			foreach($blocks as $block){
@@ -517,7 +517,7 @@ class Page_Model extends ORM {
 		}
 
 		$element['options'] = array();
-		foreach(Kohana::config('cms.modules.'.$object->template->templatename) as $field){
+		foreach(Kohana::config('cms.templates.'.$object->template->templatename) as $field){
 			if($field['type'] == 'checkbox'){
 				$options = $field['field'];
 			}

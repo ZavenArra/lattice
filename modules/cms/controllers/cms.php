@@ -47,8 +47,6 @@ class CMS_Controller extends Controller {
 
 		$this->modules = Kohana::config('cms.subModules');
 
-		//TODO:read the config and choose the navigation module..
-		Kohana::Log('info', 'cms needs to choose navigation module');
 	}
 
 	/*
@@ -115,7 +113,6 @@ class CMS_Controller extends Controller {
 
 		//2 generate all IPEs
 		//3 build and include all modules
-		$this->view = new View();
 		$modules = Kohana::config(strtolower($this->controllername).'.templates.'.$page->template->templatename);
 
 		$customview = 'templates/'.$page->template->templatename; //check for custom view for this template
@@ -123,40 +120,8 @@ class CMS_Controller extends Controller {
 		if(Kohana::find_file('views', $customview)){
 			$usecustomview = true;	
 		}
-		$htmlChunks = array();
-		if(is_array($modules)){
-			foreach($modules as $module){
-				switch($module['type']){
-				case 'module':
-					if(isset($module['arguments'])){
-						$this->buildModule($module, $module['modulename'], $module['arguments']);
-					} else {
-						$this->buildModule($module, $module['modulename']);
-					}
-					$htmlChunks[$module['modulename']] = $this->view->$module['modulename'];
-					break;
-				case 'list':
-					if(isset($module['display']) && $module['display'] != 'inline'){
-						break; //module is being displayed via navi, skip
-					}
-					$module['modulename'] = $module['class'];
-					$module['controllertype'] = 'list';
-					$this->buildModule($module, 'list');
-					break;
-				default:
-					$element = false;
-					//deal with html template elements
-					if(!isset($module['field'])){
-						$element = mopui::buildUIElement($module, null);
-						$module['field'] = CMS_Controller::$unique++;
-					} else if(!$element = mopui::buildUIElement($module, $page->contenttable->$module['field'])){
-						throw new Kohana_User_Exception('bad config in cms', 'bad ui element');
-					}
-					$htmlChunks[$module['type'].'_'.$module['field']] = $element;
-					break;
-				}
-			}
-		}
+		$htmlChunks = cms::buildUIHtmlChunks($modules, $page);
+
 		if(!$usecustomview){
 			$html = $nodetitlehtml.implode($htmlChunks);
 		} else {
@@ -545,7 +510,7 @@ class CMS_Controller extends Controller {
 		$uiimagesize = array('uithumb'=>Kohana::config('cms.uiresize'));
 		$parameters['imagesizes'] = $uiimagesize;
 
-		foreach(Kohana::config('cms.modules') as $templatename => $templateconfig){
+		foreach(Kohana::config('cms.templates') as $templatename => $templateconfig){
 			foreach($templateconfig as $field){
 				if($field['type'] == 'singleImage'){
 					$objects = ORM::Factory('template', $templatename)->getPublishedMembers();

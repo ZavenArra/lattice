@@ -21,18 +21,29 @@ class List_Controller extends Controller{
 	*/
 	protected $model = 'page'; 
 
+	/*
+	 * Variable: containerObject
+	 * The parent object of the lists children
+	 */
+	protected $containerObject;
+
 
 	/*
 	  Function:  construct();
+		Parameters:
+			containerObject - The object that contains the items for the list.  This should not be null, 
+			 but we allow it for call_user_func_array workaround
 	*/
-	public function __construct(){
+	public function __construct($containerObject = null){
 		parent::__construct();
 
+		$this->containerObject = $containerObject;
+
 		//for now the isntance is just the name of this thing
-		$this->collectionName = strtolower(substr(get_class($this), 0, -11));
+		$this->listClass = strtolower(substr(get_class($this), 0, -11));
 
 		//support for custom listmodule item templates, but might not be necessary
-		$custom = $this->collectionName.'_list_item';
+		$custom = $this->listClass.'_list_item';
 		Kohana::log('info', 'list: looking for '.$custom);
 		if(Kohana::find_file('views', $custom)){
 			$this->itemview = $custom;
@@ -41,7 +52,7 @@ class List_Controller extends Controller{
 		}
 
 		//get the dbmap
-		if(! $this->sortdirection = Kohana::config('cms.lists.'.$this->collectionName.'.sortdirection')) {
+		if(! $this->sortdirection = Kohana::config('cms.lists.'.$this->listClass.'.sortdirection')) {
 			$this->sortdirection = Kohana::config('list.sortdirection');
 		}
 
@@ -50,14 +61,14 @@ class List_Controller extends Controller{
 
 
 	public function createIndexView(){
-		$custom = $this->collectionName.'_list';
+		$custom = $this->listClass.'_list';
 		if(Kohana::find_file('views', $custom)){
 			$this->view = new View($custom);
 		} else {
 			$this->view = new View('list');		
 		}
 
-		$this->view->label = Kohana::config('cms.lists.'.$this->collectionName.'.label'); //how do we know what object we are in
+		$this->view->label = Kohana::config('cms.lists.'.$this->listClass.'.label'); //how do we know what object we are in
 
 		$this->buildIndexData();
 		return $this->render();
@@ -65,52 +76,29 @@ class List_Controller extends Controller{
 
 
 	public function buildIndexData(){
-		$this->view->label = Kohana::config('cms.lists.'.$this->collectionName.'.'.$var);
-		$this->view->class =  $this->view->moduleClass . ' sortDirection-'.$this->sortdirection;
 
-		$listMembers = ORM::Factory('page', $this->parentObjectId)->getPublishedListMembers($this->collectionName);
+		$listMembers = ORM::Factory('page', $this->containerObject->id)->getPublishedChildren();
 
-		Kohana::log('info', 'listmodule with sort: '.$this->sortdirection);
-		$list = ORM::Factory($this->model)
-		->where('page_id', CMS_Controller::getPageId())
-		->where('instance', $this->collectionName)
-		->where('activity IS NULL') 
-		->orderBy('sortorder', $this->sortdirection)
-		->find_all();
 		$html = '';
+		foreach($listMembers as $object){
 
-		foreach($list as $item){
-			//actually just call cms_services and generate all the bits there
+			$htmlChunks = cms::buildUIHtmlChunks(Kohana::config('cms.templates.'.$object->template->templatename.'.parameters'), $object);
 			$itemt = new View($this->itemview);
-			$itemt->fields = $this->fields;
-			$itemt->labels = $this->labels;
+			$itemt->uiElements = $htmlChunks;
+
 			$data = array();
-			$data['id'] = $item->id;
-			$data['page_id'] = $item->page_id;
-			$data['instance'] = $item->instance;
-			foreach(Kohana::config('cms.dbmap.'.$item->template->templatename) as $formfield => $dbfield){
-				$data[$formfield] = $item->$formfield;
-			}
+			$data['id'] = $this->containerObject->id;
+			$data['page_id'] = $object->id;
+			$data['instance'] = $this->listClass;
 			$itemt->data = $data;
 
-			//files and imaages
-			$itemt->files = array();
-			if(count(Kohana::config($this->collectionName.'.files'))){
-				$itemt->files['file'] = $this->makeFileArgs('file', $item->file);
-			}
-			$itemt->singleimages = array();
-			if(count(Kohana::config($this->collectionName.'.singleimages'))){
-				$itemt->singleimages['file'] = $this->makeFileArgs('singleimage',$item->file);
-			}
-			$itemt->instance = $this->collectionName;
 			$html.=$itemt->render();
 		}
 	
+		$this->view->label = Kohana::config('cms.lists.'.$this->listClass.'.label');
+		$this->view->class =  Kohana::config('cms.lists.'.$this->listClass.'.cssClasses') . ' sortDirection-'.$this->sortdirection;
 		$this->view->items = $html;
-		$this->view->instance = $this->collectionName;
-		$this->view->fields = $this->fields;
-		$this->view->labels = $this->labels;
-		$this->view->className = $this->view->moduleClass;
+		$this->view->instance = $this->listClass;
 
 	}
 
@@ -156,7 +144,7 @@ class List_Controller extends Controller{
 			case 'JPG':
 			case 'GIF':
 			case 'PNG':
-				$parameters = Kohana::config($this->collectionName.'.singleimages.'.$_POST['field'].'.resize');
+				$parameters = Kohana::config($this->listClass.'.singleimages.'.$_POST['field'].'.resize');
 				$uiimagesize = array('uithumb'=>Kohana::config('listmodule.uiresize'));
 				if($parameters){
 				$parameters['imagesizes'] = array_merge($uiimagesize, $parameters['imagesizes']);
@@ -195,16 +183,16 @@ class List_Controller extends Controller{
 		//config must load instance somehow
 		$sort = ORM::Factory($this->model)
 		->select('max(sortorder)+1 as newsort')
-		->where('instance', $this->collectionName)
+		->where('instance', $this->listClass)
 		->find();
 
 		//insert the collection record if it does not exist already
 		$collection = ORM::Factory('collection')
-			->where('collectionName', $this->collectionName)
+			->where('listClass', $this->listclass)
 			->find();
 		if(!$collection->loaded){
 			$collection = ORM::Factory('collection');
-			$collection->collectionName = $this->collectionName;
+			$collection->listClass = $this->listclass;
 			$collection->save();
 		}
 		
@@ -233,16 +221,17 @@ class List_Controller extends Controller{
 
 
 		$this->view = new View($this->itemview);
-		$this->view->instance = $this->collectionName;
+		$this->view->instance = $this->listClass;
 		$this->view->data = $data;
 		$this->view->fields = $this->fields;
 		$this->view->labels = $this->labels;
 		$this->view->files = array();
-		if(count(Kohana::config($this->collectionName.'.files'))){
+
+		if(count(Kohana::config($this->listClass.'.files'))){
 			$this->view->files['file'] = $this->makeFileArgs('file');
 		}
 		$this->view->singleimages = array();
-		if(count(Kohana::config($this->collectionName.'.singleimages'))){
+		if(count(Kohana::config($this->listClass.'.singleimages'))){
 			$this->view->singleimages['file'] = $this->makeFileArgs('singleimage');
 		}
 		return $this->view->render();
@@ -259,7 +248,7 @@ class List_Controller extends Controller{
 		$args['id']=null;
 		$args['ext'] = '';
 		$args['maxlength'] = $maxlength;
-		$args['extensions'] = Kohana::config($this->collectionName.'.'.$type.'s'.'.file'.'.extensions');
+		$args['extensions'] = Kohana::config($this->listClass.'.'.$type.'s'.'.file'.'.extensions');
 		if($id==null){
 			return $args;
 		}	

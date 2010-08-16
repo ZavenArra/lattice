@@ -116,10 +116,14 @@ Class ConfigSite_Controller extends Controller {
 						$this->config['cms']['templates'][$template['templatename']][$item['class']] = $item;
 
 						//add a template for the list container
-						$this->config['cms']['templates'][$item['class']] = array();
+						$entry = array();
+						$entry['cssClasses'] = $this->valueIfSet('cssClasses', $item);
+						$entry['label'] = $this->valueIfSet('label', $item);
+						$this->config['cms']['templates'][$item['class']] = $entry;
+
 						$this->config['cms_templates'][$item['class']] = array(
 							'templatename'=>$item['class'],
-							'type'=>'CATEGORY',
+							'type'=>'CONTAINER',
 							'addable_objects'=>array(
 								array(
 									'templateId'=>$item['templateId'],
@@ -131,7 +135,7 @@ Class ConfigSite_Controller extends Controller {
 						$tRecord = ORM::Factory('template');
 						$tRecord->templatename = $item['class'];
 						$tRecord->contenttable = 'content_small';
-						$tRecord->nodetype = 'CATEGORY';
+						$tRecord->nodetype = 'CONTAINER';
 						$tRecord->save();
 
 						//set up component

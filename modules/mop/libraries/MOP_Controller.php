@@ -391,6 +391,7 @@ class MOP_Controller_Core extends Controller_Core {
 	*/
 	public function index(){
 		//build the default vieew
+		Kohana::log('debug', 'building Index View ');
 		call_user_func_array(array($this, 'createIndexView'), array());
 	}
 
@@ -400,6 +401,7 @@ class MOP_Controller_Core extends Controller_Core {
 	 * to build a default view
 	 */
 	public function createIndexView(){
+		Kohana::log('debug', 'building Index View ');
 		if(isset($this->defaulttemplate)){
 			$this->view = new View(strtolower($this->defaulttemplate));
 		} else {
@@ -416,45 +418,8 @@ class MOP_Controller_Core extends Controller_Core {
 	public function buildModules(){
 		//for now $this->modules is set in the class file
 		foreach($this->modules as $templatevar => $module){
-			$this->buildModule(array('modulename'=>$module), $templatevar);
+		 	$this->view->$templatevar = mop::buildModule(array('modulename'=>$module));
 		}
-	}
-
-	/*
-	 * Function: buildModule
-		This is the same function as in Display_Controller..
-		Obviously these classes should share a parent class
-	*/
-	public function buildModule($module, $templatevar=NULL, $arguments=NULL){
-		Kohana::log('debug', 'Loading module: ' . $module['modulename']);
-			Kohana::log('debug', 'Loading controller: ' . $module['modulename']);
-
-			if(!Kohana::find_file('controllers', $module['modulename'] ) ){
-				$includeclass = 'class '.$module['modulename'].'_Controller extends '.$module['controllertype'].'_Controller { } ';
-				eval($includeclass);
-			}
-
-			$fullname = $module['modulename'].'_Controller';
-			$module = new $fullname($arguments);
-
-			//create Main View is a suspect function..
-			//why doesn't this just happen in the controllers constructor
-			$module->createIndexView();
-			$module->view->loadResources();
-			//and load resources for it's possible parents
-			$parentclass = get_parent_class($module);
-			$parentname = str_replace('_Controller', '', $parentclass);
-			$module->view->loadResources(strtolower($parentname));
-
-			//build submodules of this module (if any)
-			$module->buildModules();
-
-			//render some html
-			if($templatevar==NULL){
-				$this->view->$module['modulename'] = $module->view->render();
-			} else {
-				$this->view->$templatevar = $module->view->render();
-			}
 	}
 
 	/*

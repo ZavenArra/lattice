@@ -196,6 +196,61 @@ class CMS {
 		return $imageFilename;
 	}
 
+	/*
+	 * Function: buildUIHtmlChunks
+	 * This function builds the html for the UI elements specified in an object type's paramters
+	 * Parameters:
+	 * $parameters - the parameters array from an object type configuration
+	 * Returns: Associative array of html, one entry for each ui element
+	 */
+	public static function buildUIHtmlChunks($parameters, $object = null){
+		$view = new View();
+		$htmlChunks = array();
+		if(is_array($parameters)){
+			foreach($parameters as $module){
+				switch($module['type']){
+				case 'module':
+					if(isset($module['arguments'])){
+						$html = mop::buildModule($module, $module['modulename'], $module['arguments']);
+					} else {
+						$html = mop::buildModule($module, $module['modulename']);
+					}
+					$htmlChunks[$module['modulename']] = $html;
+					break;
+				case 'list':
+					if(isset($module['display']) && $module['display'] != 'inline'){
+						break; //module is being displayed via navi, skip
+					}
+					$module['modulename'] = $module['class'];
+					$module['controllertype'] = 'list';
+					$lt = ORM::Factory('template', $module['class']);
+					$containerObject = ORM::Factory('page')
+						->where('parentid', $object->id)
+						->where('template_id', $lt->id)
+						->where('activity IS NULL')
+						->find();
+					$arguments = array(
+						'containerObject'=>$containerObject
+					);
+					$htmlChunks[$module['class']] = mop::buildModule($module, $arguments);
+					break;
+				default:
+					$element = false;
+					//deal with html template elements
+					if(!isset($module['field'])){
+						$element = mopui::buildUIElement($module, null);
+						$module['field'] = CMS_Controller::$unique++;
+					} else if(!$element = mopui::buildUIElement($module, $object->contenttable->$module['field'])){
+						throw new Kohana_User_Exception('bad config in cms', 'bad ui element');
+					}
+					$htmlChunks[$module['type'].'_'.$module['field']] = $element;
+					break;
+				}
+			}
+		}
+		return $htmlChunks;
+	}
+
 
 
 }

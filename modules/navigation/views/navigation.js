@@ -385,7 +385,7 @@ mop.modules.navigation.Navigation = new Class({
 		placeHolder.destroy();
 		mop.HistoryManager.changeState( "pageId", node.id );
 		
-		if( node.nodeType == "CATEGORY" ){
+		if( node.nodeType == "CATEGORY" || node.nodeType == "CONTAINER"){
 			var objectElement = this.addCategoryNode( parentId, node, whichTier, this.addObjectPosition ).element;			
 		}else{
 			var objectElement = this.addLeafNode( parentId, node, whichTier, this.addObjectPosition ).element;			
