@@ -40,7 +40,7 @@ templates:
       nodetype: LEAF
       parameters:
           - type: ipe
-            field: blurb
+            field: blurb3
             label: WJAT
             tag: p
             rows: 4

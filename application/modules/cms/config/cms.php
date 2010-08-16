@@ -50,6 +50,14 @@ $config['templates'] = array (
   ),
   'differentItem' => 
   array (
+    'blurb3' => 
+    array (
+      'type' => 'ipe',
+      'field' => 'blurb3',
+      'label' => 'WJAT',
+      'class' => 'rows-4',
+      'tag' => 'p',
+    ),
     'blurb' => 
     array (
       'type' => 'ipe',
