@@ -241,7 +241,9 @@ class CMS_Controller extends Controller {
 			$fields = Kohana::config('cms.templates.'.$page->template->templatename); //this is annoying and experimental
 			$lookup = array();
 			foreach($fields as $f){
-				$lookup[$f['field']] = $f;
+				if(isset($f['field'])){
+					$lookup[$f['field']] = $f;
+				}
 			}
 			switch($lookup[$_POST['field']]['type']){
 			case 'multiSelect':
