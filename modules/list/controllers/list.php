@@ -40,7 +40,7 @@ class List_Controller extends Controller{
 		$this->containerObject = $containerObject;
 
 		//for now the isntance is just the name of this thing
-		$this->listClass = strtolower(substr(get_class($this), 0, -11));
+		$this->listClass = substr(get_class($this), 0, -11);
 
 		//support for custom listmodule item templates, but might not be necessary
 		$custom = $this->listClass.'_list_item';
@@ -77,18 +77,18 @@ class List_Controller extends Controller{
 
 	public function buildIndexData(){
 
-		$listMembers = ORM::Factory('page', $this->containerObject->id)->getPublishedChildren();
+		$listMembers = $this->containerObject->getPublishedChildren();
 
 		$html = '';
 		foreach($listMembers as $object){
 
-			$htmlChunks = cms::buildUIHtmlChunks(Kohana::config('cms.templates.'.$object->template->templatename.'.parameters'), $object);
+			$htmlChunks = cms::buildUIHtmlChunks(Kohana::config('cms.templates.'.$object->template->templatename), $object);
 			$itemt = new View($this->itemview);
 			$itemt->uiElements = $htmlChunks;
 
 			$data = array();
-			$data['id'] = $this->containerObject->id;
-			$data['page_id'] = $object->id;
+			$data['id'] = $object->id;
+			$data['page_id'] = $this->containerObject->id;
 			$data['instance'] = $this->listClass;
 			$itemt->data = $data;
 
@@ -112,7 +112,7 @@ class List_Controller extends Controller{
 	}
 
 	//this is the new one
-	public function saveField($itemid){
+	public function savefield($itemid){
 		$object = ORM::Factory($this->model, $itemid);
 		return $object->saveField($_POST['field'], $_POST['value']);
 	}
@@ -155,12 +155,12 @@ class List_Controller extends Controller{
 				if($parameters){
 					return $object->saveImage($_POST['field'], $_FILES, $parameters);
 				} else {
-					return $cmss->saveFile($_POST['field'], $_FILES);
+					return $object->saveFile($_POST['field'], $_FILES);
 				}
 				break;
 
 			default:
-				return $cmss->saveFile($_POST['field'], $_FILES);
+				return $object->saveFile($_POST['field'], $_FILES);
 		}
 
 		
@@ -171,6 +171,16 @@ class List_Controller extends Controller{
 		return $object->saveMappedPDF();
 	}
 
+	private function buildContainerObject($parentid){
+		$parent = ORM::Factory($this->model, $parentid);
+		$containerTemplate = ORM::Factory('template', $this->listClass);
+		$this->containerObject = ORM::Factory($this->model)
+			->where('parentid', $parentid)
+			->where('template_id', $containerTemplate->id)
+			->where('activity IS NULL')
+			->find();
+	}
+
 	/*
 	Function: addItem()
 	Adds a list item
@@ -178,63 +188,42 @@ class List_Controller extends Controller{
 	Returns:
 	the rendered template of the new item
 	*/
-	public function addItem($pageId){
+	public function addItem($parentid){
+		$parent = ORM::Factory($this->model, $parentid);
+		$this->buildContainerObject($parentid);
 		//read config, make the item, load template
 		//config must load instance somehow
 		$sort = ORM::Factory($this->model)
 		->select('max(sortorder)+1 as newsort')
-		->where('instance', $this->listClass)
+		->where('parentid', $parent->id)
 		->find();
 
-		//insert the collection record if it does not exist already
-		$collection = ORM::Factory('collection')
-			->where('listClass', $this->listclass)
-			->find();
-		if(!$collection->loaded){
-			$collection = ORM::Factory('collection');
-			$collection->listClass = $this->listclass;
-			$collection->save();
-		}
-		
+
+		//addable item should be specifid in the addItem call
+		$template = Kohana::config('cms_templates.'.$this->listClass.'.addable_objects');
+		$template = ORM::Factory('template', $template[0]['templateId']);
+
 		$item = ORM::Factory($this->model);
-		$item->page_id = $pageId;
-		$item->collection_id = $collection->id;
-		$item->save();
-
-		//save fields into item
-		foreach($this->fields as $field=>$type){
-			if(isset($_POST[$field])){
-				$item->$field = $_POST[$field];
-			}
-		}
+		$item->template_id = $template->id;
+		$item->parentid = $this->containerObject->id;
 		$item->sortorder = $sort->newsort;
+		$item->published = 1;
 		$item->save();
 
-		//and get data
+
+		$htmlChunks = cms::buildUIHtmlChunks(Kohana::config('cms.templates.'.$item->template->templatename), $item);
+		$itemt = new View($this->itemview);
+		$itemt->uiElements = $htmlChunks;
+
 		$data = array();
 		$data['id'] = $item->id;
-		$data['page_id'] = $item->page_id;
-		$data['instance'] = $item->instance;
-		foreach($this->dbmap as $formfield => $dbfield){
-			$data[$formfield] = $item->$dbfield;
-		}
+		$data['page_id'] = $this->containerObject->id;;
+		$data['instance'] = $this->listClass;
+		$itemt->data = $data;
 
+		$html = $itemt->render();
 
-		$this->view = new View($this->itemview);
-		$this->view->instance = $this->listClass;
-		$this->view->data = $data;
-		$this->view->fields = $this->fields;
-		$this->view->labels = $this->labels;
-		$this->view->files = array();
-
-		if(count(Kohana::config($this->listClass.'.files'))){
-			$this->view->files['file'] = $this->makeFileArgs('file');
-		}
-		$this->view->singleimages = array();
-		if(count(Kohana::config($this->listClass.'.singleimages'))){
-			$this->view->singleimages['file'] = $this->makeFileArgs('singleimage');
-		}
-		return $this->view->render();
+		return $html;
 	}
 
 	public function makeFileArgs($type, $id=null){
