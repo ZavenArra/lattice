@@ -14,13 +14,6 @@ $config['templates'] = array (
       'class' => 'rows-4',
       'tag' => 'p',
     ),
-    'listOfThings' => 
-    array (
-      'type' => 'list',
-      'collectionName' => 'listOfThings',
-      'label' => 'List of things',
-      'object' => 'stuffItem',
-    ),
   ),
   'stuffItem' => 
   array (
@@ -40,12 +33,56 @@ $config['templates'] = array (
       'class' => 'rows-4',
       'tag' => 'p',
     ),
+    'listOfThings' => 
+    array (
+      'type' => 'list',
+      'class' => 'listOfThings',
+      'label' => 'List of things',
+      'display' => 'inline',
+      'templateId' => 'differentItem',
+      'templateAddText' => 'Add a Stuff Item',
+    ),
+  ),
+  'listOfThings' => 
+  array (
+    'cssClasses' => NULL,
+    'label' => 'List of things',
+  ),
+  'differentItem' => 
+  array (
+    'blurb' => 
+    array (
+      'type' => 'ipe',
+      'field' => 'blurb',
+      'label' => 'EH KKDSJ  KDK',
+      'class' => 'rows-4',
+      'tag' => 'p',
+    ),
   ),
 );
 
 $config['stuffItem'] = array (
 );
 
+$config['settings'] = array (
+  'stuffItem' => 
+  array (
+    'components' => 
+    array (
+      array (
+        'templateId' => 'listOfThings',
+        'data' => 
+        array (
+          'title' => 'List of things',
+        ),
+      ),
+    ),
+  ),
+);
+
 $config['home'] = array (
+);
+
+$config['differentItem'] = array (
 );
 

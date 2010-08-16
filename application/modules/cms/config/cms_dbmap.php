@@ -12,3 +12,7 @@ $config['stuffItem'] = array (
 $config['home'] = array (
 );
 
+$config['differentItem'] = array (
+  'blurb' => 'field2',
+);
+
