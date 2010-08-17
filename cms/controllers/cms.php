@@ -280,7 +280,9 @@ class CMS_Controller extends Controller {
 			$page->save();
 		} else if($_POST['field']) {
 			$fields = Kohana::config('cms.modules.'.$page->template->templatename); //this is annoying and experimental
-			$lookup = array();
+      $lookup = array(
+        'title'=>'default'
+      );
 			foreach($fields as $f){
 				$lookup[$f['field']] = $f;
 			}
