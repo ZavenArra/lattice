@@ -288,7 +288,7 @@ class CMS_Controller extends Controller {
 			}
 			switch($lookup[$_POST['field']]['type']){
 			case 'multiSelect':
-				$object = ORM::Factory('page', $page->contenttable->$_POST['field']);
+				$object = ORM::Factory('page', $_POST['field']);
 				if(!$object->loaded){
 					$object->template_id = ORM::Factory('template', $lookup[$_POST['field']]['object'])->id;
 					$object->save();
