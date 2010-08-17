@@ -1,5 +1,4 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-  ini_set('session.gc_maxlifetime',30);
 
 /*
  * Class: MOP_Controller_Core

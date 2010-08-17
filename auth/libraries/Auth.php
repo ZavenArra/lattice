@@ -1,4 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
+ini_set('session.gc_maxlifetime',Kohana::config('mop.loginTimeOut'));
+
 /**
  * User authorization library. Handles user login and logout, as well as secure
  * password hashing.
