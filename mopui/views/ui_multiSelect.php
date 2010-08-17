@@ -3,8 +3,8 @@
 <?
 $preparedOptions = array();
 $preparedOptions[0] = $unsetLabel;
-foreach($options as $key => $value){
-	$preparedOptions["$key"] = $value;
+foreach($options as $key => $ovalue){
+	$preparedOptions["$key"] = $ovalue;
 }
 ?>
 <?=form::dropdown( $field, $preparedOptions, $value, "multiple" );?>

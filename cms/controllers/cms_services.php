@@ -7,7 +7,7 @@
  * @package Kororor
  */
 
-class CMS_Services_Controller{
+class CMS_Services_Controller extends Controller{
 
 	/*
 	Variable: loaded container model
@@ -31,11 +31,13 @@ class CMS_Services_Controller{
 	Parameters:
 	$model - the name of the model this item is stored in
 	*/
-	public function __construct($model){
-		if(!$model->loaded){
-			throw new Kohana_User_Exception('model is not loaded', 'model is not loaded: invalid reference to item');
+	public function __construct($model = null){
+		if($model){
+			if(!$model->loaded){
+				throw new Kohana_User_Exception('model is not loaded', 'model is not loaded: invalid reference to item');
+			}
+			$this->model = $model;
 		}
-		$this->model = $model;
 
 		if(Kohana::config('mop.staging')){
 			$this->mediapath = $this->stagingmediapath;
@@ -58,7 +60,15 @@ class CMS_Services_Controller{
 	}
 
 	public function saveField($field, $value){
-		$this->model->$field = CMS_Services_Controller::convertNewlines($value);
+		switch(Kohana::config('cms.modules.'.$this->model->template->templatename.'.'.$field.'.type')){
+		case 'multiSelect':
+			$this->saveObject();
+			break;	
+		default:
+			$this->model->$field = CMS_Services_Controller::convertNewlines($value);
+			break;
+		}
+
 		$this->model->save();
 		return array('value'=>$this->model->$field);
 	}
@@ -90,6 +100,31 @@ class CMS_Services_Controller{
 		return true;
 	}
 
+	//this is gonna change a lot!
+	//this only supports a very special case of multiSelect objects
+	public function saveObject(){
+		$object = ORM::Factory('page', $this->model->$_POST['field']);
+		if(!$object->template_id){
+			$object->template_id = 0;
+		}
+
+		$element['options'] = array();
+		echo $object->template->templatename;
+		foreach(Kohana::config('cms.modules.'.$object->template->templatename) as $field){
+			if($field['type'] == 'checkbox'){
+				$options = $field['field'];
+			}
+		}
+		foreach($options as $field){
+			$object->contenttable->$field  = 0;
+		}
+
+		foreach($_POST['values'] as $value){
+			$object->contenttable->$value = 1;
+		}
+		$object->save();
+		return true;
+	}
 
 	public function saveFile(){
 		//check for valid file upload
@@ -157,7 +192,6 @@ class CMS_Services_Controller{
 		}
 		
 
-		Kohana::log('info', 'finished with saveFile '.$file->id);
 
 		$parse = explode('.', $savename);
 		$ext = $parse[count($parse)-1];
@@ -168,6 +202,7 @@ class CMS_Services_Controller{
 			'ext'=>$ext,
 			'result'=>'success',
 		);
+		Kohana::log('info', 'finished with saveFile '.var_export($result, true));
 		return $result;
 
 	}
@@ -231,6 +266,7 @@ class CMS_Services_Controller{
 	
 
 	public function saveImage($parameters){
+		Kohana::log('info', 'Saving Image '.var_export($parameters, true) );
 		if(!isset($_POST['field'])){
 			Kohana::log('error', 'No field in Post');
 			throw new Kohana_User_Exception('no field in POST', 'no field in POST');
@@ -270,101 +306,18 @@ class CMS_Services_Controller{
 
 		//do the saving of the file
 		$result = $this->saveFile();
+		Kohana::log('info', 'Returning to saveImage');
 
 
-		$quality = Kohana::config('cms_services.imagequality');
+		$imageFilename = $this->processImage($result['filename'], $parameters);
+		
 
-		//do the resizing
-		if(is_array($parameters)){
-		$image = new Image($this->mediapath.$result['filename']);
-		foreach($parameters['imagesizes'] as $resize){
-
-			if(isset($resize['prefix']) && $resize['prefix']){
-				$prefix = $resize['prefix'].'_';
-			} else {
-				$prefix = '';
-			}
-			$newFilename = $prefix.$result['filename'];
-			$savename = $this->mediapath.$newFilename;
-
-			if(isset($resize['noresample']) && $resize['noresample']==true){
-				$image->save($savename);
-				continue;
-			}
-
-
-			//set up dimenion to key off of
-			if( isset($resize['forcewidth']) && $resize['forcewidth']){
-				$keydimension = Image::WIDTH;
-			} else if ( isset($resize['forceheight']) && $resize['forceheight']){
-				$keydimension = Image::HEIGHT;
-			} else {
-				$keydimension = Image::AUTO;
-			}
-
-
-			if(isset($resize['crop'])) {
-				//resample with crop
-				//set up sizes, and crop
-				if( ($image->width / $image->height) > ($image->height / $image->width) ){
-					$cropKeyDimension = Image::HEIGHT;
-				} else {
-					$cropKeyDimension = Image::WIDTH;
-				}
-				$image->resize($resize['width'], $resize['height'], $cropKeyDimension)->crop($resize['width'], $resize['height']);
-				$image->quality($quality);
-				$image->save($savename);
-
-
-			} else {
-				//just do the resample
-				//set up sizes
-				$resizewidth = $resize['width'];
-				$resizeheight = $resize['height'];
-
-				if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
-					$osize = getimagesize($this->mediapath.$result['filename']);
-					$horizontal = false;
-					if($osize[0] > $osize[1]){
-						//horizontal
-						$horizontal = true;	
-					}
-					$newsize = array($resizewidth, $resizeheight);
-					sort($newsize);
-					if($horizontal){
-						$resizewidth = $newsize[1];
-						$resizeheight = $newsize[0];
-					} else {
-						$resizewidth = $newsize[0];
-						$resizeheight = $newsize[1];
-					}
-				}
-
-				//maintain aspect ratio
-				//use the forcing when it applied
-				//forcing with aspectfolloworientation is gonna give weird results!
-				$image->resize($resizewidth, $resizeheight, $keydimension);
-
-				$image->quality($quality);
-				$image->save($savename);
-
-				if(isset($oldFilename) && $newFilename != $prefix.$oldFilename){
-					if(file_exists($this->mediapath.$oldFilename)){
-						unlink($this->mediapath.$oldFilename);
-					}
-				}
-
-				
-			}
-		}
-		}
-
-		if(file_exists($this->mediapath.'uithumb_'.$result['filename'])){
-			$resultpath = $this->mediapath.'uithumb_'.$result['filename'];
-			$thumbSrc = $this->basemediapath.'uithumb_'.$result['filename'];
+		if(file_exists($this->mediapath.'uithumb_'.$imageFilename)){
+			$resultpath = $this->mediapath.'uithumb_'.$imageFilename;
+			$thumbSrc = $this->basemediapath.'uithumb_'.$imageFilename;
 		} else {
-			$resultpath = $this->mediapath.$result['filename'];
-			$thumbSrc = $this->basemediapath.$result['filename'];
+			$resultpath = $this->mediapath.$imageFilename;
+			$thumbSrc = $this->basemediapath.$imageFilename;
 		}
 		$size = getimagesize($resultpath);
 		$result['width'] = $size[0];
@@ -379,6 +332,147 @@ class CMS_Services_Controller{
 		return $result;
 	}
 
+
+	/*
+	 * Funciton: processImage($filename, $parameters)
+	 * Create all automatice resizes on this image
+	 */
+	public function processImage($filename, $parameters){
+		$ext = substr(strrchr($filename, '.'), 1);
+		switch($ext){
+		case 'tiff':
+		case 'tif':
+		case 'TIFF':
+		case 'TIF':
+			Kohana::log('info', 'Converting TIFF image to JPG for resize');
+
+			$imageFilename =  $filename.'_converted.jpg';
+			$command = sprintf('convert %s %s',addcslashes($this->mediapath.$filename, "'\"\\ "), addcslashes($this->mediapath.$imageFilename, "'\"\\ "));
+			Kohana::log('info', $command);
+			system(sprintf('convert %s %s',addcslashes($this->mediapath.$filename, "'\"\\ "),addcslashes($this->mediapath.$imageFilename, "'\"\\ ")));
+			break;
+		default:
+			$imageFilename = $filename;
+			break;
+		}
+		Kohana::log('info', $imageFilename);
+
+
+		$quality = Kohana::config('cms_services.imagequality');
+
+		//do the resizing
+		if(is_array($parameters)){
+			Kohana::log('info', 'poor man');
+			$image = new Image($this->mediapath.$imageFilename);
+			Kohana::log('info', 'poor man');
+			foreach($parameters['imagesizes'] as $resize){
+
+				if(isset($resize['prefix']) && $resize['prefix']){
+					$prefix = $resize['prefix'].'_';
+				} else {
+					$prefix = '';
+				}
+				$newFilename = $prefix.$imageFilename;
+				$savename = $this->mediapath.$newFilename;
+
+				if(isset($resize['noresample']) && $resize['noresample']==true){
+					$image->save($savename);
+					continue;
+				}
+
+
+				//set up dimenion to key off of
+				if( isset($resize['forcewidth']) && $resize['forcewidth']){
+					$keydimension = Image::WIDTH;
+				} else if ( isset($resize['forceheight']) && $resize['forceheight']){
+					$keydimension = Image::HEIGHT;
+				} else {
+					$keydimension = Image::AUTO;
+				}
+
+
+				if(isset($resize['crop'])) {
+					//resample with crop
+					//set up sizes, and crop
+					if( ($image->width / $image->height) > ($image->height / $image->width) ){
+						$cropKeyDimension = Image::HEIGHT;
+					} else {
+						$cropKeyDimension = Image::WIDTH;
+					}
+					$image->resize($resize['width'], $resize['height'], $cropKeyDimension)->crop($resize['width'], $resize['height']);
+					$image->quality($quality);
+					$image->save($savename);
+
+
+				} else {
+					//just do the resample
+					//set up sizes
+					$resizewidth = $resize['width'];
+					$resizeheight = $resize['height'];
+
+					if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
+						$osize = getimagesize($this->mediapath.$imageFilename);
+						$horizontal = false;
+						if($osize[0] > $osize[1]){
+							//horizontal
+							$horizontal = true;	
+						}
+						$newsize = array($resizewidth, $resizeheight);
+						sort($newsize);
+						if($horizontal){
+							$resizewidth = $newsize[1];
+							$resizeheight = $newsize[0];
+						} else {
+							$resizewidth = $newsize[0];
+							$resizeheight = $newsize[1];
+						}
+					}
+
+					//maintain aspect ratio
+					//use the forcing when it applied
+					//forcing with aspectfolloworientation is gonna give weird results!
+					$image->resize($resizewidth, $resizeheight, $keydimension);
+
+					$image->quality($quality);
+					$image->save($savename);
+
+					if(isset($oldFilename) && $newFilename != $prefix.$oldFilename){
+						if(file_exists($this->mediapath.$oldFilename)){
+							unlink($this->mediapath.$oldFilename);
+						}
+					}
+
+
+				}
+			}
+		}
+
+		return $imageFilename;
+	}
+
+
+  public function regenerateImages(){
+		//find all images
+		//calculate resize array for images
+		$uiimagesize = array('uithumb'=>Kohana::config('cms.uiresize'));
+		$parameters['imagesizes'] = $uiimagesize;
+
+		foreach(Kohana::config('cms.modules') as $templatename => $templateconfig){
+			foreach($templateconfig as $field){
+				if($field['type'] == 'singleImage'){
+					$objects = ORM::Factory('template', $templatename)->getPublishedMembers();
+					$fieldname = $field['field'];
+					foreach($objects as $object){
+						if( $object->contenttable->$fieldname->filename && file_exists($this->mediapath . $object->contenttable->$fieldname->filename)){
+							$this->processImage($object->contenttable->$fieldname->filename, $parameters);
+						}
+					}
+				}
+			}
+		}
+		//loop through and call $this->saveImage on it
+		//
+	}
 
 
 	/*

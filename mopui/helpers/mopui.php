@@ -47,7 +47,20 @@ Class mopui{
 		switch($element['type']){
 
 		case 'singleImage':
-			$thumbSrc = 'uithumb_'.$fieldvalue['filename'];
+			$ext = substr(strrchr($fieldvalue['filename'], '.'), 1);
+			switch($ext){
+			case 'tif':
+			case 'tiff':
+			case 'TIF':
+			case 'TIFF':
+				$thumbSrc = 'uithumb_'.$fieldvalue['filename'].'_converted.jpg';
+				break;
+			default:
+				$thumbSrc = 'uithumb_'.$fieldvalue['filename'];
+				break;
+			}
+
+
 			$sitePath = '';
 			if(Kohana::config('mop.staging')){
 				$sitePath = 'staging/';
@@ -83,6 +96,27 @@ Class mopui{
 	 
 		case 'radioGroup':
 			$element['radioname'] = $id; 
+			break;
+
+		case 'multiSelect':
+			if(isset($element['object'])){
+				$object = Kohana::config('cms.modules.'.$element['object']);
+				$element['options'] = array();
+				foreach($object as $field){
+					if($field['type'] == 'checkbox'){
+						$element['options'][$field['field']] = $field['label'];
+					}
+				}
+			}	
+			if($fieldvalue){
+				$prepFieldValue = array();
+				foreach($fieldvalue as $name => $selected){
+					if($selected){
+						$prepFieldValue[] = $name;
+					}
+				}
+				$fieldvalue = $prepFieldValue;
+			}
 			break;
 		}
 
