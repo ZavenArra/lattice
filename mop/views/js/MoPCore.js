@@ -1033,7 +1033,8 @@ window.addEvent( "domready", function(){
 	mop.ModalManager = new mop.ui.ModalManager();
 	mop.DepthManager = new mop.util.DepthManager();
 	
-	if( window.location.href.indexOf( "auth" ) == -1 && mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") ) != "0" ) mop.loginMonitor = new mop.util.LoginMonitor();
+  var doAuthTimeout = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
+  if( window.location.href.indexOf( "auth" ) == -1 && doAuthTimeout && doAuthTimeout != "0" ) mop.loginMonitor = new mop.util.LoginMonitor();
 
 //	console.log( ":::::", mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") ) );
 

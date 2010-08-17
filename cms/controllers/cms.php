@@ -213,6 +213,10 @@ class CMS_Controller extends Controller {
 		case 'JPG':
 		case 'GIF':
 		case 'PNG':
+		case 'tif':
+		case 'tiff':
+		case 'TIF':
+		case 'TIFF':
 			Kohana::log('info', $page->template->templatename.$_POST['field']);
 			$parameters = Kohana::config('cms_images.'.$page->template->templatename.'.'.$_POST['field'].'.resize');
 			$uiimagesize = array('uithumb'=>Kohana::config('cms.uiresize'));
