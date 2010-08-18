@@ -105,10 +105,23 @@ class Page_Model extends ORM {
 		parent::save();
 		//if inserting, we add a record to the content table if one does not already exists
 		if($inserting){
-			$content = ORM::Factory($this->template->contenttable);
+      if(!Kohana::config('mop.legacy')){
+        $content = ORM::Factory('content');
+      } else {
+        $content = ORM::Factory($this->template->contenttable);
+      }
 			if(!$content->where('page_id',$this->id)->find()->loaded){
-				$this->db->insert(inflector::plural($this->template->contenttable), array('page_id'=>$this->id));
-				$content = ORM::factory( inflector::singular($this->__get('template')->contenttable) );
+        if(!Kohana::config('mop.legacy')){
+          $this->db->insert('contents', array('page_id'=>$this->id));
+        } else {
+          $this->db->insert(inflector::plural($this->template->contenttable), array('page_id'=>$this->id));
+        }
+
+        if(!Kohana::config('mop.legacy')){
+          $content = ORM::factory( 'content' );
+        } else {
+          $content = ORM::factory( inflector::singular($this->__get('template')->contenttable) );
+        }
 				$content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
 				$this->related['contenttable']=$content->where('page_id', $this->id)->find();
 			}
