@@ -38,9 +38,9 @@ class Page_Model extends ORM {
     if($column=='contenttable' && !isset($this->related[$column])){
       if($this->template->contenttable){
         if(!Kohana::config('mop.legacy')){
-          $content = ORM::factory( inflector::singular($this->template->contenttable) );
-        } else {
           $content = ORM::factory( inflector::singular('contents') );
+        } else {
+          $content = ORM::factory( inflector::singular($this->template->contenttable) );
         }
 				$content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
 				$this->related[$column]=$content->where('page_id',$this->id)->find();
