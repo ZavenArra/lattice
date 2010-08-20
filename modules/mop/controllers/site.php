@@ -1,4 +1,6 @@
 <?
+require('/home/deepwinter/dev/deepwinter/yaml/lib/sfYaml.php');
+require('/home/deepwinter/dev/deepwinter/yaml/lib/sfYamlParser.php');
 /*
  * Class: Site_Controller
  * Responsible for handing default behaviour of CMS driven sites,
@@ -21,6 +23,11 @@ Class Site_Controller extends Controller{
 		$this->page(substr(get_class($this), 0, -11));
 	}
 
+	public function createIndexView(){
+		$this->page(substr(get_class($this), 0, -11));
+	}
+
+
 	/*
 	 * Function: page($pageidorslug)
 	 * By default called after a rewrite of routing by slugs hooks, gets all content
@@ -31,23 +38,114 @@ Class Site_Controller extends Controller{
 	 */
 	public function page($pageidorslug=null) {
 
+		$yaml = new sfYamlParser();
+		try {
+			$configArray = $yaml->parse(file_get_contents('application/config/frontend.yaml'));
+		}
+		catch (InvalidArgumentException $e) {
+			// an error occurred during parsing
+			echo "Unable to parse the YAML string: ".$e->getMessage();
+			flush();
+			ob_flush();
+			exit;
+		}
+		$newConfig = $configArray;
+		$newConfig['views'] = array();
+		foreach($configArray['views'] as $view){
+			$newConfig['views'][$view['view']] = $view;	
+		}
+		$configArray = $newConfig;
+
+
+
+
 		$page = ORM::Factory('page', $pageidorslug);
 		//some access control
-		if(!$page->loaded || $page->published==false || $page->activity!=null){
-			throw new Kohana_User_Exception('Page not availabled', 'The page with identifier '.$id.' is does not exist or is not available');
-		}
+		if($page->loaded){
+			if($page->published==false || $page->activity!=null){
+				throw new Kohana_User_Exception('Page not availabled', 'The page with identifier '.$id.' is does not exist or is not available');
+			}
 
-		$this->content = array_merge($this->content, $page->getPageContent());
+			//keep this first line for backwards compatibility
+			$this->content = array_merge($this->content, $page->getPageContent());
+			//but this is the real deal
+			$this->content['main'] = $page->getPageContent();
 
-		//look for the template, if it's not there just print out all the data raw
-		$view = 'site/'.$page->template->templatename;
-		if(Kohana::find_file('views', $view)){
-			$this->view = new View( 'site/'.$page->template->templatename);
+      //look for the template, if it's not there just print out all the data raw
+      $view = 'site/'.$page->template->templatename;
+      if(Kohana::find_file('views', $view)){
+        $this->view = new View( 'site/'.$page->template->templatename);
+      } else {
+        $this->view = new View( 'site/default');
+      }
+
+      $this->view->content = $this->content;
+
 		} else {
-			$this->view = new View( 'site/default');
+			//check for a virtual page specified in frontend.yaml
+			if(!isset($configArray['views'][$page->template->templatename])){
+				throw new Kohana_User_Exception('Page not availabled', 'The page with identifier '.$id.' is does not exist or is not available');
+			}
 		}
 
-		$this->view->content = $this->content;
+				//look for the template, if it's not there just print out all the data raw
+		if(!$this->template){
+			$this->template = new View( 'site/default');
+		}
+
+
+		$this->template->content = $this->content;
+		
+		if(isset($configArray['views'][$page->template->templatename])){
+			foreach($configArray['views'][$page->template->templatename]['extendeddata'] as $edata){
+				
+				$objects = ORM::Factory('page');
+
+				//apply optional parent filter
+				if(isset($edata['parent'])){
+					$parent = ORM::Factory('page', $edata['parent']);
+					$objects->where('parentid', $parent->id);	
+				}
+
+				//apply optional template filter
+				if(isset($edata['templatename'])){
+					if(is_array($edata['templatename'])){
+						$tIds = array();
+						foreach($edata['templatename'] as $tname){
+							$t = ORM::Factory('template', $edata['templatename']);
+							$tIds[] = $t->id;
+						}
+						$objects->in('template_id', $tIds);
+					} else if ($edata['templatename'] == 'all'){
+						//set no filter
+					} else {
+						$t = ORM::Factory('template', $edata['templatename']);
+						$objects->where('template_id', $t->id);
+					}
+				}
+				$objects = $objects->find_all();
+
+				//apply optional SQL where filter
+				if(isset($edata['where'])){
+					$objects->where($edata['where']);
+				}
+
+				$this->template->content[$edata['label']] = array();
+				foreach($objects as $object){
+					$this->template->content[$edata['label']][] = $object->getContent();
+				}
+			}
+
+			if(isset($configArray['views'][$page->template->templatename]['subviews'])){
+				foreach($configArray['views'][$page->template->templatename]['subviews'] as $subview){
+					$this->buildModule(array('modulename'=>$subview['view']/*, 'controllertype'=>'object'*/), $subview['label']);
+				}
+			}
+		}
+
+
+		
+
 
 		if($this->responseFormat=='AJAX'){
 			return $this->view->render();

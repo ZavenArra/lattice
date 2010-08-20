@@ -5,9 +5,7 @@
 	object paradigm.
 */
 
-require_once('modules/cms/libraries/cms_services_interface.php');
-
-class ListModule_Controller extends Controller implements CMS_Services_Interface{
+class ListModule_Controller extends Controller {
 
 	/*
 	*  Variable: page_id

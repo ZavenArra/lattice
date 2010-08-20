@@ -43,6 +43,8 @@ class RouteSlugsHook{
 			$slug = $checkSlug;
 		}
 
+		//we'd ideally check around here for a virtual page via yaml
+
 
 		if($foundpage && $foundpage->loaded){
 			//figure out what controller we are going to use

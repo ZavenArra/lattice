@@ -140,6 +140,9 @@ class Page_Model extends ORM {
 
 
 
+	public function getContent(){
+		return $this->getPageContent();
+	}
 
 	public function getPageContent(){
 		$content=array();
