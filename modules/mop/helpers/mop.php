@@ -31,6 +31,10 @@ Class mop {
 		Kohana::log('debug', 'Loading controller: ' . $module['modulename']);
 
 		if(!Kohana::find_file('controllers', $module['modulename'] ) ){
+			if(!isset($module['controllertype'])){
+				$view = new View($module['modulename']);
+				return $view->render();
+			}
 			$includeclass = 'class '.$module['modulename'].'_Controller extends '.$module['controllertype'].'_Controller { } ';
 			eval($includeclass);
 		}
