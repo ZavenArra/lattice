@@ -9,7 +9,7 @@
 	<view name="stuff" loadpage="false">
 		<extendeddata label="stuffs" parent="stuff" />
 	</view>
-	<view>
+	<view name="stuffs" loadpage="false">
 		<extendeddata label="stuffs" parent="all" />
 	</view>
 </data>
