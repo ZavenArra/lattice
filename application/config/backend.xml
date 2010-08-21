@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+	<templates>  
+		<template templatename="stuff" nodetype="CATEGORY" allow_sort="true" allow_delete="true" allow_publish="true" >
+			<module type="ipe" field="blurb" label="Blurb" tag="p" rows="4" />
+			<addableobject templateId="stuffItem" templateAddText="Add a Stuff" />
+			<component templateId="stuff">
+				<title>A title!</title>
+			</component>
+		</template>
+		<template templatename="stuffItem" nodetype="LEAF" allow_sort="true">
+			<module type="ipe" field="text" label="Text" tag="p" rows="4" />
+			<module type="ipe" field="more" label="MORE" tag="p" rows="4" />
+			<module type="list" class="listOfThings" label="Blurb" display="component" >
+				<addableobject templateId="differentItem" templateAddText="Add a Different Item" />
+			</module>
+		</template>
+		<template templatename="home" nodetype="LEAF"/>
+		<template templatename="differentItem" notetype="LEAF">
+			<module type="ipe" field="blurb3" label="WJAT" tag="p" rows="4" />
+		</template>
+	</templates>
+	<data>
+		<item templatename="stuff">
+			<content>
+				<title>Stuff</title>
+			</content>
+		</item>
+		<item templatename="home">
+			<content>
+				<title>Home</title>
+			</content>
+		</item>
+	</data>
+</configuration>
+
