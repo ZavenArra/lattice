@@ -11,7 +11,7 @@ class Template_Model extends ORM {
    * Variable: nonmappedfield
    * Array of fields to not pass through to the content field mapping logic
    */
-  private $nonmappedfields = array('id', 'page_id', 'title', 'activity', 'loaded');
+  private $nonmappedfields = array('id', 'page_id', 'title', 'activity', 'loaded', 'templatename');
 
 	/*
 	 * Function: __get($column)
@@ -31,21 +31,33 @@ class Template_Model extends ORM {
 
 			if(parent::__get('nodetype')=='CONTAINER'){
 				//For lists, values will be on the 2nd level 
-				$nodes = mop::config('backend', sprintf('//module[@class="%s"]', parent::__get('templatename')));
-				$valuefromconfig = $nodes->item(0)->getAttribute($column);
+				$xQuery =  sprintf('//module[@class="%s"]', parent::__get('templatename'));
 			} else {
 				//everything else is a normal lookup
-				$nodes = mop::config('backend', sprintf('//template[@templatename="%s"]', parent::__get('templatename')));
-				$valuefromconfig = $nodes->item(0)->getAttribute($column);
-			}
-			if($valuefromconfig !== NULL){
-				return $valuefromconfig;	
+				$xQuery =  sprintf('//template[@templatename="%s"]', parent::__get('templatename'));
 			}
 
 			//No Value in config file, go looking in database
 			if($column == 'addable_objects'){
-				return null;
+				$xQuery .= '/addableobject';
+				$nodes = mop::config('backend', $xQuery);
+				$valuefromconfig = array();
+				foreach($nodes as $node){
+					$entry = array();
+					$entry['templateId'] = $node->getAttribute('templateId');
+					$entry['templateAddText'] = $node->getAttribute('templateAddText');
+					$valuefromconfig[] = $entry;
+				}
+			} else {
+				$node = mop::config('backend', $xQuery)->item(0);
+				$valuefromconfig = $node->getAttribute($column);
 			}
+
+			if($valuefromconfig !== NULL){
+				return $valuefromconfig;	
+			}
+
+			
 			return parent::__get($column);
 	}
 

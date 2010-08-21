@@ -360,6 +360,7 @@ class CMS_Controller extends Controller {
 		}
 		$newpage->parentid = $id;
 		$newpage->save();
+	
 
 		//check for enabled publish/unpublish. 
 		//if not enabled, insert as published
@@ -369,14 +370,21 @@ class CMS_Controller extends Controller {
 		$newpage->save();
 
 		//Add defaults to content table
-		$template = ORM::Factory('template')->find($newpage->template_id);
-		$contentDefaults = Kohana::config('cms.templates.'.$newpage->template->name.'.defaults');
+		$template = ORM::Factory('template', $newpage->template_id);
+		/*
+		 * this little tidbit is no longer supported
+		 * the idea was to be able to configure content defaults on adding
+		 * not really used too often
+		 */
+		/*
+		$contentDefaults = Kohana::config('cms.templates.'.$newpage->template->templatename.'.defaults');
 		if(is_array($contentDefaults) && count($contentDefaults)){
 			foreach($contentDefaults as $field=>$value){
 				$newpage->contenttable->$field = $value;
 			}
 			$newpage->contenttable->save();
 		}
+		 */
 
 		//add submitted data to content table
 		foreach($data as $field=>$value){
@@ -387,7 +395,7 @@ class CMS_Controller extends Controller {
 		//look up any components and add them as well
 
 		//configured components
-		$components = mop::config('backend', sprintf('//template[@templatename="%s"]/component',$newpage->template->templatename));
+		$components = mop::config('backend', sprintf('//template[@templatename="%s"]/component',$template->templatename));
 		foreach($components as $c){
 			$template = ORM::Factory('template', $c->getAttribute('templateId'));
 			if($c->hasChildNodes()){
@@ -399,7 +407,7 @@ class CMS_Controller extends Controller {
 		}
 
 		//containers (list)
-		$containers = mop::config('backend', sprintf('//template[@templatename="%s"]/[@type=list]',$newpage->template->templatename));
+		$containers = mop::config('backend', sprintf('//template[@templatename="%s"]/module[@type="list"]',$newpage->template->templatename));
 		foreach($components as $c){
 			$template = ORM::Factory('template', $c->getAttribute('templateId'));
 			$arguments['title'] = $c->getAttribute('label');
