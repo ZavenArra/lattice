@@ -4,19 +4,19 @@
 		<template templatename="stuff" nodetype="CATEGORY" allow_sort="true" allow_delete="true" allow_publish="true" >
 			<module type="ipe" field="blurb" label="Blurb" tag="p" rows="4" />
 			<addableobject templateId="stuffItem" templateAddText="Add a Stuff" />
-			<component templateId="stuff">
+			<component templateId="differentItem">
 				<title>A title!</title>
 			</component>
 		</template>
 		<template templatename="stuffItem" nodetype="LEAF" allow_sort="true">
 			<module type="ipe" field="text" label="Text" tag="p" rows="4" />
 			<module type="ipe" field="more" label="MORE" tag="p" rows="4" />
-			<module type="list" class="listOfThings" label="Blurb" display="component" >
+			<module type="list" class="listOfThings" label="Blurb" display="inline" >
 				<addableobject templateId="differentItem" templateAddText="Add a Different Item" />
 			</module>
 		</template>
 		<template templatename="home" nodetype="LEAF"/>
-		<template templatename="differentItem" notetype="LEAF">
+		<template templatename="differentItem" nodetype="LEAF">
 			<module type="ipe" field="blurb3" label="WJAT" tag="p" rows="4" />
 		</template>
 	</templates>
