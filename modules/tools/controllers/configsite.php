@@ -175,6 +175,9 @@ Class ConfigSite_Controller extends Controller {
 							$index = $item['type'];
 							break;
 						}	
+						//and right here it'll be 'if doesn't already exist in the array'
+						//or we'll check the database and just insert a new/next one
+						//and this is where the ALTER statements could come in
 						$this->config['cms_dbmap'][$template['templatename']][$item['field']] = $index.++$dbmapindexes[$index];
 
 						//handle cms
