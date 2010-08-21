@@ -4,6 +4,9 @@
 */
 class ContentBase_Model extends ORM {
 	//protected $has_one = array('page');
+	//
+
+	protected $dbmap = false;
 
 	/*
 	 * Variable: nonmappedfield
@@ -53,9 +56,7 @@ class ContentBase_Model extends ORM {
 		}
 
 		//check for dbmap
-		if($map = Kohana::config('cms_dbmap.'.$this->templatename)){
-			$column = $map[$column];
-		}
+		$column = mop::dbmap( ORM::Factory('page', parent::__get('page_id'))->template_id, $column);
 
 		if(in_array($column, $this->objectFields)){
 			$sub = ORM::Factory('page', parent::__get($column));
@@ -63,7 +64,7 @@ class ContentBase_Model extends ORM {
 				return array();
 			}
 			$values = array();
-			foreach(Kohana::config('cms_dbmap.'.$sub->template->templatename) as $fieldname=>$mapColumn){
+			foreach(mop::dbmap() as $fieldname=>$mapColumn){
 				$values[$fieldname] = $sub->contenttable->$fieldname;
 			}
 			return $values;
@@ -92,8 +93,8 @@ class ContentBase_Model extends ORM {
 		}
 
 		//check for dbmap
-		if($map = Kohana::config('cms_dbmap.'.$this->templatename)){
-			return parent::__set($map[$column], $value);
+		if($mappedcolumn = mop::dbmap( ORM::Factory('page', parent::__get('page_id'))->template_id, $column) ){
+			return parent::__set($mappedcolumn, $value);
 		} else {
 			return parent::__set($column, $value);
 		}

@@ -4,6 +4,8 @@ Class mop {
 
 	private static $config;
 
+	private static $dbmaps;
+
 	public static function config($arena, $xpath){
 		if(!is_array(self::$config)){
 			self::$config = array();
@@ -16,6 +18,21 @@ Class mop {
 		}
 		$xmlNodes = self::$config[$arena]->evaluate($xpath);
 		return $xmlNodes;
+	}
+
+	public static function dbmap($template_id, $column=null){
+		if(!isset($this->dbmaps[$template_id])){
+			$dbmaps = ORM::Factory('dbmap')->where('template_id', $template_id)->find_all;
+			$this->dbmaps[$template_id] = array();
+			foreach($dbmaps as $map){
+				$this->dbmaps[$template_id][$map->dbfield] = $map->mapfield;
+			}
+		}
+		if(!isset($column)){
+			return $this->dbmaps[$template_id];
+		} else {
+			return $this->dbmaps[$tempate_id][$column];
+		}
 	}
 
 	/*
