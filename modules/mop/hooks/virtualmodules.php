@@ -11,18 +11,15 @@ class RouteVirtualModulesHook{
 		$virtualModule = Router::$rsegments[0];
 
 		//what we'll try doing is to look up the class in cms.php and create the module
-		$config = Kohana::config('cms.templates');
 		$modules = array();
-		foreach($config as $template){
-			foreach($template as $block){
-				if($block['type']=='module'){ 
-					//there could be other type of virtual modules
-					//this is a total hack
-					$modules[$block['modulename']] = $block;
-				} else if ($block['type']=='list'){
-					$modules[$block['class']] = $block;
-					$modules[$block['class']]['controllertype'] = 'list';
-				}
+		foreach(mop::config('backend', '//template/module') as $module){
+			if($module->getAttribute('type')=='module'){ 
+				//there could be other type of virtual modules
+				//this is a total hack
+				$modules[$module->getAttribute('modulename')] = $block;
+			} else if ($module->getAttribute('type')=='list'){
+			//	$modules[$module->getAttribute('class')] = $block;
+				$modules[$module->getAttribute('class')]['controllertype'] = 'list';
 			}
 		}
 

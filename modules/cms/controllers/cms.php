@@ -370,7 +370,7 @@ class CMS_Controller extends Controller {
 		$newpage->save();
 
 		//Add defaults to content table
-		$template = ORM::Factory('template', $newpage->template_id);
+		$newtemplate = ORM::Factory('template', $newpage->template_id);
 		/*
 		 * this little tidbit is no longer supported
 		 * the idea was to be able to configure content defaults on adding
@@ -395,7 +395,7 @@ class CMS_Controller extends Controller {
 		//look up any components and add them as well
 
 		//configured components
-		$components = mop::config('backend', sprintf('//template[@templatename="%s"]/component',$template->templatename));
+		$components = mop::config('backend', sprintf('//template[@templatename="%s"]/component',$newtemplate->templatename));
 		foreach($components as $c){
 			$template = ORM::Factory('template', $c->getAttribute('templateId'));
 			if($c->hasChildNodes()){
@@ -403,15 +403,16 @@ class CMS_Controller extends Controller {
 					$arguments[$data->name] = $data->value;
 				}
 			}
-			$this->__addObject($newpage->id, $template->id, $arguments);
+			$this->__addObject($newpage->id, $newtemplate->id, $arguments);
 		}
 
 		//containers (list)
-		$containers = mop::config('backend', sprintf('//template[@templatename="%s"]/module[@type="list"]',$newpage->template->templatename));
-		foreach($components as $c){
+		$containers = mop::config('backend', sprintf('//template[@templatename="%s"]/module[@type="list"]',$newtemplate->templatename));
+		foreach($containers as $c){
+			echo 'adding one';
 			$template = ORM::Factory('template', $c->getAttribute('templateId'));
 			$arguments['title'] = $c->getAttribute('label');
-			$this->__addObject($newpage->id, $template->id, $arguments);
+			$this->__addObject($newpage->id, $newtemplate->id, $arguments);
 		}
 
 		return $newpage->id;

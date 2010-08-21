@@ -68,7 +68,7 @@ class List_Controller extends Controller{
 			$this->view = new View('list');		
 		}
 
-		$this->view->label = Kohana::config('cms.lists.'.$this->listClass.'.label'); //how do we know what object we are in
+		$this->view->label = mop::config('backend', sprintf('//modules[@class="%s"]/label',$this->listClass));
 
 		$this->buildIndexData();
 		return $this->render();
@@ -82,7 +82,18 @@ class List_Controller extends Controller{
 		$html = '';
 		foreach($listMembers as $object){
 
-			$htmlChunks = cms::buildUIHtmlChunks(Kohana::config('cms.templates.'.$object->template->templatename), $object);
+
+			$modules = mop::config('backend', sprintf('//template[@templatename="%s"]/module', $object->template->templatename));
+			$modulesConfig = array();
+			foreach($modules as $module){
+				$entry = array();
+				for($i=0; $i<$module->attributes->length; $i++){
+					$entry[$module->attributes->item($i)->name] = $module->attributes->item($i)->value;
+				}
+				$modulesConfig[] = $entry;
+			}
+
+			$htmlChunks = cms::buildUIHtmlChunks($modulesConfig, $object);
 			$itemt = new View($this->itemview);
 			$itemt->uiElements = $htmlChunks;
 
@@ -95,8 +106,8 @@ class List_Controller extends Controller{
 			$html.=$itemt->render();
 		}
 	
-		$this->view->label = Kohana::config('cms.lists.'.$this->listClass.'.label');
-		$this->view->class =  Kohana::config('cms.lists.'.$this->listClass.'.cssClasses') . ' sortDirection-'.$this->sortdirection;
+		$this->view->label =  mop::config('backend', sprintf('//module[@class="%s"]', $this->listClass))->item(0)->getAttribute('label');
+		$this->view->class =  mop::config('backend', sprintf('//module[@class="%s"]', $this->listClass))->item(0)->getAttribute('cssClasses') . ' sortDirection-'.$this->sortdirection;
 		$this->view->items = $html;
 		$this->view->instance = $this->listClass;
 
@@ -202,8 +213,9 @@ class List_Controller extends Controller{
 
 
 		//addable item should be specifid in the addItem call
-		$template = Kohana::config('cms_templates.'.$this->listClass.'.addable_objects');
-		$template = ORM::Factory('template', $template[0]['templateId']);
+		$template = mop::config('backend', sprintf('//module[@class="%s"]/addableobject', $this->listClass));
+		$template = $template->item(0);
+		$template = ORM::Factory('template', $template->getAttribute('templateId'));
 
 		$item = ORM::Factory($this->model);
 		$item->template_id = $template->id;
@@ -213,7 +225,19 @@ class List_Controller extends Controller{
 		$item->save();
 
 
-		$htmlChunks = cms::buildUIHtmlChunks(Kohana::config('cms.templates.'.$item->template->templatename), $item);
+		//ok enough of this
+		//this block of code is now repeated 3 times!
+		//what config format can be passed around??
+		$modules = mop::config('backend', sprintf('//template[@templatename="%s"]/module', $template->templatename));
+		$modulesConfig = array();
+		foreach($modules as $module){
+			$entry = array();
+			for($i=0; $i<$module->attributes->length; $i++){
+				$entry[$module->attributes->item($i)->name] = $module->attributes->item($i)->value;
+			}
+			$modulesConfig[] = $entry;
+		}
+		$htmlChunks = cms::buildUIHtmlChunks($modulesConfig, $item);
 		$itemt = new View($this->itemview);
 		$itemt->uiElements = $htmlChunks;
 

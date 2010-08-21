@@ -37,7 +37,7 @@ class Template_Model extends ORM {
 				$xQuery =  sprintf('//template[@templatename="%s"]', parent::__get('templatename'));
 			}
 
-			//No Value in config file, go looking in database
+			$valuefromconfig=NULL;
 			if($column == 'addable_objects'){
 				$xQuery .= '/addableobject';
 				$nodes = mop::config('backend', $xQuery);
@@ -50,7 +50,8 @@ class Template_Model extends ORM {
 				}
 			} else {
 				$node = mop::config('backend', $xQuery)->item(0);
-				$valuefromconfig = $node->getAttribute($column);
+				if($node)
+					$valuefromconfig = $node->getAttribute($column);
 			}
 
 			if($valuefromconfig !== NULL){

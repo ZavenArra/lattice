@@ -34,25 +34,25 @@ class CMS {
 			$slug = str_replace(' ', '-', strtolower($slug));
 			Kohana::log('info', $slug);
 			$checkSlug = ORM::Factory('page')
-			->regex('slug', '^'.$slug.'[0-9]*$')
-			->orderby("slug");
+				->regex('slug', '^'.$slug.'[0-9]*$')
+				->orderby("slug");
 			if($forPageId != NULL){
 				$checkSlug->where('pages.id != '.$forPageId);
 			}
 			$checkSlug = $checkSlug->find_all();
 			if(count($checkSlug)){
-			$idents = array();
-			foreach($checkSlug as $ident){
-				$idents[] = $ident->slug;
-			}
-			natsort($idents);
-			$idents = array_values($idents);
-			$maxslug = $idents[count($idents)-1];
-			if($maxslug){
-				$curindex = substr($maxslug, strlen($slug));
-				$newindex = $curindex+1;
-				$slug .= $newindex;
-			}
+				$idents = array();
+				foreach($checkSlug as $ident){
+					$idents[] = $ident->slug;
+				}
+				natsort($idents);
+				$idents = array_values($idents);
+				$maxslug = $idents[count($idents)-1];
+				if($maxslug){
+					$curindex = substr($maxslug, strlen($slug));
+					$newindex = $curindex+1;
+					$slug .= $newindex;
+				}
 			}
 			return $slug;
 		} else {
