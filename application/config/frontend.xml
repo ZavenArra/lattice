@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+	<view name="home" loadpage="false" >
+		<extendeddata label="stuffs" templatename="stuffItem" />
+		<extendeddata label="stuffs" templatename="stuffItem" />
+		<subview view="publicheader" label="listing" />		
+		<subview view="publicheader" label="listing2" />		
+	</view>
+	<view name="stuff" loadpage="false">
+		<extendeddata label="stuffs" parent="stuff" />
+	</view>
+	<view>
+		<extendeddata label="stuffs" parent="all" />
+	</view>
+</data>

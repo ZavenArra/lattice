@@ -30,12 +30,12 @@ $config['default'] = array
 	'connection'    => array
 	(
 		'type'     => 'mysql',
-		'user'     => 'webdev',
-		'pass'     => 'luckyme#2$%67',
+		'user'     => 'root',
+		'pass'     => 'root',
 		'host'     => 'localhost',
 		'port'     => FALSE,
 		'socket'   => FALSE,
-		'database' => 'fullobject_dev'
+		'database' => 'foragingdev_dev'
 	),
 	'character_set' => 'utf8',
 	'table_prefix'  => '',
