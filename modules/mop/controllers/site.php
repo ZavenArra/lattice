@@ -1,6 +1,4 @@
 <?
-require('/home/deepwinter/dev/deepwinter/yaml/lib/sfYaml.php');
-require('/home/deepwinter/dev/deepwinter/yaml/lib/sfYamlParser.php');
 /*
  * Class: Site_Controller
  * Responsible for handing default behaviour of CMS driven sites,
@@ -38,23 +36,15 @@ Class Site_Controller extends Controller{
 	 */
 	public function page($pageidorslug=null) {
 
-		$yaml = new sfYamlParser();
-		try {
-			$configArray = $yaml->parse(file_get_contents('application/config/frontend.yaml'));
-		}
-		catch (InvalidArgumentException $e) {
-			// an error occurred during parsing
-			echo "Unable to parse the YAML string: ".$e->getMessage();
-			flush();
-			ob_flush();
-			exit;
-		}
+		/*
 		$newConfig = $configArray;
 		$newConfig['views'] = array();
 		foreach($configArray['views'] as $view){
 			$newConfig['views'][$view['view']] = $view;	
 		}
 		$configArray = $newConfig;
+		 */
+
 
 
 
@@ -83,56 +73,57 @@ Class Site_Controller extends Controller{
 
 		} else {
 			//check for a virtual page specified in frontend.yaml
-			if(!isset($configArray['views'][$page->template->templatename])){
+			if(! mop::config('frontend', "/view/{$page->template->templatename}")){
 				throw new Kohana_User_Exception('Page not availabled', 'The page with identifier '.$id.' is does not exist or is not available');
 			}
 		}
 
 				//look for the template, if it's not there just print out all the data raw
-		if(!$this->template){
-			$this->template = new View( 'site/default');
+		if(!$this->view){
+			$this->view = new View( 'site/default');
 		}
 
 
-		$this->template->content = $this->content;
+		$this->view->content = $this->content;
 		
-		if(isset($configArray['views'][$page->template->templatename])){
-			foreach($configArray['views'][$page->template->templatename]['extendeddata'] as $edata){
+		if($eDataNodes = mop::config('frontend',"//view[@name=\"{$page->template->templatename}\"]/extendeddata")){
+			foreach($eDataNodes as $eDataConfig){
 				
 				$objects = ORM::Factory('page');
 
 				//apply optional parent filter
-				if(isset($edata['parent'])){
-					$parent = ORM::Factory('page', $edata['parent']);
+				if($parent = $eDataConfig->getAttribute('parent')){
+					$parent = ORM::Factory('page', $parent);
 					$objects->where('parentid', $parent->id);	
 				}
 
 				//apply optional template filter
-				if(isset($edata['templatename'])){
-					if(is_array($edata['templatename'])){
+				if($templatename = $eDataConfig->getAttribute('templatename')){
+					if(strpos(',', $templatename)){
+						$tNames = explode(',', $templatename);
 						$tIds = array();
-						foreach($edata['templatename'] as $tname){
-							$t = ORM::Factory('template', $edata['templatename']);
+						foreach($tNames as $tname){
+							$t = ORM::Factory('template', $tname);
 							$tIds[] = $t->id;
 						}
 						$objects->in('template_id', $tIds);
-					} else if ($edata['templatename'] == 'all'){
+					} else if ($templatename == 'all'){
 						//set no filter
 					} else {
-						$t = ORM::Factory('template', $edata['templatename']);
+						$t = ORM::Factory('template', $templatename);
 						$objects->where('template_id', $t->id);
 					}
 				}
 				$objects = $objects->find_all();
 
 				//apply optional SQL where filter
-				if(isset($edata['where'])){
-					$objects->where($edata['where']);
+				if($where = $eDataConfig->getAttribute('where')){
+					$objects->where($where);
 				}
 
-				$this->template->content[$edata['label']] = array();
+				$this->view->content[$eDataConfig->getAttribute('label')] = array();
 				foreach($objects as $object){
-					$this->template->content[$edata['label']][] = $object->getContent();
+					$this->view->content[$eDataConfig->getAttribute('label')][] = $object->getContent();
 				}
 			}
 

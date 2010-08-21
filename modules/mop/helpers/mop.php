@@ -1,6 +1,23 @@
 <?
 
 Class mop {
+
+	private static $config;
+
+	public static function config($arena, $xpath){
+		if(!is_array(self::$config)){
+			self::$config = array();
+		}
+		if(!isset(self::$config[$arena])){
+			$dom = new DOMDocument();
+			$dom->load( "application/config/$arena.xml");
+			$xpathObject = new DOMXPath($dom);
+			self::$config[$arena] = $xpathObject;
+		}
+		$xmlNodes = self::$config[$arena]->evaluate($xpath);
+		return $xmlNodes;
+	}
+
 	/*
 	 * Function: buildModule
 	 This is the same function as in Display_Controller..
