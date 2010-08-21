@@ -39,14 +39,14 @@ Class ConfigSite_Controller extends Controller {
 			flush();
 			ob_flush();
 			$db->query('delete from templates');
+			$db->query('delete from objectmaps');
 			$db->query('alter table templates AUTO_INCREMENT = 1');
+			$db->query('alter table objectmaps AUTO_INCREMENT = 1');
 		}
 
 
-
-
 		//build templates
-		foreach(mop::config('siteconfig', 'templates') as $template){
+		foreach(mop::config('backend', '//template') as $template){
 			$dbmapindexes = array(
 				'field'=>0,
 				'file'=>0,
@@ -54,230 +54,118 @@ Class ConfigSite_Controller extends Controller {
 				'flag'=>0,
 			);
 
-			//config entries
-			if(!isset($template['templatename'])){
-				echo 'Missing templatename attribute in: ';
-				print_r($template);
-				exit;
-			}
-			$this->config['cms'][$template['templatename']] = array();
-			$this->config['cms_dbmap'][$template['templatename']] = array();
-			$this->config['cms_templates'][$template['templatename']] = array();
-			$this->config['cms_images'][$template['templatename']] = array();
-
-			//this should be part of a general validation
-			//
-			/*
-			if(!isset($template['parameters'])){
-				echo 'Missing parameters attribute in: ';
-				print_r($template);
-				flush();
-				ob_flush();
-				exit;
-			} else
-			 */
-			if(is_array($template['parameters'])){
-			//loop through items
-				foreach($template['parameters'] as $item){
-					switch($item['type']){
-					case 'module':
-						$entry = array(
-							'type'=>$item['type'],
-							'modulename'=>$item['modulename'],
-							'controllertype'=>$item['controllertype'],
-						);
-						$this->config['cms']['templates'][$template['templatename']][$item['modulename']] = $entry;
-
-						switch($item['controllertype']){
-						case 'listmodule':
-							$this->buildListModuleConfig($item);
-							break;
-						}
-
-					case 'list':
-						
-						//add entry 
-						$this->config['cms']['templates'][$template['templatename']][$item['class']] = $item;
-
-						//add a template for the list container
-						$entry = array();
-						$entry['cssClasses'] = $this->valueIfSet('cssClasses', $item);
-						$entry['label'] = $this->valueIfSet('label', $item);
-						$this->config['cms']['templates'][$item['class']] = $entry;
-
-						$this->config['cms_templates'][$item['class']] = array(
-							'templatename'=>$item['class'],
-							'type'=>'CONTAINER',
-							'addable_objects'=>array(
-								array(
-									'templateId'=>$item['templateId'],
-									'templateAddText'=>$item['templateAddText']
-								),
-							),
-						);
-
-						$tRecord = ORM::Factory('template');
-						$tRecord->templatename = $item['class'];
-						$tRecord->contenttable = 'content_small';
-						$tRecord->nodetype = 'CONTAINER';
-						$tRecord->save();
-
-						//set up component
-						$this->config['cms']['settings'][$template['templatename']]['components'] = array(
-							array(
-								'templateId'=>$item['class'],
-								'data'=>array(
-									'title'=>$item['label']
-								)
-							)
-						);
-						break;
-
-					default:
-
-						//base cms elements
-
-						//handle dbmap
-						$index = null;
-						switch($item['type']){
-						case 'ipe':
-						case 'radioGroup':
-						case 'pulldown':
-						case 'time':
-						case 'date':
-						case 'multiSelect':
-							$index = 'field';
-							break;
-						case 'singleImage':
-						case 'singlefile':
-							$index = 'file';
-							break;
-						case 'checkbox':
-							$index = 'flag';
-							break;
-						default:
-							$index = $item['type'];
-							break;
-						}	
-						//and right here it'll be 'if doesn't already exist in the array'
-						//or we'll check the database and just insert a new/next one
-						//and this is where the ALTER statements could come in
-						$this->config['cms_dbmap'][$template['templatename']][$item['field']] = $index.++$dbmapindexes[$index];
-
-						//handle cms
-						$entry = array(
-							'type'=>'',
-							'field'=>'',
-							'label'=>'',
-							'class'=>'',
-							'tag'=>'',
-						);
-						foreach(array_keys($entry) as $key){
-							$entry[$key] = $this->valueIfSet($key, $item);
-						}
-
-						$classes = array(
-							'rows',
-							'cols',
-						);
-						foreach($classes as $aClass){
-							if($value = $this->valueIfSet($aClass, $item)){
-								$entry['class'].=$aClass.'-'.$value;
-							}
-						}
-
-						switch($item['type']){
-						case 'singlefile':
-						case 'singleImage':
-							$entry['extensions'] = $this->valueIfSet('extensions', $item);
-							$entry['maxlength'] = $this->valueIfSet('maxlength', $item);
-							break;
-						case 'radioGroup':
-							$entry['radios'] = $this->valueIfSet('radios', $item);
-							$entry['groupLabel'] = $this->valueIfSet('groupLabel', $item);
-							$entry['radioname'] = $this->valueIfSet('radioname', $item);
-							break;
-						case 'multiSelect':
-							$entry['options'] = $this->valueIfSet('options', $item);
-							$entry['unsetLabel'] = $this->valueIfSet('unsetLabel', $item);
-							break;
-						}
-
-						$this->config['cms']['templates'][$template['templatename']][$entry['field']] = $entry;
-
-						//cms images
-						if($item['type']=='singleImage'){
-							$entry = array();
-							$entry['extensions'] = $this->valueIfSet('extensions', $item);
-							if(isset($item['sizes'])){
-								$entry['resize']['imagesizes'] = $item['sizes'];
-							} else {
-								$entry['resize']['imagesizes'] = array();
-							}
-							$this->config['cms_images'][$template['templatename']][$item['field']] = $entry;
-						}
-
-
-
-					}
-				}
-			}
-			//handle cms_templates config
-			$entry = array(
-				'addable_objects' => array(),
-				'allow_delete'=>0,
-				'allow_toggle_publish'=>0,
-				'landing'=>'DEFAULT', //DEFAULT, NO_LANDING, USE_PAGE_TITLE
-				'allow_sort'=>true,
-			);
-
-			print_r($template);
-
-			if(isset($template['addable_objects']) 
-				&& is_array($template['addable_objects']) 
-					&& count($template['addable_objects']) )
-			{
-				print_r($template['addable_objects']);
-				$entry['addable_objects'] = $template['addable_objects'];
-			}
-
-			$entry['allow_delete'] = $this->valueIfSet('allow_delete', $template);
-			$entry['allow_sort'] = $this->valueIfSet('allow_sort', $template);
-			$entry['allow_toggle_publish'] = $this->valueIfSet('allow_toggle_publish', $template);
-			$landing = $this->valueIfSet('landing', $template);
-			$entry['landing'] = $landing ? $landing : 'DEFAULT';
-			$this->config['cms_templates'][$template['templatename']] = $entry;
-			print_r($entry);
-
-			//set up the database
-			if($this->doTemplateDatabase){
+			//find or create template record
+			$tRecord = ORM::Factory('template', $template->getAttribute('templatename') );
+			if(!$tRecord->loaded){
 				$tRecord = ORM::Factory('template');
-				$tRecord->templatename = $template['templatename'];
-				if($dbmapindexes['field'] <= 5 && $dbmapindexes['file'] <= 2){
-					$contenttable = 'content_small';
-				} else if($dbmapindexes['field'] <= 10 && $dbmapindexes['file'] <= 2){
-					$contenttable = 'content_medium';
-				} else if($dbmapindexes['field'] <= 15 && $dbmapindexes['file'] <= 2){
-					$contenttable = 'content_large';
-				} else {
-					print_r($dbmapindexes);
-					die('Too many fields to content_large');
-				}
-				$tRecord->contenttable = $contenttable;
-				if(!isset($template['nodetype'])){
-					echo 'nodetype must be set at: ';
-					print_r($template);
-					flush();
-					ob_flush();
-					exit;
-				}
-				$tRecord->nodetype = $this->valueIfSet('nodetype', $template);
+				$tRecord->templatename = $template->getAttribute('templatename');
+				$tRecord->nodetype = $template->getAttribute('nodetype');
 				$tRecord->save();
 			}
-		}
-		
-	//	var_export($this->config);
-		$this->writeConfig();
+
+
+			foreach(mop::config('backend', '//template[@templatename="'.$template->getAttribute('templatename').'"]/module') as $item){
+				echo $item->getAttribute('type');
+				switch($item->getAttribute('type')){
+
+				case 'list':
+					continue;
+
+					//we should be able to hande this somehow 
+
+					//add a template for the list container
+					$entry = array();
+					$entry['cssClasses'] = $this->valueIfSet('cssClasses', $item);
+					$entry['label'] = $this->valueIfSet('label', $item);
+					$this->config['cms']['templates'][$item['class']] = $entry;
+
+					//
+					////
+					//// FUUCK, this really causes a problem.  we need to ADD??? to the xml
+					//   isn't there some other solution?
+					////
+					//
+					$this->config['cms_templates'][$item['class']] = array(
+						'templatename'=>$item['class'],
+						'type'=>'CONTAINER',
+						'addable_objects'=>array(
+							array(
+								'templateId'=>$item['templateId'],
+								'templateAddText'=>$item['templateAddText']
+							),
+						),
+					);
+
+					$tRecord = ORM::Factory('template');
+					$tRecord->templatename = $item['class'];
+					$tRecord->nodetype = 'CONTAINER';
+					$tRecord->save();
+
+					//set up component
+					//// FUUCK, this really causes a problem.  we need to ADD??? to the xml
+					$this->config['cms']['settings'][$template['templatename']]['components'] = array(
+						array(
+							'templateId'=>$item['class'],
+							'data'=>array(
+								'title'=>$item['label']
+							)
+						)
+					);
+					break;
+
+				default:
+					echo 'default';
+
+					//base cms elements
+
+					//handle dbmap
+					$index = null;
+					switch($item->getAttribute('type')){
+					case 'ipe':
+						case 'radioGroup':
+							case 'pulldown':
+								case 'time':
+									case 'date':
+										case 'multiSelect':
+											$index = 'field';
+											break;
+										case 'singleImage':
+											case 'singlefile':
+												$index = 'file';
+												break;
+											case 'checkbox':
+												$index = 'flag';
+												break;
+											default:
+												$index = $item->getAttriute('type');
+												break;
+					}	
+				echo $index;
+
+					//and right here it'll be 'if doesn't already exist in the array'
+					//or we'll check the database and just insert a new/next one
+					//and this is where the ALTER statements could come in
+					//
+
+					$objectmap = ORM::Factory('objectmap')
+						->where('template_id', $tRecord->id)
+						->where('column', $item->getAttribute('field'))
+						->find();
+					if(!$objectmap->loaded){
+						$newmap = ORM::Factory('objectmap');
+						$newmap->template_id = $tRecord->id;
+						$newmap->type = $index;
+						$newmap->index = ++$dbmapindexes[$index];
+						$newmap->column = $item->getAttribute('field');
+						$newmap->save();
+					}
+
+				}
+			}
+				}
+
+		//	var_export($this->config);
+		//$this->writeConfig();
 
 		echo "\nPreparing to insert data.  Do you want to replace all CMS data? (Yes/no)\n";
 		flush();
@@ -292,10 +180,10 @@ Class ConfigSite_Controller extends Controller {
 			$db->query('alter table content_mediums AUTO_INCREMENT = 1');
 			$db->query('delete from content_larges');
 			$db->query('alter table content_larges AUTO_INCREMENT = 1');
-		flush();
-		ob_flush();
+			flush();
+			ob_flush();
 
-		echo "\nInserting Data\n";
+			echo "\nInserting Data\n";
 		$this->insertData($configArray['data']);
 
 		}	else {

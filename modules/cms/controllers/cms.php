@@ -377,16 +377,24 @@ class CMS_Controller extends Controller {
 		$newpage->contenttable->save();
 
 		//look up any components and add them as well
-		if(is_array($components = Kohana::config('cms.settings.'.$newpage->template->templatename.'.components'))){
-			foreach($components as $arguments){
-				$template = ORM::Factory('template')
-				->where('templatename', $arguments['templateId'])
-				->find();
-				if(!$template->loaded){
-					throw new Kohana_User_Exception('BAD CMS CONFIG', 'No template found with name '.$arguments['templateId']);
-				}
-				$this->__addObject($newpage->id, $template->id, $arguments['data']);
-			}
+
+		//configured components
+		//
+		//
+
+		$components = mop::config('backend', sprintf('//template[@templatename="%s"]',$newpage->template->templatename));
+		foreach($components as $c){
+			$template = ORM::Factory('template', $c->getAttribute('templateId'));
+			//translate data somehow
+			$this->__addObject($newpage->id, $template->id, $arguments['data']);
+		}
+
+		//containers (list)
+		$containers = mop::config('backend', sprintf('//template[@templatename="%s"]/[@type=list]',$newpage->template->templatename));
+		foreach($components as $c){
+			$template = ORM::Factory('template', $c->getAttribute('templateId'));
+			//translate data somehow
+			$this->__addObject($newpage->id, $template->id, $arguments['data']);
 		}
 
 		return $newpage->id;
