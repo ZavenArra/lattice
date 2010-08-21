@@ -22,22 +22,6 @@ Class ConfigSite_Controller extends Controller {
 
 	public function index(){
 		echo "Configuring Site\n";
-		echo "Reading application/config/siteconfig.yaml\n";
-		flush();
-		ob_flush();
-		
-		$yaml = new sfYamlParser();
-		try {
-			$configArray = $yaml->parse(file_get_contents('application/config/siteconfig.yaml'));
-		}
-		catch (InvalidArgumentException $e) {
-			// an error occurred during parsing
-			echo "Unable to parse the YAML string: ".$e->getMessage();
-			flush();
-			ob_flush();
-			exit;
-		}
-
 
 		$db = Database::instance();
 		echo "\nYou are attached to database ".Kohana::config('database.'.Database::instance_name($db).'.connection.database')."\n";
@@ -62,7 +46,7 @@ Class ConfigSite_Controller extends Controller {
 
 
 		//build templates
-		foreach($configArray['templates'] as $template){
+		foreach(mop::config('siteconfig', 'templates') as $template){
 			$dbmapindexes = array(
 				'field'=>0,
 				'file'=>0,
