@@ -35,18 +35,18 @@ class Page_Model extends ORM {
 	 *         */
 	public function __get($column){
 
-		if($column=='contenttable' && !isset($this->related[$column])){
-			if($this->template->contenttable){
-				$content = ORM::factory( inflector::singular($this->template->contenttable) );
-				$content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
-				$this->related[$column]=$content->where('page_id',$this->id)->find();
-				if(!$this->related[$column]->loaded){
-					throw new Kohana_User_Exception('BAD_MOP_DB', 'no content record for page '.$this->id);
-				}
-			} else {
-				$this->related[$column] = NULL;
-			}
-			return $this->related[$column];
+    if($column=='contenttable' && !isset($this->related[$column])){
+      if(!Kohana::config('mop.legacy')){
+        $content = ORM::factory( inflector::singular('contents') );
+      } else {
+        $content = ORM::factory( inflector::singular($this->template->contenttable) );
+      }
+      $content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
+      $this->related[$column]=$content->where('page_id',$this->id)->find();
+      if(!$this->related[$column]->loaded){
+        throw new Kohana_User_Exception('BAD_MOP_DB', 'no content record for page '.$this->id);
+      }
+      return $this->related[$column];
 		} else if($column=='parent'){
 			return ORM::Factory('page', $this->parentid); 
 		}	else {
@@ -110,11 +110,23 @@ class Page_Model extends ORM {
 		parent::save();
 		//if inserting, we add a record to the content table if one does not already exists
 		if($inserting){
-			$this->related['template'] = ORM::Factory('template', $this->template_id);
-			$content = ORM::Factory($this->template->contenttable);
+      if(!Kohana::config('mop.legacy')){
+        $content = ORM::Factory('content');
+      } else {
+        $content = ORM::Factory($this->template->contenttable);
+      }
 			if(!$content->where('page_id',$this->id)->find()->loaded){
-				$this->db->insert(inflector::plural($this->template->contenttable), array('page_id'=>$this->id));
-				$content = ORM::factory( inflector::singular($this->__get('template')->contenttable) );
+        if(!Kohana::config('mop.legacy')){
+          $this->db->insert('contents', array('page_id'=>$this->id));
+        } else {
+          $this->db->insert(inflector::plural($this->template->contenttable), array('page_id'=>$this->id));
+        }
+
+        if(!Kohana::config('mop.legacy')){
+          $content = ORM::factory( 'content' );
+        } else {
+          $content = ORM::factory( inflector::singular($this->__get('template')->contenttable) );
+        }
 				$content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
 				$this->related['contenttable']=$content->where('page_id', $this->id)->find();
 			}

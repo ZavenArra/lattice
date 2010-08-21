@@ -3550,13 +3550,17 @@ mop.ui.IPE = new Class({
 		return data;
 	},
 	
-	resizeTextarea: function() {
-//		console.log( this.toString(), "resizeTextarea" );
-		if( !this.invisiDiv ) this.invisiDiv = new Element( "div", { "styles" : { display: "none" } } );
-		this.invisiDiv.set( "html", this.field.get( "text" ) );
-		this.field.setStyle( "height", this.invisiDiv.getStyle( "height" + 1.5*this.field.getStyle( "line-height" ) ) );
-	},
-	
+	fitToContent: function(){
+
+        var fieldHeight = this.field.getSize().y;
+        var scrollHeight = this.field.getScrollSize().y;
+        targetHeight = Math.max( scrollHeight, fieldHeight );
+//        console.log( "fitToContent", fieldHeight, scrollHeight, targetHeight );
+        if ( scrollHeight >= fieldHeight ) this.field.setStyle( "height", targetHeight );
+
+    },
+        
+
 	buildForm: function(){
 
 		this.form = new Element( 'div', {
@@ -3582,8 +3586,7 @@ mop.ui.IPE = new Class({
 				}
 			}
 			this.field = new Element( tag, opts );
-			this.field.addEvent( "focus" , function(){ this.resizeTextAreaPriodical = this.resizeTextarea.periodical( 300, this ); }.bind( this ) );
-			this.field.addEvent( "blur" , 	function(){ $clear( this.resizeTextAreaPriodical ); }.bind( this ) );
+			this.field.addEvent( "keyup", this.fitToContent.bind( this ) );
 		}else{
 			opts = {
 				"rows": this.rows,

@@ -238,8 +238,10 @@ class CMS_Controller extends Controller {
 			$page->$_POST['field'] = $_POST['value'];
 			$page->save();
 		} else if($_POST['field']) {
-			$fields = Kohana::config('cms.templates.'.$page->template->templatename); //this is annoying and experimental
-			$lookup = array();
+			$fields = Kohana::config('cms.modules.'.$page->template->templatename); //this is annoying and experimental
+      $lookup = array(
+        'title'=>'default'
+      );
 			foreach($fields as $f){
 				if(isset($f['field'])){
 					$lookup[$f['field']] = $f;
@@ -247,7 +249,7 @@ class CMS_Controller extends Controller {
 			}
 			switch($lookup[$_POST['field']]['type']){
 			case 'multiSelect':
-				$object = ORM::Factory('page', $page->contenttable->$_POST['field']);
+				$object = ORM::Factory('page', $_POST['field']);
 				if(!$object->loaded){
 					$object->template_id = ORM::Factory('template', $lookup[$_POST['field']]['object'])->id;
 					$object->save();
