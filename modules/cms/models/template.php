@@ -7,6 +7,11 @@ class Template_Model extends ORM {
 
 	protected $has_many = array('pages');
 
+  /*
+   * Variable: nonmappedfield
+   * Array of fields to not pass through to the content field mapping logic
+   */
+  private $nonmappedfields = array('id', 'page_id', 'title', 'activity', 'loaded');
 
 	/*
 	 * Function: __get($column)
@@ -19,13 +24,25 @@ class Template_Model extends ORM {
 
 			//check if this value is set in config files
 			Kohana::log('info', parent::__get('templatename'));
-			$valuefromconfig = Kohana::config('cms_templates.'.parent::__get('templatename').'.'.$column);
+
+			if(in_array($column, $this->nonmappedfields)){
+				return parent::__get($column);
+			}
+
+			if(parent::__get('nodetype')=='CONTAINER'){
+				//For lists, values will be on the 2nd level 
+				$nodes = mop::config('backend', sprintf('//module[@class="%s"]', parent::__get('templatename')));
+				$valuefromconfig = $nodes->item(0)->getAttribute($column);
+			} else {
+				//everything else is a normal lookup
+				$nodes = mop::config('backend', sprintf('//template[@templatename="%s"]', parent::__get('templatename')));
+				$valuefromconfig = $nodes->item(0)->getAttribute($column);
+			}
 			if($valuefromconfig !== NULL){
 				return $valuefromconfig;	
 			}
+
 			//No Value in config file, go looking in database
-			//but first apply temporary skip on addable_leaves and addable_categories
-			//need to add these, but don't want to make global database changes at this time.
 			if($column == 'addable_objects'){
 				return null;
 			}

@@ -113,14 +113,22 @@ class CMS_Controller extends Controller {
 
 		//2 generate all IPEs
 		//3 build and include all modules
-		$modules = Kohana::config(strtolower($this->controllername).'.templates.'.$page->template->templatename);
+		$modules = mop::config('backend', sprintf('//template[@templatename="%s"]/module', $page->template->templatename));
+		$modulesConfig = array();
+		foreach($modules as $module){
+			$entry = array();
+			for($i=0; $i<$module->attributes->length; $i++){
+				$entry[$module->attributes->item($i)->name] = $module->attributes->item($i)->value;
+			}	
+			$modulesConfig[] = $entry;
+		}
 
 		$customview = 'templates/'.$page->template->templatename; //check for custom view for this template
 		$usecustomview = false;
 		if(Kohana::find_file('views', $customview)){
 			$usecustomview = true;	
 		}
-		$htmlChunks = cms::buildUIHtmlChunks($modules, $page);
+		$htmlChunks = cms::buildUIHtmlChunks($modulesConfig, $page);
 
 		if(!$usecustomview){
 			$html = $nodetitlehtml.implode($htmlChunks);
@@ -379,22 +387,23 @@ class CMS_Controller extends Controller {
 		//look up any components and add them as well
 
 		//configured components
-		//
-		//
-
-		$components = mop::config('backend', sprintf('//template[@templatename="%s"]',$newpage->template->templatename));
+		$components = mop::config('backend', sprintf('//template[@templatename="%s"]/component',$newpage->template->templatename));
 		foreach($components as $c){
 			$template = ORM::Factory('template', $c->getAttribute('templateId'));
-			//translate data somehow
-			$this->__addObject($newpage->id, $template->id, $arguments['data']);
+			if($c->hasChildNodes()){
+				foreach($c->childNodes as $data){
+					$arguments[$data->name] = $data->value;
+				}
+			}
+			$this->__addObject($newpage->id, $template->id, $arguments);
 		}
 
 		//containers (list)
 		$containers = mop::config('backend', sprintf('//template[@templatename="%s"]/[@type=list]',$newpage->template->templatename));
 		foreach($components as $c){
 			$template = ORM::Factory('template', $c->getAttribute('templateId'));
-			//translate data somehow
-			$this->__addObject($newpage->id, $template->id, $arguments['data']);
+			$arguments['title'] = $c->getAttribute('label');
+			$this->__addObject($newpage->id, $template->id, $arguments);
 		}
 
 		return $newpage->id;

@@ -25,7 +25,7 @@ Class mop {
 			$dbmaps = ORM::Factory('objectmap')->where('template_id', $template_id)->find_all();
 			self::$dbmaps[$template_id] = array();
 			foreach($dbmaps as $map){
-				$this->dbmaps[$template_id][$column] = $map->type.$map->index;
+				self::$dbmaps[$template_id][$column] = $map->type.$map->index;
 			}
 		}
 		if(!isset($column)){

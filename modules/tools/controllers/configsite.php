@@ -55,8 +55,11 @@ Class ConfigSite_Controller extends Controller {
 			);
 
 			//find or create template record
+			echo 'lookin';
 			$tRecord = ORM::Factory('template', $template->getAttribute('templatename') );
+			echo 'do';
 			if(!$tRecord->loaded){
+				echo 'didnt find';
 				$tRecord = ORM::Factory('template');
 				$tRecord->templatename = $template->getAttribute('templatename');
 				$tRecord->nodetype = $template->getAttribute('nodetype');
@@ -65,52 +68,13 @@ Class ConfigSite_Controller extends Controller {
 
 
 			foreach(mop::config('backend', '//template[@templatename="'.$template->getAttribute('templatename').'"]/module') as $item){
-				echo $item->getAttribute('type');
 				switch($item->getAttribute('type')){
 
 				case 'list':
-					continue;
-
-					//we should be able to hande this somehow 
-
-					//add a template for the list container
-					$entry = array();
-					$entry['cssClasses'] = $this->valueIfSet('cssClasses', $item);
-					$entry['label'] = $this->valueIfSet('label', $item);
-					$this->config['cms']['templates'][$item['class']] = $entry;
-
-					//
-					////
-					//// FUUCK, this really causes a problem.  we need to ADD??? to the xml
-					//   isn't there some other solution?
-					////
-					//
-					$this->config['cms_templates'][$item['class']] = array(
-						'templatename'=>$item['class'],
-						'type'=>'CONTAINER',
-						'addable_objects'=>array(
-							array(
-								'templateId'=>$item['templateId'],
-								'templateAddText'=>$item['templateAddText']
-							),
-						),
-					);
-
 					$tRecord = ORM::Factory('template');
-					$tRecord->templatename = $item['class'];
+					$tRecord->templatename = $item->getAttribute('class');
 					$tRecord->nodetype = 'CONTAINER';
 					$tRecord->save();
-
-					//set up component
-					//// FUUCK, this really causes a problem.  we need to ADD??? to the xml
-					$this->config['cms']['settings'][$template['templatename']]['components'] = array(
-						array(
-							'templateId'=>$item['class'],
-							'data'=>array(
-								'title'=>$item['label']
-							)
-						)
-					);
 					break;
 
 				default:
@@ -140,7 +104,7 @@ Class ConfigSite_Controller extends Controller {
 												$index = $item->getAttriute('type');
 												break;
 					}	
-				echo $index;
+					echo $index;
 
 					//and right here it'll be 'if doesn't already exist in the array'
 					//or we'll check the database and just insert a new/next one
@@ -162,7 +126,7 @@ Class ConfigSite_Controller extends Controller {
 
 				}
 			}
-				}
+		}
 
 		//	var_export($this->config);
 		//$this->writeConfig();
