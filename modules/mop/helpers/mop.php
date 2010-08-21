@@ -21,17 +21,17 @@ Class mop {
 	}
 
 	public static function dbmap($template_id, $column=null){
-		if(!isset($this->dbmaps[$template_id])){
-			$dbmaps = ORM::Factory('dbmap')->where('template_id', $template_id)->find_all;
-			$this->dbmaps[$template_id] = array();
+		if(!isset(self::$dbmaps[$template_id])){
+			$dbmaps = ORM::Factory('objectmap')->where('template_id', $template_id)->find_all();
+			self::$dbmaps[$template_id] = array();
 			foreach($dbmaps as $map){
-				$this->dbmaps[$template_id][$map->dbfield] = $map->mapfield;
+				$this->dbmaps[$template_id][$column] = $map->type.$map->index;
 			}
 		}
 		if(!isset($column)){
-			return $this->dbmaps[$template_id];
+			return self::$dbmaps[$template_id];
 		} else {
-			return $this->dbmaps[$tempate_id][$column];
+			return self::$dbmaps[$template_id][$column];
 		}
 	}
 
