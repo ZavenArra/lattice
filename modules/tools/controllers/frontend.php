@@ -1,8 +1,5 @@
 <?
 set_error_handler(array('Cli', 'error_handler'), E_ALL);
-//set_exception_handler(('Cli::exception_handler'));
-require('/home/deepwinter/dev/deepwinter/yaml/lib/sfYaml.php');
-require('/home/deepwinter/dev/deepwinter/yaml/lib/sfYamlParser.php');
 
 Class Frontend_Controller extends Controller {
 
@@ -17,23 +14,10 @@ Class Frontend_Controller extends Controller {
 		flush();
 		ob_flush();
 		
-		$yaml = new sfYamlParser();
-		try {
-			$configArray = $yaml->parse(file_get_contents('application/config/frontend.yaml'));
-		}
-		catch (InvalidArgumentException $e) {
-			// an error occurred during parsing
-			echo "Unable to parse the YAML string: ".$e->getMessage();
-			flush();
-			ob_flush();
-			exit;
-		}
-
-		print_r($configArray);
-		foreach($configArray['views'] as $view ){
-			touch('application/modules/site/views/site/'.$view['view'].'.php');
+		foreach(mop::config('frontend', '//view') as $view ){
+			touch('application/modules/site/views/site/'.$view->getAttribute('name').'.php');
 			ob_start();
-			if($view['loadpage']=='true'){
+			if($view->getAttribute('loadpage')=='true'){
 			echo "<p>Main Content</p>";
 			echo "<ul>\n".
 				   " <?foreach(\$content['main'] as \$field => \$value):?>\n".
@@ -41,10 +25,11 @@ Class Frontend_Controller extends Controller {
 					 " <?endforeach;?>\n".
 					"</ul>\n\n";
 			}
-			if(is_array($view['extendeddata'])){
-				foreach($view['extendeddata'] as $edata){
-					echo "<p>{$edata['label']} Content</p>";
-					echo "<?foreach(\$content['{$edata['label']}'] as \$item):?>\n".
+			if($eDataNodes = mop::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/extendeddata")){
+				foreach($eDataNodes as $eDataConfig){
+					$label = $eDataConfig->getAttribute('label');
+					echo "<p>$label Content</p>";
+					echo "<?foreach(\$content['$label'] as \$item):?>\n".
 						"<ul>\n".
 						"<?foreach(\$item as \$field=>\$value):?>\n".
 						"<li><?=\$field;?>: <?=\$value;?></li>\n".
@@ -53,20 +38,21 @@ Class Frontend_Controller extends Controller {
 						"<?endforeach;?>\n\n";
 				}
 			}
-			if(is_array($view['subviews'])){
-				foreach($view['subviews'] as $sview){
-					echo "\n<?=\${$sview['label']};?>\n";
+			if($subviews = mop::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/subview")){
+				foreach($subviews as $subviewConfig){
+					echo "\n<?=\$".$subviewConfig->getAttribute('label').";?>\n";
 				}
 			}
 			$html = ob_get_contents();
 			ob_end_clean();
-			$file = fopen('application/modules/site/views/site/'.$view['view'].'.php', 'w');
+			$file = fopen('application/modules/site/views/site/'.$view->getAttribute('name').'.php', 'w');
 			fwrite($file, $html);
 			fclose($file);
 		}
 
 
 
+		echo "Done\n";
 	}
 
 }
