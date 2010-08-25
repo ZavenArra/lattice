@@ -6,40 +6,41 @@
 
 <!-- HOME -->
 
-		<template name="home" nodetype="LEAF" allow_sort="false" allow_delete="false" allow_publish="false">
+		<template name="home" nodetype="leaf" allow_sort="false" allow_delete="false" allow_publish="false">
 			<elements>
 				<ipe field="featureBlurb" label="Feature Text" tag="p" rows="4" />
+				<singleimage field="featureImage" extensions="jpg" label="Feature Image"/>
 				<list family="featureList" label="Feature Links" display="inline" >
 					<addableobject id="featureListItem" templateAddText="Add a Link" />
 				</list>
 				<ipe field="aboutHeader" label="About Header" tag="p" rows="1" />		
 				<ipe field="aboutBlurb" label="About Soberscove" tag="p" rows="6" />		
 
-				<!-- a bit confused, if i want to add annoucements as a component, is this how i do it? Or do i make annoucements a category and make it an addableobject within <!-- template name="home"?? -->
 				<list family="annoucements" label="Annoucement List" display="component" >
 					<addableobject id="featureListItem" templateAddText="Add a Link" />
 				</list>
+				
 			</elements>
 		</template>
 		
 		<!-- allow_delete here is regarding the CHILD objects yes? -->
-		<template name="announcements" nodetype="CATEGORY" allow_sort="true" allow_delete="true" allow_publish="false">
+		<template name="announcements" nodetype="category" allow_sort="true" allow_delete="true" allow_publish="false">
 			<addableobject id="annoucement" templateAddText="Add an annoucement" />
 		</template>
 		
-		<template name="annoucement" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="true">
+		<template name="annoucement" nodetype="leaf" allow_sort="true" allow_delete="true" allow_publish="true">
 			<elements>
 				<!-- how are fields namespaced? can this just be "date" or is it ideally "announcementDate" -->
 				<date field="date" label="date" />		
 				<ipe field="annoucement" label="Announcement" tag="p" rows="4" />
-				<!-- display = inline/component? -->	
+
 				<list family="annoucementLinks" label="Links" display="inline" >
 					<addableobject id="annoucementLink" templateAddText="Add a Link" />
 				</list>
 			</elements>
 		</template>
 
-		<template name="annoucementLink" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="true">
+		<template name="annoucementLink" nodetype="leaf" allow_sort="true" allow_delete="true" allow_publish="true">
 			<elements>
 				<ipe field="annoucementLinkLabel" label="Link Label" tag="p" rows="1" />
 				<ipe field="annoucementLinkUrl" label="Link URL" tag="p" rows="1" />
@@ -48,7 +49,7 @@
 		
 <!-- WHERE TO FIND -->
 
-		<template name="wheretofind" nodetype="CATEGORY" allow_sort="true" allow_delete="false" allow_publish="false">
+		<template name="wheretofind" nodetype="category" allow_sort="true" allow_delete="false" allow_publish="false">
 			<elements>
 				<ipe field="intro" label="Intro Paragraph" tag="p" rows="6" />
 			</elements>
@@ -56,7 +57,7 @@
 		</template>
 		
 		<!-- default sort / alphabetical? or just allowsort? -->
-		<template name="city" nodetype="CATEGORY" allow_sort="true" allow_delete="true" allow_publish="false">
+		<template name="city" nodetype="category" allow_sort="true" allow_delete="true" allow_publish="false">
 			<elements>
 				<list family="locations" label="Links" display="inline" >
 					<addableobject id="location" templateAddText="Add an Location" />
@@ -64,13 +65,13 @@
 			</elements>
 		</template>
 		
-		<template name="location" nodetype="LEAF">
+		<template name="location" nodetype="leaf">
 			<elements>
 				<ipe field="url" label="URL (optional)" tag="p" rows="1" />
 			</elements>
 		</template>
 
-		<template name="contact" nodetype="LEAF">
+		<template name="contact" nodetype="leaf">
 			<elements>
 				<ipe field="intro" label="Intro Paragraph" tag="p" rows="4" />
 				<mopcontactform/>
@@ -81,11 +82,11 @@
 
 <!-- BOOKS -->
 
-		<template name="books" nodetype="CATEGORY">
+		<template name="books" nodetype="category">
 			<addableobject id="book" templateAddText="Add a Book" />
 		</template>
 
-		<template name="book" nodetype="LEAF">
+		<template name="book" nodetype="leaf">
 			<elements>
 				<list family="gallery" label="Images" display="inline" >
 					<addableobject id="bookImage" templateAddText="Add an Image" />
@@ -95,7 +96,7 @@
 			<addableobject id="sidebarlist" templateAddText="Add a Sidebar List" />
 		</template>
 
-		<template name="bookImage" nodetype="LEAF">
+		<template name="bookImage" nodetype="leaf">
 			<elements>
 				<!-- how to deal with image sizes -->
 				<singleimage field="bookimage" extensions="jpg" label="Image"/>
@@ -104,7 +105,7 @@
 			</elements>
 		</template>
 
-		<template name="sidebarlist" nodetype="LEAF">
+		<template name="sidebarlist" nodetype="leaf">
 			<elements>
 				<ipe field="blurb" label="Blurb" tag="p" rows="3" />
 				<list family="booklist" label="List Items" display="inline" >
@@ -113,7 +114,7 @@
 			</elements>
 		</template>
 		
-		<template name="booklist" nodetype="LEAF">
+		<template name="booklist" nodetype="leaf">
 			<elements>
 				
 				<ipe field="blurb" label="Blurb" tag="p" rows="3" />
