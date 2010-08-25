@@ -1,0 +1,63 @@
+<data>
+  
+templates:
+    - templatename: stuff
+      nodetype: CATEGORY
+      parameters:
+          - type: ipe
+            field: blurb
+            label: Blurb
+            tag: p
+            rows: 4
+      addable_objects: 
+          - templateId: stuffItem 
+            templateAddText: Add a Stuff
+
+    - templatename: stuffItem
+      nodetype: LEAF
+      parameters:
+          - type: ipe
+            field: text
+            label: Text
+            tag: p
+            rows: 4
+          - type: ipe
+            field: more
+            label: MORE
+            tag: p
+            rows: 4
+          - type: list
+            class: listOfThings
+            label: List of things
+            display: component
+            templateId: differentItem
+            templateAddText: Add a Stuff Item
+      allow_sort: true
+
+    - templatename: home
+      nodetype: LEAF
+      parameters:
+     
+    - templatename: differentItem
+      nodetype: LEAF
+      parameters:
+          - type: ipe
+            field: blurb3
+            label: WJAT
+            tag: p
+            rows: 4
+          - type: ipe
+            field: blurb
+            label: EH KKDSJ  KDK
+            tag: p
+            rows: 4
+            
+data:
+    - templatename: stuff
+      content:
+          title: Stuff
+    
+    - templatename: home
+      content:
+          title: Home
+    
