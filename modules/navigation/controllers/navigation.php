@@ -21,7 +21,7 @@ class Navigation_Controller extends Controller{
 		'allowTogglePublish'=>'allow_toggle_publish',
 		'landing'=>'landing',
 		'allowSort'=>'allow_sort',
-		'addableObjects'=>'addable_objects',
+		'addableObjects'=>'addableobjects',
 	);
 	/*should title be stored in the PAGE table instead?*/
 	private $navDataFields_content = array(

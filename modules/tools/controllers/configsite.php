@@ -55,14 +55,11 @@ Class ConfigSite_Controller extends Controller {
 			);
 
 			//find or create template record
-			echo 'lookin';
 			$tRecord = ORM::Factory('template', $template->getAttribute('name') );
-			echo 'do';
 			if(!$tRecord->loaded){
-				echo 'didnt find';
 				$tRecord = ORM::Factory('template');
 				$tRecord->templatename = $template->getAttribute('name');
-				$tRecord->nodetype = $template->getAttribute('nodeType');
+				$tRecord->nodetype = strtoupper($template->getAttribute('nodeType'));
 				$tRecord->save();
 			}
 
@@ -137,15 +134,15 @@ Class ConfigSite_Controller extends Controller {
 		ob_flush();
 		$this->scanf('%s', $response);
 		if($response == 'Yes'){
-			$db->query('delete from objects');
-			$db->query('alter table objects AUTO_INCREMENT = 1');
+			$db->query('delete from pages');
+			$db->query('alter table pages AUTO_INCREMENT = 1');
 			$db->query('delete from content_larges');
 			$db->query('alter table content_larges AUTO_INCREMENT = 1');
 			flush();
 			ob_flush();
 
 			echo "\nInserting Data\n";
-		$this->insertData();
+      $this->insertData();
 
 		}	else {
 			echo "\nData Unchanged\n";
@@ -153,35 +150,37 @@ Class ConfigSite_Controller extends Controller {
 
 	}
 
-	public function insertData($parentId = 0){
+	public function insertData($parentId = 0, $prefix = '/configuration/data/'){
+    echo 'inserting '.$prefix;
 
-		foreach(mop::config('backend', '//data/item')  as $data){
+		foreach(mop::config('backend', $prefix.'item')  as $item){
+      echo 'found contentnode';
 			flush();
 			ob_flush();
-			$page = ORM::Factory('page');
-			$template = ORM::Factory('template', $data->getAttribute('templatename'));
-			if($template->id == 0){
-				die("Bad template name ".$data['templatename']."\n");
+			$object = ORM::Factory('page');
+			$template = ORM::Factory('template', $item->getAttribute('templateName'));
+      if(!$template->id){
+				die("Bad template name ".$item->getAttribute('templateName')."\n");
 			}
-			$page->template_id = $template->id;
-			$page->published = true;
-			$page->parentid = $parentId;
-			if(isset($data['content']['title'])){
-				$page->slug = cms::createSlug($data['content']['title']);
+			$object->template_id = $template->id;
+			$object->published = true;
+			$object->parentid = $parentId;
+			$object->save();
+      echo ')))'.$item->getAttribute('templateName');
+			foreach(mop::config('backend', sprintf($prefix.'item[@templateName="%s"]/content/*', $item->getAttribute('templateName'))) as $content){
+        $field = $content->tagName;
+        if($field == 'title'){
+          $object->slug = cms::createSlug($content->nodeValue);
+        }
+				$object->contenttable->$field = $content->nodeValue;
 			}
-			$page->save();
-			foreach($data['content'] as $field => $value){
-				if($field === 0){
-					die("Initializing content must be associative array at: $field => $value ");
-					exit;
-				}
-				$page->contenttable->$field = $value;
-				$page->contenttable->save();
-			}
+      $object->save();
+      $object->contenttable->save();
+
 			//do recursive if it has children
-			if(isset($data['children'])){
-				$this->insertData($data['children'], $page->id);
-			}
+      if(mop::config('backend', $prefix.'item/item')){
+        $this->insertData($object->id,  $prefix.'item/');
+      }
 		}
 	}
 
