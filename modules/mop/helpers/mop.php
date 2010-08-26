@@ -10,6 +10,11 @@ Class mop {
 		if(!is_array(self::$config)){
 			self::$config = array();
 		}
+
+    if(Kohana::config('mop.configuration')){
+      $arena = Kohana::config('mop.configuration').'-'.$arena;
+    }
+
 		if(!isset(self::$config[$arena])){
 			$dom = new DOMDocument();
 			$dom->load( "application/config/$arena.xml");
