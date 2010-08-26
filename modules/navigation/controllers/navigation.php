@@ -156,7 +156,7 @@ class Navigation_Controller extends Controller{
 					//we might be skipping this node
 					$parent = ORM::Factory($this->objectModel, $parentid); //it would be nice to be able to just look up the heap
 					//echo 'cms.templates.'.$parent->template->templatename.'.parameters.'.$child->template->templatename.'.display';
-					$display = mop::config('backend', sprintf('//template[@templatename="%s"]/[@class="%s"]', 
+					$display = mop::config('backend', sprintf('//template[@templatename="%s"]/elements/[@family="%s"]', 
 																										$parent->template->templatename,
 																										$child->template->templatename))
 																										->getAttritube('display');

@@ -56,55 +56,55 @@ Class ConfigSite_Controller extends Controller {
 
 			//find or create template record
 			echo 'lookin';
-			$tRecord = ORM::Factory('template', $template->getAttribute('templatename') );
+			$tRecord = ORM::Factory('template', $template->getAttribute('name') );
 			echo 'do';
 			if(!$tRecord->loaded){
 				echo 'didnt find';
 				$tRecord = ORM::Factory('template');
-				$tRecord->templatename = $template->getAttribute('templatename');
-				$tRecord->nodetype = $template->getAttribute('nodetype');
+				$tRecord->templatename = $template->getAttribute('name');
+				$tRecord->nodetype = $template->getAttribute('nodeType');
 				$tRecord->save();
 			}
 
 
-			foreach(mop::config('backend', '//template[@templatename="'.$template->getAttribute('templatename').'"]/module') as $item){
-				switch($item->getAttribute('type')){
+			foreach(mop::config('backend', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item){
+        echo 'found an item';
+				switch($item->tagName){
 
 				case 'list':
 					$tRecord = ORM::Factory('template');
-					$tRecord->templatename = $item->getAttribute('class');
+					$tRecord->templatename = $item->getAttribute('family');
 					$tRecord->nodetype = 'CONTAINER';
 					$tRecord->save();
 					break;
 
-				default:
-					echo 'default';
+        default:
+          echo 'default';
 
-					//base cms elements
+          //base cms elements
 
-					//handle dbmap
-					$index = null;
-					switch($item->getAttribute('type')){
-					case 'ipe':
-						case 'radioGroup':
-							case 'pulldown':
-								case 'time':
-									case 'date':
-										case 'multiSelect':
-											$index = 'field';
-											break;
-										case 'singleImage':
-											case 'singlefile':
-												$index = 'file';
-												break;
-											case 'checkbox':
-												$index = 'flag';
-												break;
-											default:
-												$index = $item->getAttriute('type');
-												break;
-					}	
-					echo $index;
+          //handle dbmap
+          $index = null;
+          switch($item->tagName){
+          case 'ipe':
+          case 'radioGroup':
+          case 'pulldown':
+          case 'time':
+          case 'date':
+          case 'multiSelect':
+            $index = 'field';
+            break;
+          case 'singleImage':
+          case 'singlefile':
+            $index = 'file';
+            break;
+          case 'checkbox':
+            $index = 'flag';
+            break;
+          default:
+            continue(2);
+            break;
+          }	
 
 					//and right here it'll be 'if doesn't already exist in the array'
 					//or we'll check the database and just insert a new/next one
@@ -119,6 +119,7 @@ Class ConfigSite_Controller extends Controller {
 						$newmap = ORM::Factory('objectmap');
 						$newmap->template_id = $tRecord->id;
 						$newmap->type = $index;
+            echo 'index: '.$index;
 						$newmap->index = ++$dbmapindexes[$index];
 						$newmap->column = $item->getAttribute('field');
 						$newmap->save();
@@ -136,12 +137,8 @@ Class ConfigSite_Controller extends Controller {
 		ob_flush();
 		$this->scanf('%s', $response);
 		if($response == 'Yes'){
-			$db->query('delete from pages');
-			$db->query('alter table pages AUTO_INCREMENT = 1');
-			$db->query('delete from content_smalls');
-			$db->query('alter table content_smalls AUTO_INCREMENT = 1');
-			$db->query('delete from content_mediums');
-			$db->query('alter table content_mediums AUTO_INCREMENT = 1');
+			$db->query('delete from objects');
+			$db->query('alter table objects AUTO_INCREMENT = 1');
 			$db->query('delete from content_larges');
 			$db->query('alter table content_larges AUTO_INCREMENT = 1');
 			flush();
