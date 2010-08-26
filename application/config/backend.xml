@@ -6,41 +6,46 @@
 
 <!-- HOME -->
 
-		<template name="home" nodetype="leaf" allow_sort="false" allow_delete="false" allow_publish="false">
+		<template name="home" nodeType="leaf" allow_sort="false" allow_delete="false" allow_publish="false">
 			<elements>
 				<ipe field="featureBlurb" label="Feature Text" tag="p" rows="4" />
 				<singleimage field="featureImage" extensions="jpg" label="Feature Image"/>
 				<list family="featureList" label="Feature Links" display="inline" >
-					<addableobject id="featureListItem" templateAddText="Add a Link" />
+					<addableobject templanteName="featureListItem" addText="Add a Link" />
 				</list>
 				<ipe field="aboutHeader" label="About Header" tag="p" rows="1" />		
 				<ipe field="aboutBlurb" label="About Soberscove" tag="p" rows="6" />		
 
 				<list family="annoucements" label="Annoucement List" display="component" >
-					<addableobject id="featureListItem" templateAddText="Add a Link" />
+					<addableobject templanteName="featureListItem" addText="Add a Link" />
 				</list>
 				
 			</elements>
 		</template>
 		
 		<!-- allow_delete here is regarding the CHILD objects yes? -->
-		<template name="announcements" nodetype="category" allow_sort="true" allow_delete="true" allow_publish="false">
-			<addableobject id="annoucement" templateAddText="Add an annoucement" />
+    <!-- DW: actually the JS treats as for the object itself with this template, I think it would make sense to change.
+             the original thought had been that sometimes certain objects wouldn't be allowed to be deleted, which
+             is still the case in the case of components, but otherwise it seems silly to specify it that way.
+             However we need some other way to say when a specific object is NOT deletable (except as a recursive -->
+		<template name="announcements" nodeType="category" allow_sort="true" allow_delete="true" allow_publish="false">
+			<addableobject templanteName="annoucement" addText="Add an annoucement" />
 		</template>
 		
-		<template name="annoucement" nodetype="leaf" allow_sort="true" allow_delete="true" allow_publish="true">
+		<template name="annoucement" nodeType="leaf" allow_sort="true" allow_delete="true" allow_publish="true">
 			<elements>
 				<!-- how are fields namespaced? can this just be "date" or is it ideally "announcementDate" -->
+        <!--  DW: just date is fine, name space is per template not global -->
 				<date field="date" label="date" />		
 				<ipe field="annoucement" label="Announcement" tag="p" rows="4" />
 
 				<list family="annoucementLinks" label="Links" display="inline" >
-					<addableobject id="annoucementLink" templateAddText="Add a Link" />
+					<addableobject templanteName="annoucementLink" addText="Add a Link" />
 				</list>
 			</elements>
 		</template>
 
-		<template name="annoucementLink" nodetype="leaf" allow_sort="true" allow_delete="true" allow_publish="true">
+		<template name="annoucementLink" nodeType="leaf" allow_sort="true" allow_delete="true" allow_publish="true">
 			<elements>
 				<ipe field="annoucementLinkLabel" label="Link Label" tag="p" rows="1" />
 				<ipe field="annoucementLinkUrl" label="Link URL" tag="p" rows="1" />
@@ -49,32 +54,33 @@
 		
 <!-- WHERE TO FIND -->
 
-		<template name="wheretofind" nodetype="category" allow_sort="true" allow_delete="false" allow_publish="false">
+		<template name="wheretofind" nodeType="category" allow_sort="true" allow_delete="false" allow_publish="false">
 			<elements>
 				<ipe field="intro" label="Intro Paragraph" tag="p" rows="6" />
 			</elements>
-			<addableobject id="city" templateAddText="Add a City" />
+			<addableobject templanteName="city" addText="Add a City" />
 		</template>
 		
 		<!-- default sort / alphabetical? or just allowsort? -->
-		<template name="city" nodetype="category" allow_sort="true" allow_delete="true" allow_publish="false">
+    <!-- DW: we don't currently support other kinds of sorts.  allow_sort specifies the ability to sort or not -->
+		<template name="city" nodeType="category" allow_sort="true" allow_delete="true" allow_publish="false">
 			<elements>
 				<list family="locations" label="Links" display="inline" >
-					<addableobject id="location" templateAddText="Add an Location" />
+					<addableobject templanteName="location" addText="Add an Location" />
 				</list>
 			</elements>
 		</template>
 		
-		<template name="location" nodetype="leaf">
+		<template name="location" nodeType="leaf">
 			<elements>
 				<ipe field="url" label="URL (optional)" tag="p" rows="1" />
 			</elements>
 		</template>
 
-		<template name="contact" nodetype="leaf">
+		<template name="contact" nodeType="leaf">
 			<elements>
 				<ipe field="intro" label="Intro Paragraph" tag="p" rows="4" />
-				<mopcontactform/>
+        <mopcontactform/> <!-- DW: and just what is this? -->
 				<ipe field="address" label="Address" tag="p" rows="3" />
 				<ipe field="contactemail" label="Email address" tag="p" rows="3" />
 			</elements>
@@ -82,39 +88,40 @@
 
 <!-- BOOKS -->
 
-		<template name="books" nodetype="category">
-			<addableobject id="book" templateAddText="Add a Book" />
+		<template name="books" nodeType="category">
+			<addableobject templanteName="book" addText="Add a Book" />
 		</template>
 
-		<template name="book" nodetype="leaf">
+		<template name="book" nodeType="leaf">
 			<elements>
 				<list family="gallery" label="Images" display="inline" >
-					<addableobject id="bookImage" templateAddText="Add an Image" />
+					<addableobject templanteName="bookImage" addText="Add an Image" />
 				</list>
 				<ipe field="description" label="Book Description" tag="p" rows="10" />
 			</elements>
-			<addableobject id="sidebarlist" templateAddText="Add a Sidebar List" />
+			<addableobject templanteName="sidebarlist" addText="Add a Sidebar List" />
 		</template>
 
-		<template name="bookImage" nodetype="leaf">
+		<template name="bookImage" nodeType="leaf">
 			<elements>
 				<!-- how to deal with image sizes -->
+        <!-- DW: I haven't specified it yet, want to take a shot? -->
 				<singleimage field="bookimage" extensions="jpg" label="Image"/>
-				<!-- alt-tag -->
+        <!-- alt-tag --> <!-- Alt-tag? remember this is just for the backend -->
 				<ipe field="description" label="Book Description" tag="p" rows="1" />
 			</elements>
 		</template>
 
-		<template name="sidebarlist" nodetype="leaf">
+		<template name="sidebarlist" nodeType="leaf">
 			<elements>
 				<ipe field="blurb" label="Blurb" tag="p" rows="3" />
 				<list family="booklist" label="List Items" display="inline" >
-					<addableobject id="booklistitem" templateAddText="Add an Item" />
+					<addableobject templanteName="booklistitem" addText="Add an Item" />
 				</list>
 			</elements>
 		</template>
 		
-		<template name="booklist" nodetype="leaf">
+		<template name="booklist" nodeType="leaf">
 			<elements>
 				
 				<ipe field="blurb" label="Blurb" tag="p" rows="3" />
