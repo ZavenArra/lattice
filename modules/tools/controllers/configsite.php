@@ -145,7 +145,7 @@ Class ConfigSite_Controller extends Controller {
 			ob_flush();
 
 			echo "\nInserting Data\n";
-		$this->insertData($configArray['data']);
+		$this->insertData();
 
 		}	else {
 			echo "\nData Unchanged\n";
@@ -153,13 +153,13 @@ Class ConfigSite_Controller extends Controller {
 
 	}
 
-	public function insertData($dataInit, $parentId = 0){
+	public function insertData($parentId = 0){
 
-		foreach($dataInit as $data){
+		foreach(mop::config('backend', '//data/item')  as $data){
 			flush();
 			ob_flush();
 			$page = ORM::Factory('page');
-			$template = ORM::Factory('template', $data['templatename']);
+			$template = ORM::Factory('template', $data->getAttribute('templatename'));
 			if($template->id == 0){
 				die("Bad template name ".$data['templatename']."\n");
 			}
