@@ -9,7 +9,7 @@
 		<template name="home" nodeType="leaf" allow_sort="false" allow_delete="false" allow_publish="false">
 			<elements>
 				<ipe field="featureBlurb" label="Feature Text" tag="p" rows="4" />
-				<singleimage field="featureImage" extensions="jpg" label="Feature Image"/>
+				<singleImage field="featureImage" extensions="jpg" label="Feature Image"/>
 				<list family="featureList" label="Feature Links" display="inline" >
 					<addableobject templanteName="featureListItem" addText="Add a Link" />
 				</list>
@@ -106,7 +106,8 @@
 			<elements>
 				<!-- how to deal with image sizes -->
         <!-- DW: I haven't specified it yet, want to take a shot? -->
-				<singleimage field="bookimage" extensions="jpg" label="Image"/>
+				<singleImage field="bookimage" extensions="jpg" label="Image"/>
+        <!-- DW: singleImage or singleimage, camel caps for all??? -->
         <!-- alt-tag --> <!-- Alt-tag? remember this is just for the backend -->
 				<ipe field="description" label="Book Description" tag="p" rows="1" />
 			</elements>
@@ -131,7 +132,9 @@
 		
 	</templates>
 
-	<data></data>
+  <data>
+    <!-- If you don't insert any data, theree will be nothing in the CMS -->
+  </data>
 
 </configuration>
 
