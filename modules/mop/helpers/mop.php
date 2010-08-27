@@ -57,8 +57,15 @@ Class mop {
 				$view = new View($module['modulename']);
 				return $view->render();
 			}
+      echo 'yo';
+      echo $module['modulename'];
+      echo "\n";
+      try {
 			$includeclass = 'class '.$module['modulename'].'_Controller extends '.$module['controllertype'].'_Controller { } ';
 			eval($includeclass);
+      } catch (Exception $e){
+        throw new Kohana_User_Exception('Redeclared Virtual Class', 'Redeclared Virtual Class '.  'class '.$module['modulename'].'_Controller ';
+      }
 		}
 
 		$fullname = $module['modulename'].'_Controller';

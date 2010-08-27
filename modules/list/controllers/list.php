@@ -82,7 +82,7 @@ class List_Controller extends Controller{
 		$html = '';
 		foreach($listMembers as $object){
 
-			$htmlChunks = cms::buildUIHtmlChunksForObject($$object);
+			$htmlChunks = cms::buildUIHtmlChunksForObject($object);
 			$itemt = new View($this->itemview);
 			$itemt->uiElements = $htmlChunks;
 

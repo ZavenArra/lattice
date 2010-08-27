@@ -221,9 +221,9 @@ class CMS {
 					if(isset($module['display']) && $module['display'] != 'inline'){
 						break; //module is being displayed via navi, skip
 					}
-					$module['modulename'] = $module['class'];
+					$module['modulename'] = $module['family'];
 					$module['controllertype'] = 'list';
-					$lt = ORM::Factory('template', $module['class']);
+					$lt = ORM::Factory('template', $module['family']);
 					$containerObject = ORM::Factory('page')
 						->where('parentid', $object->id)
 						->where('template_id', $lt->id)
@@ -232,7 +232,7 @@ class CMS {
 					$arguments = array(
 						'containerObject'=>$containerObject
 					);
-					$htmlChunks[$module['class']] = mop::buildModule($module, $arguments);
+					$htmlChunks[$module['family']] = mop::buildModule($module, $arguments);
 					break;
 				default:
 					$element = false;
