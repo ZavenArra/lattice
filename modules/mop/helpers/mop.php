@@ -10,6 +10,11 @@ Class mop {
 		if(!is_array(self::$config)){
 			self::$config = array();
 		}
+
+    if(Kohana::config('mop.configuration')){
+      $arena = Kohana::config('mop.configuration').'-'.$arena;
+    }
+
 		if(!isset(self::$config[$arena])){
 			$dom = new DOMDocument();
 			$dom->load( "application/config/$arena.xml");
@@ -52,8 +57,14 @@ Class mop {
 				$view = new View($module['modulename']);
 				return $view->render();
 			}
-			$includeclass = 'class '.$module['modulename'].'_Controller extends '.$module['controllertype'].'_Controller { } ';
-			eval($includeclass);
+      try {
+        if(!class_exists($module['modulename'].'_Controller')){
+          $includeclass = 'class '.$module['modulename'].'_Controller extends '.$module['controllertype'].'_Controller { } ';
+          eval($includeclass);
+        }
+      } catch (Exception $e){
+        throw new Kohana_User_Exception('Redeclared Virtual Class', 'Redeclared Virtual Class '.  'class '.$module['modulename'].'_Controller ');
+      }
 		}
 
 		$fullname = $module['modulename'].'_Controller';

@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
 	<templates>  
-		<template templatename="stuff" nodetype="CATEGORY" allow_sort="true" allow_delete="true" allow_publish="true" >
-			<module type="ipe" field="blurb" label="Blurb" tag="p" rows="4" />
-			<addableobject templateId="stuffItem" templateAddText="Add a Stuff" />
-			<component templateId="differentItem">
+		<template name="stuff" nodeType="CATEGORY" allow_sort="true" allow_delete="true" allow_publish="true" >
+      <elements>
+        <ipe field="blurb" label="Blurb" tag="p" rows="4" />
+      </elements>
+			<addableobject templateName="stuffItem" addText="Add a Stuff" />
+			<component templateName="differentItem">
 				<title>A title!</title>
 			</component>
 		</template>
-		<template templatename="stuffItem" nodetype="LEAF" allow_sort="true">
-			<module type="ipe" field="text" label="Text" tag="p" rows="4" />
-			<module type="ipe" field="more" label="MORE" tag="p" rows="4" />
-			<module type="list" class="listOfThings" label="Blurb" display="inline" >
-				<addableobject templateId="differentItem" templateAddText="Add a Different Item" />
-			</module>
+		<template name="stuffItem" nodeType="LEAF" allow_sort="true">
+      <elements>
+        <ipe field="text" label="Text" tag="p" rows="4" />
+        <ipe field="more" label="MORE" tag="p" rows="4" />
+      </elements>
+			<list family="listOfThings" label="Blurb" display="inline" >
+				<addableobject templateName="differentItem" addText="Add a Different Item" />
+			</list>
 		</template>
-		<template templatename="home" nodetype="LEAF"/>
-		<template templatename="differentItem" nodetype="LEAF">
-			<module type="ipe" field="blurb3" label="WJAT" tag="p" rows="4" />
+		<template name="home" nodeType="LEAF"/>
+		<template name="differentItem" nodeType="LEAF">
+      <elements>
+        <ipe field="blurb3" label="WJAT" tag="p" rows="4" />
+      </elements>
 		</template>
 	</templates>
 	<data>
-		<item templatename="stuff">
+		<item templateName="stuff">
 			<content>
 				<title>Stuff</title>
 			</content>
 		</item>
-		<item templatename="home">
+		<item templateName="home">
 			<content>
 				<title>Home</title>
 			</content>

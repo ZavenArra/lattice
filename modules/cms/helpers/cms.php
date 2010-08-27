@@ -221,18 +221,21 @@ class CMS {
 					if(isset($module['display']) && $module['display'] != 'inline'){
 						break; //module is being displayed via navi, skip
 					}
-					$module['modulename'] = $module['class'];
+					$module['modulename'] = $module['family'];
 					$module['controllertype'] = 'list';
-					$lt = ORM::Factory('template', $module['class']);
+					$lt = ORM::Factory('template', $module['family']);
 					$containerObject = ORM::Factory('page')
 						->where('parentid', $object->id)
 						->where('template_id', $lt->id)
 						->where('activity IS NULL')
 						->find();
+          if(!$containerObject->loaded){
+            throw new Kohana_User_Exception('Did not find list container', 'List object is missing container: '.$lt->id);
+          }
 					$arguments = array(
 						'containerObject'=>$containerObject
 					);
-					$htmlChunks[$module['class']] = mop::buildModule($module, $arguments);
+					$htmlChunks[$module['family']] = mop::buildModule($module, $arguments);
 					break;
 				default:
 					$element = false;
@@ -251,7 +254,39 @@ class CMS {
 		return $htmlChunks;
 	}
 
+  
+	public static function buildUIHtmlChunksForObject($object){
+		$elements = mop::config('backend', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename));
+    $elementsConfig = array();
+		foreach($elements as $element){
+			$entry = array();
+      $entry['type'] = $element->tagName;
+			for($i=0; $i<$element->attributes->length; $i++){
+				$entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
+			}	
+      //any special xml reading that is necessary
+      switch($entry['type']){
+      case 'singleFile':
+      case 'singleImage':
+        $ext = array();
+        //echo sprintf('/template[@name="%s"]/elements/singleImage[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
+        $children = mop::config('backend', sprintf('//template[@name="%s"]/elements/%s[@field="%s"]/ext', $object->template->templatename, $element->tagName, $element->getAttribute('field')));
+        foreach($children as $child){
+          if($child->tagName == 'ext'){
+            $ext[] = $child->nodeValue; 
+          }
+        }
+        $entry['extensions'] = implode(',', $ext);
+        break;
 
+      default:
+        break;
+      }
+			$elementsConfig[] = $entry;
+		}
+
+    return cms::buildUIHtmlChunks($elementsConfig, $object);
+  }
 
 }
 
