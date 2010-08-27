@@ -254,20 +254,15 @@ class CMS {
   
 	public static function buildUIHtmlChunksForObject($object){
 		$elements = mop::config('backend', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename));
-    echo sprintf('//template[@name="%s"]/elements/*', $object->template->templatename);
-    echo $object->template->templatename;
-    echo $elements->length;
     $elementsConfig = array();
 		foreach($elements as $element){
-      echo 'lookie';
 			$entry = array();
-      $entry['type'] = $element->name;
+      $entry['type'] = $element->tagName;
 			for($i=0; $i<$element->attributes->length; $i++){
 				$entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
 			}	
 			$elementsConfig[] = $entry;
 		}
-    print_r($elementsConfig);
 
     return cms::buildUIHtmlChunks($elementsConfig, $object);
   }

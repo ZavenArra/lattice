@@ -384,7 +384,7 @@ class CMS_Controller extends Controller {
 		//look up any components and add them as well
 
 		//configured components
-		$components = mop::config('backend', sprintf('//template[@templatename="%s"]/component',$newtemplate->templatename));
+		$components = mop::config('backend', sprintf('//template[@name="%s"]/component',$newtemplate->templatename));
 		foreach($components as $c){
 			$template = ORM::Factory('template', $c->getAttribute('templateId'));
 			if($c->hasChildNodes()){
@@ -396,7 +396,7 @@ class CMS_Controller extends Controller {
 		}
 
 		//containers (list)
-		$containers = mop::config('backend', sprintf('//template[@templatename="%s"]/module[@type="list"]',$newtemplate->templatename));
+		$containers = mop::config('backend', sprintf('//template[@name="%s"]/module[@type="list"]',$newtemplate->templatename));
 		foreach($containers as $c){
 			echo 'adding one';
 			$template = ORM::Factory('template', $c->getAttribute('templateId'));
