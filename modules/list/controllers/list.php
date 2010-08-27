@@ -95,8 +95,9 @@ class List_Controller extends Controller{
 			$html.=$itemt->render();
 		}
 	
-		$this->view->label =  mop::config('backend', sprintf('//module[@class="%s"]', $this->listClass))->item(0)->getAttribute('label');
-		$this->view->class =  mop::config('backend', sprintf('//module[@class="%s"]', $this->listClass))->item(0)->getAttribute('cssClasses') . ' sortDirection-'.$this->sortdirection;
+    //actually we need to do an absolute path for local config
+		$this->view->label =  mop::config('backend', sprintf('//list[@family="%s"]', $this->listClass))->item(0)->getAttribute('label');
+		$this->view->class =  mop::config('backend', sprintf('//list[@family="%s"]', $this->listClass))->item(0)->getAttribute('cssClasses') . ' sortDirection-'.$this->sortdirection;
 		$this->view->items = $html;
 		$this->view->instance = $this->listClass;
 

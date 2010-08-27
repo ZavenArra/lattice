@@ -57,22 +57,24 @@ Class ConfigSite_Controller extends Controller {
 			//find or create template record
 			$tRecord = ORM::Factory('template', $template->getAttribute('name') );
 			if(!$tRecord->loaded){
+        echo "\ncreating for ".$template->getAttribute('name')."\n";
 				$tRecord = ORM::Factory('template');
 				$tRecord->templatename = $template->getAttribute('name');
 				$tRecord->nodetype = strtoupper($template->getAttribute('nodeType'));
 				$tRecord->save();
 			}
+      echo 'using '.$tRecord->id."\n";
 
 
 			foreach(mop::config('backend', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item){
-        echo 'found an item';
+        echo 'found an item '.$template->getAttribute('name').':'.$item->tagName."\n";
 				switch($item->tagName){
 
 				case 'list':
-					$tRecord = ORM::Factory('template');
-					$tRecord->templatename = $item->getAttribute('family');
-					$tRecord->nodetype = 'CONTAINER';
-					$tRecord->save();
+					$ltRecord = ORM::Factory('template');
+					$ltRecord->templatename = $item->getAttribute('family');
+					$ltRecord->nodetype = 'CONTAINER';
+					$ltRecord->save();
 					break;
 
         default:
@@ -112,6 +114,7 @@ Class ConfigSite_Controller extends Controller {
 						->where('template_id', $tRecord->id)
 						->where('column', $item->getAttribute('field'))
 						->find();
+          echo "\n".$tRecord->id."   ".$item->getAttribute('field')."\n";
 					if(!$objectmap->loaded){
 						$newmap = ORM::Factory('objectmap');
 						$newmap->template_id = $tRecord->id;
@@ -147,6 +150,8 @@ Class ConfigSite_Controller extends Controller {
 		}	else {
 			echo "\nData Unchanged\n";
 		}
+
+    exit;
 
 	}
 

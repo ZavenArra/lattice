@@ -396,12 +396,11 @@ class CMS_Controller extends Controller {
 		}
 
 		//containers (list)
-		$containers = mop::config('backend', sprintf('//template[@name="%s"]/module[@type="list"]',$newtemplate->templatename));
+		$containers = mop::config('backend', sprintf('//template[@name="%s"]/elements/list',$newtemplate->templatename));
 		foreach($containers as $c){
-			echo 'adding one';
-			$template = ORM::Factory('template', $c->getAttribute('templateId'));
+			$template = ORM::Factory('template', $c->getAttribute('family'));
 			$arguments['title'] = $c->getAttribute('label');
-			$this->__addObject($newpage->id, $newtemplate->id, $arguments);
+			$this->__addObject($newpage->id, $template->id, $arguments);
 		}
 
 		return $newpage->id;

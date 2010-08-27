@@ -38,8 +38,8 @@ class Template_Model extends ORM {
 			}
 
 			$valuefromconfig=NULL;
-			if($column == 'addableobjects'){
-				$xQuery .= '/addableobject';
+			if($column == 'addableObjects'){
+				$xQuery .= '/addableObject';
 				$nodes = mop::config('backend', $xQuery);
 				$valuefromconfig = array();
 				foreach($nodes as $node){

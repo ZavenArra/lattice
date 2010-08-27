@@ -229,6 +229,9 @@ class CMS {
 						->where('template_id', $lt->id)
 						->where('activity IS NULL')
 						->find();
+          if(!$containerObject->loaded){
+            throw new Kohana_User_Exception('Did not find list container', 'List object is missing container: '.$lt->id);
+          }
 					$arguments = array(
 						'containerObject'=>$containerObject
 					);
@@ -261,6 +264,24 @@ class CMS {
 			for($i=0; $i<$element->attributes->length; $i++){
 				$entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
 			}	
+      //any special xml reading that is necessary
+      switch($entry['type']){
+      case 'singleFile':
+      case 'singleImage':
+        $ext = array();
+        //echo sprintf('/template[@name="%s"]/elements/singleImage[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
+        $children = mop::config('backend', sprintf('//template[@name="%s"]/elements/%s[@field="%s"]/ext', $object->template->templatename, $element->tagName, $element->getAttribute('field')));
+        foreach($children as $child){
+          if($child->tagName == 'ext'){
+            $ext[] = $child->nodeValue; 
+          }
+        }
+        $entry['extensions'] = implode(',', $ext);
+        break;
+
+      default:
+        break;
+      }
 			$elementsConfig[] = $entry;
 		}
 
