@@ -13,9 +13,9 @@
 <!ATTLIST template
 	name				CDATA #REQUIRED
 	nodeType			CDATA #REQUIRED
-	allowDelete 		(true|false) #IMPLIED "true"
-	allowTogglePublish	(true|false) #IMPLIED "true"	
-	allowChildSort		(true|false) #IMPLIED "true"
+	allowDelete 		(true|false) "true"
+	allowTogglePublish	(true|false) "true"	
+	allowChildSort		(true|false) "true"
 >
 
 <!ELEMENT elements ( ipe*, list*, singleImage*, singleFile*, radioGroup*, multiSelect*, date*, time*, dateRange* ) >
@@ -30,7 +30,7 @@
 <!ATTLIST list
 	family				CDATA #REQUIRED
 	label				CDATA #REQUIRED
-	display				(inline|component) #IMPLIED "inline"
+	display				(inline|component) "inline"
 >
 
 <!ELEMENT ipe>
@@ -73,7 +73,7 @@
 	width				CDATA #REQUIRED
 	height				CDATA #REQUIRED
 	forceDimensions		(width|height) #IMPLIED
-	crop				(true|false) #IMPLIED "false"
+	crop				(true|false) "false"
 >
 
 <!ELEMENT ext (#CDATA)>
