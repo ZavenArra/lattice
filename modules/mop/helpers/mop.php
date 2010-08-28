@@ -18,6 +18,9 @@ Class mop {
 		if(!isset(self::$config[$arena])){
 			$dom = new DOMDocument();
 			$dom->load( "application/config/$arena.xml");
+      if($dom->validate()){
+        die('Validation failed on '."application/config/$arena.xml");
+      }
 			$xpathObject = new DOMXPath($dom);
 			self::$config[$arena] = $xpathObject;
 		}
