@@ -34,7 +34,7 @@
         $this->_delegate->$pMemberName = $pValue;
       }
       public function onValidateError ($pNo, $pString, $pFile = null, $pLine = null, $pContext = null) {
-        $this->_validationErrors[] = preg_replace("/^.+: */", "", $pString);
+        $this->_validationErrors[] = preg_replace("/^.+: */", "", $pString).$pLine;
       }
     }
 Class mop {
