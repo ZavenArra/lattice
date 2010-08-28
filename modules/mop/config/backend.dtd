@@ -13,7 +13,7 @@
 
 <!ELEMENT templates (template*) >
 
-<!ELEMENT template (elements|addableObject)* >
+<!ELEMENT template (elements?,addableObject*) >
 <!ATTLIST template
 	name				CDATA #REQUIRED
 	nodeType			CDATA #REQUIRED
