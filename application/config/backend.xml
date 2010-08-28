@@ -1,4 +1,4 @@
-<!DOCTYPE MoPCMS BAKCEND CONFIGURATION "../../modules/mop/config/backend.dtd">
+<!DOCTYPE configuration SYSTEM "../../modules/mop/config/backend.dtd">
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
 	<templates>  
