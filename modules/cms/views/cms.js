@@ -4,9 +4,9 @@ mop.modules.CMS = new Class({
 	Extends: mop.modules.Module,
 	pageLoadCount: 0,
 
-	initialize: function( anElement, aMarshal, options ){
+	initialize: function( anElement, options ){
 
-		this.parent( anElement, aMarshal, options );		
+		this.parent( anElement, null, options );		
 		this.rid = this.getValueFromClassName( "rid" );
 		this.navKey = mop.util.getValueFromClassName( "navigation", this.elementClass );
 		
@@ -203,4 +203,20 @@ mop.modules.CMS = new Class({
 		}).send();
 	}
 	
+});
+
+window.addEvent( "domready", function(){
+	
+	mop.HistoryManager = new mop.util.HistoryManager().instance();
+	mop.HistoryManager.init( "pageId", "onPageIdChanged" );
+	mop.ModalManager = new mop.ui.ModalManager();
+    mop.DepthManager = new mop.util.DepthManager();
+	
+    var doAuthTimeout = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
+
+    if( window.location.href.indexOf( "auth" ) == -1 && doAuthTimeout && doAuthTimeout != "0" ) mop.loginMonitor = new mop.util.LoginMonitor();
+    mop.util.EventManager.broadcastEvent("resize");
+    mop.CMS = new mop.modules.CMS( $("cms"), null );
+    //  mop.ModuleManager.initialize();
+
 });

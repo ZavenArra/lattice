@@ -6,7 +6,8 @@
 
 <!ENTITY % uiattrs
 	"field				CDATA	#REQUIRED
-	 label				CDATA	#IMPLIED"
+	 label				CDATA	#IMPLIED
+	 className			CDATA	#IMPLIED"
 >
 
 <!ELEMENT configuration (templates,data) >
