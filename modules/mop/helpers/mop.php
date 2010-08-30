@@ -1,7 +1,7 @@
 <?
 
     class MyDOMDocument {
-      private $_delegate;
+      public $_delegate;
       private $_validationErrors;
 
       public function __construct (DOMDocument $pDocument) {
@@ -62,7 +62,7 @@ Class mop {
         print_r($dom->errors);  
         die('Validation failed on '."application/config/$arena.xml");
       }
-			$xpathObject = new DOMXPath($dom);
+			$xpathObject = new DOMXPath($dom->_delegate);
 			self::$config[$arena] = $xpathObject;
 		}
 		$xmlNodes = self::$config[$arena]->evaluate($xpath);
