@@ -1,23 +1,19 @@
-//msie6 redirect
+// Section: Setting up environment for MoPCore.
+
+//	Redirects ie 6 to a landing page for that browser
 if( Browser.Engine.trident4 ){
 	window.location.href =  $(document).getElement("head").getElement("base").get("href") + "msielanding";
 }
 
 
 /*
-Fix for:
-https://mootools.lighthouseapp.com/projects/2706/tickets/651-classtostring-broken-on-122-big-regression
+Note: https://mootools.lighthouseapp.com/projects/2706/tickets/651-classtostring-broken-on-122-big-regression
 */
 Class.Mutators.toString = Class.Mutators.valueOf = $arguments(0);
 
 /*
-	mopCore.js
-
-	Documentation:
-		onDomReady: instantiates instance of mop.modMan
-	
-	procedure:	Quick hack to prevent browsers w/o a console, or firebug from generating errors when console functions are called.
-	Gets called on post definition.
+	Function: buildConsoleObject
+	Quick hack to prevent browsers w/o a console, or firebug from generating errors when console functions are called. Gets called immediately
 */
 function buildConsoleObject(){	
 	if (!window.console ){
@@ -35,11 +31,16 @@ function buildConsoleObject(){
 		names = null;		
 	}
 }
-
 buildConsoleObject();
 
 /*
 	Section: Extending Mootools
+
+	Function: getSiblings
+	Arguments:
+		match - {Element} an element to get the sibling
+		nocache - {Boolean} 
+			
 */
 Element.implement({
 	getSiblings: function(match,nocache) {
@@ -47,6 +48,13 @@ Element.implement({
 	}	
 });
 
+/*
+	Function: getSibling
+	Arguments:
+		match - {Element} an element to get the sibling
+		nocache - {Boolean} 
+	Note: calls getSiblings, returns first element of collection
+*/
 Element.implement({
 	getSibling: function(match,nocache) {
 		return this.getSiblings(match,nocache)[0];
@@ -54,8 +62,9 @@ Element.implement({
 });
 
 /*
-	Implementing isBody as non private function and implementing getScrolls fix from: https://mootools.lighthouseapp.com/projects/2706/tickets/637-getcoordinatesgetleftgettop-bug-on-overflowhidden-elements
-	TODO: *** REMOVE WHEN MOOTOOLS FIXES THIS...  its in milestone for 2.0 but no fix yet***
+	Function: isBody
+	Paramaters: 
+		element - {Element}
 */
 Element.implement({
 	isBody: function(element){
@@ -63,6 +72,18 @@ Element.implement({
 	}
 });
 
+
+
+/*
+	Function: getScrolls
+	Paramaters: 
+		element - {Element}
+	Note:
+		Mootools fixed this in 1.3
+		https://mootools.lighthouseapp.com/projects/2706/tickets/637-getcoordinatesgetleftgettop-bug-on-overflowhidden-elements
+		We ought to set up a test, and upgrade.
+		This method is only relevant to the getScrolls function.
+*/
 Element.implement({
 	getScrolls: function(){
 		var element = this.parentNode, position = {x: 0, y: 0};
@@ -78,7 +99,8 @@ Element.implement({
 /*
 	Function: String.encodeUTF8
 	Implements encodeUTF8 into mootools' native String class
- 	Argument: s{String} a string
+ 	Parameters:
+ 		s - {String} a string
 	Returns: {String} argumemt string as UTF-8 string
 */
 String.implement( "encodeUTF8", function(  ){
@@ -87,38 +109,15 @@ String.implement( "encodeUTF8", function(  ){
 
 /*
 	Section: MoP Package
-	mop is a namespace, quick definition of namespace, more useful for documentation than anything else.
+	Mop is a namespace, quick definition of namespace, more useful for documentation than anything else.
 */
-
 mop = {
-
 	_domIsReady: false,
-
-	getBaseURL: function(){
-		return $(document).getElement("head").getElement("base").get("href");
-	},
-
-	getAppURL: function(){
-
-		var appURLAppendClassName = mop.util.getValueFromClassName( "appUrlAppend", $(document).getElement("body").get("class") );
-		var appUrlAppend;
-
-		if( typeof appURLAppendClassName == "string" ){
-			appUrlAppend = appURLAppendClassName + ".php/";
-		}else{
-			appUrlAppend = "";
-		}
-
-		// var appUrlAppend = ( appURLAppendClassName )? appURLAppendClassName + ".php/" : "";
-		return mop.getBaseURL() + appUrlAppend;
-
-	}
-
 }
 
 
 /*
-	Section: mop.util
+	Pakcage: mop.util
 */
 mop.util = {};
 
@@ -129,7 +128,6 @@ mop.util = {};
 		cssURL - path to the stylesheet to be attached default value is "screen"
 		media - media type to apply to stylesheet element
 */
-
 mop.util.loadStyleSheet = function( cssURL, mediaString, opts ){
 	var options = ( opts )? opts : {};
 	options.media = ( mediaString )? mediaString : "screen";
@@ -149,24 +147,17 @@ mop.util.loadJS = function( jsURL, options ){
 
 /*
 	Function: mop.util.domIsReady
+	So a module can know if the initial domready has been called (say its loaded via ajax)
 	Set mop._domIsReady to true
-
 */
-
 mop.util.domIsReady = function(){
 	mop._domIsReady = true;
-}
-
-
-mop.util.destroyInstance = function( anInstance ){
-	delete anInstance;
-	anInstance = null;
 }
 
 /*
  	Function: mop.util.stopEvent 
 	Stops event bubbling, normally this is handled in each instance
-	But this will serve as a nice shortcut given the verbosity needed to deal with Ie6 ( the whole return value conditional )
+	But this will serve as a nice shortcut given the verbosity needed to deal with some IE's ( the whole return value conditional )
 */
 mop.util.stopEvent = function( e ){
 	if( e && e.preventDefault ){
@@ -179,7 +170,7 @@ mop.util.stopEvent = function( e ){
 /*
  	Function: mop.util.preventDefault 
 	Prevents default actions on click events, similart to stopEvent... see mootools documentation for distinction
-	This will serve as a nice shortcut given the verbosity needed to deal with Ie6 ( the whole return value conditional )
+	This will serve as a nice shortcut given the verbosity needed to deal with IE's ( the whole return value conditional )
 */
 mop.util.preventDefault = function( e ){
 	if( e && e.preventDefault ){
@@ -191,11 +182,36 @@ mop.util.preventDefault = function( e ){
 
 /*
  	Function: mop.util.isDomReady 
-	Retrieve the value of mop.util.isDomReady
+	Simple getter
 	Returns: mop._domIsReady
 */
 mop.util.isDomReady = function(){
 	return mop._domIsReady;
+}
+
+/*
+ 	Function: mop.util.getBaseURL 
+	Returns: href from html base tag
+*/
+mop.util.getBaseURL = function(){
+	return $(document).getElement("head").getElement("base").get("href");
+},
+
+/*
+ 	Function: mop.util.getAppURL 
+	Gets urls to the application front-controller
+	Returns: baseURL + appention (appurl for ajax purposes)
+*/
+mop.util.getAppURL = function(){
+	var appURLAppendClassName = mop.util.getValueFromClassName( "appUrlAppend", $(document).getElement("body").get("class") );
+	var appUrlAppend;
+	if( typeof appURLAppendClassName == "string" ){
+		appUrlAppend = appURLAppendClassName + ".php/";
+	}else{
+		appUrlAppend = "";
+	}
+	return mop.util.getBaseURL() + appUrlAppend;
+
 }
 
 /* Function: mop.util.getValueFromClassName
@@ -205,7 +221,6 @@ mop.util.isDomReady = function(){
 mop.util.getValueFromClassName = function( key, aClassName ){
 	if(!aClassName) return;
 	var classNames = aClassName.split( " " );
-//	console.log( "mop.util.getValueFromClassName ", classNames.join(", ") );
 	var result = null;
 	classNames.each( function( className ){
 		if( className.indexOf( key ) == 0 ) result = className.split("-")[1];
@@ -233,16 +248,43 @@ mop.util.getUniqueId = function ( prefix ){
 	}
 }
 
+/*
+	Function: mop.util.JSONSend
+	MoP Wrapper for mootools Request.json
+	Note: Does this need to exist?
+*/ 
 mop.util.JSONSend = function( url, data, options ){
 	if( options ){ 
 		options.url = url;
 	}else{
 		options = { url: url };
 	}
-//	console.log( "mop.util.JSONSend", url, data, options );
 	new Request.JSON( options ).post( data );
 },
 
+/*
+	Function: setId
+	Sets the module id... 
+*/
+mop.util.setRID: function( aNumber ){
+	mop.rid = Number( aNumber );
+},
+
+/*
+	Function: getId
+	Gets module id from the html body's ID with the prefix "id"
+	Returns: Number
+*/
+mop.util.getRID: function(){
+	if( !mop.rid ) mop.rid = Number( $(document).getElement("body").id.split("id")[1] );
+	return mop.rid;
+},
+
+/*
+	Package: mop.util.validation
+	Static class to hold validation regex and functions
+	Note: (Capitalize)
+*/
 mop.util.validation = {
 
 	regEx : {
@@ -389,120 +431,52 @@ mop.util.validation = {
 
 }
 
-
-/*
-	Class: ModuleManager keeps track of and initializes modules in a given page
-*/
-mop.ModuleManager = {
+mop.MoPObject = new Class({
+	Implements: [ Events, Options ],
+	/*
+		Variable: element
+		html element for this class
+	*/
+	element: null,
+	/*
+		Variable: elementClass
+		Convenience variable getting the className from the element
+	*/
+	elementClass: null,
+	/*
+		Variable: marshal
+		This instance's delegate, ie. the object the next level up between this instance and the root controller.
+	*/
+	marshal: null,
 	/*
 		Function: initialize
+		Constructor
 	*/	
-	moduleInstances : new Hash(),
-	
-	initialize: function(){
-		mop.ModuleManager.initModules( null, "window" );
+	initialize: function( anElementOrId, aMarshal, options ){
+		this.setOptions( options );
+		this.element = $( anElementOrId );
+		this.elementClass = this.element.get("class");
+		this.marshal = ( $type( aMarshal ) == "string" )? mop.ModuleManager.getModuleById( aMarshal ) : aMarshal;
+		this.element.store( 'Class', this );		
 	},
-	
-	toString: function(){
-		return "[Object, mop.ModuleManager ]";
-	},
-	
 	/*
-		Function: setId
-		Sets the module id... 
-	*/
-	setRID: function( aNumber ){
-		this.rid = Number( aNumber );
+		Function: getValueFromClassName
+		Convenience method that calls mop.util.getValueFromClassName;
+	*/	
+	getValueFromClassName: function( key ){
+		return mop.util.getValueFromClassName( key, this.elementClass );
 	},
-	
 	/*
-		Function: getId
-		Gets module id from the html body's ID with the prefix "id"
-		Returns: Number
-	*/
-	getRID: function(){
-		if( !this.rid ) this.rid = Number( $(document).getElement("body").id.split("id")[1] );
-		return this.rid;
-	},
-	
-/*
-	Function: initModules	
-	Loops through elements with the class "module" and initializes each as a module
-*/	
-	initModules: function( elementToLookIn, context ){		
-
-		var modules = ( !elementToLookIn )? $$(".module") : elementToLookIn.getElements(".module");
-		var newlyInstantiatedModules =  { loadedModules:[], protectedModules:[] };
-
-//		console.log( "instantiating", modules.length, "modules inside ", elementToLookIn, " in the context ", context );
-
-		modules.each( function( element ){
-			var aNewModule = mop.ModuleManager.initModule( $(element), context );
-			newlyInstantiatedModules.loadedModules.push( aNewModule );
-			if( aNewModule.element.hasClass( "protected" ) ) newlyInstantiatedModules.protectedModules.push( aNewModule );
-		});
-		
-		try{
-			return newlyInstantiatedModules;
-		} finally {
-			modules = null;
-		}
-//		console.dir( mop.ModuleManager.moduleInstances );
-	},
-
-	/*
-		Function: initModule
-		Initializes a specific module
-	*/
-	initModule: function( element, context ){
-		
-		var className = mop.util.getValueFromClassName( "class", element.get( "class" ) );
-		var packagePath = mop.util.getValueFromClassName( "package", element.get( "class" ) );
-
-		var packagePathArray = ( packagePath.indexOf("_") > -1 )? packagePath.split( "_" ) : [ packagePath ];
-
-		ref = null;
-		
-		packagePathArray.each( function( node ){
-			ref = ( !ref )? this[node] : ref[node];
-		});
-
-		var marshal = ( mop.util.getValueFromClassName( "marshal", element.get("class") ) )?  mop.ModuleManager.getModuleById( mop.util.getValueFromClassName( "marshal", element.get("class") ) ) : null;
-
-		console.log( "classToInstantiate\t", className, "context", context );
-		
-		var newModule = new ref[className]( element, marshal );
-		
-		mop.ModuleManager.moduleInstances.set( element.id, newModule );
-
-		try{
-			return newModule;
-		}finally{
-			packagePath = className = ref = packagePathArray = marshal = newModule = null;
-		}
-		
-	},
-	
-	getModuleById: function( anId ){
-		var mod = mop.ModuleManager.moduleInstances.get( anId );
-		if( !mod ) return;
-		return mod;
-	},
-	
-	destroyModuleById: function( moduleId, callContext ){
-
-//		console.log( "\t\tdestroyModuleById", this.toString(), moduleId, " called from ", callContext );
-
-		var aModule = mop.ModuleManager.moduleInstances.get( moduleId );
-		aModule.destroy();
-		mop.ModuleManager.moduleInstances.erase( moduleId );
-		delete aModule;
-		aModule = null;
-
-//		console.log( "is object effectively removed?\t", !( aModule ) );
+		Function: JSONSend
+		Convenience method that calls mop.util.JSONSend;
+	*/	
+	JSONSend: function( action, data, options ){
+		var url = mop.util.getAppURL() + "ajax/" + this.getSubmissionController() +  "/" + action + "/" + mop.rid;
+		mop.util.JSONSend( url, data, options );
 	}
 
-};
+});
+
 
 mop.util.Broadcaster = new Class({
 
@@ -691,7 +665,7 @@ mop.util.LoginMonitor = new Class({
 		$clear( this.inactivityTimeout );
 		$clear( this.logoutTimeout );
 		this.inactivityTimeout = this.onInactivity.periodical( this.secondsOfInactivityTilPrompt, this );
-		new Request.JSON( { url: mop.getAppURL()+"keepalive" } ).post();
+		new Request.JSON( { url: mop.util.getAppURL()+"keepalive" } ).post();
 	},
 
 	logout: function(){
@@ -701,7 +675,7 @@ mop.util.LoginMonitor = new Class({
 		delete this.status;
 		window.removeEvents();
 		this.dialogue.destroy();
-		window.location = mop.getAppURL()+"auth/logout";
+		window.location = mop.util.getAppURL()+"auth/logout";
 	}
 
 });

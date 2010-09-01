@@ -9,7 +9,7 @@ mop.modules.CMS = new Class({
 		this.parent( anElement, null, options );		
 		this.rid = this.getValueFromClassName( "rid" );
 		this.navKey = mop.util.getValueFromClassName( "navigation", this.elementClass );
-		
+//		this.nav = $( this.navKey ).retrieve( "Class" );
 		return this;
 	},
 	
@@ -30,14 +30,14 @@ mop.modules.CMS = new Class({
 		this.clearPage( pageId );
 		this.pageContent.addClass(".centeredSpinner");
 		new Request.JSON({
-			url: mop.getAppURL() + "cms/ajax/getPage/" + pageId,
+			url: mop.util.getAppURL() + "cms/ajax/getPage/" + pageId,
 			onSuccess: this.onPageLoaded.bind( this )
 		}).send();
  		mop.ModuleManager.setRID( pageId );
 	},
 	
 	clearPage: function( pageId ){
-		if( this.getRID() == pageId ) return;
+		if( mop.rid == pageId ) return;
 		this.destroyUIElements();
 //		console.log( "A", this.toString(), "clearPage", pageId );
 		this.destroyChildModules();
@@ -147,7 +147,7 @@ mop.modules.CMS = new Class({
 		}
 		
 		var confirmed = confirm( "Are you sure you wish to delete the node: “" + this.titleText + "”?\nThis cannot be undone." );
-		if( confirmed ) this.deleteNode( this.getRID(), "page" );
+		if( confirmed ) this.deleteNode( mop.rid, "page" );
 		confirmed = null;
 	},
 
@@ -157,7 +157,7 @@ mop.modules.CMS = new Class({
 			this.onObjectAdded( nodeData, parentId, whichTier, placeHolder );
 		};
 		new Request.JSON({
-			url: mop.getAppURL() + "cms/ajax/addObject/" + parentId + "/" + templateId,
+			url: mop.util.getAppURL() + "cms/ajax/addObject/" + parentId + "/" + templateId,
 			onComplete: callBack.bind( this )
 		}).post( { "title" : objectName } );
 		callBack = null;
@@ -183,7 +183,7 @@ mop.modules.CMS = new Class({
 	*/
 	togglePublishedStatus: function( nodeId ){
 		new Request.JSON({
-			url: mop.getAppURL() + "cms/ajax/togglePublish/"+ nodeId
+			url: mop.util.getAppURL() + "cms/ajax/togglePublish/"+ nodeId
 //			onComplete: this.onPublishedStatusToggled
 		}).send();
 	},
@@ -198,7 +198,7 @@ mop.modules.CMS = new Class({
 //		console.log( "deleteNode :: " + pageId + " : " + from );
 		if( from == "page" ) this.getNav().removeNode( pageId, this );
 		new Request.JSON({
-			url: mop.getAppURL() + "cms/delete/"+pageId,
+			url: mop.util.getAppURL() + "cms/delete/"+pageId,
 			onComplete: this.clearPage.bind( this, pageId )
 		}).send();
 	}

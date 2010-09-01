@@ -63,7 +63,7 @@ mop.modules.navigation.Navigation = new Class({
 	getNavTree: function(){
 //		console.log( "getNavTree ", url );
 		new Request.JSON({
-			url: mop.getAppURL() + 'ajax/'+ this.instanceName + "/getNavTree" + this.getDeepLinkTarget(),
+			url: mop.util.getAppURL() + 'ajax/'+ this.instanceName + "/getNavTree" + this.getDeepLinkTarget(),
 			onComplete: this.buildNav.bind( this )
 		}).send();
 	},
@@ -501,12 +501,12 @@ mop.modules.navigation.Navigation = new Class({
 	},
 
 	JSONSend: function( action, data, options ){
-		mop.util.JSONSend( mop.getAppURL() + "ajax/"+ this.getMarshal().instanceName +  "/" + action + "/" + this.getRID(), data, options );
+		mop.util.JSONSend( mop.util.getAppURL() + "ajax/"+ this.getMarshal().instanceName +  "/" + action + "/" + mop.rid, data, options );
 	},
 
 	renameNode: function( aString ){
-//		console.log( "rename node.... { " + aString + " }", $$( "#node_" + mop.ModuleManager.getRID() ),  $$( "#node_" + mop.ModuleManager.getRID() ).retrieve("Class") );
-		this.element.getElement("#node_"+ mop.ModuleManager.getRID() ).retrieve("Class").rename( aString );
+//		console.log( "rename node.... { " + aString + " }", $$( "#node_" + mop.rid ),  $$( "#node_" + mop.rid ).retrieve("Class") );
+		this.element.getElement("#node_"+ mop.rid ).retrieve("Class").rename( aString );
 		
 	},
 

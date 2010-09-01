@@ -36,10 +36,6 @@ mop.modules.ListModule = new Class({
 		return "[ object, mop.modules.ListModule ]";
 	},
 	
-	getInstanceName: function(){
-		return this.instanceName;
-	},
-	
 	build: function(){
 		this.parent();
 		this.initControls();
@@ -331,11 +327,6 @@ mop.modules.ListItem = new Class({
 				anElement.reposition( 'window' );
 			}
 		});
-	},
-
-	JSONSend: function( action, data, options ){
-		var url = mop.getAppURL() + "ajax/" + this.getSubmissionController() +  "/" + action + "/" + this.getRID();
-		mop.util.JSONSend( url, data, options );
 	},
 
 	getSubmissionController: function(){ return this.marshal.instanceName; },
