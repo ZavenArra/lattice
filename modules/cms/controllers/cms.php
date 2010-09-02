@@ -485,7 +485,7 @@ class CMS_Controller extends Controller {
 		$page = ORM::Factory('page')->find($id);
 		$page->activity = 'D';
 		$page->sortorder = 0;
-		$page->slug = null;
+		$page->slug = 'NULL';
 		$page->save();
 		$page->contenttable->activity = 'D';
 		$page->contenttable->save();
