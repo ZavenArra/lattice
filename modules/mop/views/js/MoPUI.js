@@ -474,12 +474,7 @@ mop.ui.UIElement = new Class({
 	
 	destroy: function(){
 
-		this.element.eliminate( "Class", this );
-
-		this.destroyValidationSticky();
-		
-		delete this.element;
-		delete this.elementClass;
+		this.destroyValidationSticky();		
 		delete this.fieldName;
 		delete this.autoSubmit;
 
@@ -491,9 +486,6 @@ mop.ui.UIElement = new Class({
 		delete this.validationErrors;
 		delete this.validationSticky;
 
-		this.element = null;
-		this.marshal = null;
-		this.elementClass = null;
 		this.fieldName = null;
 		this.autoSubmit = null;
 		
@@ -504,6 +496,7 @@ mop.ui.UIElement = new Class({
 		this.validationOptions = null;
 		this.validationSticky = null;	
 		
+		this.parent();
 		
 	}
 	

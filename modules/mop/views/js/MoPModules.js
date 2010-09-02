@@ -23,15 +23,15 @@ mop.modules.Module = new Class({
 	uiElements: [],
 	/*
 		Variable: childModules
-		Modules loaded within this module (likely going away soon)
+		Modules loaded within this module
 	*/
-	childModules: new Hash(),
+	childModules: null, //new Hash(),
 	
 	initialize: function( anElementOrId, aMarshal, options ){
+		console.log( "Constructing", this.toString(), this.childModules );
 		this.parent( anElementOrId, aMarshal, options );
 		this.instanceName = this.element.get("id");
-		console.log( "Constructing", this.instanceName );
-		this.build();
+		this.build();			
 	},
 	
 	onModalScroll: function( scrollData ){
@@ -75,29 +75,37 @@ mop.modules.Module = new Class({
 	/*
 		Function: initModules	
 		Loops through elements with the class "module" and initializes each as a module
+		// there is likely a better ( faster ) way to solve this 
 	*/
 	initModules: function( whereToLook ){
 		
-		// there is likely a better ( faster ) way to solve this 
 		var descendantModules = ( whereToLook )? $( whereToLook ).getElements(".module") : this.element.getElements(".module");
-		var childModules =  new Hash();
 		var filteredOutModules = [];
-		
+
+		console.log( "initModules", this.toString(), this.childModules, descendantModules );
+
 		descendantModules.each( function( aDescendant ){
 			descendantModules.each( function( anotherDescendant ){
+			    console.log( "initModule, looping through descendant of", this.toString(), "\n\t", aDescendant,"\n\t", anotherDescendant );
 				if(  aDescendant.hasChild( anotherDescendant ) ) filteredOutModules.push( anotherDescendant );
-			});
-		});
-		console.log( "filteredOutModules", filteredOutModules );
+			}, this );
+		}, this );
+		
+		console.log( this.toString(), "\t\tfilteredOutModules", filteredOutModules );
 		descendantModules.each( function( aDescendant ){
 			if( !filteredOutModules.contains( aDescendant ) ){
+        		if( !this.childModules ) this.childModules = new Hash();
 				var module = this.initModule( aDescendant );
 				var instanceName = module.instanceName;
 				this.childModules.set( instanceName, module );
-				console.log( "instantiate", instanceName );
 			}
 		}, this );
-		return childModules;
+		
+        console.log( "childModules", this.toString(), this.childModules );
+        
+        delete filteredOutModules, descendantModules;
+        filteredOutModules = descendantModules = null;
+        
 	},
 	
 	/*
@@ -148,22 +156,24 @@ mop.modules.Module = new Class({
 	Function: destroyChildModules
 	Loops through loaded modules, and destroys unprotected ones... 
 	@TODO, this shouldnt necessarily be a part of module, but rather something more like an ModuleInstantiator interface */
-	destroyChildModules: function(){
+	destroyChildModules: function( whereToLook ){
+		console.log( "destroyChildModules", this.toString(), this.childModules );
+		if( !this.childModules || this.childModules.getLength() == 0 ) return;
 
-		if( !this.childModules.length ) return;
-
-		var count = this.childModules.length;
-
-		console.log( "pre destroyChildModules", this.childModules );
+        var possibleTargets = ( whereToLook )? whereToLook.getElements( ".module" ) : this.element.getElements( ".module" );
 		
-		this.childModules.each( function( anElement, anIndex ){
-				var moduleReference = this.childModules.get( anElement.get( "id" ) );
-				childModules.erase( moduleReference.instanceName );
-				moduleReference.destroy();
-				delete moduleReference;
-				moduleReference = null;
-		});
-		console.log( "post destroyChildModules", this.childModules );
+		this.childModules.each( function( aModule, anIndex ){
+		    if( possibleTargets.contains( aModule.element ) ){
+		        var key = aModule.instanceName;
+		        console.log( "destroyChildModules", this.toString(), "attempting to destroy", key );
+				aModule.destroy();
+				this.childModules.erase( key );
+				delete aModule;
+				aModule = null;
+				console.log( "\t\tDestroyed?", this.toString(), "childModules: ", this.childModules.get( key ) );
+			}
+		}, this );
+//		console.log( this.toString(), this.element, "post destroyChildModules", this.childModules );
 	},
 	
 	destroyUIElements: function(){
@@ -179,31 +189,18 @@ mop.modules.Module = new Class({
 	},
 	
 	destroy: function(){
-		
-		this.element.setStyle( "display", "none" );
-		
 		this.destroyChildModules();
 		this.destroyUIElements();
 		
-		this.element.eliminate( "Class" );
-
 		delete this.uiElements;
-		delete this.elementClass;
 		delete this.instanceName;
-		delete this.protectedModules;
 		delete this.childModules;
-		delete this.options;
-
 		
-		this.element = null;
-		this.elementClass = null;
 		this.instanceName = null;
-		this.marshal = null;
 		this.uiElements = null;
 		this.childModules = null;
-		this.protectedModules = null;
 		
-		this.options = null;
+		this.parent();
 	}
 
 });

@@ -3,18 +3,24 @@ mop.modules.CMS = new Class({
 	/* Constructor: initialize */
 	Extends: mop.modules.Module,
 	pageLoadCount: 0,
+	rid: null,
+	pageContent: null,
+	pageIdToLoad: null,
+	scriptsLoaded: null,
+	scriptsTotal: null,
+	currentPageLoadIndex: null,
+	titleElement: null,
+	deletePageLink: null,
 
 	initialize: function( anElement, options ){
-
+        console.log( "CMS INIT", this.childModules );
 		this.parent( anElement, null, options );		
 		this.rid = this.getValueFromClassName( "rid" );
-		return this;
 	},
 	
 	build: function(){
-		console.log( this.toString() );
 		this.pageContent = $("nodeContent");
-		this.childModules = this.initModules( this.element );	
+		this.initModules( this.element );	
 	},
 	
 	toString: function(){
@@ -25,7 +31,7 @@ mop.modules.CMS = new Class({
 		console.log( this.toString(), "loadPage", pageId );
 		this.pageIdToLoad = pageId;
 		this.clearPage( pageId );
-		this.pageContent.addClass(".centeredSpinner");
+		this.pageContent.spin();
 		new Request.JSON({
 			url: mop.util.getAppURL() + "cms/ajax/getPage/" + pageId,
 			onSuccess: this.onPageLoaded.bind( this )
@@ -34,9 +40,10 @@ mop.modules.CMS = new Class({
 	},
 	
 	clearPage: function( pageId ){
-		if( mop.rid == pageId ) return;
+	    console.log( "clearPage", pageId );
+		if( mop.util.getRID() == pageId ) return;
+		this.destroyChildModules( this.pageContent );
 		this.destroyUIElements();
-		this.destroyChildModules();
 		this.pageContent.empty();
 	},
 
@@ -51,7 +58,7 @@ mop.modules.CMS = new Class({
 		var pageData = new Hash( pageJSON );
 		pageData.css.each( function( element, index ){ mop.util.loadStyleSheet( element ); });
 
-		$("nodeContent").removeClass(".centeredSpinner");
+		$("nodeContent").unspin();
 
 		var scripts = pageData.js;
 		this.scriptsLoaded = 0;
@@ -98,7 +105,6 @@ mop.modules.CMS = new Class({
 		
 		this.initModules( this.pageContent );
 				
-		/*@TODO turn this into a hook, call to postInitUIHook or something*/
 		if( this.postInitUIHook ) this.postInitUIHook();
 
 	},
@@ -124,6 +130,7 @@ mop.modules.CMS = new Class({
 
 
 	addObject: function( objectName, templateId, parentId, whichTier, placeHolder ){
+	    console.log( "addObject", this, this.toString() );
 		var callBack = function( nodeData ){
 			this.onObjectAdded( nodeData, parentId, whichTier, placeHolder );
 		};
@@ -135,8 +142,8 @@ mop.modules.CMS = new Class({
 	},
 
 	onObjectAdded: function( data, parentId , whichTier, placeHolder ){
-	    console.log( "loadedModules", this.loadedModules );
-		this.loadedModules.get( "navigation" ).onObjectAdded(  data , parentId, whichTier, placeHolder );
+	    console.log( "onObjectAdded", this, this.toString() );
+		this.childModules.get( "navigation" ).onObjectAdded(  data , parentId, whichTier, placeHolder );
 	},
 	
 	getModule: function(){ return this; },
@@ -183,6 +190,6 @@ window.addEvent( "domready", function(){
     if( window.location.href.indexOf( "auth" ) == -1 && doAuthTimeout && doAuthTimeout != "0" ) mop.loginMonitor = new mop.util.LoginMonitor();
     
     mop.util.EventManager.broadcastEvent("resize");
-    mop.CMS = new mop.modules.CMS( $("cms"), null );
+    mop.CMS = new mop.modules.CMS( "cms" );
 
 });

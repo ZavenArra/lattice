@@ -470,7 +470,15 @@ mop.MoPObject = new Class({
 	*/	
 	JSONSend: function( action, data, options ){
 		var url = mop.util.getAppURL() + "ajax/" + this.getSubmissionController() +  "/" + action + "/" + mop.rid;
-		mop.util.JSONSend( url, data, options );
+    	if( options ){  options.url = url; }else{ options = { url: url }; }
+    	new Request.JSON( options ).post( data );
+	},
+	
+	destroy: function(){
+	    this.element.destroy();
+	    this.element.eliminate( "Class" );
+	    delete this.element, this.elementClass;
+	    this.element = this.elementClass = this.marshal = null 
 	}
 
 });
