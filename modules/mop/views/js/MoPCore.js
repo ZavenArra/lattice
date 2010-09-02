@@ -111,9 +111,7 @@ String.implement( "encodeUTF8", function(  ){
 	Section: MoP Package
 	Mop is a namespace, quick definition of namespace, more useful for documentation than anything else.
 */
-mop = {
-	_domIsReady: false,
-}
+mop = {}
 
 
 /*
@@ -266,19 +264,19 @@ mop.util.JSONSend = function( url, data, options ){
 	Function: setId
 	Sets the module id... 
 */
-mop.util.setRID: function( aNumber ){
+mop.util.setRID = function( aNumber ){
 	mop.rid = Number( aNumber );
-},
+}
 
 /*
 	Function: getId
 	Gets module id from the html body's ID with the prefix "id"
 	Returns: Number
 */
-mop.util.getRID: function(){
+mop.util.getRID = function(){
 	if( !mop.rid ) mop.rid = Number( $(document).getElement("body").id.split("id")[1] );
 	return mop.rid;
-},
+}
 
 /*
 	Package: mop.util.validation
@@ -503,6 +501,34 @@ mop.util.Broadcaster = new Class({
 mop.util.EventManager = new new Class({
 	Implements: mop.util.Broadcaster,
 	initialize: function(){}
+});
+
+mop.util.DepthManager = new Class({
+
+	Extends: mop.util.Broadcaster,
+
+	modalDepth: 5000,
+	windowOverlayDepth: 1000,
+	modalOverlayDepth: 8000, 
+
+	initialize: function(){},
+	
+	incrementDepth: function( context ){
+		switch( context ){
+			case "modal" : return this.modalDepth++; break;
+			case "modalOverlay" : return this.modalOverlayDepth++; break;
+			case "windowOverlay" : return this.windowOverlayDepth++; break;
+		}
+	},
+	
+	getCurrentDepth: function( context ){
+		switch( context ){
+			case "modal": return this.modalDepth; break;
+			case "modalOverlay": return this.modalOverlayDepth; break;
+			case "windowOverlay": return this.windowOverlayDepth; break;
+		}
+	}
+	
 });
 
 mop.util.HistoryManager = new Class({
@@ -897,4 +923,4 @@ window.addEvent( "scroll", function(){
 
 window.addEvent( "domready", function(){
 	mop.util.domIsReady();
-}
+});

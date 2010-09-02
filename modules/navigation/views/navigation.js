@@ -15,7 +15,7 @@ mop.modules.navigation.Navigation = new Class({
 
 	initialize: function( anElement, aMarshal ){
 
-		this.parent( anElement );
+		this.parent( anElement, aMarshal );
 		
 		this.navElement = this.element.getElement( ".nav" );
 		
@@ -37,10 +37,6 @@ mop.modules.navigation.Navigation = new Class({
 
 	},
 
-	getMarshal: function(){
-//		console.log( "mop.navigation.Navigation.getMarshal", this.getValueFromClassName( "marshal" ),  mop.ModuleManager.getModuleById( this.getValueFromClassName( "marshal" ) ) );
-		return mop.ModuleManager.getModuleById( this.getValueFromClassName( "marshal" ) );
-	},
 	
 	build: function(){},
 	
@@ -84,11 +80,11 @@ mop.modules.navigation.Navigation = new Class({
 		if( !pageId ) return;
 		this.currentPage = pageId;
 		this.clearTier( whichTier + 1 );
-		this.getMarshal().loadPage( pageId );
+		this.marshal.loadPage( pageId );
 	},
 
 	setPublishedStatus: function( id ){
-		this.getMarshal().togglePublishedStatus( id );
+		this.marshal.togglePublishedStatus( id );
 	},
 
 	createNavTreeLookupTable: function( obj ){
@@ -207,8 +203,6 @@ mop.modules.navigation.Navigation = new Class({
 	showCategory: function( aNode, whichTier ){
 
 		console.log( "showCategory :::: ", aNode );//, " : ", aNode.id, " : ", whichTier, aNode.children );
-
-//		this.getMarshal().clearPage();
 
 		var showPage = true;
 
@@ -375,7 +369,7 @@ mop.modules.navigation.Navigation = new Class({
 		var name = prompt( "What would you like to name this Node?" );
 		if( name ){
 			var placeHolder = this.addPlaceHolder( name, whichTier );
-			this.getMarshal().addObject( name, templateId, parentId, whichTier, placeHolder );
+			this.marshal.addObject( name, templateId, parentId, whichTier, placeHolder );
 			placeHolder = null;
 		}
 		name = null;
@@ -501,7 +495,7 @@ mop.modules.navigation.Navigation = new Class({
 	},
 
 	JSONSend: function( action, data, options ){
-		mop.util.JSONSend( mop.util.getAppURL() + "ajax/"+ this.getMarshal().instanceName +  "/" + action + "/" + mop.rid, data, options );
+		mop.util.JSONSend( mop.util.getAppURL() + "ajax/"+ this.marshal.instanceName +  "/" + action + "/" + mop.rid, data, options );
 	},
 
 	renameNode: function( aString ){
@@ -525,8 +519,8 @@ mop.modules.navigation.Navigation = new Class({
 	removeNode: function( node, caller ){
 
 		// if called from marshal, dont talk to marshal
-		if( caller != this.getMarshal() ){
-			this.getMarshal().deleteNode( node.id );
+		if( caller != this.marshal ){
+			this.marshal.deleteNode( node.id );
 		}else{
 		// if called from marshal we only know the node id
 			node = this.getNodeById( node );
@@ -588,7 +582,6 @@ mop.modules.navigation.Navigation = new Class({
 		this.breadCrumbs.destroy();
 		delete this.breadCrumbs;
 		this.breadCrumbs = null;
-		mop.ModuleManager.destroyModule( this );
 	}
 
 });
@@ -756,7 +749,7 @@ mop.modules.navigation.CategoryNode = new Class({
 		}else if( this.nodeData.landing != "NO_LANDING" ){
 			this.nav.loadPage( this.nodeData.id, this.tier, "leafNodeOnClick" );
 		}
-		mop.ModuleManager.setRID( this.nodeData.id );
+		mop.util.setRID( this.nodeData.id );
 	},
 });
 

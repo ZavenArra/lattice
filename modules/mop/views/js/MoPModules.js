@@ -22,14 +22,15 @@ mop.modules.Module = new Class({
 	*/
 	uiElements: [],
 	/*
-		Variable: loadedModules
+		Variable: childModules
 		Modules loaded within this module (likely going away soon)
 	*/
-	childModules: [],
+	childModules: new Hash(),
 	
-	initialize: function( anElementOrId, aMarshal, options ){	
+	initialize: function( anElementOrId, aMarshal, options ){
 		this.parent( anElementOrId, aMarshal, options );
 		this.instanceName = this.element.get("id");
+		console.log( "Constructing", this.instanceName );
 		this.build();
 	},
 	
@@ -47,7 +48,8 @@ mop.modules.Module = new Class({
 	Function build: Instantiates mop.ui elements by calling initUI, can be extended for other purposes...
 	*/ 	
 	build: function(){
-		this.initUI();
+		this.uiElements = this.initUI();
+		this.initModules();
 	},
 	
 	toElement: function(){
@@ -66,41 +68,50 @@ mop.modules.Module = new Class({
 		return this.instanceName;
 	},
 	
+	getChildMarshal: function(){
+		return this;
+	},
+	
 	/*
 		Function: initModules	
 		Loops through elements with the class "module" and initializes each as a module
 	*/
-	initModules: function(){
+	initModules: function( whereToLook ){
+		
 		// there is likely a better ( faster ) way to solve this 
-		var descendantModules = this.element.getElements(".module");
-		var childModules = [];
-		var filteredModules = [];		
+		var descendantModules = ( whereToLook )? $( whereToLook ).getElements(".module") : this.element.getElements(".module");
+		var childModules =  new Hash();
+		var filteredOutModules = [];
+		
 		descendantModules.each( function( aDescendant ){
 			descendantModules.each( function( anotherDescendant ){
-				if(  aDescendant.hasChild( anotherDescendant ) ) filteredModules.push( anotherDescendant );
+				if(  aDescendant.hasChild( anotherDescendant ) ) filteredOutModules.push( anotherDescendant );
 			});
 		});
+		console.log( "filteredOutModules", filteredOutModules );
 		descendantModules.each( function( aDescendant ){
-			if( filteredModules.indexOf( aDescendant ) == -1 ){
-				this.childModules.push( this.initModule( aDescendant ) );
+			if( !filteredOutModules.contains( aDescendant ) ){
+				var module = this.initModule( aDescendant );
+				var instanceName = module.instanceName;
+				this.childModules.set( instanceName, module );
+				console.log( "instantiate", instanceName );
 			}
-		});
-		return this.childModules;
+		}, this );
+		return childModules;
 	},
 	
 	/*
 		Function: initModule
 		Initializes a specific module
 	*/
-	initModule: function( element, context ){
+	initModule: function( element ){
+		console.log( "initModule", this.toString(), element, element.get( "class" ) );
 		var classPath = mop.util.getValueFromClassName( "classPath", element.get( "class" ) ).split( "_" );
 		ref = null;
 		classPath.each( function( node ){
 			ref = ( !ref )? this[node] : ref[node];
 		});
-		var marshal = ( mop.util.getValueFromClassName( "marshal", element.get("class") ) )?  mop.ModuleManager.getModuleById( mop.util.getValueFromClassName( "marshal", element.get("class") ) ) : null;
-		console.log( "classToInstantiate\t", class, "context", context );
-		var newModule = new ref( element, marshal );
+		var newModule = new ref( element, this.getChildMarshal() );
 		return newModule;		
 	},
 	
@@ -124,11 +135,13 @@ mop.modules.Module = new Class({
 	*/
 	initUI: function(){
 		var elements = this.getModuleUiElements( this.element );
+		var uiElements = [];
 		if( !elements ) return null;
 		elements.each( function( anElement, anIndex ){
-			this.uiElements.push( new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get("class") ) ]( anElement, this, this.options ) );
+			uiElements.push( new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get("class") ) ]( anElement, this, this.options ) );
 		}, this );
 		elements = null;
+		return uiElements;
 	},
 
 /*	
@@ -136,19 +149,21 @@ mop.modules.Module = new Class({
 	Loops through loaded modules, and destroys unprotected ones... 
 	@TODO, this shouldnt necessarily be a part of module, but rather something more like an ModuleInstantiator interface */
 	destroyChildModules: function(){
-		if( !this.loadedModules.length ) return;
 
-		var count = this.loadedModules.length - this.protectedModules.length;
+		if( !this.childModules.length ) return;
+
+		var count = this.childModules.length;
+
+		console.log( "pre destroyChildModules", this.childModules );
 		
-		while( this.loadedModules.length >= count ){
-
-			if( !this.loadedModules[ this.loadedModules.length - 1 ].isProtected() ){
-				var moduleReference = this.loadedModules.pop();		
-				mop.ModuleManager.destroyModuleById( moduleReference.instanceName, this.instanceName + "destroyChildModules" );
+		this.childModules.each( function( anElement, anIndex ){
+				var moduleReference = this.childModules.get( anElement.get( "id" ) );
+				childModules.erase( moduleReference.instanceName );
+				moduleReference.destroy();
 				delete moduleReference;
-				moduleReference = null;				
-			}
-		}
+				moduleReference = null;
+		});
+		console.log( "post destroyChildModules", this.childModules );
 	},
 	
 	destroyUIElements: function(){
@@ -176,7 +191,7 @@ mop.modules.Module = new Class({
 		delete this.elementClass;
 		delete this.instanceName;
 		delete this.protectedModules;
-		delete this.loadedModules;
+		delete this.childModules;
 		delete this.options;
 
 		
@@ -185,7 +200,7 @@ mop.modules.Module = new Class({
 		this.instanceName = null;
 		this.marshal = null;
 		this.uiElements = null;
-		this.loadedModules = null;
+		this.childModules = null;
 		this.protectedModules = null;
 		
 		this.options = null;
@@ -194,13 +209,12 @@ mop.modules.Module = new Class({
 });
 
 /*
-	Class mop.module.ApplicationModule
-	Front-Controller for the running application
+	Class mop.module.ViewStackModule
 	Note: Extended Module that can handle view stacks (eg a module that loads other modules into a tabbed modal interface).
 */
 mop.modules.ViewStackModule = new Class({
 
-	Extendeds: mop.modules.Module;
+	Extendeds: mop.modules.Module,
 
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
@@ -250,12 +264,7 @@ mop.modules.AjaxFormModule = new Class({
 
 	submitForm: function( e ){
 		
-//		console.log( this.toString(), "submitForm", e );
-		if( e && e.preventDefault ){
-			e.preventDefault();
-		}else if( e ){
-			e.returnValue = false;
-		}
+        mop.util.stopEvent( e );
 		
 		this.generatedData = $merge( this.generatedData, this.serialize() );
 
@@ -306,11 +315,7 @@ mop.modules.AjaxFormModule = new Class({
 	},
 	
 	clearFormFields: function( e ){
-		if( e && e.stop ){
-			e.stop();
-		}else if( e ){
-			e.returnValue = false;
-		}
+		mop.util.stopEvent( e );
 		this.uiElements.each( function( anUIElement ){
 			//console.log( this.toString(), anUIElement.type, anUIElement.fieldName, anUIElement );
 			if( anUIElement.setValue ) anUIElement.setValue( null );
