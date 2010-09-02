@@ -7,20 +7,21 @@
 <!-- HOME -->
 		<template name="basiccategory" nodetype="CATEGORY" allow_sort="false" allow_delet="false" allow_publish="false">
 			<elements>
-
 			</elements>
 		</template>
 
 
 		<template name="singleipe" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
-			<elements>
-			
+			<elements>			
 			</elements>
 		</template>
 
 
 		<template name="singleradiogroup" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
-			
+			<elements>
+			</elements>
+		</template>
+
 		<template name="basiccategory" nodetype="CATEGORY" allow_sort="false" allow_delete="false" allow_publish="false">
 			<elements>
 				<ipe field="featureBlurb" label="Feature Text" tag="p" rows="4" />
