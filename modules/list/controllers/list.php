@@ -203,9 +203,12 @@ class List_Controller extends Controller{
 
 
 		//addable item should be specifid in the addItem call
-		$template = mop::config('backend', sprintf('//module[@class="%s"]/addableobject', $this->listClass));
+		$template = mop::config('backend', sprintf('//list[@family="%s"]/addableObject', $this->listClass));
+    if(!$template->length > 0){
+      throw new Kohana_User_Exception('No List By That Name', 'Count not locate configuration in backend.xml for '.sprintf('//list[@family="%s"]/addableobject', $this->listClass) );
+    }
 		$template = $template->item(0);
-		$template = ORM::Factory('template', $template->getAttribute('templateId'));
+		$template = ORM::Factory('template', $template->getAttribute('templateName'));
 
 		$item = ORM::Factory($this->model);
 		$item->template_id = $template->id;
