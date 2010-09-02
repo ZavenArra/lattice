@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration SYSTEM "../../modules/mop/config/frontend.dtd">
 
 <data>
-	<view name="home" loadpage="false" >
-		<extendeddata label="books" templatename="books" />
+
+	<view name="home" loadpage="true" >
+		<extendeddata label="books" parent="books" templatename="book" />
 		<subview view="publicheader" label="listing" />
 		<subview view="publicheader" label="listing2" />	
 	</view>
-	<view name="contact" loadpage="false">
-	</view>
-	<view name="contact" loadpage="false">
+
+	<view name="wheretofind" loadpage="true">
 		<extendeddata label="stuffs" templatename="bio" parent="stuff" />
 	</view>
-	<view name="stuffs" loadpage="false">
-		<extendeddata label="stuffs" parent="all" />
+	
+	<view name="contact" loadpage="true">
 	</view>
+	
+	<view name="book" loadpage="true">
+	</view>
+
 </data>
