@@ -5,8 +5,23 @@
 	<templates>
 
 <!-- HOME -->
+		<template name="basiccategory" nodetype="CATEGORY" allow_sort="false" allow_delet="false" allow_publish="false">
+			<elements>
 
-		<template name="home" nodetype="LEAF" allow_sort="false" allow_delete="false" allow_publish="false">
+			</elements>
+		</template>
+
+
+		<template name="singleipe" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+			
+			</elements>
+		</template>
+
+
+		<template name="singleradiogroup" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			
+		<template name="basiccategory" nodetype="CATEGORY" allow_sort="false" allow_delete="false" allow_publish="false">
 			<elements>
 				<ipe field="featureBlurb" label="Feature Text" tag="p" rows="4" />
 				<singleimage field="featureImage" extensions="jpg" label="Feature Image"/>
