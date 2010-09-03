@@ -76,7 +76,11 @@ class Page_Model extends ORM {
 				return $this->saveObject();
 				break;	
 			default:
-				return parent::__set($column, cms::convertNewlines($value));
+        if(is_object($value)){
+          return parent::__set($column, $value);
+        } else {
+          return parent::__set($column, cms::convertNewlines($value));
+        }
 				break;
 			}
 
