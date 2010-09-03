@@ -41,8 +41,8 @@
 <!ELEMENT ipe EMPTY >
 <!ATTLIST ipe
 	%uiattrs;
-	tag					CDATA #IMPLIED
-	rows				CDATA #IMPLIED
+	tag					CDATA "p"
+	rows				CDATA "2"
 >
 
 <!ELEMENT singleImage (resize|ext)* >
@@ -62,10 +62,17 @@
 	%uiattrs;
 >
 
+<!ELEMENT radio EMPTY >
+<!ATTLIST radio
+	label				CDATA #REQUIRED
+	value				CDATA #REQUIRED
+>
+
 <!ELEMENT multiSelect EMPTY >
 <!ATTLIST multiSelect
 	%uiattrs;
 >
+
 
 <!ELEMENT date EMPTY>
 <!ATTLIST date
