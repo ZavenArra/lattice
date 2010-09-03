@@ -9,18 +9,18 @@
 <!ELEMENT view (extendeddata|subview)* >
 <!ATTLIST view
 	name				CDATA #REQUIRED
-	loadPage			(true|false) "true"
+	loadpage			(true|false) "true"
 >
 
 
-<!ELEMENT extendeddata >
+<!ELEMENT extendeddata EMPTY >
 <!ATTLIST extendeddata
 	label				CDATA #REQUIRED
 	templatename		CDATA #IMPLIED
-	parent		 		(CDATA|parent) "parent"
+	parent		 		CDATA "parent"
 >
 
-<!ELEMENT subview >
+<!ELEMENT subview EMPTY >
 <!ATTLIST subvjew
 	view				CDATA #REQUIRED
 	label				CDATA #REQUIRED
