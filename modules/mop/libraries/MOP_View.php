@@ -102,6 +102,18 @@ class MOP_View_Core extends View_Core{
 
 	}
 
+
+	public function set_filename($name, $type = NULL) {
+		$rval = parent::set_filename($name, $type);
+
+		if(!$rval->kohana_filename){
+			if(file_exists('application/frontend/'.$name.'.'.$rval->kohana_filetype)){
+				$this->kohana_filename = 'application/frontend/'.$name.'.'.$rval->kohana_filetype;
+			}
+		}
+
+	}
+
 	public function render($output=FALSE){
 		Display_Controller::addResources($this->resources);
 		return parent::render($output);
