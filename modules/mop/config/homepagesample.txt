@@ -1,0 +1,47 @@
+<h1>Page Title</h1>
+
+<!-- fieldNames are ids when its page content (unique), classes when in a list (repeating, not unique)
+<h2>Feature Blurb</h2>
+<p id="featureBlurb">...</p>
+
+<h2>Feature Image</h2>
+<img id="featureImage" src="..." width="..." height="..." alt="" />
+
+<h2>Feature Links</h2>
+<ul id="featureList">
+	<li class="featureListItem">
+		<p class="label">...</p>
+		<p class="url">...</p>
+	</li>
+</ul>
+
+<h2>About Header</h2>
+<h3 id="aboutHeader">...</h3>
+
+<h2>About Blurb</h2>
+<p id="aboutBlurb">...</p>
+
+<h2>Announcement List</h2>
+<ul id="announcements">
+	<li class="announcement">
+		<p class="anouncement">...</p>
+		<ul class="announcementLinks">
+			<p class="label">...</p>
+			<p class="url">...</p>
+		</ul>
+	</li>
+</ul>
+
+
+<!-- INCLUDEOBJECT -->
+
+<h2>books</h2>
+<ul id="books">
+	<li class="book">
+		<p class="title">Book Title</p>
+		<img class="fieldName" src="..." width="..." height="..." alt="" />
+		<p class="description">...</p>
+	</li>
+</ul>
+
+
