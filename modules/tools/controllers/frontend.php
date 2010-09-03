@@ -9,7 +9,7 @@ Class Frontend_Controller extends Controller {
 
 	public function index(){
 		echo "Configuring Frontend\n";
-		echo "Reading application/config/frontend.yaml\n";
+		echo "Reading application/config/frontend.xml\n";
 		
 		flush();
 		ob_flush();
