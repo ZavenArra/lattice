@@ -76,7 +76,11 @@ class Page_Model extends ORM {
 				return $this->saveObject();
 				break;	
 			default:
-				return parent::__set($column, cms::convertNewlines($value));
+        if(is_object($value)){
+          return parent::__set($column, $value);
+        } else {
+          return parent::__set($column, cms::convertNewlines($value));
+        }
 				break;
 			}
 
@@ -135,12 +139,11 @@ class Page_Model extends ORM {
 
 	public function getContentAsArray(){
 
-		if($fields = Kohana::config('cms_dbmap.'.$this->template->templatename)){
-			foreach($fields as $key=>$value){
-				$content[$key] = $this->contenttable->$key;
-			}
-		} else {
-			$content = $this->contenttable->as_array();
+		$fields = ORM::Factory('objectmap')
+			->where('template_id', $this->template->id)
+			->find_all();
+		foreach($fields as $map){
+			$content[$map->column] = $this->contenttable->{$map->column};
 		}
 		return $content;
 	}
@@ -163,12 +166,11 @@ class Page_Model extends ORM {
 		$content['slug'] = $this->slug;
 		$content['dateadded'] = $this->dateadded;
 
-		if($fields = Kohana::config('cms_dbmap.'.$this->template->templatename)){ 
-			foreach($fields as $key=>$value){
-				$content[$key] = $this->__get('contenttable')->$key;
-			}
-		} else {
-			$content = $this->__get('contenttable')->as_array();
+		$fields = ORM::Factory('objectmap')
+			->where('template_id', $this->template->id)
+			->find_all();
+		foreach($fields as $map){
+			$content[$map->column] = $this->contenttable->{$map->column};
 		}
 
 		//get data from lists

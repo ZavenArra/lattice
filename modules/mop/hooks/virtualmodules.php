@@ -12,14 +12,14 @@ class RouteVirtualModulesHook{
 
 		//what we'll try doing is to look up the class in cms.php and create the module
 		$modules = array();
-		foreach(mop::config('backend', '//template/module') as $module){
-			if($module->getAttribute('type')=='module'){ 
+		foreach(mop::config('backend', '//template/elements/*') as $module){
+			if($module->tagName=='module'){ 
 				//there could be other type of virtual modules
 				//this is a total hack
 				$modules[$module->getAttribute('modulename')] = $block;
-			} else if ($module->getAttribute('type')=='list'){
+			} else if ($module->tagName=='list'){
 			//	$modules[$module->getAttribute('class')] = $block;
-				$modules[$module->getAttribute('class')]['controllertype'] = 'list';
+				$modules[$module->getAttribute('family')]['controllertype'] = 'list';
 			}
 		}
 

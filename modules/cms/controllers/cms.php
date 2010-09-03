@@ -485,7 +485,7 @@ class CMS_Controller extends Controller {
 		$page = ORM::Factory('page')->find($id);
 		$page->activity = 'D';
 		$page->sortorder = 0;
-		$page->slug = null;
+		$page->slug = new Database_Expr('NULL');
 		$page->save();
 		$page->contenttable->activity = 'D';
 		$page->contenttable->save();
@@ -507,10 +507,10 @@ class CMS_Controller extends Controller {
 	 */
 	private function cascade_undelete($page_id){
 		$page = ORM::Factory('page')->find($id);
-		$page->activity = 'NULL';
+		$page->activity = new Database_Expr('NULL');
 		$page->slug = cms::createSlug($page->contenttable->title, $page->id);
 		$page->save();
-		$page->contenttable->activity = 'NULL';
+		$page->contenttable->activity = new Database_Expr('NULL');;
 		$page->contenttable->save();
 
 		$children = ORM::Factory('page');

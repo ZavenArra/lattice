@@ -1,0 +1,95 @@
+<!--
+	MoPCMS Backend Configuration File DTD
+	Revision: 0.1
+	Date: 2010/08/26	
+-->
+
+<!ENTITY % uiattrs
+	"field				CDATA	#REQUIRED
+	 label				CDATA	#IMPLIED
+	 className			CDATA	#IMPLIED"
+>
+
+<!ELEMENT configuration (templates,data) >
+
+<!ELEMENT templates (template*) >
+
+<!ELEMENT template (elements?,addableObject*) >
+<!ATTLIST template
+	name				CDATA #REQUIRED
+	nodeType			CDATA #REQUIRED
+	allowDelete 		(true|false) "true"
+	allowTogglePublish	(true|false) "true"	
+	allowChildSort		(true|false) "true"
+>
+
+<!ELEMENT elements (ipe|list|singleImage|singleFile|radioGroup|multiSelect|date|time|dateRange)* >
+
+<!ELEMENT addableObject EMPTY >
+<!ATTLIST addableObject
+	templateName		CDATA #REQUIRED
+	addText				CDATA #IMPLIED
+>
+
+<!ELEMENT list (addableObject*) >
+<!ATTLIST list
+	family				CDATA #REQUIRED
+	label				CDATA #REQUIRED
+	display				(inline|component) "inline"
+>
+
+<!ELEMENT ipe EMPTY >
+<!ATTLIST ipe
+	%uiattrs;
+	tag					CDATA #IMPLIED
+	rows				CDATA #IMPLIED
+>
+
+<!ELEMENT singleImage (resize|ext)* >
+<!ATTLIST singleImage
+	%uiattrs;	
+	maxLength			CDATA #IMPLIED
+>
+
+<!ELEMENT singleFile (ext) >
+<!ATTLIST singleFile
+	%uiattrs;
+	maxLength			CDATA #IMPLIED
+>
+
+<!ELEMENT radioGroup EMPTY >
+<!ATTLIST radioGroup
+	%uiattrs;
+>
+
+<!ELEMENT multiSelect EMPTY >
+<!ATTLIST multiSelect
+	%uiattrs;
+>
+
+<!ELEMENT date EMPTY>
+<!ATTLIST date
+	%uiattrs;
+>
+
+<!ELEMENT resize EMPTY >
+<!ATTLIST resize
+	name				CDATA #REQUIRED
+	width				CDATA #REQUIRED
+	height				CDATA #REQUIRED
+	forceDimensions		(width|height) #IMPLIED
+	crop				(true|false) "false"
+>
+
+<!ELEMENT ext (#PCDATA) >
+
+<!ELEMENT data (item*) >
+
+<!ELEMENT item ANY >
+<!ATTLIST item
+	templateName		CDATA #REQUIRED
+>
+
+<!ELEMENT content ANY >
+
+<!ELEMENT title (CDATA) >

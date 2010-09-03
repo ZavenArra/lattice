@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration SYSTEM "../../modules/mop/config/backend.dtd">
+<?xml version="1.0" encoding="utf-8"?>
 <configuration>
+<<<<<<< HEAD
 	<templates>  
 		<template name="stuff" nodeType="CATEGORY" allow_sort="true" allow_delete="true" allow_publish="true" >
       <elements>
@@ -25,6 +28,132 @@
         <ipe field="blurb3" label="WJAT" tag="p" rows="4" />
       </elements>
 		</template>
+=======
+
+	<templates>
+
+<!-- HOME -->
+
+		<template name="home" nodeType="leaf" allowDelete="false" allowTogglePublish="false" >
+			<elements>
+				<ipe field="featureBlurb" label="Feature Text" tag="p" rows="4" />
+				<singleImage field="featureImage"  label="Feature Image" >
+					<resize name="full" width="800" height="295" forceDimensions="width" crop="true" />
+					<ext>jpg</ext>
+				</singleImage>
+				<list family="featureList" label="Feature Links" display="inline" >
+					<addableObject templateName="featureListItem" addText="Add a Link" />
+				</list>
+				<ipe field="aboutHeader" label="About Header" tag="p" rows="1" />		
+				<ipe field="aboutBlurb" label="About Soberscove" tag="p" rows="6" />
+				<list family="annoucements" label="Annoucement List" display="component" >
+					<addableObject templateName="featureListItem" addText="Add a Link" />
+				</list>
+			</elements>
+		</template>
+
+		<template name="announcements" nodeType="category" allowChildSort="true" allowDelete="false" allowTogglePublish="false" >
+			<addableObject templateName="annoucement" addText="Add an annoucement" />
+		</template>
+		
+		<template name="annoucement" nodeType="leaf" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
+			<elements>
+				<date field="date" label="date" />		
+				<ipe field="annoucement" label="Announcement" tag="p" rows="4" />
+				<list family="annoucementLinks" label="Links" display="inline" >
+					<addableObject templateName="annoucementLink" addText="Add a Link" />
+				</list>
+			</elements>
+		</template>
+
+		<template name="annoucementLink" nodeType="leaf" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
+			<elements>
+				<ipe field="annoucementLinkLabel" label="Link Label" tag="p" rows="1" />
+				<ipe field="annoucementLinkUrl" label="Link URL" tag="p" rows="1" />
+			</elements>
+		</template>
+		
+<!-- WHERE TO FIND -->
+
+		<template name="wheretofind" nodeType="category" allowChildSort="true" allowDelete="false" allowTogglePublish="false" >
+			<elements>
+				<ipe field="intro" label="Intro Paragraph" tag="p" rows="6" />
+			</elements>
+			<addableObject templateName="city" addText="Add a City" />
+		</template>
+
+		<template name="city" nodeType="category" allowChildSort="true" allowDelete="true" allowTogglePublish="false" >
+			<elements>
+				<list family="locations" label="Links" display="inline" >
+					<addableObject templateName="location" addText="Add an Location" />
+				</list>
+			</elements>
+		</template>
+		
+		<template name="location" nodeType="leaf" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
+			<elements>
+				<ipe field="url" label="URL (optional)" tag="p" rows="1" />
+			</elements>
+		</template>
+
+		<template name="contact" nodeType="leaf" allowDelete="false" allowTogglePublish="false" >
+			<elements>
+				<ipe field="intro" label="Intro Paragraph" tag="p" rows="4" />
+				<ipe field="address" label="Address" tag="p" rows="3" />
+				<ipe field="contactEmail" label="Email address" tag="p" rows="3" />
+			</elements>
+		</template>
+
+<!-- BOOKS -->
+
+		<template name="books" nodeType="category" allowChildSort="true" allowDelete="false" allowTogglePublish="false" >
+			<addableObject templateName="book" addText="Add a Book" />
+		</template>
+
+		<template name="book" nodeType="leaf" >
+			<elements>
+				<list family="gallery" label="Images" display="inline" >
+					<addableObject templateName="bookImage" addText="Add an Image" />
+				</list>
+				<ipe field="description" label="Book Description" tag="p" rows="10" />
+				<list family="sidebarList" label="Sidebar Lists" display="component" >
+					<addableObject templateName="bookList" addText="Add a List" />
+				</list>
+			</elements>
+		</template>
+
+		<template name="bookImage" nodeType="leaf" allowChildSort="true" allowDelete="true">
+			<elements>
+				<singleImage field="bookimage" label="Image">
+					<resize name="thumb" width="255" height="145" forceDimensions="width" crop="true" />
+					<resize name="full" width="800" height="295" forceDimensions="width" crop="true" />
+					<ext>jpg</ext>
+				</singleImage>
+				<ipe field="description" label="Image Description" tag="p" rows="1" />
+			</elements>
+		</template>
+
+		<template name="sidebarList" nodeType="leaf" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
+			<elements>
+				<ipe field="blurb" label="Blurb" tag="p" rows="3" />
+				<list family="bookList" label="List Items" display="component" >
+					<addableObject templateName="booklistItem" addText="Add an Item" />
+				</list>
+			</elements>
+		</template>
+
+		<template name="bookLists" nodeType="leaf" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
+			<addableObject templateName="bookListItem" label="" addText="Add an Item" />
+		</template>
+
+		<template name="bookListItem" nodeType="leaf" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
+			<elements>
+				<ipe field="name" label="Name" tag="p" rows="3" />
+				<ipe field="value" label="Value" tag="p" rows="3" />
+			</elements>
+		</template>
+		
+>>>>>>> 217af17... debugging dtd
 	</templates>
 	<data>
 		<item templateName="stuff">

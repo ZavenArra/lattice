@@ -102,6 +102,23 @@ class MOP_View_Core extends View_Core{
 
 	}
 
+
+	public function set_filename($name, $type = NULL) {
+
+		/*
+		 * To support view files in app/frontend/, this is a little hacky but 
+		 * gets the job done.
+		 */
+		if(file_exists('application/frontend/'.$name.EXT)){
+			$this->kohana_filename = 'application/frontend/'.$name.EXT;
+			$this->kohana_filetype =  EXT;
+		} else {
+			parent::set_filename($name, $type);
+		}
+		return $this;
+
+	}
+
 	public function render($output=FALSE){
 		Display_Controller::addResources($this->resources);
 		return parent::render($output);

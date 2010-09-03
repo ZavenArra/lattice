@@ -191,13 +191,13 @@ mop.modules.ListModule = new Class({
 
 		//get all the items to serialize
 		var children = this.listing.getChildren("li");
-		children.each( function ( aListing ){
-			
-				var listItemId = aListing.get("id");
-				var listItemIdSplit = listItemId.split( "_" );
-				listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
-				sortArray.push( listItemId );
-			});
+		children.each( function ( aListing ){			
+            var listItemId = aListing.get("id");
+            var listItemIdSplit = listItemId.split( "_" );
+            listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
+            sortArray.push( listItemId );
+		});
+
 		try{
 			return sortArray;
 		}finally{
@@ -223,17 +223,6 @@ mop.modules.ListModule = new Class({
 		if(this.sortableList){
 			this.killSortable();
 		}
-
-		if( this.items ){
-
-			while( this.items.length > 0 ){
-				var aChild = this.items.pop();
-				aChild.destroy();
-				delete aChild;
-				aChild = null;
-			};
-
-		};
 
 		$clear( this.submitDelay );		
 		
@@ -263,7 +252,9 @@ mop.modules.ListModule = new Class({
 		this.submitDelay = null;
 		
 		mop.util.EventManager.broadcastEvent( 'resize' );
+		
 		this.parent();
+
 	}
 
 });
