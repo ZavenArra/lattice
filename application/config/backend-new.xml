@@ -22,6 +22,17 @@
 			</elements>
 		</template>
 
+		<template name="singlecheckbox" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+				<singleCheckbox field="Single Checkbox"/>
+			</elements>
+		</template>
+
+		<template name="singledate" nodetype="LEAF" allow_sort="true"allow_delete="true" allow_publish="false">
+
+		</template>
+
+
 		<template name="basiccategory" nodetype="CATEGORY" allow_sort="false" allow_delete="false" allow_publish="false">
 			<elements>
 				<ipe field="featureBlurb" label="Feature Text" tag="p" rows="4" />
