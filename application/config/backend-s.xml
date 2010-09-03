@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- defaults
+
+	template
+		allowDelete true
+		allowPublish true
+		allowChildSort true
+	
+
+	
+	
+-->
+
 
 <configuration>
 
@@ -6,46 +18,40 @@
 
 <!-- HOME -->
 
-		<template name="home" nodeType="leaf" allow_sort="false" allow_delete="false" allow_publish="false">
+		<template name="home" nodeType="leaf" allowDelete="false" allowPublish="false">
 			<elements>
 				<ipe field="featureBlurb" label="Feature Text" tag="p" rows="4" />
-				<singleImage field="featureImage" extensions="jpg" label="Feature Image"/>
+				<singleImage field="featureImage" label="Feature Image">
+          <ext>jpg</ext>
+        </singleImage>
 				<list family="featureList" label="Feature Links" display="inline" >
-					<addableobject templanteName="featureListItem" addText="Add a Link" />
+					<addableObject templateName="featureListItem" addText="Add a Link" />
 				</list>
 				<ipe field="aboutHeader" label="About Header" tag="p" rows="1" />		
-				<ipe field="aboutBlurb" label="About Soberscove" tag="p" rows="6" />		
-
+				<ipe field="aboutBlurb" label="About Soberscove" tag="p" rows="6" />
 				<list family="annoucements" label="Annoucement List" display="component" >
-					<addableobject templanteName="featureListItem" addText="Add a Link" />
+					<addableObject templateName="featureListItem" addText="Add a Link" />
 				</list>
-				
 			</elements>
 		</template>
-		
-		<!-- allow_delete here is regarding the CHILD objects yes? -->
-    <!-- DW: actually the JS treats as for the object itself with this template, I think it would make sense to change.
-             the original thought had been that sometimes certain objects wouldn't be allowed to be deleted, which
-             is still the case in the case of components, but otherwise it seems silly to specify it that way.
-             However we need some other way to say when a specific object is NOT deletable (except as a recursive -->
-		<template name="announcements" nodeType="category" allow_sort="true" allow_delete="true" allow_publish="false">
-			<addableobject templanteName="annoucement" addText="Add an annoucement" />
+
+		<template name="announcements" nodeType="category" allowSort="true" allowDelete="false" allowPublish="false">
+			<addableObject templateName="annoucement" addText="Add an annoucement" />
 		</template>
 		
-		<template name="annoucement" nodeType="leaf" allow_sort="true" allow_delete="true" allow_publish="true">
+		<template name="annoucement" nodeType="leaf" allowSort="true" allowDelete="true" allowPublish="true">
 			<elements>
-				<!-- how are fields namespaced? can this just be "date" or is it ideally "announcementDate" -->
-        <!--  DW: just date is fine, name space is per template not global -->
+
 				<date field="date" label="date" />		
 				<ipe field="annoucement" label="Announcement" tag="p" rows="4" />
 
 				<list family="annoucementLinks" label="Links" display="inline" >
-					<addableobject templanteName="annoucementLink" addText="Add a Link" />
+					<addableObject templateName="annoucementLink" addText="Add a Link" />
 				</list>
 			</elements>
 		</template>
 
-		<template name="annoucementLink" nodeType="leaf" allow_sort="true" allow_delete="true" allow_publish="true">
+		<template name="annoucementLink" nodeType="leaf" allowSort="true" allowDelete="true" allowPublish="true">
 			<elements>
 				<ipe field="annoucementLinkLabel" label="Link Label" tag="p" rows="1" />
 				<ipe field="annoucementLinkUrl" label="Link URL" tag="p" rows="1" />
@@ -54,79 +60,81 @@
 		
 <!-- WHERE TO FIND -->
 
-		<template name="wheretofind" nodeType="category" allow_sort="true" allow_delete="false" allow_publish="false">
+		<template name="wheretofind" nodeType="category" allowSort="true" allowDelete="false" allowPublish="false">
 			<elements>
 				<ipe field="intro" label="Intro Paragraph" tag="p" rows="6" />
 			</elements>
-			<addableobject templanteName="city" addText="Add a City" />
+			<addableObject templateName="city" addText="Add a City" />
 		</template>
-		
-		<!-- default sort / alphabetical? or just allowsort? -->
-    <!-- DW: we don't currently support other kinds of sorts.  allow_sort specifies the ability to sort or not -->
-		<template name="city" nodeType="category" allow_sort="true" allow_delete="true" allow_publish="false">
+
+		<template name="city" nodeType="category" allowSort="true" allowDelete="true" allowPublish="false">
 			<elements>
 				<list family="locations" label="Links" display="inline" >
-					<addableobject templanteName="location" addText="Add an Location" />
+					<addableObject templateName="location" addText="Add an Location" />
 				</list>
 			</elements>
 		</template>
 		
-		<template name="location" nodeType="leaf">
+		<template name="location" nodeType="leaf" allowSort="true" allowDelete="true" allowPublish="true">>
 			<elements>
 				<ipe field="url" label="URL (optional)" tag="p" rows="1" />
 			</elements>
 		</template>
 
-		<template name="contact" nodeType="leaf">
+		<template name="contact" nodeType="leaf" allowDelete="false" allowPublish="false">>
 			<elements>
 				<ipe field="intro" label="Intro Paragraph" tag="p" rows="4" />
-        <mopcontactform/> <!-- DW: and just what is this? -->
 				<ipe field="address" label="Address" tag="p" rows="3" />
-				<ipe field="contactemail" label="Email address" tag="p" rows="3" />
+				<ipe field="contactEmail" label="Email address" tag="p" rows="3" />
 			</elements>
 		</template>
 
 <!-- BOOKS -->
 
-		<template name="books" nodeType="category">
-			<addableobject templanteName="book" addText="Add a Book" />
+		<template name="books" nodeType="category" allowSort="true" allowDelete="false" allowPublish="false">
+			<addableObject templateName="book" addText="Add a Book" />
 		</template>
 
 		<template name="book" nodeType="leaf">
 			<elements>
 				<list family="gallery" label="Images" display="inline" >
-					<addableobject templanteName="bookImage" addText="Add an Image" />
+					<addableObject templateName="bookImage" addText="Add an Image" />
 				</list>
 				<ipe field="description" label="Book Description" tag="p" rows="10" />
-			</elements>
-			<addableobject templanteName="sidebarlist" addText="Add a Sidebar List" />
-		</template>
-
-		<template name="bookImage" nodeType="leaf">
-			<elements>
-				<!-- how to deal with image sizes -->
-        <!-- DW: I haven't specified it yet, want to take a shot? -->
-				<singleImage field="bookimage" extensions="jpg" label="Image"/>
-        <!-- DW: singleImage or singleimage, camel caps for all??? -->
-        <!-- alt-tag --> <!-- Alt-tag? remember this is just for the backend -->
-				<ipe field="description" label="Book Description" tag="p" rows="1" />
-			</elements>
-		</template>
-
-		<template name="sidebarlist" nodeType="leaf">
-			<elements>
-				<ipe field="blurb" label="Blurb" tag="p" rows="3" />
-				<list family="booklist" label="List Items" display="inline" >
-					<addableobject templanteName="booklistitem" addText="Add an Item" />
+				<list family="sidebarList" label="Sidebar Lists" display="component" >
+					<addableObject templateName="bookList" addText="Add a List" />
 				</list>
 			</elements>
 		</template>
-		
-		<template name="booklist" nodeType="leaf">
+
+		<template name="bookImage" nodeType="leaf" allowSort="true" allowDelete="true">
 			<elements>
-				
+				<singleImage field="bookimage" label="Image">
+					<resize name="thumb" width="255" height="145" forceDimensions="width" crop="true" />
+					<resize name="full" width="800" height="295" forceDimensions="width" crop="true" />
+					<ext>jpg</ext>
+				</singleImage>
+				<ipe field="description" label="Image Description" tag="p" rows="1" />
+			</elements>
+		</template>
+
+		<template name="sidebarList" nodeType="leaf" allowSort="true" allowDelete="true" allowPublish="true">
+			<elements>
 				<ipe field="blurb" label="Blurb" tag="p" rows="3" />
-				
+				<list family="bookList" label="List Items" display="component" >
+					<addableObject templateName="booklistItem" addText="Add an Item" />
+				</list>
+			</elements>
+		</template>
+
+		<template name="bookLists" nodeType="leaf" allowSort="true" allowDelete="true" allowPublish="true">
+			<addableObject templateName="bookListItem" label="" addText="Add an Item" />
+		</template>
+
+		<template name="bookListItem" nodeType="leaf" allowSort="true" allowDelete="true" allowPublish="true">
+			<elements>
+				<ipe field="name" label="Name" tag="p" rows="3" />
+				<ipe field="value" label="Value" tag="p" rows="3" />
 			</elements>
 		</template>
 		
@@ -134,6 +142,31 @@
 
   <data>
     <!-- If you don't insert any data, theree will be nothing in the CMS -->
+
+    <item templateName="home">
+      <content>
+        <title>Homepage</title>
+      </content>
+    </item>
+
+    <item templateName="books">
+      <content>
+        <title>Books</title>
+      </content>
+    </item>
+
+    <item templateName="wheretofind">
+      <content>
+        <title>Where to Find</title>
+      </content>
+    </item>
+
+    <item templateName="contact">
+      <content>
+        <title>Contact</title>
+      </content>
+    </item>
+
   </data>
 
 </configuration>
