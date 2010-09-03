@@ -17,11 +17,11 @@ class Navigation_Controller extends Controller{
 	public $navDataFields_template = array(
 		'nodetype'=>'nodetype',
 		'contenttype'=>'contenttype',
-		'allowDelete'=>'allow_delete',
-		'allowTogglePublish'=>'allow_toggle_publish',
+		'allowDelete'=>'allowDelete',
+		'allowTogglePublish'=>'allowTogglePublish',
 		'landing'=>'landing',
-		'allowSort'=>'allow_sort',
-		'addableObjects'=>'addable_objects',
+		'allowSort'=>'allowChildSort',
+		'addableObjects'=>'addableObjects',
 	);
 	/*should title be stored in the PAGE table instead?*/
 	private $navDataFields_content = array(
@@ -156,10 +156,11 @@ class Navigation_Controller extends Controller{
 					//we might be skipping this node
 					$parent = ORM::Factory($this->objectModel, $parentid); //it would be nice to be able to just look up the heap
 					//echo 'cms.templates.'.$parent->template->templatename.'.parameters.'.$child->template->templatename.'.display';
-					$display = mop::config('backend', sprintf('//template[@templatename="%s"]/[@class="%s"]', 
+					$display = mop::config('backend', sprintf('//template[@name="%s"]/elements/list[@family="%s"]', 
 																										$parent->template->templatename,
-																										$child->template->templatename))
-																										->getAttritube('display');
+                                                    $child->template->templatename))
+                                                    ->item(0)
+																										->getAttribute('display');
 					if($display == 'inline'){
 						continue;
 					}

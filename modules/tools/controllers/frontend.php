@@ -9,13 +9,13 @@ Class Frontend_Controller extends Controller {
 
 	public function index(){
 		echo "Configuring Frontend\n";
-		echo "Reading application/config/frontend.yaml\n";
+		echo "Reading application/config/frontend.xml\n";
 		
 		flush();
 		ob_flush();
 		
 		foreach(mop::config('frontend', '//view') as $view ){
-			touch('application/modules/site/views/site/'.$view->getAttribute('name').'.php');
+			touch('application/frontend/s'.$view->getAttribute('name').'.php');
 			ob_start();
 			if($view->getAttribute('loadpage')=='true'){
 			echo "<p>Main Content</p>";
@@ -45,7 +45,7 @@ Class Frontend_Controller extends Controller {
 			}
 			$html = ob_get_contents();
 			ob_end_clean();
-			$file = fopen('application/modules/site/views/site/'.$view->getAttribute('name').'.php', 'w');
+			$file = fopen('application/frontend/s'.$view->getAttribute('name').'.php', 'w');
 			fwrite($file, $html);
 			fclose($file);
 		}

@@ -11,7 +11,7 @@ class Template_Model extends ORM {
    * Variable: nonmappedfield
    * Array of fields to not pass through to the content field mapping logic
    */
-  private $nonmappedfields = array('id', 'page_id', 'title', 'activity', 'loaded', 'templatename');
+  private $nonmappedfields = array('id', 'page_id', 'activity', 'loaded', 'templatename', 'nodetype');
 
 	/*
 	 * Function: __get($column)
@@ -31,21 +31,21 @@ class Template_Model extends ORM {
 
 			if(parent::__get('nodetype')=='CONTAINER'){
 				//For lists, values will be on the 2nd level 
-				$xQuery =  sprintf('//module[@class="%s"]', parent::__get('templatename'));
+				$xQuery =  sprintf('//list[@family="%s"]', parent::__get('templatename'));
 			} else {
 				//everything else is a normal lookup
-				$xQuery =  sprintf('//template[@templatename="%s"]', parent::__get('templatename'));
+				$xQuery =  sprintf('//template[@name="%s"]', parent::__get('templatename'));
 			}
 
 			$valuefromconfig=NULL;
-			if($column == 'addable_objects'){
-				$xQuery .= '/addableobject';
+			if($column == 'addableObjects'){
+				$xQuery .= '/addableObject';
 				$nodes = mop::config('backend', $xQuery);
 				$valuefromconfig = array();
 				foreach($nodes as $node){
 					$entry = array();
-					$entry['templateId'] = $node->getAttribute('templateId');
-					$entry['templateAddText'] = $node->getAttribute('templateAddText');
+					$entry['templateId'] = $node->getAttribute('templateName');
+					$entry['templateAddText'] = $node->getAttribute('addText');
 					$valuefromconfig[] = $entry;
 				}
 			} else {
@@ -54,12 +54,7 @@ class Template_Model extends ORM {
 					$valuefromconfig = $node->getAttribute($column);
 			}
 
-			if($valuefromconfig !== NULL){
-				return $valuefromconfig;	
-			}
-
-			
-			return parent::__get($column);
+      return $valuefromconfig;	
 	}
 
 	/*

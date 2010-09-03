@@ -1,6 +1,4 @@
-<div id="cms" class="module package-mop_modules class-CMS navigation-navigation">
+<div id="cms" class="module classPath-mop_modules_CMS navigation-navigation">
 	<?=$navigation;?>
-	<div id="nodeContent">
-		<!-- <div class="clear"></div>	 -->
-	</div>
+	<div id="nodeContent"></div>
 </div>

@@ -3,21 +3,24 @@ mop.modules.CMS = new Class({
 	/* Constructor: initialize */
 	Extends: mop.modules.Module,
 	pageLoadCount: 0,
+	rid: null,
+	pageContent: null,
+	pageIdToLoad: null,
+	scriptsLoaded: null,
+	scriptsTotal: null,
+	currentPageLoadIndex: null,
+	titleElement: null,
+	deletePageLink: null,
 
-	initialize: function( anElement, aMarshal, options ){
-
-		this.parent( anElement, aMarshal, options );		
+	initialize: function( anElement, options ){
+        console.log( "CMS INIT", this.childModules );
+		this.parent( anElement, null, options );		
 		this.rid = this.getValueFromClassName( "rid" );
-		this.navKey = mop.util.getValueFromClassName( "navigation", this.elementClass );
-		
-		return this;
 	},
 	
 	build: function(){
-	
-		this.parent();
 		this.pageContent = $("nodeContent");
-	
+		this.initModules( this.element );	
 	},
 	
 	toString: function(){
@@ -25,39 +28,37 @@ mop.modules.CMS = new Class({
 	},
 
 	loadPage: function ( pageId ){
-//		console.log( this.toString(), "loadPage", pageId );
+		console.log( this.toString(), "loadPage", pageId );
 		this.pageIdToLoad = pageId;
 		this.clearPage( pageId );
-		this.pageContent.addClass(".centeredSpinner");
+		this.pageContent.spin();
 		new Request.JSON({
-			url: mop.getAppURL() + "cms/ajax/getPage/" + pageId,
+			url: mop.util.getAppURL() + "cms/ajax/getPage/" + pageId,
 			onSuccess: this.onPageLoaded.bind( this )
 		}).send();
- 		mop.ModuleManager.setRID( pageId );
+ 		mop.util.setRID( pageId );
 	},
 	
 	clearPage: function( pageId ){
-		if( this.getRID() == pageId ) return;
+	    console.log( "clearPage", pageId );
+		if( mop.util.getRID() == pageId ) return;
+		this.destroyChildModules( this.pageContent );
 		this.destroyUIElements();
-//		console.log( "A", this.toString(), "clearPage", pageId );
-		this.destroyChildModules();
-//		console.log( "B", this.toString(), "clearPage", pageId );
 		this.pageContent.empty();
 	},
 
 	/*
 		Function: onPageLoaded
-		Callback to getPage, loops through supplied JSON object and attached css, html, js, in that order then tells modulemanager to look through #pageContent and initialize modules therein....
+		Callback to getPage, loops through supplied JSON object and attached css, html, js, in that order then looks through #pageContent and initialize modules therein....
 		Arguments:
 			pageJSON - Object : { css: [ "pathToCSSFile", "pathToCSSFile", ... ], js: [ "pathToJSFile", "pathToJSFile", "pathToJSFile", ... ], html: "String" }
 	*/
 	onPageLoaded: function( pageJSON ){
 
 		var pageData = new Hash( pageJSON );
-
-		$("nodeContent").removeClass(".centeredSpinner");
-
 		pageData.css.each( function( element, index ){ mop.util.loadStyleSheet( element ); });
+
+		$("nodeContent").unspin();
 
 		var scripts = pageData.js;
 		this.scriptsLoaded = 0;
@@ -67,13 +68,9 @@ mop.modules.CMS = new Class({
 		if( this.scriptsTotal && this.scriptsTotal > 0 ){
 			scripts.each( function( urlString ){
 				mop.util.loadJS( urlString, { type: "text/javascript", onload: this.onJSLoaded.bind( this, [ pageData.html, this.currentPageLoadIndex ] ) } );
-			}, this);
-			
+			}, this);			
 		}else{
-			
-
 			this.populate( pageData.html );
-
 		}
 
 	},
@@ -95,11 +92,7 @@ mop.modules.CMS = new Class({
 	
 	populate: function( html ){
 		
-//		console.log( '1. populate', this.toString() );
-
 		this.pageContent.set( 'html', html );
-		this.loadedModules = [];
-		this.protectedModules = [];
 		this.titleElement = this.element.getElement( ".pageTitle" );
 
 		if( this.titleElement ){
@@ -110,71 +103,51 @@ mop.modules.CMS = new Class({
 		
 		this.initUI();
 		
-		/*@TODO break this out into AjaxModuleLoader interface
-		( the crm detail modal/tab interface for example needlessly replicates a lot of this functionality, 
-		cms and said modal should just implement an interface, specially how important, complex, and critical this code is,
-		it will help with maintenance to break it out ) */
-		this.initModules();
-		
-		this.loadedModules.each( function( aModule ){
-			if( aModule.element.hasClass("protected") ) this.protectedModules.push( aModule );
-		}, this );
-		
-		/*@TODO turn this into a hook, call to postInitUIHook or something*/
-		if( this.uiElements.length ){
+		this.initModules( this.pageContent );
+				
+		if( this.postInitUIHook ) this.postInitUIHook();
+
+	},
+
+	postInitUIHook: function(){
+	    if( this.uiElements.length ){
 			this.uiElements.each( function( uiInstance ){
 				if( uiInstance.element.hasClass( "ui-IPE" ) && uiInstance.element.hasClass( "field-title" ) ) uiInstance.registerOnCompleteCallBack( this.renameNode.bind( this ) );
 			}, this );
 		}
-
-	},
-	
-	initModules: function(){
-		var newlyInstantiatedModules = mop.ModuleManager.initModules( this.pageContent, "window" );
-		this.loadedModules = newlyInstantiatedModules.loadedModules;
-		this.protectedModules = newlyInstantiatedModules.protectedModules;	
 	},
 	
 	renameNode: function( response, uiInstance ){
-		this.getNav().renameNode( response.value );
+		this.loadedModules.get( "navigation" ).renameNode( response.value );
 	},
 
 	deleteNode: function( e ){
-		if( e && e.stop ){
-			e.stop();
-		}else if( e ){
-			e.returnVal = false;
-		}
-		
+		mop.util.stopEvent( e );		
 		var confirmed = confirm( "Are you sure you wish to delete the node: “" + this.titleText + "”?\nThis cannot be undone." );
-		if( confirmed ) this.deleteNode( this.getRID(), "page" );
+		if( confirmed ) this.deleteNode( mop.rid, "page" );
 		confirmed = null;
 	},
 
 
 	addObject: function( objectName, templateId, parentId, whichTier, placeHolder ){
+	    console.log( "addObject", this, this.toString() );
 		var callBack = function( nodeData ){
 			this.onObjectAdded( nodeData, parentId, whichTier, placeHolder );
 		};
 		new Request.JSON({
-			url: mop.getAppURL() + "cms/ajax/addObject/" + parentId + "/" + templateId,
+			url: mop.util.getAppURL() + "cms/ajax/addObject/" + parentId + "/" + templateId,
 			onComplete: callBack.bind( this )
 		}).post( { "title" : objectName } );
 		callBack = null;
 	},
 
 	onObjectAdded: function( data, parentId , whichTier, placeHolder ){
-		this.getNav().onObjectAdded(  data , parentId, whichTier, placeHolder );
+	    console.log( "onObjectAdded", this, this.toString() );
+		this.childModules.get( "navigation" ).onObjectAdded(  data , parentId, whichTier, placeHolder );
 	},
 	
 	getModule: function(){ return this; },
 	
-	getNav: function(){
-		if( !this.nav ) this.nav = mop.ModuleManager.getModuleById( this.navKey );
-//		console.log( "getNav", this.toString(), this.nav );
-		return this.nav;
-	},
-
 	/*
 	Function: togglePublishedStatus
 	Sends page publish toggle ajax call 
@@ -183,7 +156,7 @@ mop.modules.CMS = new Class({
 	*/
 	togglePublishedStatus: function( nodeId ){
 		new Request.JSON({
-			url: mop.getAppURL() + "cms/ajax/togglePublish/"+ nodeId
+			url: mop.util.getAppURL() + "cms/ajax/togglePublish/"+ nodeId
 //			onComplete: this.onPublishedStatusToggled
 		}).send();
 	},
@@ -198,9 +171,25 @@ mop.modules.CMS = new Class({
 //		console.log( "deleteNode :: " + pageId + " : " + from );
 		if( from == "page" ) this.getNav().removeNode( pageId, this );
 		new Request.JSON({
-			url: mop.getAppURL() + "cms/delete/"+pageId,
+			url: mop.util.getAppURL() + "cms/delete/"+pageId,
 			onComplete: this.clearPage.bind( this, pageId )
 		}).send();
 	}
 	
+});
+
+window.addEvent( "domready", function(){
+	
+	mop.HistoryManager = new mop.util.HistoryManager().instance();
+	mop.HistoryManager.init( "pageId", "onPageIdChanged" );
+	mop.ModalManager = new mop.ui.ModalManager();
+    mop.DepthManager = new mop.util.DepthManager();
+    
+    var doAuthTimeout = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
+    
+    if( window.location.href.indexOf( "auth" ) == -1 && doAuthTimeout && doAuthTimeout != "0" ) mop.loginMonitor = new mop.util.LoginMonitor();
+    
+    mop.util.EventManager.broadcastEvent("resize");
+    mop.CMS = new mop.modules.CMS( "cms" );
+
 });

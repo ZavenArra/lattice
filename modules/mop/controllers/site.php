@@ -62,11 +62,11 @@ Class Site_Controller extends Controller{
 			$this->content['main'] = $page->getPageContent();
 
       //look for the template, if it's not there just print out all the data raw
-      $view = 'site/'.$page->template->templatename;
-      if(Kohana::find_file('views', $view)){
-        $this->view = new View( 'site/'.$page->template->templatename);
+      $view = 's'.$page->template->templatename;
+      if(file_exists('application/frontend/'.$view.'.php')){
+        $this->view = new View( 's'.$page->template->templatename);
       } else {
-        $this->view = new View( 'site/default');
+        $this->view = new View( 'sdefault');
       }
 
       $this->view->content = $this->content;
@@ -80,7 +80,7 @@ Class Site_Controller extends Controller{
 
 				//look for the template, if it's not there just print out all the data raw
 		if(!$this->view){
-			$this->view = new View( 'site/default');
+			$this->view = new View( 'sdefault');
 		}
 
 

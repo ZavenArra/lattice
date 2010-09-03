@@ -111,24 +111,13 @@ class CMS_Controller extends Controller {
 		
 		$nodetitlehtml = $this->nodetitle->render();
 
-		//2 generate all IPEs
-		//3 build and include all modules
-		$modules = mop::config('backend', sprintf('//template[@templatename="%s"]/module', $page->template->templatename));
-		$modulesConfig = array();
-		foreach($modules as $module){
-			$entry = array();
-			for($i=0; $i<$module->attributes->length; $i++){
-				$entry[$module->attributes->item($i)->name] = $module->attributes->item($i)->value;
-			}	
-			$modulesConfig[] = $entry;
-		}
-
 		$customview = 'templates/'.$page->template->templatename; //check for custom view for this template
 		$usecustomview = false;
 		if(Kohana::find_file('views', $customview)){
 			$usecustomview = true;	
 		}
-		$htmlChunks = cms::buildUIHtmlChunks($modulesConfig, $page);
+
+    $htmlChunks = cms::buildUIHtmlChunksForObject($page);
 
 		if(!$usecustomview){
 			$html = $nodetitlehtml.implode($htmlChunks);
@@ -395,7 +384,7 @@ class CMS_Controller extends Controller {
 		//look up any components and add them as well
 
 		//configured components
-		$components = mop::config('backend', sprintf('//template[@templatename="%s"]/component',$newtemplate->templatename));
+		$components = mop::config('backend', sprintf('//template[@name="%s"]/component',$newtemplate->templatename));
 		foreach($components as $c){
 			$template = ORM::Factory('template', $c->getAttribute('templateId'));
 			if($c->hasChildNodes()){
@@ -407,12 +396,11 @@ class CMS_Controller extends Controller {
 		}
 
 		//containers (list)
-		$containers = mop::config('backend', sprintf('//template[@templatename="%s"]/module[@type="list"]',$newtemplate->templatename));
+		$containers = mop::config('backend', sprintf('//template[@name="%s"]/elements/list',$newtemplate->templatename));
 		foreach($containers as $c){
-			echo 'adding one';
-			$template = ORM::Factory('template', $c->getAttribute('templateId'));
+			$template = ORM::Factory('template', $c->getAttribute('family'));
 			$arguments['title'] = $c->getAttribute('label');
-			$this->__addObject($newpage->id, $newtemplate->id, $arguments);
+			$this->__addObject($newpage->id, $template->id, $arguments);
 		}
 
 		return $newpage->id;
@@ -497,7 +485,7 @@ class CMS_Controller extends Controller {
 		$page = ORM::Factory('page')->find($id);
 		$page->activity = 'D';
 		$page->sortorder = 0;
-		$page->slug = null;
+		$page->slug = new Database_Expr('NULL');
 		$page->save();
 		$page->contenttable->activity = 'D';
 		$page->contenttable->save();
@@ -519,10 +507,10 @@ class CMS_Controller extends Controller {
 	 */
 	private function cascade_undelete($page_id){
 		$page = ORM::Factory('page')->find($id);
-		$page->activity = 'NULL';
+		$page->activity = new Database_Expr('NULL');
 		$page->slug = cms::createSlug($page->contenttable->title, $page->id);
 		$page->save();
-		$page->contenttable->activity = 'NULL';
+		$page->contenttable->activity = new Database_Expr('NULL');;
 		$page->contenttable->save();
 
 		$children = ORM::Factory('page');

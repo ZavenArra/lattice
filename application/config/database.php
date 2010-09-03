@@ -30,53 +30,12 @@ $config['default'] = array
 	'connection'    => array
 	(
 		'type'     => 'mysql',
-		'user'     => 'root',
-		'pass'     => 'root',
+		'user'     => 'webdev',
+		'pass'     => 'luckyme#2$%67',
 		'host'     => 'localhost',
 		'port'     => FALSE,
 		'socket'   => FALSE,
-		'database' => 'foragingdev_dev'
-	),
-	'character_set' => 'utf8',
-	'table_prefix'  => '',
-	'object'        => TRUE,
-	'cache'         => FALSE,
-	'escape'        => TRUE
-);
-$config['staging'] = array
-(
-  'benchmark'     => TRUE,
-  'persistent'    => FALSE,
-  'connection'    => array
-	(
-		'type'     => 'mysql',
-		'user'     => 'madeofpe_user99',
-		'pass'     => 'user99',
-		'host'     => 'localhost',
-		'port'     => FALSE,
-		'socket'   => FALSE,
-		'database' => 'foraging_dev'
-	),
-  'character_set' => 'utf8',
-  'table_prefix'  => '',
-  'object'        => TRUE,
-  'cache'         => FALSE,
-  'escape'        => TRUE
-);
-
-$config['testing'] = array
-(
-	'benchmark'     => TRUE,
-	'persistent'    => FALSE,
-	'connection'    => array
-	(
-		'type'     => 'mysql',
-		'user'     => 'madeofpeople11',
-		'pass'     => 'madeofpeople11',
-		'host'     => 'mysqldev.madeofpeople.org',
-		'port'     => FALSE,
-		'socket'   => FALSE,
-		'database' => 'foraging_dev'
+		'database' => 'fullobject_dev'
 	),
 	'character_set' => 'utf8',
 	'table_prefix'  => '',

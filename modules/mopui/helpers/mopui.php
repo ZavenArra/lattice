@@ -21,7 +21,7 @@ Class mopui{
 		$view = 'ui_'.$element['type'];
 
 		//allow files to be passed either by id or as already quireid objects
-		if( in_array($element['type'], array('singlefile', 'singleImage'))){
+		if( in_array($element['type'], array('singleFile', 'singleImage'))){
 
 			if(!is_object($fieldvalue) ){
 				$fieldvalue = ORM::Factory('file')->where('id', $fieldvalue)->find(); //why is where necessary???
@@ -74,7 +74,7 @@ Class mopui{
 				$fieldvalue['height'] = 0;
 			}
 			$fieldvalue['thumbSrc']=$thumbSrc;
-		case 'singlefile':
+		case 'singleFile':
 			if(!isset($element['maxlength']) || !$element['maxlength']){
 				$element['maxlength'] = 1523712; //12 MegaBytes 
 			}
@@ -166,7 +166,7 @@ Class mopui{
 	}
 
 	public static function singleFile($field, $extensions, $maxlength, $currentFile=null ){
-		return mopui::buildUIElement( array('type'=>'singlefile', 'field'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $currentFile );
+		return mopui::buildUIElement( array('type'=>'singleFile', 'field'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $currentFile );
 	}
 
 	public static function fieldmap($values, $options){

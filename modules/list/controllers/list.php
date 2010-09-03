@@ -82,18 +82,7 @@ class List_Controller extends Controller{
 		$html = '';
 		foreach($listMembers as $object){
 
-
-			$modules = mop::config('backend', sprintf('//template[@templatename="%s"]/module', $object->template->templatename));
-			$modulesConfig = array();
-			foreach($modules as $module){
-				$entry = array();
-				for($i=0; $i<$module->attributes->length; $i++){
-					$entry[$module->attributes->item($i)->name] = $module->attributes->item($i)->value;
-				}
-				$modulesConfig[] = $entry;
-			}
-
-			$htmlChunks = cms::buildUIHtmlChunks($modulesConfig, $object);
+			$htmlChunks = cms::buildUIHtmlChunksForObject($object);
 			$itemt = new View($this->itemview);
 			$itemt->uiElements = $htmlChunks;
 
@@ -106,8 +95,9 @@ class List_Controller extends Controller{
 			$html.=$itemt->render();
 		}
 	
-		$this->view->label =  mop::config('backend', sprintf('//module[@class="%s"]', $this->listClass))->item(0)->getAttribute('label');
-		$this->view->class =  mop::config('backend', sprintf('//module[@class="%s"]', $this->listClass))->item(0)->getAttribute('cssClasses') . ' sortDirection-'.$this->sortdirection;
+    //actually we need to do an absolute path for local config
+		$this->view->label =  mop::config('backend', sprintf('//list[@family="%s"]', $this->listClass))->item(0)->getAttribute('label');
+		$this->view->class =  mop::config('backend', sprintf('//list[@family="%s"]', $this->listClass))->item(0)->getAttribute('cssClasses') . ' sortDirection-'.$this->sortdirection;
 		$this->view->items = $html;
 		$this->view->instance = $this->listClass;
 
@@ -213,9 +203,12 @@ class List_Controller extends Controller{
 
 
 		//addable item should be specifid in the addItem call
-		$template = mop::config('backend', sprintf('//module[@class="%s"]/addableobject', $this->listClass));
+		$template = mop::config('backend', sprintf('//list[@family="%s"]/addableObject', $this->listClass));
+    if(!$template->length > 0){
+      throw new Kohana_User_Exception('No List By That Name', 'Count not locate configuration in backend.xml for '.sprintf('//list[@family="%s"]/addableobject', $this->listClass) );
+    }
 		$template = $template->item(0);
-		$template = ORM::Factory('template', $template->getAttribute('templateId'));
+		$template = ORM::Factory('template', $template->getAttribute('templateName'));
 
 		$item = ORM::Factory($this->model);
 		$item->template_id = $template->id;
@@ -223,21 +216,10 @@ class List_Controller extends Controller{
 		$item->sortorder = $sort->newsort;
 		$item->published = 1;
 		$item->save();
+    $item = ORM::Factory($this->model, $item->id);
 
 
-		//ok enough of this
-		//this block of code is now repeated 3 times!
-		//what config format can be passed around??
-		$modules = mop::config('backend', sprintf('//template[@templatename="%s"]/module', $template->templatename));
-		$modulesConfig = array();
-		foreach($modules as $module){
-			$entry = array();
-			for($i=0; $i<$module->attributes->length; $i++){
-				$entry[$module->attributes->item($i)->name] = $module->attributes->item($i)->value;
-			}
-			$modulesConfig[] = $entry;
-		}
-		$htmlChunks = cms::buildUIHtmlChunks($modulesConfig, $item);
+		$htmlChunks = cms::buildUIHtmlChunksForObject($item);
 		$itemt = new View($this->itemview);
 		$itemt->uiElements = $htmlChunks;
 

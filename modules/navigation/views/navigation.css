@@ -16,12 +16,12 @@
 .breadCrumb{
 	list-style:none;
 	font-family: georgia, helvetica, sans-serif;
-	margin:1em 0 .25em 0;
+	margin:1em 0 0 0;
 	padding:0;
 }
 
 .breadCrumb li{
-	margin:0 .5em 0 0;
+	margin:0 .25em .25em 0;
 	padding:0;
 	float:left;
 	font-size: 1.2em;
