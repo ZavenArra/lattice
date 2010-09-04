@@ -43,20 +43,27 @@
 
 		<template name="simplelistmodulepage" nodetype="LEAF" allow_sort=true" allow_delete="true" allow_publish="false">
 			<elements>
-				<module label="Simple List Module">
-					<ipe field="title" label="Title" rows="1"/>
-					<ipe field="description" label="Description">
-				</module>
+				<
 			</elements>
 		</template>
 
 		<template name="imagelistmodule" nodetype"LEAF" alow_sort="true" alow_delete="true" alow_publish="false">
 			<elements>
-				<module lable	
-	
+					
+			</elements>	
 		</template>
 		
+		<template name="filelistmodulepage" nodetype="LEAF" allow_sort="true" alow_delete="true" allow_publish="false">
+			<elements>
 
+			</elements>
+		</temlpate>
+	
+		<template name="coplexlistmodulepage" type="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+			
+			</elements>
+		</template>
 		<template name="basiccategory" nodetype="CATEGORY" allow_sort="false" allow_delete="false" allow_publish="false">
 			<elements>
 				<ipe field="featureBlurb" label="Feature Text" tag="p" rows="4" />
@@ -74,6 +81,7 @@
 			</elements>
 		</template>
 		
+
 		<!-- allow_delete here is regarding the CHILD objects yes? -->
 		<template name="announcements" nodetype="CATEGORY" allow_sort="true" allow_delete="true" allow_publish="false">
 			<addableobject id="annoucement" templateAddText="Add an annoucement" />
