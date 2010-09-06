@@ -524,28 +524,6 @@ class CMS_Controller extends Controller {
 
 	}
 
-	public function regenerateImages(){
-		//find all images
-		//calculate resize array for images
-		$uiimagesize = array('uithumb'=>Kohana::config('cms.uiresize'));
-		$parameters['imagesizes'] = $uiimagesize;
-
-		foreach(Kohana::config('cms.templates') as $templatename => $templateconfig){
-			foreach($templateconfig as $field){
-				if($field['type'] == 'singleImage'){
-					$objects = ORM::Factory('template', $templatename)->getPublishedMembers();
-					$fieldname = $field['field'];
-					foreach($objects as $object){
-						if( $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
-							$this->processImage($object->contenttable->$fieldname->filename, $parameters);
-						}
-					}
-				}
-			}
-		}
-	}
-
-
 }
 
 ?>

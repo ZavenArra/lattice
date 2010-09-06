@@ -3,13 +3,28 @@
 class BuildData_Controller extends Controller {
 
 	public function index(){
-		$this->insertData();
-	}
-	public function insertData($parentId = 0, $prefix = '/data/'){
-    echo 'inserting '.$prefix;
 
-		foreach(mop::config('data', $prefix.'item')  as $item){
-      echo 'found contentnode';
+		//get directory listing of application/media
+		//and unlink all files
+
+		$db = Database::instance();
+		$db->query('delete from pages');
+		$db->query('alter table pages AUTO_INCREMENT = 1');
+		$db->query('delete from content_larges');
+		$db->query('alter table content_larges AUTO_INCREMENT = 1');
+		flush();
+		ob_flush();
+
+		echo "\nInserting Data\n";
+		$this->insertData();
+
+		cms::regenerateImages();
+
+	}
+	public function insertData($parentId = 0, $context=null){
+
+		foreach(mop::config('data', 'item', $context)  as $item){
+      echo "\n found contentnod";
 			flush();
 			ob_flush();
 			$object = ORM::Factory('page');
@@ -23,8 +38,8 @@ class BuildData_Controller extends Controller {
 			$object->save();
       echo ')))'.$item->getAttribute('templateName');
 			//templatename IS NOT a unique identifier..
-			echo count($item->childNodes);
-			foreach(mop::config('data', sprintf($prefix.'item[@templateName="%s"]/*', $item->getAttribute('templateName'))) as $content){
+			foreach(mop::config('data', '*', $item ) as $content){
+				echo $content->tagName;
 				if($content->tagName == 'item'){
 					//do nothing, catch downstairs
 					continue;
@@ -33,14 +48,19 @@ class BuildData_Controller extends Controller {
         if($field == 'title'){
           $object->slug = cms::createSlug($content->nodeValue);
         }
+				//need to look up field and switch on field type	
+				$fieldInfo = mop::config('backend', sprintf('/template[@name="%s"]/[@name="%s"]', $item->getAttribute('templateName'), $content->tagName));
+				if(!$fieldInfo){
+					die('Bad field!', sprintf('/template[@name="%s"]/[@name="%s"]', $item->getAttribute('templateName'), $content->tagName));
+				}
 				$object->contenttable->$field = $content->nodeValue;
 			}
       $object->save();
       $object->contenttable->save();
 
 			//do recursive if it has children
-      if(mop::config('backend', sprintf($prefix.'item[@templateName="%s"]/*', $item->getAttribute('templateName'))).'/item'){
-        $this->insertData($object->id,  $prefix.'item/');
+      if(mop::config('data', 'item', $item) ){
+        $this->insertData($object->id,  $item);
       }
 		}
 	}
