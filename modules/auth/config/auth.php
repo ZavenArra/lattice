@@ -47,6 +47,6 @@ $config['users'] = array
 $config['displaycontroller'] = 'DisplayLogin';
 $config['redirect'] = 'cms';
 
-$config['resources']['css'] = array('modules/cms/views/cms.css');
+$config['resources']['css'] = array('modules/cms/views/mop_cms.css');
 
 
