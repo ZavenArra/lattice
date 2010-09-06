@@ -38,6 +38,8 @@ class CMS_Controller extends Controller {
 	*/
 	public $subModules =  array();
 
+	protected $defaulttemplate='mop_cms';
+
 	/*
 		Function: __constructor
 		Loads subModules to build from config	
@@ -455,7 +457,7 @@ class CMS_Controller extends Controller {
 		public function delete($id){
 			$this->cascade_delete($id);
 
-			$this->view = new View('cms_undelete');
+			$this->view = new View('mop_cms_undelete');
 			$this->view->id=$id;
 			return $this->view->render();
 		}
