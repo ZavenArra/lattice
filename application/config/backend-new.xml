@@ -43,19 +43,33 @@
 
 		<template name="simplelistmodulepage" nodetype="LEAF" allow_sort=true" allow_delete="true" allow_publish="false">
 			<elements>
-				<
+				<ipe field="title" label="Title" rows="1"/>
+				<ipe field="description" label="Description"/>
+				<list family="simplelistmodule" label="Simple List Module" display="inline">
+					<addableobject id="simpleListItem"  templateAddText="Add a field"/>
+				</list>
 			</elements>
 		</template>
 
 		<template name="imagelistmodule" nodetype"LEAF" alow_sort="true" alow_delete="true" alow_publish="false">
 			<elements>
-					
+				<ipe field="title" label="Title" rows="1"/>
+				<ipe field="description" label="Description"/>		
+				<singleimage field="file" extentions="jpg" label=""/>
+				<list family="imageListmodule" label="Image List" dislplay="inline">
+					<addableobject="imageList" templateAddText="Add an image"/>
+				</list>
 			</elements>	
 		</template>
 		
 		<template name="filelistmodulepage" nodetype="LEAF" allow_sort="true" alow_delete="true" allow_publish="false">
 			<elements>
-
+				<ipe field="title" label="Title" rows="1"/>
+				<ipe field="description" label="Description"/>
+				<file field="file" label="" extentions="txt,pdf,html,csv"/>
+				<list family="fileListModule" label "File List" display="inline">
+ 					<addableobject="fileList" templateAddText="Add a field"/>
+				</list>
 			</elements>
 		</temlpate>
 	
