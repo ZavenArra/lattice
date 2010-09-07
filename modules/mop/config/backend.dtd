@@ -59,7 +59,7 @@
 	maxLength			CDATA #IMPLIED
 >
 
-<!ELEMENT radioGroup EMPTY >
+<!ELEMENT radioGroup (radio*) >
 <!ATTLIST radioGroup
 	%uiattrs;
 >
