@@ -32,12 +32,13 @@ class BuildData_Controller extends Controller {
       if(!$template->id){
 				die("Bad template name ".$item->getAttribute('templateName')."\n");
 			}
-			$object->template_id = $template->id;
-			$object->published = true;
-			$object->parentid = $parentId;
-			$object->save();
+
+			//$object->template_id = $template->id;
+			//$object->published = true;
+			//$object->parentid = $parentId;
+			//$object->save();
       echo ')))'.$item->getAttribute('templateName');
-			//templatename IS NOT a unique identifier..
+			$data = array();
 			foreach(mop::config('data', '*', $item ) as $content){
 				echo $content->tagName;
 				if($content->tagName == 'item'){
@@ -45,18 +46,16 @@ class BuildData_Controller extends Controller {
 					continue;
 				}
         $field = $content->tagName;
-        if($field == 'title'){
-          $object->slug = cms::createSlug($content->nodeValue);
-        }
 				//need to look up field and switch on field type	
-				$fieldInfo = mop::config('backend', sprintf('/template[@name="%s"]/[@name="%s"]', $item->getAttribute('templateName'), $content->tagName));
+				$fieldInfo = mop::config('backend', sprintf('//template[@name="%s"]/*[@name="%s"]', $item->getAttribute('templateName'), $content->tagName));
 				if(!$fieldInfo){
-					die('Bad field!', sprintf('/template[@name="%s"]/[@name="%s"]', $item->getAttribute('templateName'), $content->tagName));
+					die("Bad field!\n". sprintf('//template[@name="%s"]/*[@name="%s"]', $item->getAttribute('templateName'), $content->tagName));
 				}
-				$object->contenttable->$field = $content->nodeValue;
+				$data[$field] = $content->nodeValue;
 			}
-      $object->save();
-      $object->contenttable->save();
+			$data['published'] = true;
+			echo 'parent'.$parentId;
+			cms::addObject($parentId, $template->id, $data);
 
 			//do recursive if it has children
       if(mop::config('data', 'item', $item) ){
