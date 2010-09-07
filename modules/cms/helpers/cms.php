@@ -294,11 +294,11 @@ class CMS {
 		$uiimagesize = array('uithumb'=>Kohana::config('cms.uiresize'));
 		$parameters['imagesizes'] = $uiimagesize;
 
-		foreach(Kohana::config('cms.templates') as $templatename => $templateconfig){
-			foreach($templateconfig as $field){
-				if($field['type'] == 'singleImage'){
-					$objects = ORM::Factory('template', $templatename)->getPublishedMembers();
-					$fieldname = $field['field'];
+		foreach(mop::config('backend', '//template') as $template){
+			foreach(mop::config('backend', '/elements', $template) as $element){
+				if($element->getAttribute('type') == 'singleImage'){
+					$objects = ORM::Factory('template', $template->getAttribute('name'))->getPublishedMembers();
+					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
 						if( $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
 							cms::processImage($object->contenttable->$fieldname->filename, $parameters);
@@ -333,7 +333,6 @@ class CMS {
 	*/
 	public function addObject($id, $template_id, $data = array() ){
 		if($id!=='0' && $id!==0){
-			echo 'the id'.$id;
 			cms::checkForValidPageId($id);
 		}
 		$newpage = ORM::Factory('page');
@@ -353,11 +352,11 @@ class CMS {
 		//if not enabled, insert as published
 		$template = ORM::Factory('template', $template_id);
 		$tSettings = mop::config('backend', sprintf('//template[@name="%s"]', $template->templatename) ); 
-		echo  sprintf('/template[@name="%s"]', $template->templatename);
-		echo $tSettings->length;
 		$tSettings = $tSettings->item(0);
-		if($tSettings->getAttribute('allowTogglePublish')){
-			$newpage->published = 1;
+		if($tSettings){ //entry won't exist for Container objects
+			if($tSettings->getAttribute('allowTogglePublish')){
+				$newpage->published = 1;
+			}
 		}
 		if(isset($data['published']) && $data['published'] ){
 			$newpage->published = 1;
@@ -378,7 +377,7 @@ class CMS {
 		if(is_array($contentDefaults) && count($contentDefaults)){
 			foreach($contentDefaults as $field=>$value){
 				$newpage->contenttable->$field = $value;
-			}
+			}.$item->getAttribute('templateName')
 			$newpage->contenttable->save();
 		}
 		 */

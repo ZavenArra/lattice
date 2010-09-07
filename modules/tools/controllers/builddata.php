@@ -24,7 +24,7 @@ class BuildData_Controller extends Controller {
 	public function insertData($parentId = 0, $context=null){
 
 		foreach(mop::config('data', 'item', $context)  as $item){
-      echo "\n found contentnod";
+      echo "\n found contentnod ".$item->getAttribute('templateName');
 			flush();
 			ob_flush();
 			$object = ORM::Factory('page');
@@ -40,7 +40,7 @@ class BuildData_Controller extends Controller {
       echo ')))'.$item->getAttribute('templateName');
 			$data = array();
 			foreach(mop::config('data', '*', $item ) as $content){
-				echo $content->tagName;
+				echo 'Field'.$content->tagName."\n";
 				if($content->tagName == 'item'){
 					//do nothing, catch downstairs
 					continue;
