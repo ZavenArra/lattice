@@ -288,6 +288,133 @@ class CMS {
     return cms::buildUIHtmlChunks($elementsConfig, $object);
   }
 
+	public function regenerateImages(){
+		//find all images
+		//calculate resize array for images
+		$uiimagesize = array('uithumb'=>Kohana::config('cms.uiresize'));
+		$parameters['imagesizes'] = $uiimagesize;
+
+		foreach(mop::config('backend', '//template') as $template){
+			foreach(mop::config('backend', '/elements', $template) as $element){
+				if($element->getAttribute('type') == 'singleImage'){
+					$objects = ORM::Factory('template', $template->getAttribute('name'))->getPublishedMembers();
+					$fieldname = $element->getAttribute('field');
+					foreach($objects as $object){
+						if( $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
+							cms::processImage($object->contenttable->$fieldname->filename, $parameters);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/*
+	 * Function: checkForValidPageId($id) 
+	 * Validates the current page id 
+	 * Parameters:
+	 * $id  - the id to check 
+	 * Returns: throws exception on invalid page id
+	 */
+	public function checkForValidPageId($id){
+		if(!ORM::Factory('page')->where('id', $id)->find()->loaded){
+			throw new Kohana_User_Exception('Bad Page Id', 'The id '.$id.' is not a key in for an object in the pages table');
+		}
+	}
+
+	/*
+	Function: addObject($id)
+	Private function for adding an object to the cms data
+	Parameters:
+	id - the id of the parent category
+	template_id - the type of object to add
+	$data - possible array of keys and values to initialize with
+	Returns: the new page id
+	*/
+	public function addObject($id, $template_id, $data = array() ){
+		if($id!=='0' && $id!==0){
+			cms::checkForValidPageId($id);
+		}
+		$newpage = ORM::Factory('page');
+		$newpage->template_id = $template_id;
+
+		//create slug
+		if(isset($data['title'])){
+			$newpage->slug = cms::createSlug($data['title'], $newpage->id);
+		} else {
+			$newpage->slug = cms::createSlug();
+		}
+		$newpage->parentid = $id;
+		$newpage->save();
+	
+
+		//check for enabled publish/unpublish. 
+		//if not enabled, insert as published
+		$template = ORM::Factory('template', $template_id);
+		$tSettings = mop::config('backend', sprintf('//template[@name="%s"]', $template->templatename) ); 
+		$tSettings = $tSettings->item(0);
+		if($tSettings){ //entry won't exist for Container objects
+			if($tSettings->getAttribute('allowTogglePublish')){
+				$newpage->published = 1;
+			}
+		}
+		if(isset($data['published']) && $data['published'] ){
+			$newpage->published = 1;
+			unset($data['published']);
+		}
+
+		$newpage->save();
+
+		//Add defaults to content table
+		$newtemplate = ORM::Factory('template', $newpage->template_id);
+		/*
+		 * this little tidbit is no longer supported
+		 * the idea was to be able to configure content defaults on adding
+		 * not really used too often
+		 */
+		/*
+		$contentDefaults = Kohana::config('cms.templates.'.$newpage->template->templatename.'.defaults');
+		if(is_array($contentDefaults) && count($contentDefaults)){
+			foreach($contentDefaults as $field=>$value){
+				$newpage->contenttable->$field = $value;
+			}.$item->getAttribute('templateName')
+			$newpage->contenttable->save();
+		}
+		 */
+
+		//add submitted data to content table
+		foreach($data as $field=>$value){
+			$newpage->contenttable->$field = $data[$field];
+		}
+		$newpage->contenttable->save();
+
+		//look up any components and add them as well
+
+		//configured components
+		$components = mop::config('backend', sprintf('//template[@name="%s"]/component',$newtemplate->templatename));
+		foreach($components as $c){
+			$template = ORM::Factory('template', $c->getAttribute('templateId'));
+			if($c->hasChildNodes()){
+				foreach($c->childNodes as $data){
+					$arguments[$data->name] = $data->value;
+				}
+			}
+			cms::addObject($newpage->id, $newtemplate->id, $arguments);
+		}
+
+		//containers (list)
+		$containers = mop::config('backend', sprintf('//template[@name="%s"]/elements/list',$newtemplate->templatename));
+		foreach($containers as $c){
+			$template = ORM::Factory('template', $c->getAttribute('family'));
+			$arguments['title'] = $c->getAttribute('label');
+			cms::addObject($newpage->id, $template->id, $arguments);
+		}
+
+		return $newpage->id;
+	}
+
+
+
 }
 
 

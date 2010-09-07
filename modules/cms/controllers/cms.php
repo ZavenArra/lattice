@@ -38,6 +38,8 @@ class CMS_Controller extends Controller {
 	*/
 	public $subModules =  array();
 
+	protected $defaulttemplate='mop_cms';
+
 	/*
 		Function: __constructor
 		Loads subModules to build from config	
@@ -90,7 +92,7 @@ class CMS_Controller extends Controller {
 		
 		//new generation of page
 		//1 grap cms_nodetitle
-		$this->nodetitle = new View('cms_nodetitle');
+		$this->nodetitle = new View('mop_cms_nodetitle');
 		$this->nodetitle->loadResources();
 		$this->nodetitle->title = $page->contenttable->title; //this should change to page table
 		$this->nodetitle->allow_delete = $page->template->allow_delete;
@@ -282,19 +284,6 @@ class CMS_Controller extends Controller {
 	}
 
 	/*
-	 * Function: checkForValidPageId($id) 
-	 * Validates the current page id 
-	 * Parameters:
-	 * $id  - the id to check 
-	 * Returns: throws exception on invalid page id
-	 */
-	public function checkForValidPageId($id){
-		if(!ORM::Factory('page')->where('id', $id)->find()->loaded){
-			throw new Kohana_User_Exception('Bad Page Id', 'The id '.$id.' is not a key in for an object in the pages table');
-		}
-	}
-
-	/*
 	Function: addObject($id)
 	Public interface for adding an object to the cms data
 	Parameters:
@@ -310,100 +299,12 @@ class CMS_Controller extends Controller {
 		if($title){
 			$data['title'] = $title;
 		}
-		$newid = $this->__addObject($id, $template_id, $data);
+		$newid = cms::addObject($id, $template_id, $data);
 
 		//Dial up associated navi and ask for details
 		$nav_controller = ucfirst($this->modules['navigation']).'_Controller';
 		$nav_controller = new $nav_controller();
 		return $nav_controller->getNode($newid);
-	}
-
-	/*
-	Function: __addObject($id)
-	Private function for adding an object to the cms data
-	Parameters:
-	id - the id of the parent category
-	template_id - the type of object to add
-	$data - possible array of keys and values to initialize with
-	Returns: the new page id
-	*/
-	private function __addObject($id, $template_id = NULL, $data = array() ){
-		if($id!=='0'){
-			$this->checkForValidPageId($id);
-		}
-		$newpage = ORM::Factory('page');
-		if($template_id){
-			$newpage->template_id = $template_id;
-		} else {
-			$parent = ORM::Factory('page')->find($id);
-			if($parent->template->default_add_category == NULL){
-				die('no default add category for this category');
-			}
-			$newpage->template_id = $parent->template->default_add_category;
-		}
-		//create slug
-		if(isset($data['title'])){
-			$newpage->slug = cms::createSlug($data['title'], $newpage->id);
-		} else {
-			$newpage->slug = cms::createSlug();
-		}
-		$newpage->parentid = $id;
-		$newpage->save();
-	
-
-		//check for enabled publish/unpublish. 
-		//if not enabled, insert as published
-		if(!Kohana::config('cms.templates.'.$newpage->template->templatename.'.allow_toggle_publish')){
-			$newpage->published = 1;
-		}
-		$newpage->save();
-
-		//Add defaults to content table
-		$newtemplate = ORM::Factory('template', $newpage->template_id);
-		/*
-		 * this little tidbit is no longer supported
-		 * the idea was to be able to configure content defaults on adding
-		 * not really used too often
-		 */
-		/*
-		$contentDefaults = Kohana::config('cms.templates.'.$newpage->template->templatename.'.defaults');
-		if(is_array($contentDefaults) && count($contentDefaults)){
-			foreach($contentDefaults as $field=>$value){
-				$newpage->contenttable->$field = $value;
-			}
-			$newpage->contenttable->save();
-		}
-		 */
-
-		//add submitted data to content table
-		foreach($data as $field=>$value){
-			$newpage->contenttable->$field = $data[$field];
-		}
-		$newpage->contenttable->save();
-
-		//look up any components and add them as well
-
-		//configured components
-		$components = mop::config('backend', sprintf('//template[@name="%s"]/component',$newtemplate->templatename));
-		foreach($components as $c){
-			$template = ORM::Factory('template', $c->getAttribute('templateId'));
-			if($c->hasChildNodes()){
-				foreach($c->childNodes as $data){
-					$arguments[$data->name] = $data->value;
-				}
-			}
-			$this->__addObject($newpage->id, $newtemplate->id, $arguments);
-		}
-
-		//containers (list)
-		$containers = mop::config('backend', sprintf('//template[@name="%s"]/elements/list',$newtemplate->templatename));
-		foreach($containers as $c){
-			$template = ORM::Factory('template', $c->getAttribute('family'));
-			$arguments['title'] = $c->getAttribute('label');
-			$this->__addObject($newpage->id, $template->id, $arguments);
-		}
-
-		return $newpage->id;
 	}
 
 
@@ -455,7 +356,7 @@ class CMS_Controller extends Controller {
 		public function delete($id){
 			$this->cascade_delete($id);
 
-			$this->view = new View('cms_undelete');
+			$this->view = new View('mop_cms_undelete');
 			$this->view->id=$id;
 			return $this->view->render();
 		}
@@ -521,28 +422,6 @@ class CMS_Controller extends Controller {
 		}
 
 	}
-
-	public function regenerateImages(){
-		//find all images
-		//calculate resize array for images
-		$uiimagesize = array('uithumb'=>Kohana::config('cms.uiresize'));
-		$parameters['imagesizes'] = $uiimagesize;
-
-		foreach(Kohana::config('cms.templates') as $templatename => $templateconfig){
-			foreach($templateconfig as $field){
-				if($field['type'] == 'singleImage'){
-					$objects = ORM::Factory('template', $templatename)->getPublishedMembers();
-					$fieldname = $field['field'];
-					foreach($objects as $object){
-						if( $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
-							$this->processImage($object->contenttable->$fieldname->filename, $parameters);
-						}
-					}
-				}
-			}
-		}
-	}
-
 
 }
 
