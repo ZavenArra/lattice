@@ -20,6 +20,7 @@ mop.modules.navigation.Navigation = new Class({
 		this.navElement = this.element.getElement( ".nav" );
 		
 		this.breadCrumbs =  new mop.ui.navigation.BreadCrumbTrail( this.element.getSibling( ".breadCrumb" ), this.onBreadCrumbClicked.bind( this ) );
+		this.breadCrumbs.addCrumb( { label: "Main Menu", id: null, index: 0 } );
 		
 		this.mode = "browse";
 		this.tiers = [];
@@ -237,7 +238,7 @@ mop.modules.navigation.Navigation = new Class({
 					var slideTier = new Fx.Scroll( this.getTierElement( whichTier ) );
 					if( node )  slideTier.toElement( node.element );
 					slideTier = null;
-					this.breadCrumbs.addCrumb( { label: ( aNode.id )? aNode.title : "Main Menu", id: ( aNode.id )? aNode.id : null, index: whichTier } );
+					if( aNode.id ) this.breadCrumbs.addCrumb( { label: aNode.title, id: aNode.id, index: whichTier } );
 					this.showCategory( childNode, whichTier+1 );
 				}
 			}, this );

@@ -43,7 +43,7 @@ Class mop {
 
 	private static $dbmaps;
 
-	public static function config($arena, $xpath){
+	public static function config($arena, $xpath, $contextNode=null){
 		if(!is_array(self::$config)){
 			self::$config = array();
 		}
@@ -60,12 +60,16 @@ Class mop {
 			$dom->load( "application/config/$arena.xml");
       if(!$dom->validate()){
         print_r($dom->errors);  
-        die('Validation failed on '."application/config/$arena.xml");
+       // die('Validation failed on '."application/config/$arena.xml");
       }
 			$xpathObject = new DOMXPath($dom->_delegate);
 			self::$config[$arena] = $xpathObject;
 		}
-		$xmlNodes = self::$config[$arena]->evaluate($xpath);
+		if($contextNode){
+			$xmlNodes = self::$config[$arena]->evaluate($xpath, $contextNode);
+		} else {
+			$xmlNodes = self::$config[$arena]->evaluate($xpath);
+		}
 		return $xmlNodes;
 	}
 

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+
+	<item templateName="home">
+		<title>Homepage</title>
+		<featureBlurb>This is a feature blurb</featureBlurb>
+		<featureImage>/home/deepwinter/data/image.jpg</featureImage>
+		<aboutHeader>This is the about header</aboutHeader>
+		<!--
+		<featureList>
+			<item templateName="featureListItem">
+				<label>This is a feature list item</label>
+				<url>http://www.nytimes.com/</url>
+			</item>
+			<item templateName="featureListItem">
+				<label>Another feature list item</label>
+				<url>http://www.myhouse.com/</url>
+			</item>
+		</featureList>
+		-->
+	</item>
+
+	<item templateName="books">
+		<title>Books</title>
+		<item templateName="book">
+			<title>The title of the book</title>
+			<description>The Description of the book</description>
+		</item>
+		<item templateName="book">
+			<title>The title of the book</title>
+			<description>The Description of the book</description>
+		</item>
+		<item templateName="book">
+			<title>The title of the book</title>
+			<description>The Description of the book</description>
+		</item>
+	</item>
+
+	<item templateName="wheretofind">
+		<title>Where to Find</title>
+	</item>
+
+	<item templateName="contact">
+		<title>Contact</title>
+	</item>
+
+</data>
+
+

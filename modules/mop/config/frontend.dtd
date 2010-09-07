@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <!--
 	MoPCMS Frontend Data File DTD
 	Revision: 0.1
@@ -6,22 +8,20 @@
 
 <!ELEMENT data (view*) >
 
-<!ELEMENT view (extendeddata|subview)* >
+<!ELEMENT view (includeObjects|subView)* >
 <!ATTLIST view
 	name				CDATA #REQUIRED
-	loadpage			(true|false) "true"
+	loadPage			(true|false) "true"
 >
 
-
-<!ELEMENT extendeddata EMPTY >
-<!ATTLIST extendeddata
-	label				CDATA #REQUIRED
-	templatename		CDATA #IMPLIED
-	parent		 		CDATA "parent"
+<!ELEMENT includeData ANY >
+<!ATTLIST includeData
+	from		 		CDATA "parent"
+	name				CDATA #REQUIRED
 >
 
-<!ELEMENT subview EMPTY >
-<!ATTLIST subvjew
+<!ELEMENT subView EMPTY >
+<!ATTLIST subView
 	view				CDATA #REQUIRED
 	label				CDATA #REQUIRED
 >

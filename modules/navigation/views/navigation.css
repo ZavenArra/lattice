@@ -13,34 +13,39 @@
 	clear: both;
 }
 
-.breadCrumb{
+ul.breadCrumb{
+    clear: both;
 	list-style:none;
 	font-family: georgia, helvetica, sans-serif;
-	margin:1em 0 0 0;
-	padding:0;
+	margin: 0 0 0 0;
+	height: 2em;
 }
 
-.breadCrumb li{
-	margin:0 .25em .25em 0;
-	padding:0;
+ul.breadCrumb li{
+	margin:0 .125em 0 0;
+	display: block;
 	float:left;
 	font-size: 1.2em;
 }
 
-/*.breadCrumb li:after{ content: "/" }*/
-
-.breadCrumb li.clear{
+/*.breadCrumb li:after{ content: "/" }
+*/
+ul.breadCrumb li.clear{
 	visibility: hidden;
 }
 
-.breadCrumb li a{
-	color:#fff;
-	background:#ccc;
+ul.breadCrumb li a{
+    display: block;
+    width: auto;
+	color:#aaa;
+	background:#eee;
+/*  border: 1px #aaa solid;
+*/
 	cursor: pointer;
 	text-decoration:none;
-	padding: .25em .5em;
+	padding: .5em 1em;
 }
-.breadCrumb li a:hover{
+ul.breadCrumb li a:hover{
 	background:#0af;
 	color:#fff;
 }

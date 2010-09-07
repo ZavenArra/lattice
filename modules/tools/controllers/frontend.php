@@ -15,7 +15,7 @@ Class Frontend_Controller extends Controller {
 		ob_flush();
 		
 		foreach(mop::config('frontend', '//view') as $view ){
-			touch('application/frontend/s'.$view->getAttribute('name').'.php');
+			touch('application/frontend/'.$view->getAttribute('name').'.php');
 			ob_start();
 			if($view->getAttribute('loadpage')=='true'){
 			echo "<p>Main Content</p>";
