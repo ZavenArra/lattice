@@ -1,6 +1,7 @@
 {
 	"templates":[{
 		"templatename":"basiccategory",
+
 		"nodetype":"CATEGORY",
 		"parameters":[]
 	},

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+
+	<templates>
+
+<!-- HOME -->
+		<template name="basiccategory" nodetype="CATEGORY" allow_sort="false" allow_delet="false" allow_publish="false"/>
+
+		<template name="singleIPE" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false"/>
+			<elements>
+				<ipe field="singleIPE" label="single IPE" rows="1"/>
+			</elements>
+		</template>
+
+		<template name="singleradiogroup" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+				<radiogroup field="singleRadioGroup" grouplabel="Single Radio Group">
+				<radio label="One" value="1"/>
+				<radio label="Two" value="2"/>
+				<radio label="Three" value="3"/>
+				</radiogroup>
+			</elements>
+		</template>
+
+		<template name="singlecheckbox" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+				<checkbox field="Single Checkbox" label="Single Checkbox"/>
+			</elements>
+		</template>
+
+		<template name="singledate" nodetype="LEAF" allow_sort="true"allow_delete="true" allow_publish="false">
+			<elements>
+				<date field="singleDate" label="Single Date"/>
+			</elements>
+		</template>
+
+		<template name="singletime" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+				<time field="singleTime" label="Single Time/>
+			</elements>
+		</template>
+
+		<template name="simplelistmodulepage" nodetype="LEAF" allow_sort=true" allow_delete="true" allow_publish="false">
+			<elements>
+				<ipe field="title" label="Title" rows="1"/>
+				<ipe field="description" label="Description"/>
+			</elements>
+		</template>
+
+		<template name="imagelistmodule" nodetype"LEAF" alow_sort="true" alow_delete="true" alow_publish="false">
+			<elements>
+				<ipe field="title" label="Title" rows="1"/>
+				<ipe field="description" label="Description"/>		
+				<singleimage field="
+			</elements>	
+		</template>
+		
+		<template name="filelistmodulepage" nodetype="LEAF" allow_sort="true" alow_delete="true" allow_publish="false">
+			<elements>
+
+			</elements>
+		</temlpate>
+	
+		<template name="coplexlistmodulepage" type="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+			
+			</elements>
+		</template>
+		<template name="basiccategory" nodetype="CATEGORY" allow_sort="false" allow_delete="false" allow_publish="false">
+			<elements>
+				<ipe field="featureBlurb" label="Feature Text" tag="p" rows="4" />
+				<singleimage field="featureImage" extensions="jpg" label="Feature Image"/>
+				<list family="featureList" label="Feature Links" display="inline" >
+					<addableobject id="featureListItem" templateAddText="Add a Link" />
+				</list>
+				<ipe field="aboutHeader" label="About Header" tag="p" rows="1" />		
+				<ipe field="aboutBlurb" label="About Soberscove" tag="p" rows="6" />		
+
+				<!-- a bit confused, if i want to add annoucements as a component, is this how i do it? Or do i make annoucements a category and make it an addableobject within <!-- template name="home"?? -->
+				<list family="annoucements" label="Annoucement List" display="component" >
+					<addableobject id="featureListItem" templateAddText="Add a Link" />
+				</list>
+			</elements>
+		</template>
+		
+
+		<!-- allow_delete here is regarding the CHILD objects yes? -->
+		<template name="announcements" nodetype="CATEGORY" allow_sort="true" allow_delete="true" allow_publish="false">
+			<addableobject id="annoucement" templateAddText="Add an annoucement" />
+		</template>
+		
+		<template name="annoucement" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="true">
+			<elements>
+				<!-- how are fields namespaced? can this just be "date" or is it ideally "announcementDate" -->
+				<date field="date" label="date" />		
+				<ipe field="annoucement" label="Announcement" tag="p" rows="4" />
+				<!-- display = inline/component? -->	
+				<list family="annoucementLinks" label="Links" display="inline" >
+					<addableobject id="annoucementLink" templateAddText="Add a Link" />
+				</list>
+			</elements>
+		</template>
+
+		<template name="annoucementLink" nodety<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+
+	<templates>
+
+<!-- HOME -->
+		<template name="basiccategory" nodetype="CATEGORY" allow_sort="false" allow_delet="false" allow_publish="false"/>
+
+		<template name="singleIPE" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false"/>
+			<elements>
+				<ipe field="singleIPE" label="single IPE" rows="1"/>
+			</elements>
+		</template>
+
+		<template name="singleradiogroup" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+				<radiogroup field="singleRadioGroup" grouplabel="Single Radio Group">
+				<radio label="One" value="1"/>
+				<radio label="Two" value="2"/>
+				<radio label="Three" value="3"/>
+				</radiogroup>
+			</elements>
+		</template>
+
+		<template name="singlecheckbox" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+				<checkbox field="Single Checkbox" label="Single Checkbox"/>
+			</elements>
+		</template>
+
+		<template name="singledate" nodetype="LEAF" allow_sort="true"allow_delete="true" allow_publish="false">
+			<elements>
+				<date field="singleDate" label="Single Date"/>
+			</elements>
+		</template>
+
+		<template name="singletime" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+				<time field="singleTime" label="Single Time/>
+			</elements>
+		</template>
+
+		<template name="simplelistmodulepage" nodetype="LEAF" allow_sort=true" allow_delete="true" allow_publish="false">
+			<elements>
+				<ipe field="title" label="Title" rows="1"/>
+				<ipe field="description" label="Description"/>
+			</elements>
+		</template>
+
+		<template name="imagelistmodule" nodetype"LEAF" alow_sort="true" alow_delete="true" alow_publish="false">
+			<elements>
+				<ipe field="title" label="Title" rows="1"/>
+				<ipe field="description" label="Description"/>		
+				<singleimage field="
+			</elements>	
+		</template>
+		
+		<template name="filelistmodulepage" nodetype="LEAF" allow_sort="true" alow_delete="true" allow_publish="false">
+			<elements>
+
+			</elements>
+		</temlpate>
+	
+		<template name="coplexlistmodulepage" type="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+			
+			</elements>
+		</template>
+		<template name="basiccategory" nodetype="CATEGORY" allow_sort="false" allow_delete="false" allow_publish="false">
+			<elements>
+				<ipe field="featureBlurb" label="Feature Text" tag="p" rows="4" />
+				<singleimage field="featureImage" extensions="jpg" label="Feature Image"/>
+				<list family="featureList" label="Feature Links" display="inline" >
+					<addableobject id="featureListItem" templateAddText="Add a Link" />
+				</list>
+				<ipe field="aboutHeader" label="About Header" tag="p" rows="1" />		
+				<ipe field="aboutBlurb" label="About Soberscove" tag="p" rows="6" />		
+
+				<!-- a bit confused, if i want to add annoucements as a component, is this how i do it? Or do i make annoucements a category and make it an addableobject within <!-- template name="home"?? -->
+				<list family="annoucements" label="Annoucement List" display="component" >
+					<addableobject id="featureListItem" templateAddText="Add a Link" />
+				</list>
+			</elements>
+		</template>
+		
+
+		<!-- allow_delete here is regarding the CHILD objects yes? -->
+		<template name="announcements" nodetype="CATEGORY" allow_sort="true" allow_delete="true" allow_publish="false">
+			<addableobject id="annoucement" templateAddText="Add an annoucement" />
+		</template>
+		
+		<template name="annoucement" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="true">
+			<elements>
+				<!-- how are fields namespaced? can this just be "date" or is it ideally "announcementDate" -->
+				<date field="date" label="date" />		
+				<ipe field="annoucement" label="Announcement" tag="p" rows="4" />
+				<!-- display = inline/component? -->	
+				<list family="annoucementLinks" label="Links" display="inline" >
+					<addableobject id="annoucementLink" templateAddText="Add a Link" />
+				</list>
+			</elements>
+		</template>
+
+		<template name="annoucementLink" nodety
