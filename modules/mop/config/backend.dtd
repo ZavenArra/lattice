@@ -25,7 +25,7 @@
 	allowChildSort		(true|false) "true"
 >
 
-<!ELEMENT elements (ipe|list|singleImage|singleFile|radioGroup|multiSelect|date|time|dateRange)* >
+<!ELEMENT elements (ipe|list|singleImage|singleFile|radioGroup|multiSelect|date|time|dateRange|checkbox|time)* >
 
 <!ELEMENT addableObject EMPTY >
 <!ATTLIST addableObject
@@ -62,6 +62,7 @@
 <!ELEMENT radioGroup (radio*) >
 <!ATTLIST radioGroup
 	%uiattrs;
+	groupLabel				CDATA #REQUIRED
 >
 
 <!ELEMENT radio EMPTY >
@@ -78,6 +79,17 @@
 
 <!ELEMENT date EMPTY>
 <!ATTLIST date
+	%uiattrs;
+>
+
+<!ELEMENT time EMPTY>
+<!ATTLIST time
+	%uiattrs;
+>
+
+
+<!ELEMENT checkbox EMPTY>
+<!ATTLIST checkbox
 	%uiattrs;
 >
 
