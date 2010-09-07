@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <!--
 	MoPCMS Backend Configuration File DTD
 	Revision: 0.1
@@ -47,7 +49,7 @@
 
 <!ELEMENT singleImage (resize|ext)* >
 <!ATTLIST singleImage
-	%uiattrs;	
+	%uiattrs;
 	maxLength			CDATA #IMPLIED
 >
 
