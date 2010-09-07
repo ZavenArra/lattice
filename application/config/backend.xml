@@ -1,171 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE configuration SYSTEM "../../modules/mop/config/backend.dtd">
-<?xml version="1.0" encoding="utf-8"?>
+
 <configuration>
-<<<<<<< HEAD
-	<templates>  
-		<template name="stuff" nodeType="CATEGORY" allow_sort="true" allow_delete="true" allow_publish="true" >
-      <elements>
-        <ipe field="blurb" label="Blurb" tag="p" rows="4" />
-      </elements>
-			<addableobject templateName="stuffItem" addText="Add a Stuff" />
-			<component templateName="differentItem">
-				<title>A title!</title>
-			</component>
-		</template>
-		<template name="stuffItem" nodeType="LEAF" allow_sort="true">
-      <elements>
-        <ipe field="text" label="Text" tag="p" rows="4" />
-        <ipe field="more" label="MORE" tag="p" rows="4" />
-      </elements>
-			<list family="listOfThings" label="Blurb" display="inline" >
-				<addableobject templateName="differentItem" addText="Add a Different Item" />
-			</list>
-		</template>
-		<template name="home" nodeType="LEAF"/>
-		<template name="differentItem" nodeType="LEAF">
-      <elements>
-        <ipe field="blurb3" label="WJAT" tag="p" rows="4" />
-      </elements>
-		</template>
-=======
 
 	<templates>
 
 <!-- HOME -->
+		<template name="basicCategory" nodetype="CATEGORY" allow_sort="false" allow_delete="false" allow_publish="false">
 
-		<template name="home" nodeType="leaf" allowDelete="false" allowTogglePublish="false" >
+		</template>
+
+		<template name="singleIPE" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false"/>
+			<elements>
+				<ipe field="singleIPE" label="single IPE" rows="1"/>
+			</elements>
+		</template>
+
+		<template name="singleRadioGroup" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+				<radiogroup field="singleRadioGroup" grouplabel="Single Radio Group">
+				<radio label="One" value="1"/>
+				<radio label="Two" value="2"/>
+				<radio label="Three" value="3"/>
+				</radiogroup>
+			</elements>
+		</template>
+
+		<template name="singleCheckbox" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+				<checkbox field="Single Checkbox" label="Single Checkbox"/>
+			</elements>
+		</template>
+
+		<template name="singleDate" nodetype="LEAF" allow_sort="true"allow_delete="true" allow_publish="false">
+			<elements>
+				<date field="singleDate" label="Single Date"/>
+			</elements>
+		</template>
+
+		<template name="singleTime" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+				<time field="singleTime" label="Single Time/>
+			</elements>
+		</template>
+
+		<template name="simpleListModulePage" nodetype="LEAF" allow_sort=true" allow_delete="true" allow_publish="false">
+			<elements>
+				<ipe field="title" label="Title" rows="1"/>
+				<ipe field="description" label="Description"/>
+				<list family="simplelistmodule" label="Simple List Module" display="inline">
+					<addableobject id="simpleListItem"  templateAddText="Add a field"/>
+				</list>
+			</elements>
+		</template>
+
+		<template name="imagelistmodule" nodetype"LEAF" alow_sort="true" alow_delete="true" alow_publish="false">
+			<elements>
+				<ipe field="title" label="Title" rows="1"/>
+				<ipe field="description" label="Description"/>		
+				<singleimage field="file" extentions="jpg" label=""/>
+				<list family="imageListmodule" label="Image List" dislplay="inline">
+					<addableobject="imageList" templateAddText="Add an image"/>
+				</list>
+			</elements>	
+		</template>
+		
+		<template name="filelistmodulepage" nodetype="LEAF" allow_sort="true" alow_delete="true" allow_publish="false">
+			<elements>
+				<ipe field="title" label="Title" rows="1"/>
+				<ipe field="description" label="Description"/>
+				<file field="file" label="" extentions="txt,pdf,html,csv"/>
+				<list family="fileListModule" label "File List" display="inline">
+ 					<addableobject="fileList" templateAddText="Add a field"/>
+				</list>
+			</elements>
+		</temlpate>
+	
+		<template name="coplexlistmodulepage" type="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+			<elements>
+			
+			</elements>
+		</template>
+		<template name="basiccategory" nodetype="CATEGORY" allow_sort="false" allow_delete="false" allow_publish="false">
 			<elements>
 				<ipe field="featureBlurb" label="Feature Text" tag="p" rows="4" />
-				<singleImage field="featureImage"  label="Feature Image" >
-					<resize name="full" width="800" height="295" forceDimensions="width" crop="true" />
-					<ext>jpg</ext>
-				</singleImage>
+				<singleimage field="featureImage" extensions="jpg" label="Feature Image"/>
 				<list family="featureList" label="Feature Links" display="inline" >
-					<addableObject templateName="featureListItem" addText="Add a Link" />
+					<addableobject id="featureListItem" templateAddText="Add a Link" />
 				</list>
 				<ipe field="aboutHeader" label="About Header" tag="p" rows="1" />		
-				<ipe field="aboutBlurb" label="About Soberscove" tag="p" rows="6" />
+				<ipe field="aboutBlurb" label="About Soberscove" tag="p" rows="6" />		
+
+				<!-- a bit confused, if i want to add annoucements as a component, is this how i do it? Or do i make annoucements a category and make it an addableobject within <!-- template name="home"?? -->
 				<list family="annoucements" label="Annoucement List" display="component" >
-					<addableObject templateName="featureListItem" addText="Add a Link" />
-				</list>
-			</elements>
-		</template>
-
-		<template name="announcements" nodeType="category" allowChildSort="true" allowDelete="false" allowTogglePublish="false" >
-			<addableObject templateName="annoucement" addText="Add an annoucement" />
-		</template>
-		
-		<template name="annoucement" nodeType="leaf" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
-			<elements>
-				<date field="date" label="date" />		
-				<ipe field="annoucement" label="Announcement" tag="p" rows="4" />
-				<list family="annoucementLinks" label="Links" display="inline" >
-					<addableObject templateName="annoucementLink" addText="Add a Link" />
-				</list>
-			</elements>
-		</template>
-
-		<template name="annoucementLink" nodeType="leaf" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
-			<elements>
-				<ipe field="annoucementLinkLabel" label="Link Label" tag="p" rows="1" />
-				<ipe field="annoucementLinkUrl" label="Link URL" tag="p" rows="1" />
-			</elements>
-		</template>
-		
-<!-- WHERE TO FIND -->
-
-		<template name="wheretofind" nodeType="category" allowChildSort="true" allowDelete="false" allowTogglePublish="false" >
-			<elements>
-				<ipe field="intro" label="Intro Paragraph" tag="p" rows="6" />
-			</elements>
-			<addableObject templateName="city" addText="Add a City" />
-		</template>
-
-		<template name="city" nodeType="category" allowChildSort="true" allowDelete="true" allowTogglePublish="false" >
-			<elements>
-				<list family="locations" label="Links" display="inline" >
-					<addableObject templateName="location" addText="Add an Location" />
+					<addableobject id="featureListItem" templateAddText="Add a Link" />
 				</list>
 			</elements>
 		</template>
 		
-		<template name="location" nodeType="leaf" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
-			<elements>
-				<ipe field="url" label="URL (optional)" tag="p" rows="1" />
-			</elements>
-		</template>
-
-		<template name="contact" nodeType="leaf" allowDelete="false" allowTogglePublish="false" >
-			<elements>
-				<ipe field="intro" label="Intro Paragraph" tag="p" rows="4" />
-				<ipe field="address" label="Address" tag="p" rows="3" />
-				<ipe field="contactEmail" label="Email address" tag="p" rows="3" />
-			</elements>
-		</template>
-
-<!-- BOOKS -->
-
-		<template name="books" nodeType="category" allowChildSort="true" allowDelete="false" allowTogglePublish="false" >
-			<addableObject templateName="book" addText="Add a Book" />
-		</template>
-
-		<template name="book" nodeType="leaf" >
-			<elements>
-				<list family="gallery" label="Images" display="inline" >
-					<addableObject templateName="bookImage" addText="Add an Image" />
-				</list>
-				<ipe field="description" label="Book Description" tag="p" rows="10" />
-				<list family="sidebarList" label="Sidebar Lists" display="component" >
-					<addableObject templateName="bookList" addText="Add a List" />
-				</list>
-			</elements>
-		</template>
-
-		<template name="bookImage" nodeType="leaf" allowChildSort="true" allowDelete="true">
-			<elements>
-				<singleImage field="bookimage" label="Image">
-					<resize name="thumb" width="255" height="145" forceDimensions="width" crop="true" />
-					<resize name="full" width="800" height="295" forceDimensions="width" crop="true" />
-					<ext>jpg</ext>
-				</singleImage>
-				<ipe field="description" label="Image Description" tag="p" rows="1" />
-			</elements>
-		</template>
-
-		<template name="sidebarList" nodeType="leaf" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
-			<elements>
-				<ipe field="blurb" label="Blurb" tag="p" rows="3" />
-				<list family="bookList" label="List Items" display="component" >
-					<addableObject templateName="booklistItem" addText="Add an Item" />
-				</list>
-			</elements>
-		</template>
-
-		<template name="bookLists" nodeType="leaf" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
-			<addableObject templateName="bookListItem" label="" addText="Add an Item" />
-		</template>
-
-		<template name="bookListItem" nodeType="leaf" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
-			<elements>
-				<ipe field="name" label="Name" tag="p" rows="3" />
-				<ipe field="value" label="Value" tag="p" rows="3" />
-			</elements>
-		</template>
-		
->>>>>>> 217af17... debugging dtd
 	</templates>
-	<data>
-		<item templateName="stuff">
-			<content>
-				<title>Stuff</title>
-			</content>
-		</item>
-		<item templateName="home">
-			<content>
-				<title>Home</title>
-			</content>
-		</item>
-	</data>
+
+	<data></data>
+
 </configuration>
 

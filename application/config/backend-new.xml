@@ -5,7 +5,7 @@
 	<templates>
 
 <!-- HOME -->
-		<template name="basiccategory" nodetype="CATEGORY" allow_sort="false" allow_delet="false" allow_publish="false"/>
+		<template name="basicCategory" nodetype="CATEGORY" allow_sort="false" allow_delet="false" allow_publish="false"/>
 
 		<template name="singleIPE" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false"/>
 			<elements>
@@ -13,7 +13,7 @@
 			</elements>
 		</template>
 
-		<template name="singleradiogroup" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+		<template name="singleRadioGroup" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
 			<elements>
 				<radiogroup field="singleRadioGroup" grouplabel="Single Radio Group">
 				<radio label="One" value="1"/>
@@ -23,25 +23,25 @@
 			</elements>
 		</template>
 
-		<template name="singlecheckbox" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+		<template name="singleCheckbox" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
 			<elements>
 				<checkbox field="Single Checkbox" label="Single Checkbox"/>
 			</elements>
 		</template>
 
-		<template name="singledate" nodetype="LEAF" allow_sort="true"allow_delete="true" allow_publish="false">
+		<template name="singleDate" nodetype="LEAF" allow_sort="true"allow_delete="true" allow_publish="false">
 			<elements>
 				<date field="singleDate" label="Single Date"/>
 			</elements>
 		</template>
 
-		<template name="singletime" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
+		<template name="singleTime" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
 			<elements>
 				<time field="singleTime" label="Single Time/>
 			</elements>
 		</template>
 
-		<template name="simplelistmodulepage" nodetype="LEAF" allow_sort=true" allow_delete="true" allow_publish="false">
+		<template name="simpleListModulePage" nodetype="LEAF" allow_sort=true" allow_delete="true" allow_publish="false">
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
 				<ipe field="description" label="Description"/>
