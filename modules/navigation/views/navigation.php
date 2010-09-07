@@ -2,5 +2,5 @@
 	<ul class="nav"></ul>
 	<div class="clear"></div>
 </div>
-<ul class="breadCrumb"></ul>
+<div class="breadCrumb"></div>
 <div class="clear"></div>
