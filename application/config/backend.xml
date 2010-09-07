@@ -9,7 +9,7 @@
 
 		</template>
 
-		<template name="singleIPE" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false"/>
+		<template name="singleIPE" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
 			<elements>
 				<ipe field="singleIPE" label="single IPE" rows="1"/>
 			</elements>
@@ -31,7 +31,7 @@
 			</elements>
 		</template>
 
-		<template name="singleDate" nodetype="LEAF" allow_sort="true"allow_delete="true" allow_publish="false">
+		<template name="singleDate" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
 			<elements>
 				<date field="singleDate" label="Single Date"/>
 			</elements>
@@ -39,27 +39,27 @@
 
 		<template name="singleTime" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
 			<elements>
-				<time field="singleTime" label="Single Time/>
+				<time field="singleTime" label="Single Time"/>
 			</elements>
 		</template>
 
-		<template name="simpleListModulePage" nodetype="LEAF" allow_sort=true" allow_delete="true" allow_publish="false">
+		<template name="simpleListModulePage" nodetype="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
 				<ipe field="description" label="Description"/>
 				<list family="simplelistmodule" label="Simple List Module" display="inline">
-					<addableobject id="simpleListItem"  templateAddText="Add a field"/>
+					<addableObject id="simpleListItem"  templateAddText="Add a field"/>
 				</list>
 			</elements>
 		</template>
 
-		<template name="imagelistmodule" nodetype"LEAF" alow_sort="true" alow_delete="true" alow_publish="false">
+		<template name="imagelistmodule" nodetype="LEAF" alow_sort="true" alow_delete="true" alow_publish="false">
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
 				<ipe field="description" label="Description"/>		
-				<singleimage field="file" extentions="jpg" label=""/>
+				<singleimage field="file" extentions="jpg"/>
 				<list family="imageListmodule" label="Image List" dislplay="inline">
-					<addableobject="imageList" templateAddText="Add an image"/>
+					<addablObject templateName="imageList" templateAddText="Add an image"/>
 				</list>
 			</elements>	
 		</template>
@@ -68,32 +68,16 @@
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
 				<ipe field="description" label="Description"/>
-				<file field="file" label="" extentions="txt,pdf,html,csv"/>
-				<list family="fileListModule" label "File List" display="inline">
- 					<addableobject="fileList" templateAddText="Add a field"/>
+				<file field="file" label="File" extentions="txt,pdf,html,csv"/>
+				<list family="fileListModule" label="File List" display="inline">
+ 					<addableObject templateName="fileList" templateAddText="Add a field"/>
 				</list>
-			</elements>
-		</temlpate>
-	
-		<template name="coplexlistmodulepage" type="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
-			<elements>
-			
 			</elements>
 		</template>
-		<template name="basiccategory" nodetype="CATEGORY" allow_sort="false" allow_delete="false" allow_publish="false">
+	
+		<template name="complexlistmodulepage" type="LEAF" allow_sort="true" allow_delete="true" allow_publish="false">
 			<elements>
-				<ipe field="featureBlurb" label="Feature Text" tag="p" rows="4" />
-				<singleimage field="featureImage" extensions="jpg" label="Feature Image"/>
-				<list family="featureList" label="Feature Links" display="inline" >
-					<addableobject id="featureListItem" templateAddText="Add a Link" />
-				</list>
-				<ipe field="aboutHeader" label="About Header" tag="p" rows="1" />		
-				<ipe field="aboutBlurb" label="About Soberscove" tag="p" rows="6" />		
-
-				<!-- a bit confused, if i want to add annoucements as a component, is this how i do it? Or do i make annoucements a category and make it an addableobject within <!-- template name="home"?? -->
-				<list family="annoucements" label="Annoucement List" display="component" >
-					<addableobject id="featureListItem" templateAddText="Add a Link" />
-				</list>
+			
 			</elements>
 		</template>
 		
