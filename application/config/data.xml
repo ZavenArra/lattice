@@ -50,7 +50,7 @@
 	
 	<item templateName="fileListModule">
 		<field name="title">File List</field>
-	</item>
+  </item>
 
 	<item templateName="singleFile">
 		<field name="title">File Build Test</field>
@@ -64,6 +64,10 @@
 			<field name="title">Image Build Test</field>
 			<field name="file">/Users/deepwinter/data/2.jpg</field>
 		</item>
+	</item>
+
+	<item templateName="stuff">
+		<title>some stuff</title>
 	</item>
 </data>
 

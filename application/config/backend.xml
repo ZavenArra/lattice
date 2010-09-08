@@ -158,7 +158,35 @@
 				</singleFile>
 			</elements>
 		</template>			
-	</templates>
+
+		<template name="stuff" nodeType="CATEGORY" allow_sort="true" allow_delete="true" allow_publish="true" >
+      <elements>
+        <ipe field="blurb" label="Blurb" tag="p" rows="4" />
+				<associator field="myObjects" label="give it to me">
+					<filter templateName="stuffItem">
+				</associator>
+      </elements>
+			<addableobject templateName="stuffItem" addText="Add a Stuff" />
+			<component templateName="differentItem">
+				<title>A title!</title>
+			</component>
+		</template>
+		<template name="stuffItem" nodeType="LEAF" allow_sort="true">
+      <elements>
+        <ipe field="text" label="Text" tag="p" rows="4" />
+        <ipe field="more" label="MORE" tag="p" rows="4" />
+      </elements>
+			<list family="listOfThings" label="Blurb" display="inline" >
+				<addableobject templateName="differentItem" addText="Add a Different Item" />
+			</list>
+		</template>
+		<template name="home" nodeType="LEAF"/>
+		<template name="differentItem" nodeType="LEAF">
+      <elements>
+        <ipe field="blurb3" label="WJAT" tag="p" rows="4" />
+      </elements>
+		</template>
+	<templates>
 
 </configuration>
 
