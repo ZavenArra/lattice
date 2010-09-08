@@ -137,6 +137,7 @@ Class ConfigSite_Controller extends Controller {
 		ob_flush();
 		$this->scanf('%s', $response);
 		if($response == 'Yes'){
+			die('use builddata for now'); 
 			$db->query('delete from pages');
 			$db->query('alter table pages AUTO_INCREMENT = 1');
 			$db->query('delete from content_larges');

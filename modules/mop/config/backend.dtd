@@ -51,12 +51,14 @@
 <!ATTLIST singleImage
 	%uiattrs;
 	maxLength			CDATA #IMPLIED
+	extensions    CDATA #REQUIRED
 >
 
 <!ELEMENT singleFile (ext) >
 <!ATTLIST singleFile
 	%uiattrs;
 	maxLength			CDATA #IMPLIED
+	extensions    CDATA #REQUIRED
 >
 
 <!ELEMENT radioGroup (radio*) >
