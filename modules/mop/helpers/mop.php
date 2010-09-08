@@ -60,7 +60,8 @@ Class mop {
 			$dom->load( "application/config/$arena.xml");
       if(!$dom->validate()){
         print_r($dom->errors);  
-        die('Validation failed on '."application/config/$arena.xml");
+        echo('Validation failed on '."application/config/$arena.xml");
+        //die();
       }
 			$xpathObject = new DOMXPath($dom->_delegate);
 			self::$config[$arena] = $xpathObject;
