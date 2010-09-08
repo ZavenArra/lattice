@@ -53,7 +53,7 @@
 	maxLength			CDATA #IMPLIED
 >
 
-<!ELEMENT singleFile (ext) >
+<!ELEMENT singleFile (ext)* >
 <!ATTLIST singleFile
 	%uiattrs;
 	maxLength			CDATA #IMPLIED
