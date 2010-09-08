@@ -264,6 +264,9 @@ class CMS {
 			for($i=0; $i<$element->attributes->length; $i++){
 				$entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
 			}	
+      //make sure defaults load
+      $entry['tag'] = $element->getAttribute('tag');
+      $entry['rows'] = $element->getAttribute('rows');
       //any special xml reading that is necessary
       switch($entry['type']){
       case 'singleFile':
@@ -277,6 +280,16 @@ class CMS {
           }
         }
         $entry['extensions'] = implode(',', $ext);
+        break;
+      case 'radioGroup':
+        $children = mop::config('backend', 'radio', $element);
+        $radios = array();
+        foreach($children as $child){
+          $label = $child->getAttribute('label');
+          $value = $child->getAttribute('value');
+          $radios[$label] =$value;
+        }
+        $entry['radios'] = $radios;
         break;
 
       default:
