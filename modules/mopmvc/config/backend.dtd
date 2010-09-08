@@ -28,7 +28,7 @@
 	allowTitleEdit  CDATA "true"
 >
 
-<!ELEMENT elements (ipe|list|singleImage|singleFile|radioGroup|multiSelect|date|time|dateRange|checkbox|time)* >
+<!ELEMENT elements (ipe|list|singleImage|singleFile|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator)* >
 
 <!ELEMENT components (component*) >
 
@@ -56,6 +56,21 @@
 	contentType  CDATA "document"
 >
 <!-- last two attributes currently not supported -->
+
+
+<!ELEMENT associator (filter*)>
+<!ATTLIST associator 
+	parent				CDATA  #IMPLIED
+	templateName  CDATA  #IMPLIED
+>
+
+<!ELEMENT filter >
+<!ATTLIST filter
+	from				   CDATA #IMPLIED
+	templateName	 CDATA #IMPLIED
+	tagged	       CDATA #IMPLIED
+>
+
 
 <!ELEMENT ipe EMPTY >
 <!ATTLIST ipe
