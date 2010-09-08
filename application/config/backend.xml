@@ -54,29 +54,37 @@
 			</elements>
 		</template>
 
-		<template name="imagelistmodule" nodeType="LEAF" alow_sort="true" alow_delete="true" alow_publish="false">
+		<template name="imagelistmodule" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
+
 				<ipe field="title" label="Title" rows="1"/>
 				<ipe field="description" label="Description"/>		
-				<singleimage field="file" extentions="jpg"/>
-				<list family="imageListmodule" label="Image List" dislplay="inline">
+				<singleImage field="file">
+					<ext>jpg</ext>
+				</singleImage>
+				<list family="imageListmodule" label="Image List" display="inline">
 					<addableObject templateName="imageList" addText="Add an image"/>
 				</list>
 			</elements>	
 		</template>
 		
-		<template name="filelistmodulepage" nodeType="LEAF" allowChildSort="true" alow_delete="true" allowTogglePublish="false">
+		<template name="filelistmodulepage" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
 				<ipe field="description" label="Description"/>
-				<file field="file" label="File" extentions="txt,pdf,html,csv"/>
+				<singleFile field="file" label="File">
+					<ext>html</ext>
+					<ext>csv</ext>
+					<ext>txt</ext>
+				        <ext>pdf</ext>
+        			</singleFile>
 				<list family="fileListModule" label="File List" display="inline">
  					<addableObject templateName="fileList" addText="Add a field"/>
 				</list>
 			</elements>
 		</template>
 	
-		<template name="complexlistmodulepage" type="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="complexlistmodulepage" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 			
 			</elements>
