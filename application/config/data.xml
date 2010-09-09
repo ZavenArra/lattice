@@ -13,8 +13,30 @@
 	<item templateName="singleRadioGroup">
 		<title>Single Radio Group</title>
 	</item>
+	
+	<item templateName="singleCheckbox">
+		<title>Single checkbox</title>
+	</item>
 
+	<item templateName="singleDate">
+		<title>Single Date</title>
+	</item>
 
+	<item templateName="singleTime">
+		<title>Single Time</title>
+	</item>
+
+	<item templateName="simpleListModulePage">
+		<title>Simple List Module</title>
+	</item>
+	
+	<item templateName="imageListModule">
+		<title>Image List</title>
+	</item>
+	
+	<item templateName="fileListModule">
+		<title>File List</title>
+	</item>
 </data>
 
 
