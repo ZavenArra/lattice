@@ -1,11 +1,5 @@
 // Section: Setting up environment for MoPCore.
 
-//	Redirects ie 6 to a landing page for that browser
-if( Browser.Engine.trident4 ){
-	window.location.href =  $(document).getElement("head").getElement("base").get("href") + "msielanding";
-}
-
-
 /*
 Note: https://mootools.lighthouseapp.com/projects/2706/tickets/651-classtostring-broken-on-122-big-regression
 */
@@ -31,6 +25,7 @@ function buildConsoleObject(){
 		names = null;		
 	}
 }
+
 buildConsoleObject();
 
 /*
@@ -511,33 +506,6 @@ mop.util.EventManager = new new Class({
 	initialize: function(){}
 });
 
-mop.util.DepthManager = new Class({
-
-	Extends: mop.util.Broadcaster,
-
-	modalDepth: 5000,
-	windowOverlayDepth: 1000,
-	modalOverlayDepth: 8000, 
-
-	initialize: function(){},
-	
-	incrementDepth: function( context ){
-		switch( context ){
-			case "modal" : return this.modalDepth++; break;
-			case "modalOverlay" : return this.modalOverlayDepth++; break;
-			case "windowOverlay" : return this.windowOverlayDepth++; break;
-		}
-	},
-	
-	getCurrentDepth: function( context ){
-		switch( context ){
-			case "modal": return this.modalDepth; break;
-			case "modalOverlay": return this.modalOverlayDepth; break;
-			case "windowOverlay": return this.windowOverlayDepth; break;
-		}
-	}
-	
-});
 
 mop.util.HistoryManager = new Class({
 
@@ -930,5 +898,10 @@ window.addEvent( "scroll", function(){
 });
 
 window.addEvent( "domready", function(){
+    //	Redirects ie 6 to a landing page for that browser
+    if( Browser.Engine.trident4 ){
+    	window.location.href =  $(document).getElement("head").getElement("base").get("href") + "msielanding";
+    	return;
+    }
 	mop.util.domIsReady();
 });
