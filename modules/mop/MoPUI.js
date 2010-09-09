@@ -1,6 +1,34 @@
 mop.ui = {};
 mop.ui.navigation = {};
 
+mop.ui.DepthManager = new Class({
+
+	Extends: mop.util.Broadcaster,
+
+	modalDepth: 5000,
+	windowOverlayDepth: 1000,
+	modalOverlayDepth: 8000, 
+
+	initialize: function(){},
+	
+	incrementDepth: function( context ){
+		switch( context ){
+			case "modal" : return this.modalDepth++; break;
+			case "modalOverlay" : return this.modalOverlayDepth++; break;
+			case "windowOverlay" : return this.windowOverlayDepth++; break;
+		}
+	},
+	
+	getCurrentDepth: function( context ){
+		switch( context ){
+			case "modal": return this.modalDepth; break;
+			case "modalOverlay": return this.modalOverlayDepth; break;
+			case "windowOverlay": return this.windowOverlayDepth; break;
+		}
+	}
+	
+});
+
 /*
 	Class: mop.ui.navigation.Tabs
 	Generic helper for handling tabbed navigation
@@ -398,7 +426,7 @@ mop.ui.UIElement = new Class({
 		
 		if( this.showSaving ) this.showSaving();
 		
-		var url = mop.getAppURL() + this.marshal.getSubmissionController() + "/ajax/" + this.action + "/" + this.marshal.getRID();
+		var url = mop.util.getAppURL() + this.marshal.getSubmissionController() + "/ajax/" + this.action + "/" + this.marshal.getRID();
 		var submittedVars = { field: this.fieldName, value: val };
 		
 		console.log( "SUBMIT ", url, submittedVars );
@@ -2176,12 +2204,12 @@ mop.ui.FileElement = new Class({
 		this.uploadButton = this.element.getElement( ".uploadLink" );
 		this.uploadButton.store( "Class", this );
 
-		this.Uploader = new mop.util.Uploader( { path: mop.getBaseURL() + "modules/mop/views/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
+		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "modules/mop/views/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
 
 		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );
 		this.uploadButton.addEvent( "mouseover", this.onMouseOver.bindWithEvent( this ) );
 
-		this.baseURL = mop.getBaseURL();
+		this.baseURL = mop.util.getBaseURL();
 
 		this.statusElement = this.element.getElement( 'div.status' );
 		this.progressBar = this.statusElement.getElement( "img" );
@@ -2255,7 +2283,7 @@ mop.ui.FileElement = new Class({
 	},
 
 	getSubmitURL: function(){
-		var url = mop.getAppURL() + this.marshal.getSubmissionController() + "/ajax/" + this.action + "/" + this.marshal.getRID();
+		var url = mop.util.getAppURL() + this.marshal.getSubmissionController() + "/ajax/" + this.action + "/" + this.marshal.getRID();
 //		console.log( ":::: ", this.toString(), "getSubmitURL: ", url );
 		return 	url;
 	},
@@ -2983,7 +3011,7 @@ mop.ui.PulldownNav = new Class({
 	
 	redirect: function(){
 		if( this.getValue() == null || this.getValue() == "" ) return;
-		var url = mop.getAppURL() + this.getValue();
+		var url = mop.util.getAppURL() + this.getValue();
 		window.location.href = url;
 	}
 
@@ -3082,7 +3110,7 @@ mop.ui.CheckBox = new Class({
 
 		if( this.showSaving ) this.showSaving();
 
-		var url = mop.getAppURL() + this.marshal.getSubmissionController() + "/ajax/" + this.action + "/" + this.marshal.getRID();
+		var url = mop.util.getAppURL() + this.marshal.getSubmissionController() + "/ajax/" + this.action + "/" + this.marshal.getRID();
 		var submittedVars = { field: this.fieldName, value: val };
 		console.log( this.toString(), "submit", url, submittedVars );
 		mop.util.JSONSend( url, submittedVars, { onComplete: this.onResponse.bind( this ) } );
@@ -4031,7 +4059,7 @@ mop.ui.PaginationControls = new Class({
 		}else{
 			this.spinner.removeClass( "hidden" );
 			var marshalId = ( this.marshal.instanceName )? this.marshal.instanceName : this.marshal.get("id");
-			var url = mop.getAppURL() + marshalId + "/ajax/" + this.method + "/" + this.listId + "/" + this.currentPage;
+			var url = mop.util.getAppURL() + marshalId + "/ajax/" + this.method + "/" + this.listId + "/" + this.currentPage;
 			var postData = ( this.marshal.getPaginationPostData )? this.marshal.getPaginationPostData() : null ; //getGeneratedDataQueryString() : null;
 //			console.log( this.toString(), "paginate uncached page >> ", url, postData );
 			mop.util.JSONSend( url, postData, { onComplete: this.onPagination.bind( this ) } );
