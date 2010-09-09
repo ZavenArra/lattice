@@ -15,7 +15,7 @@ class CMS_Controller extends Controller {
 	*  static int the global page id when operating within the CMS submodules get the page id
 	*  we could just reference the primaryId attribute of Display as well...
 	*/
-	private static $page_id = NULL;
+	private static $objectId = NULL;
 
 
 	/*
@@ -38,6 +38,8 @@ class CMS_Controller extends Controller {
 	*/
 	public $subModules =  array();
 
+
+
 	protected $defaulttemplate='mop_cms';
 
 	/*
@@ -59,8 +61,8 @@ class CMS_Controller extends Controller {
 	 * Returns: nothing 
 	 */
 	private function setPageId($page_id){
-		if(self::$page_id == NULL){
-			self::$page_id = $page_id;
+		if(self::$objectId == NULL){
+			self::$objectId = $page_id;
 		}
 	}
 
@@ -71,7 +73,7 @@ class CMS_Controller extends Controller {
 	 * Returns: page id
 	 */
 	public static function getPageId(){
-		return self::$page_id;
+		return self::$objectId;
 	}
 
 	/*
@@ -83,7 +85,7 @@ class CMS_Controller extends Controller {
 	*/
 	public function getPage($id){
 		
-		self::$page_id = $id;
+		self::$objectId = $id;
 		
 		$page = ORM::factory('page', $id);
 		if($page->id == 0){
@@ -246,6 +248,7 @@ class CMS_Controller extends Controller {
 					$lookup[$f['field']] = $f;
 				}
 			}
+
 			switch($lookup[$_POST['field']]['type']){
 			case 'multiSelect':
 				$object = ORM::Factory('page', $_POST['field']);
@@ -421,6 +424,25 @@ class CMS_Controller extends Controller {
 			$this->cascade_undelete($child->id);
 		}
 
+	}
+
+	public function toWebpage(){
+
+		//get the default 
+		if(!self::$objectId){ //this allows for the controller to force it, 
+			//but the below initialization should happen first in the future
+			if(!count(Router::$arguments) || !Router::$arguments[0]){
+				self::$objectId = null;
+			} else {
+				self::$objectId = Router::$arguments[0];
+			}
+		}
+
+		$page = ORM::Factory('page', self::$objectId);
+		self::$objectId = $page->id; //make sure we're storing id and not slug
+
+		$this->view->objectId = $page->id;
+		parent::toWebpage();
 	}
 
 }
