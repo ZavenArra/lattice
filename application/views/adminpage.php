@@ -15,7 +15,7 @@
 	<?=$javascript;?>
 	
 </head>
-<body id="<?=$primaryId;?>" class=" loginTimeOut-<?=Kohana::config('mop.loginTimeOut');?>">
+<body class=" loginTimeOut-<?=Kohana::config('mop.loginTimeOut');?>">
 	<div id="container">
 		<?=$adminheader;?>
 		<?=$content;?>
