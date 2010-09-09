@@ -7,7 +7,7 @@
 		'modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
 		
 //		trying to treat this like a dynamically loaded dependency please leave it commented out and this comment for now
-//		'modules/mop/views/js/monkeyphysics/datepicker-nc.js',
+		'modules/mop/thirdparty/monkeyphysics/datepicker-nc.js',
 
 		'modules/mop/MoPCore.js',
 		'modules/mop/MoPUI.js',
