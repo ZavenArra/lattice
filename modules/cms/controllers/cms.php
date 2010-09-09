@@ -239,12 +239,12 @@ class CMS_Controller extends Controller {
 			$page->$_POST['field'] = $_POST['value'];
 			$page->save();
 		} else if($_POST['field']) {
-			$fieldInfo = mop::config('backend', sprintf('/template[@name="%s"]/element[@field="%s]"',
-																									$object->template->templatename,
-																									$_POST['field']));
+			$fieldInfo = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[@field="%s"]',
+																									$page->template->templatename,
+																									$_POST['field']))->item(0);
 
 
-			switch($fieldInfo->getAttribut('type')){
+			switch($fieldInfo->getAttribute('type')){
 			case 'multiSelect':
 				$object = ORM::Factory('page', $_POST['field']);
 				if(!$object->loaded){
