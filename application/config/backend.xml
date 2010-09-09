@@ -163,22 +163,19 @@
       <elements>
         <ipe field="blurb" label="Blurb" tag="p" rows="4" />
 				<associator field="myObjects" label="give it to me">
-					<filter templateName="stuffItem">
+					<filter templateName="stuffItem"/>
 				</associator>
       </elements>
-			<addableobject templateName="stuffItem" addText="Add a Stuff" />
-			<component templateName="differentItem">
-				<title>A title!</title>
-			</component>
+			<addableObject templateName="stuffItem" addText="Add a Stuff" />
 		</template>
-		<template name="stuffItem" nodeType="LEAF" allow_sort="true">
-      <elements>
-        <ipe field="text" label="Text" tag="p" rows="4" />
-        <ipe field="more" label="MORE" tag="p" rows="4" />
-      </elements>
-			<list family="listOfThings" label="Blurb" display="inline" >
-				<addableobject templateName="differentItem" addText="Add a Different Item" />
-			</list>
+		<template name="stuffItem" nodeType="LEAF" allowChildSort="true">
+			<elements>
+				<ipe field="text" label="Text" tag="p" rows="4" />
+				<ipe field="more" label="MORE" tag="p" rows="4" />
+				<list family="listOfThings" label="Blurb" display="inline" >
+					<addableObject templateName="differentItem" addText="Add a Different Item" />
+				</list>
+			</elements>
 		</template>
 		<template name="home" nodeType="LEAF"/>
 		<template name="differentItem" nodeType="LEAF">
@@ -186,7 +183,7 @@
         <ipe field="blurb3" label="WJAT" tag="p" rows="4" />
       </elements>
 		</template>
-	<templates>
+	</templates>
 
 </configuration>
 
