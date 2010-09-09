@@ -1,3 +1,4 @@
+
 /*
 	Section: mop.module
 	mop Modules
@@ -106,6 +107,10 @@ mop.modules.Module = new Class({
         delete filteredOutModules, descendantModules;
         filteredOutModules = descendantModules = null;
         
+	},
+	
+	getObjectId: function(){
+	    return mop.util.getObjectId();
 	},
 	
 	/*

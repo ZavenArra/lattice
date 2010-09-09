@@ -3,7 +3,7 @@ mop.modules.CMS = new Class({
 	/* Constructor: initialize */
 	Extends: mop.modules.Module,
 	pageLoadCount: 0,
-	rid: null,
+	objectId: null,
 	pageContent: null,
 	pageIdToLoad: null,
 	scriptsLoaded: null,
@@ -15,7 +15,7 @@ mop.modules.CMS = new Class({
 	initialize: function( anElement, options ){
         console.log( "CMS INIT", this.childModules );
 		this.parent( anElement, null, options );		
-		this.rid = this.getValueFromClassName( "rid" );
+		this.objectId = this.getValueFromClassName( "objectId" );
 	},
 	
 	build: function(){
@@ -36,12 +36,12 @@ mop.modules.CMS = new Class({
 			url: mop.util.getAppURL() + "cms/ajax/getPage/" + pageId,
 			onSuccess: this.onPageLoaded.bind( this )
 		}).send();
- 		mop.util.setRID( pageId );
+ 		mop.util.setObjectId( pageId );
 	},
 	
 	clearPage: function( pageId ){
 	    console.log( "clearPage", pageId );
-		if( mop.util.getRID() == pageId ) return;
+		if( mop.util.getObjectId() == pageId ) return;
 		this.destroyChildModules( this.pageContent );
 		this.destroyUIElements();
 		this.pageContent.empty();
@@ -124,7 +124,7 @@ mop.modules.CMS = new Class({
 	deleteNode: function( e ){
 		mop.util.stopEvent( e );		
 		var confirmed = confirm( "Are you sure you wish to delete the node: “" + this.titleText + "”?\nThis cannot be undone." );
-		if( confirmed ) this.deleteNode( mop.rid, "page" );
+		if( confirmed ) this.deleteNode( mop.objectId, "page" );
 		confirmed = null;
 	},
 

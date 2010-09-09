@@ -426,7 +426,7 @@ mop.ui.UIElement = new Class({
 		
 		if( this.showSaving ) this.showSaving();
 		
-		var url = mop.util.getAppURL() + this.marshal.getSubmissionController() + "/ajax/" + this.action + "/" + this.marshal.getRID();
+		var url = mop.util.getAppURL() + this.marshal.getSubmissionController() + "/ajax/" + this.action + "/" + this.marshal.getObjectId();
 		var submittedVars = { field: this.fieldName, value: val };
 		
 		console.log( "SUBMIT ", url, submittedVars );
@@ -2283,7 +2283,7 @@ mop.ui.FileElement = new Class({
 	},
 
 	getSubmitURL: function(){
-		var url = mop.util.getAppURL() + this.marshal.getSubmissionController() + "/ajax/" + this.action + "/" + this.marshal.getRID();
+		var url = mop.util.getAppURL() + this.marshal.getSubmissionController() + "/ajax/" + this.action + "/" + this.marshal.getObjectId();
 //		console.log( ":::: ", this.toString(), "getSubmitURL: ", url );
 		return 	url;
 	},
@@ -3110,7 +3110,7 @@ mop.ui.CheckBox = new Class({
 
 		if( this.showSaving ) this.showSaving();
 
-		var url = mop.util.getAppURL() + this.marshal.getSubmissionController() + "/ajax/" + this.action + "/" + this.marshal.getRID();
+		var url = mop.util.getAppURL() + this.marshal.getSubmissionController() + "/ajax/" + this.action + "/" + this.marshal.getObjectId();
 		var submittedVars = { field: this.fieldName, value: val };
 		console.log( this.toString(), "submit", url, submittedVars );
 		mop.util.JSONSend( url, submittedVars, { onComplete: this.onResponse.bind( this ) } );

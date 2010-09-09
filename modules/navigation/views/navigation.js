@@ -496,12 +496,11 @@ mop.modules.navigation.Navigation = new Class({
 	},
 
 	JSONSend: function( action, data, options ){
-		mop.util.JSONSend( mop.util.getAppURL() + "ajax/"+ this.marshal.instanceName +  "/" + action + "/" + mop.rid, data, options );
+		mop.util.JSONSend( mop.util.getAppURL() + "ajax/"+ this.marshal.instanceName +  "/" + action + "/" + mop.objectId, data, options );
 	},
 
 	renameNode: function( aString ){
-//		console.log( "rename node.... { " + aString + " }", $$( "#node_" + mop.rid ),  $$( "#node_" + mop.rid ).retrieve("Class") );
-		this.element.getElement("#node_"+ mop.rid ).retrieve("Class").rename( aString );
+		this.element.getElement("#node_"+ mop.objectId ).retrieve("Class").rename( aString );
 		
 	},
 
@@ -750,7 +749,7 @@ mop.modules.navigation.CategoryNode = new Class({
 		}else if( this.nodeData.landing != "NO_LANDING" ){
 			this.nav.loadPage( this.nodeData.id, this.tier, "leafNodeOnClick" );
 		}
-		mop.util.setRID( this.nodeData.id );
+		mop.util.setObjectId( this.nodeData.id );
 	},
 });
 

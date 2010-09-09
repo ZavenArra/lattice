@@ -264,8 +264,8 @@ mop.util.JSONSend = function( url, data, options ){
 	Function: setId
 	Sets the module id... 
 */
-mop.util.setRID = function( aNumber ){
-	mop.rid = Number( aNumber );
+mop.util.setObjectId = function( aNumber ){
+	mop.objectId = Number( aNumber );
 }
 
 /*
@@ -273,9 +273,9 @@ mop.util.setRID = function( aNumber ){
 	Gets module id from the html body's ID with the prefix "id"
 	Returns: Number
 */
-mop.util.getRID = function(){
-	if( !mop.rid ) mop.rid = Number( $(document).getElement("body").id.split("id")[1] );
-	return mop.rid;
+mop.util.getObjectId = function(){
+	if( !mop.objectId ) mop.objectId = Number( $(document).getElement("body").id.split("id")[1] );
+	return mop.objectId;
 }
 
 /*
@@ -469,7 +469,7 @@ mop.MoPObject = new Class({
 		Convenience method that calls mop.util.JSONSend;
 	*/	
 	JSONSend: function( action, data, options ){
-		var url = mop.util.getAppURL() + "ajax/" + this.getSubmissionController() +  "/" + action + "/" + mop.rid;
+		var url = mop.util.getAppURL() + "ajax/" + this.getSubmissionController() +  "/" + action + "/" + mop.objectId;
     	if( options ){  options.url = url; }else{ options = { url: url }; }
     	new Request.JSON( options ).post( data );
 	},
