@@ -266,7 +266,7 @@ mop.modules.ListItem = new Class({
 	Implements: [ Events, Options ],
 
 	addItemDialogue: null,
-	rid: null,
+	objectId: null,
 	scrollContext: null,
 	controls: null,
 	fadeOut: null,
@@ -279,12 +279,12 @@ mop.modules.ListItem = new Class({
 		this.marshal = aMarshal;
 		this.instanceName = this.element.get( "id" );
 		this.addItemDialogue = addItemDialogue;
-		this.rid = this.element.get("id").split("_")[1];
+		this.objectId = this.element.get("id").split("_")[1];
 		if( options && options.scrollContext ) this.scrollContext = options.scrollContext;
 		this.build();
 	},
 
-	getRID: function(){ return this.rid; },
+	getObjectId: function(){ return this.objectId; },
 
 	toString: function(){ return "[ object, mop.modules.ListItem ]"; },
 
@@ -325,7 +325,7 @@ mop.modules.ListItem = new Class({
 	},
 
 	JSONSend: function( action, data, options ){
-		var url = mop.getAppURL() + "ajax/" + this.getSubmissionController() +  "/" + action + "/" + this.getRID();
+		var url = mop.getAppURL() + "ajax/" + this.getSubmissionController() +  "/" + action + "/" + this.getObjectId();
 		mop.util.JSONSend( url, data, options );
 	},
 
@@ -387,7 +387,7 @@ mop.modules.ListItem = new Class({
 		this.controls = null;
 		this.fadeOut = null;
 		this.scrollContext = null;
-		this.rid = null;
+		this.objectId = null;
 
 		console.log(this.element);
 
