@@ -179,7 +179,7 @@ mop.modules.CMS = new Class({
 });
 
 window.addEvent( "domready", function(){
-	
+
 	mop.HistoryManager = new mop.util.HistoryManager().instance();
 	mop.HistoryManager.init( "pageId", "onPageIdChanged" );
 	mop.ModalManager = new mop.ui.ModalManager();
