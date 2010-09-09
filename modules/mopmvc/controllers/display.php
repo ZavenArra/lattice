@@ -52,20 +52,6 @@ class Display_Controller{
 		$this->view = new DisplayView($this->view);
 		$this->view->loadResources();
 
-		//get the default 
-		if(!self::$primaryId){ //this allows for the controller to force it, 
-			//but the below initialization should happen first in the future
-			if(!count(Router::$arguments) || !Router::$arguments[0]){
-				self::$primaryId = null;
-			} else {
-				self::$primaryId = Router::$arguments[0];
-			}
-		}
-
-		$page = ORM::Factory('page', self::$primaryId);
-		self::$primaryId = $page->id; //make sure we're storing id and not slug
-
-
 		if(file_exists('application/config/local.php') && Kohana::config('local.profiler')){
 			$this->profiler = new Profiler;
 		}
@@ -169,29 +155,6 @@ class Display_Controller{
 	}
 
 	/*
-	 * Function: setPrimaryId($primaryId)
-	 * Sets private variable 'primaryId'
-	 * Parameters: 
-	 * $primaryId  - the id of the object (page) being displayed
-	 * Returns: nothing
-	 */
-	public function setPrimaryId($primaryId){
-		self::$primaryId = $primaryId;
-		Kohana::log('info',	'setting primaryId to: '.self::$primaryId);
-	}
-
-	/*
-	 * Function: getPrimaryid()
-	 * Gets the id stored in private variable primaryId
-	 * Parameters: none
-	 * Returns: The id stored in private variable primaryId
-	 */
-	static public function getPrimaryId(){
-		Kohana::log('info',	'getting primaryId: '.self::$primaryId);
-		return self::$primaryId;
-	}
-
-	/*
 	 * Function: outputPage($mainview) 
 	 * Final call to convert displayview to html webpage
 	 * Parameters:
@@ -201,7 +164,6 @@ class Display_Controller{
 	public function outputPage($mainview){
 		$this->view->content = $mainview->render();
 		//set the overall ID for this view (defines what data we are looking at)
-		$this->view->primaryId = self::$primaryId;
 		$this->view->render(TRUE);
 	}
 
