@@ -115,7 +115,7 @@ foreach($enabledappmodules as $module){
 //list of module enabled for this website
 $enabledmodules = array(
 	'auth',
-	'mop',
+	'mopmvc',
 	'mopui',
 	'forge',
 	'cms',
