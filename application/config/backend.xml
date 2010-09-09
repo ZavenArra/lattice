@@ -48,7 +48,7 @@
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
 				<ipe field="description" label="Description"/>
-				<list family="simplelistmodule" label="Simple List Module" display="inline">
+				<list family="simplelist" label="Simple List Module" display="inline">
 					<addableObject templateName="simpleListItem"  addText="Add a field"/>
 				</list>
 			</elements>
@@ -62,7 +62,7 @@
 				<singleImage field="file">
 					<ext>jpg</ext>
 				</singleImage>
-				<list family="imageListmodule" label="Image List" display="inline">
+				<list family="imageList" label="Image List" display="inline">
 					<addableObject templateName="imageList" addText="Add an image"/>
 				</list>
 			</elements>	
@@ -78,7 +78,7 @@
 					<ext>txt</ext>
 				        <ext>pdf</ext>
         			</singleFile>
-				<list family="fileListModule" label="File List" display="inline">
+				<list family="fileList" label="File List" display="inline">
  					<addableObject templateName="fileList" addText="Add a field"/>
 				</list>
 			</elements>
