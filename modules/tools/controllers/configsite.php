@@ -132,25 +132,6 @@ Class ConfigSite_Controller extends Controller {
 		//	var_export($this->config);
 		//$this->writeConfig();
 
-		echo "\nPreparing to insert data.  Do you want to replace all CMS data? (Yes/no)\n";
-		flush();
-		ob_flush();
-		$this->scanf('%s', $response);
-		if($response == 'Yes'){
-			die('use builddata for now'); 
-			$db->query('delete from pages');
-			$db->query('alter table pages AUTO_INCREMENT = 1');
-			$db->query('delete from content_larges');
-			$db->query('alter table content_larges AUTO_INCREMENT = 1');
-			flush();
-			ob_flush();
-
-			echo "\nInserting Data\n";
-      $this->insertData();
-
-		}	else {
-			echo "\nData Unchanged\n";
-		}
 
     exit;
 

@@ -97,5 +97,10 @@ class Template_Model extends ORM {
 
 	}
 
+	//public save()
+	// if(!$this->loaded) {
+	// check for duplicate templatename
+	// }
+
 
 }
