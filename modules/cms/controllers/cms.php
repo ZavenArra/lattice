@@ -239,17 +239,12 @@ class CMS_Controller extends Controller {
 			$page->$_POST['field'] = $_POST['value'];
 			$page->save();
 		} else if($_POST['field']) {
-			$fields = Kohana::config('cms.modules.'.$page->template->templatename); //this is annoying and experimental
-      $lookup = array(
-        'title'=>'default'
-      );
-			foreach($fields as $f){
-				if(isset($f['field'])){
-					$lookup[$f['field']] = $f;
-				}
-			}
+			$fieldInfo = mop::config('backend', sprintf('/template[@name="%s"]/element[@field="%s]"',
+																									$object->template->templatename,
+																									$_POST['field']));
 
-			switch($lookup[$_POST['field']]['type']){
+
+			switch($fieldInfo->getAttribut('type')){
 			case 'multiSelect':
 				$object = ORM::Factory('page', $_POST['field']);
 				if(!$object->loaded){
@@ -259,8 +254,8 @@ class CMS_Controller extends Controller {
 					$page->contenttable->save();
 				}
 				$options = array();
-				foreach(Kohana::config('cms.templates.'.$object->template->templatename) as $field){
-					if($field['type'] == 'checkbox'){
+				foreach(mop::config('backend', sprintf('/template[@name="%s"]/element', $object->template->templatename)) as $field){
+					if($field->getAttribute('type') == 'checkbox'){
 						$options[] = $field['field'];
 					}
 				}
