@@ -29,7 +29,7 @@ class RouteVirtualModulesHook{
 			eval($includeclass);
 
 			Router::$controller = $virtualModule;
-			Router::$controller_path = 'modules/mop/controllers/virtual.php';
+			Router::$controller_path = 'modules/mopmvc/controllers/virtual.php';
 			Router::$method = Router::$rsegments[1];
 			$segments = array_slice(Router::$rsegments, 2);
 			Router::$arguments = $segments;
