@@ -160,6 +160,14 @@ class CMS_Controller extends CMS_Interface_Controller {
 
 
 	/*
+	 * Function: associate
+	 * Associate an object to another object
+	 */
+	public function associate($objectId){
+		//gotta issue here
+	}
+
+	/*
 	Function: addObject($id)
 	Public interface for adding an object to the cms data
 	Parameters:

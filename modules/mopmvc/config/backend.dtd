@@ -16,7 +16,7 @@
 
 <!ELEMENT templates (template*) >
 
-<!ELEMENT template (elements|addableObject|components)* >
+<!ELEMENT template (elements?|addableObject*|component*) >
 <!ATTLIST template
 	name				CDATA #REQUIRED
 	nodeType			CDATA "document"
@@ -45,6 +45,11 @@
 	addText				CDATA #IMPLIED
 >
 
+<!ELEMENT component ANY>
+<!ATTLIST component
+	templateName  CDATA #REQUIRED
+>
+
 <!ELEMENT list (addableObject*) >
 <!ATTLIST list
 	family				CDATA #REQUIRED
@@ -60,11 +65,13 @@
 
 <!ELEMENT associator (filter*)>
 <!ATTLIST associator 
+	field					CDATA #REQUIRED
+	label					CDATA #IMPLIED
 	parent				CDATA  #IMPLIED
 	templateName  CDATA  #IMPLIED
 >
 
-<!ELEMENT filter >
+<!ELEMENT filter EMPTY >
 <!ATTLIST filter
 	from				   CDATA #IMPLIED
 	templateName	 CDATA #IMPLIED

@@ -187,6 +187,12 @@ class CMS {
 					);
 					$htmlChunks[$module['family']] = mop::buildModule($module, $arguments);
 					break;
+				case 'associator':
+					$module['pool'] = array();
+					$selection = array();
+					$element = mopui::buildUIElement($module, $selection); 
+					$htmlChunks[$module['type'].'_'.$module['field']] = $element;
+					break;
 				default:
 					$element = false;
 					//deal with html template elements
@@ -404,7 +410,7 @@ class CMS {
 			}
 			if($c->hasChildNodes()){
 				foreach($c->childNodes as $data){
-					$arguments[$data->name] = $data->value;
+					$arguments[$data->tagName] = $data->value;
 				}
 			}
 			cms::addObject($newpage->id, $template->id, $arguments);
