@@ -44,16 +44,21 @@
 			</elements>
 		</template>
 
-		<template name="simpleListModulePage" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="simpleListModule" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
-				<ipe field="title" label="Title" rows="1"/>
-				<ipe field="description" label="Description"/>
 				<list family="simplelist" label="Simple List Module" display="inline">
 					<addableObject templateName="simpleListItem"  addText="Add a field"/>
 				</list>
 			</elements>
 		</template>
 
+		<template name="simpleListModuleItem" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+			<elements>
+				<ipe field="title" label="Title" rows="1"/>
+                                <ipe field="description" label="Description"/>
+			</elements>
+		</template>
+			
 		<template name="imagelistmodule" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<list family="imageListItem" label="Image List" display="inline">
