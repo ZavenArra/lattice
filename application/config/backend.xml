@@ -59,7 +59,7 @@
 			</elements>
 		</template>
 			
-		<template name="imagelistmodule" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="imageListModule" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<list family="imageListItem" label="Image List" display="inline">
 					<addableObject templateName="imageListItem" addText="Add an image"/>
@@ -76,20 +76,25 @@
 				</singleImage>
 			</elements>
 		</template>
+		
+		<template name="fileListModule" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+			<elements>
+				<list family="fileList" label="File List" display="component">
+                                        <addableObject templateName="fileListItem" addText="Add a field"/>
+                                </list>
+                        </elements>
+		</template>
 
-		<template name="filelistmodulepage" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="fileListItem" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
-				<ipe field="description" label="Description"/>
-				<singleFile field="file" label="File">
-					<ext>html</ext>
-					<ext>csv</ext>
-					<ext>txt</ext>
-				        <ext>pdf</ext>
-        			</singleFile>
-				<list family="fileList" label="File List" display="inline">
- 					<addableObject templateName="fileList" addText="Add a field"/>
-				</list>
+                                <ipe field="description" label="Description"/>
+                                <singleFile field="file" label="File">
+                                        <ext>html</ext>
+                                        <ext>csv</ext>
+                                        <ext>txt</ext>
+                                        <ext>pdf</ext>
+                                </singleFile>
 			</elements>
 		</template>
 	
