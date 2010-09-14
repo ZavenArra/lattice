@@ -26,7 +26,7 @@
 		<title>Single Time</title>
 	</item>
 
-	<item templateName="simpleListModulePage">
+	<item templateName="simpleListModule">
 		<title>Simple List Module</title>
 	</item>
 	
