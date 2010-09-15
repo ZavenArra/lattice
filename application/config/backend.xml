@@ -79,7 +79,7 @@
 		
 		<template name="fileListModule" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
-				<list family="fileList" label="File List" display="component">
+				<list family="fileList" label="File List" display="inline">
                                         <addableObject templateName="fileListItem" addText="Add a field"/>
                                 </list>
                         </elements>
