@@ -158,7 +158,8 @@ mop.util.domIsReady = function(){
 	But this will serve as a nice shortcut given the verbosity needed to deal with some IE's ( the whole return value conditional )
 */
 mop.util.stopEvent = function( e ){
-	if( e && e.preventDefault ){
+    console.log( e );
+	if( e && e.stop ){
 		e.stop();
 	}else if( e ){
 		e.returnValue = false;

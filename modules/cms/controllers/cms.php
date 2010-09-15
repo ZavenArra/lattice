@@ -231,11 +231,10 @@ class CMS_Controller extends Controller {
 		if($_POST['field']=='title'){ //update slug, but actually we may not want to have slug updatable
 			$page->slug = cms::createSlug($_REQUEST['value'], $page->id);
 			$page->save();
+			$page->contenttable->$_POST['field'] = cms::convertNewlines($_POST['value']);
+			$page->contenttable->save();
 		}
-
-
-		   
-		if(in_array($_POST['field'], array('dateadded'))){
+		else if(in_array($_POST['field'], array('dateadded'))){
 			$page->$_POST['field'] = $_POST['value'];
 			$page->save();
 		} else if($_POST['field']) {

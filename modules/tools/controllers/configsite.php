@@ -47,7 +47,8 @@ Class ConfigSite_Controller extends Controller {
 
 		//build templates
 		foreach(mop::config('backend', '//template') as $template){
-			$dbmapindexes = array(
+
+				$dbmapindexes = array(
 				'field'=>0,
 				'file'=>0,
 				'date'=>0,
@@ -65,7 +66,21 @@ Class ConfigSite_Controller extends Controller {
 			}
       echo 'using '.$tRecord->id."\n";
 
+			//create title field
+			$checkMap = ORM::Factory('objectmap')->where('template_id', $tRecord->id)->where('column', 'title')->find();
+			if(!$checkMap->loaded){
+				$index = 'field';
+				$newmap = ORM::Factory('objectmap');
+				$newmap->template_id = $tRecord->id;
+				$newmap->type = $index;
+				echo 'index: '.$index;
+				$newmap->index = ++$dbmapindexes[$index];
+				$newmap->column = 'title';
+				$newmap->save();
+			}
 
+
+			
 			foreach(mop::config('backend', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item){
         echo 'found an item '.$template->getAttribute('name').':'.$item->tagName."\n";
 				switch($item->tagName){
