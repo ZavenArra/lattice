@@ -325,7 +325,7 @@ mop.modules.ListItem = new Class({
 	},
 
 	JSONSend: function( action, data, options ){
-		var url = mop.getAppURL() + "ajax/" + this.getSubmissionController() +  "/" + action + "/" + this.getObjectId();
+		var url = mop.util.getAppURL() + "ajax/" + this.getSubmissionController() +  "/" + action + "/" + this.getObjectId();
 		mop.util.JSONSend( url, data, options );
 	},
 
