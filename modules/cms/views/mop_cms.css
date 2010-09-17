@@ -607,14 +607,14 @@ a.button{
 .enhancedModalContainer .modal{
 	margin: 7em auto 2em auto;	
 	width: 50em;
-	z-index:11111;
+	z-index:9800;
 	background: #fff;
 	padding: 2em 2em 0  2em;
 }
 
 .enhancedModalContainer .header{
 	position: fixed;
-	z-index : 22222;
+	z-index : 9900;
 	left: 50%;
 	top: 0;
 	padding: 2em 2em 0 2em;
@@ -691,7 +691,7 @@ a.button{
 	left:50%;
 	margin: -150px 0 0 -300px;	
 	width:600px;
-	z-index:11111;
+	z-index:9800;
 }
 
 .modal .controls,
@@ -758,7 +758,7 @@ th.spinner{
 	height: 100%;
 	top:0;
 	left:0;
-	z-index:11110;
+	z-index:9700;
 	display:block;
 	background: #000;
 	opacity: 0.9;
@@ -772,7 +772,7 @@ th.spinner{
 	height: 100%;
 	top:0;
 	left:0;
-	z-index:11110;
+	z-index:9700;
 	display:block;
 }
 
