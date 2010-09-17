@@ -187,7 +187,7 @@ mop.modules.navigation.Navigation = new Class({
 			aTier.destroy();
 		});
 		
-		this.breadCrumbs.clearCrumbs( whichTier );
+		this.breadCrumbs.clearCrumbs( whichTier + 1 );
 
 		targetListElement = null;
 		theTier = null;
@@ -262,7 +262,6 @@ mop.modules.navigation.Navigation = new Class({
 		}else{
 			node = this.navTreeLookupTable[ aNode.id ];
 		}
-		
 //		console.log( this.toString(), "onBreadCrumbClicked", node, aNode.index );
 		this.showCategory( node, aNode.index );
 	},
