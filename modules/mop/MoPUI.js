@@ -1823,7 +1823,6 @@ mop.ui.DatePicker = new Class({
 	},
 	
 	buildPicker: function(){ 
-//		console.log( "buildPicker");
 		this.picker = new mop.ui.ExtendedMonkeyPhysicsDatePicker( this.dateField, this, {
 			elementId: "datePickerFor_" + this.fieldName,
 			startView: "month",
