@@ -5,9 +5,9 @@ mop.ui.DepthManager = new Class({
 
 	Extends: mop.util.Broadcaster,
 
-	modalDepth: 5000,
-	windowOverlayDepth: 1000,
-	modalOverlayDepth: 8000, 
+	modalDepth: 15000,
+	windowOverlayDepth: 10000,
+	modalOverlayDepth: 20000, 
 
 	initialize: function(){},
 	
@@ -2302,7 +2302,7 @@ mop.ui.FileElement = new Class({
 		mop.util.stopEvent( e );
 
 		var depth = ( this.scrollContext == 'modal' )? mop.DepthManager.incrementDepth( 'modalOverlay' ) :  mop.DepthManager.incrementDepth( 'windowOverlay' );
-//		console.log( this.toString(), "onTargetHovered", this.scrollContext, depth );
+		console.log( this.toString(), "onTargetHovered", this.scrollContext, depth );
 		this.Uploader.onTargetHovered( this, this.uploadButton, this.getCoordinates(), depth, this.getOptions() );
 
 	},
