@@ -21,6 +21,12 @@
 		
 		</template>
 
+		<template name="multilineIPE" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+			<elements>
+				<ipe field="multilineIPE" label="MultiLine IPE" rows="10"/>
+			</elements>
+		</template>
+		
 		<template name="singleRadioGroup" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
         <radioGroup field="singleRadioGroup" groupLabel="Single Radio Group">

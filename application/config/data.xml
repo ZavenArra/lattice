@@ -10,6 +10,10 @@
 		<title>Single IPE</title>
 	</item>
 
+	<item templateName="multilineIPE">
+		<title>Multiline IPE</title>
+	</item>
+
 	<item templateName="singleRadioGroup">
 		<title>Single Radio Group</title>
 	</item>
