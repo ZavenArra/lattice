@@ -16,7 +16,7 @@
 
 <!ELEMENT templates (template*) >
 
-<!ELEMENT template (elements?,addableObject*) >
+<!ELEMENT template (elements?,addableObject*,components*) >
 <!ATTLIST template
 	name				CDATA #REQUIRED
 	nodeType			CDATA #REQUIRED
@@ -26,6 +26,14 @@
 >
 
 <!ELEMENT elements (ipe|list|singleImage|singleFile|radioGroup|multiSelect|date|time|dateRange|checkbox|time)* >
+
+<!ELEMENT components (component) >
+	<!ELEMENT component (component) >
+<!ATTLIST component
+	templateName	CDATA #REQUIRED
+	label					CDATA #IMPLIED
+>
+
 
 <!ELEMENT addableObject EMPTY >
 <!ATTLIST addableObject
