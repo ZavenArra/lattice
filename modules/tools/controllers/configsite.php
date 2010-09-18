@@ -23,30 +23,8 @@ Class ConfigSite_Controller extends Controller {
 	public function index(){
 		echo "Configuring Site\n";
 
-		//load value from config to force validation
-		mop::config('backend', '//configuration');
-
 		$db = Database::instance();
-			//validate backend.xml data
-		$errors = array();
-		foreach(mop::config('backend', '//template') as $template){
-			foreach(mop::config('backend', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item ){
-				$field = $item->getAttribute('field');
-				if(!preg_match('/^[A-z0-9]*$/', $field)){
-					$errors[] = "Element field names must be alphanumeric.  field=\"$field\" found in template ".$template->getAttribute('name');
-				}
-			}
-		}
-		if(count($errors)){
-			foreach($errors as $error){
-				echo $error."\n";
-			}
-			die("Did not pass validation \n");
-		}
-
-
-
-	echo "\nYou are attached to database ".Kohana::config('database.'.Database::instance_name($db).'.connection.database')."\n";
+		echo "\nYou are attached to database ".Kohana::config('database.'.Database::instance_name($db).'.connection.database')."\n";
 		echo "Do you want to write template settings to this database - this will delete all previous templates ? (Yes/no)";
 		flush();
 		ob_flush();
@@ -67,10 +45,7 @@ Class ConfigSite_Controller extends Controller {
 		}
 
 
-
-
-
-	//build templates
+		//build templates
 		foreach(mop::config('backend', '//template') as $template){
 
 				$dbmapindexes = array(
