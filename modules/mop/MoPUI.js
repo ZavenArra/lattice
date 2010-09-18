@@ -3543,7 +3543,14 @@ mop.ui.IPE = new Class({
 	},
 	
 	fitToContent: function(){
-
+	    console.log( "fitToContent", this.field.getStyles() );
+        if( !this.measureDiv ){
+            this.measureDiv = new Element( "div", {
+                styles: {
+                    
+                }
+            } );
+        }
         var fieldHeight = this.field.getSize().y;
         var scrollHeight = this.field.getScrollSize().y;
         targetHeight = Math.max( scrollHeight, fieldHeight );
@@ -3711,7 +3718,7 @@ mop.ui.IPE = new Class({
 		mop.util.stopEvent( e );
 
 		if( this.oldValue ){
-			this.ipeElement.set( "text", this.oldValue );
+			this.ipeElement.set( "html", this.oldValue );
 		}else{
 			this.ipeElement.set("text", "" );			
 		}
