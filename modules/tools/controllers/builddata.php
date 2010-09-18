@@ -12,6 +12,8 @@ class BuildData_Controller extends Controller {
 		$db->query('alter table pages AUTO_INCREMENT = 1');
 		$db->query('delete from content_larges');
 		$db->query('alter table content_larges AUTO_INCREMENT = 1');
+		$db->query('delete from contents');
+		$db->query('alter table contents AUTO_INCREMENT = 1');
 		flush();
 		ob_flush();
 

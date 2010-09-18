@@ -196,6 +196,9 @@ class List_Controller extends Controller{
 		$this->buildContainerObject($parentid);
 		//read config, make the item, load template
 		//config must load instance somehow
+		//
+		//
+		//.. SORT SHOULD BE HANDLED IN cms::addObject
 		$sort = ORM::Factory($this->model)
 		->select('max(sortorder)+1 as newsort')
 		->where('parentid', $parent->id)
@@ -210,23 +213,25 @@ class List_Controller extends Controller{
 		$template = $template->item(0);
 		$template = ORM::Factory('template', $template->getAttribute('templateName'));
 
-		$item = ORM::Factory($this->model);
-		$item->template_id = $template->id;
-		$item->parentid = $this->containerObject->id;
-		$item->sortorder = $sort->newsort;
-		$item->published = 1;
-		$item->save();
-    $item = ORM::Factory($this->model, $item->id);
+		//what to do with these values
+		$data = array();
+		//$data['sort'] = $sort->newsort;
+		$data['published'] = 1;
+
+		$newid = cms::addObject($this->containerObject->id, $template->id, $data);
 
 
+		$item = ORM::Factory('page', $newid);
 		$htmlChunks = cms::buildUIHtmlChunksForObject($item);
 		$itemt = new View($this->itemview);
 		$itemt->uiElements = $htmlChunks;
 
 		$data = array();
-		$data['id'] = $item->id;
+		$data['id'] = $newid;
 		$data['page_id'] = $this->containerObject->id;;
 		$data['instance'] = $this->listClass;
+
+
 		$itemt->data = $data;
 
 		$html = $itemt->render();
