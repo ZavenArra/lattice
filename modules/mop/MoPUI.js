@@ -2195,7 +2195,7 @@ mop.ui.FileElement = new Class({
 		this.uploadButton = this.element.getElement( ".uploadLink" );
 		this.uploadButton.store( "Class", this );
 
-		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "modules/mop/views/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
+		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
 
 		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );
 		this.uploadButton.addEvent( "mouseover", this.onMouseOver.bindWithEvent( this ) );
