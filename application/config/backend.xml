@@ -28,7 +28,7 @@
 
 		<template name="singleCheckbox" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
-				<checkbox field="Single Checkbox" label="Single Checkbox"/>
+				<checkbox field="singleCheckbox" label="Single Checkbox"/>
 			</elements>
 		</template>
 
