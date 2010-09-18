@@ -47,7 +47,7 @@
 		<template name="simpleListModule" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<list family="simplelist" label="Simple List Module" display="inline">
-					<addableObject templateName="simpleListItem"  addText="Add a field"/>
+					<addableObject templateName="simpleListModuleItem"  addText="Add a field"/>
 				</list>
 			</elements>
 		</template>
