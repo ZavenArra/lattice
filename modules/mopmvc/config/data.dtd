@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+	MoPCMS Data Configuration File DTD
+	Revision: 0.1
+	Date: 2010/09/18	
+-->
+
+<!ELEMENT data (item*) >
+
+<!ELEMENT item ANY >
+<!ATTLIST item
+	templateName		CDATA #REQUIRED
+>
+
+<!ELEMENT content ANY >
+
+<!ELEMENT title (CDATA) >
