@@ -404,15 +404,19 @@ class CMS {
 		//look up any components and add them as well
 
 		//configured components
-		$components = mop::config('backend', sprintf('//template[@name="%s"]/component',$newtemplate->templatename));
+		$components = mop::config('backend', sprintf('//template[@name="%s"]/components/component',$newtemplate->templatename));
 		foreach($components as $c){
-			$template = ORM::Factory('template', $c->getAttribute('templateId'));
+			$template = ORM::Factory('template', $c->getAttribute('templateName'));
+			$arguments = array();
+			if($label = $c->getAttribute('label')){
+				$arguments['title'] = $label;
+			}
 			if($c->hasChildNodes()){
 				foreach($c->childNodes as $data){
 					$arguments[$data->name] = $data->value;
 				}
 			}
-			cms::addObject($newpage->id, $newtemplate->id, $arguments);
+			cms::addObject($newpage->id, $template->id, $arguments);
 		}
 
 		//containers (list)
