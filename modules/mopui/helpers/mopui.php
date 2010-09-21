@@ -118,11 +118,20 @@ Class mopui{
 				$fieldvalue = $prepFieldValue;
 			}
 			break;
+
+		case 'ipe':
+			if(!isset($element['class'])){
+				$element['class'] = '';
+			}
+			if(isset($element['rows'])){
+				$element['class'] .= ' rows-'.$element['rows'];
+			}
 		}
 
 		if(!isset($element['class'])){
 			$element['class'] = null;
 		}
+
 
 		if(Kohana::find_file('views', $view)){
 			$template = new View($view);
