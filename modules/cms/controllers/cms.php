@@ -97,6 +97,7 @@ class CMS_Controller extends Controller {
 		$this->nodetitle = new View('mop_cms_nodetitle');
 		$this->nodetitle->loadResources();
 		$this->nodetitle->title = $page->contenttable->title; //this should change to page table
+		$this->nodetitle->slug = $page->slug;
 		$this->nodetitle->allow_delete = $page->template->allow_delete;
 
 		$settings = Kohana::config('cms.defaultsettings');
@@ -233,6 +234,11 @@ class CMS_Controller extends Controller {
 			$page->save();
 			$page->contenttable->$_POST['field'] = cms::convertNewlines($_POST['value']);
 			$page->contenttable->save();
+		} else if($_POST['field'] =='slug') {
+			$page->slug = cms::createSlug($_REQUEST['value'], $page->id);
+			$page->save();	
+			$page = ORM::Factory('page')->find($id);
+			return array('value'=>$page->slug);
 		}
 		else if(in_array($_POST['field'], array('dateadded'))){
 			$page->$_POST['field'] = $_POST['value'];
