@@ -134,7 +134,7 @@ Class ConfigSite_Controller extends Controller {
             $index = 'field';
             break;
           case 'singleImage':
-          case 'singlefile':
+          case 'singleFile':
             $index = 'file';
             break;
           case 'checkbox':

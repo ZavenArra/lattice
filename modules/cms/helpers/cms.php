@@ -273,7 +273,7 @@ class CMS {
       case 'singleImage':
         $ext = array();
         //echo sprintf('/template[@name="%s"]/elements/singleImage[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
-        $children = mop::config('backend', sprintf('//template[@name="%s"]/elements/%s[@field="%s"]/ext', $object->template->templatename, $element->tagName, $element->getAttribute('field')));
+        $children = mop::config('backend', 'ext', $element);
         foreach($children as $child){
           if($child->tagName == 'ext'){
             $ext[] = $child->nodeValue; 

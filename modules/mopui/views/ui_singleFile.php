@@ -1,8 +1,8 @@
-<div class="ui-FileElement field-<?=$field;?> extensions-<?=implode('_',$extensions);?> maxlength-<?=$maxlength;?> <?=$class;?> ">
+<div class="ui-FileElement field-<?=$field;?> extensions-<?=str_replace(',','_',$extensions);?> maxlength-<?=$maxlength;?> <?=$class;?> ">
 	<label><?=isset($label)?$label:'FIle';?></label>
 	<div class="wrapper">
 		<input type="file" class="hidden" />
-		<p class="<?=implode(' ',$extensions);?> fileName"><?if($value):?><?=$value['filename'];?><?else:?>No file uploaded yet.<?endif;?></p>
+		<p class="<?=str_replace(',',' ',$extensions);?> fileName"><?if($value):?><?=$value['filename'];?><?else:?>No file uploaded yet.<?endif;?></p>
 		<div class="status hidden">
 			<img src="modules/cms/views/images/bar.gif" class="progress" />
 			<span class="message hidden"></span>

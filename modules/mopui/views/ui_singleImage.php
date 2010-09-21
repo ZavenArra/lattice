@@ -2,7 +2,7 @@
 		<label><?=(isset($label))?$label:"Image File";?></label>
 		<div class="wrapper">
 			<input type="file" class="hidden" />
-			<p class="fileName <?=str_replace(',','_',$extensions);?>"><?if(isset($value['id'])):?><?=$value['filename'];?><?else:?>No image uploaded yet&hellip;<?endif;?></p>
+			<p class="fileName <?=str_replace(',',' ',$extensions);?>"><?if(isset($value['id'])):?><?=$value['filename'];?><?else:?>No image uploaded yet&hellip;<?endif;?></p>
 			<div class="preview">
 				<?if(isset($value['id'])):?>
 				<a class="viewLink" rel="newwindow" href="<?=Kohana::config('config.site_path');?>cms_file/download/<?=$value['id'];?>/">
