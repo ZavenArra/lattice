@@ -90,10 +90,10 @@
 		
 		<template name="fileListModule" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
-				<list family="fileList" label="File List" display="inline">
-                                        <addableObject templateName="fileListItem" addText="Add a field"/>
-                                </list>
-                        </elements>
+				<list family="fileList" label="File List" display="inline" >
+            <addableObject templateName="fileListItem" addText="Add a field"/>
+        </list>
+      </elements>
 		</template>
 
 		<template name="fileListItem" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
