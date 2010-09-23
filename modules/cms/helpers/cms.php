@@ -364,7 +364,7 @@ class CMS {
 		->select('max(sortorder)+1 as newsort')
 		->where('parentid', $parent_id)
 		->find();
-		$newpage->sort = $sort->newsort;
+		$newpage->sortorder = $sort->newsort;
 
 		$newpage->save();
 	
