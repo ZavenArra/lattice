@@ -47,6 +47,8 @@
 	family				CDATA #REQUIRED
 	label				CDATA #REQUIRED
 	display				(inline|component) "inline"
+	allowSort   (true|false) "true"  <!-- currently not supported -->
+	allowTogglePublish (true|false)      <!-- currently not supported -->
 >
 
 <!ELEMENT ipe EMPTY >

@@ -194,16 +194,6 @@ class List_Controller extends Controller{
 	public function addItem($parentid){
 		$parent = ORM::Factory($this->model, $parentid);
 		$this->buildContainerObject($parentid);
-		//read config, make the item, load template
-		//config must load instance somehow
-		//
-		//
-		//.. SORT SHOULD BE HANDLED IN cms::addObject
-		$sort = ORM::Factory($this->model)
-		->select('max(sortorder)+1 as newsort')
-		->where('parentid', $parent->id)
-		->find();
-
 
 		//addable item should be specifid in the addItem call
 		$template = mop::config('backend', sprintf('//list[@family="%s"]/addableObject', $this->listClass));
@@ -213,13 +203,7 @@ class List_Controller extends Controller{
 		$template = $template->item(0);
 		$template = ORM::Factory('template', $template->getAttribute('templateName'));
 
-		//what to do with these values
-		$data = array();
-		//$data['sort'] = $sort->newsort;
-		$data['published'] = 1;
-
 		$newid = cms::addObject($this->containerObject->id, $template->id, $data);
-
 
 		$item = ORM::Factory('page', $newid);
 		$htmlChunks = cms::buildUIHtmlChunksForObject($item);

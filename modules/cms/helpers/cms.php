@@ -344,9 +344,9 @@ class CMS {
 	$data - possible array of keys and values to initialize with
 	Returns: the new page id
 	*/
-	public function addObject($id, $template_id, $data = array() ){
-		if($id!=='0' && $id!==0){
-			cms::checkForValidPageId($id);
+	public function addObject($parent_id, $template_id, $data = array() ){
+		if($parent_id!=='0' && $parent_id!==0){
+			cms::checkForValidPageId($parent_id);
 		}
 		$newpage = ORM::Factory('page');
 		$newpage->template_id = $template_id;
@@ -357,7 +357,15 @@ class CMS {
 		} else {
 			$newpage->slug = cms::createSlug();
 		}
-		$newpage->parentid = $id;
+		$newpage->parentid = $parent_id;
+
+		//calculate sort order
+		$sort = ORM::Factory('page')
+		->select('max(sortorder)+1 as newsort')
+		->where('parentid', $parent_id)
+		->find();
+		$newpage->sort = $sort->newsort;
+
 		$newpage->save();
 	
 
@@ -366,9 +374,10 @@ class CMS {
 		$template = ORM::Factory('template', $template_id);
 		$tSettings = mop::config('backend', sprintf('//template[@name="%s"]', $template->templatename) ); 
 		$tSettings = $tSettings->item(0);
+		$newpage->published = 1;
 		if($tSettings){ //entry won't exist for Container objects
 			if($tSettings->getAttribute('allowTogglePublish')){
-				$newpage->published = 1;
+				$newpage->published = 0;
 			}
 		}
 		if(isset($data['published']) && $data['published'] ){
