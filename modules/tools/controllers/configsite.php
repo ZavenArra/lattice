@@ -36,6 +36,32 @@ Class ConfigSite_Controller extends Controller {
 			die("Did not pass validation \n");
 		}
 
+		//do some mop specific validation
+		$tNames = array();
+		foreach(mop::config('backend', '//template') as $template){
+			$name = $template->getAttribute('name');
+			if(in_array($name, $tNames)){
+				die("Duplication Template Name: $name \n");
+			}
+			$tNames[] = $name;
+
+			foreach(mop::config('backend', 'elements/*', $template) as $item){
+				$name = null;
+				switch($item->tagName){
+
+				case 'list':
+					$name = $item->getAttribute('family');	
+					break;
+				}
+
+				if($name){
+					if(in_array($name, $tNames)){
+						die("List family name cannot match template name: $name \n");
+					}
+					$tNames[] = $name;
+				}
+			}
+		}
 
 
 		echo "\nYou are attached to database ".Kohana::config('database.'.Database::instance_name($db).'.connection.database')."\n";
