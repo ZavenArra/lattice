@@ -273,7 +273,7 @@ class CMS {
       case 'singleImage':
         $ext = array();
         //echo sprintf('/template[@name="%s"]/elements/singleImage[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
-        $children = mop::config('backend', sprintf('//template[@name="%s"]/elements/%s[@field="%s"]/ext', $object->template->templatename, $element->tagName, $element->getAttribute('field')));
+        $children = mop::config('backend', 'ext', $element);
         foreach($children as $child){
           if($child->tagName == 'ext'){
             $ext[] = $child->nodeValue; 
@@ -344,9 +344,9 @@ class CMS {
 	$data - possible array of keys and values to initialize with
 	Returns: the new page id
 	*/
-	public function addObject($id, $template_id, $data = array() ){
-		if($id!=='0' && $id!==0){
-			cms::checkForValidPageId($id);
+	public function addObject($parent_id, $template_id, $data = array() ){
+		if($parent_id!=='0' && $parent_id!==0){
+			cms::checkForValidPageId($parent_id);
 		}
 		$newpage = ORM::Factory('page');
 		$newpage->template_id = $template_id;
@@ -357,7 +357,15 @@ class CMS {
 		} else {
 			$newpage->slug = cms::createSlug();
 		}
-		$newpage->parentid = $id;
+		$newpage->parentid = $parent_id;
+
+		//calculate sort order
+		$sort = ORM::Factory('page')
+		->select('max(sortorder)+1 as newsort')
+		->where('parentid', $parent_id)
+		->find();
+		$newpage->sortorder = $sort->newsort;
+
 		$newpage->save();
 	
 
@@ -366,9 +374,10 @@ class CMS {
 		$template = ORM::Factory('template', $template_id);
 		$tSettings = mop::config('backend', sprintf('//template[@name="%s"]', $template->templatename) ); 
 		$tSettings = $tSettings->item(0);
+		$newpage->published = 1;
 		if($tSettings){ //entry won't exist for Container objects
 			if($tSettings->getAttribute('allowTogglePublish')){
-				$newpage->published = 1;
+				$newpage->published = 0;
 			}
 		}
 		if(isset($data['published']) && $data['published'] ){
@@ -404,15 +413,19 @@ class CMS {
 		//look up any components and add them as well
 
 		//configured components
-		$components = mop::config('backend', sprintf('//template[@name="%s"]/component',$newtemplate->templatename));
+		$components = mop::config('backend', sprintf('//template[@name="%s"]/components/component',$newtemplate->templatename));
 		foreach($components as $c){
-			$template = ORM::Factory('template', $c->getAttribute('templateId'));
+			$template = ORM::Factory('template', $c->getAttribute('templateName'));
+			$arguments = array();
+			if($label = $c->getAttribute('label')){
+				$arguments['title'] = $label;
+			}
 			if($c->hasChildNodes()){
 				foreach($c->childNodes as $data){
 					$arguments[$data->name] = $data->value;
 				}
 			}
-			cms::addObject($newpage->id, $newtemplate->id, $arguments);
+			cms::addObject($newpage->id, $template->id, $arguments);
 		}
 
 		//containers (list)
