@@ -7,10 +7,18 @@
 
 <!-- HOME -->
 		<template name="basicCategory" nodeType="CATEGORY" allowChildSort="false" allowDelete="false" allowTogglePublish="false">
+			<addableObject templateName="article" addText="Add an Article" />
+			<addableObject templateName="basicCategory" addText="Add a Category" />
+		</template>
 
+		<template name="basicCategory" nodeType="CATEGORY">
+		</template>
+		
+		<template name="article" nodeType="LEAF">
 		</template>
 
 		<template name="singleIPE" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+
 			<elements>
 				<ipe field="singleIPE" label="single IPE" rows="1"/>
 			</elements>
