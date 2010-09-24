@@ -3720,7 +3720,7 @@ mop.ui.IPE = new Class({
 		if( this.oldValue ){
 			this.ipeElement.set( "html", this.oldValue );
 		}else{
-			this.ipeElement.set("text", "" );			
+			this.ipeElement.set("text", "" );
 		}
 		this.leaveEditMode();
 	},
