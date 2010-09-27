@@ -72,7 +72,7 @@
 			
 		<template name="imageListModule" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
-				<list family="imageListItem" label="Image List" display="inline">
+				<list family="imageList" label="Image List" display="inline">
 					<addableObject templateName="imageListItem" addText="Add an image"/>
 				</list>
 			</elements>	
