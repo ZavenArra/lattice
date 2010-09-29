@@ -98,7 +98,7 @@ class CMS_Controller extends Controller {
 		$this->nodetitle->loadResources();
 		$this->nodetitle->title = $page->contenttable->title; //this should change to page table
 		$this->nodetitle->slug = $page->slug;
-		$this->nodetitle->allow_delete = $page->template->allow_delete;
+		$this->nodetitle->allowDelete = $page->template->allowDelete;
 
 		$settings = Kohana::config('cms.defaultsettings');
 		if(is_array($settings)){

@@ -10,7 +10,7 @@
 	</div>
 		
 		
-	<?if($allow_delete):?>
+	<?if($allowDelete):?>
 		<a class="icon deleteLink" href="#" title="Delete this page."></a>
 	<?endif;?>
 	
