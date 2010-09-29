@@ -4,7 +4,7 @@
 	<div class="ui-IPE rows-1 field-slug marshal-cms"><p class="ipe p"><?=$slug;?></p></div>
 		
 		
-	<?if($allow_delete):?>
+	<?if($allowDelete):?>
 		<a class="icon deleteLink" href="#" title="Delete this page."></a>
 	<?endif;?>
 	
