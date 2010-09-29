@@ -5,9 +5,7 @@
 			<p class="fileName <?=str_replace(',',' ',$extensions);?>"><?if(isset($value['id'])):?><?=$value['filename'];?><?else:?>No image uploaded yet&hellip;<?endif;?></p>
 			<div class="preview">
 				<?if(isset($value['id'])):?>
-				<a class="viewLink" rel="newwindow" href="<?=Kohana::config('config.site_path');?>cms_file/download/<?=$value['id'];?>/">
 					<img src="application/media/<?=$value['thumbSrc'];?>" width="<?=$value['width'];?>" height="<?=$value['height'];?>" alt="<?=$value['filename'];?>"/>
-				</a>
 				<?endif;?>
 			</div>
 			<div class="status hidden">
