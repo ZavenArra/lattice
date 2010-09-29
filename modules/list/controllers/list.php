@@ -203,7 +203,7 @@ class List_Controller extends Controller{
 		$template = $template->item(0);
 		$template = ORM::Factory('template', $template->getAttribute('templateName'));
 
-		$newid = cms::addObject($this->containerObject->id, $template->id, $data);
+		$newid = cms::addObject($this->containerObject->id, $template->id);
 
 		$item = ORM::Factory('page', $newid);
 		$htmlChunks = cms::buildUIHtmlChunksForObject($item);
