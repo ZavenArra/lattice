@@ -77,9 +77,6 @@ h6,
 	cursor: default;
 }
 
-.field-title{
-	font-family: Georgia, Times, Serif;
-}
 
 .extend1week{
 	position: relative;
@@ -572,9 +569,6 @@ label{
 	clear:right;
 }
 
-#pageContent>.ui-IPE .ipe p{
-	min-height: 6em;
-}
 
 #pageContent .module{
 /*	border-bottom: 1px #dedede solid;
@@ -811,6 +805,10 @@ th.spinner{
 
 input[type='radio']{
 	margin-top: .5em;
+}
+
+#pageContent>.ui-IPE .ipe p{
+	min-height: 6em;
 }
 
 .rows-10 .ipe{

@@ -3538,19 +3538,40 @@ mop.ui.IPE = new Class({
 	},
 	
 	fitToContent: function(){
-	    console.log( "fitToContent", this.field.getStyles() );
+	    
         if( !this.measureDiv ){
-            this.measureDiv = new Element( "div", {
-                styles: {
+            var styles = this.field.getComputedSize();
+            this.measureDiv = new Element( "div", { 
+                "class": this.field.get( "class" ) + " " + this.ipeElement.get("class"),
+                "styles" : {
+                    "min-height": this.ipeElement.getStyle( "min-height" ),
+                    "max-height": this.ipeElement.getStyle( "max-height" ),
+                    "display": "none",
+                    "width": styles.width,
+                    "height": 'auto',
+                    "font-size": this.ipeElement.getStyle( "font-size" ),
+                    "font-family": this.ipeElement.getStyle( "font-family" ),
+                    "line-height": this.ipeElement.getStyle( "line-height" ),
                     
+                    "padding-top": styles['padding-top']+"px",
+                    "padding-bottom": styles['padding-bottom']+"px",
+                    "padding-left": styles['padding-left']+"px",
+                    "padding-right": styles['padding-right']+"px",
+
+                    "padding-top": styles['margin-top']+"px",
+                    "padding-bottom": styles['margin-bottom']+"px",
+                    "padding-left": styles['margin-left']+"px",
+                    "padding-right": styles['margin-right']+"px",
+
+                    "letter-spacing": this.field.getStyle( "letter-spacing" )
                 }
-            } );
+            })
+            $(document.body).adopt( this.measureDiv );
         }
-        var fieldHeight = this.field.getSize().y;
-        var scrollHeight = this.field.getScrollSize().y;
-        targetHeight = Math.max( scrollHeight, fieldHeight );
-//        console.log( "fitToContent", fieldHeight, scrollHeight, targetHeight );
-        if ( scrollHeight >= fieldHeight ) this.field.setStyle( "height", targetHeight );
+        var val = this.html_entity_decode( this.field.get( "value" ).replace( /\n/g, "<br/>" ) )
+        this.measureDiv.set( "html", val );
+        var size = this.measureDiv.measure( function(){ return this.getComputedSize() } );
+        this.field.setStyle( "height", ( size.height + 16 ) + "px" );
 
     },
         
@@ -3575,6 +3596,7 @@ mop.ui.IPE = new Class({
 				"text":   this.html_entity_decode( contents.replace( /<br( ?)(\/?)>/g, "\n" ) ),
 				"value": this.formatForEditing( contents ),
 				"styles": {
+				    "overflow": "hidden",
 					"width": size.x,
 					"height": size.y
 				}
