@@ -10,9 +10,6 @@
 			<addableObject templateName="article" addText="Add an Article" />
 			<addableObject templateName="basicCategory" addText="Add a Category" />
 		</template>
-
-		<template name="basicCategory" nodeType="CATEGORY">
-		</template>
 		
 		<template name="article" nodeType="LEAF">
 		</template>
@@ -24,12 +21,12 @@
 			</elements>
 			
 			<components>
-				<component templateName="singleDate" label="SingleDate as Component" />
+				<component templateName="singleDate" label="SingleDate as Component"/>
 			</components>
 		
 		</template>
 
-		<template name="multilineIPE" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="multilineIPE" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="true">
 			<elements>
 				<ipe field="multilineIPE" label="MultiLine IPE" rows="10"/>
 			</elements>
