@@ -251,8 +251,6 @@ mop.modules.navigation.Navigation = new Class({
 		if( showPage ) this.loadPage( aNode.id , whichTier, " inside showCategory " );
 		
 		objectToTraverse = null;
-		showPage = null;
-
 		
 	},
 	
@@ -767,7 +765,12 @@ mop.modules.navigation.LeafNode = new Class({
 		this.nav.addBreadCrumb( this.parentId, this.tier );
 		this.nav.setActiveChild( this.tier, this.element );
 		mop.HistoryManager.changeState("pageId", this.nodeData.id );
-		if( this.nodeData.landing != "NO_LANDING" ) this.nav.loadPage( this.nodeData.id, this.tier, "leafNodeOnClick" );
+		
+		if( ( this.nodeData.addableObjects && this.nodeData.addableObjects.length > 0 ) || this.nodeData.children.length > 0  ){
+			this.nav.showCategory( this.nodeData, this.tier + 1 );
+		}else if( this.nodeData.landing != "NO_LANDING" ){
+			this.nav.loadPage( this.nodeData.id, this.tier, "leafNodeOnClick" );
+		}
 	}
 });
 
