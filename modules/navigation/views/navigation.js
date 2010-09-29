@@ -377,7 +377,7 @@ mop.modules.navigation.Navigation = new Class({
 		placeHolder.destroy();
 		mop.HistoryManager.changeState( "pageId", node.id );
 		
-		if( node.nodeType == "CATEGORY" || node.nodeType == "CONTAINER"){
+		if( node.nodetype == "CATEGORY" || node.nodetype == "CONTAINER"){
 			var objectElement = this.addCategoryNode( parentId, node, whichTier, this.addObjectPosition ).element;			
 		}else{
 			var objectElement = this.addLeafNode( parentId, node, whichTier, this.addObjectPosition ).element;			
@@ -387,7 +387,7 @@ mop.modules.navigation.Navigation = new Class({
 		this.setActiveChild( whichTier, objectElement );
 		if( this.tiers[whichTier].sortable ) this.tiers[whichTier].sortable.addItems( objectElement ); 
 		if( node.addableObjects ) this.showCategory( node , whichTier+1 );
-		//node.nodeType == "CATEGORY" ) 
+		//node.nodetype == "CATEGORY" ) 
 	},
 	
 	addPlaceHolder: function( name, whichTier ){
