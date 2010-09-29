@@ -18,10 +18,10 @@ mop.modules.Module = new Class({
 	*/
 	instanceName: null,
 	/*
-		Variable: uiElements
-		list of this module's uiElements
+		Variable: UIElements
+		list of this module's UIElements
 	*/
-	uiElements: [],
+	UIElements: new Hash(),
 	/*
 		Variable: childModules
 		Modules loaded within this module
@@ -29,14 +29,14 @@ mop.modules.Module = new Class({
 	childModules: null, //new Hash(),
 	
 	initialize: function( anElementOrId, aMarshal, options ){
-		console.log( "Constructing", this.toString(), this.childModules );
+//		console.log( "Constructing", this.toString(), this.childModules );
 		this.parent( anElementOrId, aMarshal, options );
 		this.instanceName = this.element.get("id");
 		this.build();			
 	},
 	
 	onModalScroll: function( scrollData ){
-		this.uiElements.each( function( anUIElement ){
+		this.UIElements.each( function( anUIElement ){
 			anUIElement.reposition( mop.ModalManager.getActiveModal() );
 		});
 	},
@@ -49,7 +49,7 @@ mop.modules.Module = new Class({
 	Function build: Instantiates mop.ui elements by calling initUI, can be extended for other purposes...
 	*/ 	
 	build: function(){
-		this.uiElements = this.initUI();
+		this.UIElements = this.initUI();
 		this.initModules();
 	},
 	
@@ -83,16 +83,16 @@ mop.modules.Module = new Class({
 		var descendantModules = ( whereToLook )? $( whereToLook ).getElements(".module") : this.element.getElements(".module");
 		var filteredOutModules = [];
 
-		console.log( "initModules", this.toString(), this.childModules, descendantModules );
+//		console.log( "initModules", this.toString(), this.childModules, descendantModules );
 
 		descendantModules.each( function( aDescendant ){
 			descendantModules.each( function( anotherDescendant ){
-			    console.log( "initModule, looping through descendant of", this.toString(), "\n\t", aDescendant,"\n\t", anotherDescendant );
+//			    console.log( "initModule, looping through descendant of", this.toString(), "\n\t", aDescendant,"\n\t", anotherDescendant );
 				if(  aDescendant.hasChild( anotherDescendant ) ) filteredOutModules.push( anotherDescendant );
 			}, this );
 		}, this );
 		
-		console.log( this.toString(), "\t\tfilteredOutModules", filteredOutModules );
+//		console.log( this.toString(), "\t\tfilteredOutModules", filteredOutModules );
 		descendantModules.each( function( aDescendant ){
 			if( !filteredOutModules.contains( aDescendant ) ){
         		if( !this.childModules ) this.childModules = new Hash();
@@ -102,7 +102,7 @@ mop.modules.Module = new Class({
 			}
 		}, this );
 		
-        console.log( "childModules", this.toString(), this.childModules );
+//        console.log( "childModules", this.toString(), this.childModules );
         
         delete filteredOutModules, descendantModules;
         filteredOutModules = descendantModules = null;
@@ -118,7 +118,7 @@ mop.modules.Module = new Class({
 		Initializes a specific module
 	*/
 	initModule: function( element ){
-		console.log( "initModule", this.toString(), element, element.get( "class" ) );
+//		console.log( "initModule", this.toString(), element, element.get( "class" ) );
 		var classPath = mop.util.getValueFromClassName( "classPath", element.get( "class" ) ).split( "_" );
 		ref = null;
 		classPath.each( function( node ){
@@ -129,32 +129,43 @@ mop.modules.Module = new Class({
 	},
 	
 	/*
-		Function: getModuleUiElements
+		Function: getModuleUIElements
 	*/
-	getModuleUiElements: function( anElement ){
+	getModuleUIElements: function( anElement ){
 		var elements = [];
 		anElement.getChildren().each( function( aChild, anIndex ){
-			if( aChild.get( "class" ).indexOf( "ui" ) > -1 ){
+			if( aChild.get( "class" ).indexOf( "ui-" ) > -1 ){
 				elements.combine( [ aChild ] );
 			} else if( !aChild.hasClass( "modal" ) && !aChild.hasClass( "module" ) && !aChild.hasClass( "listItem" ) ){
-				elements.combine( this.getModuleUiElements( aChild ) );
+				elements.combine( this.getModuleUIElements( aChild ) );
 			}
 		}, this );
+//		console.log( "getModuleUIElements", this.toString(), anElement, elements );
 		return elements;
 	},
 	/*
 		Function: initUI
 		loops through child elements and instantiates ui elements that dont live inside other modules
 	*/
-	initUI: function(){
-		var elements = this.getModuleUiElements( this.element );
-		var uiElements = [];
-		if( !elements ) return null;
-		elements.each( function( anElement, anIndex ){
-			uiElements.push( new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get("class") ) ]( anElement, this, this.options ) );
+	initUI: function( anElement ){
+	    anElement = ( anElement )? anElement : this.element;
+		var UIElements = this.getModuleUIElements( anElement );
+		
+//		this.UIElements = if( !this.childModules ) this.childModules = new Hash();
+		
+
+		if( !UIElements || UIElements.length == 0  ) return null;
+
+		UIElements.each( function( anElement ){
+		    console.log( "initUI", anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) ) )
+		    var UIElement = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  ]( anElement, this, this.options );
+		    this.UIElements.set( UIElement.fieldName, UIElement );
+		    console.log( "initUI", UIElement.fieldName );
 		}, this );
-		elements = null;
-		return uiElements;
+		
+		if( this.postInitUIHook ) this.postInitUIHook();
+		
+		return UIElements;
 	},
 
 /*	
@@ -162,34 +173,34 @@ mop.modules.Module = new Class({
 	Loops through loaded modules, and destroys unprotected ones... 
 	@TODO, this shouldnt necessarily be a part of module, but rather something more like an ModuleInstantiator interface */
 	destroyChildModules: function( whereToLook ){
-		console.log( "destroyChildModules", this.toString(), this.childModules );
+//		console.log( "destroyChildModules", this.toString(), this.childModules );
 		if( !this.childModules || this.childModules.getLength() == 0 ) return;
 
         var possibleTargets = ( whereToLook )? whereToLook.getElements( ".module" ) : this.element.getElements( ".module" );
 		
-		this.childModules.each( function( aModule, anIndex ){
+		this.childModules.each( function( aModule ){
 		    if( possibleTargets.contains( aModule.element ) ){
 		        var key = aModule.instanceName;
-		        console.log( "destroyChildModules", this.toString(), "attempting to destroy", key );
 				aModule.destroy();
 				this.childModules.erase( key );
 				delete aModule;
 				aModule = null;
-				console.log( "\t\tDestroyed?", this.toString(), "childModules: ", this.childModules.get( key ) );
 			}
 		}, this );
-//		console.log( this.toString(), this.element, "post destroyChildModules", this.childModules );
 	},
 	
 	destroyUIElements: function(){
 		
-		if( !this.uiElements.length ) return;
-		while( this.uiElements.length > 0 ){
-			var aUIElement = this.uiElements.pop();
+		if( !this.UIElements.getLength() || this.UIElements.getLength() == 0  ) return;
+		this.UIElements.each( function( aUIElement ){
+			var key = aUIElement.fieldName;
 			aUIElement.destroy();
+			this.UIElements.erase( key );
 			delete aUIElement;
 			aUIElement = null;
-		}
+		}, this );
+		
+		console.log( "post destroyUIElements ", this.UIElements );
 
 	},
 	
@@ -197,12 +208,12 @@ mop.modules.Module = new Class({
 		this.destroyChildModules();
 		this.destroyUIElements();
 		
-		delete this.uiElements;
+		delete this.UIElements;
 		delete this.instanceName;
 		delete this.childModules;
 		
 		this.instanceName = null;
-		this.uiElements = null;
+		this.UIElements = null;
 		this.childModules = null;
 		
 		this.parent();
@@ -278,7 +289,7 @@ mop.modules.AjaxFormModule = new Class({
 
 		if( this.requiresValidation ){
 			if( this.validateFields() ){
-				console.log( this.toString(), "submitForm fields validates.... ");
+//				console.log( this.toString(), "submitForm fields validates.... ");
 				this.JSONSend( this.action, this.generatedData, { onComplete: this.onFormSubmissionComplete.bind( this ) } );
 			}
 		}else{
@@ -288,8 +299,8 @@ mop.modules.AjaxFormModule = new Class({
 	
 	validateFields: function(){
 		var returnVal = true
-		this.uiElements.each( function( anUIElement, anIndex ){
-			console.log( "validateFields", anUIElement.fieldName, anUIElement.enabled );
+		this.UIElements.each( function( anUIElement, anIndex ){
+//			console.log( "validateFields", anUIElement.fieldName, anUIElement.enabled );
 			if( anUIElement.validationOptions && anUIElement.enabled ){
 				returnVal = ( anUIElement.validate() )? true : false ;
 			}
@@ -302,10 +313,10 @@ mop.modules.AjaxFormModule = new Class({
 	},
 
 	serialize: function(){
-//		console.log( this.toString(), "serialize", this.uiElements.length );
+//		console.log( this.toString(), "serialize", this.UIElements.length );
 		var query = "";
 		var keyValuePairs = {};
-		this.uiElements.each( function( anUIElement ){
+		this.UIElements.each( function( anUIElement ){
 			
 //			console.log( this.toString(), anUIElement.type, anUIElement.fieldName, anUIElement );
 
@@ -318,7 +329,7 @@ mop.modules.AjaxFormModule = new Class({
 	
 	clearFormFields: function( e ){
 		mop.util.stopEvent( e );
-		this.uiElements.each( function( anUIElement ){
+		this.UIElements.each( function( anUIElement ){
 			//console.log( this.toString(), anUIElement.type, anUIElement.fieldName, anUIElement );
 			if( anUIElement.setValue ) anUIElement.setValue( null );
 		}, this );

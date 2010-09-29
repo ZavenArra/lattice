@@ -203,7 +203,7 @@ mop.modules.navigation.Navigation = new Class({
 	*/
 	showCategory: function( aNode, whichTier ){
 
-		console.log( "showCategory :::: ", aNode );//, " : ", aNode.id, " : ", whichTier, aNode.children );
+//		console.log( "showCategory :::: ", aNode );//, " : ", aNode.id, " : ", whichTier, aNode.children );
 
 		var showPage = true;
 
@@ -284,7 +284,7 @@ mop.modules.navigation.Navigation = new Class({
 	addUtilityNode: function( aNode, whichTier ){
 		var tierElement = this.getTierElement( whichTier );
 		var tier = this.tiers[ whichTier ];
-		console.log( this.toString(), "addUtilityNode : ", aNode, whichTier, tierElement, this.element.getSibling );
+//		console.log( this.toString(), "addUtilityNode : ", aNode, whichTier, tierElement, this.element.getSibling );
 		
 		if( aNode.addableObjects.length > 1 ){
 			var utilityNode = tierElement.getSibling( ".utility" );

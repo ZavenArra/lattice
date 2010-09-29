@@ -293,6 +293,7 @@ mop.ui.UIElement = new Class({
 	type: "UIElement",
 
 	Implements: [ Options, Events ],
+    Extends: mop.MoPObject,
 
 	options:{ action: "savefield" },
 	
@@ -300,9 +301,6 @@ mop.ui.UIElement = new Class({
 	
 	type: "Generic UIElement",
 	
-	element: null,
-	marshal: null,
-	elementClass: null,
 	fieldName: null,
 	autoSubmit: true,
 	action: null,
@@ -345,15 +343,12 @@ mop.ui.UIElement = new Class({
 	
 	initialize: function( anElement, aMarshal, options ) {
 
-		this.setOptions( options );
-//		console.log( this.toString(), this.fieldName, this.options );
-		this.element = $( anElement );
-		this.marshal = aMarshal;
-		this.elementClass = this.element.get( "class" );
+        this.parent( anElement, aMarshal, options );
 
-		this.element.store( "Class", this );
-
+        console.log( "mop.uiUIElement", anElement, aMarshal, this.element.retrieve( "class" ) );
+        
 		this.fieldName = this.getValueFromClassName( 'field' );
+
 		// if autosubmit is set in the class as autoSubmit-false then set to false, otherwise default to true
 		this.autoSubmit = (  mop.util.getValueFromClassName( "autoSubmit", this.element.get( "class" ) ) == "false" )? false : this.autoSubmit;
 //		console.log( this.toString(), this.field, this.autoSubmit );
@@ -712,7 +707,7 @@ mop.ui.EnhancedModal = new Class({
 			mop.ui.windowMode = "normal";
 			this.element.setStyle( "opacity", 1 );
 			
-			//this should be part of a mixin or something, 
+			// this should be part of a mixin or something, 
 			// it should be written once
 			// it should do all ui elements not just ipes
 			// since modals dont have a uiElement array, it needs a way to find all ui elements...... hmmmm

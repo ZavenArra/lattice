@@ -81,7 +81,6 @@ h6,
 	font-family: Georgia, Times, Serif;
 }
 
-
 .extend1week{
 	position: relative;
 	top: 1.75em;
@@ -406,12 +405,16 @@ ul.listing li{
 	background-image: url(images/icon_png.gif);
 }
 
+#nodeContent{
+    margin: 2em 0 0 0;
+}
+
 .pageTitle .deleteLink{
-	margin: 1.5em 0 0 .5em;
+	margin: 2em 0 0 .5em;
 }
 
 .pageTitle{
-	margin: 2em 0 0 0;
+	margin: 0 0 0 0;
 }
 
 a.icon{

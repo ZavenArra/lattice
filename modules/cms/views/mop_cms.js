@@ -13,14 +13,14 @@ mop.modules.CMS = new Class({
 	deletePageLink: null,
 
 	initialize: function( anElement, options ){
-        console.log( "CMS INIT", this.childModules );
+//        console.log( "CMS INIT", this.childModules );
 		this.parent( anElement, null, options );		
 		this.objectId = this.getValueFromClassName( "objectId" );
 	},
 	
 	build: function(){
 		this.pageContent = $("nodeContent");
-		this.initModules( this.element );	
+		this.initModules( this.element );
 	},
 	
 	toString: function(){
@@ -28,7 +28,7 @@ mop.modules.CMS = new Class({
 	},
 
 	loadPage: function ( pageId ){
-		console.log( this.toString(), "loadPage", pageId );
+//		console.log( this.toString(), "loadPage", pageId );
 		this.pageIdToLoad = pageId;
 		this.clearPage( pageId );
 		this.pageContent.spin();
@@ -40,8 +40,8 @@ mop.modules.CMS = new Class({
 	},
 	
 	clearPage: function( pageId ){
-	    console.log( "clearPage", pageId );
-		if( mop.util.getObjectId() == pageId ) return;
+//	    console.log( "clearPage", pageId );
+//		if( mop.util.getObjectId() == pageId ) return;
 		this.destroyChildModules( this.pageContent );
 		this.destroyUIElements();
 		this.pageContent.empty();
@@ -98,39 +98,33 @@ mop.modules.CMS = new Class({
 		if( this.titleElement ){
 			this.titleText = this.titleElement.getElement( "h2" ).get( "text" );
 			this.deletePageLink = this.titleElement.getElement( "a.deleteLink" );
-			if( this.deletePageLink ) this.deletePageLink.addEvent( "click", this.deleteNode.bindWithEvent( this ) );
+			if( this.deletePageLink ) this.deletePageLink.addEvent( "click", this.deleteNode.bindWithEvent( this, "page" ) );
 		}
 		
-		this.initUI();
-		
-		this.initModules( this.pageContent );
+		this.uiElements = this.initUI( this.pageContent );
 				
-		if( this.postInitUIHook ) this.postInitUIHook();
+		this.initModules( this.pageContent );		
 
 	},
 
-	postInitUIHook: function(){
-	    if( this.uiElements.length ){
-			this.uiElements.each( function( uiInstance ){
-				if( uiInstance.element.hasClass( "ui-IPE" ) && uiInstance.element.hasClass( "field-title" ) ) uiInstance.registerOnCompleteCallBack( this.renameNode.bind( this ) );
-			}, this );
-		}
+	postInitUIHook: function( ){
+	    
+		this.UIElements.each( function( aUIElement ){
+			if( aUIElement.element.hasClass( "field-title" ) ){
+        	    console.log( "postInitUIHook" , aUIElement, aUIElement.element );
+			    aUIElement.registerOnCompleteCallBack( this.renameNode.bind( this ) );
+			}
+		}, this );
+	
 	},
 	
 	renameNode: function( response, uiInstance ){
-		this.loadedModules.get( "navigation" ).renameNode( response.value );
-	},
-
-	deleteNode: function( e ){
-		mop.util.stopEvent( e );		
-		var confirmed = confirm( "Are you sure you wish to delete the node: “" + this.titleText + "”?\nThis cannot be undone." );
-		if( confirmed ) this.deleteNode( mop.objectId, "page" );
-		confirmed = null;
+		this.childModules.get( "navigation" ).renameNode( response.value );
 	},
 
 
 	addObject: function( objectName, templateId, parentId, whichTier, placeHolder ){
-	    console.log( "addObject", this, this.toString() );
+//	    console.log( "addObject", this, this.toString() );
 		var callBack = function( nodeData ){
 			this.onObjectAdded( nodeData, parentId, whichTier, placeHolder );
 		};
@@ -142,7 +136,7 @@ mop.modules.CMS = new Class({
 	},
 
 	onObjectAdded: function( data, parentId , whichTier, placeHolder ){
-	    console.log( "onObjectAdded", this, this.toString() );
+//	    console.log( "onObjectAdded", this, this.toString() );
 		this.childModules.get( "navigation" ).onObjectAdded(  data , parentId, whichTier, placeHolder );
 	},
 	
@@ -167,13 +161,17 @@ mop.modules.CMS = new Class({
 	Argument: pageId {Number}
 	Callback: onNodeDeleted
 	*/
-	deleteNode: function( pageId, from ){
-//		console.log( "deleteNode :: " + pageId + " : " + from );
-		if( from == "page" ) this.getNav().removeNode( pageId, this );
-		new Request.JSON({
-			url: mop.util.getAppURL() + "cms/delete/"+pageId,
-			onComplete: this.clearPage.bind( this, pageId )
-		}).send();
+	deleteNode: function( e, from ){
+	    console.log( "deleteNode", this.toString(), from );
+		mop.util.stopEvent( e );		
+		var confirmed = confirm( "Are you sure you wish to delete the node: “" + this.titleText + "”?\nThis cannot be undone." );
+		if( confirmed ){
+		    if( from == "page" ) this.childModules.get( "navigation" ).removeNode( mop.objectId, this );
+    		new Request.JSON({
+    			url: mop.util.getAppURL() + "ajax/cms/delete/"+mop.objectId,
+    			onComplete: this.clearPage.bind( this, mop.objectId )
+    		}).send();
+    	};
 	}
 	
 });
