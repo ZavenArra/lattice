@@ -11,11 +11,11 @@
 			<addableObject templateName="anotherCategory" addText="Add a Category" />
 		</template>
 
-		<template name="anotherCategory" nodeType="CATEGORY" allowChildSort="false" allowDelete="false" allowTogglePublish="false">
+		<template name="anotherCategory" nodeType="CATEGORY" allowChildSort="false" allowDelete="true" allowTogglePublish="false">
 			<addableObject templateName="article" addText="Add an Article" />
 		</template>
 		
-		<template name="article" nodeType="LEAF">
+		<template name="article" nodeType="LEAF" allowDelete="true" >
 		</template>
 
 		<template name="singleIPE" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
@@ -75,7 +75,7 @@
 		<template name="simpleListModuleItem" nodeType="LEAF" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
-                                <ipe field="description" label="Description"/>
+				<ipe field="description" label="Description"/>
 			</elements>
 		</template>
 			
