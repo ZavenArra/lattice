@@ -152,7 +152,7 @@ mop.modules.ListModule = new Class({
 	onItemAdded: function( json  ){
 		var element = this.addItemDialogue.setContent( json.response, this.controls.getElement( ".addItem" ).get( "text" ) );
 		var listItem = new mop.modules.ListItem( element, this, this.addItemDialogue, { scrollContext: 'modal' } );
-		listItem.uiElements.each( function( uiInstance ){
+		listItem.UIElements.each( function( uiInstance ){
 			uiInstance.scrollContext = "modal";
 		});
 		listItem.filesToTop();
@@ -175,7 +175,7 @@ mop.modules.ListModule = new Class({
 		var listItemInstance = anElement.retrieve("Class");
 		listItemInstance.scrollContext = 'window';
 		listItemInstance.resetFileDepth();
-		listItemInstance.uiElements.each( function( uiInstance ){
+		listItemInstance.UIElements.each( function( uiInstance ){
 			uiInstance.scrollContext = "window";
 		});
 		anElement.tween( "opacity", 1 );
@@ -308,7 +308,7 @@ mop.modules.ListItem = new Class({
 	},
 	
 	filesToTop: function(){
-		this.uiElements.each( function( uiElementInstance, indexA ){
+		this.UIElements.each( function( uiElementInstance, indexA ){
 			if( uiElementInstance.type == "file" || uiElementInstance.type == "imageFile" ){
  				uiElementInstance.scrollContext = 'modal';
 				uiElementInstance.reposition( 'modal' );
@@ -317,7 +317,7 @@ mop.modules.ListItem = new Class({
 	},
 	
 	resetFileDepth: function(){
-		this.uiElements.each( function( anElement ){
+		this.UIElements.each( function( anElement ){
 			if( anElement.type == "file" || anElement.type == "imageFile" ){
 				anElement.reposition( 'window' );
 			}
