@@ -455,7 +455,7 @@ mop.MoPObject = new Class({
 		this.element = $( anElementOrId );
 		this.elementClass = this.element.get("class");
 		this.marshal = ( $type( aMarshal ) == "string" )? mop.ModuleManager.getModuleById( aMarshal ) : aMarshal;
-		this.element.store( 'Class', this );		
+		this.element.store( 'Class', this );
 	},
 	/*
 		Function: getValueFromClassName
@@ -515,26 +515,18 @@ mop.util.DepthManager = new Class({
 
 	Extends: mop.util.Broadcaster,
 
-	modalDepth: 5000,
-	windowOverlayDepth: 1000,
-	modalOverlayDepth: 8000, 
+	windowOverlayDepth: 5000,
+	modalDepth:         15000,
+	modalOverlayDepth:  20000, 
 
 	initialize: function(){},
 	
 	incrementDepth: function( context ){
-		switch( context ){
-			case "modal" : return this.modalDepth++; break;
-			case "modalOverlay" : return this.modalOverlayDepth++; break;
-			case "windowOverlay" : return this.windowOverlayDepth++; break;
-		}
+			return this.modalOverlayDepth++;
 	},
 	
 	getCurrentDepth: function( context ){
-		switch( context ){
-			case "modal": return this.modalDepth; break;
-			case "modalOverlay": return this.modalOverlayDepth; break;
-			case "windowOverlay": return this.windowOverlayDepth; break;
-		}
+	    return this.modalOverlayDepth;
 	}
 	
 });

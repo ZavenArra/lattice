@@ -155,9 +155,10 @@ mop.modules.ListModule = new Class({
 		listItem.UIElements.each( function( uiInstance ){
 			uiInstance.scrollContext = "modal";
 		});
-		listItem.filesToTop();
+//		listItem.filesToTop();
 		this.items.push( listItem );
-		this.addItemDialogue.show();
+//		this.addItemDialogue.show();
+		mop.util.EventManager.broadcastEvent( "resize" );
 		listItem = null;
 	},
 	
@@ -210,6 +211,7 @@ mop.modules.ListModule = new Class({
 		anItem.destroy();
 		delete anItem;
 		anItem = null;
+		
 		mop.util.EventManager.broadcastEvent( "resize" );
 		//again we should be removing from this.items
 		//this is a potential memory leak, since adding and removing many times will leave
