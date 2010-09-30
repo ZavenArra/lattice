@@ -15,7 +15,9 @@
 			<div class="controls">
 				<a class="command uploadLink" href="#"><?if(isset($value['id'])):?>reupload file<?else:?>upload a file<?endif;?></a>
 				<?if(isset($value['id'])):?>
-				<a class="command downloadLink" href="<?=Kohana::config('config.site_path');?>cms_file/directlink/<?=$value['id'];?>">download</a>
+					<a class="command downloadLink" href="<?=Kohana::config('config.site_path');?>cms_file/directlink/<?=$value['id'];?>">download</a>
+				<?else:?>
+					<a class="command downloadLink hidden" target="_blank" href="#">download</a>
 				<?endif;?>
 			</div>
 		</div>
