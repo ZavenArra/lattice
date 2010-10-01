@@ -1,34 +1,6 @@
 mop.ui = {};
 mop.ui.navigation = {};
 
-mop.ui.DepthManager = new Class({
-
-	Extends: mop.util.Broadcaster,
-
-	modalDepth: 15000,
-	windowOverlayDepth: 10000,
-	modalOverlayDepth: 20000, 
-
-	initialize: function(){},
-	
-	incrementDepth: function( context ){
-		switch( context ){
-			case "modal" : return this.modalDepth++; break;
-			case "modalOverlay" : return this.modalOverlayDepth++; break;
-			case "windowOverlay" : return this.windowOverlayDepth++; break;
-		}
-	},
-	
-	getCurrentDepth: function( context ){
-		switch( context ){
-			case "modal": return this.modalDepth; break;
-			case "modalOverlay": return this.modalOverlayDepth; break;
-			case "windowOverlay": return this.windowOverlayDepth; break;
-		}
-	}
-	
-});
-
 /*
 	Class: mop.ui.navigation.Tabs
 	Generic helper for handling tabbed navigation
@@ -293,6 +265,7 @@ mop.ui.UIElement = new Class({
 	type: "UIElement",
 
 	Implements: [ Options, Events ],
+    Extends: mop.MoPObject,
 
 	options:{ action: "savefield" },
 	
@@ -300,9 +273,6 @@ mop.ui.UIElement = new Class({
 	
 	type: "Generic UIElement",
 	
-	element: null,
-	marshal: null,
-	elementClass: null,
 	fieldName: null,
 	autoSubmit: true,
 	action: null,
@@ -345,15 +315,12 @@ mop.ui.UIElement = new Class({
 	
 	initialize: function( anElement, aMarshal, options ) {
 
-		this.setOptions( options );
-//		console.log( this.toString(), this.fieldName, this.options );
-		this.element = $( anElement );
-		this.marshal = aMarshal;
-		this.elementClass = this.element.get( "class" );
+        this.parent( anElement, aMarshal, options );
 
-		this.element.store( "Class", this );
-
+        console.log( "mop.uiUIElement", anElement, aMarshal, this.element.retrieve( "class" ) );
+        
 		this.fieldName = this.getValueFromClassName( 'field' );
+
 		// if autosubmit is set in the class as autoSubmit-false then set to false, otherwise default to true
 		this.autoSubmit = (  mop.util.getValueFromClassName( "autoSubmit", this.element.get( "class" ) ) == "false" )? false : this.autoSubmit;
 //		console.log( this.toString(), this.field, this.autoSubmit );
@@ -574,7 +541,7 @@ mop.ui.EnhancedModal = new Class({
 			if( anElement ){
 								
 				this.element = $( anElement );
-				this.element.setStyles( { "z-index": mop.DepthManager.incrementDepth( "modal" ) } );
+                // this.element.setStyles( { "z-index": mop.DepthManager.incrementDepth( "modal" ) } );
 
 				this.modalAnchor = this.element.getElement( ".modalAnchor" );
 
@@ -627,7 +594,7 @@ mop.ui.EnhancedModal = new Class({
 			
 			this.element = new Element( "div", {
 				"class": "enhancedModalContainer hidden",
-				"styles": { "z-index": mop.DepthManager.incrementDepth( "modal") }
+                // "styles": { "z-index": mop.DepthManager.incrementDepth( "modal") }
 			});
 
 			this.modalAnchor = new Element( "a", {
@@ -712,7 +679,7 @@ mop.ui.EnhancedModal = new Class({
 			mop.ui.windowMode = "normal";
 			this.element.setStyle( "opacity", 1 );
 			
-			//this should be part of a mixin or something, 
+			// this should be part of a mixin or something, 
 			// it should be written once
 			// it should do all ui elements not just ipes
 			// since modals dont have a uiElement array, it needs a way to find all ui elements...... hmmmm
@@ -855,8 +822,7 @@ mop.ui.EnhancedAddItemDialogue = new Class({
 	build: function(){
 		
 		this.element = new Element( "div", {
-			"class": "enhancedModalContainer hidden",
-			"styles": { "z-index": mop.DepthManager.incrementDepth( "modal") }
+			"class": "enhancedModalContainer hidden"
 		});
 
 		this.modalAnchor = new Element( "a", {
@@ -1006,8 +972,7 @@ mop.ui.Modal = new Class({
 			"class": "modalContainer",
 			"styles": {
 				"display" : "none",
-				"opacity" : 0,
-				"styles": { "z-index": mop.DepthManager.incrementDepth( 'modal' ) }
+				"opacity" : 0
 			}
 		});
 
@@ -1636,7 +1601,7 @@ mop.ui.ExtendedMonkeyPhysicsDatePicker = new Class({
 	show: function( position, timestamp){
 
 		this.parent( position, timestamp );
-		var depth = mop.DepthManager.incrementDepth( ( this.marshal.scrollContext == "modal" )? 'modalOverlay' : 'windowOverlay' );
+		var depth = mop.DepthManager.incrementDepth();
 
 //		console.log( this.toString(), "show", this.marshal.scrollContext );
 		if( this.marshal.scrollContext == 'modal' ){
@@ -2195,6 +2160,9 @@ mop.ui.FileElement = new Class({
 		this.uploadButton = this.element.getElement( ".uploadLink" );
 		this.uploadButton.store( "Class", this );
 
+		this.downloadButton = this.element.getElement( ".downloadLink" );
+		this.downloadButton.store( "Class", this );
+
 		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
 
 		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );
@@ -2301,14 +2269,16 @@ mop.ui.FileElement = new Class({
 
 		mop.util.stopEvent( e );
 
-		var depth = ( this.scrollContext == 'modal' )? mop.DepthManager.incrementDepth( 'modalOverlay' ) :  mop.DepthManager.incrementDepth( 'windowOverlay' );
-		console.log( this.toString(), "onTargetHovered", this.scrollContext, depth );
+		var depth = mop.DepthManager.incrementDepth();
+
+		console.log( this.toString(), "onTargetHovered", depth );
 		this.Uploader.onTargetHovered( this, this.uploadButton, this.getCoordinates(), depth, this.getOptions() );
+		this.reposition();
 
 	},
 	
-	reposition: function( scrollContext ){
-		this.Uploader.reposition( scrollContext );
+	reposition: function(){
+		this.Uploader.reposition();
 	},
 	
 	getCoordinates: function(){
@@ -2384,11 +2354,13 @@ mop.ui.FileElement = new Class({
 
 //		console.log( "-------------------------------- ", $A( arguments ) );
 
-		this.fileName.set( "text",  json.filename );
-
-
+		this.fileName.set( "html",  '<a href="' + json.src + '" target="_blank">'+json.filename+'</a>' );
+        this.downloadButton.set( "href", json.src );
+        this.downloadButton.removeClass("hidden");
+        
 		if( this.previewElement ){
 //			console.log( this.toString(), "onFileComplete B ", json, data.response.text, JSON.decode( data.response.text ) );
+            
 			this.imgAsset = new Asset.image( json.thumbSrc, {  alt: json.filename, onload: this.updateThumb.bind( this, json ) } );
 		}else{
 			this.revertToReadyState();
@@ -2848,7 +2820,6 @@ mop.util.Uploader = new Class({
 
 		this.currentFileElementInstance = uiElement;
 		this.target = targetElement;
-
 		this.setOptions( options );
 		this.reposition();
 
@@ -2864,13 +2835,7 @@ mop.util.Uploader = new Class({
 
 		var coords = this.currentFileElementInstance.getCoordinates();
 
-		if( !scrollContext ){
-			depthContext = (  this.currentFileElementInstance.scrollContext == 'modal' )? "modalOverlay" : "windowOverlay";			
-		}else{
-			depthContext = (  depthContext == "modal" )? "modalOverlay" : "windowOverlay";
-		}
-
-		var newDepth = mop.DepthManager.incrementDepth( depthContext );
+		var newDepth = mop.DepthManager.incrementDepth();
 
 //		console.log( this.toString(), "reposition", this.scrollContext, depthContext, this.currentFileElementInstance.getCoordinates(), newDepth );
 
@@ -3307,7 +3272,7 @@ mop.ui.Sticky = new Class({
 		
 //		console.log( "repositioning", this.toString(), this.marshal.toString(), "{ inModal:", inModal, "}", this.marshal.fieldName, "{ activeModal.coords: ", mop.ModalManager.getActiveModal().element.getCoordinates().left, mop.ModalManager.getActiveModal().element.getCoordinates().top, "}", "{ marshalCoords: ", pos.left, pos.top, "}", top, left );
 
-		var zIndex = ( inModal )? mop.DepthManager.incrementDepth( "modalOverlay" ) : mop.DepthManager.incrementDepth( "windowOverlay" );
+		var zIndex = mop.DepthManager.incrementDepth();
 		this.element.setStyles({
 			"top" : top,
 			"left" : left,
@@ -3543,19 +3508,28 @@ mop.ui.IPE = new Class({
 	},
 	
 	fitToContent: function(){
-	    console.log( "fitToContent", this.field.getStyles() );
+	    
         if( !this.measureDiv ){
-            this.measureDiv = new Element( "div", {
-                styles: {
-                    
+            this.measureDiv = new Element( "div", { 
+                "class": this.field.get( "class" ) + " " + this.ipeElement.get("class"),
+                "styles" : {
+                    "min-height": this.ipeElement.getStyle( "min-height" ),
+                    "max-height": this.ipeElement.getStyle( "max-height" ),
+                    "display": "none",
+                    "width": this.field.getStyle( "width" ),
+                    "height": 'auto',
+                    "font-size": this.ipeElement.getStyle( "font-size" ),
+                    "font-family": this.ipeElement.getStyle( "font-family" ),
+                    "line-height": this.ipeElement.getStyle( "line-height" ),
+                    "letter-spacing": this.field.getStyle( "letter-spacing" )
                 }
-            } );
+            })
+            $(document.body).adopt( this.measureDiv );
         }
-        var fieldHeight = this.field.getSize().y;
-        var scrollHeight = this.field.getScrollSize().y;
-        targetHeight = Math.max( scrollHeight, fieldHeight );
-//        console.log( "fitToContent", fieldHeight, scrollHeight, targetHeight );
-        if ( scrollHeight >= fieldHeight ) this.field.setStyle( "height", targetHeight );
+        var val = this.html_entity_decode( this.field.get( "value" ).replace( /\n/g, "<br/>" ) )
+        this.measureDiv.set( "html", val );
+        var size = this.measureDiv.measure( function(){ return this.getComputedSize() } );
+        this.field.setStyle( "height", ( size.height + 16 ) + "px" );
 
     },
         
@@ -3580,6 +3554,7 @@ mop.ui.IPE = new Class({
 				"text":   this.html_entity_decode( contents.replace( /<br( ?)(\/?)>/g, "\n" ) ),
 				"value": this.formatForEditing( contents ),
 				"styles": {
+				    "overflow": "hidden",
 					"width": size.x,
 					"height": size.y
 				}

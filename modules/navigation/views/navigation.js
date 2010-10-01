@@ -203,7 +203,7 @@ mop.modules.navigation.Navigation = new Class({
 	*/
 	showCategory: function( aNode, whichTier ){
 
-		console.log( "showCategory :::: ", aNode );//, " : ", aNode.id, " : ", whichTier, aNode.children );
+//		console.log( "showCategory :::: ", aNode );//, " : ", aNode.id, " : ", whichTier, aNode.children );
 
 		var showPage = true;
 
@@ -251,8 +251,6 @@ mop.modules.navigation.Navigation = new Class({
 		if( showPage ) this.loadPage( aNode.id , whichTier, " inside showCategory " );
 		
 		objectToTraverse = null;
-		showPage = null;
-
 		
 	},
 	
@@ -284,7 +282,7 @@ mop.modules.navigation.Navigation = new Class({
 	addUtilityNode: function( aNode, whichTier ){
 		var tierElement = this.getTierElement( whichTier );
 		var tier = this.tiers[ whichTier ];
-		console.log( this.toString(), "addUtilityNode : ", aNode, whichTier, tierElement, this.element.getSibling );
+//		console.log( this.toString(), "addUtilityNode : ", aNode, whichTier, tierElement, this.element.getSibling );
 		
 		if( aNode.addableObjects.length > 1 ){
 			var utilityNode = tierElement.getSibling( ".utility" );
@@ -379,7 +377,7 @@ mop.modules.navigation.Navigation = new Class({
 		placeHolder.destroy();
 		mop.HistoryManager.changeState( "pageId", node.id );
 		
-		if( node.nodeType == "CATEGORY" || node.nodeType == "CONTAINER"){
+		if( node.nodetype == "CATEGORY" || node.nodetype == "CONTAINER"){
 			var objectElement = this.addCategoryNode( parentId, node, whichTier, this.addObjectPosition ).element;			
 		}else{
 			var objectElement = this.addLeafNode( parentId, node, whichTier, this.addObjectPosition ).element;			
@@ -389,7 +387,7 @@ mop.modules.navigation.Navigation = new Class({
 		this.setActiveChild( whichTier, objectElement );
 		if( this.tiers[whichTier].sortable ) this.tiers[whichTier].sortable.addItems( objectElement ); 
 		if( node.addableObjects ) this.showCategory( node , whichTier+1 );
-		//node.nodeType == "CATEGORY" ) 
+		//node.nodetype == "CATEGORY" ) 
 	},
 	
 	addPlaceHolder: function( name, whichTier ){
@@ -767,7 +765,12 @@ mop.modules.navigation.LeafNode = new Class({
 		this.nav.addBreadCrumb( this.parentId, this.tier );
 		this.nav.setActiveChild( this.tier, this.element );
 		mop.HistoryManager.changeState("pageId", this.nodeData.id );
-		if( this.nodeData.landing != "NO_LANDING" ) this.nav.loadPage( this.nodeData.id, this.tier, "leafNodeOnClick" );
+		
+		if( ( this.nodeData.addableObjects && this.nodeData.addableObjects.length > 0 ) || this.nodeData.children.length > 0  ){
+			this.nav.showCategory( this.nodeData, this.tier + 1 );
+		}else if( this.nodeData.landing != "NO_LANDING" ){
+			this.nav.loadPage( this.nodeData.id, this.tier, "leafNodeOnClick" );
+		}
 	}
 });
 

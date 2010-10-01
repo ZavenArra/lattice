@@ -158,7 +158,6 @@ mop.util.domIsReady = function(){
 	But this will serve as a nice shortcut given the verbosity needed to deal with some IE's ( the whole return value conditional )
 */
 mop.util.stopEvent = function( e ){
-    console.log( e );
 	if( e && e.stop ){
 		e.stop();
 	}else if( e ){
@@ -456,7 +455,7 @@ mop.MoPObject = new Class({
 		this.element = $( anElementOrId );
 		this.elementClass = this.element.get("class");
 		this.marshal = ( $type( aMarshal ) == "string" )? mop.ModuleManager.getModuleById( aMarshal ) : aMarshal;
-		this.element.store( 'Class', this );		
+		this.element.store( 'Class', this );
 	},
 	/*
 		Function: getValueFromClassName
@@ -516,26 +515,18 @@ mop.util.DepthManager = new Class({
 
 	Extends: mop.util.Broadcaster,
 
-	modalDepth: 5000,
-	windowOverlayDepth: 1000,
-	modalOverlayDepth: 8000, 
+	windowOverlayDepth: 5000,
+	modalDepth:         15000,
+	modalOverlayDepth:  20000, 
 
 	initialize: function(){},
 	
 	incrementDepth: function( context ){
-		switch( context ){
-			case "modal" : return this.modalDepth++; break;
-			case "modalOverlay" : return this.modalOverlayDepth++; break;
-			case "windowOverlay" : return this.windowOverlayDepth++; break;
-		}
+			return this.modalOverlayDepth++;
 	},
 	
 	getCurrentDepth: function( context ){
-		switch( context ){
-			case "modal": return this.modalDepth; break;
-			case "modalOverlay": return this.modalOverlayDepth; break;
-			case "windowOverlay": return this.windowOverlayDepth; break;
-		}
+	    return this.modalOverlayDepth;
 	}
 	
 });
@@ -654,7 +645,7 @@ mop.util.LoginMonitor = new Class({
 		
 		window.addEvent( "mousemove", this.onMouseMove.bind( this ) );
 		var loginTimeOutClassName = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
-		console.log( loginTimeOutClassName, $(document).getElement("body"), $(document).getElement("body").get("class") );
+//		console.log( loginTimeOutClassName, $(document).getElement("body"), $(document).getElement("body").get("class") );
 
 		if( loginTimeOutClassName != undefined ){
 			this.secondsOfInactivityTilPrompt = Number( loginTimeOutClassName ) * 1000;
@@ -684,7 +675,7 @@ mop.util.LoginMonitor = new Class({
 	},
 
 	logoutCountDown: function( message ){
-		console.log( "Maximum period of inactivity received starting logout countdown ", message );
+//		console.log( "Maximum period of inactivity received starting logout countdown ", message );
 		
 		this.secondsIdle ++;
 		var secondsLeft = this.secondsTilLogout*.001 - this.secondsIdle;
@@ -704,7 +695,7 @@ mop.util.LoginMonitor = new Class({
 	},
 
 	logout: function(){
-		console.log( "timeout exceeded performing logout" );
+//		console.log( "timeout exceeded performing logout" );
 		$clear( this.logoutTimeout );
 		$clear( this.inactivityTimeout );
 		delete this.status;
