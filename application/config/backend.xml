@@ -8,7 +8,11 @@
 <!-- HOME -->
 		<template name="basicCategory" nodeType="CATEGORY" allowChildSort="false" allowDelete="false" allowTogglePublish="false">
 			<addableObject templateName="article" addText="Add an Article" />
-			<addableObject templateName="basicCategory" addText="Add a Category" />
+			<addableObject templateName="anotherCategory" addText="Add a Category" />
+		</template>
+
+		<template name="anotherCategory" nodeType="CATEGORY" allowChildSort="false" allowDelete="false" allowTogglePublish="false">
+			<addableObject templateName="article" addText="Add an Article" />
 		</template>
 		
 		<template name="article" nodeType="LEAF">

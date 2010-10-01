@@ -334,9 +334,9 @@ class Page_Model extends ORM {
 		}
 		Kohana::log('info', 'proceeding with saveFile');
 
-		$file = ORM::Factory('file', $this->$field);
+		$file = ORM::Factory('file', $this->contenttable->$field);
 		
-		$xarray = explode('.', $_postFiles[$field]['name']);
+		$xarray = explode('.', $postFiles[$field]['name']);
 		$nr = count($xarray);
 		$ext = $xarray[$nr-1];
 		$name = array_slice($xarray, 0, $nr-1);
@@ -354,8 +354,8 @@ class Page_Model extends ORM {
 
 		$savename = $name.$i.'.'.$ext;
 
-		if($this->savelocalfile){ //allow bypass of move_uploaded_file
-			copy($this->savelocalfile, cms::mediapath().$savename);
+		if(isset($postFiles['savelocalfile'])){ //allow bypass of move_uploaded_file
+			copy(isset($postFiles['savelocalfile']), cms::mediapath().$savename);
 		} else if(!move_uploaded_file($postFiles[$field]['tmp_name'], cms::mediapath().$savename)){
 			$result = array(
 					'result'=>'failed',
@@ -393,9 +393,10 @@ class Page_Model extends ORM {
 
 		$parse = explode('.', $savename);
 		$ext = $parse[count($parse)-1];
+    $src = cms::mediapath().$savename;
 		$result = array(
 			'id'=>$file->id,
-			'src'=>$this->basemediapath.$savename,
+			'src'=>$src,
 			'filename'=>$savename,
 			'ext'=>$ext,
 			'result'=>'success',
@@ -412,8 +413,8 @@ class Page_Model extends ORM {
 			throw new Kohana_User_Exception('no field in POST', 'no field in POST');
 		}
 
-		if($this->savelocalfile){
-			$size = @getimagesize($this->savelocalfile);
+		if($postFiles['savelocalfile']){
+			$size = @getimagesize($postFiles['savelocalfile']);
 		} else if(!$size = @getimagesize($postFiles[$field]['tmp_name'])){
 			Kohana::log('error', 'Bad upload tmp image');
 			throw new Kohana_User_Exception('bad upload tmp image', 'bad upload tmp image');
