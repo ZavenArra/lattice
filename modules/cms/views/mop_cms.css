@@ -34,9 +34,12 @@ h1,
 h2,
 .h2{
 	font-size: 3em;		/* 36px */
-	line-height: 1em;
+	line-height: 1;
 }
 
+.pageTitle .ipe.h2{
+	margin-bottom: 0 !important;
+}
 
 h3,
 .h3 {
@@ -155,6 +158,11 @@ a:focus, a:hover {color:#000;}
 a {
 	color:#0af;
 	text-decoration:underline;
+}
+
+a.tertiary{
+	color:#aaa;
+	font-size: .875em;
 }
 
 blockquote {
@@ -375,43 +383,48 @@ ul.listing li{
 	background-image: url( images/icon_img.gif );
 }
 
-.fileName[class~=PDF],
-.fileName[class~=pdf]{
+.fileName.pdf{
 	background-image: url(images/icon_pdf.gif);
 }
 
-.fileName[class~=DOC],
-.fileName[class~=doc]{
+.fileName.doc{
 	background-image: url(images/icon_doc.gif);
 }
 
-.fileName[class~=jpg],
-.fileName[class~=jpeg],
-.fileName[class~=JPG],
-.fileName[class~=JPEG]{
+.fileName.jpg,
+.fileName.jpeg{
 	background-image: url(images/icon_jpg.gif);
 }
 
-.fileName[class~=gif],
-.fileName[class~=GIF]{
-	background-image: url(images/icon_gif.gif);
-}
+.fileName.gif{ background-image: url(images/icon_gif.gif); }
 
-.fileName[class~=PNG],
-.fileName[class~=png]{
-	background-image: url(images/icon_png.gif);
-}
+.fileName.png{ background-image: url(images/icon_png.gif); }
 
 #nodeContent{
     margin: 2em 0 0 0;
+}
+
+.pageTitle{
+	margin-bottom: 2em;
 }
 
 .pageTitle .deleteLink{
 	margin: 2em 0 0 .5em;
 }
 
-.pageTitle{
-	margin: 0 0 0 0;
+.pageTitle .field-slug{
+	clear: both;
+}
+
+.pageTitle .field-slug label{
+	float: left;
+	text-decoration: underline;
+	line-height: 2;
+}
+
+.pageTitle .field-slug p.ipe{
+	margin: 0 0 0 72px !important;
+	border: 1px  #f00 solid;
 }
 
 a.icon{
@@ -818,10 +831,6 @@ input[type='radio']{
 
 .rows-2 .ipe{
 	min-height: 2em !important;
-}
-
-.rows-1 .ipe{
-	min-height: 1em !important;
 }
 
 input[type='radio']{

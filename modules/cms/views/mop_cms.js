@@ -32,10 +32,8 @@ mop.modules.CMS = new Class({
 		this.pageIdToLoad = pageId;
 		this.clearPage();
 		this.pageContent.spin();
-		new Request.JSON({
-			url: mop.util.getAppURL() + "cms/ajax/getPage/" + pageId,
-			onSuccess: this.onPageLoaded.bind( this )
-		}).send();
+		var url = mop.util.getAppURL() + "cms/ajax/getPage/" + pageId;
+		mop.util.JSONSend( url, null, { onSuccess: this.onPageLoaded.bind( this ) } );
  		mop.util.setObjectId( pageId );
 	},
 	
@@ -94,7 +92,10 @@ mop.modules.CMS = new Class({
 		
 		this.pageContent.set( 'html', html );
 		this.titleElement = this.element.getElement( ".pageTitle" );
-
+		
+		this.editSlugLink = this.titleElement.getElement( ".field-slug" );
+		this.editSlugLink.addEvent( "click", this.revealSlugEditField.bindWithEvent( this ) );
+		
 		if( this.titleElement ){
 			this.titleText = this.titleElement.getElement( "h2" ).get( "text" );
 			this.deletePageLink = this.titleElement.getElement( "a.deleteLink" );
@@ -105,6 +106,12 @@ mop.modules.CMS = new Class({
 				
 		this.initModules( this.pageContent );		
 
+	},
+	
+	revealSlugEditField: function( e ){
+		mop.util.stopEvent( e );
+//		this.titleElement.getElement( ".field-slug" ).retrieve( "Class" ).enterEditMode();
+		this.titleElement.getElement( ".field-slug .ipe" ).toggleClass("hidden");
 	},
 
 	postInitUIHook: function( ){

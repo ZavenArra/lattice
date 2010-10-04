@@ -8,11 +8,11 @@
 		<a class="icon deleteLink" href="#" title="Delete this page."></a>
 	<?endif;?>
 
-	<div class="ui-IPE fifthCol oneCol rows-1 field-slug">
-		<label>Page Slug</label>
-		<p class="ipe p"><?=$slug;?></p>
+	<div class="ui-IPE twoCol field-slug floatLeft	">
+		<label>Edit Slug</label>
+		<p class="ipe p hidden"><?=$slug;?></p>
 	</div>
-	
+
 	<div class="clear"></div>
 
 </div>

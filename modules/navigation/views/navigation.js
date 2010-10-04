@@ -220,7 +220,7 @@ mop.modules.navigation.Navigation = new Class({
 			objectToTraverse.each( function( childNode, anIndex ){
 				// Todo: Figure out recursion for opening deeplinks
 				var node;
-				switch( childNode.nodetype.toLowerCase() ){
+				switch( childNode.nodeType.toLowerCase() ){
 					case "leaf":
 						node = this.addLeafNode( aNode.id, childNode, whichTier );
 					break;
@@ -242,7 +242,7 @@ mop.modules.navigation.Navigation = new Class({
 			}, this );
 		}
 		
-		if( aNode.allowSort ) this.makeTierSortable( whichTier );
+		if( aNode.allowChildSort ) this.makeTierSortable( whichTier );
 		
 		this.navSlide.toElement( this.getTierElement( whichTier ) );
 
@@ -379,7 +379,7 @@ mop.modules.navigation.Navigation = new Class({
 	onObjectAdded: function( node, parentId, whichTier, placeHolder ){
 		placeHolder.destroy();
 		mop.HistoryManager.changeState( "pageId", node.id );
-		if( node.nodetype == "CATEGORY" || node.nodetype == "CONTAINER"){
+		if( node.nodeType == "CATEGORY" || node.nodeType == "CONTAINER"){
 			var objectElement = this.addCategoryNode( parentId, node, whichTier, this.addObjectPosition ).element;			
 		}else{
 			var objectElement = this.addLeafNode( parentId, node, whichTier, this.addObjectPosition ).element;			
@@ -543,7 +543,7 @@ mop.modules.navigation.Navigation = new Class({
 		// remove child from children array of parent node
 		if( parentRef ){
 			parentRef.children.each( function( child, index ){
-				console.log( "parentRef each loop", child.toString(), node.toString(), child );
+//				console.log( "parentRef each loop", child.toString(), node.toString(), child );
 				if( child == node.nodeData ) parentRef.children.erase( child );				
 			});	
 		}
@@ -608,8 +608,8 @@ mop.modules.navigation.Node = new Class({
 		this.nav = nav;
 		this.parentId = parentId;
 		this.nodeData = nodeData;
-		this.nodeType = nodeData.nodetype;
-		this.contentType = nodeData.contenttype;
+		this.nodeType = nodeData.nodeType;
+		this.contentType = nodeData.contentType;
 		this.id = nodeData.id;
 		this.tier = aTier;
 		this.build();

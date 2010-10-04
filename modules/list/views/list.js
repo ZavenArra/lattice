@@ -26,10 +26,10 @@ mop.modules.ListModule = new Class({
 		this.items = null;
 		this.items = [];
 		
-		this.sortable = ( this.getValueFromClassName( "sortable" ) != "false" ) ? this.getValueFromClassName( "sortable" ) : false;
+		this.allowChildSort = ( this.getValueFromClassName( "allowChildSort" ) != "true" ) ? false : true;
 		this.sortDirection = this.getValueFromClassName( "sortDirection" );
 
-		if( this.sortable ) this.makeSortable();
+		if( this.allowChildSort ) this.makeSortable();
 	},
 
 	toString: function(){
@@ -60,14 +60,14 @@ mop.modules.ListModule = new Class({
 	},
 	
 	toggleSortable: function(){
-		if( this.sortable ){ this.killSortable(); }else{ this.makeSortable(); }
+		if( this.allowChildSort ){ this.killSortable(); }else{ this.makeSortable(); }
 	},
 
 	initControls: function(){
 		// console.log( this.element.getElement( "#" + this.instanceName+"AddItemModal" ).retrieve("Class") );
 		this.controls = this.element.getChildren( ".controls" );
 		var addItemButton = this.controls.getElement( ".addItem" ).addEvent("click", this.addItem.bindWithEvent( this ) );//this.showModal.bindWithEvent( this, $( this.instanceName+"AddItemModal" ) ) );
-		if( this.sortable ){
+		if( this.allowChildSort ){
 			var saveSort = this.controls.getElement( ".saveSort" ).addEvent("click", this.saveSort.bindWithEvent( this ) );
 			saveSort = null;
 		}
@@ -75,7 +75,7 @@ mop.modules.ListModule = new Class({
 	},
 	
 	makeSortable: function(){
-		if( this.sortable && !this.sortableList ){
+		if( this.allowChildSort && !this.sortableList ){
 				this.sortableList = new mop.ui.Sortable(  this.listing, this, {
 				scrollElement: window,
 				clone:  true,
@@ -95,18 +95,18 @@ mop.modules.ListModule = new Class({
 					this.scroller.start();
 				}
 			});
-		}else if( this.sortable ){
+		}else if( this.allowChildSort ){
 			this.sortableList.attach();
 		}
 		this.oldSort = this.serialize();
 	},
 		
 	resumeSort: function(){
-		if( this.sortable && this.sortableList ) this.sortableList.attach();
+		if( this.allowChildSort && this.sortableList ) this.sortableList.attach();
 	},
 	
 	suspendSort: function(){
-		if( this.sortable && this.sortableList ) this.sortableList.detach();
+		if( this.allowChildSort && this.sortableList ) this.sortableList.detach();
 	},
 	
 	killSortable: function(){
@@ -123,7 +123,7 @@ mop.modules.ListModule = new Class({
 	},
 	
 	submitSortOrder: function( newOrder ){
-		if( this.sortable && this.oldSort != newOrder ){
+		if( this.allowChildSort && this.oldSort != newOrder ){
 			$clear( this.submitDelay );
 			this.submitDelay = null;
 			this.JSONSend( "saveSortOrder", { sortorder: newOrder } );
@@ -170,7 +170,7 @@ mop.modules.ListModule = new Class({
 	insertItem: function( anElement ){
 		var where = ( this.sortDirection == "DESC" )? "top" : "bottom";
 		this.listing.grab( anElement, where );
-		if( this.sortable && this.sortableList ) this.sortableList.addItems( anElement );
+		if( this.allowChildSort && this.sortableList ) this.sortableList.addItems( anElement );
 
 		// reset scrollContexts
 		var listItemInstance = anElement.retrieve("Class");
@@ -182,7 +182,7 @@ mop.modules.ListModule = new Class({
 		anElement.tween( "opacity", 1 );
 	 	anElement.getElement(".itemControls" ).getElement(".delete").removeClass("hidden");
 
-		if( this.sortable != null ) this.onOrderChanged();
+		if( this.allowChildSort != null ) this.onOrderChanged();
 		listItemInstance = where = null;
 	},
 
@@ -238,7 +238,7 @@ mop.modules.ListModule = new Class({
 		delete this.listing;
 		delete this.oldSort;
 		delete this.scroller;
-		delete this.sortable;
+		delete this.allowChildSort;
 		delete this.sortDirection;
 		delete this.submitDelay;
 		
@@ -249,7 +249,7 @@ mop.modules.ListModule = new Class({
 		this.listing = null;
 		this.oldSort = null;
 		this.scroller = null;
-		this.sortable = null;
+		this.allowChildSort = null;
 		this.sortDirection = null;
 		this.submitDelay = null;
 		
