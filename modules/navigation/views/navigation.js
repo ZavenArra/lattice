@@ -221,7 +221,7 @@ mop.modules.navigation.Navigation = new Class({
 				// Todo: Figure out recursion for opening deeplinks
 				var node;
 				switch( childNode.nodeType.toLowerCase() ){
-					case "leaf":
+					case "document":
 						node = this.addLeafNode( aNode.id, childNode, whichTier );
 					break;
 					case "category":

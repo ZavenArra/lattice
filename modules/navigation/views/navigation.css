@@ -102,13 +102,13 @@ ul.breadCrumb li a:hover{
 	float: right;
 }
 
-#navigation ul li ul li.leaf,
+#navigation ul li ul li.document,
 #navigation ul li ul li.category{
 	cursor:pointer;
 }
 
-#navigation ul li ul li.leaf:hover,
-#navigation ul li ul li.leaf[ class~="active" ],
+#navigation ul li ul li.document:hover,
+#navigation ul li ul li.document[ class~="active" ],
 #navigation ul li ul li.category:hover,
 #navigation ul li ul li.category[ class~="active" ]{
 	cursor: pointer;
@@ -135,14 +135,14 @@ ul.breadCrumb li a:hover{
 	background: url( images/icon_spinner.gif ) 1em .5em no-repeat;
 }
 
-#navigation li.leaf h5{
+#navigation li.document h5{
 	background-image: url( images/icon_leaf.png );
 	background-position: 1em .5em;
 	background-repeat: no-repeat;
 }
 
-#navigation li.leaf[class ~= "active"] h5,
-#navigation li.leaf:hover h5{
+#navigation li.document.active h5,
+#navigation li.document:hover h5{
 	background-image: url( images/icon_leaf_hover.png );
 	background-position: 1em .5em;
 	background-repeat: no-repeat;
@@ -154,7 +154,7 @@ ul.breadCrumb li a:hover{
 	background-repeat: no-repeat;
 }
 
-#navigation li.category[class ~= "active"] h5,
+#navigation li.category.active h5,
 #navigation li.category:hover h5{
 	background-image: url( images/icon_category_hover.png );	
 	background-position: 1em .5em;
