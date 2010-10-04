@@ -15,13 +15,13 @@ class Navigation_Controller extends Controller{
 		'published'=>'published',
 	);
 	public $navDataFields_template = array(
-		'nodetype'=>'nodetype',
-		'contenttype'=>'contenttype',
-		'allowDelete'=>'allowDelete',
-		'allowTogglePublish'=>'allowTogglePublish',
-		'landing'=>'landing',
-		'allowSort'=>'allowChildSort',
-		'addableObjects'=>'addableObjects',
+		'nodeType',
+		'contentType',
+		'allowDelete',
+		'allowTogglePublish',
+		'landing',
+		'allowChildSort',
+		'addableObjects',
 	);
 	/*should title be stored in the PAGE table instead?*/
 	private $navDataFields_content = array(
@@ -108,8 +108,8 @@ class Navigation_Controller extends Controller{
 		foreach($this->navDataFields_page as $send=>$field){
 			$sendItem[$send] = $item->$field;
 		}
-		foreach($this->navDataFields_template as $send=>$field){
-			$sendItem[$send] = $item->template->$field;
+		foreach($this->navDataFields_template as $field){
+			$sendItem[$field] = $item->template->$field;
 		}
 
 		//this part should get removed or not
@@ -152,7 +152,7 @@ class Navigation_Controller extends Controller{
 			$sendItemFolders = array(); //these will go first
 			$sendItemObjects = array();
 			foreach($iitems as $child){
-				if($child->template->nodetype == 'CONTAINER'){
+				if($child->template->nodeType == 'CONTAINER'){
 					//we might be skipping this node
 					$parent = ORM::Factory($this->objectModel, $parentid); //it would be nice to be able to just look up the heap
 					//echo 'cms.templates.'.$parent->template->templatename.'.parameters.'.$child->template->templatename.'.display';
@@ -183,7 +183,7 @@ class Navigation_Controller extends Controller{
 				}
 				$sendItem['children'] = $children;
 
-				if($child->template->nodetype=='CATEGORY' || $child->template->nodetype=='CONTAINER'){
+				if($child->template->nodeType=='CATEGORY' || $child->template->nodeType=='CONTAINER'){
 					$sendItemFolders[] = $sendItem;
 				} else {
 					$sendItemObjects[] = $sendItem;
