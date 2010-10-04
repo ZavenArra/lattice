@@ -15,4 +15,4 @@
 
 <!ELEMENT content ANY >
 
-<!ELEMENT title (CDATA) >
+<!ELEMENT title (#PCDATA) >
