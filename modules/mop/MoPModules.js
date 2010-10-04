@@ -157,10 +157,10 @@ mop.modules.Module = new Class({
 		if( !UIElements || UIElements.length == 0  ) return null;
 
 		UIElements.each( function( anElement ){
-		    console.log( "initUI", anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) ) )
+//		    console.log( "initUI", anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) ) )
 		    var UIElement = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  ]( anElement, this, this.options );
 		    this.UIElements.set( UIElement.fieldName, UIElement );
-		    console.log( "initUI", UIElement.fieldName );
+//		    console.log( "initUI", UIElement.fieldName );
 		}, this );
 		
 		if( this.postInitUIHook ) this.postInitUIHook();
@@ -190,7 +190,7 @@ mop.modules.Module = new Class({
 	},
 	
 	destroyUIElements: function(){
-		console.log( "destroyUIElements", this, this.instanceName, this.UIElements );
+//		console.log( "destroyUIElements", this, this.instanceName, this.UIElements );
 		if( !this.UIElements || !this.UIElements.getLength() || this.UIElements.getLength() == 0  ) return;
 		this.UIElements.each( function( aUIElement ){
 			var key = aUIElement.fieldName;
@@ -200,7 +200,7 @@ mop.modules.Module = new Class({
 			aUIElement = null;
 		}, this );
 		
-		console.log( "post destroyUIElements ", this.UIElements );
+//	console.log( "post destroyUIElements ", this.UIElements );
 
 	},
 	

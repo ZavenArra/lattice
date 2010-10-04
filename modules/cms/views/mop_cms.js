@@ -30,7 +30,7 @@ mop.modules.CMS = new Class({
 	loadPage: function ( pageId ){
 //		console.log( this.toString(), "loadPage", pageId );
 		this.pageIdToLoad = pageId;
-		this.clearPage( pageId );
+		this.clearPage();
 		this.pageContent.spin();
 		new Request.JSON({
 			url: mop.util.getAppURL() + "cms/ajax/getPage/" + pageId,
@@ -39,7 +39,7 @@ mop.modules.CMS = new Class({
  		mop.util.setObjectId( pageId );
 	},
 	
-	clearPage: function( pageId ){
+	clearPage: function(){
 //	    console.log( "clearPage", pageId );
 //		if( mop.util.getObjectId() == pageId ) return;
 		this.destroyChildModules( this.pageContent );
@@ -98,7 +98,7 @@ mop.modules.CMS = new Class({
 		if( this.titleElement ){
 			this.titleText = this.titleElement.getElement( "h2" ).get( "text" );
 			this.deletePageLink = this.titleElement.getElement( "a.deleteLink" );
-			if( this.deletePageLink ) this.deletePageLink.addEvent( "click", this.deleteNode.bindWithEvent( this, "page" ) );
+			if( this.deletePageLink ) this.deletePageLink.addEvent( "click", this.onDeleteNodeReleased.bindWithEvent( this ) );
 		}
 		
 		this.uiElements = this.initUI( this.pageContent );
@@ -111,7 +111,7 @@ mop.modules.CMS = new Class({
 	    
 		this.UIElements.each( function( aUIElement ){
 			if( aUIElement.element.hasClass( "field-title" ) ){
-        	    console.log( "postInitUIHook" , aUIElement, aUIElement.element );
+        	//    console.log( "postInitUIHook" , aUIElement, aUIElement.element );
 			    aUIElement.registerOnCompleteCallBack( this.renameNode.bind( this ) );
 			}
 		}, this );
@@ -154,6 +154,18 @@ mop.modules.CMS = new Class({
 //			onComplete: this.onPublishedStatusToggled
 		}).send();
 	},
+	
+	/*
+	Function: onDeleteNodeReleased
+	Event handler for delete link in pagetitle area
+	Argument: event from bound link
+	*/
+	onDeleteNodeReleased: function( e ){
+		mop.util.stopEvent( e );
+//		console.log( "onDeleteNodeReleased", mop.objectId );
+		this.deleteNode( mop.objectId, this.titleText );
+		this.childModules.get( "navigation" ).removeNode( mop.objectId, true );
+	},
 
 	/*
 	Function: deleteNode
@@ -161,17 +173,13 @@ mop.modules.CMS = new Class({
 	Argument: pageId {Number}
 	Callback: onNodeDeleted
 	*/
-	deleteNode: function( e, from ){
-	    console.log( "deleteNode", this.toString(), from );
-		mop.util.stopEvent( e );		
-		var confirmed = confirm( "Are you sure you wish to delete the node: “" + this.titleText + "”?\nThis cannot be undone." );
+	deleteNode: function( nodeId, titleText ){
+	    console.log( "deleteNode", this.toString() );
+		var confirmed = confirm( "Are you sure you wish to delete the node: “" + titleText + "”?\nThis cannot be undone." );
 		if( confirmed ){
-		    if( from == "page" ) this.childModules.get( "navigation" ).removeNode( mop.objectId, this );
-    		new Request.JSON({
-    			url: mop.util.getAppURL() + "ajax/cms/delete/"+mop.objectId,
-    			onComplete: this.clearPage.bind( this, mop.objectId )
-    		}).send();
-    	};
+			var url = mop.util.getAppURL() + "ajax/cms/delete/"+ nodeId;
+			mop.util.JSONSend( url, null, { onComplete: this.clearPage.bind( this ) })
+		}
 	}
 	
 });

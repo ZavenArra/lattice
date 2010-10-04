@@ -216,7 +216,29 @@ mop.ui.Sortable = new Class({
 			'width': element.getStyle('width'),
 			'height': element.getStyle('height')
 		}).inject( this.list ).position( element.getPosition() );
-	}
+	},
+	
+		clone: function(event,element,list){
+			var scroll = {x:0 ,y: 0};
+			element.getParents().each(function(el){
+				if(['auto','scroll'].contains(el.getStyle('overflow'))){
+					scroll = {
+						x: scroll.x + el.getScroll().x,
+						y: scroll.y + el.getScroll().y
+					}					
+				}
+			});
+			var position = element.getPosition();
+			
+			return element.clone().setStyles({
+				margin: '0px',
+				position: 'absolute',
+				visibility: 'hidden',
+				'width': element.getStyle('width'),
+				top: position.y + scroll.y,
+				left: position.x + scroll.x
+			}).inject(this.list);
+		}
 	
 });
 
@@ -316,9 +338,7 @@ mop.ui.UIElement = new Class({
 	initialize: function( anElement, aMarshal, options ) {
 
         this.parent( anElement, aMarshal, options );
-
-        console.log( "mop.uiUIElement", anElement, aMarshal, this.element.retrieve( "class" ) );
-        
+       
 		this.fieldName = this.getValueFromClassName( 'field' );
 
 		// if autosubmit is set in the class as autoSubmit-false then set to false, otherwise default to true
