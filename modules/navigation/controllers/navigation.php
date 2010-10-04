@@ -152,7 +152,7 @@ class Navigation_Controller extends Controller{
 			$sendItemFolders = array(); //these will go first
 			$sendItemObjects = array();
 			foreach($iitems as $child){
-				if($child->template->nodeType == 'CONTAINER'){
+				if(strtolower($child->template->nodeType) == 'container'){
 					//we might be skipping this node
 					$parent = ORM::Factory($this->objectModel, $parentid); //it would be nice to be able to just look up the heap
 					//echo 'cms.templates.'.$parent->template->templatename.'.parameters.'.$child->template->templatename.'.display';
@@ -183,7 +183,7 @@ class Navigation_Controller extends Controller{
 				}
 				$sendItem['children'] = $children;
 
-				if($child->template->nodeType=='CATEGORY' || $child->template->nodeType=='CONTAINER'){
+				if(strtolower($child->template->nodeType)=='category' || strtolower($child->template->nodeType)=='container'){
 					$sendItemFolders[] = $sendItem;
 				} else {
 					$sendItemObjects[] = $sendItem;
