@@ -58,7 +58,7 @@ class Navigation_Controller extends Controller{
 		id
 		identifier
 		published
-		nodetype
+		nodeType
 		contenttype	
 		allowAddCategory
 		allowAddLeaf

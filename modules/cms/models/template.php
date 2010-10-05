@@ -11,7 +11,7 @@ class Template_Model extends ORM {
    * Variable: nonmappedfield
    * Array of fields to not pass through to the content field mapping logic
    */
-  private $nonmappedfields = array('id', 'page_id', 'activity', 'loaded', 'templatename', 'nodetype');
+  private $nonmappedfields = array('id', 'page_id', 'activity', 'loaded', 'templatename', 'nodeType');
 
 	/*
 	 * Function: __get($column)
@@ -29,7 +29,7 @@ class Template_Model extends ORM {
 				return parent::__get($column);
 			}
 
-			if(parent::__get('nodetype')=='container'){
+			if(parent::__get('nodeType')=='container'){
 				//For lists, values will be on the 2nd level 
 				$xQuery =  sprintf('//list[@family="%s"]', parent::__get('templatename'));
 			} else {

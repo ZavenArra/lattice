@@ -118,7 +118,7 @@ Class ConfigSite_Controller extends Controller {
         echo "\ncreating for ".$template->getAttribute('name')."\n";
 				$tRecord = ORM::Factory('template');
 				$tRecord->templatename = $template->getAttribute('name');
-				$tRecord->nodetype = strtoupper($template->getAttribute('nodeType'));
+				$tRecord->nodeType = 'object';
 				$tRecord->save();
 			}
       echo 'using '.$tRecord->id."\n";
@@ -144,7 +144,7 @@ Class ConfigSite_Controller extends Controller {
 				case 'list':
 					$ltRecord = ORM::Factory('template');
 					$ltRecord->templatename = $item->getAttribute('family');
-					$ltRecord->nodetype = 'container';
+					$ltRecord->nodeType = 'container';
 					$ltRecord->save();
 					break;
 

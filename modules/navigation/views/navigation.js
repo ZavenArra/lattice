@@ -220,7 +220,7 @@ mop.modules.navigation.Navigation = new Class({
 			objectToTraverse.each( function( childNode, anIndex ){
 				// Todo: Figure out recursion for opening deeplinks
 				var node;
-				switch( childNode.nodeType.toLowerCase() ){
+				switch( childNode.contentType.toLowerCase() ){
 					case "document":
 						node = this.addLeafNode( aNode.id, childNode, whichTier );
 					break;
@@ -379,7 +379,7 @@ mop.modules.navigation.Navigation = new Class({
 	onObjectAdded: function( node, parentId, whichTier, placeHolder ){
 		placeHolder.destroy();
 		mop.HistoryManager.changeState( "pageId", node.id );
-		if( node.nodeType == "category" || node.nodeType == "container"){
+		if( node.nodeType == "container"){
 			var objectElement = this.addCategoryNode( parentId, node, whichTier, this.addObjectPosition ).element;			
 		}else{
 			var objectElement = this.addLeafNode( parentId, node, whichTier, this.addObjectPosition ).element;			

@@ -19,7 +19,6 @@
 <!ELEMENT template (elements?,addableObject*,components*) >
 <!ATTLIST template
 	name				CDATA #REQUIRED
-	nodeType			CDATA #REQUIRED
 	contentType   CDATA  "document"
 	allowDelete 		(true|false) "true"
 	allowTogglePublish	(true|false) "true"	
