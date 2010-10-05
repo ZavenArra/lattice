@@ -6,19 +6,19 @@
 	<templates>
 
 <!-- HOME -->
-		<template name="basicCategory" nodeType="category" allowChildSort="false" allowDelete="false" allowTogglePublish="false">
+		<template name="basicCategory" contentType="category" allowChildSort="false" allowDelete="false" allowTogglePublish="false">
 			<addableObject templateName="article" addText="Add an Article" />
 			<addableObject templateName="anotherCategory" addText="Add a Category" />
 		</template>
 
-		<template name="anotherCategory" nodeType="category" allowChildSort="false" allowDelete="true" allowTogglePublish="false">
+		<template name="anotherCategory" contentType="category" allowChildSort="false" allowDelete="true" allowTogglePublish="false">
 			<addableObject templateName="article" addText="Add an Article" />
 		</template>
 		
-		<template name="article" nodeType="document" allowDelete="true" >
+		<template name="article" contentType="document" allowDelete="true" >
 		</template>
 
-		<template name="singleIPE" nodeType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="singleIPE" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 
 			<elements>
 				<ipe field="singleIPE" label="single IPE" rows="1"/>
@@ -30,13 +30,13 @@
 		
 		</template>
 
-		<template name="multilineIPE" nodeType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="true">
+		<template name="multilineIPE" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="true">
 			<elements>
 				<ipe field="multilineIPE" label="MultiLine IPE" rows="10"/>
 			</elements>
 		</template>
 		
-		<template name="singleRadioGroup" nodeType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="singleRadioGroup" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
         <radioGroup field="singleRadioGroup" groupLabel="Single Radio Group">
           <radio label="One" value="1"/>
@@ -46,25 +46,25 @@
 			</elements>
 		</template>
 
-		<template name="singleCheckbox" nodeType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="singleCheckbox" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<checkbox field="singleCheckbox" label="Single Checkbox"/>
 			</elements>
 		</template>
 
-		<template name="singleDate" nodeType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="singleDate" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<date field="singleDate" label="Single Date"/>
 			</elements>
 		</template>
 
-		<template name="singleTime" nodeType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="singleTime" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<time field="singleTime" label="Single Time"/>
 			</elements>
 		</template>
 
-		<template name="simpleListModule" nodeType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="simpleListModule" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<list family="simplelist" label="Simple List Module" display="inline">
 					<addableObject templateName="simpleListModuleItem"  addText="Add a field"/>
@@ -72,14 +72,14 @@
 			</elements>
 		</template>
 
-		<template name="simpleListModuleItem" nodeType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="simpleListModuleItem" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
 				<ipe field="description" label="Description"/>
 			</elements>
 		</template>
 			
-		<template name="imageListModule" nodeType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="imageListModule" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<list family="imageList" label="Image List" display="inline">
 					<addableObject templateName="imageListItem" addText="Add an image"/>
@@ -87,7 +87,7 @@
 			</elements>	
 		</template>
 		
-		<template name="imageListItem" nodeType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="imageListItem" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
 				<ipe field="description" label="Description"/>		
@@ -97,7 +97,7 @@
 			</elements>
 		</template>
 		
-		<template name="fileListModule" nodeType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="fileListModule" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<list family="fileList" label="File List" display="inline" >
             <addableObject templateName="fileListItem" addText="Add a field"/>
@@ -105,7 +105,7 @@
       </elements>
 		</template>
 
-		<template name="fileListItem" nodeType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="fileListItem" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
                                 <ipe field="description" label="Description"/>
@@ -118,7 +118,7 @@
 			</elements>
 		</template>
 	
-		<template name="complexlistmodulepage" nodeType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="complexlistmodulepage" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 
 			</elements>
