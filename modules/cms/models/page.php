@@ -252,6 +252,15 @@ class Page_Model extends ORM {
 		return $children;
 	}
 
+	public function getChildren(){
+
+		$children = ORM::Factory('page')
+			->where('parentid', $this->id)
+			->where('activity IS NULL')
+			->orderby('sortorder')
+			->find_all();
+		return $children;
+	}
 	public function getNextPublishedPeer(){
 		$next = ORM::Factory('page')
 			->where('parentid', $this->parentid)

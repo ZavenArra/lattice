@@ -52,9 +52,7 @@ class List_Controller extends Controller{
 		}
 
 		//get the dbmap
-		if(! $this->sortdirection = Kohana::config('cms.lists.'.$this->listClass.'.sortdirection')) {
-			$this->sortdirection = Kohana::config('list.sortdirection');
-		}
+		$this->sortdirection = mop::config('backend', sprintf('//list[@family="%s"]', $this->listClass))->item(0)->getAttribute('sortDirection');
 
 		//TODO:read the config and setupd
 	}
@@ -68,8 +66,6 @@ class List_Controller extends Controller{
 			$this->view = new View('list');		
 		}
 
-		$this->view->label = mop::config('backend', sprintf('//modules[@class="%s"]/label',$this->listClass));
-
 		$this->buildIndexData();
 		return $this->render();
 	}
@@ -77,7 +73,7 @@ class List_Controller extends Controller{
 
 	public function buildIndexData(){
 
-		$listMembers = $this->containerObject->getPublishedChildren();
+		$listMembers = $this->containerObject->getChildren();
 
 		$html = '';
 		foreach($listMembers as $object){
@@ -221,39 +217,6 @@ class List_Controller extends Controller{
 		$html = $itemt->render();
 
 		return $html;
-	}
-
-	public function makeFileArgs($type, $id=null){
-		$maxlength = ini_get('upload_max_filesize');
-		if(!strpos($maxlength, 'M')){
-			throw new Kohana_User_Exception('invalid upload_max_filesize', 'invalid upload_max_filesize');
-		}
-
-		$maxlength = substr($maxlength, 0, -1) * 1024 *1024;
-		$args = array();
-		$args['id']=null;
-		$args['ext'] = '';
-		$args['maxlength'] = $maxlength;
-		$args['extensions'] = Kohana::config($this->listClass.'.'.$type.'s'.'.file'.'.extensions');
-		if($id==null){
-			return $args;
-		}	
-		$file = ORM::Factory('file')->where('id', $id)->find(); //why is this find necessary?
-		if($file->loaded==true){
-			$args['id'] = $id; 
-			$parse = explode('.', $file->filename);
-			$args['ext'] = $parse[count($parse)-1];
-			$args['filename'] = $file->filename;
-			$thumbSrc = 'uithumb_'.$file->filename;
-			if(!file_exists('staging/application/media/'.$thumbSrc)){
-				$thumbSrc = $file->filename;
-			} 
-			$args['thumbSrc'] = $thumbSrc;
-			$size = @getimagesize($thumbSrc);
-			$args['width'] = $size[0];
-			$args['height'] = $size[1];
-		} 
-		return $args;
 	}
 
 	/*

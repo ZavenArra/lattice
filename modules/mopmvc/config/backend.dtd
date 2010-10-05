@@ -21,7 +21,7 @@
 	name				CDATA #REQUIRED
 	contentType   CDATA  "document"
 	allowDelete 		(true|false) "true"
-	allowTogglePublish	(true|false) "true"	
+	allowTogglePublish	(true|false) "true"
 	allowChildSort		(true|false) "true"
 >
 

@@ -376,7 +376,7 @@ class CMS {
 		$tSettings = $tSettings->item(0);
 		$newpage->published = 1;
 		if($tSettings){ //entry won't exist for Container objects
-			if($tSettings->getAttribute('allowTogglePublish')){
+			if($tSettings->getAttribute('allowTogglePublish') == 'true' ) {
 				$newpage->published = 0;
 			}
 		}
