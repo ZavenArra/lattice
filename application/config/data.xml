@@ -49,6 +49,10 @@
 	<item templateName="singleImage">
 		<title>Image Build Test</title>
 		<file>/Users/deepwinter/data/2.jpg</file>
+		<item templateName="singleImage">
+			<title>Image Build Test</title>
+			<file>/Users/deepwinter/data/2.jpg</file>
+		</item>
 	</item>
 </data>
 
