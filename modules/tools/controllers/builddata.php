@@ -70,7 +70,11 @@ class BuildData_Controller extends Controller {
 				case 'singleImage':
 						$path_parts = pathinfo($content->nodeValue);
 						$savename = cms::makeFileSaveName($path_parts['basename']);	
-						copy($content->nodeValue, cms::mediapath($savename).$savename);
+						if(file_exists($content->nodeValue)){
+							copy($content->nodeValue, cms::mediapath($savename).$savename);
+						} else {
+							echo "File does not exist {$content->nodeValue} \n";
+						}
 						$data[$field] = $savename;
 						break;
 				default:
