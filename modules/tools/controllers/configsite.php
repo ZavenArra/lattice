@@ -38,10 +38,11 @@ Class ConfigSite_Controller extends Controller {
 
 		//do some mop specific validation
 		$tNames = array();
+		$components = array();
 		foreach(mop::config('backend', '//template') as $template){
 			$name = $template->getAttribute('name');
 			if(in_array($name, $tNames)){
-				die("Duplication Template Name: $name \n");
+				die("Duplicate Template Name: $name \n");
 			}
 			$tNames[] = $name;
 
@@ -61,6 +62,22 @@ Class ConfigSite_Controller extends Controller {
 					$tNames[] = $name;
 				}
 			}
+
+			//check for components loops
+			$comps = array();
+			foreach(mop::config('backend','components/*', $template) as $component){
+				$comps[] = $component->getAttribute('templateName');	
+			}
+			if(in_array($name, $comps)){
+				die("Component Loop in $name \n");
+			} else {
+				$components[$name] = $comps;
+			}
+		}
+
+		//now check for cycles in $components
+		foreach($components as $name => $comps){
+			//may need a recursive function
 		}
 
 
@@ -127,7 +144,7 @@ Class ConfigSite_Controller extends Controller {
 				case 'list':
 					$ltRecord = ORM::Factory('template');
 					$ltRecord->templatename = $item->getAttribute('family');
-					$ltRecord->nodetype = 'CONTAINER';
+					$ltRecord->nodetype = 'container';
 					$ltRecord->save();
 					break;
 

@@ -149,7 +149,7 @@ class Navigation_Controller extends Controller{
 		$items->where('activity IS NULL');
 		$items->orderBy('sortorder');
 		if($iitems = $items->find_all()){
-			$sendItemFolders = array(); //these will go first
+			$sendItemContainers = array(); //these will go first
 			$sendItemObjects = array();
 			foreach($iitems as $child){
 				if(strtolower($child->template->nodeType) == 'container'){
@@ -183,14 +183,14 @@ class Navigation_Controller extends Controller{
 				}
 				$sendItem['children'] = $children;
 
-				if(strtolower($child->template->nodeType)=='category' || strtolower($child->template->nodeType)=='container'){
-					$sendItemFolders[] = $sendItem;
+				if(strtolower($child->template->nodeType)=='container'){
+					$sendItemContainers[] = $sendItem;
 				} else {
 					$sendItemObjects[] = $sendItem;
 				}
 			}
 			//this puts the folders first
-			$sendItemObjects = array_merge($sendItemFolders, $sendItemObjects);
+			$sendItemObjects = array_merge($sendItemContainers, $sendItemObjects);
 			return $sendItemObjects;
 		} else {
 			return array();

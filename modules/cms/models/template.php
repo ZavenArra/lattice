@@ -29,7 +29,7 @@ class Template_Model extends ORM {
 				return parent::__get($column);
 			}
 
-			if(parent::__get('nodetype')=='CONTAINER'){
+			if(parent::__get('nodetype')=='container'){
 				//For lists, values will be on the 2nd level 
 				$xQuery =  sprintf('//list[@family="%s"]', parent::__get('templatename'));
 			} else {
