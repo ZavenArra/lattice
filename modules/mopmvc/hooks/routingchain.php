@@ -1,5 +1,6 @@
 <?
 
+Event::add('system.ready', array('MopReadyHook', 'MopReady'));
 
 Event::clear('system.routing');
 Event::add('system.routing', array('Router', 'find_uri'));
