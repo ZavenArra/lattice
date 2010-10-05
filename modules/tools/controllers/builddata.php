@@ -82,11 +82,11 @@ class BuildData_Controller extends Controller {
 			$data['published'] = true;
 			echo 'parent'.$parentId;
 			print_r($data);
-			cms::addObject($parentId, $template->id, $data);
+			$objectId = cms::addObject($parentId, $template->id, $data);
 
 			//do recursive if it has children
       if(mop::config('data', 'item', $item) ){
-        $this->insertData($object->id,  $item);
+        $this->insertData($objectId,  $item);
       }
 		}
 
