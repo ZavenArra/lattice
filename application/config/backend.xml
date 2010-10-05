@@ -64,6 +64,18 @@
 			</elements>
 		</template>
 
+		<template name="singleFile" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+			<elements>
+				<singleFile field="file" label="Single File"/>
+			</elements>
+		</template>
+
+		<template name="singleImage" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+			<elements>
+				<singleImage field="file" label="Single Image"/>
+			</elements>
+		</template>
+
 		<template name="simpleListModule" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
 				<list family="simplelist" label="Simple List Module" display="inline">

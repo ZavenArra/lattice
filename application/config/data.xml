@@ -41,6 +41,15 @@
 	<item templateName="fileListModule">
 		<title>File List</title>
 	</item>
+
+	<item templateName="singleFile">
+		<title>File Build Test</title>
+		<file>/Users/deepwinter/ndocTemplates.txt</file>
+	</item>
+	<item templateName="singleImage">
+		<title>Image Build Test</title>
+		<file>/Users/deepwinter/data/2.jpg</file>
+	</item>
 </data>
 
 
