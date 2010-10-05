@@ -344,30 +344,14 @@ class Page_Model extends ORM {
 		Kohana::log('info', 'proceeding with saveFile');
 
 		$file = ORM::Factory('file', $this->contenttable->$field);
-		
-		$xarray = explode('.', $postFiles[$field]['name']);
-		$nr = count($xarray);
-		$ext = $xarray[$nr-1];
-		$name = array_slice($xarray, 0, $nr-1);
-		$name = implode('.', $name);
-		$i=1;
-		if(!file_exists(cms::mediapath()."$name".'.'.$ext)){
-			$i='';
-		} else {
-			for(; file_exists(cms::mediapath()."$name".$i.'.'.$ext); $i++){}
-		}
 
-		//clean up extension
-		$ext = strtolower($ext);
-		if($ext=='jpeg'){ $ext = 'jpg'; }
-
-		$savename = $name.$i.'.'.$ext;
+		$savename = cms::makeFileSaveName($postFiles[$field]['name']);
 
 		if(isset($postFiles['savelocalfile'])){ //allow bypass of move_uploaded_file
 			copy(isset($postFiles['savelocalfile']), cms::mediapath().$savename);
 		} else if(!move_uploaded_file($postFiles[$field]['tmp_name'], cms::mediapath().$savename)){
 			$result = array(
-					'result'=>'failed',
+				'result'=>'failed',
 					'error'=>'internal error, contact system administrator',
 				);
 			return $result;

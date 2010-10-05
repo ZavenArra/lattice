@@ -33,6 +33,7 @@ class BuildData_Controller extends Controller {
 			$template = ORM::Factory('template', $item->getAttribute('templateName'));
       if(!$template->id){
 				die("Bad template name ".$item->getAttribute('templateName')."\n");
+				//or course just go ahead and insert here.
 			}
 
 			//$object->template_id = $template->id;
@@ -43,30 +44,44 @@ class BuildData_Controller extends Controller {
 			$data = array();
 			foreach(mop::config('data', '*', $item ) as $content){
 				echo 'Field'.$content->tagName."\n";
-				if($content->tagName == 'item'){
-					//do nothing, catch downstairs
-					continue;
+				switch($content->tagName){
+				case 'item':
+					//do nothing, catch later
+					continue(2);
+				case 'title':
+				case 'slug':
+					$data[$content->tagName] = $content->nodeValue;	
+					continue(2);
+				default:
+					break;
 				}
+
+
         $field = $content->tagName;
 				//need to look up field and switch on field type	
-				$fieldInfo = mop::config('backend', sprintf('//template[@name="%s"]/*[@name="%s"]', $item->getAttribute('templateName'), $content->tagName));
+				$fieldInfo = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->tagName))->item(0);
 				if(!$fieldInfo){
-					die("Bad field!\n". sprintf('//template[@name="%s"]/*[@name="%s"]', $item->getAttribute('templateName'), $content->tagName));
+					die("Bad field!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->tagName));
 				}
+
+				//special setup based on field type
 				switch($fieldInfo->tagName){
 				case 'singleFile':
-					case 'singleImage':
-
+				case 'singleImage':
+						$path_parts = pathinfo($content->nodeValue);
+						$savename = cms::makeFileSaveName($path_parts['basename']);	
+						copy($content->nodeValue, cms::mediapath($savename).$savename);
+						$data[$field] = $savename;
 						break;
-					default:
+				default:
 						$data[$field] = $content->nodeValue;
 						break;
-
 				}
 
 			}
 			$data['published'] = true;
 			echo 'parent'.$parentId;
+			print_r($data);
 			cms::addObject($parentId, $template->id, $data);
 
 			//do recursive if it has children
@@ -74,6 +89,8 @@ class BuildData_Controller extends Controller {
         $this->insertData($object->id,  $item);
       }
 		}
+
+		//and regenerate all files
 	}
 
 }

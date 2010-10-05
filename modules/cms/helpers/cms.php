@@ -308,8 +308,8 @@ class CMS {
 		$parameters['imagesizes'] = $uiimagesize;
 
 		foreach(mop::config('backend', '//template') as $template){
-			foreach(mop::config('backend', '/elements', $template) as $element){
-				if($element->getAttribute('type') == 'singleImage'){
+			foreach(mop::config('backend', 'elements/*', $template) as $element){
+				if($element->tagName == 'singleImage'){
 					$objects = ORM::Factory('template', $template->getAttribute('name'))->getPublishedMembers();
 					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
@@ -389,24 +389,42 @@ class CMS {
 
 		//Add defaults to content table
 		$newtemplate = ORM::Factory('template', $newpage->template_id);
-		/*
-		 * this little tidbit is no longer supported
-		 * the idea was to be able to configure content defaults on adding
-		 * not really used too often
-		 */
-		/*
-		$contentDefaults = Kohana::config('cms.templates.'.$newpage->template->templatename.'.defaults');
-		if(is_array($contentDefaults) && count($contentDefaults)){
-			foreach($contentDefaults as $field=>$value){
-				$newpage->contenttable->$field = $value;
-			}.$item->getAttribute('templateName')
-			$newpage->contenttable->save();
-		}
-		 */
 
 		//add submitted data to content table
 		foreach($data as $field=>$value){
-			$newpage->contenttable->$field = $data[$field];
+			//need to switch here on type of field
+			
+			switch($field){
+			case 'title':
+			case 'slug':
+					$newpage->contenttable->$field = $data[$field];
+					continue(2);
+			}
+
+			$fieldInfo = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $template->templatename, $field))->item(0);
+			if(!$fieldInfo){
+				die("Bad field!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $template->templatename, $field));
+			}
+			switch($fieldInfo->tagName){
+			case 'singleFile':
+			case 'singleImage':
+				$file = ORM::Factory('file');
+				$file->filename = $value;			
+				$file->save();
+				$newpage->contenttable->$field = $file->id;
+				break;
+			case 'object':
+				//not sure how to handle this!
+				//probably just assume that $value is an array to put into object
+				//well actually it's just another call to cms::addObject
+				$oTemplate = ORM::Factory('template', $field);
+				cms::addObject($newpage->id, $oTemplate->id ,$value);
+				break;
+
+			default:
+				$newpage->contenttable->$field = $data[$field];
+				break;
+			}
 		}
 		$newpage->contenttable->save();
 
@@ -439,7 +457,25 @@ class CMS {
 		return $newpage->id;
 	}
 
+	public function makeFileSaveName($filename){
+		$xarray = explode('.', $filename);
+		$nr = count($xarray);
+		$ext = $xarray[$nr-1];
+		$name = array_slice($xarray, 0, $nr-1);
+		$name = implode('.', $name);
+		$i=1;
+		if(!file_exists(cms::mediapath()."$name".'.'.$ext)){
+			$i='';
+		} else {
+			for(; file_exists(cms::mediapath()."$name".$i.'.'.$ext); $i++){}
+		}
 
+		//clean up extension
+		$ext = strtolower($ext);
+		if($ext=='jpeg'){ $ext = 'jpg'; }
+
+		return $name.$i.'.'.$ext;
+	}
 
 }
 
