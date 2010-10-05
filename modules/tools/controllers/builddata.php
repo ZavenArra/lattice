@@ -53,7 +53,17 @@ class BuildData_Controller extends Controller {
 				if(!$fieldInfo){
 					die("Bad field!\n". sprintf('//template[@name="%s"]/*[@name="%s"]', $item->getAttribute('templateName'), $content->tagName));
 				}
-				$data[$field] = $content->nodeValue;
+				switch($fieldInfo->tagName){
+				case 'singleFile':
+					case 'singleImage':
+
+						break;
+					default:
+						$data[$field] = $content->nodeValue;
+						break;
+
+				}
+
 			}
 			$data['published'] = true;
 			echo 'parent'.$parentId;
