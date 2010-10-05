@@ -335,7 +335,7 @@ class Page_Model extends ORM {
 	}
 
 
-	public function saveFile($field, $postFiles){
+	public function saveFile($field, $postFileVars){
 		//check for valid file upload
 		if(!isset($field)){
 			Kohana::log('error', 'No field in Post');
@@ -343,13 +343,16 @@ class Page_Model extends ORM {
 		}
 		Kohana::log('info', 'proceeding with saveFile');
 
+
+		//consolidate extension switching
+
 		$file = ORM::Factory('file', $this->contenttable->$field);
 
-		$savename = cms::makeFileSaveName($postFiles[$field]['name']);
+		$savename = cms::makeFileSaveName($postFileVars['name']);
 
-		if(isset($postFiles['savelocalfile'])){ //allow bypass of move_uploaded_file
-			copy(isset($postFiles['savelocalfile']), cms::mediapath().$savename);
-		} else if(!move_uploaded_file($postFiles[$field]['tmp_name'], cms::mediapath().$savename)){
+		if(isset($postFileVars['savelocalfile'])){ //allow bypass of move_uploaded_file
+			copy(isset($postFileVars['savelocalfile']), cms::mediapath().$savename);
+		} else if(!move_uploaded_file($postFileVars[$field]['tmp_name'], cms::mediapath().$savename)){
 			$result = array(
 				'result'=>'failed',
 					'error'=>'internal error, contact system administrator',
@@ -381,34 +384,21 @@ class Page_Model extends ORM {
 				unlink(cms::mediapath().$oldFilename);
 			}
 		}
-		
 
-
-		$parse = explode('.', $savename);
-		$ext = $parse[count($parse)-1];
-    $src = cms::mediapath().$savename;
-		$result = array(
-			'id'=>$file->id,
-			'src'=>$src,
-			'filename'=>$savename,
-			'ext'=>$ext,
-			'result'=>'success',
-		);
-		Kohana::log('info', 'finished with saveFile '.var_export($result, true));
-		return $result;
+		return $file;
 
 	}
 
-	public function saveImage($field, $postFiles, $parameters){
+	public function saveImage($field, $postFileVars, $parameters){
 		Kohana::log('info', 'Saving Image '.var_export($parameters, true) );
 		if(!isset($field)){
 			Kohana::log('error', 'No field in Post');
 			throw new Kohana_User_Exception('no field in POST', 'no field in POST');
 		}
 
-		if($postFiles['savelocalfile']){
-			$size = @getimagesize($postFiles['savelocalfile']);
-		} else if(!$size = @getimagesize($postFiles[$field]['tmp_name'])){
+		if($postFileVars['savelocalfile']){
+			$size = @getimagesize($postFileVars['savelocalfile']);
+		} else if(!$size = @getimagesize($postFileVars[$field]['tmp_name'])){
 			Kohana::log('error', 'Bad upload tmp image');
 			throw new Kohana_User_Exception('bad upload tmp image', 'bad upload tmp image');
 		}

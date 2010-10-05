@@ -80,6 +80,71 @@ class CMS {
 	}
 
 	/*
+	 *
+	 */
+	public function createdResizedImage($originalFilename, $newFilename, $width, $height, $forceDimension='width', $crop='false'){
+		//set up dimenion to key off of
+		switch($forceDimension){
+		case: 'width'
+			$keydimension = Image::WIDTH;
+			break;
+		case: 'height'
+			$keydimension = Image::HEIGHT;
+			break;
+		default:
+			$keydimension = Image::AUTO;
+			break;
+		}
+
+		$image = new Image(cms::mediapath().$originalFilename);
+		if($crop) {
+			//resample with crop
+			//set up sizes, and crop
+			if( ($image->width / $image->height) > ($image->height / $image->width) ){
+				$cropKeyDimension = Image::HEIGHT;
+			} else {
+				$cropKeyDimension = Image::WIDTH;
+			}
+			$image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
+			$image->quality($quality);
+			$image->save($newFilename);
+
+		} else {
+			//just do the resample
+			//set up sizes
+			$resizewidth = $width;
+			$resizeheight = $height;
+
+			if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
+				$osize = getimagesize(cms::mediapath().$imageFilename);
+				$horizontal = false;
+				if($osize[0] > $osize[1]){
+					//horizontal
+					$horizontal = true;	
+				}
+				$newsize = array($resizewidth, $resizeheight);
+				sort($newsize);
+				if($horizontal){
+					$resizewidth = $newsize[1];
+					$resizeheight = $newsize[0];
+				} else {
+					$resizewidth = $newsize[0];
+					$resizeheight = $newsize[1];
+				}
+			}
+
+			//maintain aspect ratio
+			//use the forcing when it applied
+			//forcing with aspectfolloworientation is gonna give weird results!
+			$image->resize($resizewidth, $resizeheight, $keydimension);
+
+			$image->quality($quality);
+			$image->save($newFilename);
+
+		}
+
+	}
+	/*
 	 * Functon: processImage($filename, $parameters)
 	 * Create all automatice resizes on this image
 	 */
@@ -108,9 +173,6 @@ class CMS {
 
 		//do the resizing
 		if(is_array($parameters)){
-			Kohana::log('info', 'poor man');
-			$image = new Image(cms::mediapath().$imageFilename);
-			Kohana::log('info', 'poor man');
 			foreach($parameters['imagesizes'] as $resize){
 
 				if(isset($resize['prefix']) && $resize['prefix']){
@@ -119,70 +181,17 @@ class CMS {
 					$prefix = '';
 				}
 				$newFilename = $prefix.$imageFilename;
-				$savename = cms::mediapath().$newFilename;
+				$saveName = cms::mediapath().$newFilename;
 
 				if(isset($resize['noresample']) && $resize['noresample']==true){
-					$image->save($savename);
+					//should already be saved!
 					continue;
 				}
 
-
-				//set up dimenion to key off of
-				if( isset($resize['forcewidth']) && $resize['forcewidth']){
-					$keydimension = Image::WIDTH;
-				} else if ( isset($resize['forceheight']) && $resize['forceheight']){
-					$keydimension = Image::HEIGHT;
-				} else {
-					$keydimension = Image::AUTO;
-				}
+				cms::resizeImage($imageFileName, $saveName, $width, $height, $forceDimension, $crop);
 
 
-				if(isset($resize['crop'])) {
-					//resample with crop
-					//set up sizes, and crop
-					if( ($image->width / $image->height) > ($image->height / $image->width) ){
-						$cropKeyDimension = Image::HEIGHT;
-					} else {
-						$cropKeyDimension = Image::WIDTH;
-					}
-					$image->resize($resize['width'], $resize['height'], $cropKeyDimension)->crop($resize['width'], $resize['height']);
-					$image->quality($quality);
-					$image->save($savename);
-
-
-				} else {
-					//just do the resample
-					//set up sizes
-					$resizewidth = $resize['width'];
-					$resizeheight = $resize['height'];
-
-					if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
-						$osize = getimagesize(cms::mediapath().$imageFilename);
-						$horizontal = false;
-						if($osize[0] > $osize[1]){
-							//horizontal
-							$horizontal = true;	
-						}
-						$newsize = array($resizewidth, $resizeheight);
-						sort($newsize);
-						if($horizontal){
-							$resizewidth = $newsize[1];
-							$resizeheight = $newsize[0];
-						} else {
-							$resizewidth = $newsize[0];
-							$resizeheight = $newsize[1];
-						}
-					}
-
-					//maintain aspect ratio
-					//use the forcing when it applied
-					//forcing with aspectfolloworientation is gonna give weird results!
-					$image->resize($resizewidth, $resizeheight, $keydimension);
-
-					$image->quality($quality);
-					$image->save($savename);
-
-					if(isset($oldFilename) && $newFilename != $prefix.$oldFilename){
+							if(isset($oldFilename) && $newFilename != $prefix.$oldFilename){
 						if(file_exists(cms::mediapath().$oldFilename)){
 							unlink(cms::mediapath().$oldFilename);
 						}
@@ -475,6 +484,56 @@ class CMS {
 		if($ext=='jpeg'){ $ext = 'jpg'; }
 
 		return $name.$i.'.'.$ext;
+	}
+
+	public function saveHttpPostFile($objectid, $field, $postFileVars){
+
+		$object = ORM::Factory('page', $objectid);
+		//check the file extension
+		$filename = $postFileVars['name'];
+		$ext = substr(strrchr($filename, '.'), 1);
+		switch($ext){
+		case 'jpeg':
+		case 'jpg':
+		case 'gif':
+		case 'png':
+		case 'JPEG':
+		case 'JPG':
+		case 'GIF':
+		case 'PNG':
+		case 'tif':
+		case 'tiff':
+		case 'TIF':
+		case 'TIFF':
+			Kohana::log('info', $object->template->templatename.$field);
+			$parameters = Kohana::config('cms_images.'.$object->template->templatename.'.'.$field.'.resize');
+
+			$resizes = mop::config('backend', sprintf('//template[@name="%s"]/elements/[field="%s"]/resize', 
+				$object->template->templatename,
+				$field,
+			));
+			$parameters = array();
+			foreach($resizes as $resize){
+				$parameters
+			}
+			
+			//check that the template does not have a uithumb set
+			if(1){
+				$uiresize = Kohana::config('cms.uiresize');
+				cms::createResizedImage($postFileVars[$field], $theThumbFileName, $width, $height, etc._);
+			}
+
+			if($parameters){
+				return $object->saveImage($field, $postFileVars, $parameters);
+			} else {
+				return $object->saveFile($field, $postFileVars);
+			}
+			break;
+
+		default:
+			return $object->saveFile($field, $postFileVars);
+		}
+
 	}
 
 }
