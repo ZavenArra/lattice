@@ -72,6 +72,7 @@ h6,
 
 .ipeField{
 	font-family: Georgia, Times, Serif;
+	padding: 0 !important; 
 }
 
 .disabled .ipe,
@@ -93,7 +94,7 @@ h6,
 	border: none;
 	font-family: Georgia, Times, Serif;
 	margin: 0 0 .5em 0;
-	padding: 4px 6px;
+	padding: 4px .5em;
 	background: #FFFAC4; 
 	color:#222;
 	min-height: 1.5em;
@@ -131,12 +132,6 @@ h4 img{
 
 p {
 	margin:0 0 2em 0; 
-}
-
-.displayField,
-.p{
-	font-size: 1em;
-	margin:0 0 2em 0;
 }
 
 p img.left {
@@ -290,12 +285,6 @@ ul.listing li{
 	background: url( ../../mopui/views/images/spinner.gif );
 }
 
-/*.ui-File .controls,
-.ui-ImageFile .controls{
-	margin: 1em 0!important;
-}
-*/
-
 .ui-FileElement .controls,
 .ui-File .controls,
 .ui-ImageFile .controls{
@@ -322,14 +311,12 @@ ul.listing li{
 .ui-FileElement .controls a:hover,
 .ui-File .controls a:hover,
 .ui-ImageFile .controls a:hover{
-/*	text-decoration: none;
-	background: #0af !important;
-*/	color: #000;
+	color: #000;
 }
 
 .ipeControls{
 	margin: 0 0 1em 0;
-	height:1.5em;
+	height: 1.5em;
 }
 
 .ui-FileElement img{
@@ -413,18 +400,22 @@ ul.listing li{
 }
 
 .pageTitle .field-slug{
+    margin: .5em 0 0 0;
 	clear: both;
 }
 
 .pageTitle .field-slug label{
 	float: left;
-	text-decoration: underline;
-	line-height: 2;
+	line-height: 2.25;
 }
 
-.pageTitle .field-slug p.ipe{
-	margin: 0 0 0 72px !important;
-	border: 1px  #f00 solid;
+.pageTitle .field-slug p.ipe,
+.pageTitle .field-slug .IPEForm{
+	margin: 0 0 0 46px !important;
+}
+
+.pageTitle .field-slug .IPEField{
+    width: 12em !important;
 }
 
 a.icon{
@@ -806,10 +797,6 @@ th.spinner{
 
 input[type='radio']{
 	margin-top: .5em;
-}
-
-#pageContent>.ui-IPE .ipe p{
-	min-height: 6em;
 }
 
 .rows-10 .ipe{

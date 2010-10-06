@@ -317,7 +317,7 @@ mop.ui.UIElement = new Class({
 		return mop.util.getValueFromClassName( key, this.element.get( "class" ) );
 	},
 
-	registerOnCompleteCallBack: function( func ){
+	registerOnCompleteCallback: function( func ){
 		this.onCompleteCallbacks.push( func );
 	},
 
@@ -3375,7 +3375,7 @@ mop.ui.Input = new Class({
 		this.inputElement.erase( "disabled" );
 		this.inputElement.removeEvents();
 		// this.inputElement.addEvent( "click", this.enterEditMode.bindWithEvent( this ) );
-		if( this.maxlength ) this.element.addEvent("keydown", this.checkForMaxLength.bindWithEvent( this ) );
+		if( this.maxlength ) this.element.addEvent( "keydown", this.checkForMaxLength.bindWithEvent( this ) );
 	},
 	
 	disableElement: function( e ){
@@ -3430,9 +3430,15 @@ mop.ui.IPE = new Class({
 
 	form: null,
 	
+	onLeaveEditModeCallbacks: [],
+	
 	options:{
 		messages: { clickToEdit: "click to edit." },
 		action: "savefield"
+	},
+
+	registerOnLeaveEditModeCallback: function( func ){
+		this.onLeaveEditModeCallbacks.push( func );
 	},
 
 	enableElement: function( e ){
@@ -3476,8 +3482,8 @@ mop.ui.IPE = new Class({
 	enterEditMode: function( e ){
 //		console.log( this.toString(), "enterEditMode", this.field );
 		mop.util.stopEvent( e );
-		if( this.marshal.suspendSort) this.marshal.suspendSort();
-		if( this.mode == "editing ") return false;
+		if( this.marshal.suspendSort ) this.marshal.suspendSort();
+		if( this.mode == "editing" ) return false;
 		this.mode = "editing";
 		
 		if( !this.form ){
@@ -3730,6 +3736,12 @@ mop.ui.IPE = new Class({
 
 		if( this.marshal.resumeSort ) this.marshal.resumeSort();
 
+		if( this.onLeaveEditModeCallbacks.length > 0 ){
+			for( var i = 0; i < this.onLeaveEditModeCallbacks.length; i++ ){
+				this.onLeaveEditModeCallbacks[i]( json, this );
+			}
+		}
+
 		this.ipeElement.setStyle( "display", "block" );
 		
 		this.destroyValidationSticky();
@@ -3739,8 +3751,12 @@ mop.ui.IPE = new Class({
 	},
 
 	destroy: function(){
+
 		delete this.oldValue;
 		delete this.submittedValue;
+		delete this.onLeaveEditModeCallbacks;
+		delete this.onCompleteCallbacks;
+		this.onCompleteCallbacks = this.onLeaveEditModeCallbacks = null;
 		this.clickEvent = null;
 		this.ipeElement.eliminate( "Class" );
 		this.ipeElement.destroy();
