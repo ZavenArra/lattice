@@ -11,14 +11,14 @@
 			<addableObject templateName="anotherCategory" addText="Add a Category" />
 		</template>
 
-		<template name="anotherCategory" contentType="category" allowChildSort="false" allowDelete="true" allowTogglePublish="false">
+		<template name="anotherCategory" contentType="category" allowChildSort="false" allowDelete="false" allowTogglePublish="false">
 			<addableObject templateName="article" addText="Add an Article" />
 		</template>
 		
 		<template name="article" contentType="document" allowDelete="true" >
 		</template>
 
-		<template name="singleIPE" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="singleIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 
 			<elements>
 				<ipe field="singleIPE" label="single IPE" rows="1"/>
@@ -30,13 +30,13 @@
 		
 		</template>
 
-		<template name="multilineIPE" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="true">
+		<template name="multilineIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="true">
 			<elements>
 				<ipe field="multilineIPE" label="MultiLine IPE" rows="10"/>
 			</elements>
 		</template>
 		
-		<template name="singleRadioGroup" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="singleRadioGroup" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
         <radioGroup field="singleRadioGroup" groupLabel="Single Radio Group">
           <radio label="One" value="1"/>
@@ -46,37 +46,37 @@
 			</elements>
 		</template>
 
-		<template name="singleCheckbox" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="singleCheckbox" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<checkbox field="singleCheckbox" label="Single Checkbox"/>
 			</elements>
 		</template>
 
-		<template name="singleDate" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="singleDate" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<date field="singleDate" label="Single Date"/>
 			</elements>
 		</template>
 
-		<template name="singleTime" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="singleTime" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<time field="singleTime" label="Single Time"/>
 			</elements>
 		</template>
 
-		<template name="singleFile" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="singleFile" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<singleFile field="file" label="Single File"/>
 			</elements>
 		</template>
 
-		<template name="singleImage" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="singleImage" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<singleImage field="file" label="Single Image"/>
 			</elements>
 		</template>
 
-		<template name="simpleListModule" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="simpleListModule" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<list family="simplelist" label="Simple List Module" display="inline">
 					<addableObject templateName="simpleListModuleItem"  addText="Add a field"/>
@@ -84,14 +84,14 @@
 			</elements>
 		</template>
 
-		<template name="simpleListModuleItem" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="simpleListModuleItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
 				<ipe field="description" label="Description"/>
 			</elements>
 		</template>
 			
-		<template name="imageListModule" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="imageListModule" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<list family="imageList" label="Image List" display="inline">
 					<addableObject templateName="imageListItem" addText="Add an image"/>
@@ -99,7 +99,7 @@
 			</elements>	
 		</template>
 		
-		<template name="imageListItem" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="imageListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
 				<ipe field="description" label="Description"/>		
@@ -109,7 +109,7 @@
 			</elements>
 		</template>
 		
-		<template name="fileListModule" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="fileListModule" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<list family="fileList" label="File List" display="inline" >
             <addableObject templateName="fileListItem" addText="Add a field"/>
@@ -117,7 +117,7 @@
       </elements>
 		</template>
 
-		<template name="fileListItem" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="fileListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
                                 <ipe field="description" label="Description"/>
@@ -130,7 +130,7 @@
 			</elements>
 		</template>
 	
-		<template name="complexlistmodulepage" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
+		<template name="complexlistmodulepage" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 
 			</elements>
