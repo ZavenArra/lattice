@@ -80,120 +80,69 @@ class CMS {
 	}
 
 	/*
-	 * Functon: processImage($filename, $parameters)
-	 * Create all automatice resizes on this image
+	 *
 	 */
-	public static function processImage($filename, $parameters){
-		$ext = substr(strrchr($filename, '.'), 1);
-		switch($ext){
-		case 'tiff':
-		case 'tif':
-		case 'TIFF':
-		case 'TIF':
-			Kohana::log('info', 'Converting TIFF image to JPG for resize');
-
-			$imageFilename =  $filename.'_converted.jpg';
-			$command = sprintf('convert %s %s',addcslashes(cms::mediapath().$filename, "'\"\\ "), addcslashes(cms::mediapath().$imageFilename, "'\"\\ "));
-			Kohana::log('info', $command);
-			system(sprintf('convert %s %s',addcslashes(cms::mediapath().$filename, "'\"\\ "),addcslashes(cms::mediapath().$imageFilename, "'\"\\ ")));
+	public function createdResizedImage($originalFilename, $newFilename, $width, $height, $forceDimension='width', $crop='false'){
+		//set up dimenion to key off of
+		switch($forceDimension){
+		case 'width':
+			$keydimension = Image::WIDTH;
+			break;
+		case 'height':
+			$keydimension = Image::HEIGHT;
 			break;
 		default:
-			$imageFilename = $filename;
+			$keydimension = Image::AUTO;
 			break;
 		}
-		Kohana::log('info', $imageFilename);
 
+		$image = new Image(cms::mediapath().$originalFilename);
+		if($crop) {
+			//resample with crop
+			//set up sizes, and crop
+			if( ($image->width / $image->height) > ($image->height / $image->width) ){
+				$cropKeyDimension = Image::HEIGHT;
+			} else {
+				$cropKeyDimension = Image::WIDTH;
+			}
+			$image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
+			$image->quality($quality);
+			$image->save($newFilename);
 
-		$quality = Kohana::config('cms_services.imagequality');
+		} else {
+			//just do the resample
+			//set up sizes
+			$resizewidth = $width;
+			$resizeheight = $height;
 
-		//do the resizing
-		if(is_array($parameters)){
-			Kohana::log('info', 'poor man');
-			$image = new Image(cms::mediapath().$imageFilename);
-			Kohana::log('info', 'poor man');
-			foreach($parameters['imagesizes'] as $resize){
-
-				if(isset($resize['prefix']) && $resize['prefix']){
-					$prefix = $resize['prefix'].'_';
-				} else {
-					$prefix = '';
+			if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
+				$osize = getimagesize(cms::mediapath().$imageFilename);
+				$horizontal = false;
+				if($osize[0] > $osize[1]){
+					//horizontal
+					$horizontal = true;	
 				}
-				$newFilename = $prefix.$imageFilename;
-				$savename = cms::mediapath().$newFilename;
-
-				if(isset($resize['noresample']) && $resize['noresample']==true){
-					$image->save($savename);
-					continue;
-				}
-
-
-				//set up dimenion to key off of
-				if( isset($resize['forcewidth']) && $resize['forcewidth']){
-					$keydimension = Image::WIDTH;
-				} else if ( isset($resize['forceheight']) && $resize['forceheight']){
-					$keydimension = Image::HEIGHT;
+				$newsize = array($resizewidth, $resizeheight);
+				sort($newsize);
+				if($horizontal){
+					$resizewidth = $newsize[1];
+					$resizeheight = $newsize[0];
 				} else {
-					$keydimension = Image::AUTO;
-				}
-
-
-				if(isset($resize['crop'])) {
-					//resample with crop
-					//set up sizes, and crop
-					if( ($image->width / $image->height) > ($image->height / $image->width) ){
-						$cropKeyDimension = Image::HEIGHT;
-					} else {
-						$cropKeyDimension = Image::WIDTH;
-					}
-					$image->resize($resize['width'], $resize['height'], $cropKeyDimension)->crop($resize['width'], $resize['height']);
-					$image->quality($quality);
-					$image->save($savename);
-
-
-				} else {
-					//just do the resample
-					//set up sizes
-					$resizewidth = $resize['width'];
-					$resizeheight = $resize['height'];
-
-					if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
-						$osize = getimagesize(cms::mediapath().$imageFilename);
-						$horizontal = false;
-						if($osize[0] > $osize[1]){
-							//horizontal
-							$horizontal = true;	
-						}
-						$newsize = array($resizewidth, $resizeheight);
-						sort($newsize);
-						if($horizontal){
-							$resizewidth = $newsize[1];
-							$resizeheight = $newsize[0];
-						} else {
-							$resizewidth = $newsize[0];
-							$resizeheight = $newsize[1];
-						}
-					}
-
-					//maintain aspect ratio
-					//use the forcing when it applied
-					//forcing with aspectfolloworientation is gonna give weird results!
-					$image->resize($resizewidth, $resizeheight, $keydimension);
-
-					$image->quality($quality);
-					$image->save($savename);
-
-					if(isset($oldFilename) && $newFilename != $prefix.$oldFilename){
-						if(file_exists(cms::mediapath().$oldFilename)){
-							unlink(cms::mediapath().$oldFilename);
-						}
-					}
-
-
+					$resizewidth = $newsize[0];
+					$resizeheight = $newsize[1];
 				}
 			}
+
+			//maintain aspect ratio
+			//use the forcing when it applied
+			//forcing with aspectfolloworientation is gonna give weird results!
+			$image->resize($resizewidth, $resizeheight, $keydimension);
+
+			$image->quality($quality);
+			$image->save($newFilename);
+
 		}
 
-		return $imageFilename;
 	}
 
 	/*
@@ -475,6 +424,36 @@ class CMS {
 		if($ext=='jpeg'){ $ext = 'jpg'; }
 
 		return $name.$i.'.'.$ext;
+	}
+
+	public function saveHttpPostFile($objectid, $field, $postFileVars){
+
+		$object = ORM::Factory('page', $objectid);
+		//check the file extension
+		$filename = $postFileVars['name'];
+		$ext = substr(strrchr($filename, '.'), 1);
+		switch($ext){
+		case 'jpeg':
+		case 'jpg':
+		case 'gif':
+		case 'png':
+		case 'JPEG':
+		case 'JPG':
+		case 'GIF':
+		case 'PNG':
+		case 'tif':
+		case 'tiff':
+		case 'TIF':
+		case 'TIFF':
+			return $object->saveUploadedImage($field, $postFileVars['file_name'], 
+																				$postFileVars['mime'], $postFileVars['tmp_name']);
+			break;
+
+		default:
+			return $object->saveUploadedFile($field, $postFileVars['file_name'], 
+				$postFileVars['mime'], $postFileVars['tmp_name']);
+		}
+
 	}
 
 }
