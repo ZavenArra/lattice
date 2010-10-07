@@ -68,7 +68,7 @@ class File_Model extends ORM {
 	//and complete the unlinking on destroy
 	public function unlinkOldFile(){
 		$oldFileName = parent::__get('filename');
-		if($file_exists(cms::mediapath().$oldFileName)){
+		if(file_exists(cms::mediapath().$oldFileName)){
 			unlink(cms::mediapath().$oldFileName);
 		}
 	}

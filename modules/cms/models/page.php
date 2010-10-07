@@ -351,7 +351,7 @@ class Page_Model extends ORM {
 		return $file;
 	}
 
-	private function moveUploadedFileToTmpMedia($fileName, $tmpName){
+	private function moveUploadedFileToTmpMedia($tmpName){
 		$saveName = cms::makeFileSaveName('tmp').microtime();
 
 		if(!move_uploaded_file($tmpName, cms::mediapath().$saveName)){
@@ -375,7 +375,7 @@ class Page_Model extends ORM {
 		$file->unlinkOldFile();
 		$saveName = cms::makeFileSaveName($fileName);
 
-		if(!copy(cms::mediapath().$tmpName, cms::medipath().$saveName)){
+		if(!copy(cms::mediapath().$tmpName, cms::mediapath().$saveName)){
 			throw new MOP_Exception('this is a MOP Exception');
 		}
 		unlink(cms::mediapath().$tmpName);
@@ -415,19 +415,20 @@ class Page_Model extends ORM {
 
 	public function saveImage($field, $fileName, $type, $tmpName){
 		//do the saving of the file
-		$file = $this->saveFile($file, $fileName, $type, $tmpName);
+		$file = $this->saveFile($field, $fileName, $type, $tmpName);
 		Kohana::log('info', 'Returning to saveImage');
 
 
-		$imageFilename = $this->processImage($file->filename, $field);
+		$imageFileName = $this->processImage($file->filename, $field);
+
 		
 
-		if(file_exists(cms::mediapath().'uithumb_'.$imageFilename)){
-			$resultpath = cms::mediapath().'uithumb_'.$imageFilename;
-			$thumbSrc = Kohana::config('cms.basemediapath').'uithumb_'.$imageFilename;
+		if(file_exists(cms::mediapath().'uithumb_'.$imageFileName)){
+			$resultpath = cms::mediapath().'uithumb_'.$imageFileName;
+			$thumbSrc = Kohana::config('cms.basemediapath').'uithumb_'.$imageFileName;
 		} else {
-			$resultpath = cms::mediapath().$imageFilename;
-			$thumbSrc = Kohana::config('cms.basemediapath').$imageFilename;
+			$resultpath = cms::mediapath().$imageFileName;
+			$thumbSrc = Kohana::config('cms.basemediapath').$imageFileName;
 		}
 		$size = getimagesize($resultpath);
 		$result['width'] = $size[0];
@@ -444,7 +445,7 @@ class Page_Model extends ORM {
 	 * Functon: processImage($filename, $parameters)
 	 * Create all automatice resizes on this image
 	 */
-	public static function processImage($filename, $field){
+	public function processImage($filename, $field){
 
 		//First check for tiff, and convert if necessary
 		$ext = substr(strrchr($filename, '.'), 1);
@@ -455,23 +456,23 @@ class Page_Model extends ORM {
 		case 'TIF':
 			Kohana::log('info', 'Converting TIFF image to JPG for resize');
 
-			$imageFilename =  $filename.'_converted.jpg';
-			$command = sprintf('convert %s %s',addcslashes(cms::mediapath().$filename, "'\"\\ "), addcslashes(cms::mediapath().$imageFilename, "'\"\\ "));
+			$imageFileName =  $filename.'_converted.jpg';
+			$command = sprintf('convert %s %s',addcslashes(cms::mediapath().$filename, "'\"\\ "), addcslashes(cms::mediapath().$imageFileName, "'\"\\ "));
 			Kohana::log('info', $command);
-			system(sprintf('convert %s %s',addcslashes(cms::mediapath().$filename, "'\"\\ "),addcslashes(cms::mediapath().$imageFilename, "'\"\\ ")));
+			system(sprintf('convert %s %s',addcslashes(cms::mediapath().$filename, "'\"\\ "),addcslashes(cms::mediapath().$imageFileName, "'\"\\ ")));
 			break;
 		default:
-			$imageFilename = $filename;
+			$imageFileName = $filename;
 			break;
 		}
 
-		Kohana::log('info', $imageFilename);
+		Kohana::log('info', $imageFileName);
 
-		$quality = Kohana::config('cms_services.imagequality');
 
 		//do the resizing
-		$resizes = mop::config('backend', sprintf('//template[@name="%s"]/elements/[field="%s"]/resize', 
-			$this->template->templatename,
+    $templatename = $this->template->templatename;
+		$resizes = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[field="%s"]/resize', 
+      $templatename,
 			$field
 		)
 	);
@@ -482,7 +483,7 @@ class Page_Model extends ORM {
 			} else {
 				$prefix = '';
 			}
-			$newFilename = $prefix.$imageFilename;
+			$newFilename = $prefix.$imageFileName;
 			$saveName = cms::mediapath().$newFilename;
 
 			cms::resizeImage($imageFileName, $saveName, 
@@ -500,10 +501,10 @@ class Page_Model extends ORM {
 		}	
 		//and create thumbnail
 		$uiresize = Kohana::config('cms.uiresize');
-		cms::resizeImage($imageFileName, $uiresize['prefix'].'_'.$file->filename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
+		cms::resizeImage($imageFileName, $uiresize['prefix'].'_'.$imageFileName, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
 
 
-		return $imageFilename;
+		return $imageFileName;
 	}
 
 
