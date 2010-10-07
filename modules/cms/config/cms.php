@@ -25,3 +25,4 @@ $config['stagingmediapath'] = 'staging/application/media/';
 $config['basemediapath'] = 'application/media/';
 
 
+$config['imagequality'] = 75;
