@@ -187,7 +187,6 @@ class CMS_Controller extends CMS_Interface_Controller {
 	}
 
 
-	return 'something';
 	/*
 	*
 	* Function: savefield()

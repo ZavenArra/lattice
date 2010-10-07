@@ -85,10 +85,10 @@ class CMS {
 	public function createdResizedImage($originalFilename, $newFilename, $width, $height, $forceDimension='width', $crop='false'){
 		//set up dimenion to key off of
 		switch($forceDimension){
-		case: 'width'
+		case 'width':
 			$keydimension = Image::WIDTH;
 			break;
-		case: 'height'
+		case 'height':
 			$keydimension = Image::HEIGHT;
 			break;
 		default:
@@ -143,66 +143,6 @@ class CMS {
 
 		}
 
-	}
-	/*
-	 * Functon: processImage($filename, $parameters)
-	 * Create all automatice resizes on this image
-	 */
-	public static function processImage($filename, $parameters){
-		$ext = substr(strrchr($filename, '.'), 1);
-		switch($ext){
-		case 'tiff':
-		case 'tif':
-		case 'TIFF':
-		case 'TIF':
-			Kohana::log('info', 'Converting TIFF image to JPG for resize');
-
-			$imageFilename =  $filename.'_converted.jpg';
-			$command = sprintf('convert %s %s',addcslashes(cms::mediapath().$filename, "'\"\\ "), addcslashes(cms::mediapath().$imageFilename, "'\"\\ "));
-			Kohana::log('info', $command);
-			system(sprintf('convert %s %s',addcslashes(cms::mediapath().$filename, "'\"\\ "),addcslashes(cms::mediapath().$imageFilename, "'\"\\ ")));
-			break;
-		default:
-			$imageFilename = $filename;
-			break;
-		}
-		Kohana::log('info', $imageFilename);
-
-
-		$quality = Kohana::config('cms_services.imagequality');
-
-		//do the resizing
-		if(is_array($parameters)){
-			foreach($parameters['imagesizes'] as $resize){
-
-				if(isset($resize['prefix']) && $resize['prefix']){
-					$prefix = $resize['prefix'].'_';
-				} else {
-					$prefix = '';
-				}
-				$newFilename = $prefix.$imageFilename;
-				$saveName = cms::mediapath().$newFilename;
-
-				if(isset($resize['noresample']) && $resize['noresample']==true){
-					//should already be saved!
-					continue;
-				}
-
-				cms::resizeImage($imageFileName, $saveName, $width, $height, $forceDimension, $crop);
-
-
-							if(isset($oldFilename) && $newFilename != $prefix.$oldFilename){
-						if(file_exists(cms::mediapath().$oldFilename)){
-							unlink(cms::mediapath().$oldFilename);
-						}
-					}
-
-
-				}
-			}
-		}
-
-		return $imageFilename;
 	}
 
 	/*
@@ -505,33 +445,13 @@ class CMS {
 		case 'tiff':
 		case 'TIF':
 		case 'TIFF':
-			Kohana::log('info', $object->template->templatename.$field);
-			$parameters = Kohana::config('cms_images.'.$object->template->templatename.'.'.$field.'.resize');
-
-			$resizes = mop::config('backend', sprintf('//template[@name="%s"]/elements/[field="%s"]/resize', 
-				$object->template->templatename,
-				$field,
-			));
-			$parameters = array();
-			foreach($resizes as $resize){
-				$parameters
-			}
-			
-			//check that the template does not have a uithumb set
-			if(1){
-				$uiresize = Kohana::config('cms.uiresize');
-				cms::createResizedImage($postFileVars[$field], $theThumbFileName, $width, $height, etc._);
-			}
-
-			if($parameters){
-				return $object->saveImage($field, $postFileVars, $parameters);
-			} else {
-				return $object->saveFile($field, $postFileVars);
-			}
+			return $object->saveUploadedImage($field, $postFileVars['file_name'], 
+																				$postFileVars['mime'], $postFileVars['tmp_name']);
 			break;
 
 		default:
-			return $object->saveFile($field, $postFileVars);
+			return $object->saveUploadedFile($field, $postFileVars['file_name'], 
+				$postFileVars['mime'], $postFileVars['tmp_name']);
 		}
 
 	}
