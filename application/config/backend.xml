@@ -72,7 +72,9 @@
 
 		<template name="singleImage" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 			<elements>
-				<singleImage field="file" label="Single Image"/>
+				<singleImage field="file" label="Single Image">
+					<ext>jpg</ext>
+				</singleImage>
 			</elements>
 		</template>
 
