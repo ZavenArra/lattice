@@ -43,7 +43,25 @@ class CMS_Interface_Controller extends Controller {
 			'filename'=>$file->filename,
 			'ext'=>$file->ext,
 			'result'=>'success',
-		);
+		);	
+		
+		//if it's an image
+		$thumbsrc = null;
+		if(file_exists(cms::mediapath().$file->uithumb->filename)){
+			$resultpath = cms::mediapath().$file->uithumb->filename;
+			$thumbSrc = Kohana::config('cms.basemediapath').$file->uithumb->filename;
+		} else {
+			$resultpath = cms::mediapath().$file->uithumb->filename;
+			$thumbSrc = Kohana::config('cms.basemediapath').$file->uithumb->filename;
+		}
+		if($thumbSrc){
+			$size = getimagesize($resultpath);
+			$result['width'] = $size[0];
+			$result['height'] = $size[1];
+			$result['thumbSrc']= $thumbSrc;
+		}
+
+
 		return $result;
 
 	}
