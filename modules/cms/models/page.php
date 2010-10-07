@@ -421,24 +421,8 @@ class Page_Model extends ORM {
 
 		$imageFileName = $this->processImage($file->filename, $field);
 
+		return $file;
 		
-
-		if(file_exists(cms::mediapath().'uithumb_'.$imageFileName)){
-			$resultpath = cms::mediapath().'uithumb_'.$imageFileName;
-			$thumbSrc = Kohana::config('cms.basemediapath').'uithumb_'.$imageFileName;
-		} else {
-			$resultpath = cms::mediapath().$imageFileName;
-			$thumbSrc = Kohana::config('cms.basemediapath').$imageFileName;
-		}
-		$size = getimagesize($resultpath);
-		$result['width'] = $size[0];
-		$result['height'] = $size[1];
-		$result['thumbSrc']= $thumbSrc;
-
-		//get rid of the old ones
-		//but how to find them ???
-
-		return $result;
 	}
 
 	/*
