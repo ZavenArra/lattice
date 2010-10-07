@@ -82,7 +82,7 @@ class CMS {
 	/*
 	 *
 	 */
-	public function createdResizedImage($originalFilename, $newFilename, $width, $height, $forceDimension='width', $crop='false'){
+	public function resizeImage($originalFilename, $newFilename, $width, $height, $forceDimension='width', $crop='false'){
 		//set up dimenion to key off of
 		switch($forceDimension){
 		case 'width':
@@ -106,8 +106,9 @@ class CMS {
 				$cropKeyDimension = Image::WIDTH;
 			}
 			$image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
+      $quality = Kohana::config('cms_services.imagequality');
 			$image->quality($quality);
-			$image->save($newFilename);
+			$image->save(cms::mediapath().$newFilename);
 
 		} else {
 			//just do the resample
@@ -139,7 +140,7 @@ class CMS {
 			$image->resize($resizewidth, $resizeheight, $keydimension);
 
 			$image->quality($quality);
-			$image->save($newFilename);
+			$image->save(cms::mediapath .$newFilename);
 
 		}
 
@@ -445,13 +446,13 @@ class CMS {
 		case 'tiff':
 		case 'TIF':
 		case 'TIFF':
-			return $object->saveUploadedImage($field, $postFileVars['file_name'], 
-																				$postFileVars['mime'], $postFileVars['tmp_name']);
+			return $object->saveUploadedImage($field, $postFileVars['name'], 
+																				$postFileVars['type'], $postFileVars['tmp_name']);
 			break;
 
 		default:
-			return $object->saveUploadedFile($field, $postFileVars['file_name'], 
-				$postFileVars['mime'], $postFileVars['tmp_name']);
+			return $object->saveUploadedFile($field, $postFileVars['name'], 
+				$postFileVars['type'], $postFileVars['tmp_name']);
 		}
 
 	}
