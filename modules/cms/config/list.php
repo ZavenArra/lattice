@@ -1,0 +1,3 @@
+<?
+
+$config['sortdirection'] = 'ASC';

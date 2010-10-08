@@ -5,7 +5,7 @@
 	object paradigm.
 */
 
-class List_Controller extends Controller{
+class List_Controller extends CMS_Interface_Controller{
 
 	/*
 	*  Variable: page_id
@@ -98,76 +98,12 @@ class List_Controller extends Controller{
 		$this->view->instance = $this->listClass;
 
 	}
-
-	/*
-	Function: saveIPE($itemid)
-	Wrapper to saveIPE in CMS_Services_Controller
-	*/
-	public function saveFieldMapping($itemid){
-		$object = ORM::Factory($this->model, $itemid);
-		return $object->saveFieldMapping($_POST['field'], $_POST['value']);
-	}
-
 	//this is the new one
 	public function savefield($itemid){
 		$object = ORM::Factory($this->model, $itemid);
 		$object->contenttable->$_POST['field'] = $_POST['value'];
 		$object->contenttable->save();
 		return array('value'=>$object->contenttable->$_POST['field']);
-	}
-
-
-
-	/*
-	Function: saveFile($itemid)
-	Wrapper to saveFile in CMS_Services_Controller
-
-	Parameters:
-	$itemid - the id of the item that the file is attached to
-	$_POST['field'] - the identifier of the file in this specific list instance 
-	(same as a field for ipe)
-	$_FILES - the uploaded file gets put here by php
-	*/
-	public function saveFile($itemid){
-		$object = ORM::Factory($this->model, $itemid);
-
-		//check the file extension
-		$filename = $_FILES[$_POST['field']]['name'];
-		$ext = substr(strrchr($filename, '.'), 1);
-		switch($ext){
-			case 'jpeg':
-			case 'jpg':
-			case 'gif':
-			case 'png':
-			case 'JPEG':
-			case 'JPG':
-			case 'GIF':
-			case 'PNG':
-				$parameters = Kohana::config($this->listClass.'.singleimages.'.$_POST['field'].'.resize');
-				$uiimagesize = array('uithumb'=>Kohana::config('listmodule.uiresize'));
-				if($parameters){
-				$parameters['imagesizes'] = array_merge($uiimagesize, $parameters['imagesizes']);
-				} else {
-					$parameters['imagesizes'] = $uiimagesize;
-				}
-				
-				if($parameters){
-					return $object->saveImage($_POST['field'], $_FILES, $parameters);
-				} else {
-					return $object->saveFile($_POST['field'], $_FILES);
-				}
-				break;
-
-			default:
-				return $object->saveFile($_POST['field'], $_FILES);
-		}
-
-		
-	}
-
-	public function saveMappedPDF($itemid){
-		$object = ORM::Factory($this->model, $itemid);
-		return $object->saveMappedPDF();
 	}
 
 	private function buildContainerObject($parentid){
@@ -236,27 +172,6 @@ class List_Controller extends Controller{
 
 	}
 
-	/*
-	Function: saveSortOrder
-	Saves sort order of some ids
-	This is a candidate for going into cms_services, with generalization
-
-	Parameters:
-	$_POST['sortorder'] - comma delineated string of ids
-	*/
-	public function saveSortOrder(){
-		$order = explode(',', $_POST['sortorder']);
-
-		for($i=0; $i<count($order); $i++){
-			if(!is_numeric($order[$i])){
-				throw new Kohana_User_Exception('bad sortorder string', 'bad sortorder string');
-			}
-			$item = ORM::factory($this->model, $order[$i]);
-			$item->sortorder = $i+1;
-			$item->save();
-		}
-
-	}
 }
 
 ?>

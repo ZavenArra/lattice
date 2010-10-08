@@ -335,84 +335,63 @@ class Page_Model extends ORM {
 	}
 
 
-	public function saveFile($field, $postFiles){
-		//check for valid file upload
-		if(!isset($field)){
-			Kohana::log('error', 'No field in Post');
-			throw new Kohana_User_Exception('no field in POST', 'no field in POST');
-		}
-		Kohana::log('info', 'proceeding with saveFile');
+	public function saveUploadedFile($field, $fileName, $type, $tmpName){
+		$tmpName = $this->moveUploadedFileToTmpMedia($tmpName);
+		return $this->saveFile($field, $fileName, $type, $tmpName); 
+	}
 
-		$file = ORM::Factory('file', $this->contenttable->$field);
+	/*
+	 *
+	 *	Returns: file model of saved file
+	 * */
+	public function saveUploadedImage($field, $fileName, $type, $tmpName){
+			$tmpName = $this->moveUploadedFileToTmpMedia($tmpName);
+			$file = $this->saveImage($field, $fileName, $type, $tmpName); 
 
-		$savename = cms::makeFileSaveName($postFiles[$field]['name']);
+		return $file;
+	}
 
-		if(isset($postFiles['savelocalfile'])){ //allow bypass of move_uploaded_file
-			copy(isset($postFiles['savelocalfile']), cms::mediapath().$savename);
-		} else if(!move_uploaded_file($postFiles[$field]['tmp_name'], cms::mediapath().$savename)){
+	private function moveUploadedFileToTmpMedia($tmpName){
+		$saveName = cms::makeFileSaveName('tmp').microtime();
+
+		if(!move_uploaded_file($tmpName, cms::mediapath().$saveName)){
 			$result = array(
 				'result'=>'failed',
-					'error'=>'internal error, contact system administrator',
-				);
+				'error'=>'internal error, contact system administrator',
+			);
 			return $result;
 		}
-		Kohana::log('info', 'moved file to '.cms::mediapath().$savename);
+		Kohana::log('info', 'moved file to '.cms::mediapath().$saveName);
 
+		return $saveName;
+
+	}
+
+	public function saveFile($field, $fileName, $type, $tmpName){
 		if(!is_object($file = $this->contenttable->$field)){
 			$file = ORM::Factory('file', $this->contenttable->$field);
 		}	
 
-		if($file->loaded){
-			$oldFilename = $file->filename;
-		}
+		$file->unlinkOldFile();
+		$saveName = cms::makeFileSaveName($fileName);
 
-		$file->filename = $savename;	
-		$file->mime = $_FILES[$field]['type'];
+		if(!copy(cms::mediapath().$tmpName, cms::mediapath().$saveName)){
+			throw new MOP_Exception('this is a MOP Exception');
+		}
+		unlink(cms::mediapath().$tmpName);
+		
+		$file->filename = $saveName;	
+		$file->mime = $type;
 		$file->save(); //inserts or updates depending on if it got loaded above
 
 		$this->contenttable->$field = $file->id;
 		$this->contenttable->save();
 
-		if(isset($oldFilename) && ($savename != $oldFilename) ){
-			Kohana::log('info', 'trying to unlink file');
-			//then we have to get rid of the old file
-			if(file_exists(cms::mediapath().$oldFilename)){
-				Kohana::log('info', 'unlinking '.cms::mediapath().$oldFilename);
-				unlink(cms::mediapath().$oldFilename);
-			}
-		}
-		
-
-
-		$parse = explode('.', $savename);
-		$ext = $parse[count($parse)-1];
-    $src = cms::mediapath().$savename;
-		$result = array(
-			'id'=>$file->id,
-			'src'=>$src,
-			'filename'=>$savename,
-			'ext'=>$ext,
-			'result'=>'success',
-		);
-		Kohana::log('info', 'finished with saveFile '.var_export($result, true));
-		return $result;
+		return $file;
 
 	}
 
-	public function saveImage($field, $postFiles, $parameters){
-		Kohana::log('info', 'Saving Image '.var_export($parameters, true) );
-		if(!isset($field)){
-			Kohana::log('error', 'No field in Post');
-			throw new Kohana_User_Exception('no field in POST', 'no field in POST');
-		}
-
-		if($postFiles['savelocalfile']){
-			$size = @getimagesize($postFiles['savelocalfile']);
-		} else if(!$size = @getimagesize($postFiles[$field]['tmp_name'])){
-			Kohana::log('error', 'Bad upload tmp image');
-			throw new Kohana_User_Exception('bad upload tmp image', 'bad upload tmp image');
-		}
-
+	public function verifyImage($field, $tmpName){
 		$origwidth = $size[0];
 		$origheight = $size[1];
 		Kohana::log('info', var_export($parameters, true));
@@ -432,37 +411,86 @@ class Page_Model extends ORM {
 		}
 		Kohana::log('info', "passed min tests with {$origwidth} x {$origheight}");
 
-		//get original file names so we can delete them
-		$file = ORM::Factory('file', $this->contenttable->$field);
-		if($file->loaded){
-			$oldFilename = $file->filename;
-		}
+	}
 
+	public function saveImage($field, $fileName, $type, $tmpName){
 		//do the saving of the file
-		$result = $this->saveFile();
+		$file = $this->saveFile($field, $fileName, $type, $tmpName);
 		Kohana::log('info', 'Returning to saveImage');
 
 
-		$imageFilename = cms::processImage($result['filename'], $parameters);
+		$imageFileName = $this->processImage($file->filename, $field);
+
+		return $file;
 		
-
-		if(file_exists(cms::mediapath().'uithumb_'.$imageFilename)){
-			$resultpath = cms::mediapath().'uithumb_'.$imageFilename;
-			$thumbSrc = Kohana::config('cms.basemediapath').'uithumb_'.$imageFilename;
-		} else {
-			$resultpath = cms::mediapath().$imageFilename;
-			$thumbSrc = Kohana::config('cms.basemediapath').$imageFilename;
-		}
-		$size = getimagesize($resultpath);
-		$result['width'] = $size[0];
-		$result['height'] = $size[1];
-		$result['thumbSrc']= $thumbSrc;
-
-		//get rid of the old ones
-		//but how to find them ???
-
-		return $result;
 	}
+
+	/*
+	 * Functon: processImage($filename, $parameters)
+	 * Create all automatice resizes on this image
+	 */
+	public function processImage($filename, $field){
+
+		//First check for tiff, and convert if necessary
+		$ext = substr(strrchr($filename, '.'), 1);
+		switch($ext){
+		case 'tiff':
+		case 'tif':
+		case 'TIFF':
+		case 'TIF':
+			Kohana::log('info', 'Converting TIFF image to JPG for resize');
+
+			$imageFileName =  $filename.'_converted.jpg';
+			$command = sprintf('convert %s %s',addcslashes(cms::mediapath().$filename, "'\"\\ "), addcslashes(cms::mediapath().$imageFileName, "'\"\\ "));
+			Kohana::log('info', $command);
+			system(sprintf('convert %s %s',addcslashes(cms::mediapath().$filename, "'\"\\ "),addcslashes(cms::mediapath().$imageFileName, "'\"\\ ")));
+			break;
+		default:
+			$imageFileName = $filename;
+			break;
+		}
+
+		Kohana::log('info', $imageFileName);
+
+
+		//do the resizing
+    $templatename = $this->template->templatename;
+		$resizes = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[field="%s"]/resize', 
+      $templatename,
+			$field
+		)
+	);
+		foreach($resizes as $resize){
+
+			if($prefix = $resize->getAttribute('prefix')){
+				$prefix = $prefix.'_';
+			} else {
+				$prefix = '';
+			}
+			$newFilename = $prefix.$imageFileName;
+			$saveName = cms::mediapath().$newFilename;
+
+			cms::resizeImage($imageFileName, $saveName, 
+				$resize->getAttribute('width'),
+				$resize->getAttribute('height'),
+				$resize->getAttribute('forceDimension'), 
+				$resize->getAttribute('crop')
+			);
+
+			if(isset($oldFilename) && $newFilename != $prefix.$oldFilename){
+				if(file_exists(cms::mediapath().$oldFilename)){
+					unlink(cms::mediapath().$oldFilename);
+				}
+			}
+		}	
+		//and create thumbnail
+		$uiresize = Kohana::config('cms.uiresize');
+		cms::resizeImage($imageFileName, $uiresize['prefix'].'_'.$imageFileName, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
+
+
+		return $imageFileName;
+	}
+
 
 	public function saveMappedPDF(){
 		$result = $this->saveFile();

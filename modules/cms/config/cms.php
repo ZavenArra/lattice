@@ -12,7 +12,7 @@ $config['uiresize'] =  array(
 	'width'=>150,
 	'height'=>75,
 	'prefix' => 'uithumb',
-	'forcewidth'=>true,
+	'forceDimension'=>'width',
 	'crop'=>true,
 );
 
@@ -25,3 +25,4 @@ $config['stagingmediapath'] = 'staging/application/media/';
 $config['basemediapath'] = 'application/media/';
 
 
+$config['imagequality'] = 75;
