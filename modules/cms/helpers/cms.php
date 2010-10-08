@@ -106,7 +106,7 @@ class CMS {
 				$cropKeyDimension = Image::WIDTH;
 			}
 			$image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
-      $quality = Kohana::config('cms_services.imagequality');
+      $quality = Kohana::config('cms.imagequality');
 			$image->quality($quality);
 			$image->save(cms::mediapath().$newFilename);
 
