@@ -39,7 +39,7 @@ class CMS_Interface_Controller extends Controller {
 		$file = cms::saveHttpPostFile($pageid, $_POST['field'], $_FILES[$_POST['field']]);
 		$result = array(
 			'id'=>$file->id,
-			'src'=>$file->src,
+			'src'=>$file->original->fullpath,
 			'filename'=>$file->filename,
 			'ext'=>$file->ext,
 			'result'=>'success',
