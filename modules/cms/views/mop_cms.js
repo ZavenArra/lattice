@@ -96,22 +96,27 @@ mop.modules.CMS = new Class({
 		this.editSlugLink = this.titleElement.getElement( ".field-slug" );
 		this.editSlugLink.addEvent( "click", this.revealSlugEditField.bindWithEvent( this ) );
 		
+		this.uiElements = this.initUI( this.pageContent );
+		this.initModules( this.pageContent );		
+
 		if( this.titleElement ){
 			this.titleText = this.titleElement.getElement( "h2" ).get( "text" );
 			this.deletePageLink = this.titleElement.getElement( "a.deleteLink" );
 			if( this.deletePageLink ) this.deletePageLink.addEvent( "click", this.onDeleteNodeReleased.bindWithEvent( this ) );
+			this.titleElement.getElement( ".field-slug" ).retrieve( "Class" ).registerOnLeaveEditModeCallback( this.onSlugEdit.bind( this ) );
 		}
 		
-		this.uiElements = this.initUI( this.pageContent );
-				
-		this.initModules( this.pageContent );		
 
+	},
+	
+	onSlugEdit: function(){
+		this.titleElement.getElement( ".field-slug .ipe" ).addClass("hidden");
 	},
 	
 	revealSlugEditField: function( e ){
 		mop.util.stopEvent( e );
-//		this.titleElement.getElement( ".field-slug" ).retrieve( "Class" ).enterEditMode();
-		this.titleElement.getElement( ".field-slug .ipe" ).toggleClass("hidden");
+		this.titleElement.getElement( ".field-slug .ipe" ).removeClass("hidden");
+		this.titleElement.getElement( ".field-slug" ).retrieve( "Class" ).enterEditMode();
 	},
 
 	postInitUIHook: function( ){

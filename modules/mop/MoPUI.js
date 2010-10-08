@@ -3426,6 +3426,8 @@ mop.ui.IPE = new Class({
 
 	Extends: mop.ui.UIElement,
 
+	onLeaveEditModeCallbacks: [],
+	
 	type: "ipe",
 
 	form: null,
@@ -3433,6 +3435,10 @@ mop.ui.IPE = new Class({
 	options:{
 		messages: { clickToEdit: "click to edit." },
 		action: "savefield"
+	},
+
+	registerOnLeaveEditModeCallback: function( func ){
+		this.onLeaveEditModeCallbacks.push( func );
 	},
 
 	enableElement: function( e ){
@@ -3731,6 +3737,12 @@ mop.ui.IPE = new Class({
 		if( this.marshal.resumeSort ) this.marshal.resumeSort();
 
 		this.ipeElement.setStyle( "display", "block" );
+		
+		if( this.onLeaveEditModeCallbacks.length > 0 ){
+			for( var i = 0; i < this.onLeaveEditModeCallbacks.length; i++ ){
+				this.onLeaveEditModeCallbacks[i]( this );
+			}
+		}
 		
 		this.destroyValidationSticky();
 		
