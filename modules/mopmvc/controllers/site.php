@@ -64,9 +64,9 @@ Class Site_Controller extends Controller{
       //look for the template, if it's not there just print out all the data raw
       $view = $page->template->templatename;
       if(file_exists('application/frontend/'.$view.'.php')){
-        $this->view = new View( 's'.$page->template->templatename);
+        $this->view = new View( $page->template->templatename);
       } else {
-        $this->view = new View( 'sdefault');
+        $this->view = new View( 'default');
       }
 
       $this->view->content = $this->content;
