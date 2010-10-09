@@ -60,6 +60,22 @@ Class Frontend_Controller extends Controller {
 		$field = $element->getAttribute('field');
 
 		switch($element->nodeName){
+		case 'list':
+			$family = $element->getAttribute('family');
+			$addables = mop::config('backend', 'addableObject', $element);		
+			$addable = $addables->item(0);
+			$templateName = $addable->getAttribute('templateName');
+			$listItemElements = mop::config('backend', sprintf('//template[@name="%s"]', $templateName);		
+			echo "<ul id=\"$family\" >\n"
+			echo "<?foreach(\$content['$prefix']['$family'] as $label => {$family}ListItem):?>\n";
+			echo " <li class=\"$template\">\n";
+			foreach($listItemElements as $element){
+				$this->makeHtmlElement($element, "$prefix']['$family");
+			}
+			echo " </li>\n";
+			echo "</ul>\n\n";
+			break;
+
 		case 'singleImage':
 			if(!($size=$element->getAttribute('size'))){
 				$size = 'original';	

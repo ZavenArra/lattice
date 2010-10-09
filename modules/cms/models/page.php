@@ -173,73 +173,27 @@ class Page_Model extends ORM {
 			$content[$map->column] = $this->contenttable->{$map->column};
 		}
 
-		//get data from lists
-		$blocks = Kohana::config('cms.templates.'.$this->__get('template')->templatename);
-		if($blocks) {
-			$modules = array();
-			foreach($blocks as $block){
-				if($block['type'] == 'module'){
-					switch($block['controllertype']){
-					case 'listmodule':
-						$content[$block['modulename']] = $this->getListData($block['modulename']);
-						break;
-					default:
-						break;
-					}
-				}
-			}
+		//find any lists
+		foreach(mop::config('backend', '//template[@name="%s"]/elements/list') as $list){
+			$family = $list->getAttribute('family');	
+			$content[$family] = $this->getListContent($family);
 		}
 
 		return $content;
 	}
 
-
-	//EXPERIMENTAL
-	// ok this doubles up code in site controller
-	// in the future there shouldn't be a distinction between templates and lists
-	// and that will resolve this doubling, which is dumb
-	public function getListData($instance){
-			if(! $sortdirection = Kohana::config($instance.'.sortdirection')){
-				$sortdirection = Kohana::config('listmodule.sortdirection');
-			}
-
-			//for pagination, we generate the module
-			//and then just go ahead and call the paginatedList stuff
-
-
-			$dbmap = Kohana::config($instance.'.dbmap');
-			$listitems = ORM::Factory('list')
-			->where('instance', $instance)
+	public function getListContent($family){
+		//get container
+		$container = ORM::Factory('page')
+			->where('templatename', $family)
+			->where('parentid', $this->id)
 			->where('activity IS NULL')
-			->orderby('sortorder', $sortdirection);
-			if($this->id){
-				$listitems->where('page_id', $this->id);
-			}
-			$listitems = $listitems->find_all();
-			$list = array();
-			//this is a template for slurping out lists
-			foreach($listitems as $item){
-				$data = array();
-				foreach($dbmap as $var => $dbfield){
-					$data[$var] = $item->$var; //EXPERIMENTAL	
-				}
+			->find();
 
-				$files = Kohana::config($instance.'.files');
-				if(is_array($files)){
-					foreach($files as $key => $settings){
-						$data[$key] = $item->$key;
-					}
-				}
-				$singleimages = Kohana::config($instance.'.singleimages');
-				if(is_array($singleimages)){
-					foreach($singleimages as $key => $settings){
-						$data[$key] = $item->$key;
-					}
-				}
-				$list[] = $data;
-			}
-			return $list;
+		//get children of
+		return $container->getPublishedChildren();
 	}
+
 
 	public function getPublishedChildren(){
 
