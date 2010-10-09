@@ -10,19 +10,23 @@ Class Frontend_Controller extends Controller {
 	public function index(){
 		echo "Configuring Frontend\n";
 		echo "Reading application/config/frontend.xml\n";
+
+		mop::config('backend', '//templates');
 		
 		flush();
 		ob_flush();
 		
 		foreach(mop::config('frontend', '//view') as $view ){
+			echo 'hey';
 			touch('application/frontend/'.$view->getAttribute('name').'.php');
+			echo 'application/frontend/'.$view->getAttribute('name').'.php';
 			ob_start();
 			if($view->getAttribute('loadpage')=='true'){
 				echo "<h1><?\$content['main']['title'];?></h1>\n\n";
 				//this also implies that name is a templatename
 				foreach(mop::config('backend', 
 					sprintf('//template[@name="%s"]/elements/*', $view->getAttribute('name') )) as $element){
-						$this->makeHtmlElement($element, 'main');
+						$this->makeHtmlElement($element, "\$content['main']");
 					}
 			}
 			if($eDataNodes = mop::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/extendeddata")){
@@ -55,7 +59,7 @@ Class Frontend_Controller extends Controller {
 		echo "Done\n";
 	}
 
-	public function makeHtmlElement($element, $prefix){
+	public function makeHtmlElement($element, $prefix, $indent=''){
 
 		$field = $element->getAttribute('field');
 
@@ -65,28 +69,28 @@ Class Frontend_Controller extends Controller {
 			$addables = mop::config('backend', 'addableObject', $element);		
 			$addable = $addables->item(0);
 			$templateName = $addable->getAttribute('templateName');
-			$listItemElements = mop::config('backend', sprintf('//template[@name="%s"]', $templateName);		
-			echo "<ul id=\"$family\" >\n"
-			echo "<?foreach(\$content['$prefix']['$family'] as $label => {$family}ListItem):?>\n";
-			echo " <li class=\"$template\">\n";
+			$listItemElements = mop::config('backend', sprintf('//template[@name="%s"]/elements/*', $templateName));		
+			echo $indent."<ul id=\"$family\" >\n";
+			echo $indent."<?foreach({$prefix}['$family'] as \$label => \${$family}ListItem):?>\n";
+			echo $indent." <li class=\"$templateName\">\n";
 			foreach($listItemElements as $element){
-				$this->makeHtmlElement($element, "$prefix']['$family");
+				$this->makeHtmlElement($element, "\${$family}ListItem", $indent.'  ');
 			}
-			echo " </li>\n";
-			echo "</ul>\n\n";
+			echo $indent." </li>\n";
+			echo $indent."</ul>\n\n";
 			break;
 
 		case 'singleImage':
 			if(!($size=$element->getAttribute('size'))){
 				$size = 'original';	
 			}
-			echo "<img id=\"$field\" src=\"<?=\$content['$prefix']['$field']->{$size}->fullpath;?>\" width=\"<?=\$content['$prefix']['$field']->{$size}->width;?>\" height=\"<?=\$content['$prefix']['$field']->{$size}->height;?>\" alt=\"<?=\$content['$prefix']['$field']->{$size}->filename;?>\" />";
+			echo $indent."<img id=\"$field\" src=\"<?={$prefix}['$field']->{$size}->fullpath;?>\" width=\"<?={$prefix}['$field']->{$size}->width;?>\" height=\"<?={$prefix}['$field']->{$size}->height;?>\" alt=\"<?={$prefix}['$field']->{$size}->filename;?>\" />\n\n";
 			break;
 		case 'singleFile':
-			echo "<a href=\"\"></a>";
+			echo $indent."<a href=\"\"></a>\n\n";
 			break;
 		default:
-			echo "<p class=\"$field\"> <?=\$content['main']['$field'];?></p>\n";
+			echo $indent."<p class=\"$field\"> <?={$prefix}['$field'];?></p>\n\n";
 			break;
 		}
 
