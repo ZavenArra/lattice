@@ -47,8 +47,6 @@ Class Site_Controller extends Controller{
 
 
 
-
-
 		$page = ORM::Factory('page', $pageidorslug);
 		//some access control
 		if($page->loaded){
@@ -86,40 +84,31 @@ Class Site_Controller extends Controller{
 
 		$this->view->content = $this->content;
 		
-		if($eDataNodes = mop::config('frontend',"//view[@name=\"{$page->template->templatename}\"]/extendeddata")){
+		if($eDataNodes = mop::config('frontend',"//view[@name=\"{$page->template->templatename}\"]/includeData")){
 			foreach($eDataNodes as $eDataConfig){
 				
 				$objects = ORM::Factory('page');
 
 				//apply optional parent filter
-				if($parent = $eDataConfig->getAttribute('parent')){
-					$parent = ORM::Factory('page', $parent);
-					$objects->where('parentid', $parent->id);	
+				if($from = $eDataConfig->getAttribute('from')){
+					if($from=='parent'){
+						$objects->where('parentid', $page->id);
+					} else {
+						$from = ORM::Factory('page', $from);
+						$objects->where('parentid', $from->id);	
+					}
 				}
 
 				//apply optional template filter
-				if($templatename = $eDataConfig->getAttribute('templatename')){
-					if(strpos(',', $templatename)){
-						$tNames = explode(',', $templatename);
-						$tIds = array();
-						foreach($tNames as $tname){
-							$t = ORM::Factory('template', $tname);
-							$tIds[] = $t->id;
-						}
-						$objects->in('template_id', $tIds);
-					} else if ($templatename == 'all'){
-						//set no filter
-					} else {
-						$t = ORM::Factory('template', $templatename);
-						$objects->where('template_id', $t->id);
-					}
-				}
-				$objects = $objects->find_all();
+				$objects->templateFilter($eDataConfig->getAttribute('templateName'));
+	
 
 				//apply optional SQL where filter
 				if($where = $eDataConfig->getAttribute('where')){
 					$objects->where($where);
 				}
+
+				$objects = $objects->find_all();
 
 				$this->view->content[$eDataConfig->getAttribute('label')] = array();
 				foreach($objects as $object){

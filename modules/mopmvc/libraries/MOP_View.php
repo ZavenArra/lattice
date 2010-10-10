@@ -119,9 +119,9 @@ class MOP_View_Core extends View_Core{
 
 	}
 
-	public function render($output=FALSE){
+	public function render($output=FALSE, $renderer = false){
 		Display_Controller::addResources($this->resources);
-		return parent::render($output);
+		return parent::render($output, $renderer);
 	}
 
 	public function addResource($type, $resource){

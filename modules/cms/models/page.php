@@ -545,6 +545,38 @@ class Page_Model extends ORM {
 	}
 
 
+	/* Query Filters */
+	public function templateFilter($templates){
+		if(!$templates){
+			return $this;
+		}
+		if(strpos(',', $templates)){
+			$tNames = explode(',', $templates);
+			$tIds = array();
+			foreach($tNames as $tname){
+				$t = ORM::Factory('template', $tname);
+				$tIds[] = $t->id;
+			}
+			$this->in('template_id', $tIds);
+		} else if ($templates == 'all'){
+			//set no filter
+		} else {
+			$t = ORM::Factory('template', $templates);
+			$this->where('template_id', $t->id);
+		}
+		return $this;
+	}
+
+	public function publishedFilter(){
+		$this->where('published', 1)
+			->where('activity IS NULL');
+		return $this;
+	}
+
+	public function taggedFilter(){
+
+	}
+
 
 
 }

@@ -12,11 +12,11 @@
 	 className			CDATA	#IMPLIED"
 >
 
-<!ELEMENT configuration (templates,data) >
+<!ELEMENT configuration (templates) >
 
 <!ELEMENT templates (template*) >
 
-<!ELEMENT template (elements?,addableObject*,components*) >
+<!ELEMENT template (elements?,addableObject*,components?) >
 <!ATTLIST template
 	name				CDATA #REQUIRED
 	contentType   CDATA  "document"
@@ -27,7 +27,7 @@
 
 <!ELEMENT elements (ipe|list|singleImage|singleFile|radioGroup|multiSelect|date|time|dateRange|checkbox|time)* >
 
-<!ELEMENT components (component) >
+<!ELEMENT components (component*) >
 
 <!ELEMENT component EMPTY >
 <!ATTLIST component
