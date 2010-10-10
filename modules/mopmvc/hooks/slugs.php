@@ -55,7 +55,7 @@ class RouteSlugsHook{
 				$controller = $foundpage->template->templatename;
 			} else {
 				$controller = 'site';
-				$cpath = 'modules/mop/controllers/site.php';
+				$cpath = 'modules/mopmvc/controllers/site.php';
 			}
 
 

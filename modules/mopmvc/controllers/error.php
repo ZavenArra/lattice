@@ -12,7 +12,7 @@ Class Error_Controller extends MOP_Controller_Core {
 		parent::__construct();
 	}
 
-	public function toWebpage(){
-		parent::toWebpage();
+	public function toWebpage($custom=null){
+		parent::toWebpage($custom);
 	}
 }
