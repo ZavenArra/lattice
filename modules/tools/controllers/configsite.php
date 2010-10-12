@@ -38,10 +38,11 @@ Class ConfigSite_Controller extends Controller {
 
 		//do some mop specific validation
 		$tNames = array();
+		$fNames = array();
 		$components = array();
 		foreach(mop::config('backend', '//template') as $template){
 			$name = $template->getAttribute('name');
-			if(in_array($name, $tNames)){
+			if(in_array($name, $tNames) || in_array($name, $fNames)){
 				die("Duplicate Template Name: $name \n");
 			}
 			$tNames[] = $name;
@@ -59,7 +60,7 @@ Class ConfigSite_Controller extends Controller {
 					if(in_array($name, $tNames)){
 						die("List family name cannot match template name: $name \n");
 					}
-					$tNames[] = $name;
+					$fNames[] = $name;
 				}
 			}
 
