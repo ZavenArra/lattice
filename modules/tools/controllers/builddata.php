@@ -26,6 +26,11 @@ class BuildData_Controller extends Controller {
 	public function insertData($parentId = 0, $context=null){
 
 		foreach(mop::config('data', 'item', $context)  as $item){
+			$lists = array();
+			if(!$item->getAttribute('templateName')){
+				echo $item->tagName;
+				die("No templatename specified for Item\n\n");
+			}
       echo "\n found contentnod ".$item->getAttribute('templateName');
 			flush();
 			ob_flush();
@@ -39,31 +44,30 @@ class BuildData_Controller extends Controller {
 				die("Can't add list family as template name in data.xml: {$template->templatename} \n");
 			}
 
-			//$object->template_id = $template->id;
-			//$object->published = true;
-			//$object->parentid = $parentId;
-			//$object->save();
       echo ')))'.$item->getAttribute('templateName');
 			$data = array();
-			foreach(mop::config('data', '*', $item ) as $content){
-				echo 'Field'.$content->tagName."\n";
-				switch($content->tagName){
-				case 'item':
-					//do nothing, catch later
-					continue(2);
+			foreach(mop::config('data', 'field', $item ) as $content){
+				$field = $content->getAttribute('name');
+				switch($field){
 				case 'title':
 				case 'slug':
-					$data[$content->tagName] = $content->nodeValue;	
+					$data[$field] = $content->nodeValue;	
 					continue(2);
 				default:
 					break;
 				}
 
 
-        $field = $content->tagName;
 				//need to look up field and switch on field type	
 				$fieldInfo = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->tagName))->item(0);
 				if(!$fieldInfo){
+					//check to see if this is a list field
+					if(mop::config('backend',  sprintf('//template[@name="%s"]/elements/list[@family="%s"]', $item->getAttribute('templateName'), $content->tagName))){
+						//its a list, just  skip/continue we deal with this after the object has been inserted
+						//add to array of lists to process
+						$lists[] = $field;
+						continue;
+					}
 					die("Bad field!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->tagName));
 				}
 
@@ -80,6 +84,11 @@ class BuildData_Controller extends Controller {
 						}
 						$data[$field] = $savename;
 						break;
+				case 'list':
+					echo "found a list\n";
+					//skip this entirely and pick up later as child
+					////this should never come throug here
+										break;
 				default:
 						$data[$field] = $content->nodeValue;
 						break;
@@ -92,9 +101,22 @@ class BuildData_Controller extends Controller {
 			$objectId = cms::addObject($parentId, $template->id, $data);
 
 			//do recursive if it has children
-      if(mop::config('data', 'item', $item) ){
-        $this->insertData($objectId,  $item);
+     foreach(mop::config('data', 'item', $item) as $child ){
+        $this->insertData($objectId,  $child);
       }
+
+				foreach(mop::config('data', 'list', $item) as $list){
+				echo "FOUND A LIST\n\n";
+				//find the container
+					$listT = ORM::Factory('template', $list->getAttribute('family'));
+					$container = ORM::Factory('page')
+						->where('parentid', $objectId)
+						->where('template_id', $listT->id)
+						->find();
+					//jump down a level to add object
+						$this->insertData($container->id, $list);
+			}
+
 		}
 
 		//and regenerate all files
