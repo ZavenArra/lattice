@@ -34,6 +34,9 @@ class BuildData_Controller extends Controller {
       if(!$template->id){
 				die("Bad template name ".$item->getAttribute('templateName')."\n");
 				//or course just go ahead and insert here.
+			} 
+			if($template->nodeType == 'container'){
+				die("Can't add list family as template name in data.xml: {$template->templatename} \n");
 			}
 
 			//$object->template_id = $template->id;
