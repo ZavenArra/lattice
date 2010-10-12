@@ -39,6 +39,7 @@ Class ConfigSite_Controller extends Controller {
 		//do some mop specific validation
 		$tNames = array();
 		$fNames = array();
+		$localFNames = array();
 		$components = array();
 		foreach(mop::config('backend', '//template') as $template){
 			$name = $template->getAttribute('name');
@@ -47,6 +48,7 @@ Class ConfigSite_Controller extends Controller {
 			}
 			$tNames[] = $name;
 
+			$localFNames = array();
 			foreach(mop::config('backend', 'elements/*', $template) as $item){
 				$name = null;
 				switch($item->tagName){
@@ -60,9 +62,14 @@ Class ConfigSite_Controller extends Controller {
 					if(in_array($name, $tNames)){
 						die("List family name cannot match template name: $name \n");
 					}
-					$fNames[] = $name;
+					if(in_array($name, $localFNames)){
+						die("List family cannot be repeated within template: $name \n");
+					}
+					$localFNames[] = $name;
 				}
 			}
+
+			$fNames = array_merge($fNames, $localFNames);
 
 			//check for components loops
 			$comps = array();
