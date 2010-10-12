@@ -260,7 +260,8 @@ class CMS {
 					$objects = ORM::Factory('template', $template->getAttribute('name'))->getPublishedMembers();
 					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
-						if( $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
+						echo $fieldname;
+						if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
 							$object->processImage($object->contenttable->$fieldname->filename, $fieldname);
 						}
 					}
