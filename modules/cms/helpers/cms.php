@@ -253,9 +253,6 @@ class CMS {
 
 	public function regenerateImages(){
 		//find all images
-		//calculate resize array for images
-		$uiimagesize = array('uithumb'=>Kohana::config('cms.uiresize'));
-		$parameters['imagesizes'] = $uiimagesize;
 
 		foreach(mop::config('backend', '//template') as $template){
 			foreach(mop::config('backend', 'elements/*', $template) as $element){
@@ -264,7 +261,7 @@ class CMS {
 					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
 						if( $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
-							cms::processImage($object->contenttable->$fieldname->filename, $parameters);
+							$object->processImage($object->contenttable->$fieldname->filename, $fieldname);
 						}
 					}
 				}
