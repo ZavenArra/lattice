@@ -48,12 +48,14 @@ class BuildData_Controller extends Controller {
 			$data = array();
 			foreach(mop::config('data', 'field', $item ) as $content){
 				$field = $content->getAttribute('name');
+				echo 'This Field '.$field;
 				switch($field){
 				case 'title':
 				case 'slug':
 					$data[$field] = $content->nodeValue;	
 					continue(2);
 				default:
+					$data[$field] = $content->nodeValue;
 					break;
 				}
 
@@ -98,23 +100,46 @@ class BuildData_Controller extends Controller {
 			$data['published'] = true;
 			echo 'parent'.$parentId;
 			print_r($data);
-			$objectId = cms::addObject($parentId, $template->id, $data);
+
+			//now we check for a title collision
+			//if there is a title collision, we assume that this is a component
+			//already added at the next level up, in this case we just
+			//update the objects data
+			$existing = ORM::Factory('page')
+				->where('parentid', $parentId)
+				->find_all();
+			$component = null;
+			foreach($existing as $aComponent){
+				echo 'WOW'.$aComponent->contenttable->title;
+				if($aComponent->contenttable->title == $data['title']){
+					$component = $aComponent;	
+					break;
+				}
+			}
+			if($component){
+				echo 'COMPONENT';
+				print_r($data);
+				$component->updateWithArray($data);
+				$object->id = $component->id;
+			} else {
+				$objectId = cms::addObject($parentId, $template->id, $data);
+			}
 
 			//do recursive if it has children
-     foreach(mop::config('data', 'item', $item) as $child ){
-        $this->insertData($objectId,  $child);
-      }
+			if(mop::config('data', 'item', $item)->length ){
+				$this->insertData($objectId,  $item);
+			}
 
-				foreach(mop::config('data', 'list', $item) as $list){
+			foreach(mop::config('data', 'list', $item) as $list){
 				echo "FOUND A LIST\n\n";
 				//find the container
-					$listT = ORM::Factory('template', $list->getAttribute('family'));
-					$container = ORM::Factory('page')
-						->where('parentid', $objectId)
-						->where('template_id', $listT->id)
-						->find();
-					//jump down a level to add object
-						$this->insertData($container->id, $list);
+				$listT = ORM::Factory('template', $list->getAttribute('family'));
+				$container = ORM::Factory('page')
+					->where('parentid', $objectId)
+					->where('template_id', $listT->id)
+					->find();
+				//jump down a level to add object
+				$this->insertData($container->id, $list);
 			}
 
 		}

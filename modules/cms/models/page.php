@@ -137,6 +137,25 @@ class Page_Model extends ORM {
 		}
 	}
 
+	public function updateWithArray($data){
+		foreach($data as $field=>$value){
+			switch($field){
+			case 'slug':
+				case 'dateAdded':
+					case 'published':
+						case 'activity':
+						$this->__set($field, $value);
+						break;
+					default:
+						$this->contenttable->$field = $value;
+						break;
+			}
+		}	
+		$this->contenttable->save();
+		$this->save();
+		return $this->id;
+	}
+
 	public function getContentAsArray(){
 
 		$fields = ORM::Factory('objectmap')
