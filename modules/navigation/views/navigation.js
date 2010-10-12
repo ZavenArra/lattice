@@ -220,7 +220,8 @@ mop.modules.navigation.Navigation = new Class({
 			objectToTraverse.each( function( childNode, anIndex ){
 				// Todo: Figure out recursion for opening deeplinks
 				var node;
-				switch( childNode.contentType.toLowerCase() ){
+				switch( childNode.contentType ){
+					default:
 					case "document":
 						node = this.addLeafNode( aNode.id, childNode, whichTier );
 					break;
@@ -633,7 +634,7 @@ mop.modules.navigation.Node = new Class({
 	*/
 	build: function(){
 		this.element = new Element( "li", {
-			"class": "node " + this.nodeType.toLowerCase() + " " + this.contentType.toLowerCase(),
+			"class": "node " + this.nodeType + " " + this.contentType,
 			"events": {
 				"click": this.onClick.bindWithEvent( this ),
 				"mouseover": this.onMouseOver.bind( this ),
