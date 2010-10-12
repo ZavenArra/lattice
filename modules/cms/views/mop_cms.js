@@ -9,7 +9,9 @@ mop.modules.CMS = new Class({
 	scriptsLoaded: null,
 	scriptsTotal: null,
 	currentPageLoadIndex: null,
+	titleText: "",
 	titleElement: null,
+	editSlugLink: null,
 	deletePageLink: null,
 
 	initialize: function( anElement, options ){
@@ -38,8 +40,7 @@ mop.modules.CMS = new Class({
 	},
 	
 	clearPage: function(){
-//	    console.log( "clearPage", pageId );
-//		if( mop.util.getObjectId() == pageId ) return;
+	    console.log( "clearPage" );
 		this.destroyChildModules( this.pageContent );
 		this.destroyUIElements();
 		this.pageContent.empty();
@@ -91,17 +92,23 @@ mop.modules.CMS = new Class({
 	populate: function( html ){
 		
 		this.pageContent.set( 'html', html );
-		this.titleElement = this.element.getElement( ".pageTitle" );
-		
-		this.editSlugLink = this.titleElement.getElement( ".field-slug" );
-		this.editSlugLink.addEvent( "click", this.revealSlugEditField.bindWithEvent( this ) );
-		
+
 		this.uiElements = this.initUI( this.pageContent );
 		this.initModules( this.pageContent );		
 
+		this.titleElement = this.element.getElement( ".pageTitle" );
+		
+        
 		if( this.titleElement ){
+
 			this.titleText = this.titleElement.getElement( "h2" ).get( "text" );
 			this.deletePageLink = this.titleElement.getElement( "a.deleteLink" );
+
+    		this.editSlugLink = this.titleElement.getElement( ".field-slug" );
+    		this.editSlugLink.addEvent( "click", this.revealSlugEditField.bindWithEvent( this ) );
+
+			this.titleElement.getElement( ".field-title" ).retrieve( "Class").registerOnCompleteCallBack( this.renameNode.bind( this ) );
+
 			if( this.deletePageLink ) this.deletePageLink.addEvent( "click", this.onDeleteNodeReleased.bindWithEvent( this ) );
 			this.titleElement.getElement( ".field-slug" ).retrieve( "Class" ).registerOnLeaveEditModeCallback( this.onSlugEdit.bind( this ) );
 		}
@@ -117,17 +124,6 @@ mop.modules.CMS = new Class({
 		mop.util.stopEvent( e );
 		this.titleElement.getElement( ".field-slug .ipe" ).removeClass("hidden");
 		this.titleElement.getElement( ".field-slug" ).retrieve( "Class" ).enterEditMode();
-	},
-
-	postInitUIHook: function( ){
-	    
-		this.UIElements.each( function( aUIElement ){
-			if( aUIElement.element.hasClass( "field-title" ) ){
-        	    console.log( "postInitUIHook" , aUIElement, aUIElement.element );
-			    aUIElement.registerOnCompleteCallBack( this.renameNode.bind( this ) );
-			}
-		}, this );
-	
 	},
 	
 	renameNode: function( response, uiInstance ){

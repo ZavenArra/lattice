@@ -3756,7 +3756,7 @@ mop.ui.IPE = new Class({
 		this.clickEvent = null;
 		this.ipeElement.eliminate( "Class" );
 		this.ipeElement.destroy();
-		this.leaveEditMode();
+//		this.leaveEditMode();
 		this.parent();
 	}
 	
