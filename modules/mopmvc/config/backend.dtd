@@ -49,6 +49,7 @@
 	display				(inline|component) "inline"
 	allowSort   (true|false) "true"
 	allowTogglePublish	(true|false) "true"	
+	contentType  CDATA "document"
 >
 <!-- last two attributes currently not supported -->
 
