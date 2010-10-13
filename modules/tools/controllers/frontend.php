@@ -34,7 +34,7 @@ Class Frontend_Controller extends Controller {
 			//Now the includeData
 			if($iDataNodes = mop::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/includeData")){
 				foreach($iDataNodes as $iDataConfig){
-					$prefix = "\$content['includeData']";
+					$prefix = "\$content";
 					$this->makeIncludeDataHtml($iDataConfig, $prefix, null);
 				}
 			}

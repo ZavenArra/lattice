@@ -23,7 +23,7 @@ Class ConfigSite_Controller extends Controller {
 		$errors = array();
 		$templates = array();
 		foreach(mop::config('backend', '//template') as $template){
-			$templates = $template->getAttribute('name');
+			$templates[] = $template->getAttribute('name');
 			foreach(mop::config('backend', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item ){
 				$field = $item->getAttribute('field');
 				if(!preg_match('/^[A-z0-9]*$/', $field)){
@@ -32,8 +32,10 @@ Class ConfigSite_Controller extends Controller {
 			}
 		}
 
-		foreach(mop::config('backend', '/addableObject') as $addable){
-			if(!in_array($at = $addable->getAttribute('templateName'), $templates)){
+		foreach(mop::config('backend', '//addableObject') as $addable){
+      $at = $addable->getAttribute('templateName');
+      echo $at;
+			if(!in_array($at, $templates)){
 				$errors[] = "Addable object $at not defined as template in backend.xml";
 			}
 		}
