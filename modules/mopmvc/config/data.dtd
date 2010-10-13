@@ -8,7 +8,7 @@
 
 <!ELEMENT data (item*) >
 
-<!ELEMENT item (item*|field*|list*) >
+<!ELEMENT item (item|field|list)* >
 <!ATTLIST item
 	templateName		CDATA #REQUIRED
 >
