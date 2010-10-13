@@ -48,7 +48,7 @@ class BuildData_Controller extends Controller {
 			$data = array();
 			foreach(mop::config('data', 'field', $item ) as $content){
 				$field = $content->getAttribute('name');
-				echo 'This Field '.$field;
+				echo 'This Fielad '.$field."\n\n";
 				switch($field){
 				case 'title':
 				case 'slug':
@@ -61,10 +61,11 @@ class BuildData_Controller extends Controller {
 
 
 				//need to look up field and switch on field type	
-				$fieldInfo = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->tagName))->item(0);
+				$fieldInfo = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')))->item(0);
 				if(!$fieldInfo){
+          echo 'no?;;';
 					//check to see if this is a list field
-					if(mop::config('backend',  sprintf('//template[@name="%s"]/elements/list[@family="%s"]', $item->getAttribute('templateName'), $content->tagName))){
+					if(mop::config('backend',  sprintf('//template[@name="%s"]/elements/list[@family="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')))){
 						//its a list, just  skip/continue we deal with this after the object has been inserted
 						//add to array of lists to process
 						$lists[] = $field;
@@ -72,17 +73,21 @@ class BuildData_Controller extends Controller {
 					}
 					die("Bad field!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->tagName));
 				}
+        echo "tagname ".$fieldInfo->tagName."\n";
 
 				//special setup based on field type
 				switch($fieldInfo->tagName){
 				case 'singleFile':
 				case 'singleImage':
+          echo 'FILE';
 						$path_parts = pathinfo($content->nodeValue);
 						$savename = cms::makeFileSaveName($path_parts['basename']);	
 						if(file_exists($content->nodeValue)){
+              echo 'found a file!';
 							copy($content->nodeValue, cms::mediapath($savename).$savename);
 						} else {
 							echo "File does not exist {$content->nodeValue} \n";
+              die();
 						}
 						$data[$field] = $savename;
 						break;
