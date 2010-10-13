@@ -105,12 +105,6 @@ Class ConfigSite_Controller extends Controller {
 		flush();
 		ob_flush();
 	//	$this->scanf('%s', $response);
-		if($response == 'Yes'){
-			$this->doTemplateDatabase = true;
-		} else {
-			$this->doTemplateDatabase = false;
-		}
-		if($this->doTemplateDatabase == true){
 			echo "Truncating templates table \n";
 			flush();
 			ob_flush();
@@ -118,7 +112,6 @@ Class ConfigSite_Controller extends Controller {
 			$db->query('delete from objectmaps');
 			$db->query('alter table templates AUTO_INCREMENT = 1');
 			$db->query('alter table objectmaps AUTO_INCREMENT = 1');
-		}
 
 
 		//build templates
