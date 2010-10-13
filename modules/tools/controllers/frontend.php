@@ -22,7 +22,7 @@ Class Frontend_Controller extends Controller {
 			echo 'application/frontend/'.$view->getAttribute('name').'.php';
 			ob_start();
 			if($view->getAttribute('loadPage')=='true'){
-				echo "<h1><?\$content['main']['title'];?></h1>\n\n";
+				echo "<h1><?=\$content['main']['title'];?></h1>\n\n";
 				//this also implies that name is a templatename
 				foreach(mop::config('backend', 
 					sprintf('//template[@name="%s"]/elements/*', $view->getAttribute('name') )) as $element){
@@ -180,6 +180,7 @@ Class Frontend_Controller extends Controller {
 				$this->makeHtmlElement($element, "\${$family}ListItem", $indent.'  ');
 			}
 			echo $indent." </li>\n";
+			echo $indent."<?endforeach;?>\n";
 			echo $indent."</ul>\n\n";
 			break;
 
@@ -187,10 +188,14 @@ Class Frontend_Controller extends Controller {
 			if(!($size=$element->getAttribute('size'))){
 				$size = 'original';	
 			}
-			echo $indent."<img id=\"$field\" src=\"<?={$prefix}['$field']->{$size}->fullpath;?>\" width=\"<?={$prefix}['$field']->{$size}->width;?>\" height=\"<?={$prefix}['$field']->{$size}->height;?>\" alt=\"<?={$prefix}['$field']->{$size}->filename;?>\" />\n\n";
+			echo $indent."<?if(is_object({$prefix}['$field'])):?>\n";
+			echo $indent." <img id=\"$field\" src=\"<?={$prefix}['$field']->{$size}->fullpath;?>\" width=\"<?={$prefix}['$field']->{$size}->width;?>\" height=\"<?={$prefix}['$field']->{$size}->height;?>\" alt=\"<?={$prefix}['$field']->{$size}->filename;?>\" />\n";
+			echo $indent."<?endif;?>\n\n";
 			break;
 		case 'singleFile':
-			echo $indent."<a href=\"\"></a>\n\n";
+			echo $indent."<?if(is_object({$prefix}['$field'])):?>\n";
+			echo $indent."<a href=\"<?={$prefix}['$field']->filename;?>\"><?={$prefix}['$field']->filename;?>\</a>\n\n";
+			echo $indent."<?endif;?>\n\n";
 			break;
 		default:
 			echo $indent."<p class=\"$field\"> <?={$prefix}['$field'];?></p>\n\n";

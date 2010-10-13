@@ -135,7 +135,9 @@ class List_Controller extends CMS_Interface_Controller{
 		$template = $template->item(0);
 		$template = ORM::Factory('template', $template->getAttribute('templateName'));
 
-		$newid = cms::addObject($this->containerObject->id, $template->id);
+		$data = array('published'=>'true');
+
+		$newid = cms::addObject($this->containerObject->id, $template->id, $data);
 
 		$item = ORM::Factory('page', $newid);
 		$htmlChunks = cms::buildUIHtmlChunksForObject($item);

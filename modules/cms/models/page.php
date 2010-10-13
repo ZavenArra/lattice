@@ -193,23 +193,37 @@ class Page_Model extends ORM {
 		}
 
 		//find any lists
-		foreach(mop::config('backend', '//template[@name="%s"]/elements/list') as $list){
+		foreach(mop::config('backend', sprintf('//template[@name="%s"]/elements/list', $this->template->templatename)) as $list){
+
 			$family = $list->getAttribute('family');	
-			$content[$family] = $this->getListContent($family);
+			$content[$family] = $this->getListContentAsArray($family);
 		}
 
 		return $content;
 	}
 
+	public function getListContentAsArray($family){
+		$iter = $this->getListContent($family);
+		$content = array();
+		foreach($iter as $item){
+			$content[] = $item->getPageContent();
+		}
+		return $content;
+	}
+
+
+
 	public function getListContent($family){
 		//get container
+		$cTemplate = ORM::Factory('template', $family);
 		$container = ORM::Factory('page')
-			->where('templatename', $family)
+			->where('template_id', $cTemplate->id)
 			->where('parentid', $this->id)
 			->where('activity IS NULL')
 			->find();
 
 		//get children of
+		Kohana::log('info', 'hasdfasd');
 		return $container->getPublishedChildren();
 	}
 
