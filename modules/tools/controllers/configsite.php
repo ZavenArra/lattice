@@ -101,10 +101,10 @@ Class ConfigSite_Controller extends Controller {
 
 
 		echo "\nYou are attached to database ".Kohana::config('database.'.Database::instance_name($db).'.connection.database')."\n";
-		echo "Do you want to write template settings to this database - this will delete all previous templates ? (Yes/no)";
+	//	echo "Do you want to write template settings to this database - this will delete all previous templates ? (Yes/no)";
 		flush();
 		ob_flush();
-		$this->scanf('%s', $response);
+	//	$this->scanf('%s', $response);
 		if($response == 'Yes'){
 			$this->doTemplateDatabase = true;
 		} else {
