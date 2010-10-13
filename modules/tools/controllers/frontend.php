@@ -21,7 +21,7 @@ Class Frontend_Controller extends Controller {
 			touch('application/frontend/'.$view->getAttribute('name').'.php');
 			echo 'application/frontend/'.$view->getAttribute('name').'.php';
 			ob_start();
-			if($view->getAttribute('loadpage')=='true'){
+			if($view->getAttribute('loadPage')=='true'){
 				echo "<h1><?\$content['main']['title'];?></h1>\n\n";
 				//this also implies that name is a templatename
 				foreach(mop::config('backend', 
