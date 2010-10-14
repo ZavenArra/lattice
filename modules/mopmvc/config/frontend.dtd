@@ -8,7 +8,7 @@
 
 <!ELEMENT configuration (view*) >
 
-<!ELEMENT view (includeData*|subView)* >
+<!ELEMENT view (includeData|subView)* >
 <!ATTLIST view
 	name				CDATA #REQUIRED
 	loadPage			(true|false) "true"

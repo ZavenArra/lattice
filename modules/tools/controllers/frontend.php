@@ -18,7 +18,7 @@ Class Frontend_Controller extends Controller {
 		
 		foreach(mop::config('frontend', '//view') as $view ){
 			touch('application/frontend/'.$view->getAttribute('name').'.php');
-			chmod('application/frontend/'.$view->getAttribute('name').'.php', 777);
+			chmod('application/frontend/'.$view->getAttribute('name').'.php', 0777);
 			echo 'application/frontend/'.$view->getAttribute('name').'.php';
 			ob_start();
 			if($view->getAttribute('loadPage')=='true'){
@@ -39,7 +39,7 @@ Class Frontend_Controller extends Controller {
 				}
 			}
 
-			if($subviews = mop::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/subview")){
+			if($subviews = mop::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/subView")){
 				foreach($subviews as $subviewConfig){
 					echo "\n<?=\$".$subviewConfig->getAttribute('label').";?>\n";
 				}

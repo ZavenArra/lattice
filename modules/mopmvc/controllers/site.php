@@ -111,11 +111,12 @@ Class Site_Controller extends Controller{
 			}
 		}
 
-		if($subViews = mop::config('frontend',"//view[@name=\"{$page->template->templatename}\"]/subview")){
-			foreach($subViews as $subview){
-				$view = $subview->getAttribute('view');
-				$label = $subview->getAttribute('label');
-				$this->view->$label = mop::buildModule(array('modulename'=>$view/*, 'controllertype'=>'object'*/), $subview->getAttribute('label'));
+		if($subViews = mop::config('frontend',"//view[@name=\"{$page->template->templatename}\"]/subView")){
+				foreach($subViews as $subview){
+					$view = $subview->getAttribute('view');
+					$label = $subview->getAttribute('label');
+					$this->view->$label = mop::buildModule(array('modulename'=>$view/*, 'controllertype'=>'object'*/), $subview->getAttribute('label'));
+				}
 			}
 		}
 
