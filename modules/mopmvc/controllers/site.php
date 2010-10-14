@@ -53,21 +53,21 @@ Class Site_Controller extends Controller{
 			if($page->published==false || $page->activity!=null){
 				throw new Kohana_User_Exception('Page not availabled', 'The page with identifier '.$id.' is does not exist or is not available');
 			}
+      //look for the template, if it's not there just print out all the data raw
+      $view = $page->template->templatename;
+      if(file_exists('application/frontend/'.$view.'.php')){
+        $this->view = new View( $view);
+      } else {
+        $this->view = new View( 'default');
+      }
+
+      $this->view->content = $this->content;
 
 			//keep this first line for backwards compatibility
 			$this->content = array_merge($this->content, $page->getPageContent());
 			//but this is the real deal
 			$this->content['main'] = $page->getPageContent();
 
-      //look for the template, if it's not there just print out all the data raw
-      $view = $page->template->templatename;
-      if(file_exists('application/frontend/'.$view.'.php')){
-        $this->view = new View( $page->template->templatename);
-      } else {
-        $this->view = new View( 'default');
-      }
-
-      $this->view->content = $this->content;
 
 		} else {
 			//check for a virtual page specified in frontend.yaml
@@ -76,13 +76,7 @@ Class Site_Controller extends Controller{
 			}
 		}
 
-				//look for the template, if it's not there just print out all the data raw
-		if(!$this->view){
-			$this->view = new View( 'sdefault');
-		}
-
-
-		$this->view->content = $this->content;
+		//call this->view load data
 		
 		if($eDataNodes = mop::config('frontend',"//view[@name=\"{$page->template->templatename}\"]/includeData")){
 			foreach($eDataNodes as $eDataConfig){
@@ -101,7 +95,7 @@ Class Site_Controller extends Controller{
 
 				//apply optional template filter
 				$objects->templateFilter($eDataConfig->getAttribute('templateName'));
-	
+
 
 				//apply optional SQL where filter
 				if($where = $eDataConfig->getAttribute('where')){
@@ -115,13 +109,13 @@ Class Site_Controller extends Controller{
 					$this->view->content[$eDataConfig->getAttribute('label')][] = $object->getContent();
 				}
 			}
+		}
 
 		if($subViews = mop::config('frontend',"//view[@name=\"{$page->template->templatename}\"]/subview")){
-				foreach($subViews as $subview){
-					$view = $subview->getAttribute('view');
-					$label = $subview->getAttribute('label');
-					$this->view->$label = mop::buildModule(array('modulename'=>$view/*, 'controllertype'=>'object'*/), $subview->getAttribute('label'));
-				}
+			foreach($subViews as $subview){
+				$view = $subview->getAttribute('view');
+				$label = $subview->getAttribute('label');
+				$this->view->$label = mop::buildModule(array('modulename'=>$view/*, 'controllertype'=>'object'*/), $subview->getAttribute('label'));
 			}
 		}
 
@@ -157,49 +151,5 @@ Class Site_Controller extends Controller{
 		return;
 	}
 
-	/*
-	 * Function: getChildrenContent($pageid, & $content)
-	 * Deprecated function to load content of children.  Use $page->getPublishedChildren() instead
-	 */
-	public function getChildrenContent($pageid, & $content){
-		$page = ORM::Factory('page', $pageid);
-		$pages = $page->getPublishedChildren;
-
-		$content = array();
-		foreach($pages as $page){
-			$pagecontent = $page->getPageContent();
-			$content[$page->slug] = $pagecontent;
-		}
-	}
-
-
-	/*
-	 * Function: getContentsByPageId($pageid)
-	 * Deprecated function used to build content array for a given page.
-	 * The correct way to do this now is to call getPageContent on a loaded Page model
-	 */
-	protected function getContentsByPageId($pageid){
-		return ORM::Factory('page', $pageid)->getPageContent();
-	}
-
-	/*
-	 * Function: getContentsByPageIdentifier($pageid)
-	 * Deprecated function used to build content array for a given page.
-	 * The correct way to do this now is to call getPageContent on a loaded Page model
-	 */
-	protected function getContentsByPageIdentifier($identifier){
-		return ORM::Factory('page', $pageid)->getPageContent();
-	}
-
-	/*
-	 * Function: getListData($instance, $pagid=null)
-	 * Deprecated function used to build content array for a given list.
-	 * The correct way to do this now is to call getListData a loaded Page model
-	 * Soon we'll get away from the page vs. list content and this function will
-	 * completely disappear
-	 */
-	protected function getListData($instance, $pageid){
-			return ORM::Factory('page', $pageid)->getListData();
-	}
 
 }

@@ -104,6 +104,10 @@ Class mop {
 		if(!Kohana::find_file('controllers', $module['modulename'] ) ){
 			if(!isset($module['controllertype'])){
 				$view = new View($module['modulename']);
+				$object = ORM::Factory('page', $module['modulename']);
+				if($object->loaded){ // in this case it's a slug for a specific object
+					$view->content = array();
+				}
 				return $view->render();
 			}
       try {
