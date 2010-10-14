@@ -29,7 +29,7 @@ class BuildData_Controller extends Controller {
 			$lists = array();
 			if(!$item->getAttribute('templateName')){
 				echo $item->tagName;
-				die("No templatename specified for Item\n\n");
+        die("No templatename specified for Item ".$item->tagName."\n\n");
 			}
       echo "\n found contentnod ".$item->getAttribute('templateName');
 			flush();
@@ -73,13 +73,13 @@ class BuildData_Controller extends Controller {
 					}
 					die("Bad field!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->tagName));
 				}
-        echo "tagname ".$fieldInfo->tagName."\n";
+        echo "\ntagname\t".$fieldInfo->tagName."\n";
 
 				//special setup based on field type
 				switch($fieldInfo->tagName){
 				case 'singleFile':
 				case 'singleImage':
-          echo 'FILE';
+          echo "\nFILE: ";
 						$path_parts = pathinfo($content->nodeValue);
 						$savename = cms::makeFileSaveName($path_parts['basename']);	
 						if(file_exists($content->nodeValue)){
@@ -115,11 +115,13 @@ class BuildData_Controller extends Controller {
 				->find_all();
 			$component = null;
 			foreach($existing as $aComponent){
-				echo 'WOW'.$aComponent->contenttable->title;
-				if($aComponent->contenttable->title == $data['title']){
-					$component = $aComponent;	
-					break;
-				}
+				echo "\n\n".$aComponent->contenttable->title;
+        if(isset($data['title'])){
+          if($aComponent->contenttable->title == $data['title']){
+            $component = $aComponent;	
+            break;
+          }
+        }
 			}
 			if($component){
 				echo 'COMPONENT';
