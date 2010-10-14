@@ -72,6 +72,48 @@ Class Site_Controller extends Controller{
 
 
 		//possible hook for processing content	
+		$this->view->content = $this->content;
+		
+		if($eDataNodes = mop::config('frontend',"//view[@name=\"{$page->template->templatename}\"]/includeData")){
+			foreach($eDataNodes as $eDataConfig){
+				
+				$objects = ORM::Factory('page');
+
+				//apply optional parent filter
+				if($from = $eDataConfig->getAttribute('from')){
+					if($from=='parent'){
+						$objects->where('parentid', $page->id);
+					} else {
+						$from = ORM::Factory('page', $from);
+						$objects->where('parentid', $from->id);	
+					}
+				}
+
+				//apply optional template filter
+				$objects->templateFilter($eDataConfig->getAttribute('templateName'));
+	
+
+				//apply optional SQL where filter
+				if($where = $eDataConfig->getAttribute('where')){
+					$objects->where($where);
+				}
+
+				$objects = $objects->find_all();
+
+				$this->view->content[$eDataConfig->getAttribute('label')] = array();
+				foreach($objects as $object){
+					$this->view->content[$eDataConfig->getAttribute('label')][] = $object->getContent();
+				}
+			}
+
+		if($subViews = mop::config('frontend',"//view[@name=\"{$page->template->templatename}\"]/subView")){
+				foreach($subViews as $subview){
+					$view = $subview->getAttribute('view');
+					$label = $subview->getAttribute('label');
+					$this->view->$label = mop::buildModule(array('modulename'=>$view/*, 'controllertype'=>'object'*/), $subview->getAttribute('label'));
+				}
+			}
+		}
 
 
 		if($this->responseFormat=='AJAX'){
