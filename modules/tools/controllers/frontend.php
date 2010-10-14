@@ -19,6 +19,7 @@ Class Frontend_Controller extends Controller {
 		foreach(mop::config('frontend', '//view') as $view ){
 			echo 'hey';
 			touch('application/frontend/'.$view->getAttribute('name').'.php');
+			chmod('application/frontend/'.$view->getAttribute('name').'.php', 777);
 			echo 'application/frontend/'.$view->getAttribute('name').'.php';
 			ob_start();
 			if($view->getAttribute('loadPage')=='true'){
