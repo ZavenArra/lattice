@@ -31,7 +31,7 @@ class BuildData_Controller extends Controller {
 				echo $item->tagName;
         die("No templatename specified for Item ".$item->tagName."\n\n");
 			}
-      echo "\n found contentnod ".$item->getAttribute('templateName');
+      //echo "\n found contentnod ".$item->getAttribute('templateName');
 			flush();
 			ob_flush();
 			$object = ORM::Factory('page');
@@ -44,11 +44,11 @@ class BuildData_Controller extends Controller {
 				die("Can't add list family as template name in data.xml: {$template->templatename} \n");
 			}
 
-      echo ')))'.$item->getAttribute('templateName');
+      //echo ')))'.$item->getAttribute('templateName');
 			$data = array();
 			foreach(mop::config('data', 'field', $item ) as $content){
 				$field = $content->getAttribute('name');
-				echo 'This Fielad '.$field."\n\n";
+				//echo 'This Fielad '.$field."\n\n";
 				switch($field){
 				case 'title':
 				case 'slug':
@@ -63,7 +63,6 @@ class BuildData_Controller extends Controller {
 				//need to look up field and switch on field type	
 				$fieldInfo = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')))->item(0);
 				if(!$fieldInfo){
-          echo 'no?;;';
 					//check to see if this is a list field
 					if(mop::config('backend',  sprintf('//template[@name="%s"]/elements/list[@family="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')))){
 						//its a list, just  skip/continue we deal with this after the object has been inserted
@@ -73,17 +72,17 @@ class BuildData_Controller extends Controller {
 					}
 					die("Bad field!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->tagName));
 				}
-        echo "\ntagname\t".$fieldInfo->tagName."\n";
+        //echo "\ntagname\t".$fieldInfo->tagName."\n";
 
 				//special setup based on field type
 				switch($fieldInfo->tagName){
 				case 'singleFile':
 				case 'singleImage':
-          echo "\nFILE: ";
+          //echo "\nFILE: ";
 						$path_parts = pathinfo($content->nodeValue);
 						$savename = cms::makeFileSaveName($path_parts['basename']);	
 						if(file_exists($content->nodeValue)){
-              echo 'found a file!';
+              //echo 'found a file!';
 							copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']).$content->nodeValue, cms::mediapath($savename).$savename);
 						} else {
 							echo "File does not exist {$content->nodeValue} \n";
@@ -92,7 +91,7 @@ class BuildData_Controller extends Controller {
 						$data[$field] = $savename;
 						break;
 				case 'list':
-					echo "found a list\n";
+					//echo "found a list\n";
 					//skip this entirely and pick up later as child
 					////this should never come throug here
 										break;
@@ -103,8 +102,8 @@ class BuildData_Controller extends Controller {
 
 			}
 			$data['published'] = true;
-			echo 'parent'.$parentId;
-			print_r($data);
+			//echo 'parent'.$parentId;
+			//print_r($data);
 
 			//now we check for a title collision
 			//if there is a title collision, we assume that this is a component
@@ -115,7 +114,7 @@ class BuildData_Controller extends Controller {
 				->find_all();
 			$component = null;
 			foreach($existing as $aComponent){
-				echo "\n\n".$aComponent->contenttable->title;
+				//echo "\n\n".$aComponent->contenttable->title;
         if(isset($data['title'])){
           if($aComponent->contenttable->title == $data['title']){
             $component = $aComponent;	
@@ -124,8 +123,8 @@ class BuildData_Controller extends Controller {
         }
 			}
 			if($component){
-				echo 'COMPONENT';
-				print_r($data);
+				//echo 'COMPONENT';
+				//print_r($data);
 				$component->updateWithArray($data);
 				$objectId = $component->id;
 			} else {
@@ -138,7 +137,7 @@ class BuildData_Controller extends Controller {
 			}
 
 			foreach(mop::config('data', 'list', $item) as $list){
-				echo "FOUND A LIST\n\n";
+				//echo "FOUND A LIST\n\n";
 				//find the container
 				$listT = ORM::Factory('template', $list->getAttribute('family'));
 				$container = ORM::Factory('page')
