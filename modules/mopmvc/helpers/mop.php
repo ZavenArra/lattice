@@ -155,6 +155,9 @@ Class mop {
 		$data = array();
 
 		$viewConfig = mop::config('frontend', "//view[@name=\"$view\"]")->item(0);
+		if(!$viewConfig){
+			die("No View setup in frontend.xml by that name: $view");
+		}
 		if($viewConfig->getAttribute('loadPage')){
 			$object = ORM::Factory('page', $slug);
 			if(!$object->loaded){
