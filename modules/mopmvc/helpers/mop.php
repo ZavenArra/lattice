@@ -191,7 +191,7 @@ Class mop {
 				}
 
 				//apply optional template filter
-				$objects->templateFilter($eDataConfig->getAttribute('templateName'));
+				$objects->templateFilter($eDataConfig->getAttribute('templateFilter'));
 
 
 				//apply optional SQL where filter
@@ -201,7 +201,7 @@ Class mop {
 
 				$objects = $objects->find_all();
 
-				$content[$eDataConfig->getAttribute('label')] = array();
+				$data['content'][$eDataConfig->getAttribute('label')] = array();
 				foreach($objects as $object){
 					$data['content'][$eDataConfig->getAttribute('label')][] = $object->getContent();
 				}

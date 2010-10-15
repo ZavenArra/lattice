@@ -583,19 +583,20 @@ class Page_Model extends ORM {
 		if(!$templates){
 			return $this;
 		}
+			$db = new Database();
 		if(strpos(',', $templates)){
 			$tNames = explode(',', $templates);
 			$tIds = array();
 			foreach($tNames as $tname){
-				$t = ORM::Factory('template', $tname);
-				$tIds[] = $t->id;
+				$result = $db->query("Select id from templates where templatename = '$templates'");
+				$tIds[] = $result->current()->id;
 			}
 			$this->in('template_id', $tIds);
 		} else if ($templates == 'all'){
 			//set no filter
 		} else {
-			$t = ORM::Factory('template', $templates);
-			$this->where('template_id', $t->id);
+			$result = $db->query("Select id from templates where templatename = '$templates'");
+			$this->where('template_id', $result->current()->id);
 		}
 		return $this;
 	}
