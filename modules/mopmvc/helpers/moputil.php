@@ -82,5 +82,21 @@ Class moputil {
 		}
 	}
 
+	public static $modulos;
+
+	public static function modulo($identifier, $options){
+		if(!is_array(self::$modulo)){
+			self::$modulos = array();
+		}
+		if(!isset(self::$modulos[$identifier])){
+			self::$modulos[$identifier] = 0;
+		}
+		$index = self::$modulos[$identifier];
+		self::$modulos[$identifier]++;
+		return $options[$index];
+
+	}
+
+
 
 }
