@@ -39,7 +39,7 @@ Class Frontend_Controller extends Controller {
 				}
 			}
 
-			if($subviews = mop::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/subview")){
+			if($subviews = mop::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/subView")){
 				foreach($subviews as $subviewConfig){
 					echo "\n<?=\$".$subviewConfig->getAttribute('label').";?>\n";
 				}
