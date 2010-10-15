@@ -174,7 +174,7 @@ Class mop {
 				//apply optional parent filter
 				if($from = $eDataConfig->getAttribute('from')){
 					if($from=='parent'){
-						$objects->where('parentid', $page->id);
+						$objects->where('parentid', $object->id);
 					} else {
 						$from = ORM::Factory('page', $from);
 						$objects->where('parentid', $from->id);	

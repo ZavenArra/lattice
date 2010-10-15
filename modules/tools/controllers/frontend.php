@@ -17,8 +17,8 @@ Class Frontend_Controller extends Controller {
 		ob_flush();
 		
 		foreach(mop::config('frontend', '//view') as $view ){
+			echo 'hey';
 			touch('application/frontend/'.$view->getAttribute('name').'.php');
-			chmod('application/frontend/'.$view->getAttribute('name').'.php', 0777);
 			echo 'application/frontend/'.$view->getAttribute('name').'.php';
 			ob_start();
 			if($view->getAttribute('loadPage')=='true'){
@@ -39,7 +39,7 @@ Class Frontend_Controller extends Controller {
 				}
 			}
 
-			if($subviews = mop::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/subView")){
+			if($subviews = mop::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/subview")){
 				foreach($subviews as $subviewConfig){
 					echo "\n<?=\$".$subviewConfig->getAttribute('label').";?>\n";
 				}
@@ -53,7 +53,7 @@ Class Frontend_Controller extends Controller {
 
 
 
-		echo "\n\nDone\n";
+		echo "Done\n";
 	}
 
 	public function makeIncludeDataHtml($iDataConfig, $prefix, $parentTemplate, $indent=''){
@@ -136,6 +136,7 @@ Class Frontend_Controller extends Controller {
 				echo $indent." case '$templateName':?>\n";
 			}
 			echo $indent."  <li class=\"$templateName\">\n";
+      echo $indent."   "."<h2><?=\${$label}Item['title'];?></h2>\n\n";
 			foreach(mop::config('backend', 
 				sprintf('//template[@name="%s"]/elements/*', $templateName )) as $element){
 					$this->makeHtmlElement($element, "\${$label}Item", $indent."   ");
