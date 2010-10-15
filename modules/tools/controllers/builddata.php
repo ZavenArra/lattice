@@ -82,7 +82,6 @@ class BuildData_Controller extends Controller {
 						$path_parts = pathinfo($content->nodeValue);
 						$savename = cms::makeFileSaveName($path_parts['basename']);	
 						if(file_exists($content->nodeValue)){
-              //echo 'found a file!';
 							copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']).$content->nodeValue, cms::mediapath($savename).$savename);
 						} else {
 							echo "File does not exist {$content->nodeValue} \n";
