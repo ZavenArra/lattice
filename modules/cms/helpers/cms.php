@@ -377,6 +377,7 @@ class CMS {
 			}
 		}
 		$newpage->contenttable->save();
+		$newpage->save();
 
 		//look up any components and add them as well
 
