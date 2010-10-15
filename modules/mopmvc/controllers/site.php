@@ -71,7 +71,7 @@ Class Site_Controller extends Controller{
 
 		//call this->view load data
 		//get all the data for the page
-		$viewContent = mop::getViewContent($pageidorslug, $viewName);
+		$viewContent = mop::getViewContent($viewName, $pageidorslug);
 		foreach($viewContent as $key=>$content){
 			$this->view->$key = $content;
 		}	

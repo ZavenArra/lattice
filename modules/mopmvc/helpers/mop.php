@@ -154,6 +154,15 @@ Class mop {
 
 		$data = array();
 
+    if($view == 'default'){
+			$object = ORM::Factory('page', $slug);
+			if(!$object->loaded){
+				die('mop::getViewContent : Default view callled with no slug');
+			}
+			$data['content']['main'] = $object->getPageContent();
+      return $data;
+    }
+
 		$viewConfig = mop::config('frontend', "//view[@name=\"$view\"]")->item(0);
 		if(!$viewConfig){
 			die("No View setup in frontend.xml by that name: $view");
