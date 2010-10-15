@@ -49,79 +49,35 @@ Class Site_Controller extends Controller{
 
 		$page = ORM::Factory('page', $pageidorslug);
 		//some access control
+		$viewName = null;
 		if($page->loaded){
 			if($page->published==false || $page->activity!=null){
 				throw new Kohana_User_Exception('Page not availabled', 'The page with identifier '.$id.' is does not exist or is not available');
 			}
       //look for the template, if it's not there just print out all the data raw
-      $view = $page->template->templatename;
-      if(file_exists('application/frontend/'.$view.'.php')){
-        $this->view = new View( $view);
-      } else {
-        $this->view = new View( 'default');
-      }
+      $viewName = $page->template->templatename;
+      if(!file_exists('application/frontend/'.$viewName.'.php')){
+				$viewName = 'default';
+			}
+			$this->view = new View( $viewName );
 
-      $this->view->content = $this->content;
-
-			//keep this first line for backwards compatibility
-			$this->content = array_merge($this->content, $page->getPageContent());
-			//but this is the real deal
-			$this->content['main'] = $page->getPageContent();
-
-
+    
 		} else {
 			//check for a virtual page specified in frontend.yaml
-			if(! mop::config('frontend', "/view/{$page->template->templatename}")){
-				throw new Kohana_User_Exception('Page not availabled', 'The page with identifier '.$id.' is does not exist or is not available');
-			}
+			//a virtual page will be one that does not match a template
+			$viewname = $pageidorslug;
+			$this->view = new View( $viewname );
 		}
 
 		//call this->view load data
-		
-		if($eDataNodes = mop::config('frontend',"//view[@name=\"{$page->template->templatename}\"]/includeData")){
-			foreach($eDataNodes as $eDataConfig){
-				
-				$objects = ORM::Factory('page');
-
-				//apply optional parent filter
-				if($from = $eDataConfig->getAttribute('from')){
-					if($from=='parent'){
-						$objects->where('parentid', $page->id);
-					} else {
-						$from = ORM::Factory('page', $from);
-						$objects->where('parentid', $from->id);	
-					}
-				}
-
-				//apply optional template filter
-				$objects->templateFilter($eDataConfig->getAttribute('templateName'));
+		//get all the data for the page
+		$viewContent = mop::getViewContent($pageidorslug, $viewName);
+		foreach($viewContent as $key=>$content){
+			$this->view->$key = $content;
+		}	
 
 
-				//apply optional SQL where filter
-				if($where = $eDataConfig->getAttribute('where')){
-					$objects->where($where);
-				}
-
-				$objects = $objects->find_all();
-
-				$this->view->content[$eDataConfig->getAttribute('label')] = array();
-				foreach($objects as $object){
-					$this->view->content[$eDataConfig->getAttribute('label')][] = $object->getContent();
-				}
-			}
-		}
-
-		if($subViews = mop::config('frontend',"//view[@name=\"{$page->template->templatename}\"]/subView")){
-				foreach($subViews as $subview){
-					$view = $subview->getAttribute('view');
-					$label = $subview->getAttribute('label');
-					$this->view->$label = mop::buildModule(array('modulename'=>$view/*, 'controllertype'=>'object'*/), $subview->getAttribute('label'));
-				}
-			}
-		}
-
-
-		
+		//possible hook for processing content	
 
 
 		if($this->responseFormat=='AJAX'){
@@ -138,19 +94,6 @@ Class Site_Controller extends Controller{
 	}
 
 
-
-	/*
-	 * Function: __buildPageContent($content, $page)
-	 * Deprecated function used to build content array for a given page.
-	 * The correct way to do this now is to call getPageContent on a loaded Page model
-	 * */
-	protected function __buildPageContent(& $content, & $page){
-		if (is_array($content))
-			$content = array_merge($content, $page->getPageContent());
-		else
-			$content = $page->getPageContent();
-		return;
-	}
 
 
 }

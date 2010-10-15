@@ -26,6 +26,7 @@
 
 <!ELEMENT subView EMPTY >
 <!ATTLIST subView
-	view				CDATA #REQUIRED
+	view				CDATA #IMPLIED 
+	slug				CDATA #IMPLIED
 	label				CDATA #REQUIRED
 >

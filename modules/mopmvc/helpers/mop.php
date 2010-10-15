@@ -106,7 +106,9 @@ Class mop {
 				$view = new View($module['modulename']);
 				$object = ORM::Factory('page', $module['modulename']);
 				if($object->loaded){ // in this case it's a slug for a specific object
-					$view->content = array();
+					foreach(mop::getViewContent($object->id, $object->template->templatename) as $key=>$content){
+						$view->$key = $content;
+					}
 				}
 				return $view->render();
 			}
@@ -146,6 +148,86 @@ Class mop {
 		} else {
 			$this->view->$templatevar = $module->view->render();
 		}
+	}
+
+	public static function getViewContent($view, $slug=null){
+
+		$data = array();
+
+		$viewConfig = mop::config('frontend', "//view[@name=\"$view\"]")->item(0);
+		if($viewConfig->getAttribute('loadPage')){
+			$object = ORM::Factory('page', $slug);
+			if(!$object->loaded){
+				die('mop::getViewContent : View specifies loadPage but no page to load');
+			}
+			$data['content']['main'] = $object->getPageContent();
+		}
+
+		if($eDataNodes = mop::config('frontend',"includeData", $viewConfig)){
+			foreach($eDataNodes as $eDataConfig){
+
+				$objects = ORM::Factory('page');
+
+				//apply optional parent filter
+				if($from = $eDataConfig->getAttribute('from')){
+					if($from=='parent'){
+						$objects->where('parentid', $page->id);
+					} else {
+						$from = ORM::Factory('page', $from);
+						$objects->where('parentid', $from->id);	
+					}
+				}
+
+				//apply optional template filter
+				$objects->templateFilter($eDataConfig->getAttribute('templateName'));
+
+
+				//apply optional SQL where filter
+				if($where = $eDataConfig->getAttribute('where')){
+					$objects->where($where);
+				}
+
+				$objects = $objects->find_all();
+
+				$content[$eDataConfig->getAttribute('label')] = array();
+				foreach($objects as $object){
+					$data['content'][$eDataConfig->getAttribute('label')][] = $object->getContent();
+				}
+			}
+		}
+
+		if($subViews = mop::config('frontend',"subView", $viewConfig)){
+			foreach($subViews as $subview){
+				$view = $subview->getAttribute('view');
+				$slug = $subview->getAttribute('slug');
+				$label = $subview->getAttribute('label');
+				if(mop::config('frontend', "//view[@name=\"$view\"]")){
+
+					if($view && $slug){
+						$subViewContent = mop::getViewContent($view, $slug);
+					} else if($slug){
+						$object = ORM::Factory('page', $slug);
+						$view = $object->template->templatename;
+						$subViewContent = mop::getViewContent($view, $slug);
+					} else if($view){
+						$subViewContent = mop::getViewContent($view);
+					} else {
+						die("subview $label must have either view or slug");
+					}
+					$subView = new View($view);
+
+					foreach($subViewContent as $key=>$content){
+						$subView->$key = $content;
+					}
+					$data[$label] = $subView->render();
+				} else {
+					//assume it's a module
+					$data[$label] = mop::buildModule(array('modulename'=>$view/*, 'controllertype'=>'object'*/), $subview->getAttribute('label'));
+				}
+			}
+		}
+
+		return $data;
 	}
 
 
