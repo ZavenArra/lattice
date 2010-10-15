@@ -343,8 +343,10 @@ class CMS {
 			//need to switch here on type of field
 			
 			switch($field){
-			case 'title':
 			case 'slug':
+					$newpage->$field = $data[$field];
+					continue(2);
+			case 'title':
 					$newpage->contenttable->$field = $data[$field];
 					continue(2);
 			}
