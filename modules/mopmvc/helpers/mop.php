@@ -201,9 +201,10 @@ Class mop {
 
 				$objects = $objects->find_all();
 
-				$data['content'][$eDataConfig->getAttribute('label')] = array();
-				foreach($objects as $object){
-					$data['content'][$eDataConfig->getAttribute('label')][] = $object->getContent();
+				$label = $eDataConfig->getAttribute('label');
+				$data['content'][$label] = array();
+				foreach($objects as $includeObject){
+					$data['content'][$label][] = $includeObject->getContent();
 				}
 			}
 		}
