@@ -127,7 +127,7 @@ class BuildData_Controller extends Controller {
 				echo 'COMPONENT';
 				print_r($data);
 				$component->updateWithArray($data);
-				$object->id = $component->id;
+				$objectId = $component->id;
 			} else {
 				$objectId = cms::addObject($parentId, $template->id, $data);
 			}
