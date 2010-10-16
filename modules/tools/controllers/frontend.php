@@ -195,7 +195,7 @@ Class Frontend_Controller extends Controller {
 			break;
 		case 'singleFile':
 			echo $indent."<?if(is_object({$prefix}['$field'])):?>\n";
-			echo $indent."<a href=\"<?={$prefix}['$field']->filename;?>\"><?={$prefix}['$field']->filename;?>\</a>\n\n";
+			echo $indent."<a href=\"<?={$prefix}['$field']->fullpath;?>\"><?={$prefix}['$field']->filename;?></a>\n\n";
 			echo $indent."<?endif;?>\n\n";
 			break;
 		default:
