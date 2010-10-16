@@ -15,19 +15,6 @@ class ContentBase_Model extends ORM {
 	private $nonmappedfields = array('id', 'page_id', 'title', 'activity', 'loaded');
 
 	/*
-	 * Variable: fileFields 
-	 * Array of possible fields to use for saving files
-	 */
-	protected $fileFields = array('file', 'file1', 'file2', 'file3', 'file4');
-
-
-	/*
-	 * Variable: objectFields 
-	 * Array of possible fields to use for saving objects
-	 */
-	protected $objectFields = array('object1', 'object2', 'object3', 'object4');
-
-	/*
 	 * Variable: templatename
 	 * Private variable storing the name of the temple the current object is using.
 	 */
@@ -58,7 +45,7 @@ class ContentBase_Model extends ORM {
 		//check for dbmap
 		$column = mop::dbmap( ORM::Factory('page', parent::__get('page_id'))->template_id, $column);
 
-		if(in_array($column, $this->objectFields)){
+		if(strstr($column, 'object')){
 			$sub = ORM::Factory('page', parent::__get($column));
 			if(!$sub->loaded){
 				return array();
@@ -70,7 +57,7 @@ class ContentBase_Model extends ORM {
 			return $values;
 		}
 
-		if(in_array($column, $this->fileFields) && !is_object(parent::__get($column)) ){
+		if(strstr($column, 'file') && !is_object(parent::__get($column)) ){
 			$file = ORM::Factory('file', parent::__get($column));
 			//file needs to know what module it's from if its going to check against valid resizes
 			Kohana::log('info', var_export($file->as_array(), true));
