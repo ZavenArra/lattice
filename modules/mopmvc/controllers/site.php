@@ -7,6 +7,8 @@
  */
 Class Site_Controller extends Controller{
 
+	public static $slug;
+
 	/*
 	 * Variable: $content
 	 * Holds the content for a page
@@ -36,16 +38,7 @@ Class Site_Controller extends Controller{
 	 */
 	public function page($pageidorslug=null) {
 
-		/*
-		$newConfig = $configArray;
-		$newConfig['views'] = array();
-		foreach($configArray['views'] as $view){
-			$newConfig['views'][$view['view']] = $view;	
-		}
-		$configArray = $newConfig;
-		 */
-
-
+		self::$slug = $pageidorslug;
 
 		$page = ORM::Factory('page', $pageidorslug);
 		//some access control
