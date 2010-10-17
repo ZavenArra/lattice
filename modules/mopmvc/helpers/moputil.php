@@ -83,9 +83,10 @@ Class moputil {
 	}
 
 	public static $modulos;
-
+	public static $modulosOptionsCount;
 	public static function modulo($identifier, $options){
-		if(!is_array(self::$modulo)){
+		self::$modulosOptionsCount = count( $options );
+		if(!is_array(self::$modulos)){
 			self::$modulos = array();
 		}
 		if(!isset(self::$modulos[$identifier])){
@@ -93,7 +94,7 @@ Class moputil {
 		}
 		$index = self::$modulos[$identifier];
 		self::$modulos[$identifier]++;
-		return $options[$index];
+		return $options[$index%self::$modulosOptionsCount];
 
 	}
 
