@@ -134,13 +134,13 @@
 	
 		<template name="complexListModule" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-				<list family="complexList" label="Complex List" distplay="inline">
-					<addableObject templateName="copmlexListItem" addtext="Add List"/>
+				<list family="complexList" label="Complex List" display="inline">
+					<addableObject templateName="complexListItem" addText="Add List"/>
 				</list>
 			</elements>
 		</template>
 		
-		<template name="complexListItem" contentType="document" allowChildsort="true" allowDelete="false" allowTogglePublish=false>
+		<template name="complexListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<ipe field="title" label="Title" rows="1"/>
 				<ipe field="description" label="Description"/>
