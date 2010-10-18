@@ -23,6 +23,7 @@
 	allowDelete 		(true|false) "true"
 	allowTogglePublish	(true|false) "true"
 	allowChildSort		(true|false) "true"
+	sortDirection		(ASC|DESC)	"ASC"
 >
 
 <!ELEMENT elements (ipe|list|singleImage|singleFile|radioGroup|multiSelect|date|time|dateRange|checkbox|time)* >
@@ -47,7 +48,8 @@
 	family				CDATA #REQUIRED
 	label				CDATA #REQUIRED
 	display				(inline|component) "inline"
-	allowSort   (true|false) "true"
+	allowSort   		(true|false) "true"
+	sortDirection		(ASC|DESC)	"ASC"
 	allowTogglePublish	(true|false) "true"	
 	contentType  CDATA "document"
 >
