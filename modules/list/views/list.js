@@ -29,7 +29,7 @@ mop.modules.ListModule = new Class({
 		this.allowChildSort = ( this.getValueFromClassName( "allowChildSort" ) != "true" ) ? false : true;
 		this.sortDirection = this.getValueFromClassName( "sortDirection" );
 
-		if( this.allowChildSort ) this.makeSortable();
+		if( this.allowChildSort == "true" ) this.makeSortable();
 	},
 
 	toString: function(){

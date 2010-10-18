@@ -242,7 +242,7 @@ mop.modules.navigation.Navigation = new Class({
 			}, this );
 		}
 		
-		if( aNode.allowChildSort ) this.makeTierSortable( whichTier );
+		if( aNode.allowChildSort == "true" ) this.makeTierSortable( whichTier );
 		
 		this.navSlide.toElement( this.getTierElement( whichTier ) );
 
