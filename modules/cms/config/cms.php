@@ -9,8 +9,8 @@ $config['defaultsettings']['editable_title'] = true;
 $config['newObjectPlacement'] = 'bottom';
 
 $config['uiresize'] =  array(
-	'width'=>150,
-	'height'=>75,
+	'width'=>240,
+	'height'=>120,
 	'prefix' => 'uithumb',
 	'forceDimension'=>'width',
 	'crop'=>true,
@@ -27,4 +27,4 @@ $config['basemediapath'] = 'application/media/';
 
 $config['imagequality'] = 85;
 
-$config['enableSlugEditing'] = false;
+$config['enableSlugEditing'] = true;
