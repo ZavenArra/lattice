@@ -92,8 +92,11 @@ class List_Controller extends CMS_Interface_Controller{
 		}
 	
     //actually we need to do an absolute path for local config
-		$this->view->label =  mop::config('backend', sprintf('//list[@family="%s"]', $this->listClass))->item(0)->getAttribute('label');
-		$this->view->class =  mop::config('backend', sprintf('//list[@family="%s"]', $this->listClass))->item(0)->getAttribute('cssClasses') . ' sortDirection-'.$this->sortdirection;
+		$listConfig =  mop::config('backend', sprintf('//list[@family="%s"]', $this->listClass))->item(0);
+		$this->view->label =  $listConfig->getAttribute('label');
+		$this->view->class =  $listConfig->getAttribute('cssClasses');
+		$this->view->class .= ' allowChildSort-'.$listConfig->getAttribute('allowChildSort');
+	 	$this->view->class .= ' sortDirection-'.$this->sortdirection;
 		$this->view->items = $html;
 		$this->view->instance = $this->listClass;
 
