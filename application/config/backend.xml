@@ -132,12 +132,32 @@
 			</elements>
 		</template>
 	
-		<template name="complexlistmodulepage" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<template name="complexListModule" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-
+				<list family="complexList" label="Complex List" display="inline">
+					<addableObject templateName="complexListItem" addText="Add List"/>
+				</list>
 			</elements>
 		</template>
 		
+		<template name="complexListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+			<elements>
+				<ipe field="title" label="Title" rows="1"/>
+				<ipe field="description" label="Description"/>
+				<checkbox field="singleCheckbox" label="One"/>
+				<radioGroup field="singleRadioGroup" groupLabel="Single Radio Group">
+         		 		<radio label="One" value="1"/>
+          				<radio label="Two" value="2"/>
+          				<radio label="Three" value="3"/>
+        			</radioGroup>
+				<singleFile field="file" label="File">
+					<ext>html</ext>
+					<ext>csv</ext>
+                                        <ext>txt</ext>
+                                        <ext>pdf</ext>
+				</singleFile>
+			</elements>
+		</template>			
 	</templates>
 
 </configuration>

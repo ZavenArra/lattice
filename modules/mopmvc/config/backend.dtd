@@ -23,6 +23,7 @@
 	allowDelete 		(true|false) "true"
 	allowTogglePublish	(true|false) "true"
 	allowChildSort		(true|false) "true"
+	sortDirection		(ASC|DESC)	"ASC"
 >
 
 <!ELEMENT elements (ipe|list|singleImage|singleFile|radioGroup|multiSelect|date|time|dateRange|checkbox|time)* >

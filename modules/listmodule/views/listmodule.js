@@ -26,8 +26,9 @@ mop.modules.ListModule = new Class({
 		this.items = null;
 		this.items = [];
 		
-		this.sortable = ( this.getValueFromClassName( "sortable" ) != "false" ) ? this.getValueFromClassName( "sortable" ) : false;
-		this.sortDirection = this.getValueFromClassName( "sortDirection" );
+		this.sortable = ( this.getValueFromClassName( "sortable" ) == "false" ) ? false : true;
+		console.log("!!!!!!!!");
+		this.sortDirection = ( this.getValueFromClassName( "sortDirection" );
 
 		if( this.sortable ) this.makeSortable();
 	},

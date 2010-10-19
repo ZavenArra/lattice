@@ -259,18 +259,35 @@ ul.listing{
 }
 
 ul.listing li{
-	margin: 0 0 .75em 0;
+/*    width: 270px;
+*/	margin: 0 0 .75em 0;
 	padding: 0 0 0 6px;
 	border-left: 1px #dedede solid;
 	color:#444;
 }
 
+ul.listing li.allowChildSort-true{
+    cursor: pointer;
+}
+
+ul.listing li.alpha{
+    margin-left: 0px !important;
+    clear: left;
+}
+
+
+ul.listing li.omega{
+    clear: right;
+}
 
 .itemControls,
 .controls{
 	height: 2em;
 }
 
+.classPath-mop_modules_ListModule{
+    margin-bottom: 2em;
+}
 .listItem>.itemControls .delete{
 	width: 16px;
 	height:16px;
