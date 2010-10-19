@@ -110,7 +110,7 @@ mop.modules.CMS = new Class({
 				this.titleElement.getElement( ".field-slug" ).retrieve( "Class" ).registerOnLeaveEditModeCallback( this.onSlugEdit.bind( this ) );
 			}
 			
-			this.titleElement.getElement( ".field-title" ).retrieve( "Class").registerOnCompleteCallBack( this.renameNode.bind( this ) );
+			if( this.titleElement.getElement( ".field-title" ).retrieve("Class") ) this.titleElement.getElement( ".field-title" ).retrieve( "Class").registerOnCompleteCallBack( this.renameNode.bind( this ) );
 
 			if( this.deletePageLink ) this.deletePageLink.addEvent( "click", this.onDeleteNodeReleased.bindWithEvent( this ) );
 			
