@@ -99,7 +99,7 @@ class CMS_Controller extends CMS_Interface_Controller {
 		$this->nodetitle->title = $page->contenttable->title; //this should change to page table
 		$this->nodetitle->slug = $page->slug;
 		$this->nodetitle->allowDelete = $page->template->allowDelete;
-		$this->nodetitle->allowTitleEdit = $page->template->allowTitleEdit == "true" ? true : false;
+		$this->nodetitle->allowTitleEdit = ($page->template->allowTitleEdit == "true" ? true : false);
 
 		$settings = Kohana::config('cms.defaultsettings');
 		if(is_array($settings)){
