@@ -24,6 +24,7 @@
 	allowTogglePublish	(true|false) "true"
 	allowChildSort		(true|false) "true"
 	sortDirection		(ASC|DESC)	"ASC"
+	allowTitleEdit  CDATA "false"
 >
 
 <!ELEMENT elements (ipe|list|singleImage|singleFile|radioGroup|multiSelect|date|time|dateRange|checkbox|time)* >
