@@ -113,7 +113,7 @@
 	name				CDATA #REQUIRED
 	width				CDATA #REQUIRED
 	height				CDATA #REQUIRED
-	forceDimensions		(width|height) #IMPLIED
+	forceDimension		(width|height) #IMPLIED
 	crop				(true|false) "false"
 >
 
