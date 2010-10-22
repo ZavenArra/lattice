@@ -26,7 +26,7 @@ mop.modules.ListModule = new Class({
 		this.items = null;
 		this.items = [];
 		
-		this.allowChildSort = ( this.getValueFromClassName( "allowChildSort" ) != "true" ) ? false : true;
+		this.allowChildSort = ( this.getValueFromClassName( "allowChildSort" ) == "false" ) ? false : true;
 		this.sortDirection = this.getValueFromClassName( "sortDirection" );
 
 		if( this.allowChildSort == "true" ) this.makeSortable();
@@ -187,7 +187,7 @@ mop.modules.ListModule = new Class({
 	},
 
 	serialize:function(){
-		console.log( this.toString(), "serialize", this.listing, this.listing.getChildren() )
+//		console.log( this.toString(), "serialize", this.listing, this.listing.getChildren() )
 		var sortArray = [];
 
 		//get all the items to serialize
@@ -344,18 +344,18 @@ mop.modules.ListItem = new Class({
 			e.target.addClass("spinner");
 		}
 		this.JSONSend( "deleteItem" );
-		if( this.marshal.sortable != null ) this.marshal.onOrderChanged();
+		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
 		this.fadeOut = new Fx.Morph( this.element, { duration: 300, onComplete: this.marshal.onItemDeleted.bind( this.marshal, this ) } );
 		this.fadeOut.start( { opacity: 0 } );
 	},
 
 	
 	resumeSort: function(){
-		if( this.marshal.sortable ) this.marshal.resumeSort();
+		if( this.marshal.sortableList ) this.marshal.resumeSort();
 	},
 	
 	suspendSort: function(){
-		if( this.marshal.sortable ) this.marshal.suspendSort();
+		if( this.marshal.sortableList ) this.marshal.suspendSort();
 	},
 	
 	destroy: function(){
