@@ -3469,7 +3469,7 @@ mop.ui.IPE = new Class({
 		this.ipeElement.store( "Class", this );
 		this.rows = this.getValueFromClassName( "rows" );
 		this.ogBgColor = this.ipeElement.getStyle("background-color");
-		this.ogTextColor = this.ipeElement.getStyle("color");		
+		this.ogTextColor = this.ipeElement.getStyle("color");
 
 		this.enableElement();
 		
@@ -3486,7 +3486,7 @@ mop.ui.IPE = new Class({
 	enterEditMode: function( e ){
 //		console.log( this.toString(), "enterEditMode", this.field );
 		mop.util.stopEvent( e );
-		if( this.marshal.suspendSort) this.marshal.suspendSort();
+		if( this.marshal.suspendSort ) this.marshal.suspendSort();
 		if( this.mode == "editing ") return false;
 		this.mode = "editing";
 		
