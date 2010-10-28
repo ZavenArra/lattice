@@ -292,7 +292,20 @@ class CMS {
 	$data - possible array of keys and values to initialize with
 	Returns: the new page id
 	*/
-	public function addObject($parent_id, $template_id, $data = array() ){
+	public function addObject($parent_id, $template_ident, $data = array() ){
+		$template_id = ORM::Factory('template', $template_ident)->id;
+    if(!$template_id){
+      //we're trying to add an object of template that doesn't exist in db yet
+      //check backend.xml for configuration
+      if($templateConfig = mop::config('backend', sprintf('//template[@name="%s"]', $template_ident))->item(0)){
+        //there's a config for this template
+        //go ahead and configure it
+        cms::configureTemplate($templateConfig);
+      }
+      $template_id = ORM::Factory('template', $template_ident)->id;
+    } 
+
+
 		if($parent_id!=='0' && $parent_id!==0){
 			cms::checkForValidPageId($parent_id);
 		}
@@ -457,6 +470,102 @@ class CMS {
 		}
 
 	}
+
+  public function configureTemplate($template){
+		$dbmapindexes = array(
+				'field'=>0,
+				'file'=>0,
+				'date'=>0,
+				'flag'=>0,
+			);
+
+			//find or create template record
+			$tRecord = ORM::Factory('template', $template->getAttribute('name') );
+			if(!$tRecord->loaded){
+        echo "\ncreating for ".$template->getAttribute('name')."\n";
+				$tRecord = ORM::Factory('template');
+				$tRecord->templatename = $template->getAttribute('name');
+				$tRecord->nodeType = 'object';
+				$tRecord->save();
+			}
+      echo 'using '.$tRecord->id."\n";
+
+			//create title field
+			$checkMap = ORM::Factory('objectmap')->where('template_id', $tRecord->id)->where('column', 'title')->find();
+			if(!$checkMap->loaded){
+				$index = 'field';
+				$newmap = ORM::Factory('objectmap');
+				$newmap->template_id = $tRecord->id;
+				$newmap->type = $index;
+				echo 'index: '.$index;
+				$newmap->index = ++$dbmapindexes[$index];
+				$newmap->column = 'title';
+				$newmap->save();
+			}
+
+			
+			foreach(mop::config('backend', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item){
+        echo 'found an item '.$template->getAttribute('name').':'.$item->tagName."\n";
+				switch($item->tagName){
+
+				case 'list':
+					$ltRecord = ORM::Factory('template');
+					$ltRecord->templatename = $item->getAttribute('family');
+					$ltRecord->nodeType = 'container';
+					$ltRecord->save();
+					break;
+
+        default:
+          echo 'default';
+
+          //base cms elements
+
+          //handle dbmap
+          $index = null;
+          switch($item->tagName){
+          case 'ipe':
+          case 'radioGroup':
+          case 'pulldown':
+          case 'time':
+          case 'date':
+          case 'multiSelect':
+            $index = 'field';
+            break;
+          case 'singleImage':
+          case 'singleFile':
+            $index = 'file';
+            break;
+          case 'checkbox':
+            $index = 'flag';
+            break;
+          default:
+            continue(2);
+            break;
+          }	
+
+					//and right here it'll be 'if doesn't already exist in the array'
+					//or we'll check the database and just insert a new/next one
+					//and this is where the ALTER statements could come in
+					//
+
+					$objectmap = ORM::Factory('objectmap')
+						->where('template_id', $tRecord->id)
+						->where('column', $item->getAttribute('field'))
+						->find();
+          echo "\n".$tRecord->id."   ".$item->getAttribute('field')."\n";
+					if(!$objectmap->loaded){
+						$newmap = ORM::Factory('objectmap');
+						$newmap->template_id = $tRecord->id;
+						$newmap->type = $index;
+            echo 'index: '.$index;
+						$newmap->index = ++$dbmapindexes[$index];
+						$newmap->column = $item->getAttribute('field');
+						$newmap->save();
+					}
+
+				}
+			}
+		}
 
 }
 

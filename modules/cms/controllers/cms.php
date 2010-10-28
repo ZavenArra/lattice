@@ -171,7 +171,7 @@ class CMS_Controller extends CMS_Interface_Controller {
 	*/
 	public function addObject($id, $template_id, $title=null){
 		$data = $_POST;
-		$template_id = ORM::Factory('template', $template_id)->id;
+
 		if($title){
 			$data['title'] = $title;
 		}
