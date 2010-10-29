@@ -117,7 +117,6 @@ Class ConfigSite_Controller extends Controller {
 		//build templates
 		foreach(mop::config('backend', '//template') as $template){
       cms::configureTemplate($template);
-
 	  }	
 
     exit;

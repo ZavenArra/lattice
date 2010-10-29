@@ -82,7 +82,7 @@ class CMS {
 	/*
 	 *
 	 */
-	public function resizeImage($originalFilename, $newFilename, $width, $height, $forceDimension='width', $crop='false'){
+	public static function resizeImage($originalFilename, $newFilename, $width, $height, $forceDimension='width', $crop='false'){
 		//set up dimenion to key off of
 		switch($forceDimension){
 		case 'width':
@@ -251,7 +251,7 @@ class CMS {
     return cms::buildUIHtmlChunks($elementsConfig, $object);
   }
 
-	public function regenerateImages(){
+	public static function regenerateImages(){
 		//find all images
 
 		foreach(mop::config('backend', '//template') as $template){
@@ -277,7 +277,7 @@ class CMS {
 	 * $id  - the id to check 
 	 * Returns: throws exception on invalid page id
 	 */
-	public function checkForValidPageId($id){
+	public static function checkForValidPageId($id){
 		if(!ORM::Factory('page')->where('id', $id)->find()->loaded){
 			throw new Kohana_User_Exception('Bad Page Id', 'The id '.$id.' is not a key in for an object in the pages table');
 		}
@@ -292,7 +292,7 @@ class CMS {
 	$data - possible array of keys and values to initialize with
 	Returns: the new page id
 	*/
-	public function addObject($parent_id, $template_ident, $data = array() ){
+	public static function addObject($parent_id, $template_ident, $data = array() ){
 		$template_id = ORM::Factory('template', $template_ident)->id;
     if(!$template_id){
       //we're trying to add an object of template that doesn't exist in db yet
@@ -421,7 +421,7 @@ class CMS {
 		return $newpage->id;
 	}
 
-	public function makeFileSaveName($filename){
+	public static function makeFileSaveName($filename){
 		$xarray = explode('.', $filename);
 		$nr = count($xarray);
 		$ext = $xarray[$nr-1];
@@ -441,7 +441,7 @@ class CMS {
 		return $name.$i.'.'.$ext;
 	}
 
-	public function saveHttpPostFile($objectid, $field, $postFileVars){
+	public static function saveHttpPostFile($objectid, $field, $postFileVars){
 
 		$object = ORM::Factory('page', $objectid);
 		//check the file extension
@@ -471,7 +471,7 @@ class CMS {
 
 	}
 
-  public function configureTemplate($template){
+  public static function configureTemplate($template){
 		$dbmapindexes = array(
 				'field'=>0,
 				'file'=>0,
