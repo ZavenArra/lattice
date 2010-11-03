@@ -78,12 +78,12 @@ class CMS_Interface_Controller extends Controller {
 	public function savefield($id){
 		$page = ORM::Factory('page')->find($id);
 		if($_POST['field']=='title'){ //update slug, but actually we may not want to have slug updatable
-			$page->slug = cms::createSlug($_REQUEST['value'], $page->id);
+			$page->slug = cms::createSlug($_POST['value'], $page->id);
 			$page->save();
 			$page->contenttable->$_POST['field'] = cms::convertNewlines($_POST['value']);
 			$page->contenttable->save();
 		} else if($_POST['field'] =='slug') {
-			$page->slug = cms::createSlug($_REQUEST['value'], $page->id);
+			$page->slug = cms::createSlug($_POST['value'], $page->id);
 			$page->save();	
 			$page = ORM::Factory('page')->find($id);
 			return array('value'=>$page->slug);

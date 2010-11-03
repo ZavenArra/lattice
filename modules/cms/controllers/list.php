@@ -135,12 +135,12 @@ class List_Controller extends CMS_Interface_Controller{
     if(!$template->length > 0){
       throw new Kohana_User_Exception('No List By That Name', 'Count not locate configuration in backend.xml for '.sprintf('//list[@family="%s"]/addableobject', $this->listClass) );
     }
-		$template = $template->item(0);
-		$template = ORM::Factory('template', $template->getAttribute('templateName'));
+    $template = $template->item(0);
 
 		$data = array('published'=>'true');
 
-		$newid = cms::addObject($this->containerObject->id, $template->id, $data);
+		$newid = cms::addObject($this->containerObject->id,
+    $template->getAttribute('templateName'), $data);
 
 		$item = ORM::Factory('page', $newid);
 		$htmlChunks = cms::buildUIHtmlChunksForObject($item);
