@@ -46,7 +46,7 @@ class CMS_Interface_Controller extends Controller {
 		);	
 		
 		//if it's an image
-		$thumbsrc = null;
+		$thumbSrc = null;
 		if($file->uithumb->filename){
 			if(file_exists(cms::mediapath().$file->uithumb->filename)){
 				$resultpath = cms::mediapath().$file->uithumb->filename;

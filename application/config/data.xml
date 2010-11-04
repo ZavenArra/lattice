@@ -3,55 +3,66 @@
 <data>
 
 	<item templateName="basicCategory">
-		<title>A Category</title>
+		<field name="title">A Category</field>
+		<item templateName="basicCategory">
+			<field name="title">Category2</field>
+			<item templateName="basicCategory">
+				<field name="title">Category3</field>
+			</item>
+		</item>
 	</item>
 
 	<item templateName="singleIPE">
-		<title>Single IPE</title>
+		<field name="title">Single IPE</field>
 	</item>
 
 	<item templateName="multilineIPE">
-		<title>Multiline IPE</title>
+		<field name="title">Multiline IPE</field>
 	</item>
 
 	<item templateName="singleRadioGroup">
-		<title>Single Radio Group</title>
+		<field name="title">Single Radio Group</field>
 	</item>
 	
 	<item templateName="singleCheckbox">
-		<title>Single checkbox</title>
+		<field name="title">Single checkbox</field>
 	</item>
 
 	<item templateName="singleDate">
-		<title>Single Date</title>
+		<field name="title">Single Date</field>
 	</item>
 
 	<item templateName="singleTime">
-		<title>Single Time</title>
+		<field name="title">Single Time</field>
 	</item>
 
 	<item templateName="simpleListModule">
-		<title>Simple List Module</title>
+		<field name="title">Simple List Module</field>
 	</item>
 	
+	 <item templateName="complexListModule">
+                <field name="title">Complex List Module</field>
+        </item>
+	
 	<item templateName="imageListModule">
-		<title>Image List</title>
+		<field name="title">Image List</field>
 	</item>
 	
 	<item templateName="fileListModule">
-		<title>File List</title>
+		<field name="title">File List</field>
 	</item>
 
 	<item templateName="singleFile">
-		<title>File Build Test</title>
-		<file>/Users/deepwinter/ndocTemplates.txt</file>
+		<field name="title">File Build Test</field>
+		<field name="file">/Users/deepwinter/ndocTemplates.txt</field>
 	</item>
+
 	<item templateName="singleImage">
-		<title>Image Build Test</title>
-		<file>/Users/deepwinter/data/2.jpg</file>
+		<field name="title">Image Build Test</field>
+		<field name="file">/Users/deepwinter/data/2.jpg</field>
 		<item templateName="singleImage">
-			<title>Image Build Test</title>
-			<file>/Users/deepwinter/data/2.jpg</file>
+			<field name="title">Image Build Test</field>
+			<field name="file">/Users/deepwinter/data/2.jpg</field>
 		</item>
 	</item>
 </data>

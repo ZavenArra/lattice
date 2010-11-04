@@ -6,9 +6,9 @@
 	Date: 2010/09/30	
 -->
 
-<!ELEMENT data (view*) >
+<!ELEMENT configuration (view*) >
 
-<!ELEMENT view (includeObjects|subView)* >
+<!ELEMENT view (includeData|subView)* >
 <!ATTLIST view
 	name				CDATA #REQUIRED
 	loadPage			(true|false) "true"
@@ -17,11 +17,16 @@
 <!ELEMENT includeData ANY >
 <!ATTLIST includeData
 	from		 		CDATA "parent"
-	name				CDATA #REQUIRED
+	label				CDATA #REQUIRED
+	templateFilter CDATA "all"
+	where       CDATA #IMPLIED
+	tagged      CDATA #IMPLIED
+	slug        CDATA #IMPLIED
 >
 
 <!ELEMENT subView EMPTY >
 <!ATTLIST subView
-	view				CDATA #REQUIRED
+	view				CDATA #IMPLIED 
+	slug				CDATA #IMPLIED
 	label				CDATA #REQUIRED
 >

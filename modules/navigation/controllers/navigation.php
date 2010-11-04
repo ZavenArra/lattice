@@ -155,7 +155,8 @@ class Navigation_Controller extends Controller{
 				if(strtolower($child->template->nodeType) == 'container'){
 					//we might be skipping this node
 					$parent = ORM::Factory($this->objectModel, $parentid); //it would be nice to be able to just look up the heap
-					//echo 'cms.templates.'.$parent->template->templatename.'.parameters.'.$child->template->templatename.'.display';
+
+					//echo sprintf('//template[@name="%s"]/elements/list[@family="%s"]', $parent->template->templatename, $child->template->templatename);
 					$display = mop::config('backend', sprintf('//template[@name="%s"]/elements/list[@family="%s"]', 
 																										$parent->template->templatename,
                                                     $child->template->templatename))

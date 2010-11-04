@@ -242,7 +242,7 @@ mop.modules.navigation.Navigation = new Class({
 			}, this );
 		}
 		
-		if( aNode.allowChildSort ) this.makeTierSortable( whichTier );
+		if( aNode.allowChildSort == "true" ) this.makeTierSortable( whichTier );
 		
 		this.navSlide.toElement( this.getTierElement( whichTier ) );
 
@@ -604,11 +604,13 @@ mop.modules.navigation.Node = new Class({
 	*/
 	className: "node",
 	initialize: function( parentId, nodeData, nav, aTier ){
-		console.log( "::::: initializing : " + this.toString(), nodeData );
+//		console.log( "::::: initializing : " + this.toString(), nodeData );
 		this.nav = nav;
 		this.parentId = parentId;
 		this.nodeData = nodeData;
 		this.nodeType = nodeData.nodeType;
+		this.allowTogglePublish = ( nodeData.allowTogglePublish == "true" )? true : false;
+		this.allowDelete = ( nodeData.allowDelete == "true" )? true : false;
 		this.contentType = nodeData.contentType;
 		this.id = nodeData.id;
 		this.tier = aTier;
@@ -669,13 +671,14 @@ mop.modules.navigation.Node = new Class({
 	hide: function(){
 		this.element.addClass("hidden");
 	},
+	
 	addControls: function(){
-		if( !Boolean( this.nodeData.allowTogglePublish) && !Boolean(this.nodeData.allowDelete) ) return false;
+	    
+		if( !this.allowTogglePublish && !this.allowDelete ) return false;
 
-		this.methods = new Element( "div", {
-			"class": "methods"
-		});
-		if( Boolean( this.nodeData.allowTogglePublish ) ){			
+		this.methods = new Element( "div", { "class": "methods" });
+		
+		if( this.allowTogglePublish ){			
 			var pubState = ( this.nodeData.published )? "published" : "unpublished";
 			this.publishLink = new Element( "a", {
 				"class": "icon " + pubState,
@@ -689,7 +692,7 @@ mop.modules.navigation.Node = new Class({
 			pubState = null;
 			this.publishLink.inject( this.methods );
 		}
-		if( Boolean(this.nodeData.allowDelete) ){
+		if( this.allowDelete ){
 			this.deleteLink = new Element( "a", {
 				"class": "icon delete",
 				"html": "<span>delete</span>",

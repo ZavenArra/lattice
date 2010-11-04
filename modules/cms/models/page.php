@@ -137,6 +137,25 @@ class Page_Model extends ORM {
 		}
 	}
 
+	public function updateWithArray($data){
+		foreach($data as $field=>$value){
+			switch($field){
+			case 'slug':
+				case 'dateAdded':
+					case 'published':
+						case 'activity':
+						$this->__set($field, $value);
+						break;
+					default:
+						$this->contenttable->$field = $value;
+						break;
+			}
+		}	
+		$this->contenttable->save();
+		$this->save();
+		return $this->id;
+	}
+
 	public function getContentAsArray(){
 
 		$fields = ORM::Factory('objectmap')
@@ -173,73 +192,41 @@ class Page_Model extends ORM {
 			$content[$map->column] = $this->contenttable->{$map->column};
 		}
 
-		//get data from lists
-		$blocks = Kohana::config('cms.templates.'.$this->__get('template')->templatename);
-		if($blocks) {
-			$modules = array();
-			foreach($blocks as $block){
-				if($block['type'] == 'module'){
-					switch($block['controllertype']){
-					case 'listmodule':
-						$content[$block['modulename']] = $this->getListData($block['modulename']);
-						break;
-					default:
-						break;
-					}
-				}
-			}
+		//find any lists
+		foreach(mop::config('backend', sprintf('//template[@name="%s"]/elements/list', $this->template->templatename)) as $list){
+
+			$family = $list->getAttribute('family');	
+			$content[$family] = $this->getListContentAsArray($family);
 		}
 
 		return $content;
 	}
 
-
-	//EXPERIMENTAL
-	// ok this doubles up code in site controller
-	// in the future there shouldn't be a distinction between templates and lists
-	// and that will resolve this doubling, which is dumb
-	public function getListData($instance){
-			if(! $sortdirection = Kohana::config($instance.'.sortdirection')){
-				$sortdirection = Kohana::config('listmodule.sortdirection');
-			}
-
-			//for pagination, we generate the module
-			//and then just go ahead and call the paginatedList stuff
-
-
-			$dbmap = Kohana::config($instance.'.dbmap');
-			$listitems = ORM::Factory('list')
-			->where('instance', $instance)
-			->where('activity IS NULL')
-			->orderby('sortorder', $sortdirection);
-			if($this->id){
-				$listitems->where('page_id', $this->id);
-			}
-			$listitems = $listitems->find_all();
-			$list = array();
-			//this is a template for slurping out lists
-			foreach($listitems as $item){
-				$data = array();
-				foreach($dbmap as $var => $dbfield){
-					$data[$var] = $item->$var; //EXPERIMENTAL	
-				}
-
-				$files = Kohana::config($instance.'.files');
-				if(is_array($files)){
-					foreach($files as $key => $settings){
-						$data[$key] = $item->$key;
-					}
-				}
-				$singleimages = Kohana::config($instance.'.singleimages');
-				if(is_array($singleimages)){
-					foreach($singleimages as $key => $settings){
-						$data[$key] = $item->$key;
-					}
-				}
-				$list[] = $data;
-			}
-			return $list;
+	public function getListContentAsArray($family){
+		$iter = $this->getListContent($family);
+		$content = array();
+		foreach($iter as $item){
+			$content[] = $item->getPageContent();
+		}
+		return $content;
 	}
+
+
+
+	public function getListContent($family){
+		//get container
+		$cTemplate = ORM::Factory('template', $family);
+		$container = ORM::Factory('page')
+			->where('template_id', $cTemplate->id)
+			->where('parentid', $this->id)
+			->where('activity IS NULL')
+			->find();
+
+		//get children of
+		Kohana::log('info', 'hasdfasd');
+		return $container->getPublishedChildren();
+	}
+
 
 	public function getPublishedChildren(){
 
@@ -590,6 +577,39 @@ class Page_Model extends ORM {
 		return true;
 	}
 
+
+	/* Query Filters */
+	public function templateFilter($templates){
+		if(!$templates){
+			return $this;
+		}
+			$db = new Database();
+		if(strpos(',', $templates)){
+			$tNames = explode(',', $templates);
+			$tIds = array();
+			foreach($tNames as $tname){
+				$result = $db->query("Select id from templates where templatename = '$templates'");
+				$tIds[] = $result->current()->id;
+			}
+			$this->in('template_id', $tIds);
+		} else if ($templates == 'all'){
+			//set no filter
+		} else {
+			$result = $db->query("Select id from templates where templatename = '$templates'");
+			$this->where('template_id', $result->current()->id);
+		}
+		return $this;
+	}
+
+	public function publishedFilter(){
+		$this->where('published', 1)
+			->where('activity IS NULL');
+		return $this;
+	}
+
+	public function taggedFilter(){
+
+	}
 
 
 

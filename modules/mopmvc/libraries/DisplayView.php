@@ -16,7 +16,7 @@ class DisplayView extends View{
 	 * Parameters:
 	 * $output - whether or not to return html, defaults to false (render to browser)
 	 */
-	public function render($output=FALSE){
+	public function render($output=FALSE, $renderer = FALSE){
 		Display_Controller::addResources($this->resources);
 		//After adding resources, we need to put them into the assigns
 		$this->javascript = html::script(Display_Controller::$resources['libraryjs']);
@@ -24,7 +24,7 @@ class DisplayView extends View{
 		$this->javascript .= '<script type="text/javascript">'.Display_Controller::getJSBlock()."</script>\n";
 		$this->stylesheet = html::stylesheet(Display_Controller::$resources['librarycss']);
 		$this->stylesheet .= html::stylesheet(Display_Controller::$resources['css']);
-		return View_Core::render($output);
+		return View_Core::render($output, $renderer);
 	}
 
 }

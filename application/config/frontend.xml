@@ -3,20 +3,12 @@
 
 <data>
 
-	<view name="home" loadpage="true" >
-		<extendeddata label="books" parent="books" templatename="book" />
-		<subview view="publicheader" label="listing" />
-		<subview view="publicheader" label="listing2" />	
-	</view>
-
-	<view name="wheretofind" loadpage="true">
-		<extendeddata label="stuffs" templatename="bio" parent="stuff" />
+	<view name="singleIPE" loadpage="true">
 	</view>
 	
-	<view name="contact" loadpage="true">
-	</view>
-	
-	<view name="book" loadpage="true">
+	<view name="singleFile" loadpage="true">
 	</view>
 
+	<view name="singleImage" loadpage="true">
+	</view>
 </data>

@@ -12,22 +12,24 @@
 	 className			CDATA	#IMPLIED"
 >
 
-<!ELEMENT configuration (templates,data) >
+<!ELEMENT configuration (templates) >
 
 <!ELEMENT templates (template*) >
 
-<!ELEMENT template (elements?,addableObject*,components*) >
+<!ELEMENT template (elements?,addableObject*,components?) >
 <!ATTLIST template
 	name				CDATA #REQUIRED
 	contentType   CDATA  "document"
 	allowDelete 		(true|false) "true"
 	allowTogglePublish	(true|false) "true"
 	allowChildSort		(true|false) "true"
+	sortDirection		(ASC|DESC)	"ASC"
+	allowTitleEdit  CDATA "true"
 >
 
 <!ELEMENT elements (ipe|list|singleImage|singleFile|radioGroup|multiSelect|date|time|dateRange|checkbox|time)* >
 
-<!ELEMENT components (component) >
+<!ELEMENT components (component*) >
 
 <!ELEMENT component EMPTY >
 <!ATTLIST component
@@ -47,8 +49,10 @@
 	family				CDATA #REQUIRED
 	label				CDATA #REQUIRED
 	display				(inline|component) "inline"
-	allowSort   (true|false) "true"
+	allowChildSort   		(true|false) "true"
+	sortDirection		(ASC|DESC)	"ASC"
 	allowTogglePublish	(true|false) "true"	
+	contentType  CDATA "document"
 >
 <!-- last two attributes currently not supported -->
 
@@ -110,7 +114,7 @@
 	name				CDATA #REQUIRED
 	width				CDATA #REQUIRED
 	height				CDATA #REQUIRED
-	forceDimensions		(width|height) #IMPLIED
+	forceDimension		(width|height) #IMPLIED
 	crop				(true|false) "false"
 >
 

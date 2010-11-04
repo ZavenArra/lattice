@@ -11,7 +11,7 @@ Class moputil {
 	 * Returns a microseconds of current time as a 3 place float
 	 * Returns: Microseconds
 	 */
-	public function getMicroSeconds(){
+	public static function getMicroSeconds(){
 		list($usec, $sec) = explode(" ", microtime());
 		return number_format((float)$usec, 3);
 	}
@@ -21,7 +21,7 @@ Class moputil {
 	 * Creates a timestamp including microseconds
 	 * Returns: Microsecond timestamp
 	 */
-	public function getMicroTimestamp(){
+	public static function getMicroTimestamp(){
 		$timestamp = date('YmdHis') . substr(moputil::getMicroSeconds(), 1) ;
 		Kohana::log('info', 'TIMESTAMP: '.$timestamp);
 		return $timestamp;
@@ -37,7 +37,7 @@ Class moputil {
 	 * $extra - extra stuff to go inside the tag attributes area
 	 * Returns: if file exists, return the img src tag code, otherwise return null
 	 */
-	public function img($file, $prefix, $alt,  $extra = null){
+	public static function img($file, $prefix, $alt,  $extra = null){
 		if(!$file->$prefix->fullpath 
 			|| !file_exists($file->$prefix->fullpath)){
 			return null;
@@ -58,7 +58,7 @@ Class moputil {
 	 * $role - the role to check against
 	 * Returns: true or false
 	 */
-	public function checkRoleAccess($role){
+	public static function checkRoleAccess($role){
 
 		if($role && !Auth::instance()->logged_in($role)){
 			return false;
@@ -70,7 +70,7 @@ Class moputil {
 	/*
 	 * Function: decode_recurse($value)
 	 */
-	private function decode_recurse($value){
+	private static function decode_recurse($value){
 		//handle object?
 		if(!is_array($value)){
 			return html_entity_decode($value);
@@ -81,6 +81,23 @@ Class moputil {
 			return $value;
 		}
 	}
+
+	public static $modulos;
+	public static $modulosOptionsCount;
+	public static function modulo($identifier, $options){
+		self::$modulosOptionsCount = count( $options );
+		if(!is_array(self::$modulos)){
+			self::$modulos = array();
+		}
+		if(!isset(self::$modulos[$identifier])){
+			self::$modulos[$identifier] = 0;
+		}
+		$index = self::$modulos[$identifier];
+		self::$modulos[$identifier]++;
+		return $options[$index%self::$modulosOptionsCount];
+
+	}
+
 
 
 }

@@ -7,7 +7,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta http-equiv="content-script-type" content="text/javascript">
 
-	<title>Jane Wood Interiors</title>
+	<title>Made of People</title>
 
 	<base href="<?=Kohana::config('config.site_protocol');?>://<?echo isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:'';?><?=Kohana::config('config.site_domain');?>" />
 
@@ -15,7 +15,7 @@
 <?=$javascript;?>
 
 </head>
-<body id="<?=$primaryId;?>">
+<body>
 
 <?=$publicheader;?>
 

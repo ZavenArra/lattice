@@ -47,6 +47,8 @@ class File_Model extends ORM {
 
 		if($column == 'urlfilename'){
 			return rawurlencode(parent::__get('filename'));
+		} else if ($column == 'fullpath'){
+			return cms::mediapath().parent::__get('filename');
 		}
 
 		//otherwise check if it's a valid resize prefix

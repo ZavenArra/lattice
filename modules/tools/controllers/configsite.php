@@ -21,7 +21,9 @@ Class ConfigSite_Controller extends Controller {
 		$db = Database::instance();
 			//validate backend.xml data
 		$errors = array();
+		$templates = array();
 		foreach(mop::config('backend', '//template') as $template){
+			$templates[] = $template->getAttribute('name');
 			foreach(mop::config('backend', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item ){
 				$field = $item->getAttribute('field');
 				if(!preg_match('/^[A-z0-9]*$/', $field)){
@@ -29,6 +31,15 @@ Class ConfigSite_Controller extends Controller {
 				}
 			}
 		}
+
+		foreach(mop::config('backend', '//addableObject') as $addable){
+      $at = $addable->getAttribute('templateName');
+      echo $at;
+			if(!in_array($at, $templates)){
+				$errors[] = "Addable object $at not defined as template in backend.xml";
+			}
+		}
+
 		if(count($errors)){
 			foreach($errors as $error){
 				echo $error."\n";
@@ -38,14 +49,17 @@ Class ConfigSite_Controller extends Controller {
 
 		//do some mop specific validation
 		$tNames = array();
+		$fNames = array();
+		$localFNames = array();
 		$components = array();
 		foreach(mop::config('backend', '//template') as $template){
 			$name = $template->getAttribute('name');
-			if(in_array($name, $tNames)){
+			if(in_array($name, $tNames) || in_array($name, $fNames)){
 				die("Duplicate Template Name: $name \n");
 			}
 			$tNames[] = $name;
 
+			$localFNames = array();
 			foreach(mop::config('backend', 'elements/*', $template) as $item){
 				$name = null;
 				switch($item->tagName){
@@ -59,9 +73,14 @@ Class ConfigSite_Controller extends Controller {
 					if(in_array($name, $tNames)){
 						die("List family name cannot match template name: $name \n");
 					}
-					$tNames[] = $name;
+					if(in_array($name, $localFNames)){
+						die("List family cannot be repeated within template: $name \n");
+					}
+					$localFNames[] = $name;
 				}
 			}
+
+			$fNames = array_merge($fNames, $localFNames);
 
 			//check for components loops
 			$comps = array();
@@ -82,16 +101,10 @@ Class ConfigSite_Controller extends Controller {
 
 
 		echo "\nYou are attached to database ".Kohana::config('database.'.Database::instance_name($db).'.connection.database')."\n";
-		echo "Do you want to write template settings to this database - this will delete all previous templates ? (Yes/no)";
+	//	echo "Do you want to write template settings to this database - this will delete all previous templates ? (Yes/no)";
 		flush();
 		ob_flush();
-		$this->scanf('%s', $response);
-		if($response == 'Yes'){
-			$this->doTemplateDatabase = true;
-		} else {
-			$this->doTemplateDatabase = false;
-		}
-		if($this->doTemplateDatabase == true){
+	//	$this->scanf('%s', $response);
 			echo "Truncating templates table \n";
 			flush();
 			ob_flush();
@@ -99,7 +112,6 @@ Class ConfigSite_Controller extends Controller {
 			$db->query('delete from objectmaps');
 			$db->query('alter table templates AUTO_INCREMENT = 1');
 			$db->query('alter table objectmaps AUTO_INCREMENT = 1');
-		}
 
 
 		//build templates

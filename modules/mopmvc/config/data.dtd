@@ -8,11 +8,18 @@
 
 <!ELEMENT data (item*) >
 
-<!ELEMENT item ANY >
+<!ELEMENT item (item*|field*|list*) >
 <!ATTLIST item
 	templateName		CDATA #REQUIRED
 >
 
-<!ELEMENT content ANY >
+<!ELEMENT field ANY >
+<!ATTLIST field
+	name CDATA #REQUIRED
+>
 
-<!ELEMENT title (#PCDATA) >
+<!ELEMENT list  (item*) >
+<!ATTLIST list
+	family CDATA #REQUIRED
+>
+

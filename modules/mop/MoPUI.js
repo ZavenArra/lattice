@@ -198,47 +198,51 @@ mop.ui.Sortable = new Class({
 	initialize: function( anElement, marshal, options ){
 		this.parent( anElement, options );
 		this.marshal = marshal;
-		var opts = {};
-		opts.area = options.area;
-		opts.velocity = options.velocity;
+		var opts = {
+		    area: options.area,
+		    velocity: options.velocity,
+		};
 		this.scroller = new mop.ui.VerticalScroller( options.scrollElement, opts );
+//       this.scroller = new Scroller( options.scrollElement, opts );
+
 		opts = null;
 	},
 	
-	getClone: function(event, element){
-		if (!this.options.clone) return new Element('div').inject(document.body);
-		if ($type(this.options.clone) == 'function') return this.options.clone.call(this, event, element, this.list );
-		return element.clone(false).addClass("listClone").setStyles({
-			'margin': '0px',
-			'position': 'absolute',
-			'opacity': .4,
-			'visibility': 'hidden',
-			'width': element.getStyle('width'),
-			'height': element.getStyle('height')
-		}).inject( this.list ).position( element.getPosition() );
-	},
+    getClone: function(event, element){
+     if (!this.options.clone) return new Element('div').inject(document.body);
+     if ($type(this.options.clone) == 'function') return this.options.clone.call(this, event, element, this.list );
+     return element.clone(false).addClass("listClone").setStyles({
+         'margin': '0px',
+         'position': 'absolute',
+         'opacity': .4,
+         'visibility': 'hidden',
+         'width': element.getStyle('width'),
+         'height': element.getStyle('height')
+     }).inject( this.list ).position( element.getPosition() );
+    },
 	
-		clone: function(event,element,list){
-			var scroll = {x:0 ,y: 0};
-			element.getParents().each(function(el){
-				if(['auto','scroll'].contains(el.getStyle('overflow'))){
-					scroll = {
-						x: scroll.x + el.getScroll().x,
-						y: scroll.y + el.getScroll().y
-					}					
-				}
-			});
-			var position = element.getPosition();
-			
-			return element.clone().setStyles({
-				margin: '0px',
-				position: 'absolute',
-				visibility: 'hidden',
-				'width': element.getStyle('width'),
-				top: position.y + scroll.y,
-				left: position.x + scroll.x
-			}).inject(this.list);
-		}
+        clone: function(event,element,list){
+         var scroll = {x:0 ,y: 0};
+         element.getParents().each(function(el){
+             if(['auto','scroll'].contains(el.getStyle('overflow'))){
+                 scroll = {
+                     x: scroll.x + el.getScroll().x,
+                     y: scroll.y + el.getScroll().y
+                 }                   
+             }
+         });
+         
+         var position = element.getPosition();
+         
+         return element.clone().setStyles({
+             margin: '0px',
+             position: 'absolute',
+             visibility: 'hidden',
+             'width': element.getStyle('width'),
+             top: position.y + scroll.y,
+             left: position.x + scroll.x
+         }).inject(this.list);
+        }
 	
 });
 
@@ -317,7 +321,7 @@ mop.ui.UIElement = new Class({
 		return mop.util.getValueFromClassName( key, this.element.get( "class" ) );
 	},
 
-	registerOnCompleteCallback: function( func ){
+	registerOnCompleteCallBack: function( func ){
 		this.onCompleteCallbacks.push( func );
 	},
 
@@ -3375,7 +3379,7 @@ mop.ui.Input = new Class({
 		this.inputElement.erase( "disabled" );
 		this.inputElement.removeEvents();
 		// this.inputElement.addEvent( "click", this.enterEditMode.bindWithEvent( this ) );
-		if( this.maxlength ) this.element.addEvent( "keydown", this.checkForMaxLength.bindWithEvent( this ) );
+		if( this.maxlength ) this.element.addEvent("keydown", this.checkForMaxLength.bindWithEvent( this ) );
 	},
 	
 	disableElement: function( e ){
@@ -3426,11 +3430,11 @@ mop.ui.IPE = new Class({
 
 	Extends: mop.ui.UIElement,
 
+	onLeaveEditModeCallbacks: [],
+	
 	type: "ipe",
 
 	form: null,
-	
-	onLeaveEditModeCallbacks: [],
 	
 	options:{
 		messages: { clickToEdit: "click to edit." },
@@ -3482,8 +3486,8 @@ mop.ui.IPE = new Class({
 	enterEditMode: function( e ){
 //		console.log( this.toString(), "enterEditMode", this.field );
 		mop.util.stopEvent( e );
-		if( this.marshal.suspendSort ) this.marshal.suspendSort();
-		if( this.mode == "editing" ) return false;
+		if( this.marshal.suspendSort) this.marshal.suspendSort();
+		if( this.mode == "editing ") return false;
 		this.mode = "editing";
 		
 		if( !this.form ){
@@ -3736,13 +3740,13 @@ mop.ui.IPE = new Class({
 
 		if( this.marshal.resumeSort ) this.marshal.resumeSort();
 
+		this.ipeElement.setStyle( "display", "block" );
+		
 		if( this.onLeaveEditModeCallbacks.length > 0 ){
 			for( var i = 0; i < this.onLeaveEditModeCallbacks.length; i++ ){
-				this.onLeaveEditModeCallbacks[i]( json, this );
+				this.onLeaveEditModeCallbacks[i]( this );
 			}
 		}
-
-		this.ipeElement.setStyle( "display", "block" );
 		
 		this.destroyValidationSticky();
 		
@@ -3751,16 +3755,12 @@ mop.ui.IPE = new Class({
 	},
 
 	destroy: function(){
-
 		delete this.oldValue;
 		delete this.submittedValue;
-		delete this.onLeaveEditModeCallbacks;
-		delete this.onCompleteCallbacks;
-		this.onCompleteCallbacks = this.onLeaveEditModeCallbacks = null;
 		this.clickEvent = null;
 		this.ipeElement.eliminate( "Class" );
 		this.ipeElement.destroy();
-		this.leaveEditMode();
+//		this.leaveEditMode();
 		this.parent();
 	}
 	

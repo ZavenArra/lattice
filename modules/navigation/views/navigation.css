@@ -85,7 +85,6 @@ ul.breadCrumb li a:hover{
 
 #navigation>ul ul.tier.tall{
 	height: 22em !important;
-	border-top: 1px #f00 solid;
 }
 
 #navigation ul li ul.utlity li{
@@ -107,10 +106,8 @@ ul.breadCrumb li a:hover{
 	cursor:pointer;
 }
 
-#navigation ul li ul li.document:hover,
-#navigation ul li ul li.document[ class~="active" ],
-#navigation ul li ul li.category:hover,
-#navigation ul li ul li.category[ class~="active" ]{
+#navigation ul li ul li.node.active,
+#navigation ul li ul li.node:hover{
 	cursor: pointer;
 	background: #0af;
 	color:#fff;
@@ -139,6 +136,19 @@ ul.breadCrumb li a:hover{
 	background-image: url( images/icon_leaf.png );
 	background-position: 1em .5em;
 	background-repeat: no-repeat;
+}
+
+#navigation li.aux h5{
+	background-image: url( images/icon_aux.png );
+	background-position: 1em .5em;
+	background-repeat: no-repeat;    
+}
+
+#navigation li.aux.active h5,
+#navigation li.aux:hover h5{
+	background-image: url( images/icon_aux_hover.png );
+	background-position: 1em .5em;
+	background-repeat: no-repeat;    
 }
 
 #navigation li.document.active h5,
