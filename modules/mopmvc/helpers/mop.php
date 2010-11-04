@@ -198,7 +198,9 @@ Class mop {
 				if($where = $eDataConfig->getAttribute('where')){
 					$objects->where($where);
 				}
-
+        
+        $objects->publishedFilter();
+        $objects->orderBy('sortorder');
 				$objects = $objects->find_all();
 
 				$label = $eDataConfig->getAttribute('label');
