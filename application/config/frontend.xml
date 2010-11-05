@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE configuration SYSTEM "../../modules/mopmvc/config/frontend.dtd">
 
-<data>
+<configuration>
 
-        <view name="singleIPE" loadpage="true">
+        <view name="singleIPE" loadPage="true">
         </view>
 
-        <view name="multilineIPE" loadpage="true">
+        <view name="multilineIPE" loadPage="true">
         </view>
 
-        <vew name="singleRadioGroup" loadpage="true">
+        <view name="singleRadioGroup" loadPage="true">
         </view>
 
-        <view name="singleCheckbox" loadpage="true">
+        <view name="singleCheckbox" loadPage="true">
         </view>
 
-        <view name="singleDate" loadpage="true">
+        <view name="singleDate" loadPage="true">
         </view>
 
-        <view name="singleTime" loadpage="true">
+        <view name="singleTime" loadPage="true">
         </view>
 
-        <view name="singleFile" loadpage="true">
+        <view name="singleFile" loadPage="true">
         </view>
 
-        <view name="singleImage" loadpage="true">
+        <view name="singleImage" loadPage="true">
         </view>
 
-        <view name="simpleListModule" loadpage="true">
+        <view name="simpleListModule" loadPage="true">
         </view>
 
-        <view name="imageListModule" loadpage="true">
+        <view name="imageListModule" loadPage="true">
         </view>
 
-        <view name="fileListModue" loadpage="true">
+        <view name="fileListModue" loadPage="true">
         </view>
 
-        <view name="complexListModule" loadpage="true">
+        <view name="complexListModule" loadPage="true">
         </view>
-</data>
+</configuration>
 

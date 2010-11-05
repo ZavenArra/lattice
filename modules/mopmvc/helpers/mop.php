@@ -97,7 +97,7 @@ Class mop {
 	 $module - module configuration parameters
 	 $constructorArguments - module arguments to constructor
 	 */
-	public static function buildModule($module, $constructorArguments=NULL){
+	public static function buildModule($module, $constructorArguments=array() ){
 		Kohana::log('debug', 'Loading module: ' . $module['modulename']);
 		Kohana::log('debug', 'Loading controller: ' . $module['modulename']);
 

@@ -65,14 +65,11 @@ Class Site_Controller extends Controller{
 		//call this->view load data
 		//get all the data for the page
 		$viewContent = mop::getViewContent($viewName, $pageidorslug);
-		//print_r($viewContent);
-		foreach($viewContent as $key=>$content){
-			$this->view->$key = $content;
-		}	
-
+		foreach($viewContent as $key => $value){
+			$this->view->$key = $value;
+		}
 
 		//possible hook for processing content	
-		$this->view->content = $this->content;
 		
 		if($eDataNodes = mop::config('frontend',"//view[@name=\"{$page->template->templatename}\"]/includeData")){
 			foreach($eDataNodes as $eDataConfig){

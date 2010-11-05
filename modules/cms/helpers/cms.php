@@ -263,10 +263,9 @@ class CMS {
 		foreach(mop::config('backend', '//template') as $template){
 			foreach(mop::config('backend', 'elements/*', $template) as $element){
 				if($element->tagName == 'singleImage'){
-					$objects = ORM::Factory('template', $template->getAttribute('name'))->getPublishedMembers();
+					$objects = ORM::Factory('template', $template->getAttribute('name'))->getActiveMembers();
 					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
-						echo $fieldname;
 						if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
 							$object->processImage($object->contenttable->$fieldname->filename, $fieldname);
 						}
@@ -275,6 +274,21 @@ class CMS {
 			}
 		}
 	}
+
+	public static function generateNewImages($objectIds){
+		foreach($objectIds as $id){
+			$object = ORM::Factory('page', $id);
+			foreach(mop::config('backend', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename)) as $element){
+				if($element->tagName == 'singleImage'){
+					$fieldname = $element->getAttribute('field');
+					if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
+						$object->processImage($object->contenttable->$fieldname->filename, $fieldname);
+					}
+				}
+			}	
+		}
+	}
+
 
 	/*
 	 * Function: checkForValidPageId($id) 

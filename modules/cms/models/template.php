@@ -97,10 +97,26 @@ class Template_Model extends ORM {
 
 	}
 
-	//public save()
-	// if(!$this->loaded) {
-	// check for duplicate templatename
-	// }
+	/*
+	 * Function: getActiveMembers($limit)
+	 * This function queries all objects that use the current initialized template model object as thier template.
+	 * Parameters:
+	 * $limit - number of records to return
+	 * Returns: ORM Iterator of matching records
+	 */
+	public function getActiveMembers($limit=null){
+
+		$o = ORM::Factory('page')
+			->where('template_id', $this->id)
+			->where('activity IS NULL')
+			->orderby('sortorder');
+		if($limit){
+			$o->limit($limit);
+		}
+		$o = $o->find_all();
+		return $o;
+
+	}
 
 
 }
