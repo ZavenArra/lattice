@@ -36,6 +36,20 @@
 		<field name="title">Single Time</field>
 	</item>
 
+ 	<item templateName="singleFile">
+                <field name="title">Single File</field>
+                <field name="file">testimages/ctoolsAllCases.csv</field>
+        </item>
+
+        <item templateName="singleImage">
+                <field name="title">Single Image</field>
+                <field name="file">testimages/29305_390907843268_707068268_4114906_7182725_n.jpg</field>
+                <item templateName="singleImage">
+                        <field name="title">Image Build Test</field>
+                        <field name="file">testimages/29305_390907843268_707068268_4114906_7182725_n.jpg</field>
+                </item>
+        </item>
+
 	<item templateName="simpleListModule">
 		<field name="title">Simple List Module</field>
 	</item>
@@ -51,20 +65,6 @@
 	<item templateName="fileListModule">
 		<field name="title">File List</field>
   </item>
-
-	<item templateName="singleFile">
-		<field name="title">File Build Test</field>
-		<field name="file">/Users/deepwinter/ndocTemplates.txt</field>
-	</item>
-
-	<item templateName="singleImage">
-		<field name="title">Image Build Test</field>
-		<field name="file">/Users/deepwinter/data/2.jpg</field>
-		<item templateName="singleImage">
-			<field name="title">Image Build Test</field>
-			<field name="file">/Users/deepwinter/data/2.jpg</field>
-		</item>
-	</item>
 
 	<item templateName="stuff">
 		<field name="title">some stuff</field>
