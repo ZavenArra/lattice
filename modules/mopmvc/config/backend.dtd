@@ -16,7 +16,7 @@
 
 <!ELEMENT templates (template*) >
 
-<!ELEMENT template (elements?|addableObject*|component*) >
+<!ELEMENT template ( elements?,addableObject*,components* ) >
 <!ATTLIST template
 	name				CDATA #REQUIRED
 	nodeType			CDATA "document"
@@ -32,13 +32,6 @@
 
 <!ELEMENT components (component*) >
 
-<!ELEMENT component EMPTY >
-<!ATTLIST component
-	templateName	CDATA #REQUIRED
-	label					CDATA #IMPLIED
->
-
-
 <!ELEMENT addableObject EMPTY >
 <!ATTLIST addableObject
 	templateName		CDATA #REQUIRED
@@ -47,17 +40,18 @@
 
 <!ELEMENT component ANY>
 <!ATTLIST component
-	templateName  CDATA #REQUIRED
+	templateName	CDATA #REQUIRED
+	label			CDATA #REQUIRED
 >
 
 <!ELEMENT list (addableObject*) >
 <!ATTLIST list
 	family				CDATA #REQUIRED
 	label				CDATA #REQUIRED
-	display				(inline|component) "inline"
-	allowChildSort   		(true|false) "true"
-	sortDirection		(ASC|DESC)	"ASC"
-	allowTogglePublish	(true|false) "true"	
+	display				(inline|component)	"inline"
+	allowChildSort   	(true|false)		"true"
+	sortDirection		(ASC|DESC)			"ASC"
+	allowTogglePublish	(true|false)		"true"	
 	contentType  CDATA "document"
 >
 <!-- last two attributes currently not supported -->
@@ -65,17 +59,17 @@
 
 <!ELEMENT associator (filter*)>
 <!ATTLIST associator 
-	field					CDATA #REQUIRED
-	label					CDATA #IMPLIED
-	parent				CDATA  #IMPLIED
-	templateName  CDATA  #IMPLIED
+	field				CDATA	#REQUIRED
+	label				CDATA	#IMPLIED
+	parent				CDATA	#IMPLIED
+	templateName  		CDATA	#IMPLIED
 >
 
 <!ELEMENT filter EMPTY >
 <!ATTLIST filter
-	from				   CDATA #IMPLIED
-	templateName	 CDATA #IMPLIED
-	tagged	       CDATA #IMPLIED
+	from				CDATA #IMPLIED
+	templateName		CDATA #IMPLIED
+	tagged				CDATA #IMPLIED
 >
 
 
@@ -101,7 +95,7 @@
 <!ELEMENT radioGroup (radio*) >
 <!ATTLIST radioGroup
 	%uiattrs;
-	groupLabel				CDATA #REQUIRED
+	groupLabel			CDATA #REQUIRED
 >
 
 <!ELEMENT radio EMPTY >

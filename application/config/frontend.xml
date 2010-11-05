@@ -3,12 +3,40 @@
 
 <data>
 
-	<view name="singleIPE" loadpage="true">
-	</view>
-	
-	<view name="singleFile" loadpage="true">
-	</view>
+        <view name="singleIPE" loadpage="true">
+        </view>
 
-	<view name="singleImage" loadpage="true">
-	</view>
+        <view name="multilineIPE" loadpage="true">
+        </view>
+
+        <vew name="singleRadioGroup" loadpage="true">
+        </view>
+
+        <view name="singleCheckbox" loadpage="true">
+        </view>
+
+        <view name="singleDate" loadpage="true">
+        </view>
+
+        <view name="singleTime" loadpage="true">
+        </view>
+
+        <view name="singleFile" loadpage="true">
+        </view>
+
+        <view name="singleImage" loadpage="true">
+        </view>
+
+        <view name="simpleListModule" loadpage="true">
+        </view>
+
+        <view name="imageListModule" loadpage="true">
+        </view>
+
+        <view name="fileListModue" loadpage="true">
+        </view>
+
+        <view name="complexListModule" loadpage="true">
+        </view>
 </data>
+

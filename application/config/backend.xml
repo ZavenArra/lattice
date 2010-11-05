@@ -21,11 +21,11 @@
 		<template name="singleIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 
 			<elements>
-				<ipe field="singleIPE" label="single IPE" rows="1"/>
+				<ipe field="singleIPE" label="single IPE" rows="1" />
 			</elements>
 			
 			<components>
-				<component templateName="singleDate" label="SingleDate as Component"/>
+				<component templateName="singleDate" label="SingleDate as Component" />
 			</components>
 		
 		</template>
@@ -38,11 +38,11 @@
 		
 		<template name="singleRadioGroup" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-        <radioGroup field="singleRadioGroup" groupLabel="Single Radio Group">
-          <radio label="One" value="1"/>
-          <radio label="Two" value="2"/>
-          <radio label="Three" value="3"/>
-        </radioGroup>
+        			<radioGroup field="singleRadioGroup" groupLabel="Single Radio Group">
+          				<radio label="One" value="1"/>
+          				<radio label="Two" value="2"/>
+          				<radio label="Three" value="3"/>
+        			</radioGroup>
 			</elements>
 		</template>
 
@@ -108,6 +108,9 @@
 				<singleImage field="file">
 					<ext>jpg</ext>
 				</singleImage>
+                                <singleImage field="file">
+                                        <ext>jpg</ext>
+                                </singleImage>
 			</elements>
 		</template>
 		
@@ -159,7 +162,7 @@
 			</elements>
 		</template>			
 
-		<template name="stuff" nodeType="CATEGORY" allow_sort="true" allow_delete="true" allow_publish="true" >
+		<template name="stuff" nodeType="CATEGORY" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
       <elements>
         <ipe field="blurb" label="Blurb" tag="p" rows="4" />
 				<associator field="myObjects" label="give it to me">
@@ -186,4 +189,3 @@
 	</templates>
 
 </configuration>
-
