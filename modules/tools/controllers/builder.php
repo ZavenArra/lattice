@@ -6,7 +6,7 @@ class builder_Controller extends Controller {
 
   public function __construct(){
 		if(!is_writable('application/frontend/')){
-			die('application/media must be writable');
+			die('application/frontemd must be writable');
 		}
 	}
 
