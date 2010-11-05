@@ -1,6 +1,55 @@
 mop.ui = {};
 mop.ui.navigation = {};
 
+
+Element.implement({
+    smartDispose: function() {
+        // dispose of an element and its dropShadow (if there is one)
+        var rel = this.get("data-related");
+	    if ($(rel)) {
+	        $(rel).destroy();
+	    }
+	    this.destroy();
+	}, // end smartDispose
+	dropShadow: function(options) {
+	    // creates a shadow effect to a rectangular element
+	    // define defaults
+        var options = $merge({
+            id: "dropShadow" + $random(100,1000),
+            x: 3, // offset from parent
+            y: 3,
+            border: "1px solid #000",
+            background: "#555",
+            opacity: .5,
+            zIndex: this.getStyle("z-index").toInt() - 1 // behind parent
+        }, options);
+
+        // only apply shadow on absolutely positioned elements
+        if (this.getStyle("position") != "absolute")
+            return this;
+
+        var c = this.getCoordinates();
+
+        new Element("div", {
+            id: options.id,
+            styles: {
+                position: "absolute",
+                left: c.left + options.x,
+                top: c.top + options.y,
+                width: c.width,
+                height: c.height,
+                background: options.background,
+                zIndex: options.zIndex
+            },
+            opacity: 0
+        }).injectBefore(this).fade(0, options.opacity);
+
+        // store the shadow id into the element
+        this.set("data-related", options.id);
+
+        return this;
+    } // end dropShadow
+});
 /*
 	Class: mop.ui.navigation.Tabs
 	Generic helper for handling tabbed navigation
@@ -1009,7 +1058,7 @@ mop.ui.Modal = new Class({
 
 		this.modal = new Element( "div", {
 			"class": "modal"
-		});
+		}).dropShadow();
 		
 		this.header = new Element( "h3" );
 
@@ -1057,6 +1106,7 @@ mop.ui.Modal = new Class({
 	},
 	
 	destroy: function(){
+	    this.modal.smartDispose();
 		this.modal.destroy();
 		this.modalAnchor.destroy();
 		this.element.destroy();
@@ -1071,22 +1121,26 @@ mop.ui.MessageDialogue = new Class({
 
 	Extends: mop.ui.Modal,
 	
-	initialize: function( aMarshal, aTitle, aMessage, onConfirm, onCancel, confirmText, cancelText ){
+	initialize: function( aMarshal, options ){
 		this.parent( aMarshal );
 		this.container = new Element( "div", { "class": "container" } );
 		this.message = new Element("div");
-		
-		this.setupControls( onConfirm, onCancel, confirmText, cancelText );
-		
-		this.header.set( "text", aTitle );
+		this.setupControls( options );
+		this.header.set( "text", options.title );
 		this.message.inject( this.container );
 		this.container.inject( this.modal );
-
 		return this;
 	},
 	
-	setupControls: function( onConfirm, onCancel, confirmText, cancelText ){
+	setupControls: function(){
 		
+		var confirmText = options.confirmText;
+		var cancelText = options.cancelText;
+		var aMessage = options.aMessage;
+		var title = options.title;
+		var onCancel = options.onCancel; 
+		var onConfirm = options.onConfirm;
+			    
 		confirmText = (confirmText)? confirmText : "Confirm";
 		cancelText = (cancelText)? cancelText : "Cancel";
 		
@@ -1125,8 +1179,8 @@ mop.ui.MessageDialogue = new Class({
 
 mop.ui.InactivityDialogue = new Class({
 	Extends: mop.ui.MessageDialogue,
-	initialize: function( aMarshal, aTitle, aMessage, onConfirm, onCancel, confirmText, cancelText ){
-		this.parent( aMarshal, aTitle, aMessage, onConfirm, onCancel, confirmText, cancelText );
+	initialize: function( aMarshal, options ){
+		this.parent( aMarshal, options );
 	},
 	
 	setupControls: function(onConfirm, onCancel, confirmText, cancelText){
