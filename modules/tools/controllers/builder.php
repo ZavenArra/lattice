@@ -1,9 +1,16 @@
 <?
 
-class BuildData_Controller extends Controller {
+class builder_Controller extends Controller {
 
-	public function index(){
+	private $newObjectIds = array();
 
+  public function __construct(){
+		if(!is_writable('application/frontend/')){
+			die('application/media must be writable');
+		}
+	}
+
+	public function initializeSite($xmlFile='data'){
 		//get directory listing of application/media
 		//and unlink all files
 
@@ -18,14 +25,27 @@ class BuildData_Controller extends Controller {
 		ob_flush();
 
 		echo "\nInserting Data\n";
-		$this->insertData();
+		$this->insertData($xmlFile);
 
 		cms::regenerateImages();
 
-	}
-	public function insertData($parentId = 0, $context=null){
+    //and run frontend
+		echo "\n Regenerating Fronted";
+    $frontend = new Frontend_Controller();
+    $frontend->index();
 
-		foreach(mop::config('data', 'item', $context)  as $item){
+	}
+
+	public function addData($xmlFile){
+		$this->insertData($xmlFile);	
+
+		cms::generateNewImages($this->newObjectIds);
+	}
+
+
+	protected function insertData($xmlFile, $parentId = 0, $context=null){
+
+		foreach(mop::config($xmlFile, 'item', $context)  as $item){
 			$lists = array();
 			if(!$item->getAttribute('templateName')){
 				echo $item->tagName;
@@ -46,7 +66,7 @@ class BuildData_Controller extends Controller {
 
       //echo ')))'.$item->getAttribute('templateName');
 			$data = array();
-			foreach(mop::config('data', 'field', $item ) as $content){
+			foreach(mop::config($xmlFile, 'field', $item ) as $content){
 				$field = $content->getAttribute('name');
 				//echo 'This Fielad '.$field."\n\n";
 				switch($field){
@@ -128,14 +148,15 @@ class BuildData_Controller extends Controller {
 				$objectId = $component->id;
 			} else {
 				$objectId = cms::addObject($parentId, $template->id, $data);
+				$this->newObjectIds[] = $objectId;
 			}
 
 			//do recursive if it has children
-			if(mop::config('data', 'item', $item)->length ){
-				$this->insertData($objectId,  $item);
+			if(mop::config($xmlFile, 'item', $item)->length ){
+				$this->insertData($xmlFile, $objectId,  $item);
 			}
 
-			foreach(mop::config('data', 'list', $item) as $list){
+			foreach(mop::config($xmlFile, 'list', $item) as $list){
 				//echo "FOUND A LIST\n\n";
 				//find the container
 				$listT = ORM::Factory('template', $list->getAttribute('family'));
@@ -144,7 +165,7 @@ class BuildData_Controller extends Controller {
 					->where('template_id', $listT->id)
 					->find();
 				//jump down a level to add object
-				$this->insertData($container->id, $list);
+				$this->insertData($xmlFile, $container->id, $list);
 			}
 
 		}
