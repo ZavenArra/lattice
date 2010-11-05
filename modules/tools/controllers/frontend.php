@@ -24,7 +24,7 @@ Class Frontend_Controller extends Controller {
 				//this also implies that name is a templatename
 				foreach(mop::config('backend', 
 					sprintf('//template[@name="%s"]/elements/*', $view->getAttribute('name') )) as $element){
-						$this->makeHtmlElement($element, "\$content['main']");
+						frontend::makeHtmlElement($element, "\$content['main']");
 					}
 			}
 
@@ -140,7 +140,7 @@ Class Frontend_Controller extends Controller {
       echo $indent."   "."<h2><?=\${$label}Item['title'];?></h2>\n\n";
 			foreach(mop::config('backend', 
 				sprintf('//template[@name="%s"]/elements/*', $templateName )) as $element){
-					$this->makeHtmlElement($element, "\${$label}Item", $indent."   ");
+					frontend::makeHtmlElement($element, "\${$label}Item", $indent."   ");
 				}
 
 			//handle lower levels
