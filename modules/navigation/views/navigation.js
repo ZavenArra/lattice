@@ -1,4 +1,4 @@
- /*
+/*
 	Section: mop.modules.navigation
 */
 mop.modules.navigation = {};
@@ -12,29 +12,32 @@ mop.modules.navigation.Navigation = new Class({
 	*/
 	Extends: mop.modules.Module,
 	Implements: Events,
-
+	navElement: null,
+	breadCrumbs: null,
+	colWidth: null,
+	navTree: null,
+    addObjectPosition: null,
+    userLevel: null,
+    
 	initialize: function( anElement, aMarshal ){
-
 		this.parent( anElement, aMarshal );
-		
 		this.navElement = this.element.getElement( ".nav" );
+		
+		this.userLevel = ( Cookie.read( 'userLevel' ) )? Cookie.read( 'userLevel' ) : "superuser";
 		
 		this.breadCrumbs =  new mop.ui.navigation.BreadCrumbTrail( this.element.getSibling( ".breadCrumb" ), this.onBreadCrumbClicked.bind( this ) );
 		this.breadCrumbs.addCrumb( { label: "Main Menu", id: null, index: 0 } );
 		
-		this.mode = "browse";
 		this.tiers = [];
 		this.colWidth = 300;
 		this.navTree = null;
-		this.currentPage = null;
-
 		this.navSlide = new Fx.Scroll( this.element );
 
 		mop.HistoryManager.addListener( this );
 		this.addEvent( "pageIdChanged", this.onPageIdChanged );
 		this.getNavTree();
 
-		this.addObjectPosition =	mop.util.getValueFromClassName( "addObjectPosition", this.element.get( "class" ) );
+		this.addObjectPosition = mop.util.getValueFromClassName( "addObjectPosition", this.element.get( "class" ) );
 
 	},
 
@@ -149,11 +152,9 @@ mop.modules.navigation.Navigation = new Class({
 		newList.inject( newTier ); 
 		newTier.inject( this.navElement );
 		
-		newList = newTier = navElementWidth = leftMargin = null;
 	},
 	
-	getTierElement: function( whichTier, from ){
-		//console.log( "getTierElement >>>> " + whichTier + " called from " + from, this.navElement.getChildren() );
+	getTierElement: function( whichTier ){
 		return ( this.navElement.getChildren()[ whichTier ] )? this.navElement.getChildren()[ whichTier ].getElement( "ul.tier" ) : false;
 	},
 
@@ -263,7 +264,6 @@ mop.modules.navigation.Navigation = new Class({
 	},
 	
 	addBreadCrumb: function( nodeParentId, whichTier ){
-//		console.log( "\n\taddBreadCrumb", nodeParentId, whichTier );
 		if( nodeParentId ){
 			var node = this.navTreeLookupTable.get( nodeParentId );
 			breadCrumbObj = { label: node.title, id: node.id, index: whichTier };
@@ -279,6 +279,10 @@ mop.modules.navigation.Navigation = new Class({
 	addUtilityNode: function( aNode, whichTier ){
 	
 		var tierElement = this.getTierElement( whichTier );
+		if( !tierElement.getElement( '.utility' ) ){
+    		var utilityNode = new Element( "ul", { "class": "utility" } );
+    		utilityNode.inject( tierElement );		    
+		}
 		var tier = this.tiers[ whichTier ];
 		
 		if( !tierElement ) return;
@@ -419,10 +423,6 @@ mop.modules.navigation.Navigation = new Class({
 		}
 	},
 	
-	/*
-		Function: toggleMode
-		Toggle nav mode (sorting/browsing)
-	*/
 	makeTierSortable: function( whichTier ){
         if( this.tiers[whichTier].sortable ){
     		this.tiers[whichTier].sortable.detach();
