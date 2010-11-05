@@ -12,7 +12,7 @@
         <vew name="singleRadioGroup" loadpage="true">
         </view>
 
-        <view name="singleCheckbox" loadpage="true"
+        <view name="singleCheckbox" loadpage="true">
         </view>
 
         <view name="singleDate" loadpage="true">
