@@ -21,11 +21,11 @@
 		<template name="singleIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 
 			<elements>
-				<ipe field="singleIPE" label="single IPE" rows="1"/>
+				<ipe field="singleIPE" label="single IPE" rows="1" />
 			</elements>
 			
 			<components>
-				<component templateName="singleDate" label="SingleDate as Component"/>
+				<component templateName="singleDate" label="SingleDate as Component" />
 			</components>
 		
 		</template>
@@ -159,7 +159,7 @@
 			</elements>
 		</template>			
 
-		<template name="stuff" nodeType="CATEGORY" allow_sort="true" allow_delete="true" allow_publish="true" >
+		<template name="stuff" nodeType="CATEGORY" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
       <elements>
         <ipe field="blurb" label="Blurb" tag="p" rows="4" />
 				<associator field="myObjects" label="give it to me">
@@ -186,4 +186,3 @@
 	</templates>
 
 </configuration>
-

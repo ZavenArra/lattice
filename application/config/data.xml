@@ -40,9 +40,9 @@
 		<field name="title">Simple List Module</field>
 	</item>
 	
-	 <item templateName="complexListModule">
-                <field name="title">Complex List Module</field>
-        </item>
+	<item templateName="complexListModule">
+		<field name="title">Complex List Module</field>
+	</item>
 	
 	<item templateName="imageListModule">
 		<field name="title">Image List</field>
@@ -67,8 +67,6 @@
 	</item>
 
 	<item templateName="stuff">
-		<title>some stuff</title>
+		<field name="title">some stuff</field>
 	</item>
 </data>
-
-
