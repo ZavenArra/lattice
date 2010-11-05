@@ -1,12 +1,16 @@
+<h1><?=$content['main']['title'];?></h1>
 <?
-$objTmp = (object) array('aFlat' => array());
+//this also implies that name is a templatename
+ob_start();
+foreach(mop::config('backend', 
+	sprintf('//template[@name="%s"]/elements/*', ORM::Factory('page', $content['main']['id'])->template->templatename )) as $element){
+		frontend::makeHtmlElement($element, "\$content['main']");
+}
+$html = ob_get_contents();
+ob_end_clean();
+eval('?> '.$html.' <?');
+?>
 
-array_walk_recursive($content, create_function('&$v, $k, &$t', '$t->aFlat[] = $v;'), $objTmp);
 
-$content = $objTmp->aFlat;
 
- ?>
-Default..
-<?foreach($content as $key => $item):?>
-	<p><?=$item;?></p>
-<?endforeach;?>
+		
