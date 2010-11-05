@@ -153,6 +153,16 @@ mop.util.domIsReady = function(){
 }
 
 /*
+ 	Function: mop.util.isUnsignedInteger 
+	Is the passed value an integer or not?
+*/
+mop.util.isUnsignedInteger = function( s ){
+    console.log( s );
+    return ( s.toString().search(/^[0-9]+$/ ) == 0);
+}
+
+
+/*
  	Function: mop.util.stopEvent 
 	Stops event bubbling, normally this is handled in each instance
 	But this will serve as a nice shortcut given the verbosity needed to deal with some IE's ( the whole return value conditional )
