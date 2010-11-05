@@ -21,7 +21,7 @@
 		<template name="singleIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 
 			<elements>
-				<ipe field="singleIPE" label="single IPE" rows="1" />
+				<ipe field="singleIPE" label="Single Single Single" rows="1" />
 			</elements>
 			
 			<components>

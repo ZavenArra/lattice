@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE configuration SYSTEM "../../modules/mopmvc/config/frontend.dtd">
 
-<data>
+<configuration>
 
         <view name="singleIPE" loadpage="true">
         </view>
@@ -9,7 +9,7 @@
         <view name="multilineIPE" loadpage="true">
         </view>
 
-        <vew name="singleRadioGroup" loadpage="true">
+        <view name="singleRadioGroup" loadpage="true">
         </view>
 
         <view name="singleCheckbox" loadpage="true">
@@ -38,5 +38,5 @@
 
         <view name="complexListModule" loadpage="true">
         </view>
-</data>
+</configuration>
 
