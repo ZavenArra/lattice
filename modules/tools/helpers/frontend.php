@@ -2,8 +2,6 @@
 
 class frontend {
 	public static function makeHtmlElement($element, $prefix, $indent=''){
-		echo 'ehllo';
-		echo $element->nodeName;
 
 		$field = $element->getAttribute('field');
 
