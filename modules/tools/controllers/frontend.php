@@ -14,9 +14,9 @@ Class Frontend_Controller extends Controller {
 		mop::config('backend', '//templates');
 		
 		flush();
-		ob_start();
 		
 		foreach(mop::config('frontend', '//view') as $view ){
+			ob_start();
 			touch('application/frontend/'.$view->getAttribute('name').'.php');
 
 			if($view->getAttribute('loadPage')=='true'){
