@@ -678,7 +678,7 @@ mop.util.LoginMonitor = new Class({
 		$clear( this.inactivityTimeout );
 		this.date = new Date();
 		if( !this.dialogue ) this.dialogue = new mop.ui.InactivityDialogue( this, "Inactivity", "", this.keepAlive.bind( this ), this.logout.bind( this ), "Stay logged in?", "Logout" );
-		this.dialogue.setMessage( this.inactivityMessage.substitute( { inactiveMins: this.secondsOfInactivityTilPrompt/60000, minutes: Math.floor( this.secondsTilLogout*.001 ), seconds: 00 } ) );
+		this.dialogue.setMessage( this.inactivityMessage.substitute( { inactiveMins: this.secondsOfInactivityTilPrompt/this.millisecondsInAMinute, minutes: Math.floor( this.secondsTilLogout*.001 ), seconds: 00 } ) );
 		this.secondsIdle = 0;
 		this.logoutTimeout = this.logoutCountDown.periodical( 1000, this );
 		this.dialogue.show();
