@@ -197,6 +197,20 @@ class Navigation_Controller extends Controller{
 			return array();
 		}
 	}
+
+
+	public function getTemplates(){
+		$templates = array();
+		foreach(mop::config('objects', '//template') as $template){
+			$entry = array();
+			$entry['templateId'] = $template->getAttribute('name');	
+			$entry['templateAddText'] = $template->getAttribute('addText');	
+			$entry['nodeType'] = $template->getAttribute('nodeType');	
+			$entry['contentType'] = $template->getAttribute('contentType');	
+			$templates[] = $entry;
+		}
+		return $templates;
+	}
 		
 }
 
