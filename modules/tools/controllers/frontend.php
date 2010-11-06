@@ -3,7 +3,12 @@ set_error_handler(array('Cli', 'error_handler'), E_ALL);
 
 Class Frontend_Controller extends Controller {
 
+	private $basePath = 'application/views/generated/';
+
 	public function __construct(){
+		if(!is_writable($this->basePath)){
+			die($this->basePath.' must be writable');
+		}
 		parent::__construct();
 	}
 
@@ -17,7 +22,7 @@ Class Frontend_Controller extends Controller {
 		
 		foreach(mop::config('frontend', '//view') as $view ){
 			ob_start();
-			touch('application/frontend/'.$view->getAttribute('name').'.php');
+			touch($this->basePath.$view->getAttribute('name').'.php');
 
 			if($view->getAttribute('loadPage')=='true'){
 				echo "<h1><?=\$content['main']['title'];?></h1>\n\n";
@@ -47,7 +52,7 @@ Class Frontend_Controller extends Controller {
 
 			$html = ob_get_contents();
 			ob_end_clean();
-			$file = fopen('application/frontend/'.$view->getAttribute('name').'.php', 'w');
+			$file = fopen($this->basePath.$view->getAttribute('name').'.php', 'w');
 			fwrite($file, $html);
 			fclose($file);
 		}

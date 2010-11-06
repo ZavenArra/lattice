@@ -5,8 +5,8 @@ class builder_Controller extends Controller {
 	private $newObjectIds = array();
 
   public function __construct(){
-		if(!is_writable('application/frontend/')){
-			die('application/frontemd must be writable');
+		if(!is_writable('application/views/generated/')){
+			die('application/views/generated/ must be writable');
 		}
 	}
 

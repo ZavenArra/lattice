@@ -49,14 +49,16 @@ Class Site_Controller extends Controller{
 			}
       //look for the template, if it's not there just print out all the data raw
       $viewName = $page->template->templatename;
-      if(!file_exists('application/frontend/'.$viewName.'.php')){
-				$viewName = 'default';
+      if(!file_exists('application/views/frontend/'.$viewName.'.php')){
+				if(!file_exists('application/views/generated/'.$viewName.'.php')){
+					$viewName = 'default';
+				}
 			}
 			$this->view = new View( $viewName );
 
     
 		} else {
-			//check for a virtual page specified in frontend.yaml
+			//check for a virtual page specified in frontend.xml
 			//a virtual page will be one that does not match a template
 			$viewname = $pageidorslug;
 			$this->view = new View( $viewname );
