@@ -46,6 +46,9 @@ class Template_Model extends ORM {
 					$entry = array();
 					$entry['templateId'] = $node->getAttribute('templateName');
 					$entry['templateAddText'] = $node->getAttribute('addText');
+					$tConfig = mop::config('backend', sprintf('//template[@name="%s"]', $entry['templateId'] ))->item(0);
+					$entry['nodeType'] = $tConfig->getAttribute('nodeType');
+					$entry['contentType'] = $tConfig->getAttribute('contentType');
 					$valuefromconfig[] = $entry;
 				}
 			} else {
