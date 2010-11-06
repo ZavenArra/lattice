@@ -601,6 +601,19 @@ class Page_Model extends ORM {
 		return $this;
 	}
 
+	public function noContainerObjects(){
+			$db = new Database();
+			$res = $db->query("Select id from templates where nodeType = 'container'");
+			$tIds = array();
+			foreach($res as $container){
+				$tIds[] = $container->id;
+			}
+			if(count($tIds)){
+				$this->notin('template_id', $tIds);
+			}
+			return $this;
+	}
+
 	public function publishedFilter(){
 		$this->where('published', 1)
 			->where('activity IS NULL');
