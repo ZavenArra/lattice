@@ -16,15 +16,15 @@ Class ConfigSite_Controller extends Controller {
 		echo "Configuring Site\n";
 
 		//load value from config to force validation
-		mop::config('backend', '//configuration');
+		mop::config('objects', '//configuration');
 
 		$db = Database::instance();
-			//validate backend.xml data
+			//validate objects.xml data
 		$errors = array();
 		$templates = array();
-		foreach(mop::config('backend', '//template') as $template){
+		foreach(mop::config('objects', '//template') as $template){
 			$templates[] = $template->getAttribute('name');
-			foreach(mop::config('backend', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item ){
+			foreach(mop::config('objects', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item ){
 				$field = $item->getAttribute('field');
 				if(!preg_match('/^[A-z0-9]*$/', $field)){
 					$errors[] = "Element field names must be alphanumeric.  field=\"$field\" found in template ".$template->getAttribute('name');
@@ -32,11 +32,11 @@ Class ConfigSite_Controller extends Controller {
 			}
 		}
 
-		foreach(mop::config('backend', '//addableObject') as $addable){
+		foreach(mop::config('objects', '//addableObject') as $addable){
       $at = $addable->getAttribute('templateName');
       echo $at;
 			if(!in_array($at, $templates)){
-				$errors[] = "Addable object $at not defined as template in backend.xml";
+				$errors[] = "Addable object $at not defined as template in objects.xml";
 			}
 		}
 
@@ -52,7 +52,7 @@ Class ConfigSite_Controller extends Controller {
 		$fNames = array();
 		$localFNames = array();
 		$components = array();
-		foreach(mop::config('backend', '//template') as $template){
+		foreach(mop::config('objects', '//template') as $template){
 			$name = $template->getAttribute('name');
 			if(in_array($name, $tNames) || in_array($name, $fNames)){
 				die("Duplicate Template Name: $name \n");
@@ -60,7 +60,7 @@ Class ConfigSite_Controller extends Controller {
 			$tNames[] = $name;
 
 			$localFNames = array();
-			foreach(mop::config('backend', 'elements/*', $template) as $item){
+			foreach(mop::config('objects', 'elements/*', $template) as $item){
 				$name = null;
 				switch($item->tagName){
 
@@ -84,7 +84,7 @@ Class ConfigSite_Controller extends Controller {
 
 			//check for components loops
 			$comps = array();
-			foreach(mop::config('backend','components/*', $template) as $component){
+			foreach(mop::config('objects','components/*', $template) as $component){
 				$comps[] = $component->getAttribute('templateName');	
 			}
 			if(in_array($name, $comps)){
@@ -115,7 +115,7 @@ Class ConfigSite_Controller extends Controller {
 
 
 		//build templates
-		foreach(mop::config('backend', '//template') as $template){
+		foreach(mop::config('objects', '//template') as $template){
       cms::configureTemplate($template);
 	  }	
 

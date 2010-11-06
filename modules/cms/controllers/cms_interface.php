@@ -92,7 +92,7 @@ class CMS_Interface_Controller extends Controller {
 			$page->$_POST['field'] = $_POST['value'];
 			$page->save();
 		} else if($_POST['field']) {
-			$fieldInfo = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[@field="%s"]',
+			$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]',
 																									$page->template->templatename,
 																									$_POST['field']))->item(0);
 
@@ -107,7 +107,7 @@ class CMS_Interface_Controller extends Controller {
 					$page->contenttable->save();
 				}
 				$options = array();
-				foreach(mop::config('backend', sprintf('/template[@name="%s"]/element', $object->template->templatename)) as $field){
+				foreach(mop::config('objects', sprintf('/template[@name="%s"]/element', $object->template->templatename)) as $field){
 					if($field->getAttribute('type') == 'checkbox'){
 						$options[] = $field['field'];
 					}

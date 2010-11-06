@@ -157,7 +157,7 @@ class Navigation_Controller extends Controller{
 					$parent = ORM::Factory($this->objectModel, $parentid); //it would be nice to be able to just look up the heap
 
 					//echo sprintf('//template[@name="%s"]/elements/list[@family="%s"]', $parent->template->templatename, $child->template->templatename);
-					$display = mop::config('backend', sprintf('//template[@name="%s"]/elements/list[@family="%s"]', 
+					$display = mop::config('objects', sprintf('//template[@name="%s"]/elements/list[@family="%s"]', 
 																										$parent->template->templatename,
                                                     $child->template->templatename))
                                                     ->item(0)
@@ -196,6 +196,20 @@ class Navigation_Controller extends Controller{
 		} else {
 			return array();
 		}
+	}
+
+
+	public function getTemplates(){
+		$templates = array();
+		foreach(mop::config('objects', '//template') as $template){
+			$entry = array();
+			$entry['templateId'] = $template->getAttribute('name');	
+			$entry['templateAddText'] = $template->getAttribute('addText');	
+			$entry['nodeType'] = $template->getAttribute('nodeType');	
+			$entry['contentType'] = $template->getAttribute('contentType');	
+			$templates[] = $entry;
+		}
+		return $templates;
 	}
 		
 }

@@ -12,7 +12,7 @@ class RouteVirtualModulesHook{
 
 		//what we'll try doing is to look up the class in cms.php and create the module
 		$modules = array();
-		foreach(mop::config('backend', '//template/elements/*') as $module){
+		foreach(mop::config('objects', '//template/elements/*') as $module){
 			if($module->tagName=='module'){ 
 				//there could be other type of virtual modules
 				//this is a total hack

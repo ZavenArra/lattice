@@ -44,6 +44,9 @@ class ContentBase_Model extends ORM {
 
 		//check for dbmap
 		$column = mop::dbmap( ORM::Factory('page', parent::__get('page_id'))->template_id, $column);
+		if(!$column){
+			return null;
+		}
 
 		if(strstr($column, 'object')){
 			$sub = ORM::Factory('page', parent::__get($column));
@@ -79,12 +82,35 @@ class ContentBase_Model extends ORM {
 			return parent::__set($column, $value);
 		}
 
+		$object = ORM::Factory('page', parent::__get('page_id'));
+
 		//check for dbmap
-		if($mappedcolumn = mop::dbmap( ORM::Factory('page', parent::__get('page_id'))->template_id, $column) ){
+		if($mappedcolumn = mop::dbmap( $object->template_id, $column) ){
 			return parent::__set($mappedcolumn, $value);
+		} 
+
+		//this column isn't mapped, check to see if it's in the xml
+		if($object->template->nodeType=='container'){
+			//For lists, values will be on the 2nd level 
+			$xPath =  sprintf('//list[@family="%s"]', $object->template->templatename);
 		} else {
-			return parent::__set($column, $value);
+			//everything else is a normal lookup
+			$xPath =  sprintf('//template[@name="%s"]', $object->template->templatename);
 		}
+		$fieldConfig = mop::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $column));
+		if($fieldConfig->item(0)){
+			//field is configured but not initialized in database
+			cms::configureField($object->template->id, $fieldConfig->item(0));	
+
+			//now go aheand and save on the mapped column
+
+			mop::reinitDbmap($object->template_id);
+			$mappedcolumn = mop::dbmap( $object->template_id, $column);
+			return parent::__set($mappedcolumn, $value);
+		}
+
+		//othewise default behavior
+		return parent::__set($column, $value);
 	}
 
 }
