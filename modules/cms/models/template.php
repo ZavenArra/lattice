@@ -57,6 +57,7 @@ class Template_Model extends ORM {
       return $valuefromconfig;	
 	}
 
+
 	/*
 	 * Function: unique_key($id)
 	 * Allows both integer id and templatename text to be unique key,
