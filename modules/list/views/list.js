@@ -155,9 +155,7 @@ mop.modules.ListModule = new Class({
 		listItem.UIElements.each( function( uiInstance ){
 			uiInstance.scrollContext = "modal";
 		});
-//		listItem.filesToTop();
 		this.items.push( listItem );
-//		this.addItemDialogue.show();
 		mop.util.EventManager.broadcastEvent( "resize" );
 		listItem = null;
 	},
