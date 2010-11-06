@@ -97,7 +97,7 @@ class ContentBase_Model extends ORM {
 			//everything else is a normal lookup
 			$xPath =  sprintf('//template[@name="%s"]', $object->template->templatename);
 		}
-		$fieldConfig = mop::config('backend', $xPath.sprintf('/elements/*[@field="%s"]', $column));
+		$fieldConfig = mop::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $column));
 		if($fieldConfig->item(0)){
 			//field is configured but not initialized in database
 			cms::configureField($object->template->id, $fieldConfig->item(0));	

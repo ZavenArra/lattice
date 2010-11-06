@@ -157,7 +157,7 @@ class Navigation_Controller extends Controller{
 					$parent = ORM::Factory($this->objectModel, $parentid); //it would be nice to be able to just look up the heap
 
 					//echo sprintf('//template[@name="%s"]/elements/list[@family="%s"]', $parent->template->templatename, $child->template->templatename);
-					$display = mop::config('backend', sprintf('//template[@name="%s"]/elements/list[@family="%s"]', 
+					$display = mop::config('objects', sprintf('//template[@name="%s"]/elements/list[@family="%s"]', 
 																										$parent->template->templatename,
                                                     $child->template->templatename))
                                                     ->item(0)

@@ -212,7 +212,7 @@ class CMS {
 
   
 	public static function buildUIHtmlChunksForObject($object){
-		$elements = mop::config('backend', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename));
+		$elements = mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename));
     $elementsConfig = array();
 		foreach($elements as $element){
 			$entry = array();
@@ -229,7 +229,7 @@ class CMS {
       case 'singleImage':
         $ext = array();
         //echo sprintf('/template[@name="%s"]/elements/singleImage[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
-        $children = mop::config('backend', 'ext', $element);
+        $children = mop::config('objects', 'ext', $element);
         foreach($children as $child){
           if($child->tagName == 'ext'){
             $ext[] = $child->nodeValue; 
@@ -238,7 +238,7 @@ class CMS {
         $entry['extensions'] = implode(',', $ext);
         break;
       case 'radioGroup':
-        $children = mop::config('backend', 'radio', $element);
+        $children = mop::config('objects', 'radio', $element);
         $radios = array();
         foreach($children as $child){
           $label = $child->getAttribute('label');
@@ -260,8 +260,8 @@ class CMS {
 	public static function regenerateImages(){
 		//find all images
 
-		foreach(mop::config('backend', '//template') as $template){
-			foreach(mop::config('backend', 'elements/*', $template) as $element){
+		foreach(mop::config('objects', '//template') as $template){
+			foreach(mop::config('objects', 'elements/*', $template) as $element){
 				if($element->tagName == 'singleImage'){
 					$objects = ORM::Factory('template', $template->getAttribute('name'))->getActiveMembers();
 					$fieldname = $element->getAttribute('field');
@@ -278,7 +278,7 @@ class CMS {
 	public static function generateNewImages($objectIds){
 		foreach($objectIds as $id){
 			$object = ORM::Factory('page', $id);
-			foreach(mop::config('backend', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename)) as $element){
+			foreach(mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename)) as $element){
 				if($element->tagName == 'singleImage'){
 					$fieldname = $element->getAttribute('field');
 					if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
@@ -316,8 +316,8 @@ class CMS {
 		$template_id = ORM::Factory('template', $template_ident)->id;
     if(!$template_id){
       //we're trying to add an object of template that doesn't exist in db yet
-      //check backend.xml for configuration
-      if($templateConfig = mop::config('backend', sprintf('//template[@name="%s"]', $template_ident))->item(0)){
+      //check objects.xml for configuration
+      if($templateConfig = mop::config('objects', sprintf('//template[@name="%s"]', $template_ident))->item(0)){
         //there's a config for this template
         //go ahead and configure it
         cms::configureTemplate($templateConfig);
@@ -353,7 +353,7 @@ class CMS {
 		//check for enabled publish/unpublish. 
 		//if not enabled, insert as published
 		$template = ORM::Factory('template', $template_id);
-		$tSettings = mop::config('backend', sprintf('//template[@name="%s"]', $template->templatename) ); 
+		$tSettings = mop::config('objects', sprintf('//template[@name="%s"]', $template->templatename) ); 
 		$tSettings = $tSettings->item(0);
 		$newpage->published = 1;
 		if($tSettings){ //entry won't exist for Container objects
@@ -384,7 +384,7 @@ class CMS {
 					continue(2);
 			}
 
-			$fieldInfo = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $template->templatename, $field))->item(0);
+			$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $template->templatename, $field))->item(0);
 			if(!$fieldInfo){
 				die("Bad field!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $template->templatename, $field));
 			}
@@ -415,7 +415,7 @@ class CMS {
 		//look up any components and add them as well
 
 		//configured components
-		$components = mop::config('backend', sprintf('//template[@name="%s"]/components/component',$newtemplate->templatename));
+		$components = mop::config('objects', sprintf('//template[@name="%s"]/components/component',$newtemplate->templatename));
 		foreach($components as $c){
 			$template = ORM::Factory('template', $c->getAttribute('templateName'));
 			$arguments = array();
@@ -431,7 +431,7 @@ class CMS {
 		}
 
 		//containers (list)
-		$containers = mop::config('backend', sprintf('//template[@name="%s"]/elements/list',$newtemplate->templatename));
+		$containers = mop::config('objects', sprintf('//template[@name="%s"]/elements/list',$newtemplate->templatename));
 		foreach($containers as $c){
 			$template = ORM::Factory('template', $c->getAttribute('family'));
 			$arguments['title'] = $c->getAttribute('label');
@@ -523,7 +523,7 @@ class CMS {
 		}
 
 
-		foreach(mop::config('backend', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item){
+		foreach(mop::config('objects', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item){
 			cms::configureField($tRecord->id, $item);
 		}
 	}

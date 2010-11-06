@@ -11,7 +11,7 @@ Class Frontend_Controller extends Controller {
 		echo "Configuring Frontend\n";
 		echo "Reading application/config/frontend.xml\n";
 
-		mop::config('backend', '//templates');
+		mop::config('objects', '//templates');
 		
 		flush();
 		
@@ -22,7 +22,7 @@ Class Frontend_Controller extends Controller {
 			if($view->getAttribute('loadPage')=='true'){
 				echo "<h1><?=\$content['main']['title'];?></h1>\n\n";
 				//this also implies that name is a templatename
-				foreach(mop::config('backend', 
+				foreach(mop::config('objects', 
 					sprintf('//template[@name="%s"]/elements/*', $view->getAttribute('name') )) as $element){
 						frontend::makeHtmlElement($element, "\$content['main']");
 					}
@@ -85,7 +85,7 @@ Class Frontend_Controller extends Controller {
 			if($from=="parent"){
 
 				//get the info from addableObjects of the current
-				foreach(mop::config('backend', sprintf('//template[@name="%s"]/addableObject', $parentTemplate)) as $addable){
+				foreach(mop::config('objects', sprintf('//template[@name="%s"]/addableObject', $parentTemplate)) as $addable){
 					$templateName = $addable->getAttribute('templateName');
 					$templates[$templateName] = $templateName;
 				}
@@ -104,7 +104,7 @@ Class Frontend_Controller extends Controller {
 				$object = ORM::Factory('page', $from);
 				if($object->loaded){
 					//find its addable objects
-					foreach(mop::config('backend', sprintf('//template[@name="%s"]/addableObject', $object->template->templatename)) as $addable){
+					foreach(mop::config('objects', sprintf('//template[@name="%s"]/addableObject', $object->template->templatename)) as $addable){
 						$templateName = $addable->getAttribute('templateName');
 						$templates[$templateName] = $templateName;
 					}
@@ -138,7 +138,7 @@ Class Frontend_Controller extends Controller {
 			}
 			echo $indent."  <li class=\"$templateName\">\n";
       echo $indent."   "."<h2><?=\${$label}Item['title'];?></h2>\n\n";
-			foreach(mop::config('backend', 
+			foreach(mop::config('objects', 
 				sprintf('//template[@name="%s"]/elements/*', $templateName )) as $element){
 					frontend::makeHtmlElement($element, "\${$label}Item", $indent."   ");
 				}

@@ -81,10 +81,10 @@ class builder_Controller extends Controller {
 
 
 				//need to look up field and switch on field type	
-				$fieldInfo = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')))->item(0);
+				$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')))->item(0);
 				if(!$fieldInfo){
 					//check to see if this is a list field
-					if(mop::config('backend',  sprintf('//template[@name="%s"]/elements/list[@family="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')))){
+					if(mop::config('objects',  sprintf('//template[@name="%s"]/elements/list[@family="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')))){
 						//its a list, just  skip/continue we deal with this after the object has been inserted
 						//add to array of lists to process
 						$lists[] = $field;
