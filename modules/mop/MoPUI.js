@@ -1037,8 +1037,8 @@ mop.ui.Modal = new Class({
 
 	Implements: [ Options, Events ],
 
-	initialize: function( aMarshal ){
-
+	initialize: function( aMarshal, options ){
+		this.setOptions( options );
 		this.marshal = aMarshal;
 
 		this.element = new Element( "div", {
@@ -1125,7 +1125,7 @@ mop.ui.MessageDialogue = new Class({
 		this.parent( aMarshal );
 		this.container = new Element( "div", { "class": "container" } );
 		this.message = new Element("div");
-		this.setupControls( options );
+		this.setupControls( );
 		this.header.set( "text", options.title );
 		this.message.inject( this.container );
 		this.container.inject( this.modal );
@@ -1134,12 +1134,12 @@ mop.ui.MessageDialogue = new Class({
 	
 	setupControls: function(){
 		
-		var confirmText = options.confirmText;
-		var cancelText = options.cancelText;
-		var aMessage = options.aMessage;
-		var title = options.title;
-		var onCancel = options.onCancel; 
-		var onConfirm = options.onConfirm;
+		var confirmText = this.options.confirmText;
+		var cancelText = this.options.cancelText;
+		var aMessage = this.options.aMessage;
+		var title = this.options.title;
+		var onCancel = this.options.onCancel; 
+		var onConfirm = this.options.onConfirm;
 			    
 		confirmText = (confirmText)? confirmText : "Confirm";
 		cancelText = (cancelText)? cancelText : "Cancel";
@@ -2242,7 +2242,7 @@ mop.ui.FileElement = new Class({
 		this.downloadButton.store( "Class", this );
 
 		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
-
+        console.log( ":::::::::::::::", this.Uploader.box.getElement( "object" ).get( "id" ) );
 		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );
 		this.uploadButton.addEvent( "mouseover", this.onMouseOver.bindWithEvent( this ) );
 
@@ -2279,6 +2279,11 @@ mop.ui.FileElement = new Class({
 		this.extensions = this.buildExtensionsObject();
 		this.submitURL = this.getSubmitURL();
 		this.sizeLimitMax = Number( mop.util.getValueFromClassName( "maxlength", this.element.get("class") ) ) * 1024;
+	},
+	
+	simulateClick: function(){
+	    console.log( "simulateClick", this.Uploader.box.getElement( "object" ), $( this.Uploader.box.getElement( "object" ).get( "id" ) ) );
+        // Swiff.remote.delay( 500, Swiff, this.Uploader.box.getElement( "object" ), 'stageClick' );
 	},
 
 	toString: function(){
@@ -2327,17 +2332,11 @@ mop.ui.FileElement = new Class({
 	
 	onFocus: function( e ){
 //		console.log( this.toString(), "onFocus", e );
-
 		mop.util.stopEvent( e );
-
+        console.log( "::", this.Uploader );
 		this.Uploader.setFocus( this, this.getPosition() );
 	},
 	
-	// onKeyDown: function( e ){
-	// 	if( e.key == "enter" && this.Uploader.getFocus() == this ){
-	// 		mop.Uploader.browse();
-	// 	}
-	// },
 	
 	onUploadButtonClicked: function( e ){
 		mop.util.stopEvent( e );
@@ -2352,7 +2351,7 @@ mop.ui.FileElement = new Class({
 		console.log( this.toString(), "onTargetHovered", depth );
 		this.Uploader.onTargetHovered( this, this.uploadButton, this.getCoordinates(), depth, this.getOptions() );
 		this.reposition();
-
+        this.simulateClick();
 	},
 	
 	reposition: function(){
@@ -2604,7 +2603,6 @@ mop.util.Uploader = new Class({
 
 		mop.util.EventManager.addListener( this );
 		this.addEvent( "resize", this.reposition );
-
 
 		// callbacks are no longer in the options, every callback
 		// is fired as event, this is just compat
