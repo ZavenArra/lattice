@@ -418,6 +418,9 @@ class MOP_Controller_Core extends Controller_Core {
 	public function buildModules(){
 		//for now $this->modules is set in the class file
 		foreach($this->modules as $templatevar => $module){
+			if(is_int($templatevar)){
+				$templatevar = $module;
+			}
 		 	$this->view->$templatevar = mop::buildModule(array('modulename'=>$module));
 		}
 	}
