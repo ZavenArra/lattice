@@ -148,9 +148,9 @@ class Display_Controller{
 	public function buildModules(){
 		foreach($this->modules as $templatevar => $module){
 			if(is_int($templatevar)){
-				$templatevar = null;
+				$templatevar = $module;
 			}
-			$this->buildModule($module, $templatevar);
+			$this->view->$templatevar = mop::buildModule(array('modulename'=>$module));
 		}
 	}
 

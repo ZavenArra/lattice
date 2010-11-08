@@ -85,8 +85,15 @@ Class mop {
 		if(!isset($column)){
 			return self::$dbmaps[$template_id];
 		} else {
-			return self::$dbmaps[$template_id][$column];
+			if(isset(self::$dbmaps[$template_id][$column])){
+				return self::$dbmaps[$template_id][$column];
+			} else {
+				return null;
+			}
 		}
+	}
+	public static function reinitDbmap($template_id){
+		unset(self::$dbmaps[$template_id]);
 	}
 
 	/*

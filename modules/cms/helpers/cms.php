@@ -212,7 +212,7 @@ class CMS {
 
   
 	public static function buildUIHtmlChunksForObject($object){
-		$elements = mop::config('backend', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename));
+		$elements = mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename));
     $elementsConfig = array();
 		foreach($elements as $element){
 			$entry = array();
@@ -229,7 +229,7 @@ class CMS {
       case 'singleImage':
         $ext = array();
         //echo sprintf('/template[@name="%s"]/elements/singleImage[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
-        $children = mop::config('backend', 'ext', $element);
+        $children = mop::config('objects', 'ext', $element);
         foreach($children as $child){
           if($child->tagName == 'ext'){
             $ext[] = $child->nodeValue; 
@@ -238,7 +238,7 @@ class CMS {
         $entry['extensions'] = implode(',', $ext);
         break;
       case 'radioGroup':
-        $children = mop::config('backend', 'radio', $element);
+        $children = mop::config('objects', 'radio', $element);
         $radios = array();
         foreach($children as $child){
           $label = $child->getAttribute('label');
@@ -260,8 +260,8 @@ class CMS {
 	public static function regenerateImages(){
 		//find all images
 
-		foreach(mop::config('backend', '//template') as $template){
-			foreach(mop::config('backend', 'elements/*', $template) as $element){
+		foreach(mop::config('objects', '//template') as $template){
+			foreach(mop::config('objects', 'elements/*', $template) as $element){
 				if($element->tagName == 'singleImage'){
 					$objects = ORM::Factory('template', $template->getAttribute('name'))->getActiveMembers();
 					$fieldname = $element->getAttribute('field');
@@ -278,7 +278,7 @@ class CMS {
 	public static function generateNewImages($objectIds){
 		foreach($objectIds as $id){
 			$object = ORM::Factory('page', $id);
-			foreach(mop::config('backend', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename)) as $element){
+			foreach(mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename)) as $element){
 				if($element->tagName == 'singleImage'){
 					$fieldname = $element->getAttribute('field');
 					if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
@@ -316,8 +316,8 @@ class CMS {
 		$template_id = ORM::Factory('template', $template_ident)->id;
     if(!$template_id){
       //we're trying to add an object of template that doesn't exist in db yet
-      //check backend.xml for configuration
-      if($templateConfig = mop::config('backend', sprintf('//template[@name="%s"]', $template_ident))->item(0)){
+      //check objects.xml for configuration
+      if($templateConfig = mop::config('objects', sprintf('//template[@name="%s"]', $template_ident))->item(0)){
         //there's a config for this template
         //go ahead and configure it
         cms::configureTemplate($templateConfig);
@@ -353,7 +353,7 @@ class CMS {
 		//check for enabled publish/unpublish. 
 		//if not enabled, insert as published
 		$template = ORM::Factory('template', $template_id);
-		$tSettings = mop::config('backend', sprintf('//template[@name="%s"]', $template->templatename) ); 
+		$tSettings = mop::config('objects', sprintf('//template[@name="%s"]', $template->templatename) ); 
 		$tSettings = $tSettings->item(0);
 		$newpage->published = 1;
 		if($tSettings){ //entry won't exist for Container objects
@@ -384,7 +384,7 @@ class CMS {
 					continue(2);
 			}
 
-			$fieldInfo = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $template->templatename, $field))->item(0);
+			$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $template->templatename, $field))->item(0);
 			if(!$fieldInfo){
 				die("Bad field!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $template->templatename, $field));
 			}
@@ -415,7 +415,7 @@ class CMS {
 		//look up any components and add them as well
 
 		//configured components
-		$components = mop::config('backend', sprintf('//template[@name="%s"]/components/component',$newtemplate->templatename));
+		$components = mop::config('objects', sprintf('//template[@name="%s"]/components/component',$newtemplate->templatename));
 		foreach($components as $c){
 			$template = ORM::Factory('template', $c->getAttribute('templateName'));
 			$arguments = array();
@@ -431,7 +431,7 @@ class CMS {
 		}
 
 		//containers (list)
-		$containers = mop::config('backend', sprintf('//template[@name="%s"]/elements/list',$newtemplate->templatename));
+		$containers = mop::config('objects', sprintf('//template[@name="%s"]/elements/list',$newtemplate->templatename));
 		foreach($containers as $c){
 			$template = ORM::Factory('template', $c->getAttribute('family'));
 			$arguments['title'] = $c->getAttribute('label');
@@ -491,101 +491,105 @@ class CMS {
 
 	}
 
-  public static function configureTemplate($template){
-		$dbmapindexes = array(
-				'field'=>0,
-				'file'=>0,
-				'date'=>0,
-				'flag'=>0,
-			);
+	public static function configureTemplate($template){
+		//find or create template record
+		$tRecord = ORM::Factory('template', $template->getAttribute('name') );
+		if(!$tRecord->loaded){
+			echo "\ncreating for ".$template->getAttribute('name')."\n";
+			$tRecord = ORM::Factory('template');
+			$tRecord->templatename = $template->getAttribute('name');
+			$tRecord->nodeType = 'object';
+			$tRecord->save();
+		}
+		Kohana::log('info', 'configureTemplate: using '.$tRecord->id."\n");
 
-			//find or create template record
-			$tRecord = ORM::Factory('template', $template->getAttribute('name') );
-			if(!$tRecord->loaded){
-        echo "\ncreating for ".$template->getAttribute('name')."\n";
-				$tRecord = ORM::Factory('template');
-				$tRecord->templatename = $template->getAttribute('name');
-				$tRecord->nodeType = 'object';
-				$tRecord->save();
-			}
-      echo 'using '.$tRecord->id."\n";
+		//create title field
+		$checkMap = ORM::Factory('objectmap')->where('template_id', $tRecord->id)->where('column', 'title')->find();
+		if(!$checkMap->loaded){
+			$index = 'field';
+			$count = ORM::Factory('objectmap')
+				->select('max(`index`) as maxIndex')
+				->where('type', $index)
+				->where('template_id', $tRecord->id)
+				->find();
+			$nextIndex = $count->maxIndex+1;
 
-			//create title field
-			$checkMap = ORM::Factory('objectmap')->where('template_id', $tRecord->id)->where('column', 'title')->find();
-			if(!$checkMap->loaded){
-				$index = 'field';
+			$newmap = ORM::Factory('objectmap');
+			$newmap->template_id = $tRecord->id;
+			$newmap->type = $index;
+			$newmap->index = $nextIndex;
+			$newmap->column = 'title';
+			$newmap->save();
+		}
+
+
+		foreach(mop::config('objects', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item){
+			cms::configureField($tRecord->id, $item);
+		}
+	}
+
+	public static function configureField($templateId, $item){
+		switch($item->tagName){
+
+		case 'list':
+			$ltRecord = ORM::Factory('template');
+			$ltRecord->templatename = $item->getAttribute('family');
+			$ltRecord->nodeType = 'container';
+			$ltRecord->save();
+			break;
+
+		default:
+			//handle dbmap
+			$index = null;
+			switch($item->tagName){
+			case 'ipe':
+				case 'radioGroup':
+					case 'pulldown':
+						case 'time':
+							case 'date':
+								case 'multiSelect':
+									$index = 'field';
+									break;
+								case 'singleImage':
+									case 'singleFile':
+										$index = 'file';
+										break;
+									case 'checkbox':
+										$index = 'flag';
+										break;
+									default:
+										continue(2);
+										break;
+			}	
+
+			//and right here it'll be 'if doesn't already exist in the array'
+			//or we'll check the database and just insert a new/next one
+			//and this is where the ALTER statements could come in
+
+			//safeguard that this field isn't already configured!
+			$objectmap = ORM::Factory('objectmap')
+				->where('template_id', $templateId)
+				->where('column', $item->getAttribute('field'))
+				->find();
+			if(!$objectmap->loaded){
+				//compute new dbmapindex
+				$count = ORM::Factory('objectmap')
+					->select('max(`index`) as maxIndex')
+					->where('type', $index)
+					->where('template_id', $templateId)
+					->find();
+				$nextIndex = $count->maxIndex+1;
+
 				$newmap = ORM::Factory('objectmap');
-				$newmap->template_id = $tRecord->id;
+				$newmap->template_id = $templateId;
 				$newmap->type = $index;
-				echo 'index: '.$index;
-				$newmap->index = ++$dbmapindexes[$index];
-				$newmap->column = 'title';
+				$newmap->index = $nextIndex;
+				$newmap->column = $item->getAttribute('field');
 				$newmap->save();
 			}
 
-			
-			foreach(mop::config('backend', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item){
-        echo 'found an item '.$template->getAttribute('name').':'.$item->tagName."\n";
-				switch($item->tagName){
-
-				case 'list':
-					$ltRecord = ORM::Factory('template');
-					$ltRecord->templatename = $item->getAttribute('family');
-					$ltRecord->nodeType = 'container';
-					$ltRecord->save();
-					break;
-
-        default:
-          echo 'default';
-
-          //base cms elements
-
-          //handle dbmap
-          $index = null;
-          switch($item->tagName){
-          case 'ipe':
-          case 'radioGroup':
-          case 'pulldown':
-          case 'time':
-          case 'date':
-          case 'multiSelect':
-            $index = 'field';
-            break;
-          case 'singleImage':
-          case 'singleFile':
-            $index = 'file';
-            break;
-          case 'checkbox':
-            $index = 'flag';
-            break;
-          default:
-            continue(2);
-            break;
-          }	
-
-					//and right here it'll be 'if doesn't already exist in the array'
-					//or we'll check the database and just insert a new/next one
-					//and this is where the ALTER statements could come in
-					//
-
-					$objectmap = ORM::Factory('objectmap')
-						->where('template_id', $tRecord->id)
-						->where('column', $item->getAttribute('field'))
-						->find();
-          echo "\n".$tRecord->id."   ".$item->getAttribute('field')."\n";
-					if(!$objectmap->loaded){
-						$newmap = ORM::Factory('objectmap');
-						$newmap->template_id = $tRecord->id;
-						$newmap->type = $index;
-            echo 'index: '.$index;
-						$newmap->index = ++$dbmapindexes[$index];
-						$newmap->column = $item->getAttribute('field');
-						$newmap->save();
-					}
-
-				}
-			}
 		}
+	}
 
 }
 

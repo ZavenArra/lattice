@@ -2,18 +2,16 @@
 
 class frontend {
 	public static function makeHtmlElement($element, $prefix, $indent=''){
-		echo 'ehllo';
-		echo $element->nodeName;
 
 		$field = $element->getAttribute('field');
 
 		switch($element->nodeName){
 		case 'list':
 			$family = $element->getAttribute('family');
-			$addables = mop::config('backend', 'addableObject', $element);		
+			$addables = mop::config('objects', 'addableObject', $element);		
 			$addable = $addables->item(0);
 			$templateName = $addable->getAttribute('templateName');
-			$listItemElements = mop::config('backend', sprintf('//template[@name="%s"]/elements/*', $templateName));		
+			$listItemElements = mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $templateName));		
 			echo $indent."<ul id=\"$family\" >\n";
 			echo $indent."<?foreach({$prefix}['$family'] as \$label => \${$family}ListItem):?>\n";
 			echo $indent." <li class=\"$templateName\">\n";

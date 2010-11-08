@@ -52,7 +52,7 @@ class List_Controller extends CMS_Interface_Controller{
 		}
 
 		//get the dbmap
-		$this->sortdirection = mop::config('backend', sprintf('//list[@family="%s"]', $this->listClass))->item(0)->getAttribute('sortDirection');
+		$this->sortdirection = mop::config('objects', sprintf('//list[@family="%s"]', $this->listClass))->item(0)->getAttribute('sortDirection');
 
 		//TODO:read the config and setupd
 	}
@@ -92,7 +92,7 @@ class List_Controller extends CMS_Interface_Controller{
 		}
 	
     //actually we need to do an absolute path for local config
-		$listConfig =  mop::config('backend', sprintf('//list[@family="%s"]', $this->listClass))->item(0);
+		$listConfig =  mop::config('objects', sprintf('//list[@family="%s"]', $this->listClass))->item(0);
 		$this->view->label =  $listConfig->getAttribute('label');
 		$this->view->class =  $listConfig->getAttribute('cssClasses');
 		$this->view->class .= ' allowChildSort-'.$listConfig->getAttribute('allowChildSort');
@@ -131,9 +131,9 @@ class List_Controller extends CMS_Interface_Controller{
 		$this->buildContainerObject($parentid);
 
 		//addable item should be specifid in the addItem call
-		$template = mop::config('backend', sprintf('//list[@family="%s"]/addableObject', $this->listClass));
+		$template = mop::config('objects', sprintf('//list[@family="%s"]/addableObject', $this->listClass));
     if(!$template->length > 0){
-      throw new Kohana_User_Exception('No List By That Name', 'Count not locate configuration in backend.xml for '.sprintf('//list[@family="%s"]/addableobject', $this->listClass) );
+      throw new Kohana_User_Exception('No List By That Name', 'Count not locate configuration in objects.xml for '.sprintf('//list[@family="%s"]/addableobject', $this->listClass) );
     }
     $template = $template->item(0);
 
