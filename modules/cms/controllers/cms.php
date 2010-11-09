@@ -86,6 +86,19 @@ class CMS_Controller extends CMS_Interface_Controller {
 	public function getPage($id){
 		
 		self::$objectId = $id;
+
+
+		$controller = $id;
+		if(Kohana::find_file('controllers', $controller)){
+			$controller = $id.'_Controller';
+			$controller = new $controller;
+			$controller->createIndexView();
+			$return = array();
+			$return['html']= $controller->render();
+			$return['css'] = array_merge($controller->view->resources['librarycss'], $controller->view->resources['css']);
+			$return['js'] = array_merge($controller->view->resources['libraryjs'], $controller->view->resources['js']);
+			return $return;
+		}
 		
 		$page = ORM::factory('page', $id);
 		if($page->id == 0){

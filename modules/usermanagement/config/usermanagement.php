@@ -12,7 +12,7 @@ $config['resources']['css'] = array(
  * Config: ['resources']['js']
  */
 $config['resources']['js'] = array(
-	'modules/listmodule/views/listmodule.js'
+	'modules/cms/views/list.js'
 );
 
 /*

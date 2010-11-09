@@ -68,6 +68,7 @@ Class UserManagement_Controller extends Controller {
 			}
 
 			//find role'] = null;
+			$data['role'] = null;
 			foreach($this->managedRoles as $label=>$role){
 				if($user->has(ORM::Factory('role', $role))){
 					$data['role'] = $role;
