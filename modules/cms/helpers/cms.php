@@ -492,6 +492,15 @@ class CMS {
 	}
 
 	public static function configureTemplate($template){
+		//validation
+		//
+		foreach(mop::config('objects', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item){
+			if($item->getAttribute('field')=='title'){
+				die('Title is a reserved field name');
+			}
+		}
+
+
 		//find or create template record
 		$tRecord = ORM::Factory('template', $template->getAttribute('name') );
 		if(!$tRecord->loaded){

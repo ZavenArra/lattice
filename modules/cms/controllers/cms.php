@@ -95,8 +95,8 @@ class CMS_Controller extends CMS_Interface_Controller {
 			$controller->createIndexView();
 			$return = array();
 			$return['html']= $controller->render();
-			$return['css'] = array_merge($controller->view->resources['librarycss'], $controller->view->resources['css']);
-			$return['js'] = array_merge($controller->view->resources['libraryjs'], $controller->view->resources['js']);
+			$return['css'] = array_values(array_merge($controller->view->resources['librarycss'], $controller->view->resources['css']));
+			$return['js'] = array_values(array_merge($controller->view->resources['libraryjs'], $controller->view->resources['js']));
 			return $return;
 		}
 		
