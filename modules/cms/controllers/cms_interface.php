@@ -77,16 +77,20 @@ class CMS_Interface_Controller extends Controller {
 	 */
 	public function savefield($id){
 		$page = ORM::Factory('page')->find($id);
-		if($_POST['field']=='title'){ //update slug, but actually we may not want to have slug updatable
+		if($_POST['field']=='slug'){
 			$page->slug = cms::createSlug($_POST['value'], $page->id);
+			$page->decoupleSlugTitle = 1;
+			$page->save();
+			return array('value'=>$page->slug);
+		} else if($_POST['field']=='title'){ //update slug, but actually we may not want to have slug updatable
+			if(!$page->decoupleSlugTitle){
+				$page->slug = cms::createSlug($_POST['value'], $page->id);
+			}
 			$page->save();
 			$page->contenttable->$_POST['field'] = cms::convertNewlines($_POST['value']);
 			$page->contenttable->save();
-		} else if($_POST['field'] =='slug') {
-			$page->slug = cms::createSlug($_POST['value'], $page->id);
-			$page->save();	
 			$page = ORM::Factory('page')->find($id);
-			return array('value'=>$page->slug);
+			return array('value'=>$page->contenttable->$_POST['field'], 'slug'=>$page->slug);
 		}
 		else if(in_array($_POST['field'], array('dateadded'))){
 			$page->$_POST['field'] = $_POST['value'];

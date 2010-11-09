@@ -71,8 +71,11 @@ class builder_Controller extends Controller {
 				//echo 'This Fielad '.$field."\n\n";
 				switch($field){
 				case 'title':
+					$data[$field] = $content->nodeValue;	
+					continue(2);
 				case 'slug':
 					$data[$field] = $content->nodeValue;	
+					$data['decoupleSlugTitle'] = 1;
 					continue(2);
 				default:
 					$data[$field] = $content->nodeValue;
