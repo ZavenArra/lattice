@@ -282,6 +282,7 @@ ul.listing li.omega{
 
 .itemControls,
 .controls{
+    clear: both;
 	height: 2em;
 }
 
@@ -1435,4 +1436,33 @@ td{
 
 .swiff-uploader-box a {
 	display: none !important;
+}
+
+
+ul.listing li.menuItem{
+    float: left;
+    padding: .5em 1em .5em 1em;
+    margin: 0 0 0 0;
+    width: 166px;
+    background: url( ../../mopui/views/images/optionBg.png ) bottom left;
+    border-left: none;
+    border-top: 1px #efefef solid !important;
+    border-left: 1px #efefef solid !important
+}
+
+
+ul.listing li.menuItem.alpha{
+/*    border-left: 1px #aaa solid;
+*/}
+
+ul.listing li.menuItem.omega{
+    margin: 0 0 0 0;
+    border-right: 1px #efefef solid;
+    clear: right;
+}
+
+ul.listing li.menuItem:hover{
+    background: #0af;
+    color: #fff;
+    
 }

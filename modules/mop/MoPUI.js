@@ -94,6 +94,35 @@ mop.ui.navigation.Tabs = new Class({
 
 });
 
+
+mop.ui.Button = new Class({
+    
+    Implments: [ Options, Events ],
+    enabled: true,
+    onClick: null,
+    
+    initialize: function( anElement, aMarshal, onClick, options ){
+        this.element = $( anElement );
+        this.marshal = aMarshal;
+        this.onClick = onClick;
+        this.element.addEvent( 'click', onClick );
+    },
+    
+    enable: function(){
+        this.element.removeClass( "disabled" );
+        this.element.addEvent( 'click', this.onClick );
+    },
+    
+    disable: function(){
+        this.element.addClass( "disabled" );
+        this.element.removeEvent( 'click' );
+    },
+    
+    destroy: function(){
+        this.enabled = null;
+        this.onClick = null;
+    }
+})
 /*
 	Class: mop.ui.navigation.BreadCrumbTrail
 	Generic class for handling breadcrumb trails
@@ -1124,11 +1153,9 @@ mop.ui.MessageDialogue = new Class({
 	initialize: function( aMarshal, options ){
 		this.parent( aMarshal );
 		this.container = new Element( "div", { "class": "container" } );
-		this.message = new Element("div");
-		this.setupControls( );
+		this.setupControls();
 		this.header.set( "text", options.title );
-		this.message.inject( this.container );
-		this.container.inject( this.modal );
+		this.modal.adopt( this.container );
 		return this;
 	},
 	
@@ -1164,8 +1191,12 @@ mop.ui.MessageDialogue = new Class({
 
 	},
 
-	setMessage: function( aMessage ){
-		this.message.set( "html", aMessage );
+	setContent: function( content ){
+	    if( typeof content == "string" ){
+    		this.container.set( "html", content );	        
+	    }else{
+	        content.inject( this.container, 'top' );
+	    }
 	},
 	
 	destroy: function(){

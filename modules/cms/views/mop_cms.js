@@ -53,7 +53,7 @@ mop.modules.CMS = new Class({
 			pageJSON - Object : { css: [ "pathToCSSFile", "pathToCSSFile", ... ], js: [ "pathToJSFile", "pathToJSFile", "pathToJSFile", ... ], html: "String" }
 	*/
 	onPageLoaded: function( pageJSON ){
-
+        
 		var pageData = new Hash( pageJSON );
 		pageData.css.each( function( element, index ){ mop.util.loadStyleSheet( element ); });
 
@@ -64,8 +64,10 @@ mop.modules.CMS = new Class({
 		this.scriptsTotal = scripts.length;
 		this.currentPageLoadIndex = this.pageLoadCount++;
 
+        console.log( "onPageLoaded", pageData.js );
 		if( this.scriptsTotal && this.scriptsTotal > 0 ){
 			scripts.each( function( urlString ){
+			    console.log( this.toString(), "loadJS loading ", urlString );
 				mop.util.loadJS( urlString, { type: "text/javascript", onload: this.onJSLoaded.bind( this, [ pageData.html, this.currentPageLoadIndex ] ) } );
 			}, this);			
 		}else{
