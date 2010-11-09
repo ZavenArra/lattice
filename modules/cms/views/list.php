@@ -1,4 +1,4 @@
-<div id="<?=$instance;?>" class="module <?=$class;?> classPath-mop_modules_ListModule">
+<div id="<?=$instance;?>" class="module <?=$class;?> classPath-mop_modules_List">
 	
 	<?if(isset($label) && $label):?>
 	<label><?=$label;?></label>

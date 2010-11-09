@@ -1,4 +1,4 @@
-<div id="<?=$instance;?>" class="module <?=$class;?> classPath-mop_modules_ListModule sortable-true">
+<div id="<?=$instance;?>" class="module <?=$class;?> classPath-mop_modules_List sortable-true">
 <?if(isset($label) && $label):?>
 		<label><?=$label;?></label>
 	<?endif;?>
