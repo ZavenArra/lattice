@@ -201,11 +201,12 @@ class Navigation_Controller extends Controller{
 				foreach($cmsModules as $m){
 
 					$entry = array();
+					$entry['id'] = $m->getAttribute('controller');
 					$entry['slug'] = $m->getAttribute('controller');
 					$entry['nodeType'] = 'module';
 					$entry['contentType'] = 'module';
 					$entry['title'] = $m->getAttribute('label');
-		//			$entry['children'] = array();
+					$entry['children'] = array();
 					$sendItemObjects[] = $entry;
 				}
 			} else {
@@ -223,8 +224,8 @@ class Navigation_Controller extends Controller{
 		$templates = array();
 		foreach(mop::config('objects', '//template') as $template){
 			$entry = array();
-			$entry['templateId'] = $template->getAttribute('name');	
-			$entry['templateAddText'] = $template->getAttribute('addText');	
+			$entry['templateName'] = $template->getAttribute('name');	
+			$entry['label'] = $template->getAttribute('name').' label';	
 			$entry['nodeType'] = $template->getAttribute('nodeType');	
 			$entry['contentType'] = $template->getAttribute('contentType');	
 			$templates[] = $entry;
