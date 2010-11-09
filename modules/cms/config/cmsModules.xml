@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration SYSTEM "../../cms/config/cmsModules.dtd">
+
+<configuration>
+
+	<module controller="usermanagement" label="User Management" />
+	<module controller="golive" label="Publish Site" />
+
+
+</configuration>

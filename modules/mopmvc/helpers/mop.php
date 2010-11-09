@@ -57,10 +57,12 @@ Class mop {
 		if(!isset(self::$config[$arena])){
 			$dom = new DOMDocument();
 			$dom = new MyDOMDocument($dom);
-			$dom->load( "application/config/$arena.xml");
+
+			$path = Kohana::find_file('config', $arena, true, 'xml'); 
+
+			$dom->load( $path[0] );
       if(!$dom->validate()){
-        print_r($dom->errors);  
-        echo('Validation failed on '."application/config/$arena.xml");
+        echo('Validation failed on '.$path);
         //die();
       }
 			$xpathObject = new DOMXPath($dom->_delegate);
