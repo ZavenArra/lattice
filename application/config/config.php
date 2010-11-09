@@ -119,6 +119,8 @@ $enabledmodules = array(
 	'mopui',
 	'forge',
 	'cms',
+	'usermanagement',
+	'golive',
 	'navigation',
 	'listmodule',
 	'singleimage',
