@@ -1,1 +1,0 @@
-<<?=$tag;?> class="moduleLabel <?=$class;?>"><?=$label;?></<?=$tag;?>>

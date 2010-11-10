@@ -231,10 +231,10 @@ class CMS {
       $entry['rows'] = $element->getAttribute('rows');
       //any special xml reading that is necessary
       switch($entry['type']){
-      case 'singleFile':
-      case 'singleImage':
+      case 'file':
+      case 'image':
         $ext = array();
-        //echo sprintf('/template[@name="%s"]/elements/singleImage[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
+        //echo sprintf('/template[@name="%s"]/elements/image[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
         $children = mop::config('objects', 'ext', $element);
         foreach($children as $child){
           if($child->tagName == 'ext'){
@@ -268,7 +268,7 @@ class CMS {
 
 		foreach(mop::config('objects', '//template') as $template){
 			foreach(mop::config('objects', 'elements/*', $template) as $element){
-				if($element->tagName == 'singleImage'){
+				if($element->tagName == 'image'){
 					$objects = ORM::Factory('template', $template->getAttribute('name'))->getActiveMembers();
 					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
@@ -285,7 +285,7 @@ class CMS {
 		foreach($objectIds as $id){
 			$object = ORM::Factory('page', $id);
 			foreach(mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename)) as $element){
-				if($element->tagName == 'singleImage'){
+				if($element->tagName == 'image'){
 					$fieldname = $element->getAttribute('field');
 					if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
 						$object->processImage($object->contenttable->$fieldname->filename, $fieldname);
@@ -570,8 +570,8 @@ class CMS {
 								case 'multiSelect':
 									$index = 'field';
 									break;
-								case 'singleImage':
-									case 'singleFile':
+								case 'image':
+									case 'file':
 										$index = 'file';
 										break;
 									case 'checkbox':

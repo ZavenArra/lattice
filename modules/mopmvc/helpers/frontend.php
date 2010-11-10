@@ -23,7 +23,7 @@ class frontend {
 			echo $indent."</ul>\n\n";
 			break;
 
-		case 'singleImage':
+		case 'image':
 			if(!($size=$element->getAttribute('size'))){
 				$size = 'original';	
 			}
@@ -31,7 +31,7 @@ class frontend {
 			echo $indent." <img id=\"$field\" src=\"<?={$prefix}['$field']->{$size}->fullpath;?>\" width=\"<?={$prefix}['$field']->{$size}->width;?>\" height=\"<?={$prefix}['$field']->{$size}->height;?>\" alt=\"<?={$prefix}['$field']->{$size}->filename;?>\" />\n";
 			echo $indent."<?endif;?>\n\n";
 			break;
-		case 'singleFile':
+		case 'file':
 			echo $indent."<?if(is_object({$prefix}['$field'])):?>\n";
 			echo $indent."<a href=\"<?={$prefix}['$field']->fullpath;?>\"><?={$prefix}['$field']->filename;?></a>\n\n";
 			echo $indent."<?endif;?>\n\n";
