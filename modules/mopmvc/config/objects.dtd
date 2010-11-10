@@ -28,7 +28,7 @@
 	allowTitleEdit  CDATA "true"
 >
 
-<!ELEMENT elements (ipe|list|singleImage|singleFile|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator)* >
+<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator)* >
 
 <!ELEMENT components (component*) >
 
@@ -94,14 +94,14 @@
 	rows				CDATA "2"
 >
 
-<!ELEMENT singleImage (resize|ext)* >
-<!ATTLIST singleImage
+<!ELEMENT image (resize|ext)* >
+<!ATTLIST image
 	%uiattrs;
 	maxLength			CDATA #IMPLIED
 >
 
-<!ELEMENT singleFile (ext)* >
-<!ATTLIST singleFile
+<!ELEMENT file (ext)* >
+<!ATTLIST file
 	%uiattrs;
 	maxLength			CDATA #IMPLIED
 >

@@ -97,8 +97,8 @@ class builder_Controller extends Controller {
 
 				//special setup based on field type
 				switch($fieldInfo->tagName){
-				case 'singleFile':
-				case 'singleImage':
+				case 'file':
+				case 'image':
           //echo "\nFILE: ";
 						$path_parts = pathinfo($content->nodeValue);
 						$savename = cms::makeFileSaveName($path_parts['basename']);	

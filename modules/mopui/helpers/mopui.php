@@ -21,7 +21,7 @@ Class mopui{
 		$view = 'ui_'.$element['type'];
 
 		//allow files to be passed either by id or as already quireid objects
-		if( in_array($element['type'], array('singleFile', 'singleImage'))){
+		if( in_array($element['type'], array('file', 'image'))){
 
 			if(!is_object($fieldvalue) ){
 				$fieldvalue = ORM::Factory('file')->where('id', $fieldvalue)->find(); //why is where necessary???
@@ -46,7 +46,7 @@ Class mopui{
 
 		switch($element['type']){
 
-		case 'singleImage':
+		case 'image':
 			$ext = substr(strrchr($fieldvalue['filename'], '.'), 1);
 			switch($ext){
 			case 'tif':
@@ -74,7 +74,7 @@ Class mopui{
 				$fieldvalue['height'] = 0;
 			}
 			$fieldvalue['thumbSrc']=$thumbSrc;
-		case 'singleFile':
+		case 'file':
 			if(!isset($element['maxlength']) || !$element['maxlength']){
 				$element['maxlength'] = 1523712; //12 MegaBytes 
 			}
@@ -174,8 +174,8 @@ Class mopui{
 		return mopui::buildUIElement( array('type'=>'checkbox', 'field'=>$field, 'checkboxvalue'=>$checkboxvalue, 'label'=>$label, 'class'=>'checkbox'), $value);
 	}
 
-	public static function singleFile($field, $extensions, $maxlength, $currentFile=null ){
-		return mopui::buildUIElement( array('type'=>'singleFile', 'field'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $currentFile );
+	public static function file($field, $extensions, $maxlength, $currentFile=null ){
+		return mopui::buildUIElement( array('type'=>'file', 'field'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $currentFile );
 	}
 
 	public static function fieldmap($values, $options){
