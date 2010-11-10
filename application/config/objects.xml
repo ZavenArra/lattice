@@ -108,9 +108,9 @@
 				<singleImage field="file">
 					<ext>jpg</ext>
 				</singleImage>
-                                <singleImage field="file">
-                                        <ext>jpg</ext>
-                                </singleImage>
+        <singleImage field="file">
+          <ext>jpg</ext>
+        </singleImage>
 			</elements>
 		</template>
 		
