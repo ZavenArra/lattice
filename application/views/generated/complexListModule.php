@@ -11,10 +11,7 @@
 
   <p class="singleRadioGroup"> <?=$complexListListItem['singleRadioGroup'];?></p>
 
-  <?if(is_object($complexListListItem['file'])):?>
-  <a href="<?=$complexListListItem['file']->fullpath;?>"><?=$complexListListItem['file']->filename;?></a>
-
-  <?endif;?>
+  <p class="file"> <?=$complexListListItem['file'];?></p>
 
  </li>
 <?endforeach;?>
