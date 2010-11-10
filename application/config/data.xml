@@ -69,4 +69,7 @@
 	<item templateName="stuff">
 		<field name="title">some stuff</field>
 	</item>
+	<item templateName="linkTest">
+		<field name="title">Link Test</field>
+	</item>
 </data>
