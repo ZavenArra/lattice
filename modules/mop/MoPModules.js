@@ -118,7 +118,7 @@ mop.modules.Module = new Class({
 		Initializes a specific module
 	*/
 	initModule: function( element ){
-//		console.log( "initModule", this.toString(), element, element.get( "class" ) );
+		console.log( "initModule", this.toString(), element, element.get( "class" ) );
 		var classPath = mop.util.getValueFromClassName( "classPath", element.get( "class" ) ).split( "_" );
 		ref = null;
 		classPath.each( function( node ){

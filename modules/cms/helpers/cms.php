@@ -371,6 +371,7 @@ class CMS {
 		//Add defaults to content table
 		$newtemplate = ORM::Factory('template', $newpage->template_id);
 
+
 		//add submitted data to content table
 		foreach($data as $field=>$value){
 			//need to switch here on type of field
@@ -384,9 +385,9 @@ class CMS {
 					continue(2);
 			}
 
-			$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $template->templatename, $field))->item(0);
+			$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field))->item(0);
 			if(!$fieldInfo){
-				die("Bad field!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $template->templatename, $field));
+				die("Bad field!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field));
 			}
 			switch($fieldInfo->tagName){
 			case 'singleFile':

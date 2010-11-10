@@ -153,6 +153,16 @@ mop.util.domIsReady = function(){
 }
 
 /*
+ 	Function: mop.util.isUnsignedInteger 
+	Is the passed value an integer or not?
+*/
+mop.util.isUnsignedInteger = function( s ){
+    console.log( s );
+    return ( s.toString().search(/^[0-9]+$/ ) == 0);
+}
+
+
+/*
  	Function: mop.util.stopEvent 
 	Stops event bubbling, normally this is handled in each instance
 	But this will serve as a nice shortcut given the verbosity needed to deal with some IE's ( the whole return value conditional )
@@ -668,7 +678,7 @@ mop.util.LoginMonitor = new Class({
 		$clear( this.inactivityTimeout );
 		this.date = new Date();
 		if( !this.dialogue ) this.dialogue = new mop.ui.InactivityDialogue( this, "Inactivity", "", this.keepAlive.bind( this ), this.logout.bind( this ), "Stay logged in?", "Logout" );
-		this.dialogue.setMessage( this.inactivityMessage.substitute( { inactiveMins: this.secondsOfInactivityTilPrompt/60000, minutes: Math.floor( this.secondsTilLogout*.001 ), seconds: 00 } ) );
+		this.dialogue.setContent( this.inactivityMessage.substitute( { inactiveMins: this.secondsOfInactivityTilPrompt/this.millisecondsInAMinute, minutes: Math.floor( this.secondsTilLogout*.001 ), seconds: 00 } ) );
 		this.secondsIdle = 0;
 		this.logoutTimeout = this.logoutCountDown.periodical( 1000, this );
 		this.dialogue.show();
@@ -682,7 +692,7 @@ mop.util.LoginMonitor = new Class({
 		if( secondsLeft == 0 ){ this.logout() };
 		var minutesLeft = Math.floor( secondsLeft/60 );
 		secondsLeft = secondsLeft - ( minutesLeft * 60 );
-		this.dialogue.setMessage( this.inactivityMessage.substitute( { inactiveMins: this.secondsOfInactivityTilPrompt/this.millisecondsInAMinute, minutes: minutesLeft, seconds: secondsLeft } ) );
+		this.dialogue.setContent( this.inactivityMessage.substitute( { inactiveMins: this.secondsOfInactivityTilPrompt/this.millisecondsInAMinute, minutes: minutesLeft, seconds: secondsLeft } ) );
 		minutesLeft = secondsLeft = null;
 	},
 
@@ -913,6 +923,7 @@ mop.util.MD5 = function (string) {
 	return temp.toLowerCase();
 }
 
+/* These should be configurable, also are they more App level stuff instead of mopcore? */
 window.addEvent( "resize", function(){
 	mop.util.EventManager.broadcastEvent("resize");
 });

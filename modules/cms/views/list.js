@@ -1,5 +1,5 @@
 
-mop.modules.ListModule = new Class({
+mop.modules.List = new Class({
 
 	/* TODO write unit tests for List*/
 
@@ -33,7 +33,7 @@ mop.modules.ListModule = new Class({
 	},
 
 	toString: function(){
-		return "[ object, mop.modules.ListModule ]";
+		return "[ object, mop.modules.List ]";
 	},
 	
 	getInstanceName: function(){
@@ -155,9 +155,7 @@ mop.modules.ListModule = new Class({
 		listItem.UIElements.each( function( uiInstance ){
 			uiInstance.scrollContext = "modal";
 		});
-//		listItem.filesToTop();
 		this.items.push( listItem );
-//		this.addItemDialogue.show();
 		mop.util.EventManager.broadcastEvent( "resize" );
 		listItem = null;
 	},

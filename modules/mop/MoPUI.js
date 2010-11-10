@@ -1,6 +1,55 @@
 mop.ui = {};
 mop.ui.navigation = {};
 
+
+Element.implement({
+    smartDispose: function() {
+        // dispose of an element and its dropShadow (if there is one)
+        var rel = this.get("data-related");
+	    if ($(rel)) {
+	        $(rel).destroy();
+	    }
+	    this.destroy();
+	}, // end smartDispose
+	dropShadow: function(options) {
+	    // creates a shadow effect to a rectangular element
+	    // define defaults
+        var options = $merge({
+            id: "dropShadow" + $random(100,1000),
+            x: 3, // offset from parent
+            y: 3,
+            border: "1px solid #000",
+            background: "#555",
+            opacity: .5,
+            zIndex: this.getStyle("z-index").toInt() - 1 // behind parent
+        }, options);
+
+        // only apply shadow on absolutely positioned elements
+        if (this.getStyle("position") != "absolute")
+            return this;
+
+        var c = this.getCoordinates();
+
+        new Element("div", {
+            id: options.id,
+            styles: {
+                position: "absolute",
+                left: c.left + options.x,
+                top: c.top + options.y,
+                width: c.width,
+                height: c.height,
+                background: options.background,
+                zIndex: options.zIndex
+            },
+            opacity: 0
+        }).injectBefore(this).fade(0, options.opacity);
+
+        // store the shadow id into the element
+        this.set("data-related", options.id);
+
+        return this;
+    } // end dropShadow
+});
 /*
 	Class: mop.ui.navigation.Tabs
 	Generic helper for handling tabbed navigation
@@ -45,6 +94,35 @@ mop.ui.navigation.Tabs = new Class({
 
 });
 
+
+mop.ui.Button = new Class({
+    
+    Implments: [ Options, Events ],
+    enabled: true,
+    onClick: null,
+    
+    initialize: function( anElement, aMarshal, onClick, options ){
+        this.element = $( anElement );
+        this.marshal = aMarshal;
+        this.onClick = onClick;
+        this.element.addEvent( 'click', onClick );
+    },
+    
+    enable: function(){
+        this.element.removeClass( "disabled" );
+        this.element.addEvent( 'click', this.onClick );
+    },
+    
+    disable: function(){
+        this.element.addClass( "disabled" );
+        this.element.removeEvent( 'click' );
+    },
+    
+    destroy: function(){
+        this.enabled = null;
+        this.onClick = null;
+    }
+})
 /*
 	Class: mop.ui.navigation.BreadCrumbTrail
 	Generic class for handling breadcrumb trails
@@ -988,8 +1066,8 @@ mop.ui.Modal = new Class({
 
 	Implements: [ Options, Events ],
 
-	initialize: function( aMarshal ){
-
+	initialize: function( aMarshal, options ){
+		this.setOptions( options );
 		this.marshal = aMarshal;
 
 		this.element = new Element( "div", {
@@ -1009,7 +1087,7 @@ mop.ui.Modal = new Class({
 
 		this.modal = new Element( "div", {
 			"class": "modal"
-		});
+		}).dropShadow();
 		
 		this.header = new Element( "h3" );
 
@@ -1057,6 +1135,7 @@ mop.ui.Modal = new Class({
 	},
 	
 	destroy: function(){
+	    this.modal.smartDispose();
 		this.modal.destroy();
 		this.modalAnchor.destroy();
 		this.element.destroy();
@@ -1071,22 +1150,24 @@ mop.ui.MessageDialogue = new Class({
 
 	Extends: mop.ui.Modal,
 	
-	initialize: function( aMarshal, aTitle, aMessage, onConfirm, onCancel, confirmText, cancelText ){
+	initialize: function( aMarshal, options ){
 		this.parent( aMarshal );
 		this.container = new Element( "div", { "class": "container" } );
-		this.message = new Element("div");
-		
-		this.setupControls( onConfirm, onCancel, confirmText, cancelText );
-		
-		this.header.set( "text", aTitle );
-		this.message.inject( this.container );
-		this.container.inject( this.modal );
-
+		this.setupControls();
+		this.header.set( "text", options.title );
+		this.modal.adopt( this.container );
 		return this;
 	},
 	
-	setupControls: function( onConfirm, onCancel, confirmText, cancelText ){
+	setupControls: function(){
 		
+		var confirmText = this.options.confirmText;
+		var cancelText = this.options.cancelText;
+		var aMessage = this.options.aMessage;
+		var title = this.options.title;
+		var onCancel = this.options.onCancel; 
+		var onConfirm = this.options.onConfirm;
+			    
 		confirmText = (confirmText)? confirmText : "Confirm";
 		cancelText = (cancelText)? cancelText : "Cancel";
 		
@@ -1110,8 +1191,12 @@ mop.ui.MessageDialogue = new Class({
 
 	},
 
-	setMessage: function( aMessage ){
-		this.message.set( "html", aMessage );
+	setContent: function( content ){
+	    if( typeof content == "string" ){
+    		this.container.set( "html", content );	        
+	    }else{
+	        content.inject( this.container, 'top' );
+	    }
 	},
 	
 	destroy: function(){
@@ -1125,8 +1210,8 @@ mop.ui.MessageDialogue = new Class({
 
 mop.ui.InactivityDialogue = new Class({
 	Extends: mop.ui.MessageDialogue,
-	initialize: function( aMarshal, aTitle, aMessage, onConfirm, onCancel, confirmText, cancelText ){
-		this.parent( aMarshal, aTitle, aMessage, onConfirm, onCancel, confirmText, cancelText );
+	initialize: function( aMarshal, options ){
+		this.parent( aMarshal, options );
 	},
 	
 	setupControls: function(onConfirm, onCancel, confirmText, cancelText){
@@ -2188,7 +2273,7 @@ mop.ui.FileElement = new Class({
 		this.downloadButton.store( "Class", this );
 
 		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
-
+        console.log( ":::::::::::::::", this.Uploader.box.getElement( "object" ).get( "id" ) );
 		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );
 		this.uploadButton.addEvent( "mouseover", this.onMouseOver.bindWithEvent( this ) );
 
@@ -2225,6 +2310,11 @@ mop.ui.FileElement = new Class({
 		this.extensions = this.buildExtensionsObject();
 		this.submitURL = this.getSubmitURL();
 		this.sizeLimitMax = Number( mop.util.getValueFromClassName( "maxlength", this.element.get("class") ) ) * 1024;
+	},
+	
+	simulateClick: function(){
+	    console.log( "simulateClick", this.Uploader.box.getElement( "object" ), $( this.Uploader.box.getElement( "object" ).get( "id" ) ) );
+        // Swiff.remote.delay( 500, Swiff, this.Uploader.box.getElement( "object" ), 'stageClick' );
 	},
 
 	toString: function(){
@@ -2273,17 +2363,11 @@ mop.ui.FileElement = new Class({
 	
 	onFocus: function( e ){
 //		console.log( this.toString(), "onFocus", e );
-
 		mop.util.stopEvent( e );
-
+        console.log( "::", this.Uploader );
 		this.Uploader.setFocus( this, this.getPosition() );
 	},
 	
-	// onKeyDown: function( e ){
-	// 	if( e.key == "enter" && this.Uploader.getFocus() == this ){
-	// 		mop.Uploader.browse();
-	// 	}
-	// },
 	
 	onUploadButtonClicked: function( e ){
 		mop.util.stopEvent( e );
@@ -2298,7 +2382,7 @@ mop.ui.FileElement = new Class({
 		console.log( this.toString(), "onTargetHovered", depth );
 		this.Uploader.onTargetHovered( this, this.uploadButton, this.getCoordinates(), depth, this.getOptions() );
 		this.reposition();
-
+        this.simulateClick();
 	},
 	
 	reposition: function(){
@@ -2550,7 +2634,6 @@ mop.util.Uploader = new Class({
 
 		mop.util.EventManager.addListener( this );
 		this.addEvent( "resize", this.reposition );
-
 
 		// callbacks are no longer in the options, every callback
 		// is fired as event, this is just compat

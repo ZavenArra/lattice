@@ -9,7 +9,7 @@ class MOP_View_Core extends View_Core{
 
 
 	public $name;
-	protected $resources = array('js'=>array(), 'css'=>array());
+	protected $resources = array('js'=>array(), 'css'=>array(), 'libraryjs'=>array(), 'librarycss'=>array());
 
 
 	public function __construct($name = NULL, $data = NULL, $type = NULL){
@@ -133,7 +133,6 @@ class MOP_View_Core extends View_Core{
 	}
 
 	public function addResources($type, $resources){
-		print_r($resources);
 		foreach($resources as $resource){
 			$this->resources[$type][$resource] = $resource;
 		}
