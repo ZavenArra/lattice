@@ -327,8 +327,10 @@ class CMS {
         //there's a config for this template
         //go ahead and configure it
         cms::configureTemplate($templateConfig);
-      }
-      $template_id = ORM::Factory('template', $template_ident)->id;
+				$template_id = ORM::Factory('template', $template_ident)->id;
+			} else {
+				die('No config for template '.$template_ident );
+			}
     } 
 
 
@@ -398,7 +400,7 @@ class CMS {
 
 			$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field))->item(0);
 			if(!$fieldInfo){
-				die("Bad field!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field));
+				die("Bad field in addObject!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field));
 			}
 
 			if(in_array($fieldInfo->tagName, $templates)){
@@ -428,7 +430,6 @@ class CMS {
 		//configured components
 		$components = mop::config('objects', sprintf('//template[@name="%s"]/components/component',$newtemplate->templatename));
 		foreach($components as $c){
-			$template = ORM::Factory('template', $c->getAttribute('templateName'));
 			$arguments = array();
 			if($label = $c->getAttribute('label')){
 				$arguments['title'] = $label;
@@ -438,15 +439,14 @@ class CMS {
 					$arguments[$data->tagName] = $data->value;
 				}
 			}
-			cms::addObject($newpage->id, $template->id, $arguments);
+			cms::addObject($newpage->id, $c->getAttribute('templateName'), $arguments);
 		}
 
 		//containers (list)
 		$containers = mop::config('objects', sprintf('//template[@name="%s"]/elements/list',$newtemplate->templatename));
 		foreach($containers as $c){
-			$template = ORM::Factory('template', $c->getAttribute('family'));
 			$arguments['title'] = $c->getAttribute('label');
-			cms::addObject($newpage->id, $template->id, $arguments);
+			cms::addObject($newpage->id, $c->getAttribute('family'), $arguments);
 		}
 
 		return $newpage->id;
