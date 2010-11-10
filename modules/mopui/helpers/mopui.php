@@ -15,7 +15,7 @@ Class mopui{
 	 * Builds a UI element from the mopui views directory
 	 * $element -  array of key value pairs passed to the template, including 'type' key which indicates the template to use
 	 * $fieldvalue - the value to display
-	 * Example: buildUIElement(array('type'=>'text', 'field'=>'fieldname', 'class'=>'className'), {Value})
+	 * Example: buildTextElement(array('type'=>'text', 'field'=>'fieldname', 'class'=>'className'), {Value})
 	 */
 	public static function buildUIElement($element, $fieldvalue=null){
 		$view = 'ui_'.$element['type'];
@@ -163,8 +163,6 @@ Class mopui{
 	}
 
 	public static function radioGroup( $field, $class, $radios, $fieldValue, $groupLabel=null, $labelClass=null ){
-	//	$name = $field.mopui::$unique; //why didn't this work ?
-	//	mopui::$unique++;
 		$microtime = str_replace(array(' ', '.'), '', microtime());
 		$name =$field.mopui::$unique++.$microtime;
 		$elementArray = array( 'type'=>'radioGroup', 'radioname'=>$name, 'class'=>$class, 'grouplabel'=>$groupLabel, 'field'=>$field, 'radios'=> $radios, "labelClass"=>$labelClass );

@@ -614,7 +614,7 @@ class CMS {
 			//handle dbmap
 			$index = null;
 			switch($item->tagName){
-			case 'ipe':
+			case 'text':
 				case 'radioGroup':
 					case 'pulldown':
 						case 'time':

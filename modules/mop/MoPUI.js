@@ -719,9 +719,9 @@ mop.ui.EnhancedModal = new Class({
 			
 			// this should be part of a mixin or something, 
 			// it should be written once
-			// it should do all ui elements not just ipes
+			// it should do all ui elements not just Text
 			// since modals dont have a uiElement array, it needs a way to find all ui elements...... hmmmm
-			var ipes = this.content.getElements( ".ui-IPE" );
+			var ipes = this.content.getElements( ".ui-Text" );
 			ipes.each( function( anIPE ){
 				anIPE.retrieve( "Class" ).destroyValidationSticky();
 			});
@@ -950,7 +950,7 @@ mop.ui.EnhancedAddItemDialogue = new Class({
 		mop.util.stopEvent( e );		
 		
 		/* @TODO: Figure out how to submit all ui elements inside the modal before submit (that way they all validate and close)*/
-		var ipes = this.content.getElements( ".ui-IPE" );
+		var ipes = this.content.getElements( ".ui-Text" );
 
 		var invalidIpes = [];
 
@@ -1208,7 +1208,7 @@ mop.ui.AddItemDialogue = new Class({
 	submit: function( e ){
 		mop.util.stopEvent( e );		
 		/* TODO: APPLY FOR OTHER UI ELEMENTS AS WELL*/
-		var ipes = this.container.getElements( ".ui-IPE" );
+		var ipes = this.container.getElements( ".ui-Text" );
 		// console.log( "IPES TO VALIDATE >>>> ", ipes.join( "\n\t" ) );
 		var invalidIpes = [];
 		ipes.each( function( anIPE ){
@@ -3445,13 +3445,13 @@ mop.ui.Input = new Class({
 
 });
 
-mop.ui.IPE = new Class({
+mop.ui.Text = new Class({
 
 	Extends: mop.ui.UIElement,
 
 	onLeaveEditModeCallbacks: [],
 	
-	type: "ipe",
+	type: "text",
 
 	form: null,
 	
@@ -3499,7 +3499,7 @@ mop.ui.IPE = new Class({
 	},
 
 	toString: function(){
-		return "[ Object, mop.ui.IPE ]";
+		return "[ Object, mop.ui.Text ]";
 	},
 
 	enterEditMode: function( e ){

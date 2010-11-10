@@ -37,6 +37,15 @@ h2,
 	line-height: 1;
 }
 
+.measureDiv{
+    position: fixed;
+    left: -3000px;
+}
+
+.pageTitle .ipe.h2{
+	margin-bottom: 0 !important;
+}
+
 h3,
 .h3 {
 	font-size: 2.25em;	/* 27px */
@@ -66,7 +75,7 @@ h6,
 	clear: both;
 }
 
-.ipeField{
+.textField{
 	font-family: Georgia, Times, Serif;
 	padding: 0 !important; 
 }
@@ -85,7 +94,9 @@ h6,
 }
 
 .displayField,
-.ui-IPE .ipe,
+.ui-Text .ipe,
+.ui-Text input,
+.ui-Text textarea,
 .ui-Input input{
 	border: none;
 	font-family: Georgia, Times, Serif;
@@ -98,12 +109,16 @@ h6,
 	cursor:pointer
 }
 
+.ui-Text textarea{
+    height: auto;
+}
+
 .displayField{
 	color:#333;
 	background:#eee;
 }
 
-.ui-IPE .ipe:hover{
+.ui-Text .ipe:hover{
 	background: #F26A35;
 	color:#fff;
 }
@@ -174,15 +189,6 @@ ol {list-style-type:decimal;}
 dl {margin:0 0 1.5em 0;}
 dl dt {font-weight:bold;}
 dd {margin-left:1.5em;}
-
-/*table {margin-bottom:1.4em;width:100%;}
-th {font-weight:bold;}
-thead th { background:#c3d9ff; }
-th, td, caption {padding:4px 10px 4px 5px;}
-tr.even td {background:#e5ecf9;}
-tfoot {font-style:italic;}
-
-*/
 
 caption {
 	background:#eee;
@@ -880,10 +886,6 @@ DATE PICKER
 .datepicker .header .closeButton {
 	position: absolute;
 	width: 15px;
-/*	font-size: 1.5em;*/
-/*	height: 12px;
-*//*	background: #dedede;
-*/
 	color: #666;
 	top: 5px;
 	text-align: center;

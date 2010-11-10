@@ -6,7 +6,7 @@
  */
 
  $config['fields'] = array(
-	 'name'=>'ipe',
+	 'name'=>'text',
  );
 
  $config['labels'] = array(

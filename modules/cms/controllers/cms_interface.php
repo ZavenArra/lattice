@@ -254,8 +254,8 @@ class CMS_Interface_Controller extends Controller {
 	}
 
 	/*
-	Function: saveIPE($itemid)
-	Wrapper to saveIPE in CMS_Services_Controller
+	Function: saveFieldMapping($itemid)
+	Wrapper to saveFieldMapping in CMS_Services_Controller
 	*/
 	public function saveFieldMapping($itemid){
 		$object = ORM::Factory($this->model, $itemid);

@@ -73,7 +73,8 @@
 >
 
 <!ELEMENT text EMPTY >
-<!ATTLIST text 
+<!ATTLIST text
+INSIDE ui-Text thats fine
 	%uiattrs;
 	tag					CDATA "p"
 	rows				CDATA "2"
