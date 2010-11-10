@@ -55,17 +55,42 @@ Class mop {
 
 
 		if(!isset(self::$config[$arena])){
+
 			$dom = new DOMDocument();
+			$dom->preserveWhiteSpace = false;
 			$dom = new MyDOMDocument($dom);
 
 			$path = Kohana::find_file('config', $arena, true, 'xml'); 
 
 			$dom->load( $path[0] );
-      if(!$dom->validate()){
-        echo('Validation failed on '.$path);
-        //die();
-      }
+			if(!$dom->validate()){
+				echo('Validation failed on '.$path[0]);
+				print_r($dom->errors);
+				die();
+			}
+
+			if($arena == 'objects'){
+				$clusters = new DOMDocument();
+				$clusters = new MYDOMDocument($clusters);
+				$path = Kohana::find_file('config', 'clusters', true, 'xml');
+				$clusters->load( $path[0] );
+				//echo $clusters->_delegate->saveXML();
+				$clusters = new DOMXPath($clusters->_delegate);
+				$clusterNodes = $clusters->evaluate('//template');
+				foreach($clusterNodes as $node){
+					$node = $dom->_delegate->importNode($node, true);
+					$templatesNode = $dom->_delegate->getElementsByTagName('templates')->item(0);
+					$templatesNode->appendChild($node);
+					//$dom->_delegate->insertBefore($node, $refNode);
+				}
+				//recreate Xpath object
+				//$dom->formatOutput;
+				//echo $dom->_delegate->saveXML();
+			}
+
 			$xpathObject = new DOMXPath($dom->_delegate);
+
+
 			self::$config[$arena] = $xpathObject;
 		}
 		if($contextNode){

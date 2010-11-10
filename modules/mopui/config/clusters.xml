@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration SYSTEM "clusters.dtd">
+
+<configuration>
+	<clusters>
+		<template name="link">
+			<text field="url" />
+			<text field="label" />	
+		</template>
+	</clusters>
+
+</configuration>
+

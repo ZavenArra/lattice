@@ -378,10 +378,15 @@ class CMS {
 		$newtemplate = ORM::Factory('template', $newpage->template_id);
 
 
+		$lookupTemplates = mop::config('objects', '//template');
+		$templates = array();
+		foreach($lookupTemplates as $tConfig){
+			$templates[] = $tConfig->getAttribute('name');	
+		}
 		//add submitted data to content table
 		foreach($data as $field=>$value){
+
 			//need to switch here on type of field
-			
 			switch($field){
 			case 'slug':
 					$newpage->$field = $data[$field];
@@ -395,22 +400,21 @@ class CMS {
 			if(!$fieldInfo){
 				die("Bad field!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field));
 			}
+
+			if(in_array($fieldInfo->tagName, $templates)){
+				$oTemplate = ORM::Factory('template', $field);
+				cms::addObject($newpage->id, $oTemplate->id ,$value);
+			}
+
+
 			switch($fieldInfo->tagName){
-			case 'singleFile':
-			case 'singleImage':
+			case 'file':
+			case 'image':
 				$file = ORM::Factory('file');
 				$file->filename = $value;			
 				$file->save();
 				$newpage->contenttable->$field = $file->id;
 				break;
-			case 'object':
-				//not sure how to handle this!
-				//probably just assume that $value is an array to put into object
-				//well actually it's just another call to cms::addObject
-				$oTemplate = ORM::Factory('template', $field);
-				cms::addObject($newpage->id, $oTemplate->id ,$value);
-				break;
-
 			default:
 				$newpage->contenttable->$field = $data[$field];
 				break;
