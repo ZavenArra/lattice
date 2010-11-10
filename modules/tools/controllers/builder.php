@@ -21,6 +21,8 @@ class builder_Controller extends Controller {
 		$db->query('alter table content_larges AUTO_INCREMENT = 1');
 		$db->query('delete from contents');
 		$db->query('alter table contents AUTO_INCREMENT = 1');
+		$db->query('delete from templates');
+		$db->query('alter table templates AUTO_INCREMENT = 1');
 		flush();
 		ob_flush();
 
@@ -47,19 +49,15 @@ class builder_Controller extends Controller {
 
 		foreach(mop::config($xmlFile, 'item', $context)  as $item){
 			$lists = array();
-			if(!$item->getAttribute('templateName')){
-				echo $item->tagName;
+			$templateName = $item->getAttribute('templateName');
+			if(!$templateName){
         die("No templatename specified for Item ".$item->tagName."\n\n");
 			}
       //echo "\n found contentnod ".$item->getAttribute('templateName');
 			flush();
 			ob_flush();
 			$object = ORM::Factory('page');
-			$template = ORM::Factory('template', $item->getAttribute('templateName'));
-      if(!$template->id){
-				die("Bad template name ".$item->getAttribute('templateName')."\n");
-				//or course just go ahead and insert here.
-			} 
+			$template = ORM::Factory('template', $templateName);
 			if($template->nodeType == 'container'){
 				die("Can't add list family as template name in data.xml: {$template->templatename} \n");
 			}
@@ -150,7 +148,7 @@ class builder_Controller extends Controller {
 				$component->updateWithArray($data);
 				$objectId = $component->id;
 			} else {
-				$objectId = cms::addObject($parentId, $template->id, $data);
+				$objectId = cms::addObject($parentId, $templateName, $data);
 				$this->newObjectIds[] = $objectId;
 			}
 
