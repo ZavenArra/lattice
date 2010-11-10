@@ -190,7 +190,13 @@ class CMS {
 				case 'associator':
 					$module['pool'] = array();
 					$selection = array();
-					$element = mopui::buildUIElement($module, $selection); 
+					$module['modulename'] = $module['field'];
+					$module['controllertype'] = 'associator';
+					$arguments = array(
+						'module'=>$module,
+						'selection'=>$selection
+					);
+					$element = mop::buildModule($module, $arguments); 
 					$htmlChunks[$module['type'].'_'.$module['field']] = $element;
 					break;
 				default:
@@ -493,6 +499,15 @@ class CMS {
 	}
 
 	public static function configureTemplate($template){
+		//validation
+		//
+		foreach(mop::config('objects', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item){
+			if($item->getAttribute('field')=='title'){
+				die('Title is a reserved field name');
+			}
+		}
+
+
 		//find or create template record
 		$tRecord = ORM::Factory('template', $template->getAttribute('name') );
 		if(!$tRecord->loaded){
