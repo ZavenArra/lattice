@@ -190,7 +190,13 @@ class CMS {
 				case 'associator':
 					$module['pool'] = array();
 					$selection = array();
-					$element = mopui::buildUIElement($module, $selection); 
+					$module['modulename'] = $module['field'];
+					$module['controllertype'] = 'associator';
+					$arguments = array(
+						'module'=>$module,
+						'selection'=>$selection
+					);
+					$element = mop::buildModule($module, $arguments); 
 					$htmlChunks[$module['type'].'_'.$module['field']] = $element;
 					break;
 				default:
