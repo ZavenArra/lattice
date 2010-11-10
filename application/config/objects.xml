@@ -186,6 +186,9 @@
         <ipe field="blurb3" label="WJAT" tag="p" rows="4" />
       </elements>
 		</template>
+		<template name="associatorTest">
+
+		</template>
 	</templates>
 
 </configuration>
