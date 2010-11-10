@@ -72,6 +72,20 @@
 	tagged				CDATA #IMPLIED
 >
 
+<!ELEMENT associator (filter*)>
+<!ATTLIST associator  
+	field         CDATA #REQUIRED
+	label         CDATA #IMPLIED
+	parent        CDATA  #IMPLIED
+	templateName  CDATA  #IMPLIED 
+>   
+
+<!ELEMENT filter EMPTY >
+<!ATTLIST filter
+	from           CDATA #IMPLIED
+	templateName   CDATA #IMPLIED
+	tagged         CDATA #IMPLIED
+>
 
 <!ELEMENT ipe EMPTY >
 <!ATTLIST ipe
