@@ -108,7 +108,7 @@
 				<singleImage field="file">
 					<ext>jpg</ext>
 				</singleImage>
-        <singleImage field="file">
+        <singleImage field="file2">
           <ext>jpg</ext>
         </singleImage>
 			</elements>
