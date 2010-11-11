@@ -52,6 +52,11 @@
 
 	<item templateName="simpleListModule">
 		<field name="title">Simple List Module</field>
+		<list family="simplelist">
+			<item templateName="simpleListModuleItem">
+				<field name="title">THIS IS THE TITLE</field>
+			</item>
+		</list>
 	</item>
 	
 	<item templateName="complexListModule">
