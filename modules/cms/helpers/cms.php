@@ -158,20 +158,26 @@ class CMS {
 		$htmlChunks = array();
 		if(is_array($parameters)){
 			foreach($parameters as $module){
+				//echo 'BUILDING PARAM';
+				//print_r($module);
 
 				//check if this module type is in fact a template
 				$tConfig = mop::config('objects', sprintf('//template[@name="%s"]', $module['type']))->item(0);
 				//echo $object->id;
 				//echo $object->template->id;
 				if($tConfig){
+				//	echo '<br>T CONFIG FOUND';
 					$field = $module['field'];
-					echo $field;
+					//echo $field;
 					$clusterObject = $object->contenttable->$field;
 					if(!$clusterObject){
-						cms::addObject($object->id, $module['type']);
+						//echo 'NO CLUSTER OBJECT EXITS<br>';
+						$id = cms::addObject(0, $module['type']);
+						//echo 'ADDED AN OBJECT id'.$id.' to parent 0';
+						$object->contenttable->$field = $id;
 						$clusterObject = $object->contenttable->$field;
 					}
-					$html = cms::buildUIHtmlChunksForObject($clusterObject);
+					$htmlChunks = cms::buildUIHtmlChunksForObject($clusterObject);
 
 					$customview = 'templates/'.$clusterObject->template->templatename; //check for custom view for this template
 					$usecustomview = false;
@@ -179,7 +185,11 @@ class CMS {
 						$usecustomview = true;	
 					}
 					if(!$usecustomview){
-						$html = $nodetitlehtml.implode($htmlChunks);
+						$html = implode($htmlChunks);
+						$view = new View('clusters_wrapper');
+						$view->html = $html;
+						$view->objectId = $clusterObject->id;
+						$html=$view->render();
 					} else {
 						$html = $nodetitlehtml;
 						$view = new View($customview);
@@ -189,8 +199,9 @@ class CMS {
 						}
 						$html .= $view->render();
 					}
+					//echo 'THE'.$html;
 					$htmlChunks[$module['type'].'_'.$module['field']] = $html;
-
+					continue;
 				}
 
 				switch($module['type']){
@@ -255,7 +266,9 @@ class CMS {
 	public static function buildUIHtmlChunksForObject($object){
 		$elements = mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename));
     $elementsConfig = array();
+		//echo 'BUILDING'.$object->template->templatename.'<br>'; 
 		foreach($elements as $element){
+			//echo 'FOUND AN ELEMENT<br>';
 			$entry = array();
       $entry['type'] = $element->tagName;
 			for($i=0; $i<$element->attributes->length; $i++){
@@ -586,6 +599,7 @@ class CMS {
 	}
 
 	public static function configureField($templateId, $item){
+		//echo $item->tagName;
 		switch($item->tagName){
 
 		case 'list':
@@ -596,6 +610,7 @@ class CMS {
 			break;
 
 		default:
+		//	echo $item->tagName;
 			//handle dbmap
 			$index = null;
 			switch($item->tagName){
@@ -615,7 +630,17 @@ class CMS {
 										$index = 'flag';
 										break;
 									default:
-										continue(2);
+										$tConfigs = mop::config('objects', '//template');
+										$templates = array();
+										foreach($tConfigs as $template){
+											$templates[] = $template->getAttribute('name');	
+										}
+										//print_r($templates);
+										if(in_array($item->tagName, $templates)){
+											$index = 'object';
+										} else {
+											continue(2);
+										}
 										break;
 			}	
 

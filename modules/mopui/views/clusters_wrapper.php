@@ -1,3 +1,3 @@
-<div class="module classPath-mop_modules_Module">
-
+<div class="cluster classPath-mop_modules_Module objectId=<?=$objectId;?>">
+	<?=$html;?>
 </div>

@@ -4,8 +4,10 @@
 <configuration>
 	<clusters>
 		<template name="link">
-			<text field="url" />
-			<text field="label" />	
+			<elements>
+				<text field="url" label="URL" />
+				<text field="label" label="Label" />	
+			</elements>
 		</template>
 	</clusters>
 

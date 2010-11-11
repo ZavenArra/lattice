@@ -126,6 +126,7 @@ Class mopui{
 			if(isset($element['rows'])){
 				$element['class'] .= ' rows-'.$element['rows'];
 			}
+			break;
 		}
 
 		if(!isset($element['class'])){
@@ -133,7 +134,7 @@ Class mopui{
 		}
 
 
-		if(Kohana::find_file('views', $view)){
+		if($paths = Kohana::find_file('views', $view)){
 			$template = new View($view);
 
 			$template->id = $id;
