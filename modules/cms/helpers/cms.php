@@ -158,6 +158,41 @@ class CMS {
 		$htmlChunks = array();
 		if(is_array($parameters)){
 			foreach($parameters as $module){
+
+				//check if this module type is in fact a template
+				$tConfig = mop::config('objects', sprintf('//template[@name="%s"]', $module['type']))->item(0);
+				echo $object->id;
+				echo $object->template->id;
+				if($tConfig){
+					$field = $module['field'];
+					echo $field;
+					$clusterObject = $object->contenttable->$field;
+					if(!$clusterObject){
+						cms::addObject($object->id, $module['type']);
+						$clusterObject = $object->contenttable->$field;
+					}
+					$html = cms::buildUIHtmlChunksForObject($clusterObject);
+
+					$customview = 'templates/'.$clusterObject->template->templatename; //check for custom view for this template
+					$usecustomview = false;
+					if(Kohana::find_file('views', $customview)){
+						$usecustomview = true;	
+					}
+					if(!$usecustomview){
+						$html = $nodetitlehtml.implode($htmlChunks);
+					} else {
+						$html = $nodetitlehtml;
+						$view = new View($customview);
+						$view->loadResources();
+						foreach($htmlChunks as $key=>$value){
+							$view->$key = $value;
+						}
+						$html .= $view->render();
+					}
+					$htmlChunks[$module['type'].'_'.$module['field']] = $html;
+
+				}
+
 				switch($module['type']){
 				case 'module':
 					if(isset($module['arguments'])){
@@ -404,8 +439,10 @@ class CMS {
 			}
 
 			if(in_array($fieldInfo->tagName, $templates)){
+				//this could happen, but not right now
 				$oTemplate = ORM::Factory('template', $field);
-				cms::addObject($newpage->id, $oTemplate->id ,$value);
+				$clusterObject = cms::addObject($newpage->id, $oTemplate->id ,$value);
+				$newpage->contenttable->$field = $clusterObject->id;
 			}
 
 
