@@ -161,8 +161,8 @@ class CMS {
 
 				//check if this module type is in fact a template
 				$tConfig = mop::config('objects', sprintf('//template[@name="%s"]', $module['type']))->item(0);
-				echo $object->id;
-				echo $object->template->id;
+				//echo $object->id;
+				//echo $object->template->id;
 				if($tConfig){
 					$field = $module['field'];
 					echo $field;
@@ -544,7 +544,7 @@ class CMS {
 		//
 		foreach(mop::config('objects', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item){
 			if($item->getAttribute('field')=='title'){
-				die('Title is a reserved field name');
+			//	die('Title is a reserved field name');
 			}
 		}
 
@@ -552,7 +552,7 @@ class CMS {
 		//find or create template record
 		$tRecord = ORM::Factory('template', $template->getAttribute('name') );
 		if(!$tRecord->loaded){
-			echo "\ncreating for ".$template->getAttribute('name')."\n";
+			//echo "\ncreating for ".$template->getAttribute('name')."\n";
 			$tRecord = ORM::Factory('template');
 			$tRecord->templatename = $template->getAttribute('name');
 			$tRecord->nodeType = 'object';
