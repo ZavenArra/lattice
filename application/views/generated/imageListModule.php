@@ -7,9 +7,13 @@
 
   <p class="description"> <?=$imageListListItem['description'];?></p>
 
-  <p class="file"> <?=$imageListListItem['file'];?></p>
+  <?if(is_object($imageListListItem['file'])):?>
+   <img id="file" src="<?=$imageListListItem['file']->original->fullpath;?>" width="<?=$imageListListItem['file']->original->width;?>" height="<?=$imageListListItem['file']->original->height;?>" alt="<?=$imageListListItem['file']->original->filename;?>" />
+  <?endif;?>
 
-  <p class="file"> <?=$imageListListItem['file'];?></p>
+  <?if(is_object($imageListListItem['file'])):?>
+   <img id="file" src="<?=$imageListListItem['file']->original->fullpath;?>" width="<?=$imageListListItem['file']->original->width;?>" height="<?=$imageListListItem['file']->original->height;?>" alt="<?=$imageListListItem['file']->original->filename;?>" />
+  <?endif;?>
 
  </li>
 <?endforeach;?>
