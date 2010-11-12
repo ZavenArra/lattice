@@ -260,17 +260,18 @@ ul.listing{
 
 ul.listing li{
 /*    width: 270px;
-*/	margin: 0 0 .75em 0;
+*/
+    margin: 0 0 .75em 0;
 	padding: 0 0 0 6px;
 	border-left: 1px #dedede solid;
 	color:#444;
 }
 
-ul.listing li.allowChildSort-true{
+ul.listing.allowChildSort-true li{
     cursor: pointer;
 }
 
-ul.listing li.alpha{
+/*ul.listing li.alpha{
     margin-left: 0px !important;
     clear: left;
 }
@@ -279,6 +280,7 @@ ul.listing li.alpha{
 ul.listing li.omega{
     clear: right;
 }
+*/
 
 .itemControls,
 .controls{

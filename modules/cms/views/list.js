@@ -28,8 +28,8 @@ mop.modules.List = new Class({
 		
 		this.allowChildSort = ( this.getValueFromClassName( "allowChildSort" ) == "false" ) ? false : true;
 		this.sortDirection = this.getValueFromClassName( "sortDirection" );
-
-		if( this.allowChildSort == "true" ) this.makeSortable();
+        console.log( "List allowChildSort: ", this.getValueFromClassName( "allowChildSort" ) );
+		if( this.allowChildSort ) this.makeSortable();
 	},
 
 	toString: function(){
@@ -75,6 +75,7 @@ mop.modules.List = new Class({
 	},
 	
 	makeSortable: function(){
+	    console.log( this.toString(), "makeSortable", this.allowChildSort, this.sortableList );
 		if( this.allowChildSort && !this.sortableList ){
 				this.sortableList = new mop.ui.Sortable(  this.listing, this, {
 				scrollElement: window,
@@ -87,12 +88,12 @@ mop.modules.List = new Class({
 				onComplete: function( el ){
 					if(!this.moved) return;
 					this.moved = false;
-					this.scroller.stop();
+					if( this.scroller ) this.scroller.stop();
 					this.marshal.onOrderChanged();
 				},
 				onStart: function(){
 					this.moved = true;
-					this.scroller.start();
+					if( this.scroller ) this.scroller.start();
 				}
 			});
 		}else if( this.allowChildSort ){
@@ -235,7 +236,7 @@ mop.modules.List = new Class({
 		delete this.items;
 		delete this.listing;
 		delete this.oldSort;
-		delete this.scroller;
+        if( this.scroller ) delete this.scroller;
 		delete this.allowChildSort;
 		delete this.sortDirection;
 		delete this.submitDelay;
@@ -246,7 +247,7 @@ mop.modules.List = new Class({
 		this.items = null;
 		this.listing = null;
 		this.oldSort = null;
-		this.scroller = null;
+        if( this.scroller ) this.scroller = null;
 		this.allowChildSort = null;
 		this.sortDirection = null;
 		this.submitDelay = null;

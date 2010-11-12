@@ -43,7 +43,7 @@ class List_Controller extends CMS_Interface_Controller{
 		$this->listClass = substr(get_class($this), 0, -11);
 
 		//support for custom listmodule item templates, but might not be necessary
-		$custom = $this->listClass.'_list_item';
+		$custom = $this->listClass.'_item';
 		Kohana::log('info', 'list: looking for '.$custom);
 		if(Kohana::find_file('views', $custom)){
 			$this->itemview = $custom;
@@ -59,7 +59,7 @@ class List_Controller extends CMS_Interface_Controller{
 
 
 	public function createIndexView(){
-		$custom = $this->listClass.'_list';
+		$custom = $this->listClass;
 		if(Kohana::find_file('views', $custom)){
 			$this->view = new View($custom);
 		} else {

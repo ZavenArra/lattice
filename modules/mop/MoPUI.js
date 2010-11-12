@@ -272,56 +272,48 @@ mop.ui.ModalManager = new Class({
 	adds a marshal reference, and a scroller instance
 */
 mop.ui.Sortable = new Class({
+    Implements: Options,
 	Extends: Sortables,
+	
+	
 	initialize: function( anElement, marshal, options ){
-		this.parent( anElement, options );
-		this.marshal = marshal;
-		var opts = {
+
+		if( this.options.clone ) this.clone = this.options.clone;
+		this.parent( anElement, {
 		    area: options.area,
-		    velocity: options.velocity,
-		};
-		this.scroller = new mop.ui.VerticalScroller( options.scrollElement, opts );
-//       this.scroller = new Scroller( options.scrollElement, opts );
+    	    velocity: options.velocity,
+    		clone: function(event,element,list){
+    			var scroll = {x:0 ,y: 0};
+    			element.getParents().each(function(el){
+    				if(['auto','scroll'].contains(el.getStyle('overflow'))){
+    					scroll = {
+    						x: scroll.x + el.getScroll().x,
+    						y: scroll.y + el.getScroll().y
+    					}					
+    				}
+    			});
+
+    			var position = element.getPosition();
+
+    			return element.clone().addClass('listClone').setStyles({
+    				margin: '0px',
+    				position: 'absolute',
+    				visibility: 'hidden',
+    				'width': element.getStyle('width'),
+    				top: position.y + scroll.y,
+    				left: position.x + scroll.x
+    			}).inject(this.list);
+    		}
+		});
+		this.marshal = marshal;
+//		this.scroller = new mop.ui.VerticalScroller( options.scrollElement );
+        this.scroller = new Scroller( options.scrollElement, opts );
 
 		opts = null;
 	},
-	
-    getClone: function(event, element){
-     if (!this.options.clone) return new Element('div').inject(document.body);
-     if ($type(this.options.clone) == 'function') return this.options.clone.call(this, event, element, this.list );
-     return element.clone(false).addClass("listClone").setStyles({
-         'margin': '0px',
-         'position': 'absolute',
-         'opacity': .4,
-         'visibility': 'hidden',
-         'width': element.getStyle('width'),
-         'height': element.getStyle('height')
-     }).inject( this.list ).position( element.getPosition() );
-    },
-	
-        clone: function(event,element,list){
-         var scroll = {x:0 ,y: 0};
-         element.getParents().each(function(el){
-             if(['auto','scroll'].contains(el.getStyle('overflow'))){
-                 scroll = {
-                     x: scroll.x + el.getScroll().x,
-                     y: scroll.y + el.getScroll().y
-                 }                   
-             }
-         });
-         
-         var position = element.getPosition();
-         
-         return element.clone().setStyles({
-             margin: '0px',
-             position: 'absolute',
-             visibility: 'hidden',
-             'width': element.getStyle('width'),
-             top: position.y + scroll.y,
-             left: position.x + scroll.x
-         }).inject(this.list);
-        }
-	
+    
+
+     
 });
 
 /*	Class: mop.ui.Vertical scroller
