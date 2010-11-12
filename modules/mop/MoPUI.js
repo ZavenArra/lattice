@@ -307,7 +307,7 @@ mop.ui.Sortable = new Class({
 		});
 		this.marshal = marshal;
 //		this.scroller = new mop.ui.VerticalScroller( options.scrollElement );
-        this.scroller = new Scroller( options.scrollElement, opts );
+        this.scroller = new Scroller( options.scrollElement, { area: 20, velocity: 1, onChange: function( x, y ){ this.element.scrollTo( x, y); } } );
 
 		opts = null;
 	},
