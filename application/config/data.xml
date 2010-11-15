@@ -2,7 +2,55 @@
 <!DOCTYPE data SYSTEM "../../modules/mopmvc/config/data.dtd">
 <data>
 
-	<item templateName="aTemplate">
+	<item templateName="basicCategory">
+		<field name="title">A Category</field>
+		<item templateName="basicCategory">
+			<field name="title">Category2</field>
+			<item templateName="basicCategory">
+				<field name="title">Category3</field>
+			</item>
+		</item>
+	</item>
+
+	<item templateName="singleIPE">
+		<field name="title">Single IPE</field>
+	</item>
+
+	<item templateName="multilineIPE">
+		<field name="title">Multiline IPE</field>
+	</item>
+
+	<item templateName="singleRadioGroup">
+		<field name="title">Single Radio Group</field>
+	</item>
+	
+	<item templateName="singleCheckbox">
+		<field name="title">Single checkbox</field>
+	</item>
+
+	<item templateName="singleDate">
+		<field name="title">Single Date</field>
+	</item>
+
+	<item templateName="singleTime">
+		<field name="title">Single Time</field>
+	</item>
+
+ 	<item templateName="singleFile">
+                <field name="title">Single File</field>
+                <field name="file">testimages/ctoolsAllCases.csv</field>
+        </item>
+
+        <item templateName="singleImage">
+                <field name="title">Single Image</field>
+                <field name="file">testimages/29305_390907843268_707068268_4114906_7182725_n.jpg</field>
+                <item templateName="singleImage">
+                        <field name="title">Image Build Test</field>
+                        <field name="file">testimages/29305_390907843268_707068268_4114906_7182725_n.jpg</field>
+                </item>
+        </item>
+
+	<item templateName="simpleListModule">
 		<field name="title">Simple List Module</field>
 		<list family="simplelist">
 			<item templateName="simpleListModuleItem">
@@ -11,4 +59,22 @@
 		</list>
 	</item>
 	
+	<item templateName="complexListModule">
+		<field name="title">Complex List Module</field>
+	</item>
+	
+	<item templateName="imageListModule">
+		<field name="title">Image List</field>
+	</item>
+	
+	<item templateName="fileListModule">
+		<field name="title">File List</field>
+  </item>
+
+	<item templateName="stuff">
+		<field name="title">some stuff</field>
+	</item>
+	<item templateName="linkTest">
+		<field name="title">Link Test</field>
+	</item>
 </data>
