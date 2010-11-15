@@ -52,7 +52,7 @@
 	allowChildSort   	(true|false)		"true"
 	sortDirection		(ASC|DESC)			"ASC"
 	allowTogglePublish	(true|false)		"true"	
-	contentType  CDATA "document"
+	contentType  		CDATA "document"
 >
 <!-- last two attributes currently not supported -->
 
@@ -74,7 +74,6 @@
 
 <!ELEMENT text EMPTY >
 <!ATTLIST text
-INSIDE ui-Text thats fine
 	%uiattrs;
 	tag					CDATA "p"
 	rows				CDATA "2"
