@@ -190,8 +190,8 @@ mop.modules.Module = new Class({
 	},
 	
 	destroyUIElements: function(){
-//		console.log( "destroyUIElements", this, this.instanceName, this.UIElements );
-		if( !this.UIElements || !this.UIElements.getLength() || this.UIElements.getLength() == 0  ) return;
+		console.log( "destroyUIElements", this, this.instanceName, this.UIElements );
+		if( !this.UIElements || !this.UIElements.length || this.UIElements.length == 0  ) return;
 		this.UIElements.each( function( aUIElement ){
 			var key = aUIElement.fieldName;
 			aUIElement.destroy();
