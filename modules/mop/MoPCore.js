@@ -73,29 +73,6 @@ Element.implement({
 });
 
 
-
-/*
-	Function: getScrolls
-	Paramaters: 
-		element - {Element}
-	Note:
-		Mootools fixed this in 1.3
-		https://mootools.lighthouseapp.com/projects/2706/tickets/637-getcoordinatesgetleftgettop-bug-on-overflowhidden-elements
-		We ought to set up a test, and upgrade.
-		This method is only relevant to the getScrolls function.
-*/
-// Element.implement({
-//  getScrolls: function(){
-//      var element = this.parentNode, position = {x: 0, y: 0};
-//      while (element && !this.isBody(element)){
-//      position.x += element.scrollLeft;
-//      position.y += element.scrollTop;
-//      element = element.parentNode;
-//    }
-//    return position;
-//  }
-// });
-
 /*
 	Function: String.encodeUTF8
 	Implements encodeUTF8 into mootools' native String class
