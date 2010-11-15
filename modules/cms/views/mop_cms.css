@@ -93,7 +93,8 @@ h6,
 	padding: 4px .5em;
 	background: #FFFAC4; 
 	color:#222;
-	min-height: 1.5em;
+	line-height: 1.5em;
+	height: 1.5em;
 	cursor:pointer
 }
 
@@ -106,11 +107,6 @@ h6,
 	background: #F26A35;
 	color:#fff;
 }
-
-.IPEForm{
-	margin: .5em 0 0 0;	
-}
-
 
 textarea, input{
 	display:block;
