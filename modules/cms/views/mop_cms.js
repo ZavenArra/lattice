@@ -109,20 +109,21 @@ mop.modules.CMS = new Class({
     		this.editSlugLink = this.titleElement.getElement( ".field-slug" );
 			if( this.editSlugLink ){
 				this.editSlugLink.addEvent( "click", this.revealSlugEditField.bindWithEvent( this ) );
-				this.titleElement.getElement( ".field-slug" ).retrieve( "Class" ).registerOnLeaveEditModeCallback( this.onSlugEdit.bind( this ) );
+                // this.editSlugLink.retrieve( "Class" ).registerOnLeaveEditModeCallback( this.onSlugEdited.bind( this ) );
 			}
-			
-			if( this.titleElement.getElement( ".field-title" ).retrieve("Class") ) this.titleElement.getElement( ".field-title" ).retrieve( "Class").registerOnCompleteCallBack( this.renameNode.bind( this ) );
-
+			var titleIPE = this.titleElement.getElement( ".field-title" ).retrieve("Class");
+			if( titleIPE ) titleIPE.registerOnCompleteCallBack( this.renameNode.bind( this ) );
+			if( titleIPE ) titleIPE.registerOnCompleteCallBack( this.onTitleEdited.bind( this ) );
 			if( this.deletePageLink ) this.deletePageLink.addEvent( "click", this.onDeleteNodeReleased.bindWithEvent( this ) );
 			
-		
 		}
-		
-
 	},
 	
-	onSlugEdit: function(){
+	onTitleEdited: function( response ){
+	    this.editSlugLink.retrieve( "Class" ).setValue( response.slug );
+	},
+	
+	onSlugEdited: function(){
 		this.titleElement.getElement( ".field-slug .ipe" ).addClass("hidden");
 	},
 	
