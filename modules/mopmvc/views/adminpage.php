@@ -16,7 +16,7 @@
 	
 </head>
 <body class=" loginTimeOut-<?=Kohana::config('mop.loginTimeOut');?>">
-	<div id="container">
+	<div id="container" class="container_12">
 		<?=$adminheader;?>
 		<?=$content;?>
 		<?=$adminfooter;?>

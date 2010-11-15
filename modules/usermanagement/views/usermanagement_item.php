@@ -1,8 +1,8 @@
 <li id="item_<?=$data['id'];?>" class="listItem">
 
-	<?=mopui::IPE( 'username', "rows-1 validation-nonEmpty twoColTriptic", "p", $data['username'], 'Username' );?>
-	<?=mopui::IPE( 'email', "rows-1 validation-email twoColTriptic", "p", $data['email'], 'Email' );?>
-	<?=mopui::IPE( 'password', "rows-1 validation-nonEmpty type-password twoColTriptic", "p", $data['password'], 'Reset and Mail Password' );?>
+	<?=mopui::IPE( 'username', "rows-1 validation-nonEmpty grid_4 alpha", "p", $data['username'], 'Username' );?>
+	<?=mopui::IPE( 'email', "rows-1 validation-email grid_4", "p", $data['email'], 'Email' );?>
+	<?=mopui::IPE( 'password', "rows-1 validation-nonEmpty type-password grid_4 omega", "p", $data['password'], 'Reset and Mail Password' );?>
 	
 	<div class="clear">
 		<?=mopui::radioGroup( 'role', '', $managedRoles, $data['role'], 'User Role');?>

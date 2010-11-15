@@ -2,7 +2,6 @@
 
 #navigation{
 	font-size: 12px;
-	width: 900px;
 	position:relative;
 	overflow: auto;
 	overflow:hidden;
@@ -50,8 +49,14 @@ ul.breadCrumb li a:hover{
 	color:#fff;
 }
 
+.navTier.grid_4{
+    margin: 0 0 0 0;
+}
+
+.field-title.grid_8{
+    margin-left: 0;
+}
 #navigation h5{
-	width: 210px !important;
 	font-size: 1em;
 	white-space: normal !important;
 	line-height:1.2em;

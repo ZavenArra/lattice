@@ -157,10 +157,8 @@ mop.modules.Module = new Class({
 		if( !UIElements || UIElements.length == 0  ) return null;
 
 		UIElements.each( function( anElement ){
-//		    console.log( "initUI", anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) ) )
 		    var UIElement = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  ]( anElement, this, this.options );
 		    this.UIElements.set( UIElement.fieldName, UIElement );
-//		    console.log( "initUI", UIElement.fieldName );
 		}, this );
 		
 		if( this.postInitUIHook ) this.postInitUIHook();
@@ -221,29 +219,29 @@ mop.modules.Module = new Class({
 
 });
 
-/*
-	Class mop.module.ViewStackModule
-	Note: Extended Module that can handle view stacks (eg a module that loads other modules into a tabbed modal interface).
+
+/* 
+	Class: mop.modules.Module
+	Base module
 */
-mop.modules.ViewStackModule = new Class({
 
-	Extendeds: mop.modules.Module,
-
-	initialize: function( anElement, aMarshal, options ){
-		this.parent( anElement, aMarshal, options );
-	},
-
-	initModules: function(){
-		
-	},
-
-	destroyModules: function(){
-		
-	},
-
-	destroy: function(){}
-
+mop.modules.Cluster = new Class({
+    Extends: mop.modules.Module,
+    initialize: function( anElementOrId, aMarshal, options ){
+        this.parent( anElementOrId, aMarshal, options );
+        console.log( "Cluster objectId", this.getObjectId() );
+    },
+    getSubmissionController: function(){
+        return this.marshal.getSubmissionController();
+        // console.log( "instanceName", this.instanceName );
+        // return this.instanceName;
+    },
+    getObjectId: function(){
+	    return this.getValueFromClassName( "objectId" );
+	}
 });
+
+
 
 /*
 	Class mop.module.AjaxFormModule

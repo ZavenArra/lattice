@@ -6,7 +6,7 @@
 		<?=$items;?>
 	</ul>
  <div class="controls">
-    <a href="#" class="addItem button oneCol floatLeft">Add Item</a>
+    <a href="#" class="addItem button grid_2">Add Item</a>
   </div>
 </div>
 

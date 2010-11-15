@@ -37,10 +37,6 @@ h2,
 	line-height: 1;
 }
 
-.pageTitle .ipe.h2{
-	margin-bottom: 0 !important;
-}
-
 h3,
 .h3 {
 	font-size: 2.25em;	/* 27px */
@@ -267,20 +263,7 @@ ul.listing li{
 	color:#444;
 }
 
-ul.listing.allowChildSort-true li{
-    cursor: pointer;
-}
-
-/*ul.listing li.alpha{
-    margin-left: 0px !important;
-    clear: left;
-}
-
-
-ul.listing li.omega{
-    clear: right;
-}
-*/
+ul.listing.allowChildSort-true li{ cursor: pointer; }
 
 .itemControls,
 .controls{
@@ -312,12 +295,6 @@ ul.listing li.omega{
 	border-bottom:none;
 }
 
-.ui-FileElement .controls.secondCol,
-.ui-File .controls.secondCol,
-.ui-ImageFile .controls.thirdCol{
-	border-left: 1px #dedede solid;
-}
-
 .ui-FileElement .controls a,
 .ui-File .controls a,
 .ui-ImageFile .controls a{
@@ -343,11 +320,12 @@ ul.listing li.omega{
 	border: .5em #eee solid;
 }
 
+.cluster .wrapper,
 .ui-FileElement .wrapper,
 .ui-ImageFile .wrapper,
 .ui-File .wrapper{
-	border: 1px #E6EBED solid;
-	padding:.25em;
+	border: 1px #dedede solid;
+	padding:.5em;
 	margin:0 0 .5em 0;
 }
 
@@ -385,9 +363,9 @@ ul.listing li.omega{
 	margin:0 auto;
 }
 
-.filename{
+.fileName{
 	background-repeat: no-repeat;
-	background-image: url( images/icon_img.gif );
+	background-image: url( ../../mopui/views/images/icon_doc.gif );
 }
 
 .fileName.pdf{
@@ -395,7 +373,7 @@ ul.listing li.omega{
 }
 
 .fileName.doc{
-	background-image: url(images/icon_doc.gif);
+	background-image: url( ../../mopui/views/images/icon_doc.gif );
 }
 
 .fileName.jpg,
@@ -412,7 +390,7 @@ ul.listing li.omega{
 }
 
 .pageTitle{
-	margin-bottom: 2em;
+	margin: 0 0 2em 0;
 }
 
 .pageTitle .deleteLink{
@@ -482,100 +460,6 @@ a.icon.cancel:hover{
 
 .hidden{
 	display: none !important;
-}
-
-.halfCol{
-	width: 63px;
-}
-
-.oneCol{
-	width: 126px;
-}
-
-.onePointFiveCol{
-	width: 189px;
-}
-
-.twoCol{
-	width: 276px;	
-}
-
-.twoPointFiveCol{
-	width: 351px;	
-}
-
-.threeCol{
-	width: 426px;
-}
-
-.threePointFiveCol{
-	width: 501px;
-}
-
-.fourCol{
-	width: 566px;
-}
-
-.fiveCol{
-	width: 726px;
-}
-
-.sixCol{
-	width: 900px;
-}
-
-ul.listing li .twoCol{
-	width: 270px;
-}
-
-ul.listing li .threeCol{
-	width: 420px;
-}
-
-ul.listing li .fourCol{
-	width: 560px;
-}
-
-.firstAndAHalfCol{
-	margin-left: 87px !important;	
-}
-
-.secondCol{
-	margin-left: 150px !important;	
-}
-
-.secondAndAHalfCol{
-	margin-left: 225px !important;
-}
-
-.secondColThreeCol{
-	margin-left: 24px !important;
-	width: 276px;
-}
-
-.thirdCol{
-	position:relative;
-	margin-left: 300px !important;
-}
-
-.thirdCol[class~=threeCol]{
-/*	width:450px !important;
-*/}
-
-.fourthCol{
-	margin-left:450px !important;
-}
-
-.fifthCol{
-	margin-left:600px !important;
-}
-
-ul.listing li .secondCol{
-	margin-left:144px !important;
-}
-
-ul.listing li .thirdCol{
-	margin-left: 294px !important;
 }
 
 .module#cms{
@@ -721,24 +605,6 @@ a.button{
 	margin-top:1.5em;
 }
 
-.modal .threeCol{
-	width: 270px !important;
-}
-
-.modal .fourthCol {
-	margin-left: 300px !important;
-}
-
-.modal .twoColTriptic{
-	width: 160px;
-	float:left;
-}
-
-.modal .twoColTriptic + .modal .twoColTriptic:not(.fourthCol){
-	margin-left: 16px !important;
-}
-
-
 .modalContainer h3{
 	font-family: Georgia, Times, serif;
 	font-weight: normal;
@@ -799,20 +665,6 @@ th.spinner{
 
 .boxModule>*{
 	margin-left: 12px;
-}
-
-.boxModule + .boxModule:not(.thirdCol),
-.boxModule + .boxModule:not(.fourthCol){
-	margin-left: 32px !important;
-}
-
-.twoColTriptic{
-	width: 268px;
-	float:left;
-}
-
-.twoColTriptic + .twoColTriptic:not(.fourthCol){
-	margin-left: 32px !important;
 }
 
 input[type='radio']{
