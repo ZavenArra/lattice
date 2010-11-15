@@ -275,85 +275,31 @@ mop.ui.Sortable = new Class({
     Implements: Options,
 	Extends: Sortables,
 	
-	
-	initialize: function( anElement, marshal, options ){
-
-		if( this.options.clone ) this.clone = this.options.clone;
-		this.parent( anElement, {
-		    area: options.area,
-    	    velocity: options.velocity,
-    		clone: function(event,element,list){
-    			var scroll = {x:0 ,y: 0};
-    			element.getParents().each(function(el){
-    				if(['auto','scroll'].contains(el.getStyle('overflow'))){
-    					scroll = {
-    						x: scroll.x + el.getScroll().x,
-    						y: scroll.y + el.getScroll().y
-    					}					
-    				}
-    			});
-
-    			var position = element.getPosition();
-
-    			return element.clone().addClass('listClone').setStyles({
-    				margin: '0px',
-    				position: 'absolute',
-    				visibility: 'hidden',
-    				'width': element.getStyle('width'),
-    				top: position.y + scroll.y,
-    				left: position.x + scroll.x
-    			}).inject(this.list);
-    		}
-		});
+	initialize: function( anElement, marshal, scrollerTarget ){
+	    console.log( ":: mop.ui.Sortable", anElement, marshal, scrollerTarget );
 		this.marshal = marshal;
-//		this.scroller = new mop.ui.VerticalScroller( options.scrollElement );
-        this.scroller = new Scroller( options.scrollElement, { area: 20, velocity: 1, onChange: function( x, y ){ this.element.scrollTo( x, y); } } );
-
-		opts = null;
-	},
-    
-
-     
-});
-
-/*	Class: mop.ui.Vertical scroller
-	Simply an extension of the mootools Scroller, fixed a bug or two.... 
-	might not need this at all, since bug was with Element.getScrolls(), though this is more legible
-*/
-mop.ui.VerticalScroller = new Class({
-
-	Extends: Scroller,
-
-	options: {
-		area: 20,
-		velocity: 1,
-		onChange: function(x, y){
-			this.element.scrollTo( x, y);
-		}
-	},
-
-	initialize: function(element, options){
-		this.parent( element, options );
-	},
-
-	getCoords: function(event){
-		this.page = (this.listener.get('tag') == 'body') ? event.client : event.page;
-		if (!this.timer) this.timer = this.scroll.periodical( 80, this );
-	},
-
-	scroll: function(){
-		var size = this.element.getSize();
-		var scroll = this.element.getScroll();
-		var pos = this.element.getCoordinates();
-		var change = {'x': 0, 'y': 0};
-		if ( this.page.y < ( pos.top + this.options.area ) && scroll.y != 0 ){
-			change.y = ( this.page.y - this.options.area - pos.top ) * this.options.velocity;
-		}else if( this.page.y > ( size.y + pos.top - this.options.area )  && size.y + size.y != scroll.y ){
-			change.y = (this.page.y - size.y + this.options.area - pos.top ) * this.options.velocity;
-		}
-		if ( change.y || change.x ) this.fireEvent( 'change', [scroll.x + change.x, scroll.y + change.y ] );
-	}
-
+		this.element = $( anElement );
+		this.parent( anElement, {
+            clone: true,
+			snap: 12,
+			revert: true,
+			velocity: .9,
+			area: 24,
+			constrain: false,
+			onComplete: function( droppedItem ){
+				this.isSorting = false; 
+				this.scroller.stop();
+				this.marshal.onOrderChanged( anElement, droppedItem );
+			},
+			onStart: function(){
+				this.isSorting = true; 
+				this.scroller.start();
+			}
+	 	});
+	 	var scrollerElement = ( $type( scrollerTarget ) != "element" )? $( document.body ) : scrollerTarget;
+        this.scroller = new Scroller( scrollerElement, { area: 20, velocity: 1 } );
+        
+	},     
 });
 
 mop.ui.UIElement = new Class({
@@ -635,7 +581,6 @@ mop.ui.EnhancedModal = new Class({
 			if( anElement ){
 								
 				this.element = $( anElement );
-                // this.element.setStyles( { "z-index": mop.DepthManager.incrementDepth( "modal" ) } );
 
 				this.modalAnchor = this.element.getElement( ".modalAnchor" );
 
@@ -687,8 +632,7 @@ mop.ui.EnhancedModal = new Class({
 		build: function(){
 			
 			this.element = new Element( "div", {
-				"class": "enhancedModalContainer hidden",
-                // "styles": { "z-index": mop.DepthManager.incrementDepth( "modal") }
+				"class": "enhancedModalContainer hidden"
 			});
 
 			this.modalAnchor = new Element( "a", {
@@ -2265,7 +2209,7 @@ mop.ui.FileElement = new Class({
 		this.downloadButton.store( "Class", this );
 
 		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
-        console.log( ":::::::::::::::", this.Uploader.box.getElement( "object" ).get( "id" ) );
+        // console.log( ":::::::::::::::", this.Uploader.box.getElement( "object" ).get( "id" ) );
 		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );
 		this.uploadButton.addEvent( "mouseover", this.onMouseOver.bindWithEvent( this ) );
 

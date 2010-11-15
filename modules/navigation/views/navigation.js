@@ -12,6 +12,7 @@ mop.modules.navigation.Navigation = new Class({
 	*/
 	Extends: mop.modules.Module,
 	Implements: Events,
+	isSorting: false,
 	navElement: null,
 	breadCrumbs: null,
 	colWidth: null,
@@ -254,7 +255,7 @@ mop.modules.navigation.Navigation = new Class({
 
 	/*
 		Function: showCategory
-		Replaces a given 'tier' with new listing
+		Replaces a given re with new listing
 		Arguments:
 			aNode - node data from navTree
 			whichTier - where are we doing this in the navigation...  
@@ -352,9 +353,9 @@ mop.modules.navigation.Navigation = new Class({
 			utilityNode.inject( tierElement, "after" );
 		}
 
-		if( aNode.addableObjects.length > 0 ){
+		if( aNode.addableObjects.length > 0 || this.userLevel == "superuser"){
 			var label = new Element( "li", {
-				"class": "utility label",
+				"class": "label",
 				"html" : "<a'>Add an Item to this tier.</a><div class='clear'></div>"
 			});
 			utilityNode.adopt( label );			
@@ -386,8 +387,9 @@ mop.modules.navigation.Navigation = new Class({
 	},
 
 	showUtilityNode: function( e, aNode ){
-//		console.log( "showUtilityNode", aNode );
+		console.log( "showUtilityNode",  this.isSorting );
 		mop.util.stopEvent( e );
+		if( this.isSorting ) return;
 		aNode.morph( { "top": - ( aNode.getSize().y - 24 ) } );
 	},
 	
@@ -455,7 +457,7 @@ mop.modules.navigation.Navigation = new Class({
 		}
 		this.appendEntryToNavTree( parentId, node, true );
 		this.setActiveChild( whichTier, objectElement );
-		if( this.tiers[whichTier].sortable ) this.tiers[whichTier].sortable.addItems( objectElement ); 
+		if( this.getTierElement( whichTier ).retrieve( "sortable" ) ) this.getTierElement( whichTier ).retrieve( "sortable" ).addItems( objectElement ); 
 		if( node.addableObjects ) this.showCategory( node , whichTier+1 );
 	},
 	
@@ -488,79 +490,42 @@ mop.modules.navigation.Navigation = new Class({
 	},
 	
 	makeTierSortable: function( whichTier ){
-        if( this.tiers[whichTier].sortable ){
-    		this.tiers[whichTier].sortable.detach();
-    		this.tiers[whichTier].sortable.stop();
-    		this.tiers[whichTier].sortable.destroy();
-    		this.tiers[whichTier].sortable = null;		            
+        var container = this.getTierElement( whichTier );
+        var sortable = container.retrieve( "sortable" );
+        if( !sortable ){
+    		sortable = new mop.ui.Sortable( container, this, container );
+            container.store( "sortable", sortable );
         }
-		this.tiers[whichTier].sortable = new mop.ui.Sortable(  this.getTierElement( whichTier ), this, {
-			clone:  true,
-			scrollElement: this.getTierElement( whichTier ),
-			snap: 12,
-			revert: true,
-			velocity: .9,
-			area: 24,
-			constrain: true,
-			onComplete: function( el ){
-				if(!this.moved) return;
-				this.moved = false;
-				this.scroller.stop();
-				this.marshal.onOrderChanged( el, whichTier );
-			},
-			onStart: function(){
-				this.moved = true;
-				this.scroller.start();
-			}
-	 	});
 	},
+	
 		
-	onOrderChanged: function( el, whichTier ){
-//		console.log( "onOrderChanged, ", whichTier );
-		var newOrder = this.serialize( el, whichTier );
+	onOrderChanged: function( sortableElement, sortedItem ){
+//		console.log( "onOrderChanged, ", tier.retrieve( "tier" ) );
+		var newOrder = this.serialize( sortableElement, sortedItem );
 		$clear( this.submitDelay );
-		if( this.oldSort != newOrder ) this.submitDelay = this.submitSortOrder.periodical( 3000, this, [ newOrder, whichTier ] );
+		if( this.oldSort != newOrder ) this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder );
 		newOrder = null;
 	},
 	
-	submitSortOrder: function( newOrder, whichTier ){
-
-		console.log( "submitSortOrder", newOrder, this.oldSort );
-
-		if( this.oldSort != newOrder ){
-//			console.log( "check sort order ", "\n\tnewOrder: " + newOrder, "\n\toldSort: "+ this.oldSort );
-			$clear( this.submitDelay );
-			this.JSONSend( "saveSortOrder", { sortorder: newOrder } );//, { onComplete: this.onSortsAved.bind( this, whichTier ) } );
-			this.oldSort = newOrder;
-		}
-
-	},
-
-	serialize: function( anElement, whichTier ){
-
-		var children = this.getTierElement( whichTier ).getChildren();
+	serialize: function( sortableElement, sortedItem ){
+	    console.log( "serialize", sortableElement, sortedItem.retrieve("Class"));
+		var children = sortableElement.getChildren( 'li' );
 		var sort = [];
 		var newChildren = [];
-
 		children.each( function( child, index ){
 			newChildren.push( child.retrieve("Class").nodeData );
 			sort.push( child.id.substr( "node_".length, child.id.length ) );
 		});
+		this.navTreeLookupTable[ sortedItem.retrieve( "Class" ).parentId ].children = newChildren;
+		return sort.join(",");
+	},
 
-		this.navTreeLookupTable[ anElement.retrieve( "Class" ).parentId ].children = newChildren;
-
-		try{
-
-			return sort.join(",");
-
-		}finally{
-
-			children = null;
-			sort = null;
-			newChildren = null;
-
+	submitSortOrder: function( newOrder, whichTier ){
+		if( this.oldSort != newOrder ){
+			$clear( this.submitDelay );
+			this.JSONSend( "saveSortOrder", { sortorder: newOrder } );
+			this.oldSort = newOrder;
 		}
-
 	},
 
 	JSONSend: function( action, data, options ){
@@ -895,11 +860,10 @@ mop.modules.navigation.SuperUserUtilityNode = new Class({
     
 	build: function(){
 
-		this.element = new Element( "li", { "class": this.className });
+		this.element = new Element( "li", { "class": this.className + " object document" });
 
 		this.link = new Element( "a", {
-			"class" : "addLeaf",
-			"text" : "Add other object",
+			"text" : "Add any object",
 			"events": {
 				"click" :  this.onClicked.bindWithEvent( this )
 			}

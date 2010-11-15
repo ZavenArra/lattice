@@ -58,10 +58,6 @@ mop.modules.List = new Class({
 			this.items.push( new mop.modules.ListItem( element, this, this.addItemDialogue ) ); 
 		}, this );
 	},
-	
-	toggleSortable: function(){
-		if( this.allowChildSort ){ this.killSortable(); }else{ this.makeSortable(); }
-	},
 
 	initControls: function(){
 		// console.log( this.element.getElement( "#" + this.instanceName+"AddItemModal" ).retrieve("Class") );
@@ -74,64 +70,6 @@ mop.modules.List = new Class({
 		addItemButton = null;
 	},
 	
-	makeSortable: function(){
-	    console.log( this.toString(), "makeSortable", this.allowChildSort, this.sortableList );
-		if( this.allowChildSort && !this.sortableList ){
-				this.sortableList = new mop.ui.Sortable(  this.listing, this, {
-				scrollElement: window,
-				clone:  true,
-				snap: 12,
-				revert: true,
-				velocity: .97,
-				area: 24,
-				constrain: true,
-				onComplete: function( el ){
-					if(!this.moved) return;
-					this.moved = false;
-					if( this.scroller ) this.scroller.stop();
-					this.marshal.onOrderChanged();
-				},
-				onStart: function(){
-					this.moved = true;
-					if( this.scroller ) this.scroller.start();
-				}
-			});
-		}else if( this.allowChildSort ){
-			this.sortableList.attach();
-		}
-		this.oldSort = this.serialize();
-	},
-		
-	resumeSort: function(){
-		if( this.allowChildSort && this.sortableList ) this.sortableList.attach();
-	},
-	
-	suspendSort: function(){
-		if( this.allowChildSort && this.sortableList ) this.sortableList.detach();
-	},
-	
-	killSortable: function(){
-		this.sortableList.detach();
-		delete this.sortableList;
-		this.sortableList = null;
-	},
-	
-	onOrderChanged: function(){
-		var newOrder = this.serialize();
-		$clear( this.submitDelay );
-		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder.join(",") );
-		newOrder = null;
-	},
-	
-	submitSortOrder: function( newOrder ){
-		if( this.allowChildSort && this.oldSort != newOrder ){
-			$clear( this.submitDelay );
-			this.submitDelay = null;
-			this.JSONSend( "saveSortOrder", { sortorder: newOrder } );
-			this.oldSort = newOrder;
-		}
-	},
-
 	addItem: function( e ){
 		if( e && e.preventDefault ){
 			e.preventDefault();
@@ -185,26 +123,6 @@ mop.modules.List = new Class({
 		listItemInstance = where = null;
 	},
 
-	serialize:function(){
-//		console.log( this.toString(), "serialize", this.listing, this.listing.getChildren() )
-		var sortArray = [];
-
-		//get all the items to serialize
-		var children = this.listing.getChildren("li");
-		children.each( function ( aListing ){			
-            var listItemId = aListing.get("id");
-            var listItemIdSplit = listItemId.split( "_" );
-            listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
-            sortArray.push( listItemId );
-		});
-
-		try{
-			return sortArray;
-		}finally{
-			sortArray = null;
-		}
-	},
-
 	onItemDeleted: function( anItem ){
 		this.items.erase( anItem );
 		anItem.destroy();
@@ -217,12 +135,70 @@ mop.modules.List = new Class({
 		//baggage around since it's not removed from this.items, now we have a class with all vars and methods deleted
 	},
 	
+	makeSortable: function(){
+		if( this.allowChildSort && !this.sortableList ){
+			this.sortableList = new mop.ui.Sortable( this.listing, this, $( 'body' ) );
+		}else if( this.allowChildSort ){
+			this.sortableList.attach();
+		}
+		this.oldSort = this.serialize();
+	},
+		
+	toggleSortable: function(){
+		if( this.sortableList ){ this.removeSortable( this.sortableList ); }else{ this.makeSortable(); }
+		console.log( "toggleSortable", this.sortableList );
+	},
+	
+	resumeSort: function(){
+		if( this.allowChildSort && this.sortableList ) this.sortableList.attach();
+	},
+	
+	suspendSort: function(){
+		if( this.allowChildSort && this.sortableList ) this.sortableList.detach();
+	},
+	
+	removeSortable: function( aSortable ){
+		aSortable.detach();
+		delete aSortable;
+		aSortable = null;
+	},
+	
+	onOrderChanged: function(){
+		var newOrder = this.serialize();
+		$clear( this.submitDelay );
+		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder.join(",") );
+		newOrder = null;
+	},
+	
+	submitSortOrder: function( newOrder ){
+		if( this.allowChildSort && this.oldSort != newOrder ){
+			$clear( this.submitDelay );
+			this.submitDelay = null;
+			this.JSONSend( "saveSortOrder", { sortorder: newOrder } );
+			this.oldSort = newOrder;
+		}
+	},
+
+	serialize:function(){
+		var sortArray = [];
+		var children = this.listing.getChildren("li");
+		children.each( function ( aListing ){			
+            var listItemId = aListing.get("id");
+            var listItemIdSplit = listItemId.split( "_" );
+            listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
+            sortArray.push( listItemId );
+		});
+        console.log( this.toString(), "serialize", this.listing, sortArray );
+		return sortArray;
+
+	},
+
 	destroy: function(){
 
-		//We only want to killSortable if the list is currently sortable
+		//We only want to removeSortable if the list is currently sortable
 		//It might now be, if an IPE is open and the user hits the trash can
 		if(this.sortableList){
-			this.killSortable();
+			this.removeSortable( this.sortableList );
 		}
 
 		$clear( this.submitDelay );		
