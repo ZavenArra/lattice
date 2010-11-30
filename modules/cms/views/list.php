@@ -8,8 +8,8 @@
 		<?=$items;?>
 	</ul>
 
-	<div class="controls clear">
-		<a href="#" class="addItem button oneCol floatLeft">Add another?</a>
+	<div class="controls">
+		<a href="#" class="addItem button grid_2">Add another?</a>
 	</div>
 
 	

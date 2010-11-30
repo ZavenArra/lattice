@@ -28,7 +28,7 @@
 	allowTitleEdit  CDATA "true"
 >
 
-<!ELEMENT elements (ipe|list|singleImage|singleFile|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator)* >
+<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator|link|extendedImage|extendedFile)* >
 
 <!ELEMENT components (component*) >
 
@@ -52,42 +52,41 @@
 	allowChildSort   	(true|false)		"true"
 	sortDirection		(ASC|DESC)			"ASC"
 	allowTogglePublish	(true|false)		"true"	
-	contentType  CDATA "document"
+	contentType  		CDATA "document"
 >
 <!-- last two attributes currently not supported -->
 
 
 <!ELEMENT associator (filter*)>
-<!ATTLIST associator 
-	field				CDATA	#REQUIRED
-	label				CDATA	#IMPLIED
-	parent				CDATA	#IMPLIED
-	templateName  		CDATA	#IMPLIED
->
+<!ATTLIST associator  
+	field         CDATA #REQUIRED
+	label         CDATA #IMPLIED
+	parent        CDATA  #IMPLIED
+	templateName  CDATA  #IMPLIED 
+>   
 
 <!ELEMENT filter EMPTY >
 <!ATTLIST filter
-	from				CDATA #IMPLIED
-	templateName		CDATA #IMPLIED
-	tagged				CDATA #IMPLIED
+	from           CDATA #IMPLIED
+	templateName   CDATA #IMPLIED
+	tagged         CDATA #IMPLIED
 >
 
-
-<!ELEMENT ipe EMPTY >
-<!ATTLIST ipe
+<!ELEMENT text EMPTY >
+<!ATTLIST text
 	%uiattrs;
 	tag					CDATA "p"
 	rows				CDATA "2"
 >
 
-<!ELEMENT singleImage (resize|ext)* >
-<!ATTLIST singleImage
+<!ELEMENT image (resize|ext)* >
+<!ATTLIST image
 	%uiattrs;
 	maxLength			CDATA #IMPLIED
 >
 
-<!ELEMENT singleFile (ext)* >
-<!ATTLIST singleFile
+<!ELEMENT file (ext)* >
+<!ATTLIST file
 	%uiattrs;
 	maxLength			CDATA #IMPLIED
 >
@@ -123,6 +122,21 @@
 
 <!ELEMENT checkbox EMPTY>
 <!ATTLIST checkbox
+	%uiattrs;
+>
+
+<!ELEMENT link EMPTY>
+<!ATTLIST link
+	%uiattrs;
+>
+
+<!ELEMENT extendedImage EMPTY>
+<!ATTLIST extendedImage 
+	%uiattrs;
+>
+
+<!ELEMENT extendedFile EMPTY>
+<!ATTLIST extendedFile 
 	%uiattrs;
 >
 

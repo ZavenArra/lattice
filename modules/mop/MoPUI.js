@@ -272,96 +272,34 @@ mop.ui.ModalManager = new Class({
 	adds a marshal reference, and a scroller instance
 */
 mop.ui.Sortable = new Class({
+    Implements: Options,
 	Extends: Sortables,
-	initialize: function( anElement, marshal, options ){
-		this.parent( anElement, options );
+	
+	initialize: function( anElement, marshal, scrollerTarget ){
+	    console.log( ":: mop.ui.Sortable", anElement, marshal, scrollerTarget );
 		this.marshal = marshal;
-		var opts = {
-		    area: options.area,
-		    velocity: options.velocity,
-		};
-		this.scroller = new mop.ui.VerticalScroller( options.scrollElement, opts );
-//       this.scroller = new Scroller( options.scrollElement, opts );
-
-		opts = null;
-	},
-	
-    getClone: function(event, element){
-     if (!this.options.clone) return new Element('div').inject(document.body);
-     if ($type(this.options.clone) == 'function') return this.options.clone.call(this, event, element, this.list );
-     return element.clone(false).addClass("listClone").setStyles({
-         'margin': '0px',
-         'position': 'absolute',
-         'opacity': .4,
-         'visibility': 'hidden',
-         'width': element.getStyle('width'),
-         'height': element.getStyle('height')
-     }).inject( this.list ).position( element.getPosition() );
-    },
-	
-        clone: function(event,element,list){
-         var scroll = {x:0 ,y: 0};
-         element.getParents().each(function(el){
-             if(['auto','scroll'].contains(el.getStyle('overflow'))){
-                 scroll = {
-                     x: scroll.x + el.getScroll().x,
-                     y: scroll.y + el.getScroll().y
-                 }                   
-             }
-         });
-         
-         var position = element.getPosition();
-         
-         return element.clone().setStyles({
-             margin: '0px',
-             position: 'absolute',
-             visibility: 'hidden',
-             'width': element.getStyle('width'),
-             top: position.y + scroll.y,
-             left: position.x + scroll.x
-         }).inject(this.list);
-        }
-	
-});
-
-/*	Class: mop.ui.Vertical scroller
-	Simply an extension of the mootools Scroller, fixed a bug or two.... 
-	might not need this at all, since bug was with Element.getScrolls(), though this is more legible
-*/
-mop.ui.VerticalScroller = new Class({
-
-	Extends: Scroller,
-
-	options: {
-		area: 20,
-		velocity: 1,
-		onChange: function(x, y){
-			this.element.scrollTo( x, y);
-		}
-	},
-
-	initialize: function(element, options){
-		this.parent( element, options );
-	},
-
-	getCoords: function(event){
-		this.page = (this.listener.get('tag') == 'body') ? event.client : event.page;
-		if (!this.timer) this.timer = this.scroll.periodical( 80, this );
-	},
-
-	scroll: function(){
-		var size = this.element.getSize();
-		var scroll = this.element.getScroll();
-		var pos = this.element.getCoordinates();
-		var change = {'x': 0, 'y': 0};
-		if ( this.page.y < ( pos.top + this.options.area ) && scroll.y != 0 ){
-			change.y = ( this.page.y - this.options.area - pos.top ) * this.options.velocity;
-		}else if( this.page.y > ( size.y + pos.top - this.options.area )  && size.y + size.y != scroll.y ){
-			change.y = (this.page.y - size.y + this.options.area - pos.top ) * this.options.velocity;
-		}
-		if ( change.y || change.x ) this.fireEvent( 'change', [scroll.x + change.x, scroll.y + change.y ] );
-	}
-
+		this.element = $( anElement );
+		this.parent( anElement, {
+            clone: true,
+			snap: 12,
+			revert: true,
+			velocity: .9,
+			area: 24,
+			constrain: false,
+			onComplete: function( droppedItem ){
+				this.isSorting = false; 
+				this.scroller.stop();
+				this.marshal.onOrderChanged( anElement, droppedItem );
+			},
+			onStart: function(){
+				this.isSorting = true; 
+				this.scroller.start();
+			}
+	 	});
+	 	var scrollerElement = ( $type( scrollerTarget ) != "element" )? $( document.body ) : scrollerTarget;
+        this.scroller = new Scroller( scrollerElement, { area: 20, velocity: 1 } );
+        
+	},     
 });
 
 mop.ui.UIElement = new Class({
@@ -643,7 +581,6 @@ mop.ui.EnhancedModal = new Class({
 			if( anElement ){
 								
 				this.element = $( anElement );
-                // this.element.setStyles( { "z-index": mop.DepthManager.incrementDepth( "modal" ) } );
 
 				this.modalAnchor = this.element.getElement( ".modalAnchor" );
 
@@ -695,8 +632,7 @@ mop.ui.EnhancedModal = new Class({
 		build: function(){
 			
 			this.element = new Element( "div", {
-				"class": "enhancedModalContainer hidden",
-                // "styles": { "z-index": mop.DepthManager.incrementDepth( "modal") }
+				"class": "enhancedModalContainer hidden"
 			});
 
 			this.modalAnchor = new Element( "a", {
@@ -783,9 +719,9 @@ mop.ui.EnhancedModal = new Class({
 			
 			// this should be part of a mixin or something, 
 			// it should be written once
-			// it should do all ui elements not just ipes
+			// it should do all ui elements not just Text
 			// since modals dont have a uiElement array, it needs a way to find all ui elements...... hmmmm
-			var ipes = this.content.getElements( ".ui-IPE" );
+			var ipes = this.content.getElements( ".ui-Text" );
 			ipes.each( function( anIPE ){
 				anIPE.retrieve( "Class" ).destroyValidationSticky();
 			});
@@ -1014,7 +950,7 @@ mop.ui.EnhancedAddItemDialogue = new Class({
 		mop.util.stopEvent( e );		
 		
 		/* @TODO: Figure out how to submit all ui elements inside the modal before submit (that way they all validate and close)*/
-		var ipes = this.content.getElements( ".ui-IPE" );
+		var ipes = this.content.getElements( ".ui-Text" );
 
 		var invalidIpes = [];
 
@@ -1272,7 +1208,7 @@ mop.ui.AddItemDialogue = new Class({
 	submit: function( e ){
 		mop.util.stopEvent( e );		
 		/* TODO: APPLY FOR OTHER UI ELEMENTS AS WELL*/
-		var ipes = this.container.getElements( ".ui-IPE" );
+		var ipes = this.container.getElements( ".ui-Text" );
 		// console.log( "IPES TO VALIDATE >>>> ", ipes.join( "\n\t" ) );
 		var invalidIpes = [];
 		ipes.each( function( anIPE ){
@@ -2273,7 +2209,7 @@ mop.ui.FileElement = new Class({
 		this.downloadButton.store( "Class", this );
 
 		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
-        console.log( ":::::::::::::::", this.Uploader.box.getElement( "object" ).get( "id" ) );
+        // console.log( ":::::::::::::::", this.Uploader.box.getElement( "object" ).get( "id" ) );
 		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );
 		this.uploadButton.addEvent( "mouseover", this.onMouseOver.bindWithEvent( this ) );
 
@@ -3509,13 +3445,13 @@ mop.ui.Input = new Class({
 
 });
 
-mop.ui.IPE = new Class({
+mop.ui.Text = new Class({
 
 	Extends: mop.ui.UIElement,
 
 	onLeaveEditModeCallbacks: [],
 	
-	type: "ipe",
+	type: "text",
 
 	form: null,
 	
@@ -3563,7 +3499,7 @@ mop.ui.IPE = new Class({
 	},
 
 	toString: function(){
-		return "[ Object, mop.ui.IPE ]";
+		return "[ Object, mop.ui.Text ]";
 	},
 
 	enterEditMode: function( e ){

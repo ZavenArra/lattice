@@ -21,7 +21,7 @@
 		<template name="singleIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 
 			<elements>
-				<ipe field="singleIPE" label="Single Single Single" rows="1" />
+				<text field="singleIPE" label="Single Single Single" rows="1" />
 			</elements>
 			
 			<components>
@@ -33,7 +33,7 @@
 
 		<template name="multilineIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="true">
 			<elements>
-				<ipe field="multilineIPE" label="MultiLine IPE" rows="10"/>
+				<text field="multilineIPE" label="MultiLine IPE" rows="10"/>
 			</elements>
 		</template>
 		
@@ -67,15 +67,15 @@
 
 		<template name="singleFile" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-				<singleFile field="file" label="Single File"/>
+				<file field="file" label="Single File"/>
 			</elements>
 		</template>
 
 		<template name="singleImage" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-				<singleImage field="file" label="Single Image">
+				<image field="file" label="Single Image">
 					<ext>jpg</ext>
-				</singleImage>
+				</image>
 			</elements>
 		</template>
 
@@ -89,8 +89,8 @@
 
 		<template name="simpleListModuleItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-				<ipe field="title" label="Title" rows="1"/>
-				<ipe field="description" label="Description"/>
+				<text field="title" label="Title" rows="1"/>
+				<text field="description" label="Description"/>
 			</elements>
 		</template>
 			
@@ -104,14 +104,21 @@
 		
 		<template name="imageListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-				<ipe field="title" label="Title" rows="1"/>
-				<ipe field="description" label="Description"/>		
-				<singleImage field="file">
+				<text field="title" label="Title" rows="1"/>
+				<text field="description" label="Description"/>		
+				<image field="file">
 					<ext>jpg</ext>
+<<<<<<< HEAD
 				</singleImage>
                                 <singleImage field="file2">
                                         <ext>jpg</ext>
                                 </singleImage>
+=======
+				</image>
+        <image field="file">
+          <ext>jpg</ext>
+        </image>
+>>>>>>> 9c999df63c89ce15ce0cbe5e630a36b2b0a16f18
 			</elements>
 		</template>
 		
@@ -125,14 +132,14 @@
 
 		<template name="fileListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-				<ipe field="title" label="Title" rows="1"/>
-                                <ipe field="description" label="Description"/>
-                                <singleFile field="file" label="File">
+				<text field="title" label="Title" rows="1"/>
+                                <text field="description" label="Description"/>
+                                <file field="file" label="File">
                                         <ext>html</ext>
                                         <ext>csv</ext>
                                         <ext>txt</ext>
                                         <ext>pdf</ext>
-                                </singleFile>
+                                </file>
 			</elements>
 		</template>
 	
@@ -146,26 +153,26 @@
 		
 		<template name="complexListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-				<ipe field="title" label="Title" rows="1"/>
-				<ipe field="description" label="Description"/>
+				<text field="title" label="Title" rows="1"/>
+				<text field="description" label="Description"/>
 				<checkbox field="singleCheckbox" label="One"/>
 				<radioGroup field="singleRadioGroup" groupLabel="Single Radio Group">
          		 		<radio label="One" value="1"/>
           				<radio label="Two" value="2"/>
           				<radio label="Three" value="3"/>
         			</radioGroup>
-				<singleFile field="file" label="File">
+				<file field="file" label="File">
 					<ext>html</ext>
 					<ext>csv</ext>
                                         <ext>txt</ext>
                                         <ext>pdf</ext>
-				</singleFile>
+				</file>
 			</elements>
 		</template>			
 
 		<template name="stuff" nodeType="CATEGORY" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
       <elements>
-        <ipe field="blurb" label="Blurb" tag="p" rows="4" />
+        <text field="blurb" label="Blurb" tag="p" rows="4" />
 				<associator field="myObjects" label="give it to me">
 					<filter templateName="stuffItem"/>
 				</associator>
@@ -174,17 +181,16 @@
 		</template>
 		<template name="stuffItem" nodeType="LEAF" allowChildSort="true">
 			<elements>
-				<ipe field="text" label="Text" tag="p" rows="4" />
-				<ipe field="more" label="MORE" tag="p" rows="4" />
+				<text field="text" label="Text" tag="p" rows="4" />
+				<text field="more" label="MORE" tag="p" rows="4" />
 				<list family="listOfThings" label="Blurb" display="inline" >
 					<addableObject templateName="differentItem" addText="Add a Different Item" />
 				</list>
 			</elements>
 		</template>
-		<template name="home" nodeType="LEAF"/>
-		<template name="differentItem" nodeType="LEAF">
+		<template name="linkTest" >
       <elements>
-        <ipe field="blurb3" label="WJAT" tag="p" rows="4" />
+				<link field="myLink" label="A Link for All"/>
       </elements>
 		</template>
 	</templates>

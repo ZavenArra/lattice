@@ -15,13 +15,13 @@ Class mopui{
 	 * Builds a UI element from the mopui views directory
 	 * $element -  array of key value pairs passed to the template, including 'type' key which indicates the template to use
 	 * $fieldvalue - the value to display
-	 * Example: buildUIElement(array('type'=>'ipe', 'field'=>'fieldname', 'class'=>'className'), {Value})
+	 * Example: buildTextElement(array('type'=>'text', 'field'=>'fieldname', 'class'=>'className'), {Value})
 	 */
 	public static function buildUIElement($element, $fieldvalue=null){
 		$view = 'ui_'.$element['type'];
 
 		//allow files to be passed either by id or as already quireid objects
-		if( in_array($element['type'], array('singleFile', 'singleImage'))){
+		if( in_array($element['type'], array('file', 'image'))){
 
 			if(!is_object($fieldvalue) ){
 				$fieldvalue = ORM::Factory('file')->where('id', $fieldvalue)->find(); //why is where necessary???
@@ -46,7 +46,7 @@ Class mopui{
 
 		switch($element['type']){
 
-		case 'singleImage':
+		case 'image':
 			$ext = substr(strrchr($fieldvalue['filename'], '.'), 1);
 			switch($ext){
 			case 'tif':
@@ -74,7 +74,7 @@ Class mopui{
 				$fieldvalue['height'] = 0;
 			}
 			$fieldvalue['thumbSrc']=$thumbSrc;
-		case 'singleFile':
+		case 'file':
 			if(!isset($element['maxlength']) || !$element['maxlength']){
 				$element['maxlength'] = 1523712; //12 MegaBytes 
 			}
@@ -119,13 +119,14 @@ Class mopui{
 			}
 			break;
 
-		case 'ipe':
+		case 'text':
 			if(!isset($element['class'])){
 				$element['class'] = '';
 			}
 			if(isset($element['rows'])){
 				$element['class'] .= ' rows-'.$element['rows'];
 			}
+			break;
 		}
 
 		if(!isset($element['class'])){
@@ -133,7 +134,7 @@ Class mopui{
 		}
 
 
-		if(Kohana::find_file('views', $view)){
+		if($paths = Kohana::find_file('views', $view)){
 			$template = new View($view);
 
 			$template->id = $id;
@@ -156,14 +157,12 @@ Class mopui{
 		return mopui::buildUIElement( $elementArray, $fieldValue);
 	}
 
-	public static function IPE( $field, $class, $tag, $fieldValue, $label=null, $labelClass=null ){
-		$elementArray = array( 'type'=>'ipe', 'field'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "labelClass"=>$labelClass );
+	public static function text( $field, $class, $tag, $fieldValue, $label=null, $labelClass=null ){
+		$elementArray = array( 'type'=>'text', 'field'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "labelClass"=>$labelClass );
 		return mopui::buildUIElement( $elementArray, $fieldValue);
 	}
 
 	public static function radioGroup( $field, $class, $radios, $fieldValue, $groupLabel=null, $labelClass=null ){
-	//	$name = $field.mopui::$unique; //why didn't this work ?
-	//	mopui::$unique++;
 		$microtime = str_replace(array(' ', '.'), '', microtime());
 		$name =$field.mopui::$unique++.$microtime;
 		$elementArray = array( 'type'=>'radioGroup', 'radioname'=>$name, 'class'=>$class, 'grouplabel'=>$groupLabel, 'field'=>$field, 'radios'=> $radios, "labelClass"=>$labelClass );
@@ -174,8 +173,8 @@ Class mopui{
 		return mopui::buildUIElement( array('type'=>'checkbox', 'field'=>$field, 'checkboxvalue'=>$checkboxvalue, 'label'=>$label, 'class'=>'checkbox'), $value);
 	}
 
-	public static function singleFile($field, $extensions, $maxlength, $currentFile=null ){
-		return mopui::buildUIElement( array('type'=>'singleFile', 'field'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $currentFile );
+	public static function file($field, $extensions, $maxlength, $currentFile=null ){
+		return mopui::buildUIElement( array('type'=>'file', 'field'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $currentFile );
 	}
 
 	public static function fieldmap($values, $options){

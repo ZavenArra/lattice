@@ -95,8 +95,8 @@ class CMS_Controller extends CMS_Interface_Controller {
 			$controller->createIndexView();
 			$return = array();
 			$return['html']= $controller->render();
-			$return['css'] = array_merge($controller->view->resources['librarycss'], $controller->view->resources['css']);
-			$return['js'] = array_merge($controller->view->resources['libraryjs'], $controller->view->resources['js']);
+			$return['css'] = array_values(array_merge($controller->view->resources['librarycss'], $controller->view->resources['css']));
+			$return['js'] = array_values(array_merge($controller->view->resources['libraryjs'], $controller->view->resources['js']));
 			return $return;
 		}
 		
@@ -131,13 +131,12 @@ class CMS_Controller extends CMS_Interface_Controller {
 		$nodetitlehtml = $this->nodetitle->render();
 
 		$customview = 'templates/'.$page->template->templatename; //check for custom view for this template
+    	$htmlChunks = cms::buildUIHtmlChunksForObject($page);
+
 		$usecustomview = false;
 		if(Kohana::find_file('views', $customview)){
 			$usecustomview = true;	
 		}
-
-    $htmlChunks = cms::buildUIHtmlChunksForObject($page);
-
 		if(!$usecustomview){
 			$html = $nodetitlehtml.implode($htmlChunks);
 		} else {

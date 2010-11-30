@@ -99,6 +99,9 @@ class CMS_Interface_Controller extends Controller {
 			$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]',
 																									$page->template->templatename,
 																									$_POST['field']))->item(0);
+			if(!$fieldInfo){
+				die('Invalid field for template.  Check for correct page/object ID in URL');
+			}
 
 
 			switch($fieldInfo->getAttribute('type')){
@@ -254,8 +257,8 @@ class CMS_Interface_Controller extends Controller {
 	}
 
 	/*
-	Function: saveIPE($itemid)
-	Wrapper to saveIPE in CMS_Services_Controller
+	Function: saveFieldMapping($itemid)
+	Wrapper to saveFieldMapping in CMS_Services_Controller
 	*/
 	public function saveFieldMapping($itemid){
 		$object = ORM::Factory($this->model, $itemid);

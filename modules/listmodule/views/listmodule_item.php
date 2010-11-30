@@ -6,13 +6,13 @@
 
 	<?if(is_array($files) && isset($files['file']) ):?>
 		<?=mopui::buildUIElement( array(
-			'type'=>'singlefile',
+			'type'=>'file',
 			'field'=>"file",
 			'extensions'=>$files['file']['extensions'],
 			'maxlength'=>$files['file']['maxlength'], "class"=>null ),
 			$files['file']['id'] );?>
-	<?elseif(is_array($singleimages) && isset($singleimages['file']) ):?>
-		<?=mopui::buildUIElement( array('type'=>'singleImage', 'field'=>"file", 'extensions'=>$singleimages['file']['extensions'], 'maxlength'=>$singleimages['file']['maxlength'], "class"=>null ), $singleimages['file']['id'] );?>
+	<?elseif(is_array($images) && isset($images['file']) ):?>
+		<?=mopui::buildUIElement( array('type'=>'image', 'field'=>"file", 'extensions'=>$images['file']['extensions'], 'maxlength'=>$images['file']['maxlength'], "class"=>null ), $images['file']['id'] );?>
 	<?endif;?>
 
 	<div class="itemControls">

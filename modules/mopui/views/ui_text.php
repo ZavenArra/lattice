@@ -1,4 +1,4 @@
-<div class="ui-IPE field-<?=$field;?> <?=$class;?>">
+<div class="ui-Text field-<?=$field;?> <?=$class;?>">
 	<?if(isset($label)):?>
 		<label><?=$label;?></label>
 	<?endif;?>

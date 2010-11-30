@@ -91,14 +91,14 @@ class builder_Controller extends Controller {
 						$lists[] = $field;
 						continue;
 					}
-					die("Bad field!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->tagName));
+					die("Bad field in builder!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->tagName));
 				}
         //echo "\ntagname\t".$fieldInfo->tagName."\n";
 
 				//special setup based on field type
 				switch($fieldInfo->tagName){
-				case 'singleFile':
-				case 'singleImage':
+				case 'file':
+				case 'image':
           //echo "\nFILE: ";
 						$path_parts = pathinfo($content->nodeValue);
 						$savename = cms::makeFileSaveName($path_parts['basename']);	

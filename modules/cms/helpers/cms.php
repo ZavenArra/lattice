@@ -158,6 +158,49 @@ class CMS {
 		$htmlChunks = array();
 		if(is_array($parameters)){
 			foreach($parameters as $module){
+
+				//check if this module type is in fact a template
+				$tConfig = mop::config('objects', sprintf('//template[@name="%s"]', $module['type']))->item(0);
+				//echo $object->id;
+				//echo $object->template->id;
+				if($tConfig){
+					//	echo '<br>T CONFIG FOUND';
+					$field = $module['field'];
+					//echo $field;
+					$clusterObject = $object->contenttable->$field;
+//this should really happen within the models
+					if(!$clusterObject){
+						$id = cms::addObject(null, $module['type']);
+						$object->contenttable->$field = $id;
+						$object->contenttable->save();
+						$clusterObject = $object->contenttable->$field;
+					}
+					$clusterHtmlChunks = cms::buildUIHtmlChunksForObject($clusterObject);
+
+					$customview = 'templates/'.$clusterObject->template->templatename; //check for custom view for this template
+					$usecustomview = false;
+					if(Kohana::find_file('views', $customview)){
+						$usecustomview = true;	
+					}
+					if(!$usecustomview){
+						$html = implode($clusterHtmlChunks);
+						$view = new View('clusters_wrapper');
+						$view->html = $html;
+						$view->objectId = $clusterObject->id;
+						$html=$view->render();
+					} else {
+						$view = new View($customview);
+						$view->loadResources();
+						foreach($clusterHtmlChunks as $key=>$value){
+							$view->$key = $value;
+						}
+						$html = $view->render();
+					}
+					$htmlChunks[$module['type'].'_'.$module['field']] = $html;
+					continue;
+				}
+
+
 				switch($module['type']){
 				case 'module':
 					if(isset($module['arguments'])){
@@ -190,7 +233,13 @@ class CMS {
 				case 'associator':
 					$module['pool'] = array();
 					$selection = array();
-					$element = mopui::buildUIElement($module, $selection); 
+					$module['modulename'] = $module['field'];
+					$module['controllertype'] = 'associator';
+					$arguments = array(
+						'module'=>$module,
+						'selection'=>$selection
+					);
+					$element = mop::buildModule($module, $arguments); 
 					$htmlChunks[$module['type'].'_'.$module['field']] = $element;
 					break;
 				default:
@@ -207,6 +256,7 @@ class CMS {
 				}
 			}
 		}
+		//print_r($htmlChunks);
 		return $htmlChunks;
 	}
 
@@ -214,7 +264,9 @@ class CMS {
 	public static function buildUIHtmlChunksForObject($object){
 		$elements = mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename));
     $elementsConfig = array();
+		//echo 'BUILDING'.$object->template->templatename.'<br>'; 
 		foreach($elements as $element){
+			//echo 'FOUND AN ELEMENT<br>';
 			$entry = array();
       $entry['type'] = $element->tagName;
 			for($i=0; $i<$element->attributes->length; $i++){
@@ -225,10 +277,10 @@ class CMS {
       $entry['rows'] = $element->getAttribute('rows');
       //any special xml reading that is necessary
       switch($entry['type']){
-      case 'singleFile':
-      case 'singleImage':
+      case 'file':
+      case 'image':
         $ext = array();
-        //echo sprintf('/template[@name="%s"]/elements/singleImage[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
+        //echo sprintf('/template[@name="%s"]/elements/image[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
         $children = mop::config('objects', 'ext', $element);
         foreach($children as $child){
           if($child->tagName == 'ext'){
@@ -262,7 +314,7 @@ class CMS {
 
 		foreach(mop::config('objects', '//template') as $template){
 			foreach(mop::config('objects', 'elements/*', $template) as $element){
-				if($element->tagName == 'singleImage'){
+				if($element->tagName == 'image'){
 					$objects = ORM::Factory('template', $template->getAttribute('name'))->getActiveMembers();
 					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
@@ -279,7 +331,7 @@ class CMS {
 		foreach($objectIds as $id){
 			$object = ORM::Factory('page', $id);
 			foreach(mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename)) as $element){
-				if($element->tagName == 'singleImage'){
+				if($element->tagName == 'image'){
 					$fieldname = $element->getAttribute('field');
 					if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
 						$object->processImage($object->contenttable->$fieldname->filename, $fieldname);
@@ -321,8 +373,10 @@ class CMS {
         //there's a config for this template
         //go ahead and configure it
         cms::configureTemplate($templateConfig);
-      }
-      $template_id = ORM::Factory('template', $template_ident)->id;
+				$template_id = ORM::Factory('template', $template_ident)->id;
+			} else {
+				die('No config for template '.$template_ident );
+			}
     } 
 
 
@@ -372,10 +426,15 @@ class CMS {
 		$newtemplate = ORM::Factory('template', $newpage->template_id);
 
 
+		$lookupTemplates = mop::config('objects', '//template');
+		$templates = array();
+		foreach($lookupTemplates as $tConfig){
+			$templates[] = $tConfig->getAttribute('name');	
+		}
 		//add submitted data to content table
 		foreach($data as $field=>$value){
+
 			//need to switch here on type of field
-			
 			switch($field){
 			case 'slug':
 					$newpage->$field = $data[$field];
@@ -387,24 +446,25 @@ class CMS {
 
 			$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field))->item(0);
 			if(!$fieldInfo){
-				die("Bad field!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field));
+				die("Bad field in addObject!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field));
 			}
+
+			if(in_array($fieldInfo->tagName, $templates)){
+				//this could happen, but not right now
+				$oTemplate = ORM::Factory('template', $field);
+				$clusterObject = cms::addObject($newpage->id, $oTemplate->id ,$value);
+				$newpage->contenttable->$field = $clusterObject->id;
+			}
+
+
 			switch($fieldInfo->tagName){
-			case 'singleFile':
-			case 'singleImage':
+			case 'file':
+			case 'image':
 				$file = ORM::Factory('file');
 				$file->filename = $value;			
 				$file->save();
 				$newpage->contenttable->$field = $file->id;
 				break;
-			case 'object':
-				//not sure how to handle this!
-				//probably just assume that $value is an array to put into object
-				//well actually it's just another call to cms::addObject
-				$oTemplate = ORM::Factory('template', $field);
-				cms::addObject($newpage->id, $oTemplate->id ,$value);
-				break;
-
 			default:
 				$newpage->contenttable->$field = $data[$field];
 				break;
@@ -418,7 +478,6 @@ class CMS {
 		//configured components
 		$components = mop::config('objects', sprintf('//template[@name="%s"]/components/component',$newtemplate->templatename));
 		foreach($components as $c){
-			$template = ORM::Factory('template', $c->getAttribute('templateName'));
 			$arguments = array();
 			if($label = $c->getAttribute('label')){
 				$arguments['title'] = $label;
@@ -428,15 +487,14 @@ class CMS {
 					$arguments[$data->tagName] = $data->value;
 				}
 			}
-			cms::addObject($newpage->id, $template->id, $arguments);
+			cms::addObject($newpage->id, $c->getAttribute('templateName'), $arguments);
 		}
 
 		//containers (list)
 		$containers = mop::config('objects', sprintf('//template[@name="%s"]/elements/list',$newtemplate->templatename));
 		foreach($containers as $c){
-			$template = ORM::Factory('template', $c->getAttribute('family'));
 			$arguments['title'] = $c->getAttribute('label');
-			cms::addObject($newpage->id, $template->id, $arguments);
+			cms::addObject($newpage->id, $c->getAttribute('family'), $arguments);
 		}
 
 		return $newpage->id;
@@ -493,10 +551,19 @@ class CMS {
 	}
 
 	public static function configureTemplate($template){
+		//validation
+		//
+		foreach(mop::config('objects', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item){
+			if($item->getAttribute('field')=='title'){
+			//	die('Title is a reserved field name');
+			}
+		}
+
+
 		//find or create template record
 		$tRecord = ORM::Factory('template', $template->getAttribute('name') );
 		if(!$tRecord->loaded){
-			echo "\ncreating for ".$template->getAttribute('name')."\n";
+			//echo "\ncreating for ".$template->getAttribute('name')."\n";
 			$tRecord = ORM::Factory('template');
 			$tRecord->templatename = $template->getAttribute('name');
 			$tRecord->nodeType = 'object';
@@ -530,6 +597,7 @@ class CMS {
 	}
 
 	public static function configureField($templateId, $item){
+		//echo $item->tagName;
 		switch($item->tagName){
 
 		case 'list':
@@ -540,10 +608,11 @@ class CMS {
 			break;
 
 		default:
+		//	echo $item->tagName;
 			//handle dbmap
 			$index = null;
 			switch($item->tagName){
-			case 'ipe':
+			case 'text':
 				case 'radioGroup':
 					case 'pulldown':
 						case 'time':
@@ -551,15 +620,25 @@ class CMS {
 								case 'multiSelect':
 									$index = 'field';
 									break;
-								case 'singleImage':
-									case 'singleFile':
+								case 'image':
+									case 'file':
 										$index = 'file';
 										break;
 									case 'checkbox':
 										$index = 'flag';
 										break;
 									default:
-										continue(2);
+										$tConfigs = mop::config('objects', '//template');
+										$templates = array();
+										foreach($tConfigs as $template){
+											$templates[] = $template->getAttribute('name');	
+										}
+										//print_r($templates);
+										if(in_array($item->tagName, $templates)){
+											$index = 'object';
+										} else {
+											continue(2);
+										}
 										break;
 			}	
 

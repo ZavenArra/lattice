@@ -1,4 +1,3 @@
-
 <div class="ui-Associator associatorID-xxx">
 
 	<ul class="associated">

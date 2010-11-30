@@ -41,23 +41,25 @@ class ContentBase_Model extends ORM {
 		if(in_array($column, $this->nonmappedfields)){
 			return parent::__get($column);
 		}
+		//echo '<br>getting'.$column.'<br>';
 
 		//check for dbmap
-		$column = mop::dbmap( ORM::Factory('page', parent::__get('page_id'))->template_id, $column);
+		$object =  ORM::Factory('page', parent::__get('page_id'));
+		//echo 'FROM '.$object->id.'<br>';
+		$column = mop::dbmap( $object->template_id, $column);
+		//echo 'which maps to'.$column;
 		if(!$column){
 			return null;
 		}
 
 		if(strstr($column, 'object')){
+			//echo 'iTS AN OBJECT<br>';
 			$sub = ORM::Factory('page', parent::__get($column));
 			if(!$sub->loaded){
-				return array();
+				return null;
 			}
-			$values = array();
-			foreach(mop::dbmap() as $fieldname=>$mapColumn){
-				$values[$fieldname] = $sub->contenttable->$fieldname;
-			}
-			return $values;
+			return $sub;
+
 		}
 
 		if(strstr($column, 'file') && !is_object(parent::__get($column)) ){
@@ -78,6 +80,7 @@ class ContentBase_Model extends ORM {
 	Interestingly enough, it doesn't pass throug here
 	*/
 	public function __set($column, $value){
+		//echo "SETTING $column <br>";
 		if(in_array($column, $this->nonmappedfields)){
 			return parent::__set($column, $value);
 		}
