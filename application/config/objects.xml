@@ -108,17 +108,10 @@
 				<text field="description" label="Description"/>		
 				<image field="file">
 					<ext>jpg</ext>
-<<<<<<< HEAD
-				</singleImage>
-                                <singleImage field="file2">
-                                        <ext>jpg</ext>
-                                </singleImage>
-=======
 				</image>
         <image field="file">
           <ext>jpg</ext>
         </image>
->>>>>>> 9c999df63c89ce15ce0cbe5e630a36b2b0a16f18
 			</elements>
 		</template>
 		
