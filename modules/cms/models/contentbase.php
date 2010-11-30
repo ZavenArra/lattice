@@ -60,13 +60,6 @@ class ContentBase_Model extends ORM {
 			}
 			return $sub;
 
-		//	echo 'FOUND OBJECT'. $sub->id.'<br>';
-			$values = array();
-			foreach(mop::dbmap($sub->template_id) as $fieldname=>$mapColumn){
-				$values[$fieldname] = $sub->contenttable->$fieldname;
-			}
-		//	print_r($values);
-			return $values;
 		}
 
 		if(strstr($column, 'file') && !is_object(parent::__get($column)) ){

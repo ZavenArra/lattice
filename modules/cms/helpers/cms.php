@@ -158,26 +158,24 @@ class CMS {
 		$htmlChunks = array();
 		if(is_array($parameters)){
 			foreach($parameters as $module){
-				//echo 'BUILDING PARAM';
-				//print_r($module);
 
 				//check if this module type is in fact a template
 				$tConfig = mop::config('objects', sprintf('//template[@name="%s"]', $module['type']))->item(0);
 				//echo $object->id;
 				//echo $object->template->id;
 				if($tConfig){
-				//	echo '<br>T CONFIG FOUND';
+					//	echo '<br>T CONFIG FOUND';
 					$field = $module['field'];
 					//echo $field;
 					$clusterObject = $object->contenttable->$field;
+//this should really happen within the models
 					if(!$clusterObject){
-						//echo 'NO CLUSTER OBJECT EXITS<br>';
-						$id = cms::addObject(0, $module['type']);
-						//echo 'ADDED AN OBJECT id'.$id.' to parent 0';
+						$id = cms::addObject(null, $module['type']);
 						$object->contenttable->$field = $id;
+						$object->contenttable->save();
 						$clusterObject = $object->contenttable->$field;
 					}
-					$htmlChunks = cms::buildUIHtmlChunksForObject($clusterObject);
+					$clusterHtmlChunks = cms::buildUIHtmlChunksForObject($clusterObject);
 
 					$customview = 'templates/'.$clusterObject->template->templatename; //check for custom view for this template
 					$usecustomview = false;
@@ -185,24 +183,23 @@ class CMS {
 						$usecustomview = true;	
 					}
 					if(!$usecustomview){
-						$html = implode($htmlChunks);
+						$html = implode($clusterHtmlChunks);
 						$view = new View('clusters_wrapper');
 						$view->html = $html;
 						$view->objectId = $clusterObject->id;
 						$html=$view->render();
 					} else {
-						$html = $nodetitlehtml;
 						$view = new View($customview);
 						$view->loadResources();
-						foreach($htmlChunks as $key=>$value){
+						foreach($clusterHtmlChunks as $key=>$value){
 							$view->$key = $value;
 						}
-						$html .= $view->render();
+						$html = $view->render();
 					}
-					//echo 'THE'.$html;
 					$htmlChunks[$module['type'].'_'.$module['field']] = $html;
 					continue;
 				}
+
 
 				switch($module['type']){
 				case 'module':
@@ -259,6 +256,7 @@ class CMS {
 				}
 			}
 		}
+		//print_r($htmlChunks);
 		return $htmlChunks;
 	}
 
