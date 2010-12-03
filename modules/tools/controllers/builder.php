@@ -48,7 +48,6 @@ class builder_Controller extends Controller {
 	protected function insertData($xmlFile, $parentId = 0, $context=null){
 
 		foreach(mop::config($xmlFile, 'item', $context)  as $item){
-			$lists = array();
 			$templateName = $item->getAttribute('templateName');
 			if(!$templateName){
         die("No templatename specified for Item ".$item->tagName."\n\n");
@@ -84,13 +83,6 @@ class builder_Controller extends Controller {
 				//need to look up field and switch on field type	
 				$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')))->item(0);
 				if(!$fieldInfo){
-					//check to see if this is a list field
-					if(mop::config('objects',  sprintf('//template[@name="%s"]/elements/list[@family="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')))){
-						//its a list, just  skip/continue we deal with this after the object has been inserted
-						//add to array of lists to process
-						$lists[] = $field;
-						continue;
-					}
 					die("Bad field in builder!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->tagName));
 				}
         //echo "\ntagname\t".$fieldInfo->tagName."\n";
@@ -99,7 +91,6 @@ class builder_Controller extends Controller {
 				switch($fieldInfo->tagName){
 				case 'file':
 				case 'image':
-          //echo "\nFILE: ";
 						$path_parts = pathinfo($content->nodeValue);
 						$savename = cms::makeFileSaveName($path_parts['basename']);	
 						if(file_exists($content->nodeValue)){
@@ -110,11 +101,6 @@ class builder_Controller extends Controller {
 						}
 						$data[$field] = $savename;
 						break;
-				case 'list':
-					//echo "found a list\n";
-					//skip this entirely and pick up later as child
-					////this should never come throug here
-										break;
 				default:
 						$data[$field] = $content->nodeValue;
 						break;
@@ -124,6 +110,16 @@ class builder_Controller extends Controller {
 			$data['published'] = true;
 			//echo 'parent'.$parentId;
 			//print_r($data);
+
+
+			foreach(mop::config($xmlFile, 'object', $item) as $object){
+				$clusterData = array();
+				foreach(mop::config($xmlFile, 'field', $object) as $clusterField){
+					$clusterData[$clusterField->getAttribute('name')] = $clusterField->nodeValue;
+				}
+				$data[$object->getAttribute('name')] = $clusterData;
+			}
+
 
 			//now we check for a title collision
 			//if there is a title collision, we assume that this is a component
@@ -143,8 +139,6 @@ class builder_Controller extends Controller {
         }
 			}
 			if($component){
-				//echo 'COMPONENT';
-				//print_r($data);
 				$component->updateWithArray($data);
 				$objectId = $component->id;
 			} else {

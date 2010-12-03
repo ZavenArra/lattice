@@ -168,7 +168,7 @@ class CMS {
 					$field = $module['field'];
 					//echo $field;
 					$clusterObject = $object->contenttable->$field;
-//this should really happen within the models
+					//this should really happen within the models
 					if(!$clusterObject){
 						$id = cms::addObject(null, $module['type']);
 						$object->contenttable->$field = $id;
@@ -451,10 +451,11 @@ class CMS {
 			}
 
 			if(in_array($fieldInfo->tagName, $templates)){
+				$clusterTemplateName = $fieldInfo->tagName;
 				//this could happen, but not right now
-				$oTemplate = ORM::Factory('template', $field);
-				$clusterObject = cms::addObject($newpage->id, $oTemplate->id ,$value);
-				$newpage->contenttable->$field = $clusterObject->id;
+				$clusterObjectId = cms::addObject(null, $clusterTemplateName, $value);
+				$newpage->contenttable->$field = $clusterObjectId;
+				continue;
 			}
 
 
