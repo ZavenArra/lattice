@@ -185,6 +185,7 @@ class CMS {
 					if(!$usecustomview){
 						$html = implode($clusterHtmlChunks);
 						$view = new View('clusters_wrapper');
+						$view->label = $module['label'];
 						$view->html = $html;
 						$view->objectId = $clusterObject->id;
 						$html=$view->render();
@@ -380,7 +381,7 @@ class CMS {
     } 
 
 
-		if($parent_id!=='0' && $parent_id!==0){
+		if($parent_id!=='0' && $parent_id!==0 && $parent_id !==null){
 			cms::checkForValidPageId($parent_id);
 		}
 		$newpage = ORM::Factory('page');
