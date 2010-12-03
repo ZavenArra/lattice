@@ -76,5 +76,9 @@
 	</item>
 	<item templateName="linkTest">
 		<field name="title">Link Test</field>
+		<object name="theLink">
+			<field name="url">lasdf</field>
+			<field name="label">nas as s</field>
+		</object>
 	</item>
 </data>
