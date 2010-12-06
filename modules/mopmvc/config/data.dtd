@@ -8,7 +8,7 @@
 
 <!ELEMENT data (item*) >
 
-<!ELEMENT item (item|field|list)* >
+<!ELEMENT item (item|field|list|object)* >
 <!ATTLIST item
 	templateName		CDATA #REQUIRED
 >
@@ -23,3 +23,7 @@
 	family CDATA #REQUIRED
 >
 
+<!ELEMENT object (field*) >
+<!ATTLIST object
+	name CDATA #REQUIRED
+>

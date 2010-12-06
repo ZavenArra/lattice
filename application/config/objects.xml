@@ -16,6 +16,9 @@
 		</template>
 		
 		<template name="article" contentType="document" allowDelete="true" >
+			<elements>
+				<text field="multilineIPE" label="MultiLine IPE" rows="10"/>
+			</elements>
 		</template>
 
 		<template name="singleIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
@@ -183,7 +186,7 @@
 		</template>
 		<template name="linkTest" >
       <elements>
-				<link field="myLink" label="A Link for All"/>
+				<link field="theLink" label="A Link for All"/>
       </elements>
 		</template>
 	</templates>
