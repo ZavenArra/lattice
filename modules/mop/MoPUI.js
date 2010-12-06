@@ -2204,14 +2204,18 @@ mop.ui.FileElement = new Class({
 
 		this.uploadButton = this.element.getElement( ".uploadLink" );
 		this.uploadButton.store( "Class", this );
+		this.uploadButton.addEvent( "mouseover", this.onMouseOver.bindWithEvent( this ) );
 
 		this.downloadButton = this.element.getElement( ".downloadLink" );
 		this.downloadButton.store( "Class", this );
-
+		
+		this.clearButton = this.element.getElement( ".clearLink" );
+		this.clearButton.store( "Class", this );
+        this.clearButton.addEvent( "mouseover", this.sendClearFile.bindWithEvent( this ) );
+        
 		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
         // console.log( ":::::::::::::::", this.Uploader.box.getElement( "object" ).get( "id" ) );
 		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );
-		this.uploadButton.addEvent( "mouseover", this.onMouseOver.bindWithEvent( this ) );
 
 		this.baseURL = mop.util.getBaseURL();
 
@@ -2310,15 +2314,21 @@ mop.ui.FileElement = new Class({
 	},
 	
 	onMouseOver: function( e ){
-
 		mop.util.stopEvent( e );
-
 		var depth = mop.DepthManager.incrementDepth();
-
 		console.log( this.toString(), "onTargetHovered", depth );
 		this.Uploader.onTargetHovered( this, this.uploadButton, this.getCoordinates(), depth, this.getOptions() );
 		this.reposition();
         this.simulateClick();
+	},
+	
+	sendClearFile: function( e ){
+        var url = this.clearButton.get( 'href' );
+		mop.util.JSONSend( url, null, { onComplete: this.clearFile.bind( this ) } );    
+	},
+	
+	clearFile: function(){
+	    if( this.previewElement ) this.previewElement.addClass( "hidden" );
 	},
 	
 	reposition: function(){
@@ -2330,21 +2340,16 @@ mop.ui.FileElement = new Class({
 	},
 
 	validate: function() {
-		
 //		console.log( this.toString(), 'validate' );
-
 		var options = this.Uploader.options;
-		
 		if (options.fileListMax && this.Uploader.fileList.length >= options.fileListMax) {
 			this.validationError = 'fileListMax';
 			return false;
 		}
-		
 		if (options.fileListSizeMax && (this.Uploader.size + this.size) > options.fileListSizeMax) {
 			this.validationError = 'fileListSizeMax';
 			return false;
 		}
-		
 		return true;
 
 	},
@@ -2357,9 +2362,7 @@ mop.ui.FileElement = new Class({
 	},
 
 	render: function() {
-		
 //		console.log( this.toString(), 'render' );
-
 		this.addEvents({
 			'start': this.onStart,
 			'progress': this.onProgress,
@@ -2367,9 +2370,7 @@ mop.ui.FileElement = new Class({
 			'error': this.onError,
 			'remove': this.onRemove
 		});
-		
 		return this;
-
 	},
 
 	showProgress: function( data ) {
@@ -2393,18 +2394,14 @@ mop.ui.FileElement = new Class({
 	
 	onFileComplete: function( data ){
 //		console.log( this.toString(), "onFileComplete", $A( arguments ), this.previewElement );
-
 		var json = JSON.decode( data.response.text );
-
 //		console.log( "-------------------------------- ", $A( arguments ) );
-
-		this.fileName.set( "html",  '<a href="' + json.src + '" target="_blank">'+json.filename+'</a>' );
+		if( this.fileName ) this.fileName.set( "html",  '<a href="' + json.src + '" target="_blank">'+json.filename+'</a>' );
         this.downloadButton.set( "href", json.src );
         this.downloadButton.removeClass("hidden");
         
 		if( this.previewElement ){
 //			console.log( this.toString(), "onFileComplete B ", json, data.response.text, JSON.decode( data.response.text ) );
-            
 			this.imgAsset = new Asset.image( json.thumbSrc, {  alt: json.filename, onload: this.updateThumb.bind( this, json ) } );
 		}else{
 			this.revertToReadyState();
@@ -3448,13 +3445,9 @@ mop.ui.Input = new Class({
 mop.ui.Text = new Class({
 
 	Extends: mop.ui.UIElement,
-
 	onLeaveEditModeCallbacks: [],
-	
 	type: "text",
-
 	form: null,
-	
 	options:{
 		messages: { clickToEdit: "click to edit." },
 		action: "savefield"
@@ -3493,8 +3486,9 @@ mop.ui.Text = new Class({
 		this.enableElement();
 		
 		this.ipeElement.set( "title", this.options.messages.clickToEdit );
+		this.ipeElement.setStyle( "height", "auto" );
 
-		this.oldValue = this.ipeElement.get( "text" );
+		this.oldValue = this.ipeElement.get( "html" );
 
 	},
 
@@ -3509,15 +3503,13 @@ mop.ui.Text = new Class({
 		if( this.mode == "editing ") return false;
 		this.mode = "editing";
 		
-		if( !this.form ){
-			this.buildForm();
-			this.form.inject( this.element );
-		}else{
-			this.form.setStyle( "display", "block" );
-		}
+		if( this.form ) this.form.destroy();
+        this.buildForm();
+		this.form.inject( this.element );
 		
 		this.ipeElement.setStyle( "display", "none" );
 		this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
+		this.field.setStyle( "border", "1px #ffcc00 solid" );
 		
 		this.field.focus();
 		this.field.select();
@@ -3556,14 +3548,11 @@ mop.ui.Text = new Class({
 		return data;
 	},
 	
-	fitToContent: function(){
-	    
+	fitToContent: function(){   
         if( !this.measureDiv ){
             this.measureDiv = new Element( "div", { 
                 "class": this.field.get( "class" ) + " " + this.ipeElement.get("class"),
                 "styles" : {
-                    "min-height": this.ipeElement.getStyle( "min-height" ),
-                    "max-height": this.ipeElement.getStyle( "max-height" ),
                     "display": "none",
                     "width": this.field.getStyle( "width" ),
                     "height": 'auto',
@@ -3572,14 +3561,13 @@ mop.ui.Text = new Class({
                     "line-height": this.ipeElement.getStyle( "line-height" ),
                     "letter-spacing": this.field.getStyle( "letter-spacing" )
                 }
-            })
+            });
             $(document.body).adopt( this.measureDiv );
         }
         var val = this.html_entity_decode( this.field.get( "value" ).replace( /\n/g, "<br/>" ) )
         this.measureDiv.set( "html", val );
         var size = this.measureDiv.measure( function(){ return this.getComputedSize() } );
         this.field.setStyle( "height", ( size.height + 16 ) + "px" );
-
     },
         
 
@@ -3589,7 +3577,7 @@ mop.ui.Text = new Class({
 			"class": "IPEForm ",
 			"events": { "submit": this.submitHandler }
 		});
-		
+	
 		var size = this.ipeElement.getSize();
 		var contents = this.ipeElement.get( 'html' );
 		
@@ -3636,7 +3624,7 @@ mop.ui.Text = new Class({
 		if( this.submitOnBlur == 'true' ) this.submitOnBlur = true;
 //		console.log( this.submitOnBlur );
 		if( this.submitOnBlur ) this.field.addEvent( "blur", this.submit.bindWithEvent( this ) );
-
+		this.fitToContent();
 		return this.form;
 	},
 	
@@ -3648,8 +3636,7 @@ mop.ui.Text = new Class({
 		}
 	},
 
-	buildControls: function(){
-
+	buildControls: function(){  
 		var formControls = new Element( "div", { "class" : "ipeControls" } );
 		// setting the text as html, as this allows us to style the type or use a background image via css.
 		this.okButton = new Element( "a", {
@@ -3660,7 +3647,6 @@ mop.ui.Text = new Class({
 				"click": this.submit.bind( this )
 			}
 		}).inject( formControls );
-
 		this.cancelButton = new Element( "a", {
 			"class": "icon cancel",
 			"html" : "<span>cancel</span>",
@@ -3669,11 +3655,8 @@ mop.ui.Text = new Class({
 				"click": this.cancelEditing.bind( this )
 			}
 		}).inject( formControls );
-
 		formControls.inject( this.form );
-		
 		return formControls;
-
 	},
 
 	formatForEditing: function( aString ){
@@ -3738,39 +3721,33 @@ mop.ui.Text = new Class({
 	},
 
 	cancelEditing: function( e ){
-
 		mop.util.stopEvent( e );
-
 		if( this.oldValue ){
+		    console.log( "A" );
+            var val = this.html_entity_decode( this.oldValue.replace( /<br( ?)(\/?)>/g, "\n" ) )
+		    this.field.set( "value", val );
 			this.ipeElement.set( "html", this.oldValue );
 		}else{
-			this.ipeElement.set("text", "" );
+		    console.log( "B" );		    
+			this.ipeElement.set("html", "" );
 		}
 		this.leaveEditMode();
 	},
 
 	leaveEditMode: function(){
-
 		this.mode = "resting";
-
-		if( this.form ) this.form.setStyle("display","none");
-
-		if( this.field ) this.field.removeEvents();
-
-		if( this.marshal.resumeSort ) this.marshal.resumeSort();
-
-		this.ipeElement.setStyle( "display", "block" );
-		
 		if( this.onLeaveEditModeCallbacks.length > 0 ){
 			for( var i = 0; i < this.onLeaveEditModeCallbacks.length; i++ ){
+                console.log( "* \t\t" + i, this.onLeaveEditModeCallbacks[i] );
 				this.onLeaveEditModeCallbacks[i]( this );
 			}
 		}
-		
+		if( this.form ) this.form.setStyle("display","none");
+		if( this.field ) this.field.removeEvents();
+		if( this.marshal.resumeSort ) this.marshal.resumeSort();
+		this.ipeElement.setStyle( "display", "block" );
 		this.destroyValidationSticky();
-		
 		mop.util.EventManager.broadcastEvent("resize");
-
 	},
 
 	destroy: function(){
@@ -3779,7 +3756,6 @@ mop.ui.Text = new Class({
 		this.clickEvent = null;
 		this.ipeElement.eliminate( "Class" );
 		this.ipeElement.destroy();
-//		this.leaveEditMode();
 		this.parent();
 	}
 	
