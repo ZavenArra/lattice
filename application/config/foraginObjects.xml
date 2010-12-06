@@ -1,0 +1,77 @@
+<configuration>
+	<templates>
+
+		<template name="plant">
+			<elements>
+				<text field="scientificName" label="Scientific Name" rows="1"/>
+				<text field="group" label="Group" rows="1"/>
+				<plantType field="plantType" label="Type of Plant"/>
+				<seasons field="seasonsEdible" label="All Seasons this Plant is Edible"/>
+				<seasons field="primarySeasonsEdible" label="Primary Seasons this Plant is Edible"/>
+				<text field="season" label="Season Text" rows="6"/>
+				<text field="habitat" label="Habitat" rows="2"/>
+				<text field="range" label="Range" rows="2"/>
+				<text field="placeOfOrigin" label="Place of Origin" rows="2"/>
+				<checkbox field="native" label="Native Plant"/>
+				<text field="howToSpot" label="How to Spot" rows="5"/>
+				<text field="generalInfo" label="General Info" rows="20"/>
+				<text field="positiveId" label="Postitive Id Checklist" rows="8"/>
+				<text field="harvesting" label="Harveesting" rows="20"/>
+				<text field="cooking" label="Food Preparation" rows="20"/>
+				<text field="nutrition" label="Nutrition" rows="20"/>
+				<text field="medicinalUses" label="Mediciinal Uses" rows="10"/>
+				<checkbox field="hasPoisonousLookalikes" label="This plant has poisonous lookalikes"/>
+				<text field="cautions" label="Cautions" rows="5"/>
+				<text field="similarPlants" label="Similar Plants and Confusing Factors"/>
+			</elements>
+			<addableObject templateName="plantImage" addText="Add a Plant Image" />
+			<addableObject templateName="recipe" addText="Add a Recipe" />
+		</template>
+
+		<template name="plantImage">
+			<elements>
+				<text field="caption" label="Caption"/>
+				<checkbox field="poisonous" label="Poisonous Plant"/>
+				<image field="image" label="Image">
+					<ext>jpg</ext>
+					<ext>tiff</ext>
+					<ext>tif</ext>
+				</image>
+			</elements>
+		</template>
+
+		<template name="recipe">
+			<elements>
+				<text field="directions" label="Directions" rows="40"/>
+			</elements>
+		</template>
+
+		<template name="plantType">
+			<elements>
+Y				<checkbox field="annual" label="Annual"/
+				<checkbox field="biennial" label="Biennial"/
+				<checkbox field="perennialHerbaceous" label="Perennial Herbaceous"/
+				<checkbox field="vine" label="Vine"/
+				<checkbox field="shrub" label="Shrub"/
+				<checkbox field="tree" label="Tree"/
+				<checkbox field="seaweed" label="Seaweed"/
+			</elements>
+		</template>
+
+		<template name="seasons">
+			<elements>
+				<checkbox field="earlySpring" label="Early Spring"/
+				<checkbox field="midSpring" label="Mid Spring"/
+				<checkbox field="lateSpring" label="Late Spring"/
+				<checkbox field="earlySummer" label="Early Summer"/
+				<checkbox field="midSummer" label="Mid Summer"/
+				<checkbox field="lateSummer" label="Late Summer"/
+				<checkbox field="earlyFall" label="Early Fall"/
+				<checkbox field="midFall" label="Mid Fall"/
+				<checkbox field="lateFall" label="Late Fall"/
+				<checkbox field="winter" label="Winter"/
+			</elements>
+		</template>
+	</templates>
+</configuration>
+

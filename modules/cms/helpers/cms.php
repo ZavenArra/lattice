@@ -168,7 +168,7 @@ class CMS {
 					$field = $module['field'];
 					//echo $field;
 					$clusterObject = $object->contenttable->$field;
-//this should really happen within the models
+					//this should really happen within the models
 					if(!$clusterObject){
 						$id = cms::addObject(null, $module['type']);
 						$object->contenttable->$field = $id;
@@ -185,6 +185,7 @@ class CMS {
 					if(!$usecustomview){
 						$html = implode($clusterHtmlChunks);
 						$view = new View('clusters_wrapper');
+						$view->label = $module['label'];
 						$view->html = $html;
 						$view->objectId = $clusterObject->id;
 						$html=$view->render();
@@ -380,7 +381,7 @@ class CMS {
     } 
 
 
-		if($parent_id!=='0' && $parent_id!==0){
+		if($parent_id!=='0' && $parent_id!==0 && $parent_id !==null){
 			cms::checkForValidPageId($parent_id);
 		}
 		$newpage = ORM::Factory('page');
@@ -450,10 +451,11 @@ class CMS {
 			}
 
 			if(in_array($fieldInfo->tagName, $templates)){
+				$clusterTemplateName = $fieldInfo->tagName;
 				//this could happen, but not right now
-				$oTemplate = ORM::Factory('template', $field);
-				$clusterObject = cms::addObject($newpage->id, $oTemplate->id ,$value);
-				$newpage->contenttable->$field = $clusterObject->id;
+				$clusterObjectId = cms::addObject(null, $clusterTemplateName, $value);
+				$newpage->contenttable->$field = $clusterObjectId;
+				continue;
 			}
 
 

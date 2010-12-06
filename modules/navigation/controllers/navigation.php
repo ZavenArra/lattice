@@ -111,6 +111,9 @@ class Navigation_Controller extends Controller{
 		foreach($this->navDataFields_template as $field){
 			$sendItem[$field] = $item->template->$field;
 		}
+		if(!count($sendItem['addableObjects'])){
+			unset($sendItem['addableObjects']);
+		}
 
 		//this part should get removed or not
 		try {
