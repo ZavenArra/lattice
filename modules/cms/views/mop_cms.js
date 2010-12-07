@@ -13,7 +13,6 @@ mop.modules.CMS = new Class({
 	titleElement: null,
 	editSlugLink: null,
 	deletePageLink: null,
-
 	initialize: function( anElement, options ){
 //        console.log( "CMS INIT", this.childModules );
 		this.parent( anElement, null, options );		
@@ -106,9 +105,9 @@ mop.modules.CMS = new Class({
 			this.titleText = this.titleElement.getElement( "h2" ).get( "text" );
 			this.deletePageLink = this.titleElement.getElement( "a.deleteLink" );
 
-    		this.editSlugLink = this.titleElement.getElement( ".field-slug" );
+    		this.editSlugLink = this.titleElement.getElement( ".field-slug label" );
 			if( this.editSlugLink ){
-				this.editSlugLink.addEvent( "click", this.revealSlugEditField.bindWithEvent( this ) );
+				this.editSlugLink.addEvent( "click", this.toggleSlugEditField.bindWithEvent( this ) );
                 // this.editSlugLink.retrieve( "Class" ).registerOnLeaveEditModeCallback( this.onSlugEdited.bind( this ) );
 			}
 			var titleIPE = this.titleElement.getElement( ".field-title" ).retrieve("Class");
@@ -127,10 +126,21 @@ mop.modules.CMS = new Class({
 		this.titleElement.getElement( ".field-slug .ipe" ).addClass("hidden");
 	},
 	
-	revealSlugEditField: function( e ){
+	toggleSlugEditField: function( e ){
+//	    console.log( "revealSlugEditField", e );
 		mop.util.stopEvent( e );
-		this.titleElement.getElement( ".field-slug .ipe" ).removeClass("hidden");
-		this.titleElement.getElement( ".field-slug" ).retrieve( "Class" ).enterEditMode();
+		var slug = this.titleElement.getElement( ".field-slug" );
+		var ipe = slug.getElement( ".ipe" )
+		var label = slug.getElement( "label" );
+		if( ipe.hasClass( "hidden" ) ){
+    		this.titleElement.getElement( ".field-slug .ipe" ).removeClass("hidden");
+    		this.titleElement.getElement( ".field-slug" ).retrieve( "Class" ).enterEditMode();		    
+    		label.set( "text", "Hide slug" );
+		}else{
+		    ipe.addClass( "hidden" );
+		    slug.retrieve( "Class" ).cancelEditing( null );
+    		label.set( "text", "Edit slug" );
+		}
 	},
 	
 	renameNode: function( response, uiInstance ){
@@ -139,7 +149,9 @@ mop.modules.CMS = new Class({
 
 
 	addObject: function( objectName, templateId, parentId, whichTier, placeHolder ){
-//	    console.log( "addObject", this, this.toString() );
+	    console.log( "addObject", this.toString(), $A( arguments ) );
+	    // crappy hack to add... fuckit lets do this right.
+	    parentId = ( parentId )? parentId : 0;
 		var callBack = function( nodeData ){
 			this.onObjectAdded( nodeData, parentId, whichTier, placeHolder );
 		};

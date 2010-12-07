@@ -3723,12 +3723,10 @@ mop.ui.Text = new Class({
 	cancelEditing: function( e ){
 		mop.util.stopEvent( e );
 		if( this.oldValue ){
-		    console.log( "A" );
             var val = this.html_entity_decode( this.oldValue.replace( /<br( ?)(\/?)>/g, "\n" ) )
 		    this.field.set( "value", val );
 			this.ipeElement.set( "html", this.oldValue );
 		}else{
-		    console.log( "B" );		    
 			this.ipeElement.set("html", "" );
 		}
 		this.leaveEditMode();

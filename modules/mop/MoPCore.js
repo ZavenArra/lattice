@@ -1,14 +1,9 @@
 // Section: Setting up environment for MoPCore.
 
 //	Redirects ie 6 to a landing page for that browser
-if( Browser.Engine.trident4 ){
-	window.location.href =  $(document).getElement("head").getElement("base").get("href") + "msielanding";
-}
+if( Browser.Engine.trident4 ) window.location.href = $(document).getElement("head").getElement("base").get("href") + "msielanding";
 
-
-/*
-Note: https://mootools.lighthouseapp.com/projects/2706/tickets/651-classtostring-broken-on-122-big-regression
-*/
+/* Note: https://mootools.lighthouseapp.com/projects/2706/tickets/651-classtostring-broken-on-122-big-regression */
 Class.Mutators.toString = Class.Mutators.valueOf = $arguments(0);
 
 /*

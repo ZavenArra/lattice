@@ -10,7 +10,7 @@
 
 	<?if(Kohana::config('cms.enableSlugEditing')):?>
 		<div class="ui-Text grid_4 field-slug">
-			<label>Edit Slug</label>
+			<label>Edit slug</label>
 			<p class="ipe p hidden"><?=$slug;?></p>
 		</div>
  	<?endif;?>
