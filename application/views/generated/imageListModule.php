@@ -11,8 +11,8 @@
    <img id="file" src="<?=$imageListListItem['file']->original->fullpath;?>" width="<?=$imageListListItem['file']->original->width;?>" height="<?=$imageListListItem['file']->original->height;?>" alt="<?=$imageListListItem['file']->original->filename;?>" />
   <?endif;?>
 
-  <?if(is_object($imageListListItem['file2'])):?>
-   <img id="file2" src="<?=$imageListListItem['file2']->original->fullpath;?>" width="<?=$imageListListItem['file2']->original->width;?>" height="<?=$imageListListItem['file2']->original->height;?>" alt="<?=$imageListListItem['file2']->original->filename;?>" />
+  <?if(is_object($imageListListItem['fileTwo'])):?>
+   <img id="fileTwo" src="<?=$imageListListItem['fileTwo']->original->fullpath;?>" width="<?=$imageListListItem['fileTwo']->original->width;?>" height="<?=$imageListListItem['fileTwo']->original->height;?>" alt="<?=$imageListListItem['fileTwo']->original->filename;?>" />
   <?endif;?>
 
  </li>

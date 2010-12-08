@@ -112,9 +112,9 @@
 				<image field="file">
 					<ext>jpg</ext>
 				</image>
-        <image field="file">
-          <ext>jpg</ext>
-        </image>
+			        <image field="fileTwo">
+         				 <ext>jpg</ext>
+        			</image>
 			</elements>
 		</template>
 		
