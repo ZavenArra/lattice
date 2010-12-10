@@ -3509,7 +3509,7 @@ mop.ui.Text = new Class({
 		
 		this.ipeElement.setStyle( "display", "none" );
 		this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
-		this.field.setStyle( "border", "1px #ffcc00 solid" );
+        // this.field.setStyle( "border", "1px #ffcc00 solid" );
 		
 		this.field.focus();
 		this.field.select();

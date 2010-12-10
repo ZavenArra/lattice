@@ -94,15 +94,19 @@ h6,
 }
 
 .displayField,
+.ui-Text .ipe{
+	border: none;
+	background: #FFFAC4; 
+}
+
+.displayField,
 .ui-Text .ipe,
 .ui-Text input,
 .ui-Text textarea,
 .ui-Input input{
-	border: none;
 	font-family: Georgia, Times, Serif;
 	margin: 0 0 .5em 0;
 	padding: 4px .5em;
-	background: #FFFAC4; 
 	color:#222;
 	line-height: 1.5em;
 	height: 1.5em;
