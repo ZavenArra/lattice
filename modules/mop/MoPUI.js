@@ -2211,7 +2211,7 @@ mop.ui.FileElement = new Class({
 		
 		this.clearButton = this.element.getElement( ".clearImageLink" );
 		this.clearButton.store( "Class", this );
-        this.clearButton.addEvent( "mouseover", this.sendClearFile.bindWithEvent( this ) );
+        this.clearButton.addEvent( "click", this.sendClearFile.bindWithEvent( this ) );
         
 		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
         // console.log( ":::::::::::::::", this.Uploader.box.getElement( "object" ).get( "id" ) );
