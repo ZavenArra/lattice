@@ -2209,7 +2209,7 @@ mop.ui.FileElement = new Class({
 		this.downloadButton = this.element.getElement( ".downloadLink" );
 		this.downloadButton.store( "Class", this );
 		
-		this.clearButton = this.element.getElement( ".clearLink" );
+		this.clearButton = this.element.getElement( ".clearImageLink" );
 		this.clearButton.store( "Class", this );
         this.clearButton.addEvent( "mouseover", this.sendClearFile.bindWithEvent( this ) );
         
