@@ -71,8 +71,8 @@
 		<field name="title">File List</field>
   </item>
 
-	<item templateName="stuff">
-		<field name="title">some stuff</field>
+	<item templateName="singleAssociator">
+		<field name="title">Associator</field>
 	</item>
 	<item templateName="linkTest">
 		<field name="title">Link Test</field>

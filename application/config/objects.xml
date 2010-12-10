@@ -166,22 +166,10 @@
 			</elements>
 		</template>			
 
-		<template name="stuff" nodeType="CATEGORY" allowChildSort="true" allowDelete="true" allowTogglePublish="true" >
-      <elements>
-        <text field="blurb" label="Blurb" tag="p" rows="4" />
-				<associator field="myObjects" label="give it to me">
-					<filter templateName="stuffItem"/>
-				</associator>
-      </elements>
-			<addableObject templateName="stuffItem" addText="Add a Stuff" />
-		</template>
-		<template name="stuffItem" nodeType="LEAF" allowChildSort="true">
+		<template name="singleAssociator" >
 			<elements>
-				<text field="text" label="Text" tag="p" rows="4" />
-				<text field="more" label="MORE" tag="p" rows="4" />
-				<list family="listOfThings" label="Blurb" display="inline" >
-					<addableObject templateName="differentItem" addText="Add a Different Item" />
-				</list>
+				<associator field="association">
+				</associator>
 			</elements>
 		</template>
 		<template name="linkTest" >
