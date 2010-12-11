@@ -169,6 +169,7 @@
 		<template name="singleAssociator" >
 			<elements>
 				<associator field="association">
+					<filter></filter>
 				</associator>
 			</elements>
 		</template>
