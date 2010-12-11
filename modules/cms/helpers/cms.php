@@ -157,20 +157,20 @@ class CMS {
 		$view = new View();
 		$htmlChunks = array();
 		if(is_array($parameters)){
-			foreach($parameters as $module){
+			foreach($parameters as $element){
 
-				//check if this module type is in fact a template
-				$tConfig = mop::config('objects', sprintf('//template[@name="%s"]', $module['type']))->item(0);
+				//check if this element type is in fact a template
+				$tConfig = mop::config('objects', sprintf('//template[@name="%s"]', $element['type']))->item(0);
 				//echo $object->id;
 				//echo $object->template->id;
 				if($tConfig){
 					//	echo '<br>T CONFIG FOUND';
-					$field = $module['field'];
+					$field = $element['field'];
 					//echo $field;
 					$clusterObject = $object->contenttable->$field;
 					//this should really happen within the models
 					if(!$clusterObject){
-						$id = cms::addObject(null, $module['type']);
+						$id = cms::addObject(null, $element['type']);
 						$object->contenttable->$field = $id;
 						$object->contenttable->save();
 						$clusterObject = $object->contenttable->$field;
@@ -185,7 +185,7 @@ class CMS {
 					if(!$usecustomview){
 						$html = implode($clusterHtmlChunks);
 						$view = new View('clusters_wrapper');
-						$view->label = $module['label'];
+						$view->label = $element['label'];
 						$view->html = $html;
 						$view->objectId = $clusterObject->id;
 						$html=$view->render();
@@ -197,27 +197,27 @@ class CMS {
 						}
 						$html = $view->render();
 					}
-					$htmlChunks[$module['type'].'_'.$module['field']] = $html;
+					$htmlChunks[$element['type'].'_'.$element['field']] = $html;
 					continue;
 				}
 
 
-				switch($module['type']){
-				case 'module':
-					if(isset($module['arguments'])){
-						$html = mop::buildModule($module, $module['modulename'], $module['arguments']);
+				switch($element['type']){
+				case 'element':
+					if(isset($element['arguments'])){
+						$html = mop::buildModule($element, $element['elementname'], $element['arguments']);
 					} else {
-						$html = mop::buildModule($module, $module['modulename']);
+						$html = mop::buildModule($element, $element['elementname']);
 					}
-					$htmlChunks[$module['modulename']] = $html;
+					$htmlChunks[$element['modulename']] = $html;
 					break;
 				case 'list':
-					if(isset($module['display']) && $module['display'] != 'inline'){
-						break; //module is being displayed via navi, skip
+					if(isset($element['display']) && $element['display'] != 'inline'){
+						break; //element is being displayed via navi, skip
 					}
-					$module['modulename'] = $module['family'];
-					$module['controllertype'] = 'list';
-					$lt = ORM::Factory('template', $module['family']);
+					$element['elementname'] = $element['family'];
+					$element['controllertype'] = 'list';
+					$lt = ORM::Factory('template', $element['family']);
 					$containerObject = ORM::Factory('page')
 						->where('parentid', $object->id)
 						->where('template_id', $lt->id)
@@ -229,30 +229,24 @@ class CMS {
 					$arguments = array(
 						'containerObject'=>$containerObject
 					);
-					$htmlChunks[$module['family']] = mop::buildModule($module, $arguments);
+					$htmlChunks[$element['family']] = mop::buildModule($element, $arguments);
 					break;
 				case 'associator':
-					$module['pool'] = array();
-					$selection = array();
-					$module['modulename'] = $module['field'];
-					$module['controllertype'] = 'associator';
-					$arguments = array(
-						'module'=>$module,
-						'selection'=>$selection
-					);
-					$element = mop::buildModule($module, $arguments); 
-					$htmlChunks[$module['type'].'_'.$module['field']] = $element;
+					$controller = new Associator_Controller($element['filters'], $object->id, $element['field']);
+					$controller->createIndexView();
+					$controller->view->loadResources();
+					$htmlChunks[$element['type'].'_'.$element['field']] = $controller->view->render();
 					break;
 				default:
 					$element = false;
 					//deal with html template elements
-					if(!isset($module['field'])){
-						$element = mopui::buildUIElement($module, null);
-						$module['field'] = CMS_Controller::$unique++;
-					} else if(!$element = mopui::buildUIElement($module, $object->contenttable->$module['field'])){
+					if(!isset($element['field'])){
+						$element = mopui::buildUIElement($element, null);
+						$element['field'] = CMS_Controller::$unique++;
+					} else if(!$element = mopui::buildUIElement($element, $object->contenttable->$element['field'])){
 						throw new Kohana_User_Exception('bad config in cms', 'bad ui element');
 					}
-					$htmlChunks[$module['type'].'_'.$module['field']] = $element;
+					$htmlChunks[$element['type'].'_'.$element['field']] = $element;
 					break;
 				}
 			}
@@ -300,6 +294,21 @@ class CMS {
         }
         $entry['radios'] = $radios;
         break;
+
+			case 'associator':
+				//need to load filters here
+				$filters = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]/filter', 
+							$object->template->templatename,
+							$element->getAttribute('field') ));
+				$filterSettings = array();
+				foreach($filters as $filter){
+					$setting = array();
+					$setting['from'] = $filter->getAttribute('from');
+					$setting['templateName'] = $filter->getAttribute('templateName');
+					$setting['tagged'] = $filter->getAttribute('tagged');
+					$filterSettings[] = $setting;
+				}
+				$entry['filters'] = $filterSettings;
 
       default:
         break;

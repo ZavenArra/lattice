@@ -601,6 +601,10 @@ class Page_Model extends ORM {
 		return $this;
 	}
 
+	public function parentFilter($parentid){
+		$this->where('parentid', $parentid);	
+	}
+
 	public function noContainerObjects(){
 			$db = new Database();
 			$res = $db->query("Select id from templates where nodeType = 'container'");
