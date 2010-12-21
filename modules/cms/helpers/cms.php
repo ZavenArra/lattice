@@ -238,7 +238,6 @@ class CMS {
 					$htmlChunks[$element['type'].'_'.$element['field']] = $controller->view->render();
 					break;
 				default:
-					$element = false;
 					//deal with html template elements
 					if(!isset($element['field'])){
 						$element = mopui::buildUIElement($element, null);
