@@ -78,6 +78,8 @@
 			<elements>
 				<image field="file" label="Single Image">
 					<ext>jpg</ext>
+         				 <ext>tiff</ext>
+         				 <ext>tif</ext>
 				</image>
 			</elements>
 		</template>
