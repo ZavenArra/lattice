@@ -1,8 +1,8 @@
 <?
 
-class BuildData_Controller extends Controller {
+class build_Controller extends BuildData_Controller {
 
-	public function index(){
+	public function initializeSite($xmlFile){
 
 		//get directory listing of application/media
 		//and unlink all files
@@ -18,14 +18,18 @@ class BuildData_Controller extends Controller {
 		ob_flush();
 
 		echo "\nInserting Data\n";
-		$this->insertData();
+		$this->insertData($xmlFile);
 
 		cms::regenerateImages();
 
-	}
-	public function insertData($parentId = 0, $context=null){
+    //and run frontend
+    $frontend = new Frontend_Controller();
+    $frontend->index();
 
-		foreach(mop::config('data', 'item', $context)  as $item){
+	}
+	public function insertData($xmlFile, $parentId = 0, $context=null){
+
+		foreach(mop::config($xmlFile, 'item', $context)  as $item){
 			$lists = array();
 			if(!$item->getAttribute('templateName')){
 				echo $item->tagName;
@@ -46,7 +50,7 @@ class BuildData_Controller extends Controller {
 
       //echo ')))'.$item->getAttribute('templateName');
 			$data = array();
-			foreach(mop::config('data', 'field', $item ) as $content){
+			foreach(mop::config($xmlFile, 'field', $item ) as $content){
 				$field = $content->getAttribute('name');
 				//echo 'This Fielad '.$field."\n\n";
 				switch($field){
@@ -131,11 +135,11 @@ class BuildData_Controller extends Controller {
 			}
 
 			//do recursive if it has children
-			if(mop::config('data', 'item', $item)->length ){
+			if(mop::config($xmlFile, 'item', $item)->length ){
 				$this->insertData($objectId,  $item);
 			}
 
-			foreach(mop::config('data', 'list', $item) as $list){
+			foreach(mop::config($xmlFile, 'list', $item) as $list){
 				//echo "FOUND A LIST\n\n";
 				//find the container
 				$listT = ORM::Factory('template', $list->getAttribute('family'));
