@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data SYSTEM "../../modules/mopmvc/config/data.dtd">
+<data>
+
+	<item templateName="singleIPE">
+		<field name="title">First One</field>
+	</item>
+
+	<item templateName="multilineIPE">
+	</item>
+
+	<item templateName="singleRadioGroup">
+	</item>
+	
+	<item templateName="singleCheckbox">
+	</item>
+
+  <item templateName="singleImage">
+           <field name="file">testimages/3543716407_9c7cedd08c.jpg</field>
+   </item>
+</data>

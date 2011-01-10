@@ -77,24 +77,31 @@ class CMS_Interface_Controller extends Controller {
 	 */
 	public function savefield($id){
 		$page = ORM::Factory('page')->find($id);
-		if($_POST['field']=='title'){ //update slug, but actually we may not want to have slug updatable
+		if($_POST['field']=='slug'){
 			$page->slug = cms::createSlug($_POST['value'], $page->id);
+			$page->decoupleSlugTitle = 1;
+			$page->save();
+			return array('value'=>$page->slug);
+		} else if($_POST['field']=='title'){ //update slug, but actually we may not want to have slug updatable
+			if(!$page->decoupleSlugTitle){
+				$page->slug = cms::createSlug($_POST['value'], $page->id);
+			}
 			$page->save();
 			$page->contenttable->$_POST['field'] = cms::convertNewlines($_POST['value']);
 			$page->contenttable->save();
-		} else if($_POST['field'] =='slug') {
-			$page->slug = cms::createSlug($_POST['value'], $page->id);
-			$page->save();	
 			$page = ORM::Factory('page')->find($id);
-			return array('value'=>$page->slug);
+			return array('value'=>$page->contenttable->$_POST['field'], 'slug'=>$page->slug);
 		}
 		else if(in_array($_POST['field'], array('dateadded'))){
 			$page->$_POST['field'] = $_POST['value'];
 			$page->save();
 		} else if($_POST['field']) {
-			$fieldInfo = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[@field="%s"]',
+			$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]',
 																									$page->template->templatename,
 																									$_POST['field']))->item(0);
+			if(!$fieldInfo){
+				die('Invalid field for template.  Check for correct page/object ID in URL');
+			}
 
 
 			switch($fieldInfo->getAttribute('type')){
@@ -107,7 +114,7 @@ class CMS_Interface_Controller extends Controller {
 					$page->contenttable->save();
 				}
 				$options = array();
-				foreach(mop::config('backend', sprintf('/template[@name="%s"]/element', $object->template->templatename)) as $field){
+				foreach(mop::config('objects', sprintf('/template[@name="%s"]/element', $object->template->templatename)) as $field){
 					if($field->getAttribute('type') == 'checkbox'){
 						$options[] = $field['field'];
 					}
@@ -250,8 +257,8 @@ class CMS_Interface_Controller extends Controller {
 	}
 
 	/*
-	Function: saveIPE($itemid)
-	Wrapper to saveIPE in CMS_Services_Controller
+	Function: saveFieldMapping($itemid)
+	Wrapper to saveFieldMapping in CMS_Services_Controller
 	*/
 	public function saveFieldMapping($itemid){
 		$object = ORM::Factory($this->model, $itemid);

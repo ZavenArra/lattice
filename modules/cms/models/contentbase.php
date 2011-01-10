@@ -41,20 +41,25 @@ class ContentBase_Model extends ORM {
 		if(in_array($column, $this->nonmappedfields)){
 			return parent::__get($column);
 		}
+		//echo '<br>getting'.$column.'<br>';
 
 		//check for dbmap
-		$column = mop::dbmap( ORM::Factory('page', parent::__get('page_id'))->template_id, $column);
+		$object =  ORM::Factory('page', parent::__get('page_id'));
+		//echo 'FROM '.$object->id.'<br>';
+		$column = mop::dbmap( $object->template_id, $column);
+		//echo 'which maps to'.$column;
+		if(!$column){
+			return null;
+		}
 
 		if(strstr($column, 'object')){
+			//echo 'iTS AN OBJECT<br>';
 			$sub = ORM::Factory('page', parent::__get($column));
 			if(!$sub->loaded){
-				return array();
+				return null;
 			}
-			$values = array();
-			foreach(mop::dbmap() as $fieldname=>$mapColumn){
-				$values[$fieldname] = $sub->contenttable->$fieldname;
-			}
-			return $values;
+			return $sub;
+
 		}
 
 		if(strstr($column, 'file') && !is_object(parent::__get($column)) ){
@@ -75,16 +80,40 @@ class ContentBase_Model extends ORM {
 	Interestingly enough, it doesn't pass throug here
 	*/
 	public function __set($column, $value){
+		//echo "SETTING $column <br>";
 		if(in_array($column, $this->nonmappedfields)){
 			return parent::__set($column, $value);
 		}
 
+		$object = ORM::Factory('page', parent::__get('page_id'));
+
 		//check for dbmap
-		if($mappedcolumn = mop::dbmap( ORM::Factory('page', parent::__get('page_id'))->template_id, $column) ){
+		if($mappedcolumn = mop::dbmap( $object->template_id, $column) ){
 			return parent::__set($mappedcolumn, $value);
+		} 
+
+		//this column isn't mapped, check to see if it's in the xml
+		if($object->template->nodeType=='container'){
+			//For lists, values will be on the 2nd level 
+			$xPath =  sprintf('//list[@family="%s"]', $object->template->templatename);
 		} else {
-			return parent::__set($column, $value);
+			//everything else is a normal lookup
+			$xPath =  sprintf('//template[@name="%s"]', $object->template->templatename);
 		}
+		$fieldConfig = mop::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $column));
+		if($fieldConfig->item(0)){
+			//field is configured but not initialized in database
+			cms::configureField($object->template->id, $fieldConfig->item(0));	
+
+			//now go aheand and save on the mapped column
+
+			mop::reinitDbmap($object->template_id);
+			$mappedcolumn = mop::dbmap( $object->template_id, $column);
+			return parent::__set($mappedcolumn, $value);
+		}
+
+		//othewise default behavior
+		return parent::__set($column, $value);
 	}
 
 }

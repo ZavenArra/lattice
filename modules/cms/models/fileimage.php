@@ -58,6 +58,19 @@ class FileImage_Model {
 		}
 		if($filename){
 			$this->filename = $this->prefix.$filename;
+			if($prefix == 'uithumb'){
+				$ext = substr(strrchr($filename, '.'), 1);
+				switch($ext){
+				case 'tiff':
+					case 'tif':
+						case 'TIFF':
+							case 'TIF':
+								$this->filename = $this->filename.'_converted.jpg';
+								break;
+				}
+			}
+
+
 			$this->urlfilename = rawurlencode($this->filename);
 			$dirprefix = '';
 			if(Kohana::config('mop.staging')){

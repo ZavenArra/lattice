@@ -1,14 +1,9 @@
 // Section: Setting up environment for MoPCore.
 
 //	Redirects ie 6 to a landing page for that browser
-if( Browser.Engine.trident4 ){
-	window.location.href =  $(document).getElement("head").getElement("base").get("href") + "msielanding";
-}
+if( Browser.Engine.trident4 ) window.location.href = $(document).getElement("head").getElement("base").get("href") + "msielanding";
 
-
-/*
-Note: https://mootools.lighthouseapp.com/projects/2706/tickets/651-classtostring-broken-on-122-big-regression
-*/
+/* Note: https://mootools.lighthouseapp.com/projects/2706/tickets/651-classtostring-broken-on-122-big-regression */
 Class.Mutators.toString = Class.Mutators.valueOf = $arguments(0);
 
 /*
@@ -73,29 +68,6 @@ Element.implement({
 });
 
 
-
-/*
-	Function: getScrolls
-	Paramaters: 
-		element - {Element}
-	Note:
-		Mootools fixed this in 1.3
-		https://mootools.lighthouseapp.com/projects/2706/tickets/637-getcoordinatesgetleftgettop-bug-on-overflowhidden-elements
-		We ought to set up a test, and upgrade.
-		This method is only relevant to the getScrolls function.
-*/
-Element.implement({
-	getScrolls: function(){
-		var element = this.parentNode, position = {x: 0, y: 0};
-		while (element && !this.isBody(element)){
-	    position.x += element.scrollLeft;
-	    position.y += element.scrollTop;
-	    element = element.parentNode;
-	  }
-	  return position;
-	}
-});
-
 /*
 	Function: String.encodeUTF8
 	Implements encodeUTF8 into mootools' native String class
@@ -151,6 +123,16 @@ mop.util.loadJS = function( jsURL, options ){
 mop.util.domIsReady = function(){
 	mop._domIsReady = true;
 }
+
+/*
+ 	Function: mop.util.isUnsignedInteger 
+	Is the passed value an integer or not?
+*/
+mop.util.isUnsignedInteger = function( s ){
+    console.log( s );
+    return ( s.toString().search(/^[0-9]+$/ ) == 0);
+}
+
 
 /*
  	Function: mop.util.stopEvent 
@@ -668,7 +650,7 @@ mop.util.LoginMonitor = new Class({
 		$clear( this.inactivityTimeout );
 		this.date = new Date();
 		if( !this.dialogue ) this.dialogue = new mop.ui.InactivityDialogue( this, "Inactivity", "", this.keepAlive.bind( this ), this.logout.bind( this ), "Stay logged in?", "Logout" );
-		this.dialogue.setMessage( this.inactivityMessage.substitute( { inactiveMins: this.secondsOfInactivityTilPrompt/60000, minutes: Math.floor( this.secondsTilLogout*.001 ), seconds: 00 } ) );
+		this.dialogue.setContent( this.inactivityMessage.substitute( { inactiveMins: this.secondsOfInactivityTilPrompt/this.millisecondsInAMinute, minutes: Math.floor( this.secondsTilLogout*.001 ), seconds: 00 } ) );
 		this.secondsIdle = 0;
 		this.logoutTimeout = this.logoutCountDown.periodical( 1000, this );
 		this.dialogue.show();
@@ -682,7 +664,7 @@ mop.util.LoginMonitor = new Class({
 		if( secondsLeft == 0 ){ this.logout() };
 		var minutesLeft = Math.floor( secondsLeft/60 );
 		secondsLeft = secondsLeft - ( minutesLeft * 60 );
-		this.dialogue.setMessage( this.inactivityMessage.substitute( { inactiveMins: this.secondsOfInactivityTilPrompt/this.millisecondsInAMinute, minutes: minutesLeft, seconds: secondsLeft } ) );
+		this.dialogue.setContent( this.inactivityMessage.substitute( { inactiveMins: this.secondsOfInactivityTilPrompt/this.millisecondsInAMinute, minutes: minutesLeft, seconds: secondsLeft } ) );
 		minutesLeft = secondsLeft = null;
 	},
 
@@ -913,6 +895,7 @@ mop.util.MD5 = function (string) {
 	return temp.toLowerCase();
 }
 
+/* These should be configurable, also are they more App level stuff instead of mopcore? */
 window.addEvent( "resize", function(){
 	mop.util.EventManager.broadcastEvent("resize");
 });

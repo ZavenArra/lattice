@@ -2,7 +2,6 @@
 
 #navigation{
 	font-size: 12px;
-	width: 900px;
 	position:relative;
 	overflow: auto;
 	overflow:hidden;
@@ -50,8 +49,14 @@ ul.breadCrumb li a:hover{
 	color:#fff;
 }
 
+.navTier.grid_4{
+    margin: 0 0 0 0;
+}
+
+.field-title.grid_8{
+    margin-left: 0;
+}
 #navigation h5{
-	width: 210px !important;
 	font-size: 1em;
 	white-space: normal !important;
 	line-height:1.2em;
@@ -125,9 +130,6 @@ ul.breadCrumb li a:hover{
 	display:none;
 }
 
-#navigation li.utility{
-	background: url( images/bg_util.png );
-}
 #navigation li.placeHolder h5{
 	background: url( images/icon_spinner.gif ) 1em .5em no-repeat;
 }
@@ -171,37 +173,42 @@ ul.breadCrumb li a:hover{
 	background-repeat: no-repeat;
 }
 
+#navigation ul.utility{
+	background: url( images/bg_util.png );    
+    font-size: .8em;
+}
+
+#navigation li.utility{
+	display:block;
+	cursor: pointer;
+	width: 100%;
+	text-decoration:none;
+	background: url( images/nav_bg.gif );
+}
+
+#navigation ul.utility .label{
+	padding:0 0 0 1em;
+}
+
 #navigation li.utility .icon.spinner{
 	background-image: url( images/icon_utility_spinner.gif );
 	background-position: 0 0;
 	background-repeat: no-repeat;
 }
 
-#navigation li.utility a{
-	display:block;
-	cursor: pointer;
-	float:left;
-	font-size: .8em;
-	color:#aaa;
-	text-decoration:none;
-}
 
 #navigation li.utility a:hover{
 	color:#0af;
 	text-decoration:underline;
 }
 
-#navigation li.utility.label{
-	padding:0 0 0 1em;
-}
-
-#navigation li.utility .addLeaf{
-	background: url( images/icon_add_leaf.png ) no-repeat 1em .5em;
+#navigation li.utility.document a{
+	background: url( images/icon_add_leaf.png ) no-repeat 1em 0em;
 	padding:0 0 0 3em;
 }
 
-#navigation li.utility .addCategory{
-	background: url( images/icon_add_category.png ) no-repeat 1em .5em;
+#navigation li.utility.category a{
+	background: url( images/icon_add_category.png ) no-repeat 1em 0em;
 	padding:0 0 0 3em;
 }
 

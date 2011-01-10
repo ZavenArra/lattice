@@ -55,15 +55,42 @@ Class mop {
 
 
 		if(!isset(self::$config[$arena])){
+
 			$dom = new DOMDocument();
+			$dom->preserveWhiteSpace = false;
 			$dom = new MyDOMDocument($dom);
-			$dom->load( "application/config/$arena.xml");
-      if(!$dom->validate()){
-        print_r($dom->errors);  
-        echo('Validation failed on '."application/config/$arena.xml");
-        //die();
-      }
+
+			$path = Kohana::find_file('config', $arena, true, 'xml'); 
+
+			$dom->load( $path[0] );
+			if(!$dom->validate()){
+				echo('Validation failed on '.$path[0]);
+				print_r($dom->errors);
+				die();
+			}
+
+			if($arena == 'objects'){
+				$clusters = new DOMDocument();
+				$clusters = new MYDOMDocument($clusters);
+				$path = Kohana::find_file('config', 'clusters', true, 'xml');
+				$clusters->load( $path[0] );
+				//echo $clusters->_delegate->saveXML();
+				$clusters = new DOMXPath($clusters->_delegate);
+				$clusterNodes = $clusters->evaluate('//template');
+				foreach($clusterNodes as $node){
+					$node = $dom->_delegate->importNode($node, true);
+					$templatesNode = $dom->_delegate->getElementsByTagName('templates')->item(0);
+					$templatesNode->appendChild($node);
+					//$dom->_delegate->insertBefore($node, $refNode);
+				}
+				//recreate Xpath object
+				//$dom->formatOutput;
+				//echo $dom->_delegate->saveXML();
+			}
+
 			$xpathObject = new DOMXPath($dom->_delegate);
+
+
 			self::$config[$arena] = $xpathObject;
 		}
 		if($contextNode){
@@ -85,8 +112,15 @@ Class mop {
 		if(!isset($column)){
 			return self::$dbmaps[$template_id];
 		} else {
-			return self::$dbmaps[$template_id][$column];
+			if(isset(self::$dbmaps[$template_id][$column])){
+				return self::$dbmaps[$template_id][$column];
+			} else {
+				return null;
+			}
 		}
+	}
+	public static function reinitDbmap($template_id){
+		unset(self::$dbmaps[$template_id]);
 	}
 
 	/*
@@ -97,7 +131,7 @@ Class mop {
 	 $module - module configuration parameters
 	 $constructorArguments - module arguments to constructor
 	 */
-	public static function buildModule($module, $constructorArguments=NULL){
+	public static function buildModule($module, $constructorArguments=array() ){
 		Kohana::log('debug', 'Loading module: ' . $module['modulename']);
 		Kohana::log('debug', 'Loading controller: ' . $module['modulename']);
 

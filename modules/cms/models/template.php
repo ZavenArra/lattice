@@ -40,22 +40,26 @@ class Template_Model extends ORM {
 			$valuefromconfig=NULL;
 			if($column == 'addableObjects'){
 				$xQuery .= '/addableObject';
-				$nodes = mop::config('backend', $xQuery);
+				$nodes = mop::config('objects', $xQuery);
 				$valuefromconfig = array();
 				foreach($nodes as $node){
 					$entry = array();
 					$entry['templateId'] = $node->getAttribute('templateName');
 					$entry['templateAddText'] = $node->getAttribute('addText');
+					$tConfig = mop::config('objects', sprintf('//template[@name="%s"]', $entry['templateId'] ))->item(0);
+					$entry['nodeType'] = $tConfig->getAttribute('nodeType');
+					$entry['contentType'] = $tConfig->getAttribute('contentType');
 					$valuefromconfig[] = $entry;
 				}
 			} else {
-				$node = mop::config('backend', $xQuery)->item(0);
+				$node = mop::config('objects', $xQuery)->item(0);
 				if($node)
 					$valuefromconfig = $node->getAttribute($column);
 			}
 
       return $valuefromconfig;	
 	}
+
 
 	/*
 	 * Function: unique_key($id)
@@ -97,10 +101,26 @@ class Template_Model extends ORM {
 
 	}
 
-	//public save()
-	// if(!$this->loaded) {
-	// check for duplicate templatename
-	// }
+	/*
+	 * Function: getActiveMembers($limit)
+	 * This function queries all objects that use the current initialized template model object as thier template.
+	 * Parameters:
+	 * $limit - number of records to return
+	 * Returns: ORM Iterator of matching records
+	 */
+	public function getActiveMembers($limit=null){
+
+		$o = ORM::Factory('page')
+			->where('template_id', $this->id)
+			->where('activity IS NULL')
+			->orderby('sortorder');
+		if($limit){
+			$o->limit($limit);
+		}
+		$o = $o->find_all();
+		return $o;
+
+	}
 
 
 }

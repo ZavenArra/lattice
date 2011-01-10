@@ -13,7 +13,6 @@ mop.modules.CMS = new Class({
 	titleElement: null,
 	editSlugLink: null,
 	deletePageLink: null,
-
 	initialize: function( anElement, options ){
 //        console.log( "CMS INIT", this.childModules );
 		this.parent( anElement, null, options );		
@@ -53,7 +52,7 @@ mop.modules.CMS = new Class({
 			pageJSON - Object : { css: [ "pathToCSSFile", "pathToCSSFile", ... ], js: [ "pathToJSFile", "pathToJSFile", "pathToJSFile", ... ], html: "String" }
 	*/
 	onPageLoaded: function( pageJSON ){
-
+        
 		var pageData = new Hash( pageJSON );
 		pageData.css.each( function( element, index ){ mop.util.loadStyleSheet( element ); });
 
@@ -64,8 +63,10 @@ mop.modules.CMS = new Class({
 		this.scriptsTotal = scripts.length;
 		this.currentPageLoadIndex = this.pageLoadCount++;
 
+        console.log( "onPageLoaded", pageData.js );
 		if( this.scriptsTotal && this.scriptsTotal > 0 ){
 			scripts.each( function( urlString ){
+			    console.log( this.toString(), "loadJS loading ", urlString );
 				mop.util.loadJS( urlString, { type: "text/javascript", onload: this.onJSLoaded.bind( this, [ pageData.html, this.currentPageLoadIndex ] ) } );
 			}, this);			
 		}else{
@@ -104,30 +105,42 @@ mop.modules.CMS = new Class({
 			this.titleText = this.titleElement.getElement( "h2" ).get( "text" );
 			this.deletePageLink = this.titleElement.getElement( "a.deleteLink" );
 
-    		this.editSlugLink = this.titleElement.getElement( ".field-slug" );
+    		this.editSlugLink = this.titleElement.getElement( ".field-slug label" );
 			if( this.editSlugLink ){
-				this.editSlugLink.addEvent( "click", this.revealSlugEditField.bindWithEvent( this ) );
-				this.titleElement.getElement( ".field-slug" ).retrieve( "Class" ).registerOnLeaveEditModeCallback( this.onSlugEdit.bind( this ) );
+				this.editSlugLink.addEvent( "click", this.toggleSlugEditField.bindWithEvent( this ) );
+                // this.editSlugLink.retrieve( "Class" ).registerOnLeaveEditModeCallback( this.onSlugEdited.bind( this ) );
 			}
-			
-			if( this.titleElement.getElement( ".field-title" ).retrieve("Class") ) this.titleElement.getElement( ".field-title" ).retrieve( "Class").registerOnCompleteCallBack( this.renameNode.bind( this ) );
-
+			var titleIPE = this.titleElement.getElement( ".field-title" ).retrieve("Class");
+			if( titleIPE ) titleIPE.registerOnCompleteCallBack( this.renameNode.bind( this ) );
+			if( titleIPE ) titleIPE.registerOnCompleteCallBack( this.onTitleEdited.bind( this ) );
 			if( this.deletePageLink ) this.deletePageLink.addEvent( "click", this.onDeleteNodeReleased.bindWithEvent( this ) );
 			
-		
 		}
-		
-
 	},
 	
-	onSlugEdit: function(){
+	onTitleEdited: function( response ){
+	    this.editSlugLink.retrieve( "Class" ).setValue( response.slug );
+	},
+	
+	onSlugEdited: function(){
 		this.titleElement.getElement( ".field-slug .ipe" ).addClass("hidden");
 	},
 	
-	revealSlugEditField: function( e ){
+	toggleSlugEditField: function( e ){
+//	    console.log( "revealSlugEditField", e );
 		mop.util.stopEvent( e );
-		this.titleElement.getElement( ".field-slug .ipe" ).removeClass("hidden");
-		this.titleElement.getElement( ".field-slug" ).retrieve( "Class" ).enterEditMode();
+		var slug = this.titleElement.getElement( ".field-slug" );
+		var ipe = slug.getElement( ".ipe" )
+		var label = slug.getElement( "label" );
+		if( ipe.hasClass( "hidden" ) ){
+    		this.titleElement.getElement( ".field-slug .ipe" ).removeClass("hidden");
+    		this.titleElement.getElement( ".field-slug" ).retrieve( "Class" ).enterEditMode();		    
+    		label.set( "text", "Hide slug" );
+		}else{
+		    ipe.addClass( "hidden" );
+		    slug.retrieve( "Class" ).cancelEditing( null );
+    		label.set( "text", "Edit slug" );
+		}
 	},
 	
 	renameNode: function( response, uiInstance ){
@@ -136,7 +149,9 @@ mop.modules.CMS = new Class({
 
 
 	addObject: function( objectName, templateId, parentId, whichTier, placeHolder ){
-//	    console.log( "addObject", this, this.toString() );
+	    console.log( "addObject", this.toString(), $A( arguments ) );
+	    // crappy hack to add... fuckit lets do this right.
+	    parentId = ( parentId )? parentId : 0;
 		var callBack = function( nodeData ){
 			this.onObjectAdded( nodeData, parentId, whichTier, placeHolder );
 		};

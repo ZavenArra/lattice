@@ -193,7 +193,7 @@ class Page_Model extends ORM {
 		}
 
 		//find any lists
-		foreach(mop::config('backend', sprintf('//template[@name="%s"]/elements/list', $this->template->templatename)) as $list){
+		foreach(mop::config('objects', sprintf('//template[@name="%s"]/elements/list', $this->template->templatename)) as $list){
 
 			$family = $list->getAttribute('family');	
 			$content[$family] = $this->getListContentAsArray($family);
@@ -442,7 +442,7 @@ class Page_Model extends ORM {
 
 		//do the resizing
     $templatename = $this->template->templatename;
-		$resizes = mop::config('backend', sprintf('//template[@name="%s"]/elements/*[field="%s"]/resize', 
+		$resizes = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[field="%s"]/resize', 
       $templatename,
 			$field
 		)
@@ -599,6 +599,23 @@ class Page_Model extends ORM {
 			$this->where('template_id', $result->current()->id);
 		}
 		return $this;
+	}
+
+	public function parentFilter($parentid){
+		$this->where('parentid', $parentid);	
+	}
+
+	public function noContainerObjects(){
+			$db = new Database();
+			$res = $db->query("Select id from templates where nodeType = 'container'");
+			$tIds = array();
+			foreach($res as $container){
+				$tIds[] = $container->id;
+			}
+			if(count($tIds)){
+				$this->notin('template_id', $tIds);
+			}
+			return $this;
 	}
 
 	public function publishedFilter(){
