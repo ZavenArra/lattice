@@ -299,7 +299,7 @@ mop.ui.Sortable = new Class({
 	 	var scrollerElement = ( $type( scrollerTarget ) != "element" )? $( document.body ) : scrollerTarget;
         this.scroller = new Scroller( scrollerElement, { area: 20, velocity: 1 } );
         
-	},     
+	}
 });
 
 mop.ui.UIElement = new Class({
