@@ -511,6 +511,8 @@ class CMS {
 	}
 
 	public static function makeFileSaveName($filename){
+    $filename = str_replace('&', '_', $filename);
+
 		$xarray = explode('.', $filename);
 		$nr = count($xarray);
 		$ext = $xarray[$nr-1];
