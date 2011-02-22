@@ -132,6 +132,8 @@ Class mop {
 	 $constructorArguments - module arguments to constructor
 	 */
 	public static function buildModule($module, $constructorArguments=array() ){
+		//need to look into this, these should be converged or interoperable
+		$module['modulename'] = $module['elementname'];
 		Kohana::log('debug', 'Loading module: ' . $module['modulename']);
 		Kohana::log('debug', 'Loading controller: ' . $module['modulename']);
 
