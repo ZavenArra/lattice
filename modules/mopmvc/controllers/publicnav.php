@@ -1,6 +1,6 @@
 <?
 
-Class publicNav_Controller extends Controller {
+Class publicNav_Controller extends MOP_Controller_Core {
 
 
 	public function createIndexView(){
