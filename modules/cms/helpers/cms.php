@@ -159,6 +159,7 @@ class CMS {
 		if(is_array($parameters)){
 			foreach($parameters as $element){
 
+
 				//check if this element type is in fact a template
 				$tConfig = mop::config('objects', sprintf('//template[@name="%s"]', $element['type']))->item(0);
 				//echo $object->id;
@@ -235,17 +236,20 @@ class CMS {
 					$controller = new Associator_Controller($element['filters'], $object->id, $element['field']);
 					$controller->createIndexView();
 					$controller->view->loadResources();
-					$htmlChunks[$element['type'].'_'.$element['field']] = $controller->view->render();
+					$key = $element['type'].'_'.$element['field']; 
+					$htmlChunks[$key] = $controller->view->render();
 					break;
 				default:
 					//deal with html template elements
+					$key = $element['type'].'_'.$element['field']; 
+					$html = null;
 					if(!isset($element['field'])){
-						$element = mopui::buildUIElement($element, null);
 						$element['field'] = CMS_Controller::$unique++;
-					} else if(!$element = mopui::buildUIElement($element, $object->contenttable->$element['field'])){
+						$html = mopui::buildUIElement($element, null);
+					} else if(!$html = mopui::buildUIElement($element, $object->contenttable->$element['field'])){
 						throw new Kohana_User_Exception('bad config in cms', 'bad ui element');
 					}
-					$htmlChunks[$element['type'].'_'.$element['field']] = $element;
+					$htmlChunks[$key] = $html;
 					break;
 				}
 			}
@@ -260,7 +264,7 @@ class CMS {
     $elementsConfig = array();
 		//echo 'BUILDING'.$object->template->templatename.'<br>'; 
 		foreach($elements as $element){
-			//echo 'FOUND AN ELEMENT<br>';
+			//echo 'FOUND AN ELEMENT '.$element->tagName.'<br>';
 			$entry = array();
       $entry['type'] = $element->tagName;
 			for($i=0; $i<$element->attributes->length; $i++){

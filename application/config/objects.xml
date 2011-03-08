@@ -96,6 +96,8 @@
 			<elements>
 				<text field="title" label="Title" rows="1"/>
 				<text field="description" label="Description"/>
+				<text field="detail1" label="Detail 1"/>
+				<text field="detail2" label="Detail 2"/>
 			</elements>
 		</template>
 			
