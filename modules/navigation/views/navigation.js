@@ -191,6 +191,7 @@ mop.modules.navigation.Navigation = new Class({
 	*/
 	addListing: function( whichTier, hasAddableObjects ){
 
+        
 		var leftMargin = ( whichTier > 0 )? this.colWidth * ( whichTier ) : 0;
 		
 		var navElementWidth  = ( ( whichTier ) * this.colWidth > this.totalWidth )? ( whichTier ) * ( this.colWidth ): this.totalWidth;
@@ -209,7 +210,7 @@ mop.modules.navigation.Navigation = new Class({
 		});
 
 		var newList = new Element( "ul", { "class": ( hasAddableObjects )? "tier grid_4" : "tier tall grid_4" } );
-
+console.log( "A : ", newList ); 
 		newList.inject( newTier ); 
 		newTier.inject( this.navElement );
 		
@@ -272,10 +273,20 @@ mop.modules.navigation.Navigation = new Class({
 		this.tiers[ whichTier ] = [];
 		this.tiers[ whichTier ].activeChild = null;
 		
-		this.addListing( whichTier, Boolean( aNode.addableObjects ) );
-		if( aNode.addableObjects ) this.addUtilityNode( aNode, whichTier );
+		this.addListing( whichTier, Boolean( aNode.addableObjects || this.userLevel == "superuser" ) );
+		console.log( "*** ** ** ", aNode.addableObjects );
+		if( aNode.addableObjects || this.userLevel == 'superuser' ) this.addUtilityNode( aNode, whichTier );
 		
-		var objectToTraverse = ( aNode.children )? aNode.children : aNode;
+		var objectToTraverse;
+	    
+		if( aNode.children ){
+		    console.log("::::::::: A");
+		    objectToTraverse = aNode.children;
+		}else{ 
+		    console.log("::::::::: B");
+		    objectToTraverse = aNode;
+		}
+
 
 		if( objectToTraverse.length ){
 		    var deepLinkTarget = this.getDeepLinkTarget();
@@ -338,14 +349,12 @@ mop.modules.navigation.Navigation = new Class({
 	},
 	
 	addUtilityNode: function( aNode, whichTier ){
-	
 		var tierElement = this.getTierElement( whichTier );
 		if( !tierElement.getElement( '.utility' ) ){
     		var utilityNode = new Element( "ul", { "class": "utility grid_4" } );
     		utilityNode.inject( tierElement );		    
 		}
 		var tier = this.tiers[ whichTier ];
-		
 		if( !tierElement ) return;
 				
 		var utilityNode;
@@ -356,25 +365,27 @@ mop.modules.navigation.Navigation = new Class({
 			utilityNode.inject( tierElement, "after" );
 		}
 
-		if( aNode.addableObjects.length > 0 || this.userLevel == "superuser"){
-			var label = new Element( "li", {
-				"class": "label",
-				"html" : "<a'>Add an Item to this tier.</a><div class='clear'></div>"
-			});
-			utilityNode.adopt( label );			
+		var label = new Element( "li", {
+			"class": "label",
+			"html" : "<a'>Add an Item to this tier.</a><div class='clear'></div>"
+		});
+		
+		utilityNode.adopt( label );			
+		
+		if( aNode.addableObjects ){
+    		aNode.addableObjects.each( function( leafObj, index ){ 
+    			var node = new mop.modules.navigation.UtilityNode( leafObj, aNode.id, this, whichTier );
+    			tier.unshift( node );
+    			tierElement.getSibling(".utility").adopt( node.element  );			
+    		}, this );		    
 		}
 		
-		aNode.addableObjects.each( function( leafObj, index ){ 
-			var node = new mop.modules.navigation.UtilityNode( leafObj, aNode.id, this, whichTier );
-			tier.unshift( node );
-			node.element.inject( tierElement.getSibling(".utility") );			
-		}, this );
-		
 		if( this.userLevel == "superuser" ){
-		    console.log( aNode.id, this, whichTier );
+		    console.log( "superuser", aNode.id, this, whichTier );
 		    var node = new mop.modules.navigation.SuperUserUtilityNode( aNode.id, this, whichTier, aNode.title );
 			tier.unshift( node );
-			node.element.inject( tierElement.getSibling(".utility") );			
+			console.log( ":: ", node.element );
+	        tierElement.getSibling(".utility").adopt( node.element );
 		}
 		
 		if( utilityNode ){
@@ -781,7 +792,7 @@ mop.modules.navigation.Node = new Class({
 		this.nav.setActiveChild( this.tier, this.element );
 		this.nav.addBreadCrumb( this.parentId, this.tier );
 		mop.HistoryManager.changeState( "pageId", this.nodeData.id );
-		if( ( this.nodeData.addableObjects && this.nodeData.addableObjects.length > 0 ) || ( this.nodeData.children && this.nodeData.children.length > 0 )  ){
+		if( this.nodeData.addableObjects  || ( this.nodeData.children && this.nodeData.children.length > 0 )  ){
 			this.nav.showCategory( this.nodeData, this.tier + 1 );
 		}else if( this.nodeData.landing != "NO_LANDING" ){
 			this.nav.loadPage( this.nodeData.id, this.tier, "leafNodeOnClick" );
