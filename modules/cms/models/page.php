@@ -184,6 +184,7 @@ class Page_Model extends ORM {
 		$content['title'] = $this->__get('contenttable')->title;
 		$content['slug'] = $this->slug;
 		$content['dateadded'] = $this->dateadded;
+		$content['templateName'] = $this->template->templatename;
 
 		$fields = ORM::Factory('objectmap')
 			->where('template_id', $this->template->id)

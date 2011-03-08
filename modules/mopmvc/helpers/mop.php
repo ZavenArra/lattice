@@ -132,6 +132,10 @@ Class mop {
 	 $constructorArguments - module arguments to constructor
 	 */
 	public static function buildModule($module, $constructorArguments=array() ){
+		//need to look into this, these should be converged or interoperable
+		if(isset($module['elementname'])){
+			$module['modulename'] = $module['elementname'];
+		}
 		Kohana::log('debug', 'Loading module: ' . $module['modulename']);
 		Kohana::log('debug', 'Loading controller: ' . $module['modulename']);
 
@@ -225,8 +229,7 @@ Class mop {
 				}
 
 				//apply optional template filter
-				$objects->templateFilter($eDataConfig->getAttribute('templateFilter'));
-
+				$objects = $objects->templateFilter($eDataConfig->getAttribute('templateFilter'));
 
 				//apply optional SQL where filter
 				if($where = $eDataConfig->getAttribute('where')){

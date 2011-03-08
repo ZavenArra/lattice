@@ -1,6 +1,6 @@
 <?
 
-Class publicNav_Controller extends Controller {
+Class publicNav_Controller extends MOP_Controller_Core {
 
 
 	public function createIndexView(){
@@ -36,7 +36,7 @@ Class publicNav_Controller extends Controller {
 				$entry['children'] = array();
 				foreach($children as $child){
 					$childEntry = array();
-					$childEntry['title'] = $object->contenttable->title;
+					$childEntry['title'] = $child->contenttable->title;
 					$childEntry['slug'] = $child->slug;
 					$childEntry['path'] = $object->slug.'/'.$child->slug;
 					$navi[$slug]['children'][] = $childEntry;

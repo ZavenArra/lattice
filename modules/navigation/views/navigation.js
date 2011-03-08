@@ -237,7 +237,7 @@ console.log( "A : ", newList );
 			theTier.each( function( node, index){
 //				console.log( node );
 				theTier.erase( node );
-				node.destroy();
+			//	node.destroy();
 			});
 			this.tiers.erase(whichTier);
 		}

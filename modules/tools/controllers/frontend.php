@@ -134,12 +134,12 @@ Class Frontend_Controller extends Controller {
 		echo $indent."<ul id=\"$label\" >\n";
 		echo $indent."<?foreach({$prefix}['$label'] as \${$label}Item):?>\n";
 		if($doSwitch){
-			echo $indent." <?switch(\${$label}Item['templateName']){\n";
+			echo $indent." <?switch(\${$label}Item['templateName']){?>\n";
 		}
 
 		foreach($templates as $templateName){
 			if($doSwitch){
-				echo $indent." case '$templateName':?>\n";
+				echo $indent."<? case '$templateName':?>\n";
 			}
 			echo $indent."  <li class=\"$templateName\">\n";
       echo $indent."   "."<h2><?=\${$label}Item['title'];?></h2>\n\n";
@@ -155,11 +155,11 @@ Class Frontend_Controller extends Controller {
 
 			echo $indent."  </li>\n";
 			if($doSwitch){
-				$indent."  break;\n";
+				echo $indent."<?  break;?>\n";
 			}
 		}
 		if($doSwitch){
-			echo $indent." }\n";
+			echo $indent."<? }?>\n";
 		}
 
 
