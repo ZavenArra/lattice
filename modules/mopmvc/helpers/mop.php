@@ -229,8 +229,7 @@ Class mop {
 				}
 
 				//apply optional template filter
-				$objects->templateFilter($eDataConfig->getAttribute('templateFilter'));
-
+				$objects = $objects->templateFilter($eDataConfig->getAttribute('templateFilter'));
 
 				//apply optional SQL where filter
 				if($where = $eDataConfig->getAttribute('where')){
