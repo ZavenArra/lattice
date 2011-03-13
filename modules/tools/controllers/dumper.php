@@ -11,11 +11,45 @@ class dumper_Controller extends Controller {
 
 	public function export($xslt=''){
 		//get directory listing of application/media
+    //
 
-    $objects = ORM::Factory('pages')
+    $doc = new DOMDocument('1.0', 'UTF-8');
+    $doc->formatOutput = true;
+
+    $objects = ORM::Factory('page')
       ->where('activity IS NULL')
       ->where('published', 1)
       ->find_all();
+
+    foreach($objects as $object){
+      $item = $doc->createElement($object->template->templatename);
+
+      $content = $object->getContent();
+      foreach($content as $key=>$value){
+        if($key=='templateName'){
+          continue;
+        }
+        $field = $doc->createElement($key);
+        if(is_array($value)){
+
+        } else if(is_object($value)){
+          switch(get_class($value)){
+          case 'File_Model':
+            //or copy to directory and just use filename
+            $field->appendChild( $doc->createTextNode($value->fullpath));
+            break;
+          }
+        } else {
+          $field->appendChild( $doc->createTextNode($value));
+        }
+        $item->appendChild($field);
+      }
+      $doc->appendChild($item);
+
+    }
+    $doc->save('application/media/export.xml');
+
+    exit;
 
 		foreach(mop::config($xmlFile, 'item', $context)  as $item){
 			$lists = array();
