@@ -7,6 +7,10 @@
 
   <p class="description"> <?=$simplelistListItem['description'];?></p>
 
+  <p class="detail1"> <?=$simplelistListItem['detail1'];?></p>
+
+  <p class="detail2"> <?=$simplelistListItem['detail2'];?></p>
+
  </li>
 <?endforeach;?>
 </ul>

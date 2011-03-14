@@ -118,5 +118,6 @@ if ( ! IN_PRODUCTION)
 	}
 }
 
+
 // Initialize.
 require SYSPATH.'core/Bootstrap'.EXT;

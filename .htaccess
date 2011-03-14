@@ -1,4 +1,5 @@
 # Turn on URL rewriting
+Options +FollowSymLinks
 RewriteEngine On
 
 # Installation directory

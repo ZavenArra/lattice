@@ -190,7 +190,9 @@ class Page_Model extends ORM {
 			->where('template_id', $this->template->id)
 			->find_all();
 		foreach($fields as $map){
-			$content[$map->column] = $this->contenttable->{$map->column};
+      if(mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $this->template->templatename, $map->column))->length){
+        $content[$map->column] = $this->contenttable->{$map->column};
+      }
 		}
 
 		//find any lists
