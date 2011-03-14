@@ -9,45 +9,80 @@ class dumper_Controller extends Controller {
 		}
 	}
 
+  private function getObjectFields($object){
+    $fields = array();
+    $content = $object->getContent();
+    foreach($content as $key=>$value){
+      if($key=='templateName'){
+        continue;
+      }
+      $field = $this->doc->createElement($key);
+      //print_r($value);
+      if(is_array($value)){
+
+      } else if(is_object($value)){
+        switch(get_class($value)){
+        case 'File_Model':
+          //or copy to directory and just use filename
+          $field->appendChild( $this->doc->createTextNode($value->fullpath));
+          break;
+        case 'Page_Model':
+          foreach($this->getObjectFields($value) as $subField){
+            $field->appendChild($subField);
+          }
+          break;
+        }
+      } else {
+        $field->appendChild( $this->doc->createTextNode($value));
+      }
+      $fields[] = $field;
+    }
+    return $fields;
+  }
+
+  private function exportTier($objects){
+
+    $nodes = array();
+    foreach($objects as $object){
+      $item = $this->doc->createElement($object->template->templatename);
+
+      foreach($this->getObjectFields($object) as $field){
+        $item->appendChild($field);
+      }
+
+      //and get the children
+      $childObjects = ORM::Factory('page')
+        ->where('activity IS NULL')
+        ->where('published = 1')
+        ->where('parentid', $object->id)
+        ->find_all();
+      foreach($this->exportTier($childObjects) as $childItem){
+        $item->appendChild($childItem);
+      }
+      $nodes[] = $item;
+    }
+
+    return $nodes;
+  }
+
 	public function export($xslt=''){
 		//get directory listing of application/media
-    //
 
-    $doc = new DOMDocument('1.0', 'UTF-8');
-    $doc->formatOutput = true;
+    $this->doc = new DOMDocument('1.0', 'UTF-8');
+    $this->doc->formatOutput = true;
 
     $objects = ORM::Factory('page')
       ->where('activity IS NULL')
       ->where('published', 1)
+      ->where('parentid', 0)
       ->find_all();
 
-    foreach($objects as $object){
-      $item = $doc->createElement($object->template->templatename);
-
-      $content = $object->getContent();
-      foreach($content as $key=>$value){
-        if($key=='templateName'){
-          continue;
-        }
-        $field = $doc->createElement($key);
-        if(is_array($value)){
-
-        } else if(is_object($value)){
-          switch(get_class($value)){
-          case 'File_Model':
-            //or copy to directory and just use filename
-            $field->appendChild( $doc->createTextNode($value->fullpath));
-            break;
-          }
-        } else {
-          $field->appendChild( $doc->createTextNode($value));
-        }
-        $item->appendChild($field);
-      }
-      $doc->appendChild($item);
-
+    foreach($this->exportTier($objects) as $item){
+      $this->doc->appendChild($item);
     }
-    $doc->save('application/media/export.xml');
+    
+
+    $this->doc->save('application/media/export.xml');
 
     exit;
 
