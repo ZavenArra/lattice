@@ -313,6 +313,8 @@ console.log( "A : ", newList );
 			onComplete: function( response, json ){ this.showNode( json, whichTier ) }.bind( this )
 		}).send();
 
+    this.loadPage( aNode.id , whichTier );
+
 	},
 	
 	onBreadCrumbClicked: function( aNode ){
