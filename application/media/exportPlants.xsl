@@ -149,9 +149,13 @@ primaryIdentImage
       </xsl:with-param>
     </xsl:call-template>
 
-        fullSeasonsText text,
-        fullPrimarySeasonsText text,
-        fullEcoStatusText text,
+    fullSeasonsText text,
+    @<xsl:call-template name="translateSeasons">
+      <xsl:with-param name="seasons" select="seasonsEdible"/>
+    </xsl:call-template>
+
+    fullPrimarySeasonsText text,
+    fullEcoStatusText text,
     @<xsl:call-template name="listOfSelectedValues">
       <xsl:with-param name="listNodes">
         <xsl:call-template name="translate">
@@ -164,6 +168,46 @@ primaryIdentImage
     </xsl:call-template>
 
         class text
+      </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template name="what" match="seasons/* = 1">
+      <xsl:value-of select="."/>
+    </xsl:template>
+
+    <xsl:template name="translateSeasons">
+      <xsl:param name="seasons"/>
+      <xsl:call-template name="what"/>
+
+      <xsl:for-each select="$seasons/*">
+        <xsl:variable name="thePosition"><xsl:value-of select="position()"/></xsl:variable>
+
+        -<xsl:value-of select="$thePosition"/>
+
+
+        <xsl:choose>
+          <xsl:when test="position()=0">
+            nar
+          </xsl:when>
+          <xsl:when test=".='' or .='0'">
+            <xsl:choose>
+              <xsl:when test="$seasons[position() = position()-1]='1'">
+                stopping here
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="$seasons[position()-1]"/>
+                <xsl:value-of select="position()-1"/>
+                skipping
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:when>
+          <xsl:when test=". = '1'">
+            ON
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="."/>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:for-each>
     </xsl:template>
 
