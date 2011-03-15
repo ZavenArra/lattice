@@ -111,57 +111,210 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 primaryIdentImage
  primaryImage INTEGER,
     @<xsl:value-of select="teaser"/>,
-    <xsl:call-template name="listOfSelectedValues">
+    @<xsl:call-template name="listOfSelectedValues">
       <xsl:with-param name="listNodes">
-          <xsl:call-template name="translateFoodUses">
-            <xsl:with-param name="listNodes" select="foodUses/*"/>
-          </xsl:call-template>
+        <xsl:call-template name="translateFoodUses">
+          <xsl:with-param name="listNodes" select="foodUses/*"/>
+        </xsl:call-template>
       </xsl:with-param>
     </xsl:call-template>
-    <xsl:call-template name="listOfSelectedValues">
+    @<xsl:call-template name="listOfSelectedValues">
       <xsl:with-param name="listNodes">
-          <xsl:call-template name="translateEdibleParts">
-            <xsl:with-param name="listNodes" select="edibleParts/*"/>
-          </xsl:call-template>
+        <xsl:call-template name="translate">
+          <xsl:with-param name="listNodes" select="edibleParts/*"/>
+          <xsl:with-param name="translations">
+            <xsl:call-template name="ediblePartsTranslations"/>
+          </xsl:with-param>
+        </xsl:call-template>
+      </xsl:with-param>
+    </xsl:call-template>
+    @<xsl:call-template name="listOfSelectedValues">
+      <xsl:with-param name="listNodes">
+        <xsl:call-template name="translate">
+          <xsl:with-param name="listNodes" select="habitats/*"/>
+          <xsl:with-param name="translations">
+            <xsl:call-template name="habitatsTranslations"/>
+          </xsl:with-param>
+        </xsl:call-template>
+      </xsl:with-param>
+    </xsl:call-template>
+    @<xsl:call-template name="listOfSelectedValues">
+      <xsl:with-param name="listNodes">
+        <xsl:call-template name="translate">
+          <xsl:with-param name="listNodes" select="primaryHabitats/*"/>
+          <xsl:with-param name="translations">
+            <xsl:call-template name="habitatsTranslations"/>
+          </xsl:with-param>
+        </xsl:call-template>
       </xsl:with-param>
     </xsl:call-template>
 
-
-    <!--
-    <xsl:for-each select="foodUses/salad | foodUses/potherb[contains(.,'1')]">
-      <xsl:value-of select="name()"/>
-    </xsl:for-each>
-    -->
-        fullFoodUses text,
-        fullEdiblePartsText text,
-        fullHabitatsText text,
-        fullPrimaryHabitatsText text,
         fullSeasonsText text,
         fullPrimarySeasonsText text,
         fullEcoStatusText text,
-        fullPlantTypeText text,
+    @<xsl:call-template name="listOfSelectedValues">
+      <xsl:with-param name="listNodes">
+        <xsl:call-template name="translate">
+          <xsl:with-param name="listNodes" select="plantTypes/*"/>
+          <xsl:with-param name="translations">
+            <xsl:call-template name="plantTypesTranslations"/>
+          </xsl:with-param>
+        </xsl:call-template>
+      </xsl:with-param>
+    </xsl:call-template>
+
         class text
       </xsl:for-each>
     </xsl:template>
 
 
+    <xsl:template name="habitatsTranslations">
+      <translation>
+        <key>lawns</key>
+        <value>Lawns</value>
+      </translation>
+      <translation>
+        <key>fields</key>
+        <value>Fields</value>
+      </translation>
+      <translation>
+        <key>thickets</key>
+        <value>Thickets</value>
+      </translation>
+      <translation>
+        <key>woodlands</key>
+        <value>Woodlands</value>
+      </translation>
+      <translation>
+        <key>marshes</key>
+        <value>Marhses</value>
+      </translation>
+      <translation>
+        <key>swamps</key>
+        <value>Swamps</value>
+      </translation>
+      <translation>
+        <key>seashore</key>
+        <value>Seashore</value>
+      </translation>
+      <translation>
+        <key>disturbed</key>
+        <value>Disturbed Habitats</value>
+      </translation>
+      <translation>
+        <key>edgeHabitats</key>
+        <value>Edget Habitats</value>
+      </translation>
+      <translation>
+        <key>trailAndRoadside</key>
+        <value>Trail and Roadside</value>
+      </translation>
+      <translation>
+        <key>bogs</key>
+        <value>Bogs</value>
+      </translation>
+      <translation>
+        <key>riversLakes</key>
+        <value>Rivers and Lakes</value>
+      </translation>
+      <translation>
+        <key>parks</key>
+        <value>Parks</value>
+      </translation>
+      <translation>
+        <key>cultiavedPlances</key>
+        <value>Cultivatd Places</value>
+      </translation>
+    </xsl:template>
+    <xsl:template name="plantTypesTranslations">
+      <translation>
+        <key>annual</key>
+        <value>Annual</value>
+      </translation>
+      <translation>
+        <key>biennial</key>
+        <value>Biennial</value>
+      </translation>
+      <translation>
+        <key>perennialHerbaceous</key>
+        <value>Perennial Herbaceous</value>
+      </translation>
+      <translation>
+        <key>vine</key>
+        <value>Vine</value>
+      </translation>
+      <translation>
+        <key>shrub</key>
+        <value>Shrub</value>
+      </translation>
+      <translation>
+        <key>tree</key>
+        <value>Tree</value>
+      </translation>
+      <translation>
+        <key>seaweed</key>
+        <value>Seaweed</value>
+      </translation>
+    </xsl:template>
 
-    <xsl:template name="translateEdibleParts">
+    <xsl:template name="ediblePartsTranslations">
+      <translation>
+        <key>leaves</key>
+        <value>Leaves</value>
+      </translation>
+      <translation>
+        <key>flower</key>
+        <value>Flowers</value>
+      </translation>
+      <translation>
+        <key>root</key>
+        <value>Roots</value>
+      </translation>
+      <translation>
+        <key>nut</key>
+        <value>Nuts</value>
+      </translation>
+      <translation>
+        <key>seed</key>
+        <value>Seeds</value>
+      </translation>
+      <translation>
+        <key>stem</key>
+        <value>Stems</value>
+      </translation>
+      <translation>
+        <key>fruitBerry</key>
+        <value>Fruits/Berries</value>
+      </translation>
+      <translation>
+        <key>pod</key>
+        <value>Pods</value>
+      </translation>
+      <translation>
+        <key>bud</key>
+        <value>Buds</value>
+      </translation>
+      <translation>
+        <key>shoot</key>
+        <value>Shoots</value>
+      </translation>
+      <translation>
+        <key>twigs</key>
+        <value>Twigs</value>
+      </translation>
+    </xsl:template>
+
+    <xsl:template name="translate">
       <xsl:param name="listNodes"/>
+      <xsl:param name="translations"/>
       <xsl:element name="items">
         <xsl:for-each select="$listNodes">
+          <xsl:variable name="nodeName"><xsl:value-of select="name()"/></xsl:variable>
           <xsl:variable name="translatedValue">
-            <xsl:choose>
-              <xsl:when test="name() = 'salad'">Salad</xsl:when>
-              <xsl:when test="name() = 'potherb'">Potherb</xsl:when>
-              <xsl:when test="name() = 'root'">Root</xsl:when>
-              <xsl:when test="name() = 'nut'">Nut</xsl:when>
-              <xsl:when test="name() = 'seed'">Seed</xsl:when>
-              <xsl:when test="name() = 'seasoning'">Seasoning</xsl:when>
-              <xsl:when test="name() = 'tea'">Tea</xsl:when>
-              <xsl:when test="name() = 'fruitBerry'">Fruit/Berry</xsl:when>
-            </xsl:choose>
-          </xsl:variable>
+            <xsl:for-each select="exslt:node-set($translations)/*">
+              <xsl:if test="key = $nodeName"><xsl:value-of select="value"/></xsl:if>
+              </xsl:for-each>
+            </xsl:variable>
           <xsl:if test="string-length($translatedValue)">
             <xsl:element name="item">
               <xsl:element name="name">
