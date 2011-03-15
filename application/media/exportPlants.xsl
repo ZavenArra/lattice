@@ -137,6 +137,9 @@ primaryIdentImage
         fullHabitatsText text,
         fullPrimaryHabitatsText text,
         fullSeasonsText text,
+        @<xsl:call-template name="translateSeasons">
+          <xsl:with-param name="seasons" select="seasonsEdible/*"/>
+        </xsl:call-template>
         fullPrimarySeasonsText text,
         fullEcoStatusText text,
         fullPlantTypeText text,
@@ -145,6 +148,22 @@ primaryIdentImage
     </xsl:template>
 
 
+    <xsl:template name="translateSeasons">
+      <xsl:param name="seasons"/>
+      <xsl:for-each select="$seasons">
+        <xsl:choose>
+          <xsl:when test="position() = 0">
+            nar
+          </xsl:when>
+          <xsl:when test=". = ''">
+            EMPTY
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="."/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:for-each>
+    </xsl:template>
 
     <xsl:template name="translateEdibleParts">
       <xsl:param name="listNodes"/>
