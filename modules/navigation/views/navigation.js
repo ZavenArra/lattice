@@ -40,7 +40,7 @@ mop.modules.navigation.Navigation = new Class({
 
 		mop.HistoryManager.addListener( this );
 		this.addEvent( "pageIdChanged", this.onPageIdChanged );
-		this.getNavTree();
+		this.loadNode( 0, 0);
 
 		this.addObjectPosition = mop.util.getValueFromClassName( "addObjectPosition", this.element.get( "class" ) );
 
@@ -182,7 +182,7 @@ mop.modules.navigation.Navigation = new Class({
 		this.navTree = navTree;
 		this.navTreeLookupTable = new Hash();
 		this.createNavTreeLookupTable( navTree );
-		this.showCategory( this.navTree , 0 );
+		this.loadNode( this.navTree , 0 );
 	},
 
 	/*
@@ -255,75 +255,64 @@ console.log( "A : ", newList );
 		theTier = null;
 //		crumb = null;
 	},
+	
+	/* Function: showNode
+	   Called on loadNode response
+	   Arguments: objectToTraverse 
+    */
+    showNode: function( aNode, whichTier){
+        //typeof aNode, whichTier, aNode.length );
+        aNode = JSON.decode( aNode );
+        console.log( "showNode ........... ", aNode );
+        var preventPageLoad = true;
+        if( aNode.length ){
+            var deepLinkTarget = this.getDeepLinkTarget();
+        	aNode.each( function( childNode, anIndex ){
+                var node = this.addNode( aNode.id, childNode, whichTier );
+        		if( childNode.follow || childNode.slug == deepLinkTarget ){
+        			childNode.follow = false;
+        			preventPageLoad = false;
+        			if( node ) this.setActiveChild( whichTier, node.element );
+        			var slideTier = new Fx.Scroll( this.getTierElement( whichTier ) );
+        			if( node )  slideTier.start( node.element.getCoordinates().left, node.element.getCoordinates().top );
+        			slideTier = null;
+        			if( aNode.id ) this.breadCrumbs.addCrumb( { label: aNode.title, id: aNode.id, index: whichTier } );
+        			this.loadNode( childNode, whichTier+1 );
+        		}
+        	}, this );
+        }
 
+        if( aNode.allowChildSort == "true" ) this.makeTierSortable( whichTier );
+        this.navSlide.toElement( this.getTierElement( whichTier ) );
+        if( preventPageLoad ) this.loadPage( aNode.id , whichTier );
+		
+        
+    },
+    
 	/*
-		Function: showCategory
+		Function: loadNode
 		Replaces a given re with new listing
 		Arguments:
 			aNode - node data from navTree
 			whichTier - where are we doing this in the navigation...  
 	*/
-	showCategory: function( aNode, whichTier ){
-
-//		console.log( "showCategory :::: ", aNode );//, " : ", aNode.id, " : ", whichTier, aNode.children );
-
-		var showPage = true;
-
+	loadNode: function( aNode, whichTier ){
+		console.log( "loadNode :::: ", aNode );//, " : ", aNode.id, " : ", whichTier, aNode.children );
 		this.clearTier( whichTier );
 		this.tiers[ whichTier ] = [];
 		this.tiers[ whichTier ].activeChild = null;
-		
 		this.addListing( whichTier, Boolean( aNode.addableObjects || this.userLevel == "superuser" ) );
-		console.log( "*** ** ** ", aNode.addableObjects );
+		
 		if( aNode.addableObjects || this.userLevel == 'superuser' ) this.addUtilityNode( aNode, whichTier );
 		
-		var objectToTraverse;
-	    
-		if( aNode.children ){
-		    console.log("::::::::: A");
-		    objectToTraverse = aNode.children;
-		}else{ 
-		    console.log("::::::::: B");
-		    objectToTraverse = aNode;
-		}
+		var nodeId = ( aNode )? aNode.id : 0;
+		var url = mop.util.getAppURL() + "ajax/"+ this.instanceName + "/getNavNode/" + nodeId;
+//		mop.util.JSONSend( url, null , { onComplete: function( response, json ){ this.showNode( json, whichTier ) }.bind( this ) } );
+		new Request.JSON({
+			url: url,
+			onComplete: function( response, json ){ this.showNode( json, whichTier ) }.bind( this )
+		}).send();
 
-
-		if( objectToTraverse.length ){
-		    var deepLinkTarget = this.getDeepLinkTarget();
-			objectToTraverse.each( function( childNode, anIndex ){
-				// Todo: Figure out recursion for opening deeplinks
-				var node;
-				switch( childNode.contentType ){
-					default:
-					case "document":
-						node = this.addLeafNode( aNode.id, childNode, whichTier );
-					break;
-					case "category":
-						node = this.addCategoryNode( aNode.id, childNode, whichTier );
-					break;
-				}
-//                console.log( ":: ", childNode.title, childNode.slug, childNode.follow, deepLinkTarget );
-				if( childNode.follow || childNode.slug == deepLinkTarget ){
-					childNode.follow = false;
-					showPage = false;
-					if( node ) this.setActiveChild( whichTier, node.element );
-					var slideTier = new Fx.Scroll( this.getTierElement( whichTier ) );
-					if( node )  slideTier.start( node.element.getCoordinates().left, node.element.getCoordinates().top );
-					slideTier = null;
-					if( aNode.id ) this.breadCrumbs.addCrumb( { label: aNode.title, id: aNode.id, index: whichTier } );
-					this.showCategory( childNode, whichTier+1 );
-				}
-			}, this );
-		}
-		
-		if( aNode.allowChildSort == "true" ) this.makeTierSortable( whichTier );
-		
-		this.navSlide.toElement( this.getTierElement( whichTier ) );
-
-		if( showPage ) this.loadPage( aNode.id , whichTier );
-		
-		objectToTraverse = null;
-		
 	},
 	
 	onBreadCrumbClicked: function( aNode ){
@@ -332,7 +321,7 @@ console.log( "A : ", newList );
 		}else{
 			node = this.navTreeLookupTable[ aNode.id ];
 		}
-		this.showCategory( node, aNode.index );
+		this.loadNode( node, aNode.index );
 	},
 	
 	addBreadCrumb: function( nodeParentId, whichTier ){
@@ -413,12 +402,11 @@ console.log( "A : ", newList );
 		aNode.morph( { "top": 0 } );		
 	},
 	
-	addLeafNode: function( parentId, node, whichTier, placementArg ){
+	addNode: function( parentId, node, whichTier, placementArg ){
 		var placement = placementArg || 'bottom';
 	 	var node = new mop.modules.navigation.Node( parentId, node, this, whichTier );
 		this.tiers[ whichTier ].unshift( node );
-//		console.log( this + " addLeafNode");
-		node.element.inject( this.getTierElement( whichTier, "addLeaf"), placement  );
+		node.element.inject( this.getTierElement( whichTier ), placement  );
 		try{
 			return node;
 		}finally{
@@ -426,20 +414,6 @@ console.log( "A : ", newList );
 		}
 	},
 	
-	addCategoryNode: function( parentId, node, whichTier, placementArg ){
-		var placement = placementArg || 'bottom';
-	 	var node = new mop.modules.navigation.Node( parentId, node, this, whichTier );
-//		console.log( "addCategoryNode", this.tiers, whichTier, node );
-		this.tiers[ whichTier ].unshift( node );
-//		console.log( this + " addCategoryNode");
-		node.element.inject( this.getTierElement( whichTier ), placement );
-		try{
-			return node;
-		} finally {
-			node = null;
-		}
-	},
-
 	setActiveChild: function( whichTier, whichElement ){
 		if( this.tiers[ whichTier ].activeChild ) this.tiers[ whichTier ].activeChild.removeClass("active");
 		whichElement.addClass("active");
@@ -464,15 +438,11 @@ console.log( "A : ", newList );
 	onObjectAdded: function( node, parentId, whichTier, placeHolder ){
 		placeHolder.destroy();
 		mop.HistoryManager.changeState( "pageId", node.id );
-		if( node.nodeType == "container"){
-			var objectElement = this.addCategoryNode( parentId, node, whichTier, this.addObjectPosition ).element;			
-		}else{
-			var objectElement = this.addLeafNode( parentId, node, whichTier, this.addObjectPosition ).element;			
-		}
+        var objectElement = this.addNode( parentId, node, whichTier, this.addObjectPosition ).element;			
 		this.appendEntryToNavTree( parentId, node, true );
 		this.setActiveChild( whichTier, objectElement );
 		if( this.getTierElement( whichTier ).retrieve( "sortable" ) ) this.getTierElement( whichTier ).retrieve( "sortable" ).addItems( objectElement ); 
-		if( node.addableObjects ) this.showCategory( node , whichTier+1 );
+		if( node.addableObjects ) this.loadNode( node , whichTier+1 );
 	},
 	
 	addPlaceHolder: function( name, whichTier ){
@@ -543,7 +513,9 @@ console.log( "A : ", newList );
 	},
 
 	JSONSend: function( action, data, options ){
-		mop.util.JSONSend( mop.util.getAppURL() + "ajax/"+ this.marshal.instanceName +  "/" + action + "/" + mop.objectId, data, options );
+	    console.log( "NAV JSONSEND", action, data, options );
+	    var objectId = ( mop.objectId )? mop.objectId : 0;
+		mop.util.JSONSend( mop.util.getAppURL() + "ajax/"+ this.marshal.instanceName +  "/" + action + "/" + objectId, data, options );
 	},
 
 	renameNode: function( aString ){
@@ -793,7 +765,7 @@ mop.modules.navigation.Node = new Class({
 		this.nav.addBreadCrumb( this.parentId, this.tier );
 		mop.HistoryManager.changeState( "pageId", this.nodeData.id );
 		if( this.nodeData.addableObjects  || ( this.nodeData.children && this.nodeData.children.length > 0 )  ){
-			this.nav.showCategory( this.nodeData, this.tier + 1 );
+			this.nav.loadNode( this.nodeData, this.tier + 1 );
 		}else if( this.nodeData.landing != "NO_LANDING" ){
 			this.nav.loadPage( this.nodeData.id, this.tier, "leafNodeOnClick" );
 		}
