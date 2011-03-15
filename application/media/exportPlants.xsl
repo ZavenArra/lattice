@@ -1,177 +1,218 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <xsl:stylesheet version="1.0"
-xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:exslt="http://exslt.org/common">
 
+  <xsl:output method="text" />
 
-<xsl:template match="/">
-  <xsl:for-each select="plants/plant">
-    @<xsl:value-of select="id"/>
-    @<xsl:value-of select="title"/>
-    @<xsl:value-of select="scientificName"/>
-    @<xsl:value-of select="season"/>
-    @<xsl:value-of select="habitat"/>
-    @<xsl:value-of select="plantRange"/>
-    @<xsl:value-of select="placeOfOrigin"/>
-    @<xsl:value-of select="howToSpot"/>
-    @<xsl:value-of select="generalInfo"/>
-    @<xsl:value-of select="positiveId"/>
-    @<xsl:value-of select="harvesting"/>
-    @<xsl:value-of select="cooking"/>
-    @<xsl:value-of select="nutrition"/>
-    @<xsl:value-of select="medicinalUses"/>
-    @<xsl:value-of select="cautions"/>
-    @<xsl:value-of select="similarPlants"/>
-    @<xsl:value-of select="poisonousLookalike"/>
-    @<xsl:value-of select="commonNames"/>
-    @<xsl:value-of select="native"/>
-    @<xsl:value-of select="hasPoisonousLookalikes"/>
-    @<xsl:value-of select="common"/>
-    @<xsl:value-of select="endangered"/>
-    @<xsl:value-of select="plantType/annual"/>
-    @<xsl:value-of select="plantType/biennial"/>
-    @<xsl:value-of select="plantType/perennialHerbaceous"/>
-    @<xsl:value-of select="plantType/vine"/>
-    @<xsl:value-of select="plantType/shrub"/>
-    @<xsl:value-of select="plantType/tree"/>
-    @<xsl:value-of select="plantType/seaweed"/>
-    @<xsl:value-of select="poisonous"/>
-    @<xsl:value-of select="poisonousPart"/>
-    @<xsl:value-of select="seasonsEdible/earlySpring"/>
-    @<xsl:value-of select="seasonsEdible/midSpring"/>
-    @<xsl:value-of select="seasonsEdible/lateSpring"/>
-    @<xsl:value-of select="seasonsEdible/earlySummer"/>
-    @<xsl:value-of select="seasonsEdible/midSummer"/>
-    @<xsl:value-of select="seasonsEdible/lateSummer"/>
-    @<xsl:value-of select="seasonsEdible/earlyFall"/>
-    @<xsl:value-of select="seasonsEdible/midFall"/>
-    @<xsl:value-of select="seasonsEdible/lateFall"/>
-    @<xsl:value-of select="seasonsEdible/winter"/>
-    @<xsl:value-of select="primarySeasonsEdible/earlySpring"/>
-    @<xsl:value-of select="primarySeasonsEdible/midSpring"/>
-    @<xsl:value-of select="primarySeasonsEdible/lateSpring"/>
-    @<xsl:value-of select="primarySeasonsEdible/earlySummer"/>
-    @<xsl:value-of select="primarySeasonsEdible/midSummer"/>
-    @<xsl:value-of select="primarySeasonsEdible/lateSummer"/>
-    @<xsl:value-of select="primarySeasonsEdible/earlyFall"/>
-    @<xsl:value-of select="primarySeasonsEdible/midFall"/>
-    @<xsl:value-of select="primarySeasonsEdible/lateFall"/>
-    @<xsl:value-of select="primarySeasonsEdible/winter"/>
-    @<xsl:value-of select="habitats/lawns"/>,
-    @<xsl:value-of select="habitats/fields"/>,
-    @<xsl:value-of select="habitats/thickets"/>,
-    @<xsl:value-of select="habitats/woodlands"/>,
-    @<xsl:value-of select="habitats/wetlands"/>,
-    @<xsl:value-of select="habitats/marshes"/>,
-    @<xsl:value-of select="habitats/swamps"/>,
-    @<xsl:value-of select="habitats/seashore"/>,
-    @<xsl:value-of select="habitats/disturbed"/>,
-    @<xsl:value-of select="habitats/edgeHabitats"/>,
-    @<xsl:value-of select="habitats/trailAndRoadside"/>,
-    @<xsl:value-of select="habitats/bogs"/>,
-    @<xsl:value-of select="habitats/riversLakes"/>,
-    @<xsl:value-of select="habitats/parks"/>,
-    @<xsl:value-of select="habitats/cultivatedPlaces"/>,
-    @<xsl:value-of select="primaryHabitats/lawns"/>,
-    @<xsl:value-of select="primaryHabitats/fields"/>,
-    @<xsl:value-of select="primaryHabitats/thickets"/>,
-    @<xsl:value-of select="primaryHabitats/woodlands"/>,
-    @<xsl:value-of select="primaryHabitats/wetlands"/>,
-    @<xsl:value-of select="primaryHabitats/marshes"/>,
-    @<xsl:value-of select="primaryHabitats/swamps"/>,
-    @<xsl:value-of select="primaryHabitats/seashore"/>,
-    @<xsl:value-of select="primaryHabitats/disturbed"/>,
-    @<xsl:value-of select="primaryHabitats/edgeHabitats"/>,
-    @<xsl:value-of select="primaryHabitats/trailAndRoadside"/>,
-    @<xsl:value-of select="primaryHabitats/bogs"/>,
-    @<xsl:value-of select="primaryHabitats/riversLakes"/>,
-    @<xsl:value-of select="primaryHabitats/parks"/>,
-    @<xsl:value-of select="primaryHabitats/cultivatedPlaces"/>,
-    @<xsl:value-of select="foodUses/salad"/>, 
-    @<xsl:value-of select="foodUses/potherb"/>, 
-    @<xsl:value-of select="foodUses/root"/>, 
-    @<xsl:value-of select="foodUses/nut"/>, 
-    @<xsl:value-of select="foodUses/seed"/>, 
-    @<xsl:value-of select="foodUses/seasoning"/>, 
-    @<xsl:value-of select="foodUses/tea"/>, 
-    @<xsl:value-of select="foodUses/buds"/>, 
-    @<xsl:value-of select="foodUses/fruitBerry"/>, 
-    @<xsl:value-of select="foodUses/coffee"/>, 
-    @<xsl:value-of select="foodUses/flour"/>,
-    @<xsl:value-of select="edibleParts/leaves"/>,
-    @<xsl:value-of select="edibleParts/flower"/>,
-    @<xsl:value-of select="edibleParts/root"/>,
-    @<xsl:value-of select="edibleParts/nut"/>,
-    @<xsl:value-of select="edibleParts/seed"/>,
-    @<xsl:value-of select="edibleParts/stem"/>,
-    @<xsl:value-of select="edibleParts/fruitBerry"/>,
-    @<xsl:value-of select="edibleParts/pod"/>,
-    @<xsl:value-of select="edibleParts/bud"/>,
-    @<xsl:value-of select="edibleParts/shoot"/>,
-primaryIdentImage
- primaryImage INTEGER,
-    @<xsl:value-of select="teaser"/>,
-    @<xsl:call-template name="listOfSelectedValues">
-      <xsl:with-param name="listNodes">
-        <xsl:call-template name="translateFoodUses">
-          <xsl:with-param name="listNodes" select="foodUses/*"/>
-        </xsl:call-template>
-      </xsl:with-param>
-    </xsl:call-template>
-    @<xsl:call-template name="listOfSelectedValues">
-      <xsl:with-param name="listNodes">
-        <xsl:call-template name="translate">
-          <xsl:with-param name="listNodes" select="edibleParts/*"/>
-          <xsl:with-param name="translations">
-            <xsl:call-template name="ediblePartsTranslations"/>
-          </xsl:with-param>
-        </xsl:call-template>
-      </xsl:with-param>
-    </xsl:call-template>
-    @<xsl:call-template name="listOfSelectedValues">
-      <xsl:with-param name="listNodes">
-        <xsl:call-template name="translate">
-          <xsl:with-param name="listNodes" select="habitats/*"/>
-          <xsl:with-param name="translations">
-            <xsl:call-template name="habitatsTranslations"/>
-          </xsl:with-param>
-        </xsl:call-template>
-      </xsl:with-param>
-    </xsl:call-template>
-    @<xsl:call-template name="listOfSelectedValues">
-      <xsl:with-param name="listNodes">
-        <xsl:call-template name="translate">
-          <xsl:with-param name="listNodes" select="primaryHabitats/*"/>
-          <xsl:with-param name="translations">
-            <xsl:call-template name="habitatsTranslations"/>
-          </xsl:with-param>
-        </xsl:call-template>
-      </xsl:with-param>
-    </xsl:call-template>
+  <xsl:template match="/">
+    <xsl:for-each select="plants/plant">
+      @<xsl:value-of select="id"/>
+      @<xsl:value-of select="title"/>
+      @<xsl:value-of select="scientificName"/>
+      @<xsl:value-of select="season"/>
+      @<xsl:value-of select="habitat"/>
+      @<xsl:value-of select="plantRange"/>
+      @<xsl:value-of select="placeOfOrigin"/>
+      @<xsl:value-of select="howToSpot"/>
+      @<xsl:value-of select="generalInfo"/>
+      @<xsl:value-of select="positiveId"/>
+      @<xsl:value-of select="harvesting"/>
+      @<xsl:value-of select="cooking"/>
+      @<xsl:value-of select="nutrition"/>
+      @<xsl:value-of select="medicinalUses"/>
+      @<xsl:value-of select="cautions"/>
+      @<xsl:value-of select="similarPlants"/>
+      @<xsl:value-of select="poisonousLookalike"/>
+      @<xsl:value-of select="commonNames"/>
+      @<xsl:value-of select="native"/>
+      @<xsl:value-of select="hasPoisonousLookalikes"/>
+      @<xsl:value-of select="common"/>
+      @<xsl:value-of select="endangered"/>
+      @<xsl:value-of select="plantType/annual"/>
+      @<xsl:value-of select="plantType/biennial"/>
+      @<xsl:value-of select="plantType/perennialHerbaceous"/>
+      @<xsl:value-of select="plantType/vine"/>
+      @<xsl:value-of select="plantType/shrub"/>
+      @<xsl:value-of select="plantType/tree"/>
+      @<xsl:value-of select="plantType/seaweed"/>
+      @<xsl:value-of select="poisonous"/>
+      @<xsl:value-of select="poisonousPart"/>
+      @<xsl:value-of select="seasonsEdible/earlySpring"/>
+      @<xsl:value-of select="seasonsEdible/midSpring"/>
+      @<xsl:value-of select="seasonsEdible/lateSpring"/>
+      @<xsl:value-of select="seasonsEdible/earlySummer"/>
+      @<xsl:value-of select="seasonsEdible/midSummer"/>
+      @<xsl:value-of select="seasonsEdible/lateSummer"/>
+      @<xsl:value-of select="seasonsEdible/earlyFall"/>
+      @<xsl:value-of select="seasonsEdible/midFall"/>
+      @<xsl:value-of select="seasonsEdible/lateFall"/>
+      @<xsl:value-of select="seasonsEdible/winter"/>
+      @<xsl:value-of select="primarySeasonsEdible/earlySpring"/>
+      @<xsl:value-of select="primarySeasonsEdible/midSpring"/>
+      @<xsl:value-of select="primarySeasonsEdible/lateSpring"/>
+      @<xsl:value-of select="primarySeasonsEdible/earlySummer"/>
+      @<xsl:value-of select="primarySeasonsEdible/midSummer"/>
+      @<xsl:value-of select="primarySeasonsEdible/lateSummer"/>
+      @<xsl:value-of select="primarySeasonsEdible/earlyFall"/>
+      @<xsl:value-of select="primarySeasonsEdible/midFall"/>
+      @<xsl:value-of select="primarySeasonsEdible/lateFall"/>
+      @<xsl:value-of select="primarySeasonsEdible/winter"/>
+      @<xsl:value-of select="habitats/lawns"/>,
+      @<xsl:value-of select="habitats/fields"/>,
+      @<xsl:value-of select="habitats/thickets"/>,
+      @<xsl:value-of select="habitats/woodlands"/>,
+      @<xsl:value-of select="habitats/wetlands"/>,
+      @<xsl:value-of select="habitats/marshes"/>,
+      @<xsl:value-of select="habitats/swamps"/>,
+      @<xsl:value-of select="habitats/seashore"/>,
+      @<xsl:value-of select="habitats/disturbed"/>,
+      @<xsl:value-of select="habitats/edgeHabitats"/>,
+      @<xsl:value-of select="habitats/trailAndRoadside"/>,
+      @<xsl:value-of select="habitats/bogs"/>,
+      @<xsl:value-of select="habitats/riversLakes"/>,
+      @<xsl:value-of select="habitats/parks"/>,
+      @<xsl:value-of select="habitats/cultivatedPlaces"/>,
+      @<xsl:value-of select="primaryHabitats/lawns"/>,
+      @<xsl:value-of select="primaryHabitats/fields"/>,
+      @<xsl:value-of select="primaryHabitats/thickets"/>,
+      @<xsl:value-of select="primaryHabitats/woodlands"/>,
+      @<xsl:value-of select="primaryHabitats/wetlands"/>,
+      @<xsl:value-of select="primaryHabitats/marshes"/>,
+      @<xsl:value-of select="primaryHabitats/swamps"/>,
+      @<xsl:value-of select="primaryHabitats/seashore"/>,
+      @<xsl:value-of select="primaryHabitats/disturbed"/>,
+      @<xsl:value-of select="primaryHabitats/edgeHabitats"/>,
+      @<xsl:value-of select="primaryHabitats/trailAndRoadside"/>,
+      @<xsl:value-of select="primaryHabitats/bogs"/>,
+      @<xsl:value-of select="primaryHabitats/riversLakes"/>,
+      @<xsl:value-of select="primaryHabitats/parks"/>,
+      @<xsl:value-of select="primaryHabitats/cultivatedPlaces"/>,
+      @<xsl:value-of select="foodUses/salad"/>, 
+      @<xsl:value-of select="foodUses/potherb"/>, 
+      @<xsl:value-of select="foodUses/root"/>, 
+      @<xsl:value-of select="foodUses/nut"/>, 
+      @<xsl:value-of select="foodUses/seed"/>, 
+      @<xsl:value-of select="foodUses/seasoning"/>, 
+      @<xsl:value-of select="foodUses/tea"/>, 
+      @<xsl:value-of select="foodUses/buds"/>, 
+      @<xsl:value-of select="foodUses/fruitBerry"/>, 
+      @<xsl:value-of select="foodUses/coffee"/>, 
+      @<xsl:value-of select="foodUses/flour"/>,
+      @<xsl:value-of select="edibleParts/leaves"/>,
+      @<xsl:value-of select="edibleParts/flower"/>,
+      @<xsl:value-of select="edibleParts/root"/>,
+      @<xsl:value-of select="edibleParts/nut"/>,
+      @<xsl:value-of select="edibleParts/seed"/>,
+      @<xsl:value-of select="edibleParts/stem"/>,
+      @<xsl:value-of select="edibleParts/fruitBerry"/>,
+      @<xsl:value-of select="edibleParts/pod"/>,
+      @<xsl:value-of select="edibleParts/bud"/>,
+      @<xsl:value-of select="edibleParts/shoot"/>,
+      @<xsl:apply-templates select="plantImage" mode="primaryIdentificationImage"/>
+      @<xsl:apply-templates select="plantImage" mode="primaryImage"/>
+      @<xsl:value-of select="teaser"/>
+      @<xsl:call-template name="listOfSelectedValues">
+        <xsl:with-param name="listNodes">
+          <xsl:call-template name="translateFoodUses">
+            <xsl:with-param name="listNodes" select="foodUses/*"/>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:call-template>
+      @<xsl:call-template name="listOfSelectedValues">
+        <xsl:with-param name="listNodes">
+          <xsl:call-template name="translate">
+            <xsl:with-param name="listNodes" select="edibleParts/*"/>
+            <xsl:with-param name="translations">
+              <xsl:call-template name="ediblePartsTranslations"/>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:call-template>
+      @<xsl:call-template name="listOfSelectedValues">
+        <xsl:with-param name="listNodes">
+          <xsl:call-template name="translate">
+            <xsl:with-param name="listNodes" select="habitats/*"/>
+            <xsl:with-param name="translations">
+              <xsl:call-template name="habitatsTranslations"/>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:call-template>
+      @<xsl:call-template name="listOfSelectedValues">
+        <xsl:with-param name="listNodes">
+          <xsl:call-template name="translate">
+            <xsl:with-param name="listNodes" select="primaryHabitats/*"/>
+            <xsl:with-param name="translations">
+              <xsl:call-template name="habitatsTranslations"/>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:call-template>
+      @<xsl:apply-templates select="seasonsEdible/*"/>
+      @<xsl:apply-templates select="primarySeasonsEdible/*"/>
+      @<xsl:call-template name="ecologicalStatus">
+        <xsl:with-param name="native" select="native"/>
+        <xsl:with-param name="common" select="common"/>
+        <xsl:with-param name="endangered" select="endangered"/>
+        <xsl:with-param name="invasive" select="invasive"/>
+       </xsl:call-template>
+      @<xsl:call-template name="listOfSelectedValues">
+        <xsl:with-param name="listNodes">
+          <xsl:call-template name="translate">
+            <xsl:with-param name="listNodes" select="plantTypes/*"/>
+            <xsl:with-param name="translations">
+              <xsl:call-template name="plantTypesTranslations"/>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:call-template>
+      @major
+    </xsl:for-each>
+  </xsl:template>
 
-    fullSeasonsText text,
-    @
-    <xsl:apply-templates select="seasonsEdible/*"/>
 
-    fullPrimarySeasonsText text,
-    fullEcoStatusText text,
-    @<xsl:call-template name="listOfSelectedValues">
-      <xsl:with-param name="listNodes">
-        <xsl:call-template name="translate">
-          <xsl:with-param name="listNodes" select="plantTypes/*"/>
-          <xsl:with-param name="translations">
-            <xsl:call-template name="plantTypesTranslations"/>
-          </xsl:with-param>
-        </xsl:call-template>
-      </xsl:with-param>
-    </xsl:call-template>
+  <xsl:template match="plantImage" mode="primaryImage">
+    <xsl:if test="primaryImage = 1"><xsl:value-of select="id"/></xsl:if>
+  </xsl:template>
 
-        class text
-      </xsl:for-each>
-    </xsl:template>
+  <xsl:template match="plantImage" mode="primaryIdentificationImage">
+    <xsl:if test="primaryIdentificationImage = 1"><xsl:value-of select="id"/></xsl:if>
+  </xsl:template>
 
+  <xsl:template name="ecologicalStatus">
+    <xsl:param name="native"/>
+    <xsl:param name="common"/>
+    <xsl:param name="endangered"/>
+    <xsl:param name="invasive"/>
+    <xsl:choose>
+      <xsl:when test="$native = 1">Native</xsl:when>
+      <xsl:when test="$common = 1">Common</xsl:when>
+      <xsl:when test="$endangered = 1">Endangered</xsl:when>
+      <xsl:when test="$invasive = 1">Invasive</xsl:when>
+    </xsl:choose>
+  </xsl:template>
 
     <xsl:template name="translateSeasons" match="seasonsEdible/*">
+      <xsl:variable name="curPos" select="position()" />
+      <xsl:variable name="curValue" select="."/>
+      <xsl:variable name="prevValue" select="../*[$curPos - 1]"/>
+      <xsl:variable name="nextValue" select="../*[$curPos + 1]"/>
+      <!--
+      pos<xsl:value-of select="$curPos"/>
+      prev<xsl:value-of select="$prevValue"/>
+      cur<xsl:value-of select="$curValue"/>
+      -->
+      <xsl:choose>
+        <xsl:when test="$curPos &lt; 5"></xsl:when>
+        <xsl:when test="$curValue = 1 and ($prevValue = 0 or $curPos = 5) and ($nextValue = 0 or position()=last())"> <xsl:value-of select="name()"/>, </xsl:when>
+        <xsl:when test="$curValue = 1 and ($prevValue = 0 or $curPos = 5)"> <xsl:value-of select="name()"/> </xsl:when>
+        <xsl:when test="$curValue = 1 and $nextValue = 0"> - <xsl:value-of select="name()"/>, </xsl:when>
+        <xsl:when test="$curValue = 1 and position() = last()"> - <xsl:value-of select="name()"/>, </xsl:when>
+      </xsl:choose>
+    </xsl:template>
+
+    <xsl:template name="translatePrimarySeasons" match="primarySeasonsEdible/*">
       <xsl:variable name="curPos" select="position()" />
       <xsl:variable name="curValue" select="."/>
       <xsl:variable name="prevValue" select="../*[$curPos - 1]"/>
