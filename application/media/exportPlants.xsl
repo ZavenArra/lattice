@@ -150,9 +150,8 @@ primaryIdentImage
     </xsl:call-template>
 
     fullSeasonsText text,
-    @<xsl:call-template name="translateSeasons">
-      <xsl:with-param name="seasons" select="seasonsEdible"/>
-    </xsl:call-template>
+    @
+    <xsl:apply-templates select="seasonsEdible/*"/>
 
     fullPrimarySeasonsText text,
     fullEcoStatusText text,
@@ -171,46 +170,25 @@ primaryIdentImage
       </xsl:for-each>
     </xsl:template>
 
-    <xsl:template name="what" match="seasons/* = 1">
-      <xsl:value-of select="."/>
+
+    <xsl:template name="translateSeasons" match="seasonsEdible/*">
+      <xsl:variable name="curPos" select="position()" />
+      <xsl:variable name="curValue" select="."/>
+      <xsl:variable name="prevValue" select="../*[$curPos - 1]"/>
+      <xsl:variable name="nextValue" select="../*[$curPos + 1]"/>
+      <!--
+      pos<xsl:value-of select="$curPos"/>
+      prev<xsl:value-of select="$prevValue"/>
+      cur<xsl:value-of select="$curValue"/>
+      -->
+      <xsl:choose>
+        <xsl:when test="$curPos &lt; 5"></xsl:when>
+        <xsl:when test="$curValue = 1 and ($prevValue = 0 or $curPos = 5) and ($nextValue = 0 or position()=last())"> <xsl:value-of select="name()"/>, </xsl:when>
+        <xsl:when test="$curValue = 1 and ($prevValue = 0 or $curPos = 5)"> <xsl:value-of select="name()"/> </xsl:when>
+        <xsl:when test="$curValue = 1 and $nextValue = 0"> - <xsl:value-of select="name()"/>, </xsl:when>
+        <xsl:when test="$curValue = 1 and position() = last()"> - <xsl:value-of select="name()"/>, </xsl:when>
+      </xsl:choose>
     </xsl:template>
-
-    <xsl:template name="translateSeasons">
-      <xsl:param name="seasons"/>
-      <xsl:call-template name="what"/>
-
-      <xsl:for-each select="$seasons/*">
-        <xsl:variable name="thePosition"><xsl:value-of select="position()"/></xsl:variable>
-
-        -<xsl:value-of select="$thePosition"/>
-
-
-        <xsl:choose>
-          <xsl:when test="position()=0">
-            nar
-          </xsl:when>
-          <xsl:when test=".='' or .='0'">
-            <xsl:choose>
-              <xsl:when test="$seasons[position() = position()-1]='1'">
-                stopping here
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:value-of select="$seasons[position()-1]"/>
-                <xsl:value-of select="position()-1"/>
-                skipping
-              </xsl:otherwise>
-            </xsl:choose>
-          </xsl:when>
-          <xsl:when test=". = '1'">
-            ON
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="."/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:for-each>
-    </xsl:template>
-
 
     <xsl:template name="habitatsTranslations">
       <translation>
