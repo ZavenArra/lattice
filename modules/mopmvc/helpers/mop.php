@@ -211,42 +211,12 @@ Class mop {
 				die('mop::getViewContent : View specifies loadPage but no page to load');
 			}
 			$data['content']['main'] = $object->getPageContent();
-		}
+    }
 
-		if($eDataNodes = mop::config('frontend',"includeData", $viewConfig)){
-			foreach($eDataNodes as $eDataConfig){
-
-				$objects = ORM::Factory('page');
-
-				//apply optional parent filter
-				if($from = $eDataConfig->getAttribute('from')){
-					if($from=='parent'){
-						$objects->where('parentid', $object->id);
-					} else {
-						$from = ORM::Factory('page', $from);
-						$objects->where('parentid', $from->id);	
-					}
-				}
-
-				//apply optional template filter
-				$objects = $objects->templateFilter($eDataConfig->getAttribute('templateFilter'));
-
-				//apply optional SQL where filter
-				if($where = $eDataConfig->getAttribute('where')){
-					$objects->where($where);
-				}
-        
-        $objects->publishedFilter();
-        $objects->orderBy('sortorder');
-				$objects = $objects->find_all();
-
-				$label = $eDataConfig->getAttribute('label');
-				$data['content'][$label] = array();
-				foreach($objects as $includeObject){
-					$data['content'][$label][] = $includeObject->getContent();
-				}
-			}
-		}
+    $includeContent = mop::getIncludeContent($viewConfig, $object->id);
+    foreach($includeContent as $key=>$values){
+      $data['content'][$key] = $values;
+    }
 
 		if($subViews = mop::config('frontend',"subView", $viewConfig)){
 			foreach($subViews as $subview){
@@ -281,6 +251,49 @@ Class mop {
 
 		return $data;
 	}
+
+  function getIncludeContent($includeTier, $parentid){
+    $content = array();
+    if($eDataNodes = mop::config('frontend',"includeData", $includeTier)){
+      foreach($eDataNodes as $eDataConfig){
+
+        $objects = ORM::Factory('page');
+
+        //apply optional parent filter
+        if($from = $eDataConfig->getAttribute('from')){
+          if($from=='parent'){
+            $objects->where('parentid', $parentid);
+          } else {
+            $from = ORM::Factory('page', $from);
+            $objects->where('parentid', $from->id);	
+          }
+        }
+
+        //apply optional template filter
+        $objects = $objects->templateFilter($eDataConfig->getAttribute('templateFilter'));
+
+        //apply optional SQL where filter
+        if($where = $eDataConfig->getAttribute('where')){
+          $objects->where($where);
+        }
+
+        $objects->publishedFilter();
+        $objects->orderBy('sortorder');
+        $objects = $objects->find_all();
+
+        $label = $eDataConfig->getAttribute('label');
+        $items = array();
+        foreach($objects as $includeObject){
+          $itemsData = $includeObject->getContent();
+          $itemsData = array_merge($itemsData, mop::getIncludeContent($eDataConfig, $includeObject->id ) );
+          $items[] = $itemsData;
+        }
+        $content[$label] = $items;
+      }
+    }
+    return $content;
+  }
+
 
 
 }
