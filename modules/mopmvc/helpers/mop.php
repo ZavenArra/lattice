@@ -62,7 +62,7 @@ Class mop {
 
 			$path = Kohana::find_file('config', $arena, true, 'xml'); 
 
-			$dom->load( $path[0] );
+			$dom->load( $path[count($path)-1] );
 			if(!$dom->validate()){
 				echo('Validation failed on '.$path[0]);
 				print_r($dom->errors);
