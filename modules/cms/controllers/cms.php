@@ -53,6 +53,15 @@ class CMS_Controller extends CMS_Interface_Controller {
 
 	}
 
+	public function createIndexView(){
+		parent::createIndexView();
+		if(Auth::instance()->logged_in('superuser')){
+			$this->view->userlevel = 'superuser';
+		} else {
+			$this->view->userlevel = 'basic';
+		}	
+	}
+
 	/*
 	 * Function: setPageId($page_id)
 	 * Sets the page id of the object currently being edited
