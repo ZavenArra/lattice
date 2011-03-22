@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration SYSTEM "foragingObjects.dtd">
+
+<configuration>
+	<templates>
+		<template name="plants" allowDelete="false">
+			<addableObject templateName="plant" addText="Add a Plant" />
+		</template>
+
+		<template name="plant" allowDelete="true" >
+			<elements>
+				<checkbox field="teaser" label="Plant for teaser App"/>
+				<checkbox field="poisonous" label="THIS PLANT IS POISONOUS"/>
+				<checkbox field="poisonousPart" label="THIS PLANT HAS POISONOUS PARTS"/>
+				<checkbox field="ediblePlant" label="Edible Plant"/>
+				<checkbox field="medicinalPlant" label="Medicinal Plant"/>
+				<text field="scientificName" label="Scientific Name" rows="1"/>
+				<text field="commonNames" label="Alternative Common Names" rows="2"/>
+				<text field="group" label="Group" rows="1"/>
+				<plantType field="plantType" label="Type of Plant"/>
+				<seasons field="seasonsEdible" label="All Seasons this Plant is Edible"/>
+				<seasons field="primarySeasonsEdible" label="Primary Seasons this Plant is Edible"/>
+				<text field="season" label="Season Text" rows="6"/>
+				<foodUses field="foodUses" label="Food Uses"/>
+				<edibleParts field="edibleParts" label="Parts to Use"/>
+				<text field="habitat" label="Habitat" rows="2"/>
+				<habitats field="habitats" label="Habitats"/>
+				<habitats field="primaryHabitats" label="Primary Habitats"/>
+				<text field="range" label="Range" rows="2"/>
+				<checkbox field="common" label="Common Species"/>
+				<checkbox field="veryCommon" label="Very Common Species"/>
+				<checkbox field="invasive" label="Invasive Species"/>
+				<checkbox field="endangered" label="Threatened, Endangered, or Rare Species"/>
+				<checkbox field="native" label="Native Species"/>
+				<text field="placeOfOrigin" label="Place of Origin" rows="2"/>
+				<text field="howToSpot" label="How to Spot" rows="5"/>
+				<text field="generalInfo" label="General Info" rows="20"/>
+				<text field="positiveId" label="Postitive Id Checklist" rows="8"/>
+				<text field="harvesting" label="Harvesting" rows="20"/>
+				<text field="cooking" label="Food Preparation" rows="20"/>
+				<text field="nutrition" label="Nutrition" rows="20"/>
+				<text field="medicinalUses" label="Mediciinal Uses" rows="10"/>
+				<checkbox field="hasPoisonousLookalikes" label="This plant has poisonous lookalikes"/>
+				<text field="poisonousLookalikes" label="Poisonous Lookalikes" rows="20"/>
+				<text field="poisonousLookalikesAssociated" label="Poisonous Lookalikes Plant Names" />
+				<text field="cautions" label="Cautions" rows="5"/>
+				<text field="similarPlants" label="Similar Plants and Confusing Factors"/>
+				<text field="similarPlantsAssociated" label="Similar Plants Plant Names" />
+				<text field="flashcardShortFact" label="Short fact about this plant for flashcards"/>
+				<checkbox field="wr_flashcardOverride" label="WR: Flashcard Override" />
+			</elements>
+			<addableObject templateName="plantImage" addText="Add a Plant Image" />
+			<addableObject templateName="recipe" addText="Add a Recipe" />
+		</template>
+
+		<template name="plantImage" allowTogglePublish="true">
+			<elements>
+				<!--		<text field="moveToParentId" label="Change Parent  STEVE DO NOT TOUCH" /> 0-->
+				<text field="caption" label="Caption"/>
+				<checkbox field="poisonous" label="Poisonous Plant"/>
+				<checkbox field="primaryImage" label="Primary Image for Plant" />
+				<checkbox field="primaryIdentificationImage" label="Best Identifying Image" />
+				<image field="image" label="Image">
+					<ext>jpg</ext>
+					<ext>tiff</ext>
+					<ext>tif</ext>
+				</image>
+			</elements>
+		</template>
+
+
+		<template name="minorPlants" allowDelete="false">
+			<elements>
+				<text field="caption" label="Caption"/>
+			</elements>
+		</template>
+
+		<template name="minorPlant">
+			<elements>
+				<text field="scientificName" label="Scientific Name"/>
+				<text field="description" label="Description"/>
+				<checkbox field="poisonous" label="Poisonous Plant"/>
+			</elements>
+		</template>
+
+		<template name="recipe">
+			<elements>
+				<text field="directions" label="Directions" rows="40"/>
+				<text field="dependsOn" label="Depends On" rows="3"/>
+			</elements>
+		</template>
+
+
+		<template name="plantType">
+			<elements>
+				<checkbox field="annual" label="Annual"/>
+				<checkbox field="biennial" label="Biennial"/>
+				<checkbox field="perennialHerbaceous" label="Perennial Herbaceous"/>
+				<checkbox field="vine" label="Vine"/>
+				<checkbox field="shrub" label="Shrub"/>
+				<checkbox field="tree" label="Tree"/>
+				<checkbox field="seaweed" label="Seaweed"/>
+			</elements>
+		</template>
+
+		<template name="foodUses">
+			<elements>
+				<checkbox field="salad" label="Salad"/>
+				<checkbox field="potherb" label="Potherb"/>
+				<checkbox field="root" label="Root Vegetable"/>
+				<checkbox field="nut" label="Nut"/>
+				<checkbox field="seed" label="Seed"/>
+				<checkbox field="fruitBerry" label="Fruit/Berry"/>
+				<checkbox field="seasoning" label="Seasoning"/>
+				<checkbox field="tea" label="Tea/beverage"/>
+				<checkbox field="coffee" label="Coffee"/>
+				<checkbox field="flout" label="Flour"/>
+				<checkbox field="pickles" label="Pickles"/>
+				<checkbox field="other" label="Other"/>
+			</elements>
+		</template>
+
+		<template name="edibleParts">
+			<elements>
+				<checkbox field="leaves" label="Leaf"/>
+				<checkbox field="flower" label="Flower"/>
+				<checkbox field="root" label="Root"/>
+				<checkbox field="nut" label="Nut"/>
+				<checkbox field="seed" label="Seed"/>
+				<checkbox field="fruitBerry" label="Fruit/Berry"/>
+				<checkbox field="stem" label="Stem"/>
+				<checkbox field="pod" label="Pod"/>
+				<checkbox field="bud" label="Bud"/>
+				<checkbox field="shoot" label="Shoot"/>
+				<checkbox field="twigs" label="Twigs/Cambium"/>
+			</elements>
+		</template>
+
+		<template name="seasons">
+			<elements>
+				<checkbox field="earlySpring" label="Early Spring"/>
+				<checkbox field="midSpring" label="Mid Spring"/>
+				<checkbox field="lateSpring" label="Late Spring"/>
+				<checkbox field="earlySummer" label="Early Summer"/>
+				<checkbox field="midSummer" label="Mid Summer"/>
+				<checkbox field="lateSummer" label="Late Summer"/>
+				<checkbox field="earlyFall" label="Early Fall"/>
+				<checkbox field="midFall" label="Mid Fall"/>
+				<checkbox field="lateFall" label="Late Fall"/>
+				<checkbox field="winter" label="Winter"/>
+				<checkbox field="allYear" label="All Year"/>
+			</elements>
+		</template>
+
+		<template name="habitats">
+			<elements>
+				<checkbox field="lawns" label="Lawns and Meadows"/>
+				<checkbox field="riversLakes" label="Near Rivers, Lakes, and Streams"/>
+				<checkbox field="fields" label="Fields"/>
+				<checkbox field="thickets" label="Thickets"/>
+				<checkbox field="disturbed" label="Disturbed Habitats"/>
+				<checkbox field="edgeHabitats" label="Edge Habitats"/>
+				<checkbox field="cultiavedPlaces" label="Cultivated Places"/>
+				<checkbox field="trailAndRoadside" label="Trail- and Roadsides"/>
+				<checkbox field="woodlands" label="Woodlands"/>
+				<checkbox field="bogs" label="Bogs"/>
+				<checkbox field="marshes" label="Marshes"/>
+				<checkbox field="swamps" label="Swamps"/>
+				<checkbox field="seashore" label="Seashore"/>
+				<checkbox field="parks" label="Parks"/>
+			</elements>
+		</template>
+
+
+		<template name="glossary" allowDelete="false">
+			<elements>
+			</elements>
+			<addableObject templateName="glossaryItem" addText="Add a Definition" />
+		</template>
+
+		<template name="glossaryItem">
+			<elements>
+				<text field="definition" label="Definition" />
+				<text field="linkedImage" label="Use Image From" />
+				<image field="image" label="Image">
+					<ext>jpg</ext>
+					<ext>tiff</ext>
+					<ext>tif</ext>
+				</image>
+			</elements>
+		</template>
+
+		<template name="generalInfo" allowDelete="false">
+			<elements>
+			</elements>
+			<addableObject templateName="infoItem" addText="Add an Item" />
+		</template>
+
+		<template name="infoItem">
+			<elements>
+				<text field="body" label="Body" />
+			</elements>
+		</template>
+
+	</templates>
+
+</configuration>
+

@@ -48,9 +48,15 @@ Class mop {
 			self::$config = array();
 		}
 
-    if(Kohana::config('mop.configuration')){
-      $arena = Kohana::config('mop.configuration').'-'.$arena;
-    }
+		if($activeConfig = Kohana::config('mop.activeConfiguration')){
+			if($configurations = Kohana::config('mop.configurations')){
+				if($active = $configurations[$activeConfig]){
+					if(isset($active[$arena]) && $newName = $active[$arena]){
+						$arena = $newName;
+					}
+				}
+			}
+		}
 
 
 
@@ -59,6 +65,11 @@ Class mop {
 			$dom = new DOMDocument();
 			$dom->preserveWhiteSpace = false;
 			$dom = new MyDOMDocument($dom);
+
+			//check for arena mappings
+			if($customName = Kohana::config('mop.filenames.'.$arena)){
+				$arena = $customName;
+			}
 
 			$path = Kohana::find_file('config', $arena, true, 'xml'); 
 
