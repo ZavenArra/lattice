@@ -231,6 +231,10 @@ mop.modules.navigation.Navigation = new Class({
         //typeof aNode, whichTier, aNode.length );
         aNode = JSON.decode( aNode );
         console.log( "showNode ........... ", aNode );
+
+		var parentId = this.getActiveChild( whichTier - 1 ).retrieve( "Class" ).id;
+		this.appendEntryToNavTree( parentId, aNode );
+
         var preventPageLoad = true;
         if( aNode.length ){
             var deepLinkTarget = this.getDeepLinkTarget();
