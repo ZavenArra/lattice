@@ -20,30 +20,27 @@ mop.modules.navigation.Navigation = new Class({
 	navTree: null,
     addObjectPosition: null,
     userLevel: null,
+	navTree: [],
     
 	initialize: function( anElement, aMarshal ){
 		this.parent( anElement, aMarshal );
 		this.navElement = this.element.getElement( ".nav" );
-		
-		this.userLevel = ( Cookie.read( 'userLevel' ) )? Cookie.read( 'userLevel' ) : "superuser";
-		console.log( this.userLevel );
-		
+		this.userLevel = ( Cookie.read( 'userLevel' ) )? Cookie.read( 'userLevel' ) : "superuser";	
 		this.breadCrumbs =  new mop.ui.navigation.BreadCrumbTrail( this.element.getSibling( ".breadCrumb" ), this.onBreadCrumbClicked.bind( this ) );
 		this.breadCrumbs.addCrumb( { label: "Main Menu", id: null, index: 0 } );
-		
 		this.tiers = [];
 		this.totalWidth = this.element.getSize().x;
 		this.colWidth = this.totalWidth*.33333;
-		console.log( "WIDTHS: ", this.totalWidth, this.colWidth );
-		this.navTree = null;
 		this.navSlide = new Fx.Scroll( this.element );
-
 		mop.HistoryManager.addListener( this );
 		this.addEvent( "pageIdChanged", this.onPageIdChanged );
-		this.loadNode( 0, 0);
-
+		this.navTreeLookupTable = new Hash();
+		console.log("############## ", this.navTree );
+		this.createNavTreeLookupTable( this.navTree );
+		this.loadNode( this.navTree , 0 );
+		
+		
 		this.addObjectPosition = mop.util.getValueFromClassName( "addObjectPosition", this.element.get( "class" ) );
-
 	},
 
 	displaySuperuserAddObjectDialogue: function( targetId, whichTier, targetName ){
@@ -95,27 +92,11 @@ mop.modules.navigation.Navigation = new Class({
 	},
 	
 	onPageIdChanged: function( pageId ){
-//		console.log( "onStateChange", pageId );
-		this.clearTier( 0 );
-		this.getNavTree();
+		console.log( "onPageIdChanged", pageId );
 	},
 	
 	toString: function(){
 		return "[ Object, mop.modules.navigation.Navigation ]";
-	},
-
-	/*
-		Function: getNavTree
-		Ajax call to get site's structure as json string. On callback calls buildNav
-	 	Returns: Object representing JSON structure of site nav
-		TODO: document final JSON structure... 
-	*/
-	getNavTree: function(){
-		console.log( "getNavTree ", this.getDeepLinkTarget() );
-		new Request.JSON({
-			url: mop.util.getAppURL() + 'ajax/'+ this.instanceName + "/getNavTree/" + this.getDeepLinkTarget(),
-			onComplete: this.buildNav.bind( this )
-		}).send();
 	},
 	
 	getTemplates: function( targetId, whichTier, targetName ){
@@ -163,26 +144,13 @@ mop.modules.navigation.Navigation = new Class({
 		}, this);
 	},
 
-	appendEntryToNavTree: function( parentId, node, isCategory ){
+	appendEntryToNavTree: function( parentId, node ){
+		console.log( "appendEntryToNavTree", parentId, node );
 		if(this.addObjectPosition=='top'){
 			this.navTreeLookupTable[parentId].children.unshift( node );
 		}else{
 			this.navTreeLookupTable[parentId].children.push( node );
 		}
-		if( isCategory ) this.navTreeLookupTable[ node.id ] = node;
-	},
-
-	/*
-		Function: buildNav
-		Callback to getNavTree
-		Argument: navTree {String} returned argument from getNavTree method.
-	*/
-	buildNav: function( navTree ){
-//		console.log( navTree );
-		this.navTree = navTree;
-		this.navTreeLookupTable = new Hash();
-		this.createNavTreeLookupTable( navTree );
-		this.loadNode( this.navTree , 0 );
 	},
 
 	/*
@@ -210,7 +178,6 @@ mop.modules.navigation.Navigation = new Class({
 		});
 
 		var newList = new Element( "ul", { "class": ( hasAddableObjects )? "tier grid_4" : "tier tall grid_4" } );
-console.log( "A : ", newList ); 
 		newList.inject( newTier ); 
 		newTier.inject( this.navElement );
 		
@@ -297,7 +264,7 @@ console.log( "A : ", newList );
 			whichTier - where are we doing this in the navigation...  
 	*/
 	loadNode: function( aNode, whichTier ){
-		console.log( "loadNode :::: ", aNode );//, " : ", aNode.id, " : ", whichTier, aNode.children );
+		console.log( "loadNode :::: ", aNode.id );//, " : ", aNode.id, " : ", whichTier, aNode.children );
 		this.clearTier( whichTier );
 		this.tiers[ whichTier ] = [];
 		this.tiers[ whichTier ].activeChild = null;
@@ -305,9 +272,10 @@ console.log( "A : ", newList );
 		
 		if( aNode.addableObjects || this.userLevel == 'superuser' ) this.addUtilityNode( aNode, whichTier );
 		
-		var nodeId = ( aNode )? aNode.id : 0;
+		var nodeId = ( aNode.length > 0 )? aNode.id : 0;
+
 		var url = mop.util.getAppURL() + "ajax/"+ this.instanceName + "/getNavNode/" + nodeId;
-//		mop.util.JSONSend( url, null , { onComplete: function( response, json ){ this.showNode( json, whichTier ) }.bind( this ) } );
+		console.log( url );
 		new Request.JSON({
 			url: url,
 			onComplete: function( response, json ){ this.showNode( json, whichTier ) }.bind( this )
@@ -441,7 +409,7 @@ console.log( "A : ", newList );
 		placeHolder.destroy();
 		mop.HistoryManager.changeState( "pageId", node.id );
         var objectElement = this.addNode( parentId, node, whichTier, this.addObjectPosition ).element;			
-		this.appendEntryToNavTree( parentId, node, true );
+		this.appendEntryToNavTree( parentId, node );
 		this.setActiveChild( whichTier, objectElement );
 		if( this.getTierElement( whichTier ).retrieve( "sortable" ) ) this.getTierElement( whichTier ).retrieve( "sortable" ).addItems( objectElement ); 
 		if( node.addableObjects ) this.loadNode( node , whichTier+1 );
