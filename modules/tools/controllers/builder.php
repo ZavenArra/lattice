@@ -83,7 +83,7 @@ class builder_Controller extends Controller {
 				//need to look up field and switch on field type	
 				$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')))->item(0);
 				if(!$fieldInfo){
-					die("Bad field in builder!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->tagName));
+					die("Bad field in data/objects!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')));
 				}
         //echo "\ntagname\t".$fieldInfo->tagName."\n";
 

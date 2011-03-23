@@ -24,7 +24,9 @@ class dumper_Controller extends Controller {
         switch(get_class($value)){
         case 'File_Model':
           //or copy to directory and just use filename
-          $field->appendChild( $this->doc->createTextNode($value->fullpath));
+					if($value->fullpath){
+						$field->appendChild( $this->doc->createTextNode($value->fullpath));
+					}
           break;
         case 'Page_Model':
           foreach($this->getObjectFields($value) as $subField){
@@ -44,9 +46,12 @@ class dumper_Controller extends Controller {
     $fields = array();
     $content = $object->getContent();
     foreach($content as $key=>$value){
-      if($key=='templateName'){
+      if($key=='templateName' || $key == 'dateadded'){
         continue;
       }
+			if($key=="slug" && $value=""){
+				continue;
+			}
       $field = $this->doc->createElement('field');
 			$fieldAttr = $this->doc->createAttribute('name');
 			$fieldValue = $this->doc->createTextNode($key);
@@ -59,7 +64,9 @@ class dumper_Controller extends Controller {
         switch(get_class($value)){
         case 'File_Model':
           //or copy to directory and just use filename
-          $field->appendChild( $this->doc->createTextNode($value->fullpath));
+					if($value->fullpath){
+						$field->appendChild( $this->doc->createTextNode($value->fullpath));
+					}
           break;
         case 'Page_Model':
           foreach($this->getObjectFields($value) as $subField){

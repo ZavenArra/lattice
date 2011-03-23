@@ -141,6 +141,7 @@ class Page_Model extends ORM {
 		foreach($data as $field=>$value){
 			switch($field){
 			case 'slug':
+			case 'decoupleSlugTitle':
 				case 'dateAdded':
 					case 'published':
 						case 'activity':

@@ -450,6 +450,7 @@ class CMS {
 			//need to switch here on type of field
 			switch($field){
 			case 'slug':
+			case 'decoupleSlugTitle':
 					$newpage->$field = $data[$field];
 					continue(2);
 			case 'title':
@@ -462,7 +463,7 @@ class CMS {
 				die("Bad field in addObject!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field));
 			}
 
-			if(in_array($fieldInfo->tagName, $templates)){
+			if(in_array($fieldInfo->tagName, $templates) && is_array($value) ){
 				$clusterTemplateName = $fieldInfo->tagName;
 				//this could happen, but not right now
 				$clusterObjectId = cms::addObject(null, $clusterTemplateName, $value);
