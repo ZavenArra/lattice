@@ -36,6 +36,13 @@ class frontend {
 			echo $indent."<a href=\"<?={$prefix}['$field']->fullpath;?>\"><?={$prefix}['$field']->filename;?></a>\n\n";
 			echo $indent."<?endif;?>\n\n";
 			break;
+		case 'checkbox':
+			echo $indent."<div type=\"checkboxResult\">\n";
+			echo $indent." <label>".$element->getAttribute('label')."</label>\n";
+			echo $indent." <input type=\"checkbox\" name=\"".$element->getAttribute('field')."\" ".
+				"<?echo ({$prefix}['$field'])?'checked ':'';?> disabled>\n";
+			echo $indent."</div>\n\n";
+			break;
 		default:
 			echo $indent."<p class=\"$field\"> <?={$prefix}['$field'];?></p>\n\n";
 			break;
