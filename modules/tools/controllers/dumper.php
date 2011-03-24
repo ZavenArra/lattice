@@ -167,6 +167,7 @@ class dumper_Controller extends Controller {
 
     $this->doc = new DOMDocument('1.0', 'UTF-8');
     $this->doc->formatOutput = true;
+		$data = $this->doc->createElement('data');
 
     $objects = ORM::Factory('page')
       ->where('activity IS NULL')
@@ -175,29 +176,13 @@ class dumper_Controller extends Controller {
       ->find_all();
 
     foreach($this->exportTier($objects) as $item){
-      $this->doc->appendChild($item);
+      $data->appendChild($item);
     }
     
-
+		$this->doc->appendChild('data');
     $this->doc->save('application/media/export.xml');
 
     exit;
-
-		foreach(mop::config($xmlFile, 'item', $context)  as $item){
-			$lists = array();
-			if(!$item->getAttribute('templateName')){
-				echo $item->tagName;
-        die("No templatename specified for Item ".$item->tagName."\n\n");
-			}
-      //echo "\n found contentnod ".$item->getAttribute('templateName');
-			flush();
-			ob_flush();
-			$object = ORM::Factory('page');
-			$template = ORM::Factory('template', $item->getAttribute('templateName'));
-			if($template->nodeType == 'container'){
-				die("Can't add list family as template name in data.xml: {$template->templatename} \n");
-			}
-
       //echo ')))'.$item->getAttribute('templateName');
 			$data = array();
 			foreach(mop::config($xmlFile, 'field', $item ) as $content){
