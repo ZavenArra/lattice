@@ -40,7 +40,7 @@ class frontend {
 			echo $indent."<div type=\"checkboxResult\">\n";
 			echo $indent." <label>".$element->getAttribute('label')."</label>\n";
 			echo $indent." <input type=\"checkbox\" name=\"".$element->getAttribute('field')."\" ".
-				"<?echo ({$prefix}['$field'])?'checked ':'';?> disabled>\n";
+				"<?echo ({$prefix}['$field'])?'checked=\"true\" ':'';?> disabled=\"disabled\" >\n";
 			echo $indent."</div>\n\n";
 			break;
 		default:
