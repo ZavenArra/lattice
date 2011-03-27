@@ -20,45 +20,36 @@ mop.modules.navigation.Navigation = new Class({
 	navTree: null,
     addObjectPosition: null,
     userLevel: null,
-	navTree: [],
     
 	initialize: function( anElement, aMarshal ){
 		this.parent( anElement, aMarshal );
 		this.navElement = this.element.getElement( ".nav" );
-		this.userLevel = ( Cookie.read( 'userLevel' ) )? Cookie.read( 'userLevel' ) : "superuser";	
+		
+		this.userLevel = ( Cookie.read( 'userLevel' ) )? Cookie.read( 'userLevel' ) : "superuser";
+		console.log( this.userLevel );
+		
 		this.breadCrumbs =  new mop.ui.navigation.BreadCrumbTrail( this.element.getSibling( ".breadCrumb" ), this.onBreadCrumbClicked.bind( this ) );
 		this.breadCrumbs.addCrumb( { label: "Main Menu", id: null, index: 0 } );
+		
 		this.tiers = [];
 		this.totalWidth = this.element.getSize().x;
 		this.colWidth = this.totalWidth*.33333;
+		console.log( "WIDTHS: ", this.totalWidth, this.colWidth );
+		this.navTree = null;
 		this.navSlide = new Fx.Scroll( this.element );
+
 		mop.HistoryManager.addListener( this );
 		this.addEvent( "pageIdChanged", this.onPageIdChanged );
-		//@thiago
-		//this should absolutely not be a hash
-		//there really isn't any gain to it being a hash
-		//this.navTreeLookupTable = new Hash();
-		this.navTreeLookupTable = new Array();
-		//console.log("############## ", this.navTree );
-		//this.createNavTreeLookupTable( this.navTree );
-		this.loadNaviNode( 0 , 0 ); 
-		//guess what!  this.navTree is never initialized
-		this.navTreeLookupTable[0] = null;
-		//this.createNavTreeLookupTable( this.navTree );
-		//and we don't create athe beginning now, because we lazy load
-		//everything gets appended in loadTier
+		this.getNavTree();
 
-		//@thiago
-		//no loadContent since this node is the tree root
-		
-		
 		this.addObjectPosition = mop.util.getValueFromClassName( "addObjectPosition", this.element.get( "class" ) );
+
 	},
 
-	displaySuperuserAddObjectDialogue: function( targetId, tierIndex, targetName ){
-		console.log( "displaySuperuserAddObjectDialogue", targetId, tierIndex, targetName, this.addableTemplates );
+	displaySuperuserAddObjectDialogue: function( targetId, whichTier, targetName ){
+		console.log( "displaySuperuserAddObjectDialogue", targetId, whichTier, targetName, this.addableTemplates );
 	    if( !this.addableTemplates ){
-	        this.getTemplates( targetId, tierIndex, targetName );
+	        this.getTemplates( targetId, whichTier, targetName );
 	        return;
 	    }
 	    if( this.superuserAddObjectDialogue ) mop.ModalManager.removeModal( this.superuserAddObjectDialogue );
@@ -68,13 +59,13 @@ mop.modules.navigation.Navigation = new Class({
 		    cancelText: "Cancel",
 		    onConfirm: function(){ console.log( "add the goddamned object" ); }
 		});
-		this.superuserAddObjectDialogue.setContent( this.buildOptionsListing( this.addableTemplates, targetId, tierIndex, this.superuserAddObjectDialogue ) );
+		this.superuserAddObjectDialogue.setContent( this.buildOptionsListing( this.addableTemplates, targetId, whichTier, this.superuserAddObjectDialogue ) );
 		this.superuserAddObjectDialogue.show();
 	},
 		
-	buildOptionsListing: function( objectToTraverse, targetId, tierIndex, modal ){
+	buildOptionsListing: function( objectToTraverse, targetId, whichTier, modal ){
 	    
-//	    console.log( "buildOptionsListing", objectToTraverse, targetId, tierIndex );
+//	    console.log( "buildOptionsListing", objectToTraverse, targetId, whichTier );
 	    
 	    var ul = new Element( "ul", { 'class': 'listing' } );
 	    this.addableTemplates.each( function( aTemplateObj, index ){
@@ -95,7 +86,7 @@ mop.modules.navigation.Navigation = new Class({
 	        var item = new Element( "li", { 'text': aTemplateObj.templateName, "class": 'menuItem ' + moduloClass } );
 	        item.addEvent( 'click', function( e ){
 	            mop.util.stopEvent( e );
-	            this.addObject( targetId, aTemplateObj.templateName, tierIndex );
+	            this.addObject( targetId, aTemplateObj.templateName, whichTier );
 	            modal.close();
 	        }.bindWithEvent( this ) );
     	    ul.adopt( item );
@@ -104,20 +95,36 @@ mop.modules.navigation.Navigation = new Class({
 	},
 	
 	onPageIdChanged: function( pageId ){
-		console.log( "onPageIdChanged", pageId );
+//		console.log( "onStateChange", pageId );
+		this.clearTier( 0 );
+		this.getNavTree();
 	},
 	
 	toString: function(){
 		return "[ Object, mop.modules.navigation.Navigation ]";
 	},
+
+	/*
+		Function: getNavTree
+		Ajax call to get site's structure as json string. On callback calls buildNav
+	 	Returns: Object representing JSON structure of site nav
+		TODO: document final JSON structure... 
+	*/
+	getNavTree: function(){
+		console.log( "getNavTree ", this.getDeepLinkTarget() );
+		new Request.JSON({
+			url: mop.util.getAppURL() + 'ajax/'+ this.instanceName + "/getNavTree/" + this.getDeepLinkTarget(),
+			onComplete: this.buildNav.bind( this )
+		}).send();
+	},
 	
-	getTemplates: function( targetId, tierIndex, targetName ){
+	getTemplates: function( targetId, whichTier, targetName ){
 		new Request.JSON({
 			url: mop.util.getAppURL() + 'ajax/'+ this.instanceName + "/getTemplates",
 			onComplete: function( templateObj ){
 			    console.log( "getTemplates onComplete" );
 			    this.addableTemplates = templateObj;
-			    this.displaySuperuserAddObjectDialogue( targetId, tierIndex, targetName );
+			    this.displaySuperuserAddObjectDialogue( targetId, whichTier, targetName );
 			}.bind( this )
 		}).send();
 	},
@@ -127,18 +134,18 @@ mop.modules.navigation.Navigation = new Class({
 	},
 
 	/*
-		Function: loadContent
+		Function: loadPage
 		Ajax call to retrieve a page with 'pageId'
 		Arguments:
 			pageId - {Number} the desired page's id
 	 	Callback: calls onPageReceived with JSON object { css: [ "pathToCSSFile", "pathToCSSFile", ... ], js: [ "pathToJSFile", "pathToJSFile", "pathToJSFile", ... ], html: "String" }
 	*/
-	loadContent: function( pageId, tierIndex ){
-//		console.log( "loadContent ", "pageId: " + pageId );
+	loadPage: function( pageId, whichTier, whereFrom ){
+//		console.log( "loadPage ", "pageId: " + pageId, "called from :" + whereFrom );
 		if( !pageId ) return;
 		this.currentPage = pageId;
-		this.clearTier( tierIndex + 1 );
-		this.marshal.loadContent( pageId );
+		this.clearTier( whichTier + 1 );
+		this.marshal.loadPage( pageId );
 	},
 
 	setPublishedStatus: function( id ){
@@ -154,33 +161,45 @@ mop.modules.navigation.Navigation = new Class({
 				return;
 			}
 		}, this);
-		console.log("nav tree lookup",this.navTreeLookupTable);
 	},
 
-	appendNodeToNavTree: function( parentId, node ){
-		console.log( "appendNodeToNavTree", parentId, node );
+	appendEntryToNavTree: function( parentId, node, isCategory ){
 		if(this.addObjectPosition=='top'){
 			this.navTreeLookupTable[parentId].children.unshift( node );
 		}else{
 			this.navTreeLookupTable[parentId].children.push( node );
 		}
+		if( isCategory ) this.navTreeLookupTable[ node.id ] = node;
 	},
 
 	/*
-		Function: injectAddObjectTool
-		Argument: tierIndex {Number} which tier are adding
+		Function: buildNav
+		Callback to getNavTree
+		Argument: navTree {String} returned argument from getNavTree method.
 	*/
-	injectAddObjectTool: function( tierIndex, hasAddableObjects ){
+	buildNav: function( navTree ){
+//		console.log( navTree );
+		this.navTree = navTree;
+		this.navTreeLookupTable = new Hash();
+		this.createNavTreeLookupTable( navTree );
+		this.showCategory( this.navTree , 0 );
+	},
+
+	/*
+		Function: addListing
+		Argument: whichTier {Number} which tier are adding
+	*/
+	addListing: function( whichTier, hasAddableObjects ){
 
         
-		var leftMargin = ( tierIndex > 0 )? this.colWidth * ( tierIndex ) : 0;
+		var leftMargin = ( whichTier > 0 )? this.colWidth * ( whichTier ) : 0;
 		
-		var navElementWidth  = ( ( tierIndex ) * this.colWidth > this.totalWidth )? ( tierIndex ) * ( this.colWidth ): this.totalWidth;
+		var navElementWidth  = ( ( whichTier ) * this.colWidth > this.totalWidth )? ( whichTier ) * ( this.colWidth ): this.totalWidth;
         
-    this.navElement.setStyles( {
+        this.navElement.setStyles( {
             "width": navElementWidth,
             "white-space": "nowrap"
-    });
+        });
 
 		var newTier = new Element( "li", {
 			"class": "navTier grid_4",
@@ -191,27 +210,28 @@ mop.modules.navigation.Navigation = new Class({
 		});
 
 		var newList = new Element( "ul", { "class": ( hasAddableObjects )? "tier grid_4" : "tier tall grid_4" } );
+console.log( "A : ", newList ); 
 		newList.inject( newTier ); 
 		newTier.inject( this.navElement );
 		
 	},
 	
-	getTierElement: function( tierIndex ){
-		return ( this.navElement.getChildren()[ tierIndex ] )? this.navElement.getChildren()[ tierIndex ].getElement( "ul.tier" ) : false;
+	getTierElement: function( whichTier ){
+		return ( this.navElement.getChildren()[ whichTier ] )? this.navElement.getChildren()[ whichTier ].getElement( "ul.tier" ) : false;
 	},
 
 	/*
 		Function: clearTier
-		Argument: tierIndex {Number} which tier are we clearing
+		Argument: whichTier {Number} which tier are we clearing
 	*/
-	clearTier: function( tierIndex ){
+	clearTier: function( whichTier ){
 		
-//		console.log( "\t\tclearTier ", tierIndex );
+//		console.log( "\t\tclearTier ", whichTier );
 		
-		var targetListElement = this.getTierElement( tierIndex, "clearTier" );
+		var targetListElement = this.getTierElement( whichTier, "clearTier" );
 		if( !targetListElement ) return false;
 		
-		var theTier = this.tiers[ tierIndex ];
+		var theTier = this.tiers[ whichTier ];
 		if( theTier ){
 			theTier.activeChild = null;
 			theTier.each( function( node, index){
@@ -219,7 +239,7 @@ mop.modules.navigation.Navigation = new Class({
 				theTier.erase( node );
 			//	node.destroy();
 			});
-			this.tiers.erase(tierIndex);
+			this.tiers.erase(whichTier);
 		}
 		
 		// clears out elements from this tier, and subsequent tiers
@@ -229,127 +249,112 @@ mop.modules.navigation.Navigation = new Class({
 			aTier.destroy();
 		});
 		
-		this.breadCrumbs.clearCrumbs( tierIndex + 1 );
+		this.breadCrumbs.clearCrumbs( whichTier + 1 );
 
 		targetListElement = null;
 		theTier = null;
 //		crumb = null;
 	},
-	
-	/* Function: showNode
-	   Called on loadNaviNode response
-	   Arguments: objectToTraverse 
-    */
-loadTier: function( nodeData, tierIndex){
-						nodeData = JSON.decode( nodeData );
-						console.log( "loadTier .....", nodeData, tierIndex );
 
-						//place the new node data into the navTree book keepping
-						var parentNode = this.getActiveChild( tierIndex - 1 );
-						parentId = 0;
-						if(parentNode){	
-							parentId = parentNode.retrieve( "Class" ).id;
-						}
-						this.appendNodeToNavTree( parentId, nodeData );
-
-
-						//display the tier eelement for this node
-						//we always do this when a node loads
-						if( nodeData.allowChildSort == "true" ) this.makeTierSortable( tierIndex );
-						this.navSlide.toElement( this.getTierElement( tierIndex ) );
-
-						//add the addable objects tool to this tier
-						this.injectAddObjectTool( tierIndex, Boolean( nodeData.addableObjects || this.userLevel == "superuser" ) );
-						if( nodeData.addableObjects || this.userLevel == 'superuser' ) this.addUtilityNode( nodeData, tierIndex );
-
-						//loop through the child nodes and see if we are deeplinking 
-						var followedChild = true;
-						if( nodeData.length ){
-							var deepLinkTarget = this.getDeepLinkTarget();
-							nodeData.each( function( childNode, anIndex ){
-									var node = this.addNode( nodeData.id, childNode, tierIndex );
-									if( childNode.follow || childNode.slug == deepLinkTarget ){
-											childNode.follow = false;
-											followedChild = false;
-											if( node ) this.setActiveChild( tierIndex, node.element );
-											//@thiago
-											//I don't think we need this here
-											//var slideTier = new Fx.Scroll( this.getTierElement( tierIndex ) );
-											//if( node )  slideTier.start( node.element.getCoordinates().left, node.element.getCoordinates().top );
-											//slideTier = null;
-											if( nodeData.id ) this.breadCrumbs.addCrumb( { label: nodeData.title, id: nodeData.id, index: tierIndex } );
-											//i think this function gets called here
-											//this.nav.addBreadCrumb( this.parentId, tierIndex );
-											this.loadNaviNode( childNode.id, tierIndex+1 );
-									}
-							}, this );
-						}
-
-						return followedChild;
-		
-        
-    },
-    
 	/*
-		Function: loadNaviNode
+		Function: showCategory
 		Replaces a given re with new listing
 		Arguments:
 			aNode - node data from navTree
-			tierIndex - where are we doing this in the navigation...  
+			whichTier - where are we doing this in the navigation...  
 	*/
-					//this is completely convoluted
-					//how coudl you load a node, with already knowing the nodes data
-	loadNaviNode: function( nodeId, tierIndex ){
-		console.log( "loadNaviNode :::: ", nodeId );//, " : ", aNode.id, " : ", tierIndex, aNode.children );
-		this.clearTier( tierIndex );
-		this.tiers[ tierIndex ] = [];
-		this.tiers[ tierIndex ].activeChild = null;
+	showCategory: function( aNode, whichTier ){
+
+//		console.log( "showCategory :::: ", aNode );//, " : ", aNode.id, " : ", whichTier, aNode.children );
+
+		var showPage = true;
+
+		this.clearTier( whichTier );
+		this.tiers[ whichTier ] = [];
+		this.tiers[ whichTier ].activeChild = null;
 		
+		this.addListing( whichTier, Boolean( aNode.addableObjects || this.userLevel == "superuser" ) );
+		console.log( "*** ** ** ", aNode.addableObjects );
+		if( aNode.addableObjects || this.userLevel == 'superuser' ) this.addUtilityNode( aNode, whichTier );
 		
+		var objectToTraverse;
+	    
+		if( aNode.children ){
+		    console.log("::::::::: A");
+		    objectToTraverse = aNode.children;
+		}else{ 
+		    console.log("::::::::: B");
+		    objectToTraverse = aNode;
+		}
 
-		var url = mop.util.getAppURL() + "ajax/"+ this.instanceName + "/getNavNode/" + nodeId;
-		console.log( url );
-		new Request.JSON({
-			url: url,
-			onComplete: function( response, nodeDataJSON ){ this.loadTier( nodeDataJSON, tierIndex ) }.bind( this )
-		}).send();
 
-		//we don't want this in here, since loadNaviNode sould just load that one node
-		//we don't always want to load content, necessarily
- //   this.loadContent( aNode.id , tierIndex );
+		if( objectToTraverse.length ){
+		    var deepLinkTarget = this.getDeepLinkTarget();
+			objectToTraverse.each( function( childNode, anIndex ){
+				// Todo: Figure out recursion for opening deeplinks
+				var node;
+				switch( childNode.contentType ){
+					default:
+					case "document":
+						node = this.addLeafNode( aNode.id, childNode, whichTier );
+					break;
+					case "category":
+						node = this.addCategoryNode( aNode.id, childNode, whichTier );
+					break;
+				}
+//                console.log( ":: ", childNode.title, childNode.slug, childNode.follow, deepLinkTarget );
+				if( childNode.follow || childNode.slug == deepLinkTarget ){
+					childNode.follow = false;
+					showPage = false;
+					if( node ) this.setActiveChild( whichTier, node.element );
+					var slideTier = new Fx.Scroll( this.getTierElement( whichTier ) );
+					if( node )  slideTier.start( node.element.getCoordinates().left, node.element.getCoordinates().top );
+					slideTier = null;
+					if( aNode.id ) this.breadCrumbs.addCrumb( { label: aNode.title, id: aNode.id, index: whichTier } );
+					this.showCategory( childNode, whichTier+1 );
+				}
+			}, this );
+		}
+		
+		if( aNode.allowChildSort == "true" ) this.makeTierSortable( whichTier );
+		
+		this.navSlide.toElement( this.getTierElement( whichTier ) );
 
+		if( showPage ) this.loadPage( aNode.id , whichTier );
+		
+		objectToTraverse = null;
+		
 	},
 	
-	onBreadCrumbClicked: function( nodeData ){
-		if( !nodeData.id ){
+	onBreadCrumbClicked: function( aNode ){
+		if( !aNode.id ){
 			node = this.navTree;
 		}else{
-			node = this.navTreeLookupTable[ nodeData.id ];
+			node = this.navTreeLookupTable[ aNode.id ];
 		}
-		this.loadNaviNode( node.id, nodeData.index );
-		this.loadContent( nodeData.id, nodeData.index); 
+		this.showCategory( node, aNode.index );
 	},
 	
-	addBreadCrumb: function( nodeParentId, tierIndex ){
+	addBreadCrumb: function( nodeParentId, whichTier ){
 		if( nodeParentId ){
 			var node = this.navTreeLookupTable.get( nodeParentId );
-			breadCrumbObj = { label: node.title, id: node.id, index: tierIndex };
+			breadCrumbObj = { label: node.title, id: node.id, index: whichTier };
 		}else{
 			obj = null;
-			if( tierIndex == 0 ){
-				breadCrumbObj = { label : "Main Menu", id : null, index: tierIndex }
+			if( whichTier == 0 ){
+				breadCrumbObj = { label : "Main Menu", id : null, index: whichTier }
 			}
 		}
-		this.breadCrumbs.addCrumb( breadCrumbObj );//{ label: node.title, id: node.id, anIndex: tierIndex } );
+		this.breadCrumbs.addCrumb( breadCrumbObj );//{ label: node.title, id: node.id, anIndex: whichTier } );
 	},
 	
-	addUtilityNode: function( aNode, tierIndex ){
-		var tierElement = this.getTierElement( tierIndex );
+	addUtilityNode: function( aNode, whichTier ){
+		var tierElement = this.getTierElement( whichTier );
 		if( !tierElement.getElement( '.utility' ) ){
     		var utilityNode = new Element( "ul", { "class": "utility grid_4" } );
     		utilityNode.inject( tierElement );		    
 		}
-		var tier = this.tiers[ tierIndex ];
+		var tier = this.tiers[ whichTier ];
 		if( !tierElement ) return;
 				
 		var utilityNode;
@@ -369,15 +374,15 @@ loadTier: function( nodeData, tierIndex){
 		
 		if( aNode.addableObjects ){
     		aNode.addableObjects.each( function( leafObj, index ){ 
-    			var node = new mop.modules.navigation.UtilityNode( leafObj, aNode.id, this, tierIndex );
+    			var node = new mop.modules.navigation.UtilityNode( leafObj, aNode.id, this, whichTier );
     			tier.unshift( node );
     			tierElement.getSibling(".utility").adopt( node.element  );			
     		}, this );		    
 		}
 		
 		if( this.userLevel == "superuser" ){
-		    console.log( "superuser", aNode.id, this, tierIndex );
-		    var node = new mop.modules.navigation.SuperUserUtilityNode( aNode.id, this, tierIndex, aNode.title );
+		    console.log( "superuser", aNode.id, this, whichTier );
+		    var node = new mop.modules.navigation.SuperUserUtilityNode( aNode.id, this, whichTier, aNode.title );
 			tier.unshift( node );
 			console.log( ":: ", node.element );
 	        tierElement.getSibling(".utility").adopt( node.element );
@@ -408,11 +413,12 @@ loadTier: function( nodeData, tierIndex){
 		aNode.morph( { "top": 0 } );		
 	},
 	
-	addNode: function( parentId, node, tierIndex, placementArg ){
+	addLeafNode: function( parentId, node, whichTier, placementArg ){
 		var placement = placementArg || 'bottom';
-	 	var node = new mop.modules.navigation.Node( parentId, node, this, tierIndex );
-		this.tiers[ tierIndex ].unshift( node );
-		node.element.inject( this.getTierElement( tierIndex ), placement  );
+	 	var node = new mop.modules.navigation.Node( parentId, node, this, whichTier );
+		this.tiers[ whichTier ].unshift( node );
+//		console.log( this + " addLeafNode");
+		node.element.inject( this.getTierElement( whichTier, "addLeaf"), placement  );
 		try{
 			return node;
 		}finally{
@@ -420,67 +426,71 @@ loadTier: function( nodeData, tierIndex){
 		}
 	},
 	
-	setActiveChild: function( tierIndex, whichElement ){
-		if( this.tiers[ tierIndex ].activeChild ) this.tiers[ tierIndex ].activeChild.removeClass("active");
-		whichElement.addClass("active");
-		this.tiers[ tierIndex ].activeChild = whichElement;
-	},
-	
-	getActiveChild: function ( tierIndex ){
-		if(tierIndex < 0){
-			return 0;
+	addCategoryNode: function( parentId, node, whichTier, placementArg ){
+		var placement = placementArg || 'bottom';
+	 	var node = new mop.modules.navigation.Node( parentId, node, this, whichTier );
+//		console.log( "addCategoryNode", this.tiers, whichTier, node );
+		this.tiers[ whichTier ].unshift( node );
+//		console.log( this + " addCategoryNode");
+		node.element.inject( this.getTierElement( whichTier ), placement );
+		try{
+			return node;
+		} finally {
+			node = null;
 		}
-		return ( this.tiers[ tierIndex ].activeChild )? this.tiers[ tierIndex ].activeChild : null;
 	},
 
-	addObject: function( parentId, templateId, tierIndex ){
-		console.log( "addObject", parentId, templateId, tierIndex );
+	setActiveChild: function( whichTier, whichElement ){
+		if( this.tiers[ whichTier ].activeChild ) this.tiers[ whichTier ].activeChild.removeClass("active");
+		whichElement.addClass("active");
+		this.tiers[ whichTier ].activeChild = whichElement;
+	},
+	
+	getActiveChild: function ( whichTier ){
+		return ( this.tiers[ whichTier ].activeChild )? this.tiers[ whichTier ].activeChild : null;
+	},
+
+	addObject: function( parentId, templateId, whichTier ){
+		console.log( "addObject", parentId, templateId, whichTier );
 		var name = prompt( "What would you like to name this Node?" );
 		if( name ){
-			var placeHolder = this.addPlaceHolder( name, tierIndex );
-			this.marshal.addObject( name, templateId, parentId, tierIndex, placeHolder );
+			var placeHolder = this.addPlaceHolder( name, whichTier );
+			this.marshal.addObject( name, templateId, parentId, whichTier, placeHolder );
 			placeHolder = null;
 		}
 		name = null;
 	},
 	
-	onObjectAdded: function( node, parentId, tierIndex, placeHolder ){
+	onObjectAdded: function( node, parentId, whichTier, placeHolder ){
 		placeHolder.destroy();
 		mop.HistoryManager.changeState( "pageId", node.id );
-        var objectElement = this.addNode( parentId, node, tierIndex, this.addObjectPosition ).element;			
-		this.appendNodeToNavTree( parentId, node );
-		this.setActiveChild( tierIndex, objectElement );
-		if( this.getTierElement( tierIndex ).retrieve( "sortable" ) ) this.getTierElement( tierIndex ).retrieve( "sortable" ).addItems( objectElement ); 
-		// @thiago
-		// this doesn't seem to make a lot of sense
-		// seems to indicate that a naviNode gets loaded only when it has addableObjects
-		// actually it should basically always be loaded, since anything may have children
-		// or am i wrong here
-		if( node.addableObjects ) this.loadNaviNode( node.id , tierIndex+1 );
-		//@thiago
-		//loadContent downstairs anytime it's not a container onObjectAdded
-		if( node.nodeType != 'containter'){
-			this.nav.loadContent( this.nodeData.id, tierIndex+1 );
+		if( node.nodeType == "container"){
+			var objectElement = this.addCategoryNode( parentId, node, whichTier, this.addObjectPosition ).element;			
+		}else{
+			var objectElement = this.addLeafNode( parentId, node, whichTier, this.addObjectPosition ).element;			
 		}
+		this.appendEntryToNavTree( parentId, node, true );
+		this.setActiveChild( whichTier, objectElement );
+		if( this.getTierElement( whichTier ).retrieve( "sortable" ) ) this.getTierElement( whichTier ).retrieve( "sortable" ).addItems( objectElement ); 
+		if( node.addableObjects ) this.showCategory( node , whichTier+1 );
 	},
 	
-	addPlaceHolder: function( name, tierIndex ){
+	addPlaceHolder: function( name, whichTier ){
 
-		console.log("addPlaceHolder");
 		var placeHolder = new Element( "li", { "class": "placeHolder" } );
 		var nodeTitle = new Element( "h5", { "text" : "Adding " + name + "…" } );		
 		var clearBoth = new Element( "div", { "class": "clear" } );
 
-		var tierElement = this.getTierElement( tierIndex, "addPlaceHolder" );
+		var tierElement = this.getTierElement( whichTier, "addPlaceHolder" );
 		
 		nodeTitle.inject( placeHolder );
 		clearBoth.inject( placeHolder );
 		placeHolder.inject( tierElement, this.addObjectPosition );	
-		if( !this.tiers[tierIndex].slideTier) this.tiers[tierIndex].slideTier = new Fx.Scroll( tierElement );
+		if( !this.tiers[whichTier].slideTier) this.tiers[whichTier].slideTier = new Fx.Scroll( tierElement );
 		if(this.addObjectPosition == 'top'){
-			this.tiers[tierIndex].slideTier.toTop();
+			this.tiers[whichTier].slideTier.toTop();
 		} else {
-			this.tiers[tierIndex].slideTier.toBottom();
+			this.tiers[whichTier].slideTier.toBottom();
 		}
 		try{ 
 			return placeHolder;
@@ -493,8 +503,8 @@ loadTier: function( nodeData, tierIndex){
 		}
 	},
 	
-	makeTierSortable: function( tierIndex ){
-        var container = this.getTierElement( tierIndex );
+	makeTierSortable: function( whichTier ){
+        var container = this.getTierElement( whichTier );
         var sortable = container.retrieve( "sortable" );
         if( !sortable ){
     		sortable = new mop.ui.Sortable( container, this, container );
@@ -524,7 +534,7 @@ loadTier: function( nodeData, tierIndex){
 		return sort.join(",");
 	},
 
-	submitSortOrder: function( newOrder, tierIndex ){
+	submitSortOrder: function( newOrder, whichTier ){
 		if( this.oldSort != newOrder ){
 			$clear( this.submitDelay );
 			this.JSONSend( "saveSortOrder", { sortorder: newOrder } );
@@ -533,9 +543,7 @@ loadTier: function( nodeData, tierIndex){
 	},
 
 	JSONSend: function( action, data, options ){
-	    console.log( "NAV JSONSEND", action, data, options );
-	    var objectId = ( mop.objectId )? mop.objectId : 0;
-		mop.util.JSONSend( mop.util.getAppURL() + "ajax/"+ this.marshal.instanceName +  "/" + action + "/" + objectId, data, options );
+		mop.util.JSONSend( mop.util.getAppURL() + "ajax/"+ this.marshal.instanceName +  "/" + action + "/" + mop.objectId, data, options );
 	},
 
 	renameNode: function( aString ){
@@ -557,19 +565,11 @@ loadTier: function( nodeData, tierIndex){
 	
 	removeNode: function( node, fromMarshal ){
 
-
-		//@thiago
-		//this is an example of a convoluted block of code
-		//the procedures need to be isolated
-		//on procedure is deleting from marshal
-		//the other is deleting from the navi
-		//they should be called separately where appropriate, not lumped together into a one size fits all
 		// if called from marshal, dont talk to marshal
 		if( Boolean( fromMarshal ) ){
 			// if called from marshal we only know the node id
 	        console.log( "removeNode A", Boolean( fromMarshal ), node, node.id );
 			node = this.getNodeById( node );
-			//the node has already been delete by the marshal
 		}else{
 	    	console.log( "removeNode B", node );
 			this.marshal.deleteNode( node.id, node.nodeData.title );
@@ -578,7 +578,7 @@ loadTier: function( nodeData, tierIndex){
 		// set some local variables
 		var id = node.instanceName;
 		var parentId = node.parentId;
-		var tierIndex = node.tier;
+		var whichTier = node.tier;
 		
 		mop.HistoryManager.changeState("pageId", parentId);
 		// get a reference to parentNode of navTree in the lookup table to delete the entry of this child...
@@ -594,24 +594,24 @@ loadTier: function( nodeData, tierIndex){
 
 		this.navTreeLookupTable.erase( id );
 
-		var tierInQuestion = this.navElement.getChildren( "li" )[ tierIndex ];
+		var tierInQuestion = this.navElement.getChildren( "li" )[ whichTier ];
 		var nodesInTier = tierInQuestion.getChildren( "ul" ).getChildren( "li" );
 
-		if ( node.nodeData.children ) this.clearTier( tierIndex + 1 );
-		this.tiers[ tierIndex ].erase( node );
+		if ( node.nodeData.children ) this.clearTier( whichTier + 1 );
+		this.tiers[ whichTier ].erase( node );
 
 		node.destroy();
 
 		if( tierInQuestion.getElement( "ul" ).getChildren( "li" ).length == 0 && !tierInQuestion.getElement( "li.utility" ) ){
 			tierInQuestion.destroy();
-			this.navElement.setStyle( "width", this.colWidth * ( tierIndex - 1 ) );
+			this.navElement.setStyle( "width", this.colWidth * ( whichTier - 1 ) );
 		}
 		delete node;
 		
 		nodesInTier = null;
 		tierInQuestion = null;
 		parentRef = null;
-		tierIndex = null;
+		whichTier = null;
 		parentId = null;
 		id = null;
 
@@ -792,15 +792,11 @@ mop.modules.navigation.Node = new Class({
 		this.nav.setActiveChild( this.tier, this.element );
 		this.nav.addBreadCrumb( this.parentId, this.tier );
 		mop.HistoryManager.changeState( "pageId", this.nodeData.id );
-
-		notFollowingChild = true;
 		if( this.nodeData.addableObjects  || ( this.nodeData.children && this.nodeData.children.length > 0 )  ){
-			notFollowingChild = this.nav.loadTier( this.nodeData, this.tier + 1 );
+			this.nav.showCategory( this.nodeData, this.tier + 1 );
+		}else if( this.nodeData.landing != "NO_LANDING" ){
+			this.nav.loadPage( this.nodeData.id, this.tier, "leafNodeOnClick" );
 		}
-		if(notFollowingChild && this.nodeData.nodeType != 'container' ){
-			this.nav.loadContent( this.nodeData.id, this.tier );
-		}
-		
 		mop.util.setObjectId( this.nodeData.id );	}
 });
 
@@ -809,14 +805,14 @@ mop.modules.navigation.UtilityNode = new Class({
 	Extends: mop.modules.navigation.Node,
 	className: "utility",
 
-	initialize: function( leafObj, targetId, nav, tierIndex ){
+	initialize: function( leafObj, targetId, nav, whichTier ){
 	    this.nav = nav;
 	    this.targetId = targetId;
 		this.templateId = leafObj.templateId;
 		this.templateAddText = leafObj.templateAddText;
 		this.nodeType = leafObj.nodeType;
 		this.contentType = leafObj.contentType;
-		this.tier = tierIndex;
+		this.tier = whichTier;
 		this.build();
 		return this;
 	},
@@ -867,11 +863,11 @@ mop.modules.navigation.SuperUserUtilityNode = new Class({
     Extends : mop.modules.navigation.UtilityNode,
     className: "utility",
     
-	initialize: function( targetId, nav, tierIndex, targetName ){
+	initialize: function( targetId, nav, whichTier, targetName ){
 	    this.nav = nav;
 	    this.targetName = targetName;
 	    this.targetId = targetId;
-		this.tier = tierIndex;
+		this.tier = whichTier;
 		this.build();
 		return this;
     },
