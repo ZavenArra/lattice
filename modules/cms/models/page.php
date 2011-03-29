@@ -453,7 +453,7 @@ class Page_Model extends ORM {
 	);
 		foreach($resizes as $resize){
 
-			if($prefix = $resize->getAttribute('prefix')){
+			if($prefix = $resize->getAttribute('name')){
 				$prefix = $prefix.'_';
 			} else {
 				$prefix = '';
