@@ -446,7 +446,7 @@ class Page_Model extends ORM {
 
 		//do the resizing
     $templatename = $this->template->templatename;
-		$resizes = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[field="%s"]/resize', 
+		$resizes = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]/resize', 
       $templatename,
 			$field
 		)
@@ -461,7 +461,7 @@ class Page_Model extends ORM {
 			$newFilename = $prefix.$imageFileName;
 			$saveName = cms::mediapath().$newFilename;
 
-			cms::resizeImage($imageFileName, $saveName, 
+			cms::resizeImage($imageFileName, $newFilename, 
 				$resize->getAttribute('width'),
 				$resize->getAttribute('height'),
 				$resize->getAttribute('forceDimension'), 
