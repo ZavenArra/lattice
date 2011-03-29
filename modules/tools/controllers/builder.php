@@ -10,6 +10,23 @@ class builder_Controller extends Controller {
 		}
 	}
 
+	public function destroy($dir) {
+		$mydir = opendir($dir);
+		while(false !== ($file = readdir($mydir))) {
+			if($file != "." && $file != "..") {
+				chmod($dir.$file, 0777);
+				if(is_dir($dir.$file)) {
+					chdir('.');
+					destroy($dir.$file.'/');
+					rmdir($dir.$file) or DIE("couldn't delete $dir$file<br />");
+				}
+				else
+					unlink($dir.$file) or DIE("couldn't delete $dir$file<br />");
+			}
+		}
+		closedir($mydir);
+	}
+
 	public function initializeSite($xmlFile='data'){
 		//get directory listing of application/media
 		//and unlink all files
@@ -23,6 +40,11 @@ class builder_Controller extends Controller {
 		$db->query('alter table templates AUTO_INCREMENT = 1');
 		flush();
 		ob_flush();
+
+		//clean out media dir
+		$this->destroy('application/media/');
+		$this->destroy('staging/application/media/');
+		
 
 		echo "\nInserting Data\n";
 		$this->insertData($xmlFile);
