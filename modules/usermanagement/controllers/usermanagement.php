@@ -121,6 +121,8 @@ Class UserManagement_Controller extends Controller {
 
 		//add the login role
 		$user->add(ORM::Factory('role', 'login'));
+		$user->add(ORM::Factory('role', 'admin'));
+		$user->add(ORM::Factory('role', 'staging'));
 		$user->save();
 
 		return $user;

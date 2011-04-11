@@ -10,23 +10,6 @@ class builder_Controller extends Controller {
 		}
 	}
 
-	public function destroy($dir) {
-		$mydir = opendir($dir);
-		while(false !== ($file = readdir($mydir))) {
-			if($file != "." && $file != "..") {
-	//			chmod($dir.$file, 0777);
-				if(is_dir($dir.$file)) {
-					chdir('.');
-					destroy($dir.$file.'/');
-					rmdir($dir.$file) or DIE("couldn't delete $dir$file<br />");
-				}
-				else
-					unlink($dir.$file) or DIE("couldn't delete $dir$file<br />");
-			}
-		}
-		closedir($mydir);
-	}
-
 	public function initializeSite($xmlFile='data'){
 		//get directory listing of application/media
 		//and unlink all files
@@ -41,11 +24,6 @@ class builder_Controller extends Controller {
 		flush();
 		ob_flush();
 
-		//clean out media dir
-		$this->destroy('application/media/');
-		$this->destroy('staging/application/media/');
-		
-
 		echo "\nInserting Data\n";
 		$this->insertData($xmlFile);
 
@@ -55,6 +33,8 @@ class builder_Controller extends Controller {
 		echo "\n Regenerating Fronted";
     $frontend = new Frontend_Controller();
     $frontend->index();
+
+		$this->generateCMSCustomViews();
 
 	}
 
@@ -105,7 +85,7 @@ class builder_Controller extends Controller {
 				//need to look up field and switch on field type	
 				$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')))->item(0);
 				if(!$fieldInfo){
-					die("Bad field in data/objects!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')));
+					die("Bad field in builder!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->tagName));
 				}
         //echo "\ntagname\t".$fieldInfo->tagName."\n";
 
@@ -190,4 +170,18 @@ class builder_Controller extends Controller {
 		//and regenerate all files
 	}
 
+
+	public function generateCMSCustomViews() {
+		foreach(mop::config('objects', '//template') as $template){
+			$filename = 'application/views/generated/cms/cms_'.$template->getAttribute('name').'.php';
+			touch($filename);
+			$html = '';
+			foreach(mop::config('objects', 'elements/*', $template) as $field){
+				$html .="<?=$".$field->tagName.'_'.$field->getAttribute('field').";?>\n\n";	
+			}
+			$file = fopen($filename, 'w');
+			fwrite($file, $html);
+			fclose($file);
+		}
+	}
 }
