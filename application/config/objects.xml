@@ -77,6 +77,7 @@
 		<template name="singleImage" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<image field="file" label="Single Image">
+					<resize name="test" width="96" height="58" forceDimension="height" /> 
 					<ext>jpg</ext>
          				 <ext>tiff</ext>
          				 <ext>tif</ext>
