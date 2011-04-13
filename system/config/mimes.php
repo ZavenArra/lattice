@@ -1,7 +1,5 @@
-<?php defined('SYSPATH') OR die('No direct access allowed.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /**
- * @package  Core
- *
  * A list of mime types. Our list is generally more complete and accurate than
  * the operating system MIME list.
  *
@@ -9,7 +7,7 @@
  * http://kohanaphp.com/trac/newticket. Be sure to give the filename and
  * expected MIME type, as well as any additional information you can provide.
  */
-$config = array
+return array
 (
 	'323'   => array('text/h323'),
 	'7z'    => array('application/x-7z-compressed'),
@@ -19,6 +17,7 @@ $config = array
 	'aif'   => array('audio/x-aiff'),
 	'aifc'  => array('audio/x-aiff'),
 	'aiff'  => array('audio/x-aiff'),
+	'amf'   => array('application/x-amf'),
 	'asf'   => array('video/x-ms-asf'),
 	'asr'   => array('video/x-ms-asf'),
 	'asx'   => array('video/x-ms-asf'),
@@ -47,6 +46,7 @@ $config = array
 	'dmg'   => array('application/x-apple-diskimage'),
 	'dms'   => array('application/octet-stream'),
 	'doc'   => array('application/msword'),
+	'docx'  => array('application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
 	'dvi'   => array('application/x-dvi'),
 	'dxr'   => array('application/x-director'),
 	'eml'   => array('message/rfc822'),
@@ -150,6 +150,7 @@ $config = array
 	'pot'   => array('application/vnd.ms-powerpoint'),
 	'pps'   => array('application/vnd.ms-powerpoint'),
 	'ppt'   => array('application/powerpoint'),
+	'pptx'  => array('application/vnd.openxmlformats-officedocument.presentationml.presentation'),
 	'ps'    => array('application/postscript'),
 	'psd'   => array('application/x-photoshop', 'image/x-photoshop'),
 	'pub'   => array('application/x-mspublisher'),
@@ -212,8 +213,9 @@ $config = array
 	'xlc'   => array('application/excel', 'application/vnd.ms-excel'),
 	'xlm'   => array('application/excel', 'application/vnd.ms-excel'),
 	'xls'   => array('application/excel', 'application/vnd.ms-excel'),
+	'xlsx'  => array('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
 	'xlt'   => array('application/excel', 'application/vnd.ms-excel'),
-	'xml'   => array('text/xml'),
+	'xml'   => array('text/xml', 'application/xml'),
 	'xof'   => array('x-world/x-vrml'),
 	'xpm'   => array('image/x-xpixmap'),
 	'xsl'   => array('text/xml'),
