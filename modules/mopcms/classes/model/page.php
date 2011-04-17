@@ -12,7 +12,7 @@ class Model_Page extends ORM {
 
 	public function __construct($id){
 		parent::__construct($id);
-		$this->object_fields = array_merge($this->object_fields, array_keys($this->table_columns) );
+	//	$this->object_fields = array_merge($this->object_fields, array_keys($this->_column_cache) );
 	}
 	  /**
 		 *    * Allows a model to be loaded by username or email address.
@@ -91,7 +91,7 @@ class Model_Page extends ORM {
 	Function: save()
 	Custom save function, makes sure the content table has a record when inserting new page
 	*/
-	public function save(){
+	public function save(Validation $validation = NULL) {
 		$inserting = false;
 		if($this->loaded == FALSE){
 			$inserting = true;

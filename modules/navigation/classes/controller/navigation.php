@@ -5,7 +5,7 @@
 *
 */
 
-class Navigation_Controller extends Controller{
+class Controller_Navigation extends Controller_MOP{
 
 	private $objectModel = 'page';
 
@@ -31,20 +31,21 @@ class Navigation_Controller extends Controller{
 	private $defaultAddCategoryText = '';
 	private $defaultAddLeafText = '';
 
-	public function createIndexView($deeplink=null){
+	public function __construct($request, $response){
+		parent::__construct($request, $response);
+
+		$this->defaultAddCategoryText = Kohana::config('navigation.addCategoryText');
+		$this->defaultAddLeafText = Kohana::config('navigation.addLeafText');
+	}
+
+
+	public function action_index($deeplink=null){
 		
 		//$this->view = new View(strtolower($this->controllername));
 		////this should check and extend
 		$this->view = new View('navigation');
+		$this->response->body($this->view->render());
 
-	}
-
-
-	public function __construct(){
-		parent::__construct();
-
-		$this->defaultAddCategoryText = Kohana::config('navigation.addCategoryText');
-		$this->defaultAddLeafText = Kohana::config('navigation.addLeafText');
 	}
 
 

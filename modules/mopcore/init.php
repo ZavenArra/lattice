@@ -21,3 +21,23 @@ Route::set('footer', 'footer(/<id>)')
 			'action'=>'build'
 		)
 	);
+
+Route::set('layout', 'mop:(<request>)')
+	->defaults(
+		array(
+			'controller'=>'layout',
+			'action'=>'htmlLayout'
+		)
+	);
+
+
+//using the framework means that other controllers aren't going to automatically load via the default
+//they will always get wrapped by the layout controller
+
+/*
+Route::set('mopdefault', '(m:<requestController>(/<requestAction>(/<id>)))')
+	->defaults(array(
+		'controller' => 'layout',
+		'action' => 'htmlLayout',
+	));
+ */
