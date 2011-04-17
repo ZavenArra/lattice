@@ -5,22 +5,19 @@ Route::set('ajax', '(<controller>(/<action>(/<uri>)))',
 		'controller'=>'ajax',
 		'uri' => '[A-z\/]++',		
 	));
-Route::set('header', '(<controller>(/<id>))',
-	array(
-		'controller'=>'header',
-	))
+
+Route::set('header', 'header(/<id>)')
 	->defaults(
 		array(
-		'action'=>'build'
-	)
+			'controller'=>'header',
+			'action'=>'build'
+		)
 	);
 
-Route::set('footer', '(<controller>(/<id>))',
-	array(
-		'controller'=>'footer',
-	))
+Route::set('footer', 'footer(/<id>)')
 	->defaults(
 		array(
-		'action'=>'build'
-	)
+			'controller'=>'footer',
+			'action'=>'build'
+		)
 	);
