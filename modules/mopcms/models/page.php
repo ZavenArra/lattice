@@ -4,7 +4,7 @@
 * Class: Model for Page
 *
 */
-class Page_Model extends ORM {
+class Model_Page extends ORM {
 	protected $belongs_to = array('template');
 	public $content = null;
 

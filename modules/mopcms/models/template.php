@@ -3,7 +3,7 @@
 /*
  * Class: Template_Model
  */
-class Template_Model extends ORM {
+class Model_Template extends ORM {
 
 	protected $has_many = array('pages');
 

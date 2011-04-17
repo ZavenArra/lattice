@@ -4,6 +4,6 @@
  * Extension of ContentBase_Model mapping to a database table with largest number of mappable fields
  */
 
-class Content_Model extends ContentBase_Model {
+class Model_Content extends ContentBase_Model {
 
 }
