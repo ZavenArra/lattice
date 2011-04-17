@@ -79,8 +79,13 @@ if (isset($_SERVER['KOHANA_ENV']))
  * - boolean  profile     enable or disable internal profiling               TRUE
  * - boolean  caching     enable or disable internal caching                 FALSE
  */
+
+
+//this is a convention that eases things for us, but doesn't break interoperability of the mop modules
+$path = substr($_SERVER['SCRIPT_NAME'],0,-9); 
+
 Kohana::init(array(
-	'base_url'   => '/',
+	'base_url'   => $path,
 ));
 
 /**

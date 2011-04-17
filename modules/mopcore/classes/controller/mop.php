@@ -28,10 +28,10 @@ class Controller_MOP extends Controller {
 		if(is_subclass_of(self::$topController, 'Controller_MOP')){	
 			//should add to self, then merge into topController
 			if($css = Kohana::find_file('views', 'css/'.$controllerName, 'css')){
-				$this->resources['css'][$css] = $css;
+				$this->resources['css'][$css] = helper_mop::convertFullPathToWebPath($css);
 			}
 			if($js = Kohana::find_file('views', 'js/'.$controllerName, 'js')){
-				$this->resources['js'][$js] = $js;
+				$this->resources['js'][$js] = helper_mop::convertFullPathToWebPath($js);
 			}
 		}
 
