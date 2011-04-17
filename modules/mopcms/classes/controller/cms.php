@@ -8,7 +8,7 @@
  */
 
 
-class CMS_Controller extends CMS_Interface_Controller {
+class Controller_CMS extends Controller_CMSInterface {
 
 	/*
 	*  Variable: page_id
@@ -46,20 +46,22 @@ class CMS_Controller extends CMS_Interface_Controller {
 		Function: __constructor
 		Loads subModules to build from config	
 	*/
-	public function __construct(){
-		parent::__construct();
+	public function __construct($request, $response){
+		parent::__construct($request, $response);
 
 		$this->modules = Kohana::config('cms.subModules');
 
 	}
 
-	public function createIndexView(){
-		parent::createIndexView();
+	public function action_index(){
+		$this->view = new View('mop_cms');
 		if(Auth::instance()->logged_in('superuser')){
 			$this->view->userlevel = 'superuser';
 		} else {
 			$this->view->userlevel = 'basic';
 		}	
+		$this->assignObjectId();
+		$this->response->body($this->view->render());
 	}
 
 	/*
@@ -92,7 +94,7 @@ class CMS_Controller extends CMS_Interface_Controller {
 	id - the page id to be retrieved
 	Returns: array('html'=>html, 'js'=>js, 'css'=>css)
 	*/
-	public function getPage($id){
+	public function action_getPage($id){
 		
 		self::$objectId = $id;
 
@@ -184,7 +186,7 @@ class CMS_Controller extends CMS_Interface_Controller {
 	 * Function: associate
 	 * Associate an object to another object
 	 */
-	public function associate($objectId){
+	public function function_associate($objectId){
 		//gotta issue here
 	}
 
@@ -198,7 +200,7 @@ class CMS_Controller extends CMS_Interface_Controller {
 	$_POST - possible array of keys and values to initialize with
 	Returns: nav controller node object
 	*/
-	public function addObject($id, $template_id, $title=null){
+	public function function_addObject($id, $template_id, $title=null){
 		$data = $_POST;
 
 		if($title){
@@ -212,15 +214,15 @@ class CMS_Controller extends CMS_Interface_Controller {
 		return $nav_controller->getNode($newid);
 	}
 
-	public function toWebpage(){
+	public function assignObjectId(){
 
 		//get the default 
 		if(!self::$objectId){ //this allows for the controller to force it, 
 			//but the below initialization should happen first in the future
-			if(!count(Router::$arguments) || !Router::$arguments[0]){
+			if(!Request::initial()->param('id')){
 				self::$objectId = null;
 			} else {
-				self::$objectId = Router::$arguments[0];
+				self::$objectId = Request::initial()->param('id');
 			}
 		}
 
@@ -228,7 +230,6 @@ class CMS_Controller extends CMS_Interface_Controller {
 		self::$objectId = $page->id; //make sure we're storing id and not slug
 
 		$this->view->objectId = $page->id;
-		parent::toWebpage();
 	}
 
 }

@@ -28,3 +28,7 @@ $config['basemediapath'] = 'application/media/';
 $config['imagequality'] = 85;
 
 $config['enableSlugEditing'] = true;
+
+$config['baseName'] = 'mop_cms';
+
+return $config;

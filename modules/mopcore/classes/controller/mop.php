@@ -11,6 +11,9 @@ class Controller_MOP extends Controller {
 		'librarycss'=>array(),
 	);
 
+	public $controllerName;
+	public $basename;
+
 
 	//constructor
 	public function __construct($request, $response){
@@ -24,22 +27,29 @@ class Controller_MOP extends Controller {
 		}
 
 		//look up all matching js and css based off controller name
-		$controllerName = strtolower(substr(get_class($this), 11)); 
+		$this->controllerName = strtolower(substr(get_class($this), 11)); 
+		$this->baseName = Kohana::config($this->controllerName.'.baseName');
+		if(!$this->baseName){
+			$this->baseName = $this->controllerName;
+		}
+
 		if(is_subclass_of(self::$topController, 'Controller_MOP')){	
 			//should add to self, then merge into topController
-			if($css = Kohana::find_file('views', 'css/'.$controllerName, 'css')){
+			if($css = Kohana::find_file('views', 'css/'.$this->baseName, 'css')){
 				$this->resources['css'][$css] = helper_mop::convertFullPathToWebPath($css);
 			}
-			if($js = Kohana::find_file('views', 'js/'.$controllerName, 'js')){
+			if($js = Kohana::find_file('views', 'js/'.$this->baseName, 'js')){
 				$this->resources['js'][$js] = helper_mop::convertFullPathToWebPath($js);
 			}
 		}
 
-		$config = Kohana::config($controllerName);
+		$config = Kohana::config($this->baseName);
 		//look up all matching js and css configured in the config file
-		foreach(Kohana::config($controllerName.'.resources') as $key => $paths){
-			foreach($paths as $path){
-				$this->resources[$key][$path] = $path;
+		if(is_array(Kohana::config($this->baseName.'.resources') ) ){
+			foreach(Kohana::config($this->baseName.'.resources') as $key => $paths){
+				foreach($paths as $path){
+					$this->resources[$key][$path] = $path;
+				}
 			}
 		}
 

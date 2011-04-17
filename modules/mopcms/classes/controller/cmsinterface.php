@@ -8,15 +8,15 @@
  */
 
 
-class CMS_Interface_Controller extends Controller {
+class Controller_CMSInterface extends Controller_MOP {
 
 
 	/*
 		Function: __constructor
 		Loads subModules to build from config	
 	*/
-	public function __construct(){
-		parent::__construct();
+	public function __construct($request, $response){
+		parent::__construct($request, $response);
 	}
 
 	/*
