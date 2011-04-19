@@ -9,7 +9,10 @@
 
 	<title>MoPCMS &ldquo;It's Made of People!&rdquo;</title>
 
-	<base href="<?=Kohana::config('config.site_protocol');?>://<?=$_SERVER['HTTP_HOST'];?><?=Kohana::config('config.site_domain');?>" />
+<!--
+This needs to be taken out
+-->
+	<base href="<?=Request::initial()->protocol();?>://<?=$_SERVER['HTTP_HOST'];?><?=substr($_SERVER['SCRIPT_NAME'],0,-9);?>" />
 
 	<?=$stylesheet;?>
 	<?=$javascript;?>

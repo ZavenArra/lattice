@@ -5,12 +5,15 @@
 *
 */
 class Model_Page extends ORM {
-	protected $belongs_to = array('template');
+	protected $_belongs_to = array(
+		'template'=>array()
+	);
+
 	public $content = null;
 
 	private $object_fields = array('loaded', 'template', 'primary_key', 'primary_val');
 
-	public function __construct($id){
+	public function __construct($id=NULL){
 		parent::__construct($id);
 	//	$this->object_fields = array_merge($this->object_fields, array_keys($this->_column_cache) );
 	}
@@ -35,20 +38,16 @@ class Model_Page extends ORM {
 	 *         */
 	public function __get($column){
 
-    if($column=='contenttable' && !isset($this->related[$column])){
-      if(!Kohana::config('mop.legacy')){
-        $content = ORM::factory( inflector::singular('contents') );
-      } else {
-        $content = ORM::factory( inflector::singular($this->template->contenttable) );
-      }
+    if($column=='contenttable' && !isset($this->_related[$column])){
+			$content = ORM::factory( inflector::singular('contents') );
       $content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
-      $this->related[$column]=$content->where('page_id',$this->id)->find();
-      if(!$this->related[$column]->loaded){
+      $this->_related[$column]=$content->where('page_id','=',$this->id)->find();
+      if(!$this->_related[$column]->_loaded){
         throw new Kohana_User_Exception('BAD_MOP_DB', 'no content record for page '.$this->id);
       }
-      return $this->related[$column];
+      return $this->_related[$column];
 		} else if($column=='parent'){
-			return ORM::Factory('page', $this->parentid); 
+			//return ORM::Factory('page', $this->parentid); 
 		}	else {
 			return parent::__get($column);
 		}
@@ -58,30 +57,21 @@ class Model_Page extends ORM {
 	/*
 	Function: __set
 	Custom setter, saves to appropriate contenttable
-	Interestingly enough, it doesn't pass throug here
 	*/
 	public function __set($column, $value){
 		if($column=='contenttable'){
-			$this->changed[$column] = $column;
+			$this->_changed[$column] = $column;
 
 			// Object is no longer saved
-			$this->saved = FALSE;
+			$this->_saved = FALSE;
 
 			$this->object[$column] = $this->load_type($column, $value);
 
 		} else {
-
-			switch(Kohana::config('cms.templates.'.$this->template->templatename.'.'.$column.'.type')){
-			case 'multiSelect':
-				return $this->saveObject();
-				break;	
-			default:
-        if(is_object($value)){
-          return parent::__set($column, $value);
-        } else {
-          return parent::__set($column, cms::convertNewlines($value));
-        }
-				break;
+			if(is_object($value)){
+				return parent::__set($column, $value);
+			} else {
+				return parent::__set($column, mopcms::convertNewlines($value));
 			}
 
 		}
@@ -93,7 +83,7 @@ class Model_Page extends ORM {
 	*/
 	public function save(Validation $validation = NULL) {
 		$inserting = false;
-		if($this->loaded == FALSE){
+		if($this->_loaded == FALSE){
 			$inserting = true;
 		}
 
@@ -101,11 +91,11 @@ class Model_Page extends ORM {
 			//and we need to update the sort, this should be the last
 			if(Kohana::config('cms.newObjectPlacement')=='top'){
 				$spage = ORM::Factory('page');
-				$spage->select('min(sortorder) as minsort ')->where('parentid', $this->parentid)->find();
+				$spage->select('min(sortorder) as minsort ')->where('parentid', '=', $this->parentid)->find();
 				$this->sortorder = $spage->minsort - 1;
 			} else {
 				$spage = ORM::Factory('page');
-				$spage->select('max(sortorder) as maxsort ')->where('parentid', $this->parentid)->find();
+				$spage->select('max(sortorder) as maxsort ')->where('parentid', '=', $this->parentid)->find();
 				$this->sortorder = $spage->maxsort + 1;
 			}
 			$this->dateadded = new Database_Expr('now()');
@@ -119,11 +109,11 @@ class Model_Page extends ORM {
       } else {
         $content = ORM::Factory($this->template->contenttable);
       }
-			if(!$content->where('page_id',$this->id)->find()->loaded){
+			if(!$content->where('page_id', '=', $this->id)->find()->loaded){
         if(!Kohana::config('mop.legacy')){
-          $this->db->insert('contents', array('page_id'=>$this->id));
+          $this->_db->insert('contents', array('page_id'=>$this->id));
         } else {
-          $this->db->insert(inflector::plural($this->template->contenttable), array('page_id'=>$this->id));
+          $this->_db->insert(inflector::plural($this->template->contenttable), array('page_id'=>$this->id));
         }
 
         if(!Kohana::config('mop.legacy')){
@@ -132,7 +122,7 @@ class Model_Page extends ORM {
           $content = ORM::factory( inflector::singular($this->__get('template')->contenttable) );
         }
 				$content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
-				$this->related['contenttable']=$content->where('page_id', $this->id)->find();
+				$this->_related['contenttable']=$content->where('page_id', '=',  $this->id)->find();
 			}
 		}
 	}
@@ -160,7 +150,7 @@ class Model_Page extends ORM {
 	public function getContentAsArray(){
 
 		$fields = ORM::Factory('objectmap')
-			->where('template_id', $this->template->id)
+			->where('template_id', '=', $this->template->id)
 			->find_all();
 		foreach($fields as $map){
 			$content[$map->column] = $this->contenttable->{$map->column};
@@ -188,7 +178,7 @@ class Model_Page extends ORM {
 		$content['templateName'] = $this->template->templatename;
 
 		$fields = ORM::Factory('objectmap')
-			->where('template_id', $this->template->id)
+			->where('template_id', '=', $this->template->id)
 			->find_all();
 		foreach($fields as $map){
       if(mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $this->template->templatename, $map->column))->length){
@@ -221,9 +211,9 @@ class Model_Page extends ORM {
 		//get container
 		$cTemplate = ORM::Factory('template', $family);
 		$container = ORM::Factory('page')
-			->where('template_id', $cTemplate->id)
-			->where('parentid', $this->id)
-			->where('activity IS NULL')
+			->where('template_id', '=', $cTemplate->id)
+			->where('parentid', '=', $this->id)
+			->where('activity', 'IS', NULL)
 			->find();
 
 		//get children of
@@ -235,9 +225,9 @@ class Model_Page extends ORM {
 	public function getPublishedChildren(){
 
 		$children = ORM::Factory('page')
-			->where('parentid', $this->id)
-			->where('published', 1)
-			->where('activity IS NULL')
+			->where('parentid', '=', $this->id)
+			->where('published', '=', 1)
+			->where('activity', 'IS', NULL)
 			->orderby('sortorder')
 			->find_all();
 		return $children;
@@ -246,19 +236,19 @@ class Model_Page extends ORM {
 	public function getChildren(){
 
 		$children = ORM::Factory('page')
-			->where('parentid', $this->id)
-			->where('activity IS NULL')
+			->where('parentid', '=', $this->id)
+			->where('activity', 'IS', NULL)
 			->orderby('sortorder')
 			->find_all();
 		return $children;
 	}
 	public function getNextPublishedPeer(){
 		$next = ORM::Factory('page')
-			->where('parentid', $this->parentid)
-			->where('published', 1)
-			->where('activity IS NULL')
+			->where('parentid', '=', $this->parentid)
+			->where('published', '=', 1)
+			->where('activity', 'IS', NULL)
 			->orderby('sortorder', 'ASC')
-			->where('sortorder > '.$this->sortorder)
+			->where('sortorder', '>', $this->sortorder)
 			->limit(1)
 			->find();
 		if($next->loaded){
@@ -270,11 +260,11 @@ class Model_Page extends ORM {
 
 	public function getPrevPublishedPeer(){
 		$next = ORM::Factory('page')
-			->where('parentid', $this->parentid)
-			->where('published', 1)
-			->where('activity IS NULL')
+			->where('parentid', '=', $this->parentid)
+			->where('published', '=', 1)
+			->where('activity', 'IS', NULL)
 			->orderby('sortorder', 'DESC')
-			->where('sortorder < '.$this->sortorder)
+			->where('sortorder', '<', $this->sortorder)
 			->limit(1)
 			->find();
 		if($next->loaded){
@@ -286,9 +276,9 @@ class Model_Page extends ORM {
 
 	public function getFirstPublishedPeer(){
 		$first = ORM::Factory('page')
-			->where('parentid', $this->parentid)
-			->where('published', 1)
-			->where('activity IS NULL')
+			->where('parentid', '=', $this->parentid)
+			->where('published', '=', 1)
+			->where('activity', 'IS', NULL)
 			->orderby('sortorder', 'ASC')
 			->limit(1)
 			->find();
@@ -301,9 +291,9 @@ class Model_Page extends ORM {
 
 	public function getLastPublishedPeer(){
 		$last = ORM::Factory('page')
-			->where('parentid', $this->parentid)
-			->where('published', 1)
-			->where('activity IS NULL')
+			->where('parentid', '=', $this->parentid)
+			->where('published', '=', 1)
+			->where('activity', 'IS', NULL)
 			->orderby('sortorder', 'DESC')
 			->limit(1)
 			->find();
@@ -600,13 +590,13 @@ class Model_Page extends ORM {
 			//set no filter
 		} else {
 			$result = $db->query("Select id from templates where templatename = '$templates'");
-			$this->where('template_id', $result->current()->id);
+			$this->where('template_id', '=', $result->current()->id);
 		}
 		return $this;
 	}
 
 	public function parentFilter($parentid){
-		$this->where('parentid', $parentid);	
+		$this->where('parentid', '=', $parentid);	
 	}
 
 	public function noContainerObjects(){
@@ -623,8 +613,8 @@ class Model_Page extends ORM {
 	}
 
 	public function publishedFilter(){
-		$this->where('published', 1)
-			->where('activity IS NULL');
+		$this->where('published', '=', 1)
+			->where('activity', 'IS', NULL);
 		return $this;
 	}
 

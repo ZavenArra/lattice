@@ -1,10 +1,23 @@
 <?
 
+Route::set('ajax', 'ajax/(<uri>)',
+	array(
+		'uri' => '[A-z\/0-9]+',		
+	)
+)
+->defaults(
+	array(
+		'controller'=>'ajax',
+		'action'    =>'handleRequest'
+	));
+
+/*
 Route::set('ajax', '(<controller>(/<action>(/<uri>)))',
 	array(
 		'controller'=>'ajax',
 		'uri' => '[A-z\/]++',		
 	));
+ */
 
 Route::set('header', 'header(/<id>)')
 	->defaults(

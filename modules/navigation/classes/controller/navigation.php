@@ -73,9 +73,9 @@ class Controller_Navigation extends Controller_MOP{
 		children - array()
 	)
 	*/
-	public function getNavTree($deeplink=NULL){
+	public function action_getNavTree($deeplink=NULL){
 		$navtree = $this->_getNavTree_recurse(0, $deeplink);
-		return $navtree;
+		$this->response->data($navtree);
 	}
 
 	/*
@@ -86,7 +86,7 @@ class Controller_Navigation extends Controller_MOP{
 		Returns:
 		Array of node data as specified by the controller, expected by js frontend.
 	*/
-	public function getNode($id){
+	public function action_getNode($id){
 		$item = ORM::factory($this->objectModel, $id);
 		$return = $this->_loadNode($item);
 		$return['children'] = $this->_getNavTree_recurse($id);
@@ -126,7 +126,7 @@ class Controller_Navigation extends Controller_MOP{
 			}
 		} catch (Exception $e) {
 			if($e->getCode() == 'BAD_MOP_DB'){
-				Kohana::log('error', $e->getMessage());
+				Kohana::$log->add(Log::ERROR, $e->getMessage());
 				foreach($this->navDataFields_content as $send=>$field){
 					$sendItem[$send] = 'null';
 				}
@@ -151,9 +151,9 @@ class Controller_Navigation extends Controller_MOP{
 		$parent = ORM::Factory($this->objectModel, $parentid); //it would be nice to be able to just look up the heap
 
 		$items = ORM::factory($this->objectModel);
-		$items->where('parentid ='.$parentid);
-		$items->where('activity IS NULL');
-		$items->orderBy('sortorder');
+		$items->where('parentid', '=', $parentid);
+		$items->where('activity', 'IS', NULL);
+		$items->order_by('sortorder');
 		if($iitems = $items->find_all()){
 			$sendItemContainers = array(); //these will go first
 			$sendItemObjects = array();
@@ -200,7 +200,7 @@ class Controller_Navigation extends Controller_MOP{
 
 
 			//add in any objects
-			if(!$parent->loaded){
+			if(!$parent->id){
 				$cmsModules = mop::config('cmsModules', '//module');
 				foreach($cmsModules as $m){
 
@@ -229,9 +229,9 @@ class Controller_Navigation extends Controller_MOP{
 		$parent = ORM::Factory($this->objectModel, $parentid); //it would be nice to be able to just look up the heap
 
 		$items = ORM::factory($this->objectModel);
-		$items->where('parentid ='.$parentid);
-		$items->where('activity IS NULL');
-		$items->orderBy('sortorder');
+		$items->where('parentid', 'AND',  $parentid);
+	//	$items->where('activity IS NULL');
+		$items->order_by('sortorder');
 		if($iitems = $items->find_all()){
 			$sendItemContainers = array(); //these will go first
 			$sendItemObjects = array();

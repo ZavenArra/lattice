@@ -4,7 +4,7 @@
  * Contains utility function for CMS
  */
 
-class CMS {
+class MoPCMS {
 
 	private static $mediapath;
 
@@ -96,7 +96,7 @@ class CMS {
 			break;
 		}
 
-		$image = new Image(cms::mediapath().$originalFilename);
+		$image = new Image(mopcms::mediapath().$originalFilename);
 		if($crop) {
 			//resample with crop
 			//set up sizes, and crop
@@ -108,7 +108,7 @@ class CMS {
 			$image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
       $quality = Kohana::config('cms.imagequality');
 			$image->quality($quality);
-			$image->save(cms::mediapath().$newFilename);
+			$image->save(mopcms::mediapath().$newFilename);
 
 		} else {
 			//just do the resample
@@ -117,7 +117,7 @@ class CMS {
 			$resizeheight = $height;
 
 			if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
-				$osize = getimagesize(cms::mediapath().$imageFilename);
+				$osize = getimagesize(mopcms::mediapath().$imageFilename);
 				$horizontal = false;
 				if($osize[0] > $osize[1]){
 					//horizontal
@@ -140,7 +140,7 @@ class CMS {
 			$image->resize($resizewidth, $resizeheight, $keydimension);
 
 			$image->quality($quality);
-			$image->save(cms::mediapath .$newFilename);
+			$image->save(mopcms::mediapath .$newFilename);
 
 		}
 
@@ -171,12 +171,12 @@ class CMS {
 					$clusterObject = $object->contenttable->$field;
 					//this should really happen within the models
 					if(!$clusterObject){
-						$id = cms::addObject(null, $element['type']);
+						$id = mopcms::addObject(null, $element['type']);
 						$object->contenttable->$field = $id;
 						$object->contenttable->save();
 						$clusterObject = $object->contenttable->$field;
 					}
-					$clusterHtmlChunks = cms::buildUIHtmlChunksForObject($clusterObject);
+					$clusterHtmlChunks = mopcms::buildUIHtmlChunksForObject($clusterObject);
 
 					$customview = 'templates/'.$clusterObject->template->templatename; //check for custom view for this template
 					$usecustomview = false;
@@ -319,7 +319,7 @@ class CMS {
 			$elementsConfig[] = $entry;
 		}
 
-    return cms::buildUIHtmlChunks($elementsConfig, $object);
+    return mopcms::buildUIHtmlChunks($elementsConfig, $object);
   }
 
 	public static function regenerateImages(){
@@ -331,7 +331,7 @@ class CMS {
 					$objects = ORM::Factory('template', $template->getAttribute('name'))->getActiveMembers();
 					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
-						if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
+						if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(mopcms::mediapath() . $object->contenttable->$fieldname->filename)){
 							$object->processImage($object->contenttable->$fieldname->filename, $fieldname);
 						}
 					}
@@ -346,7 +346,7 @@ class CMS {
 			foreach(mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename)) as $element){
 				if($element->tagName == 'image'){
 					$fieldname = $element->getAttribute('field');
-					if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(cms::mediapath() . $object->contenttable->$fieldname->filename)){
+					if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(mopcms::mediapath() . $object->contenttable->$fieldname->filename)){
 						$object->processImage($object->contenttable->$fieldname->filename, $fieldname);
 					}
 				}
@@ -385,7 +385,7 @@ class CMS {
       if($templateConfig = mop::config('objects', sprintf('//template[@name="%s"]', $template_ident))->item(0)){
         //there's a config for this template
         //go ahead and configure it
-        cms::configureTemplate($templateConfig);
+        mopcms::configureTemplate($templateConfig);
 				$template_id = ORM::Factory('template', $template_ident)->id;
 			} else {
 				die('No config for template '.$template_ident );
@@ -394,16 +394,16 @@ class CMS {
 
 
 		if($parent_id!=='0' && $parent_id!==0 && $parent_id !==null){
-			cms::checkForValidPageId($parent_id);
+			mopcms::checkForValidPageId($parent_id);
 		}
 		$newpage = ORM::Factory('page');
 		$newpage->template_id = $template_id;
 
 		//create slug
 		if(isset($data['title'])){
-			$newpage->slug = cms::createSlug($data['title'], $newpage->id);
+			$newpage->slug = mopcms::createSlug($data['title'], $newpage->id);
 		} else {
-			$newpage->slug = cms::createSlug();
+			$newpage->slug = mopcms::createSlug();
 		}
 		$newpage->parentid = $parent_id;
 
@@ -466,7 +466,7 @@ class CMS {
 			if(in_array($fieldInfo->tagName, $templates) && is_array($value) ){
 				$clusterTemplateName = $fieldInfo->tagName;
 				//this could happen, but not right now
-				$clusterObjectId = cms::addObject(null, $clusterTemplateName, $value);
+				$clusterObjectId = mopcms::addObject(null, $clusterTemplateName, $value);
 				$newpage->contenttable->$field = $clusterObjectId;
 				continue;
 			}
@@ -502,14 +502,14 @@ class CMS {
 					$arguments[$data->tagName] = $data->value;
 				}
 			}
-			cms::addObject($newpage->id, $c->getAttribute('templateName'), $arguments);
+			mopcms::addObject($newpage->id, $c->getAttribute('templateName'), $arguments);
 		}
 
 		//containers (list)
 		$containers = mop::config('objects', sprintf('//template[@name="%s"]/elements/list',$newtemplate->templatename));
 		foreach($containers as $c){
 			$arguments['title'] = $c->getAttribute('label');
-			cms::addObject($newpage->id, $c->getAttribute('family'), $arguments);
+			mopcms::addObject($newpage->id, $c->getAttribute('family'), $arguments);
 		}
 
 		return $newpage->id;
@@ -524,10 +524,10 @@ class CMS {
 		$name = array_slice($xarray, 0, $nr-1);
 		$name = implode('.', $name);
 		$i=1;
-		if(!file_exists(cms::mediapath()."$name".'.'.$ext)){
+		if(!file_exists(mopcms::mediapath()."$name".'.'.$ext)){
 			$i='';
 		} else {
-			for(; file_exists(cms::mediapath()."$name".$i.'.'.$ext); $i++){}
+			for(; file_exists(mopcms::mediapath()."$name".$i.'.'.$ext); $i++){}
 		}
 
 		//clean up extension
@@ -609,7 +609,7 @@ class CMS {
 
 
 		foreach(mop::config('objects', '//template[@name="'.$template->getAttribute('name').'"]/elements/*') as $item){
-			cms::configureField($tRecord->id, $item);
+			mopcms::configureField($tRecord->id, $item);
 		}
 	}
 

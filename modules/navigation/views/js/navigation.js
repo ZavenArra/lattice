@@ -177,11 +177,11 @@ mop.modules.navigation.Navigation = new Class({
 		Callback to getNavTree
 		Argument: navTree {String} returned argument from getNavTree method.
 	*/
-	buildNav: function( navTree ){
-//		console.log( navTree );
-		this.navTree = navTree;
+	buildNav: function( JSONResponse ){
+		//console.log( response );
+		this.navTree = JSONResponse.response;
 		this.navTreeLookupTable = new Hash();
-		this.createNavTreeLookupTable( navTree );
+		this.createNavTreeLookupTable( this.navTree );
 		this.showCategory( this.navTree , 0 );
 	},
 

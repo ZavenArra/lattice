@@ -112,6 +112,7 @@ Kohana::modules(array(
 	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
 	'mopcore' => MODPATH.'mopcore',
 	'mopcms' => MODPATH.'mopcms',
+	'mopui' => MODPATH.'mopui',
 	'navigation' => MODPATH.'navigation',
 	));
 

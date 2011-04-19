@@ -129,7 +129,6 @@ class MOP_CMS extends MOP_CMSInterface {
 		//new generation of page
 		//1 grap cms_nodetitle
 		$this->nodetitle = new View('mop_cms_nodetitle');
-		$this->nodetitle->loadResources();
 		$this->nodetitle->title = $page->contenttable->title; //this should change to page table
 		$this->nodetitle->slug = $page->slug;
 		$this->nodetitle->allowDelete = $page->template->allowDelete;
@@ -152,7 +151,7 @@ class MOP_CMS extends MOP_CMSInterface {
 		$nodetitlehtml = $this->nodetitle->render();
 
 		$customview = 'templates/'.$page->template->templatename; //check for custom view for this template
-    	$htmlChunks = cms::buildUIHtmlChunksForObject($page);
+    	$htmlChunks = mopcms::buildUIHtmlChunksForObject($page);
 
 		$usecustomview = false;
 		if(Kohana::find_file('views', $customview)){
@@ -216,7 +215,7 @@ class MOP_CMS extends MOP_CMSInterface {
 		if($title){
 			$data['title'] = $title;
 		}
-		$newid = cms::addObject($id, $template_id, $data);
+		$newid = mopcms::addObject($id, $template_id, $data);
 
 		//Dial up associated navi and ask for details
 		$nav_controller = ucfirst($this->modules['navigation']).'_Controller';

@@ -1,10 +1,21 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_Ajax extends Controller {
+class Controller_Ajax extends Controller_MOP {
 
 	public function action_index()
 	{
 		throw new HTTP_Exception_404('Ajax controller called without action. Check URL.');
+	}
+
+	public function action_handleRequest($uri){
+		echo $uri;
+		$subRequest = Request::Factory($uri);
+		$data = $subRequest->execute()->data();
+		$ajaxResponse = array(
+			'returnValue' => TRUE,
+			'response'=>$data
+		);
+		$this->response->body(json_encode($ajaxResponse));
 	}
 
 	public function action_data($subRequestUri)
@@ -22,7 +33,7 @@ class Controller_Ajax extends Controller {
 		$ajaxResponse = array(
 			'response'=>$responseContent
 		);
-		$this->response->body(serialize($ajaxResponse));
+		$this->response->body(json_encode($ajaxResponse));
 	}
 
 	public function action_compound()

@@ -4,8 +4,7 @@
  * Class: Template_Model
  */
 class Model_Template extends ORM {
-
-	protected $has_many = array('pages');
+	protected $_has_many = array('page'=>array());
 
   /*
    * Variable: nonmappedfield
@@ -23,7 +22,6 @@ class Model_Template extends ORM {
 	public function __get($column) {
 
 			//check if this value is set in config files
-			Kohana::log('info', parent::__get('templatename'));
 
 			if(in_array($column, $this->nonmappedfields)){
 				return parent::__get($column);
