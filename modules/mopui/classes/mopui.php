@@ -27,7 +27,7 @@ Class mopui{
 				$fieldvalue = ORM::Factory('file')->where('id', $fieldvalue)->find(); //why is where necessary???
 			}
 
-			if($fieldvalue->loaded){
+			if($fieldvalue->_loaded){
 				$fieldvalue = $fieldvalue->as_array();
 			} else {
 				$fieldvalue = null;

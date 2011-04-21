@@ -1,14 +1,14 @@
 <?
 
-Route::set('ajax', 'ajax/(<uri>)',
+Route::set('ajax', 'ajax/(<action>)/(<uri>)',
 	array(
-		'uri' => '[A-z\/0-9]+',		
+		'action' => '[A-z]+',
+		'uri' => '[A-z\/0-9]++',		
 	)
 )
 ->defaults(
 	array(
 		'controller'=>'ajax',
-		'action'    =>'handleRequest'
 	));
 
 /*

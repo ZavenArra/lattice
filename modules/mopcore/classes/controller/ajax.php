@@ -7,8 +7,22 @@ class Controller_Ajax extends Controller_MOP {
 		throw new HTTP_Exception_404('Ajax controller called without action. Check URL.');
 	}
 
+	/*
 	public function action_handleRequest($uri){
-		echo $uri;
+		$subRequest = Request::Factory($uri);
+		$data = $subRequest->execute()->data();
+		$ajaxResponse = array(
+			'returnValue' => TRUE,
+			'response'=>$data
+		);
+		$this->response->body(json_encode($ajaxResponse));
+	}
+	 */
+
+	public function action_data($subRequestUri)
+	{
+		//request to child, just data
+
 		$subRequest = Request::Factory($uri);
 		$data = $subRequest->execute()->data();
 		$ajaxResponse = array(
@@ -18,20 +32,35 @@ class Controller_Ajax extends Controller_MOP {
 		$this->response->body(json_encode($ajaxResponse));
 	}
 
-	public function action_data($subRequestUri)
-	{
-		//request to child, just data
-		$this->response->body('This should return just the data as json'.$subRequestUri);
-	}
-
 	public function action_html($subRequestUri)
 	{
-		//request to child, just html
+		//request to child, just html and js html
 		$subRequest = Request::Factory($subRequestUri);
-		$subResponse = $subRequest->execute();
-		$responseContent = $subResponse->body();
+		$html = $subRequest->execute()->body();
+
+		$cssResources = array();
+		foreach($this->resources['librarycss'] as $css){
+			$cssResources[] =	HTML::style($css);
+		}
+		foreach($this->resources['css'] as $css){
+			$cssResources[] = 	HTML::style($css);
+		}
+
+		$jsResources = array();
+		foreach($this->resources['libraryjs'] as $js){
+			$jsResources[] = HTML::script($js);		
+		}
+		foreach($this->resources['js'] as $js){
+			$jsResources[] =  HTML::script($js);		
+		}
+
+
 		$ajaxResponse = array(
-			'response'=>$responseContent
+			'response'=>array(
+					'html'=>$html,
+					'js'=>$jsResources,
+					'css'=>$cssResources
+				)
 		);
 		$this->response->body(json_encode($ajaxResponse));
 	}

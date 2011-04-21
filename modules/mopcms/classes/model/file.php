@@ -3,7 +3,7 @@
  * Class: File_Model
  * ORM Class implementing files table
  */
-class File_Model extends ORM {
+class Model_File extends ORM {
 
 	/*
 	 * Variable: $imageinfo
@@ -26,7 +26,7 @@ class File_Model extends ORM {
 	 */
 	public function __construct($id){
 		parent::__construct($id);
-		$this->object_fields = array_merge($this->object_fields, array_keys($this->table_columns) );
+		$this->object_fields = array_merge($this->object_fields, array_keys($this->_table_columns) );
 	}
 
 
@@ -58,7 +58,7 @@ class File_Model extends ORM {
 
 		//create image info object
 		if(!isset($this->imageinfo[$prefix])){
-			$this->imageinfo[$prefix] = new FileImage_Model(parent::__get('filename'), $prefix);
+			$this->imageinfo[$prefix] = new Model_FileImage(parent::__get('filename'), $prefix);
 		}
 
 		//return image info so that it's __get can be called

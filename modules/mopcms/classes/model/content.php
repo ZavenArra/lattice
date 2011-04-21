@@ -12,7 +12,7 @@ class Model_Content extends ORM {
 	 * Variable: nonmappedfield
 	 * Array of fields to not pass through to the content field mapping logic
 	 */
-	private $nonmappedfields = array('id', 'page_id', 'title', 'activity', 'loaded');
+	private $nonmappedfields = array('id', 'page_id', 'title', 'activity', '_loaded');
 
 	/*
 	 * Variable: templatename
@@ -55,7 +55,7 @@ class Model_Content extends ORM {
 		if(strstr($column, 'object')){
 			//echo 'iTS AN OBJECT<br>';
 			$sub = ORM::Factory('page', parent::__get($column));
-			if(!$sub->loaded){
+			if(!$sub->_loaded){
 				return null;
 			}
 			return $sub;
@@ -65,7 +65,6 @@ class Model_Content extends ORM {
 		if(strstr($column, 'file') && !is_object(parent::__get($column)) ){
 			$file = ORM::Factory('file', parent::__get($column));
 			//file needs to know what module it's from if its going to check against valid resizes
-			Kohana::log('info', var_export($file->as_array(), true));
 			parent::__set($column,$file);
 		}
 		$returnval = parent::__get($column);

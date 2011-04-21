@@ -33,7 +33,7 @@ mop.modules.CMS = new Class({
 		this.pageIdToLoad = pageId;
 		this.clearPage();
 		this.pageContent.spin();
-		var url = mop.util.getAppURL() + "cms/ajax/getPage/" + pageId;
+		var url = mop.util.getAppURL() + "ajax/data/cms/getPage/" + pageId;
 		mop.util.JSONSend( url, null, { onSuccess: this.onPageLoaded.bind( this ) } );
  		mop.util.setObjectId( pageId );
 	},
@@ -156,7 +156,7 @@ mop.modules.CMS = new Class({
 			this.onObjectAdded( nodeData, parentId, whichTier, placeHolder );
 		};
 		new Request.JSON({
-			url: mop.util.getAppURL() + "cms/ajax/addObject/" + parentId + "/" + templateId,
+			url: mop.util.getAppURL() + "ajax/cms/data/addObject/" + parentId + "/" + templateId,
 			onComplete: callBack.bind( this )
 		}).post( { "title" : objectName } );
 		callBack = null;
@@ -177,7 +177,7 @@ mop.modules.CMS = new Class({
 	*/
 	togglePublishedStatus: function( nodeId ){
 		new Request.JSON({
-			url: mop.util.getAppURL() + "cms/ajax/togglePublish/"+ nodeId
+			url: mop.util.getAppURL() + "ajax/cms/data/togglePublish/"+ nodeId
 //			onComplete: this.onPublishedStatusToggled
 		}).send();
 	},
@@ -204,7 +204,7 @@ mop.modules.CMS = new Class({
 	    console.log( "deleteNode", this.toString() );
 		var confirmed = confirm( "Are you sure you wish to delete the node: “" + titleText + "”?\nThis cannot be undone." );
 		if( confirmed ){
-			var url = mop.util.getAppURL() + "ajax/cms/delete/"+ nodeId;
+			var url = mop.util.getAppURL() + "ajax/cms/data/delete/"+ nodeId;
 			mop.util.JSONSend( url, null, { onComplete: this.clearPage.bind( this ) })
 		}
 	}

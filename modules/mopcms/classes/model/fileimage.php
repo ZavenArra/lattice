@@ -5,7 +5,7 @@
  * instead functioning as a cache for manually reading file size and other info.
  */
 
-class FileImage_Model {
+class Model_FileImage {
 
 
 	/*

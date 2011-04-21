@@ -120,7 +120,7 @@ Class mop {
 
 	public static function dbmap($template_id, $column=null){
 		if(!isset(self::$dbmaps[$template_id])){
-			$dbmaps = ORM::Factory('objectmap')->where('template_id', $template_id)->find_all();
+			$dbmaps = ORM::Factory('objectmap')->where('template_id', '=', $template_id)->find_all();
 			self::$dbmaps[$template_id] = array();
 			foreach($dbmaps as $map){
 				self::$dbmaps[$template_id][$map->column] = $map->type.$map->index;
@@ -279,10 +279,10 @@ Class mop {
         //apply optional parent filter
         if($from = $eDataConfig->getAttribute('from')){
           if($from=='parent'){
-            $objects->where('parentid', $parentid);
+            $objects->where('parentid', '=', $parentid);
           } else {
             $from = ORM::Factory('page', $from);
-            $objects->where('parentid', $from->id);	
+            $objects->where('parentid', '=', $from->id);	
           }
         }
 
