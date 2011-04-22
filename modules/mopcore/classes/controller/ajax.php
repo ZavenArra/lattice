@@ -28,12 +28,14 @@ class Controller_Ajax extends Controller_MOP {
 			$data = $subRequest->execute()->data();
 		} catch (Exception $e) {
 			//return HTML from exception
-                        $message = $e->getString() . $e->getTrace();
+                        $message = $e->getMessage() . $e->getTrace();
 			$ajaxResponse = array(
 				'returnValue' => TRUE,
                                 'response' => $message
                                 
 			);
+                        $this->responase->body(json_encode($data));
+ //                       throw $e;
 			return;
 		}
 		$ajaxResponse = array(

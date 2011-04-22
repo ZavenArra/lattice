@@ -113,7 +113,11 @@ Kohana::modules(array(
 	'mopcore' => MODPATH.'mopcore',
 	'mopcms' => MODPATH.'mopcms',
 	'mopui' => MODPATH.'mopui',
+	'mopextras' => MODPATH.'mopextras',
 	'navigation' => MODPATH.'navigation',
+	'tools' => MODPATH.'tools',
+	'usermanagement' => MODPATH.'usermanagement',
+
 	));
 
 

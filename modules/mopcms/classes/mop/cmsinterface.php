@@ -90,7 +90,7 @@ class MOP_CMSInterface extends Controller_MOP {
 			$page->save();
 			$page->contenttable->$_POST['field'] = mopcms::convertNewlines($_POST['value']);
 			$page->contenttable->save();
-			$page = ORM::Factory('page')->find($id);
+			$page = ORM::Factory('page')->where('id', '=', $id)->find();
 			return array('value'=>$page->contenttable->$_POST['field'], 'slug'=>$page->slug);
 		}
 		else if(in_array($_POST['field'], array('dateadded'))){
@@ -139,7 +139,7 @@ class MOP_CMSInterface extends Controller_MOP {
 			throw new Kohana_User_Exception('Invalid POST', 'Invalid POST Arguments');
 		}
 
-		$page = ORM::Factory('page')->find($id);
+		$page = ORM::Factory('page')->where('id', '=', $id)->find();
                 //echo $_POST['field'];
                 $value = $page->contenttable->$_POST['field'];
                 $this->response->data(array('value'=>$value));
@@ -153,7 +153,7 @@ class MOP_CMSInterface extends Controller_MOP {
 		Returns: Published status (0 or 1)
 		*/
 		public function action_togglePublish($id){
-			$page = ORM::Factory('page')->find($id);
+			$page = ORM::Factory('page')->where('id', '=', $id)->find();
 			if($page->published==0){
 				$page->published = 1;
 			} else {
@@ -220,7 +220,7 @@ class MOP_CMSInterface extends Controller_MOP {
 	 * Returns: nothing 
 	 */
 	private function cascade_delete($id){
-		$page = ORM::Factory('page')->find($id);
+		$page = ORM::Factory('page')->where('id', '=', $id)->find();
 		$page->activity = 'D';
 		$page->sortorder = 0;
 		$page->slug = new Database_Expr('NULL');
@@ -244,7 +244,7 @@ class MOP_CMSInterface extends Controller_MOP {
 	 * Returns: Nothing
 	 */
 	private function cascade_undelete($page_id){
-		$page = ORM::Factory('page')->find($id);
+		$page = ORM::Factory('page')->where('id', '=', $id)->find();
 		$page->activity = new Database_Expr('NULL');
 		$page->slug = mopcms::createSlug($page->contenttable->title, $page->id);
 		$page->save();

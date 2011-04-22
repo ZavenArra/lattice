@@ -119,7 +119,7 @@ Class mop {
 	}
 
 	public static function dbmap($template_id, $column=null){
-		if(!isset(self::$dbmaps[$template_id])){
+            	if(!isset(self::$dbmaps[$template_id])){
 			$dbmaps = ORM::Factory('objectmap')->where('template_id', '=', $template_id)->find_all();
 			self::$dbmaps[$template_id] = array();
 			foreach($dbmaps as $map){

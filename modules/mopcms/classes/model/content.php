@@ -45,8 +45,8 @@ class Model_Content extends ORM {
 		//check for dbmap
 		$object =  ORM::Factory('page', parent::__get('page_id'));
 		//echo 'FROM '.$object->id.'<br>';
+               
 		$column = mop::dbmap( $object->template_id, $column);
-		//echo 'which maps to'.$column;
 		if(!$column){
                     throw new Kohana_Exception('Column :column not found in content model', array(':column', $column));
 		}
@@ -71,6 +71,7 @@ class Model_Content extends ORM {
 		return $returnval;
 
 	}
+        
 
 	/*
 	Function: __set
