@@ -1,7 +1,8 @@
 <?
 
-Route::set('ajax', 'ajax/(<action>)/(<uri>)',
+Route::set('ajax', '<controller>/(<action>)/(<uri>)',
 	array(
+		'controller'=>'ajax',
 		'action' => '[A-z]+',
 		'uri' => '[A-z\/0-9]++',		
 	)

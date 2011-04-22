@@ -12,6 +12,18 @@ class Model_Template extends ORM {
    */
   private $nonmappedfields = array('id', 'page_id', 'activity', 'loaded', 'templatename', 'nodeType');
 
+	public function __construct($id=null){
+
+		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id)) {
+			//it's the tmeplate identified, look up the integer primary key
+			$result = DB::select('id')->from('templates')->where('templatename', '=', $id)->execute()->current();
+			$id = $result['id'];
+		}
+
+		parent::__construct($id);
+
+	}
+
 	/*
 	 * Function: __get($column)
 	 * Custom getter, allows overriding database values with local file config values
@@ -87,10 +99,10 @@ class Model_Template extends ORM {
 	public function getPublishedMembers($limit=null){
 
 		$o = ORM::Factory('page')
-			->where('template_id', $this->id)
-			->where('published', 1)
-			->where('activity IS NULL')
-			->orderby('sortorder');
+			->where('template_id', '=', $this->id)
+			->where('published', '=', 1)
+			->where('activity', 'IS', NULL)
+			->order_by('sortorder');
 		if($limit){
 			$o->limit($limit);
 		}
@@ -109,9 +121,9 @@ class Model_Template extends ORM {
 	public function getActiveMembers($limit=null){
 
 		$o = ORM::Factory('page')
-			->where('template_id', $this->id)
-			->where('activity IS NULL')
-			->orderby('sortorder');
+			->where('template_id', '=', $this->id)
+			->where('activity', 'IS', NULL)
+			->order_by('sortorder');
 		if($limit){
 			$o->limit($limit);
 		}

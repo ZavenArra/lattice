@@ -29,15 +29,13 @@ class MoPCMS {
 				')',
 				'(',
 			);
-			Kohana::log('info', $title);
 			$slug = str_replace($removeChars, '', strtolower($title));
 			$slug = str_replace(' ', '-', strtolower($slug));
-			Kohana::log('info', $slug);
 			$checkSlug = ORM::Factory('page')
-				->regex('slug', '^'.$slug.'[0-9]*$')
-				->orderby("slug");
+				->where('slug', 'REGEXP',  '^'.$slug.'[0-9]*$')
+				->order_by("slug");
 			if($forPageId != NULL){
-				$checkSlug->where('pages.id != '.$forPageId);
+				$checkSlug->where('pages.id', '!=', $forPageId);
 			}
 			$checkSlug = $checkSlug->find_all();
 			if(count($checkSlug)){
@@ -96,7 +94,7 @@ class MoPCMS {
 			break;
 		}
 
-		$image = new Image(mopcms::mediapath().$originalFilename);
+		$image = Image::factory(mopcms::mediapath().$originalFilename);
 		if($crop) {
 			//resample with crop
 			//set up sizes, and crop
@@ -107,8 +105,7 @@ class MoPCMS {
 			}
 			$image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
       $quality = Kohana::config('cms.imagequality');
-			$image->quality($quality);
-			$image->save(mopcms::mediapath().$newFilename);
+			$image->save(mopcms::mediapath().$newFilename, $quality);
 
 		} else {
 			//just do the resample
@@ -139,8 +136,8 @@ class MoPCMS {
 			//forcing with aspectfolloworientation is gonna give weird results!
 			$image->resize($resizewidth, $resizeheight, $keydimension);
 
-			$image->quality($quality);
-			$image->save(mopcms::mediapath .$newFilename);
+      $quality = Kohana::config('cms.imagequality');
+			$image->save(mopcms::mediapath() .$newFilename, $quality);
 
 		}
 
@@ -220,12 +217,12 @@ class MoPCMS {
 					$element['controllertype'] = 'list';
 					$lt = ORM::Factory('template', $element['family']);
 					$containerObject = ORM::Factory('page')
-						->where('parentid', $object->id)
-						->where('template_id', $lt->id)
-						->where('activity IS NULL')
+						->where('parentid', '=', $object->id)
+						->where('template_id', '=', $lt->id)
+						->where('activity', 'IS', NULL)
 						->find();
-          if(!$containerObject->loaded){
-            throw new Kohana_User_Exception('Did not find list container', 'List object is missing container: '.$lt->id);
+          if(!$containerObject->loaded()){
+            throw new Kohana_Exception('Did not find list container List object is missing container: :id', array(':id'=>$lt->id) );
           }
 					$arguments = array(
 						'containerObject'=>$containerObject
@@ -247,7 +244,7 @@ class MoPCMS {
 						$element['field'] = CMS_Controller::$unique++;
 						$html = mopui::buildUIElement($element, null);
 					} else if(!$html = mopui::buildUIElement($element, $object->contenttable->$element['field'])){
-						throw new Kohana_User_Exception('bad config in cms', 'bad ui element');
+						throw new Kohana_Exception('bad config in cms: bad ui element');
 					}
 					$htmlChunks[$key] = $html;
 					break;
@@ -363,8 +360,8 @@ class MoPCMS {
 	 * Returns: throws exception on invalid page id
 	 */
 	public static function checkForValidPageId($id){
-		if(!ORM::Factory('page')->where('id', $id)->find()->loaded){
-			throw new Kohana_User_Exception('Bad Page Id', 'The id '.$id.' is not a key in for an object in the pages table');
+		if(!ORM::Factory('page')->where('id', '=', $id)->find()->loaded()){
+				throw new Kohana_Exception('The id :id is not a key in for an object in the pages table', array(':id'=>$id));
 		}
 	}
 
@@ -378,6 +375,7 @@ class MoPCMS {
 	Returns: the new page id
 	*/
 	public static function addObject($parent_id, $template_ident, $data = array() ){
+		echo $template_ident;
 		$template_id = ORM::Factory('template', $template_ident)->id;
     if(!$template_id){
       //we're trying to add an object of template that doesn't exist in db yet
@@ -408,11 +406,10 @@ class MoPCMS {
 		$newpage->parentid = $parent_id;
 
 		//calculate sort order
-		$sort = ORM::Factory('page')
-		->select('max(sortorder)+1 as newsort')
-		->where('parentid', $parent_id)
-		->find();
-		$newpage->sortorder = $sort->newsort;
+		$sort = DB::select(array('sortorder','maxsort'))->from('pages')->where('parentid', '=', $parent_id)
+			->order_by('sortorder')->limit(1)
+			->execute()->current();
+		$newpage->sortorder = $sort['maxsort']+1;
 
 		$newpage->save();
 	
@@ -458,14 +455,14 @@ class MoPCMS {
 					continue(2);
 			}
 
-			$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field))->item(0);
+			$fieldInfoXPath = sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field);
+			$fieldInfo = mop::config('objects', $fieldInfoXPath)->item(0);
 			if(!$fieldInfo){
-				die("Bad field in addObject!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field));
+				throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath'=>$fieldInfoXPath));
 			}
 
 			if(in_array($fieldInfo->tagName, $templates) && is_array($value) ){
 				$clusterTemplateName = $fieldInfo->tagName;
-				//this could happen, but not right now
 				$clusterObjectId = mopcms::addObject(null, $clusterTemplateName, $value);
 				$newpage->contenttable->$field = $clusterObjectId;
 				continue;
@@ -579,23 +576,25 @@ class MoPCMS {
 
 		//find or create template record
 		$tRecord = ORM::Factory('template', $template->getAttribute('name') );
-		if(!$tRecord->loaded){
+		if(!$tRecord->loaded()){
 			//echo "\ncreating for ".$template->getAttribute('name')."\n";
 			$tRecord = ORM::Factory('template');
 			$tRecord->templatename = $template->getAttribute('name');
 			$tRecord->nodeType = 'object';
 			$tRecord->save();
 		}
-		Kohana::log('info', 'configureTemplate: using '.$tRecord->id."\n");
+		Kohana::$log->add(Log::ERROR,'configureTemplate: using '.$tRecord->id."\n");
 
 		//create title field
-		$checkMap = ORM::Factory('objectmap')->where('template_id', $tRecord->id)->where('column', 'title')->find();
-		if(!$checkMap->loaded){
+		$checkMap = ORM::Factory('objectmap')->where('template_id', '=', $tRecord->id)->where('column', '=', 'title')->find();
+		if(!$checkMap->loaded()){
 			$index = 'field';
 			$count = ORM::Factory('objectmap')
-				->select('max(`index`) as maxIndex')
-				->where('type', $index)
-				->where('template_id', $tRecord->id)
+				->select('maxIndex','index')
+				->where('type', '=', $index)
+				->where('template_id', '=', $tRecord->id)
+				->order_by('index')
+				->limit(1, 0)
 				->find();
 			$nextIndex = $count->maxIndex+1;
 
@@ -614,7 +613,7 @@ class MoPCMS {
 	}
 
 	public static function configureField($templateId, $item){
-		//echo $item->tagName;
+
 		switch($item->tagName){
 
 		case 'list':
@@ -625,65 +624,9 @@ class MoPCMS {
 			break;
 
 		default:
-		//	echo $item->tagName;
-			//handle dbmap
-			$index = null;
-			switch($item->tagName){
-			case 'text':
-				case 'radioGroup':
-					case 'pulldown':
-						case 'time':
-							case 'date':
-								case 'multiSelect':
-									$index = 'field';
-									break;
-								case 'image':
-									case 'file':
-										$index = 'file';
-										break;
-									case 'checkbox':
-										$index = 'flag';
-										break;
-									default:
-										$tConfigs = mop::config('objects', '//template');
-										$templates = array();
-										foreach($tConfigs as $template){
-											$templates[] = $template->getAttribute('name');	
-										}
-										//print_r($templates);
-										if(in_array($item->tagName, $templates)){
-											$index = 'object';
-										} else {
-											continue(2);
-										}
-										break;
-			}	
 
-			//and right here it'll be 'if doesn't already exist in the array'
-			//or we'll check the database and just insert a new/next one
-			//and this is where the ALTER statements could come in
-
-			//safeguard that this field isn't already configured!
-			$objectmap = ORM::Factory('objectmap')
-				->where('template_id', $templateId)
-				->where('column', $item->getAttribute('field'))
-				->find();
-			if(!$objectmap->loaded){
-				//compute new dbmapindex
-				$count = ORM::Factory('objectmap')
-					->select('max(`index`) as maxIndex')
-					->where('type', $index)
-					->where('template_id', $templateId)
-					->find();
-				$nextIndex = $count->maxIndex+1;
-
-				$newmap = ORM::Factory('objectmap');
-				$newmap->template_id = $templateId;
-				$newmap->type = $index;
-				$newmap->index = $nextIndex;
-				$newmap->column = $item->getAttribute('field');
-				$newmap->save();
-			}
+			Model_Objectmap::configureNewField($templateId, $item->getAttribute('field'), $item->tagName );
+			break;
 
 		}
 	}

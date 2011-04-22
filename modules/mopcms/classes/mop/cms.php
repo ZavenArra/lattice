@@ -170,29 +170,7 @@ class MOP_CMS extends MOP_CMSInterface {
 		}
 
 	
-
-		/*
-		$js = array();
-		foreach(Display_Controller::getJS() as $ajs){
-			$js[] = Kohana::config('config.site_domain').$ajs;
-		}
-		$css = array();
-		foreach(Display_Controller::getCSS() as $acss){
-			$css[] = Kohana::config('config.site_domain').$acss;
-		}
-		ajax controller should handle this
-		 */
-
 		$this->response->body($html);
-
-		/*
-		$return = array(
-			'html'=>$html,
-			'js'=>$js,
-			'css'=>$css,
-		);
-		return $return;
-		 */
 
 	}
 

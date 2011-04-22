@@ -113,14 +113,14 @@ mop.modules.navigation.Navigation = new Class({
 	getNavTree: function(){
 		console.log( "getNavTree ", this.getDeepLinkTarget() );
 		new Request.JSON({
-			url: mop.util.getAppURL() + 'ajax/'+ this.instanceName + "/getNavTree/" + this.getDeepLinkTarget(),
+			url: mop.util.getAppURL() + 'ajax/data/'+ this.instanceName + "/getNavTree/" + this.getDeepLinkTarget(),
 			onComplete: this.buildNav.bind( this )
 		}).send();
 	},
 	
 	getTemplates: function( targetId, whichTier, targetName ){
 		new Request.JSON({
-			url: mop.util.getAppURL() + 'ajax/'+ this.instanceName + "/getTemplates",
+			url: mop.util.getAppURL() + 'ajax/data/'+ this.instanceName + "/getTemplates",
 			onComplete: function( templateObj ){
 			    console.log( "getTemplates onComplete" );
 			    this.addableTemplates = templateObj;
@@ -543,7 +543,7 @@ console.log( "A : ", newList );
 	},
 
 	JSONSend: function( action, data, options ){
-		mop.util.JSONSend( mop.util.getAppURL() + "ajax/"+ this.marshal.instanceName +  "/" + action + "/" + mop.objectId, data, options );
+		mop.util.JSONSend( mop.util.getAppURL() + "ajax/data/"+ this.marshal.instanceName +  "/" + action + "/" + mop.objectId, data, options );
 	},
 
 	renameNode: function( aString ){

@@ -19,12 +19,21 @@ class Controller_Ajax extends Controller_MOP {
 	}
 	 */
 
-	public function action_data($subRequestUri)
+	public function action_data($uri)
 	{
 		//request to child, just data
 
-		$subRequest = Request::Factory($uri);
-		$data = $subRequest->execute()->data();
+		try {
+			$subRequest = Request::Factory($uri);
+			$data = $subRequest->execute()->data();
+		} catch (Exception $e) {
+			$ajaxResponse = array(
+				'returnValue' => TRUE,
+				'response'=>$data
+			);
+			echo "CALL A FUNCITON HERE TO COMMUNICATION EXCEPTION TO CLIENTSIDE";	
+			return;
+		}
 		$ajaxResponse = array(
 			'returnValue' => TRUE,
 			'response'=>$data

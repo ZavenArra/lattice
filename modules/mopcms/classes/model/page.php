@@ -82,6 +82,7 @@ class Model_Page extends ORM {
 	Custom save function, makes sure the content table has a record when inserting new page
 	*/
 	public function save(Validation $validation = NULL) {
+
 		$inserting = false;
 		if($this->_loaded == FALSE){
 			$inserting = true;
@@ -89,16 +90,22 @@ class Model_Page extends ORM {
 
 		if($inserting){
 			//and we need to update the sort, this should be the last
-			if(Kohana::config('cms.newObjectPlacement')=='top'){
-				$spage = ORM::Factory('page');
-				$spage->select('min(sortorder) as minsort ')->where('parentid', '=', $this->parentid)->find();
-				$this->sortorder = $spage->minsort - 1;
-			} else {
-				$spage = ORM::Factory('page');
-				$spage->select('max(sortorder) as maxsort ')->where('parentid', '=', $this->parentid)->find();
-				$this->sortorder = $spage->maxsort + 1;
+			//
+			if($this->parentid!=NULL){
+				if(Kohana::config('cms.newObjectPlacement')=='top'){
+
+					$sort = DB::query(Database::SELECT,
+						'select min(sortorder) as minsort from pages where parentid = '.$this->parentid)->execute()->current();
+					$this->sortorder = $sort['minsort']-1;
+
+				} else {
+					$query = 'select max(sortorder) as maxsort from pages where parentid = '.$this->parentid;
+					$sort = DB::query(Database::SELECT, $query)->execute()->current();
+					$this->sortorder = $sort['maxsort']+1;
+
+				}
+				$this->dateadded = 'now()';
 			}
-			$this->dateadded = new Database_Expr('now()');
 		}
 
 		parent::save();
@@ -110,19 +117,12 @@ class Model_Page extends ORM {
         $content = ORM::Factory($this->template->contenttable);
       }
 			if(!$content->where('page_id', '=', $this->id)->find()->loaded){
-        if(!Kohana::config('mop.legacy')){
-          $this->_db->insert('contents', array('page_id'=>$this->id));
-        } else {
-          $this->_db->insert(inflector::plural($this->template->contenttable), array('page_id'=>$this->id));
-        }
+				$content = ORM::Factory('content');
+				$content->page_id = $this->id;
+				$content->save();
 
-        if(!Kohana::config('mop.legacy')){
-          $content = ORM::factory( 'content' );
-        } else {
-          $content = ORM::factory( inflector::singular($this->__get('template')->contenttable) );
-        }
 				$content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
-				$this->_related['contenttable']=$content->where('page_id', '=',  $this->id)->find();
+				$this->_related['contenttable']=$content;
 			}
 		}
 	}
@@ -333,16 +333,16 @@ class Model_Page extends ORM {
 	}
 
 	private function moveUploadedFileToTmpMedia($tmpName){
-		$saveName = cms::makeFileSaveName('tmp').microtime();
+		$saveName = mopcms::makeFileSaveName('tmp').microtime();
 
-		if(!move_uploaded_file($tmpName, cms::mediapath().$saveName)){
+		if(!move_uploaded_file($tmpName, mopcms::mediapath().$saveName)){
 			$result = array(
 				'result'=>'failed',
 				'error'=>'internal error, contact system administrator',
 			);
 			return $result;
 		}
-		Kohana::log('info', 'moved file to '.cms::mediapath().$saveName);
+		Kohana::log('info', 'moved file to '.mopcms::mediapath().$saveName);
 
 		return $saveName;
 
@@ -354,12 +354,12 @@ class Model_Page extends ORM {
 		}	
 
 		$file->unlinkOldFile();
-		$saveName = cms::makeFileSaveName($fileName);
+		$saveName = mopcms::makeFileSaveName($fileName);
 
-		if(!copy(cms::mediapath().$tmpName, cms::mediapath().$saveName)){
+		if(!copy(mopcms::mediapath().$tmpName, mopcms::mediapath().$saveName)){
 			throw new MOP_Exception('this is a MOP Exception');
 		}
-		unlink(cms::mediapath().$tmpName);
+		unlink(mopcms::mediapath().$tmpName);
 		
 		$file->filename = $saveName;	
 		$file->mime = $type;
@@ -422,17 +422,14 @@ class Model_Page extends ORM {
 			Kohana::log('info', 'Converting TIFF image to JPG for resize');
 
 			$imageFileName =  $filename.'_converted.jpg';
-			$command = sprintf('convert %s %s',addcslashes(cms::mediapath().$filename, "'\"\\ "), addcslashes(cms::mediapath().$imageFileName, "'\"\\ "));
+			$command = sprintf('convert %s %s',addcslashes(mopcms::mediapath().$filename, "'\"\\ "), addcslashes(mopcms::mediapath().$imageFileName, "'\"\\ "));
 			Kohana::log('info', $command);
-			system(sprintf('convert %s %s',addcslashes(cms::mediapath().$filename, "'\"\\ "),addcslashes(cms::mediapath().$imageFileName, "'\"\\ ")));
+			system(sprintf('convert %s %s',addcslashes(mopcms::mediapath().$filename, "'\"\\ "),addcslashes(mopcms::mediapath().$imageFileName, "'\"\\ ")));
 			break;
 		default:
 			$imageFileName = $filename;
 			break;
 		}
-
-		Kohana::log('info', $imageFileName);
-
 
 		//do the resizing
     $templatename = $this->template->templatename;
@@ -449,9 +446,9 @@ class Model_Page extends ORM {
 				$prefix = '';
 			}
 			$newFilename = $prefix.$imageFileName;
-			$saveName = cms::mediapath().$newFilename;
+			$saveName = mopcms::mediapath().$newFilename;
 
-			cms::resizeImage($imageFileName, $newFilename, 
+			mopcms::resizeImage($imageFileName, $newFilename, 
 				$resize->getAttribute('width'),
 				$resize->getAttribute('height'),
 				$resize->getAttribute('forceDimension'), 
@@ -459,14 +456,14 @@ class Model_Page extends ORM {
 			);
 
 			if(isset($oldFilename) && $newFilename != $prefix.$oldFilename){
-				if(file_exists(cms::mediapath().$oldFilename)){
-					unlink(cms::mediapath().$oldFilename);
+				if(file_exists(mopcms::mediapath().$oldFilename)){
+					unlink(mopcms::mediapath().$oldFilename);
 				}
 			}
 		}	
 		//and create thumbnail
 		$uiresize = Kohana::config('cms.uiresize');
-		cms::resizeImage($imageFileName, $uiresize['prefix'].'_'.$imageFileName, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
+		mopcms::resizeImage($imageFileName, $uiresize['prefix'].'_'.$imageFileName, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
 
 
 		return $imageFileName;
