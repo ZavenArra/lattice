@@ -29,9 +29,9 @@ class Controller_Ajax extends Controller_MOP {
 		} catch (Exception $e) {
 			$ajaxResponse = array(
 				'returnValue' => TRUE,
-				'response'=>$data
 			);
 			echo "CALL A FUNCITON HERE TO COMMUNICATION EXCEPTION TO CLIENTSIDE";	
+			throw $e;
 			return;
 		}
 		$ajaxResponse = array(

@@ -34,9 +34,9 @@ class MOP_CMSInterface extends Controller_MOP {
 		 'result'=>'success',
 	 );
 	 */
-	public function saveFile($pageid){
+	public function action_saveFile($pageid){
 
-		$file = cms::saveHttpPostFile($pageid, $_POST['field'], $_FILES[$_POST['field']]);
+		$file = mopcms::saveHttpPostFile($pageid, $_POST['field'], $_FILES[$_POST['field']]);
 		$result = array(
 			'id'=>$file->id,
 			'src'=>$file->original->fullpath,
@@ -48,8 +48,8 @@ class MOP_CMSInterface extends Controller_MOP {
 		//if it's an image
 		$thumbSrc = null;
 		if($file->uithumb->filename){
-			if(file_exists(cms::mediapath().$file->uithumb->filename)){
-				$resultpath = cms::mediapath().$file->uithumb->filename;
+			if(file_exists(mopcms::mediapath().$file->uithumb->filename)){
+				$resultpath = mopcms::mediapath().$file->uithumb->filename;
 				$thumbSrc = Kohana::config('cms.basemediapath').$file->uithumb->filename;
 			}
 		}
@@ -75,19 +75,20 @@ class MOP_CMSInterface extends Controller_MOP {
 	* $_POST['value'] - the value to save
 	* Returns: array('value'=>{value})
 	 */
-	public function savefield($id){
-		$page = ORM::Factory('page')->find($id);
+	public function action_savefield($id){
+		$page = ORM::Factory('page', $id);
+                
 		if($_POST['field']=='slug'){
-			$page->slug = cms::createSlug($_POST['value'], $page->id);
+			$page->slug = mopcms::createSlug($_POST['value'], $page->id);
 			$page->decoupleSlugTitle = 1;
 			$page->save();
 			return array('value'=>$page->slug);
 		} else if($_POST['field']=='title'){ //update slug, but actually we may not want to have slug updatable
 			if(!$page->decoupleSlugTitle){
-				$page->slug = cms::createSlug($_POST['value'], $page->id);
+				$page->slug = mopcms::createSlug($_POST['value'], $page->id);
 			}
 			$page->save();
-			$page->contenttable->$_POST['field'] = cms::convertNewlines($_POST['value']);
+			$page->contenttable->$_POST['field'] = mopcms::convertNewlines($_POST['value']);
 			$page->contenttable->save();
 			$page = ORM::Factory('page')->find($id);
 			return array('value'=>$page->contenttable->$_POST['field'], 'slug'=>$page->slug);
@@ -96,11 +97,12 @@ class MOP_CMSInterface extends Controller_MOP {
 			$page->$_POST['field'] = $_POST['value'];
 			$page->save();
 		} else if($_POST['field']) {
-			$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]',
-																									$page->template->templatename,
-																									$_POST['field']))->item(0);
+			$xpath = sprintf('//template[@name="%s"]/elements/*[@field="%s"]',
+				$page->template->templatename,
+				$_POST['field']);
+			$fieldInfo = mop::config('objects', $xpath)->item(0);
 			if(!$fieldInfo){
-				die('Invalid field for template.  Check for correct page/object ID in URL');
+				throw new Kohana_Exception('Invalid field for template, using XPath : :xpath', array(':xpath'=>$xpath));
 			}
 
 
@@ -129,7 +131,7 @@ class MOP_CMSInterface extends Controller_MOP {
 				$object->contenttable->save();
 				break;	
 			default:
-				$page->contenttable->$_POST['field'] = cms::convertNewlines($_POST['value']);
+				$page->contenttable->$_POST['field'] = mopcms::convertNewlines($_POST['value']);
 				$page->contenttable->save();
 				break;
 			}
@@ -148,7 +150,7 @@ class MOP_CMSInterface extends Controller_MOP {
 		id - the id to toggle
 		Returns: Published status (0 or 1)
 		*/
-		public function togglePublish($id){
+		public function action_togglePublish($id){
 			$page = ORM::Factory('page')->find($id);
 			if($page->published==0){
 				$page->published = 1;
@@ -166,7 +168,7 @@ class MOP_CMSInterface extends Controller_MOP {
 		Parameters:
 		$_POST['sortorder'] - array of page ids in their new sort order
 		*/
-		public function saveSortOrder(){
+		public function action_saveSortOrder(){
 			$order = explode(',', $_POST['sortorder']);
 
 			for($i=0; $i<count($order); $i++){
@@ -186,7 +188,7 @@ class MOP_CMSInterface extends Controller_MOP {
 		 deletes a page/category and all categories and leaves underneath
 		 Returns: returns html for undelete pane 
 		*/
-		public function delete($id){
+		public function action_delete($id){
 			$this->cascade_delete($id);
 
 			$this->view = new View('mop_cms_undelete');
@@ -201,7 +203,7 @@ class MOP_CMSInterface extends Controller_MOP {
 
 		 Returns: 1;
 		*/
-		public function undelete($id) {
+		public function action_undelete($id) {
 			$this->cascade_undelete($id);
 			//should return something about failure...
 			return 1;
@@ -242,7 +244,7 @@ class MOP_CMSInterface extends Controller_MOP {
 	private function cascade_undelete($page_id){
 		$page = ORM::Factory('page')->find($id);
 		$page->activity = new Database_Expr('NULL');
-		$page->slug = cms::createSlug($page->contenttable->title, $page->id);
+		$page->slug = mopcms::createSlug($page->contenttable->title, $page->id);
 		$page->save();
 		$page->contenttable->activity = new Database_Expr('NULL');;
 		$page->contenttable->save();
@@ -260,7 +262,7 @@ class MOP_CMSInterface extends Controller_MOP {
 	Function: saveFieldMapping($itemid)
 	Wrapper to saveFieldMapping in CMS_Services_Controller
 	*/
-	public function saveFieldMapping($itemid){
+	public function action_saveFieldMapping($itemid){
 		$object = ORM::Factory($this->model, $itemid);
 		return $object->saveFieldMapping($_POST['field'], $_POST['value']);
 	}

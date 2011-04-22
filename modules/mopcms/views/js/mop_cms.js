@@ -69,9 +69,9 @@ mop.modules.CMS = new Class({
 			    console.log( this.toString(), "loadJS loading ", urlString );
 				mop.util.loadJS( urlString, { type: "text/javascript", onload: this.onJSLoaded.bind( this, [ pageData.html, this.currentPageLoadIndex ] ) } );
 			}, this);			
-		}else{
-			this.populate( pageData.html );
 		}
+
+		this.populate( pageData.html );
 
 	},
 	

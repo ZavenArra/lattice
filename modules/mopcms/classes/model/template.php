@@ -5,6 +5,7 @@
  */
 class Model_Template extends ORM {
 	protected $_has_many = array('page'=>array());
+        protected $_belongs_to = array('page'=>array());
 
   /*
    * Variable: nonmappedfield

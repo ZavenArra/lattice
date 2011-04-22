@@ -8,6 +8,9 @@ class Model_Page extends ORM {
 	protected $_belongs_to = array(
 		'template'=>array()
 	);
+        protected $_has_one = array(
+          'template'=>array()  
+        );
 
 	public $content = null;
 
