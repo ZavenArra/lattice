@@ -140,7 +140,9 @@ class MOP_CMSInterface extends Controller_MOP {
 		}
 
 		$page = ORM::Factory('page')->find($id);
-		return array('value'=>$page->contenttable->$_POST['field']);
+                //echo $_POST['field'];
+                $value = $page->contenttable->$_POST['field'];
+                $this->response->data(array('value'=>$value));
 	}
 
 	/*

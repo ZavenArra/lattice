@@ -18,16 +18,68 @@ class Controller_MOP extends Controller {
 	public function __construct($request, $response){
 		parent::__construct($request, $response);	
 
+		$this->controllerName = strtolower(substr(get_class($this), 11)); 
+		$this->checkAccess();
 
 		if($request->is_initial()){
 		 self::$topController = $this;
 		}
 
 		//look up all matching js and css based off controller name
-		$this->controllerName = strtolower(substr(get_class($this), 11)); 
 		
 		$this->loadResources($this->controllerName);
 	}
+
+	/*
+	 * Function: checkAccess()
+	 * Default function for acccess checking for a controller.  Can be overridden in child classes
+	 * Checks logged in user against authrole array in config file for controller
+	 * Parameters:nothing, except config file
+	 * Returns: nothing
+	 */
+	public function checkAccess(){
+		//Authentication check
+		$role = Kohana::config(strtolower($this->controllerName).'.authrole', FALSE, FALSE);
+		
+		//checked if logged in
+		if($role && !Auth::instance()->logged_in()){
+			Request::current()->redirect('auth/login/'.Request::initial()->uri());
+			exit;
+		}
+
+		if(is_array($role)){
+			$accessGranted = false;
+			foreach($role as $aRole){
+				if($role=='admin'){
+					if(Kohana::config('mop.staging_enabled') && !Kohana::config('mop.staging')){
+						$redirect = 'staging/'. Router::$current_uri;
+						url::redirect($redirect);
+					}
+				}
+
+				if(moputil::checkRoleAccess($aRole)){
+					$accessGranted = true;
+				}
+			}
+		} else {
+			if($role=='admin'){
+				if(Kohana::config('mop.staging_enabled') && !Kohana::config('mop.staging')){
+					$redirect = 'staging/'. Router::$current_uri;
+					url::redirect($redirect);
+				}
+			}
+
+			$accessGranted = moputil::checkRoleAccess($role);
+		}
+
+		if(!$accessGranted){
+			$redirect = 'accessdenied';
+			url::redirect($redirect);
+			exit;
+		}
+
+	}
+
 
 	protected function loadResources($key){
 		if(is_subclass_of(self::$topController, 'Controller_MOP')){	

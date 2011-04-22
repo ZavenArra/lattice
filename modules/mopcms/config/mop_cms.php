@@ -14,8 +14,6 @@ $config['resources']['libraryjs'] = array(
 	'modules/mop/MoPModules.js'
 );
 
-$config['layout'] = 'LayoutAdmin';
-$config['authrole'] = 'admin';
 
 $config['defaultsettings']['editable_title'] = true;
 //- - if set all titles editable

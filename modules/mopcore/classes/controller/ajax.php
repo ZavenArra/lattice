@@ -27,11 +27,13 @@ class Controller_Ajax extends Controller_MOP {
 			$subRequest = Request::Factory($uri);
 			$data = $subRequest->execute()->data();
 		} catch (Exception $e) {
+			//return HTML from exception
+                        $message = $e->getString() . $e->getTrace();
 			$ajaxResponse = array(
 				'returnValue' => TRUE,
+                                'response' => $message
+                                
 			);
-			echo "CALL A FUNCITON HERE TO COMMUNICATION EXCEPTION TO CLIENTSIDE";	
-			throw $e;
 			return;
 		}
 		$ajaxResponse = array(

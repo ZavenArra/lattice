@@ -5,62 +5,59 @@
 *
 */
 class Model_Page extends ORM {
-	protected $_belongs_to = array(
-		'template'=>array()
-	);
-        protected $_has_one = array(
-          'template'=>array()  
-        );
 
-	public $content = null;
+    protected $_belongs_to = array(
+        'template' => array()
+    );
+    protected $_has_one = array(
+        'template' => array()
+    );
+    public $content = null;
+    private $object_fields = array('loaded', 'template', 'primary_key', 'primary_val');
 
-	private $object_fields = array('loaded', 'template', 'primary_key', 'primary_val');
+    public function __construct($id=NULL) {
+        parent::__construct($id);
+        //	$this->object_fields = array_merge($this->object_fields, array_keys($this->_column_cache) );
+    }
 
-	public function __construct($id=NULL){
-		parent::__construct($id);
-	//	$this->object_fields = array_merge($this->object_fields, array_keys($this->_column_cache) );
-	}
-	  /**
-		 *    * Allows a model to be loaded by username or email address.
-		 *       */
-	public function unique_key($id)
-	{
-		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id))
-		{
-			return 'slug';
-		}
+    /**
+     *    * Allows a model to be loaded by username or email address.
+     *       */
+    public function unique_key($id) {
+        if (!empty($id) AND is_string($id) AND !ctype_digit($id)) {
+            return 'slug';
+        }
 
-		return parent::unique_key($id);
-	}
+        return parent::unique_key($id);
+    }
 
+    /*
+     *   Function: __get
+     *     Custom getter for this model, links in appropriate content table
+     *       when related object 'content' is requested
+     *         */
 
-	/*
-	 *   Function: __get
-	 *     Custom getter for this model, links in appropriate content table
-	 *       when related object 'content' is requested
-	 *         */
-	public function __get($column){
+    public function __get($column) {
 
-    if($column=='contenttable' && !isset($this->_related[$column])){
-			$content = ORM::factory( inflector::singular('contents') );
-      $content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
-      $this->_related[$column]=$content->where('page_id','=',$this->id)->find();
-      if(!$this->_related[$column]->_loaded){
-        throw new Kohana_User_Exception('BAD_MOP_DB', 'no content record for page '.$this->id);
-      }
-      return $this->_related[$column];
-		} else if($column=='parent'){
-			//return ORM::Factory('page', $this->parentid); 
-		}	else {
-			return parent::__get($column);
-		}
-	}
+        if ($column == 'contenttable' && !isset($this->_related[$column])) {
+            $content = ORM::factory(inflector::singular('contents'));
+            $content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
+            $this->_related[$column] = $content->where('page_id', '=', $this->id)->find();
+            if (!$this->_related[$column]->_loaded) {
+                throw new Kohana_User_Exception('BAD_MOP_DB', 'no content record for page ' . $this->id);
+            }
+            return $this->_related[$column];
+        } else if ($column == 'parent') {
+            return ORM::Factory('page', $this->parentid); 
+        } else {
+            return parent::__get($column);
+        }
+    }
 
-
-	/*
-	Function: __set
-	Custom setter, saves to appropriate contenttable
-	*/
+    /*
+      Function: __set
+      Custom setter, saves to appropriate contenttable
+     */
 	public function __set($column, $value){
 		if($column=='contenttable'){
 			$this->_changed[$column] = $column;

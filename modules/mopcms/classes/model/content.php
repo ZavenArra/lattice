@@ -41,15 +41,14 @@ class Model_Content extends ORM {
 		if(in_array($column, $this->nonmappedfields)){
 			return parent::__get($column);
 		}
-		//echo '<br>getting'.$column.'<br>';
-
+	
 		//check for dbmap
 		$object =  ORM::Factory('page', parent::__get('page_id'));
 		//echo 'FROM '.$object->id.'<br>';
 		$column = mop::dbmap( $object->template_id, $column);
 		//echo 'which maps to'.$column;
 		if(!$column){
-			return null;
+                    throw new Kohana_Exception('Column :column not found in content model', array(':column', $column));
 		}
 
 		if(strstr($column, 'object')){

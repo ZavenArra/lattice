@@ -1,1 +1,1 @@
-This is the default public header
+<? echo Request::Factory('mopauth')->execute()->body() ;?>
