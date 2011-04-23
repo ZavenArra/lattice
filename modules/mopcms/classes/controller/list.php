@@ -6,7 +6,7 @@
   object paradigm.
  */
 
-class List_Controller extends MOP_CMSInterface {
+class Controller_List extends MOP_CMSInterface {
 		  /*
 			*  Variable: page_id
 			*  static int the global page id when operating within the CMS submodules get the page id
@@ -45,11 +45,9 @@ class List_Controller extends MOP_CMSInterface {
 					$this->lookUpContainerObject();
 
 					 //for now the isntance is just the name of this thing
-					$this->listClass = substr(get_class($this), 0, -11);
-
+					
 					 //support for custom listmodule item templates, but might not be necessary
-					 $custom = $this->listClass . '_item';
-					 Kohana::log('info', 'list: looking for ' . $custom);
+					 $custom = $this->_family . '_item';
 					 if (Kohana::find_file('views', $custom)) {
 								$this->itemview = $custom;
 					 } else {
@@ -57,7 +55,7 @@ class List_Controller extends MOP_CMSInterface {
 					 }
 
 					 //get the sort direction from config
-					 $this->sortdirection = mop::config('objects', sprintf('//list[@family="%s"]', $this->listClass))->item(0)->getAttribute('sortDirection');
+					 $this->sortdirection = mop::config('objects', sprintf('//list[@family="%s"]', $this->_family))->item(0)->getAttribute('sortDirection');
 
 					 //TODO:read the config and setupd
 		  }
@@ -68,7 +66,9 @@ class List_Controller extends MOP_CMSInterface {
 			*/
 
 		  protected function lookUpContainerObject() {
-					 $lt = ORM::Factory('template')->where('templateName','=',$this->_family)->find();
+
+					 $lt = ORM::Factory('template')->where('templatename','=',$this->_family)->find();
+					
 					 $containerObject = ORM::Factory('page')
 								->where('parentid', '=', $this->_parentid)
 								->where('template_id', '=', $lt->id)
@@ -82,8 +82,7 @@ class List_Controller extends MOP_CMSInterface {
 		  }
 
 		  public function action_index() {
-					 echo 'hall';
-					 $custom = $this->listClass;
+					 $custom = $this->_family;
 					 if (Kohana::find_file('views', $custom)) {
 								$this->view = new View($custom);
 					 } else {
@@ -91,37 +90,37 @@ class List_Controller extends MOP_CMSInterface {
 					 }
 
 					 $this->buildIndexData();
-					 return $this->render();
+					 $this->response->body($this->view->render());
 		  }
 
 		  public function buildIndexData() {
 
-					 $listMembers = $this->containerObject->getChildren();
+					 $listMembers = $this->_containerObject->getChildren();
 
 					 $html = '';
 					 foreach ($listMembers as $object) {
 
-								$htmlChunks = cms::buildUIHtmlChunksForObject($object);
+								$htmlChunks = mopcms::buildUIHtmlChunksForObject($object);
 								$itemt = new View($this->itemview);
 								$itemt->uiElements = $htmlChunks;
 
 								$data = array();
 								$data['id'] = $object->id;
-								$data['page_id'] = $this->containerObject->id;
-								$data['instance'] = $this->listClass;
+								$data['page_id'] = $this->_containerObject->id;
+								$data['instance'] = $this->_family;
 								$itemt->data = $data;
 
 								$html.=$itemt->render();
 					 }
 
 					 //actually we need to do an absolute path for local config
-					 $listConfig = mop::config('objects', sprintf('//list[@family="%s"]', $this->listClass))->item(0);
+					 $listConfig = mop::config('objects', sprintf('//list[@family="%s"]', $this->_family))->item(0);
 					 $this->view->label = $listConfig->getAttribute('label');
 					 $this->view->class = $listConfig->getAttribute('cssClasses');
 					 $this->view->class .= ' allowChildSort-' . $listConfig->getAttribute('allowChildSort');
 					 $this->view->class .= ' sortDirection-' . $this->sortdirection;
 					 $this->view->items = $html;
-					 $this->view->instance = $this->listClass;
+					 $this->view->instance = $this->_family;
 		  }
 
 		  //this is the new one
@@ -134,8 +133,8 @@ class List_Controller extends MOP_CMSInterface {
 
 		  private function buildContainerObject($parentid) {
 					 $parent = ORM::Factory($this->model, $parentid);
-					 $containerTemplate = ORM::Factory('template', $this->listClass);
-					 $this->containerObject = ORM::Factory($this->model)
+					 $containerTemplate = ORM::Factory('template', $this->_family);
+					 $this->_containerObject = ORM::Factory($this->model)
 								->where('parentid', $parentid)
 								->where('template_id', $containerTemplate->id)
 								->where('activity IS NULL')
@@ -155,15 +154,15 @@ class List_Controller extends MOP_CMSInterface {
 					 $this->buildContainerObject($parentid);
 
 					 //addable item should be specifid in the addItem call
-					 $template = mop::config('objects', sprintf('//list[@family="%s"]/addableObject', $this->listClass));
+					 $template = mop::config('objects', sprintf('//list[@family="%s"]/addableObject', $this->_family));
 					 if (!$template->length > 0) {
-								throw new Kohana_User_Exception('No List By That Name', 'Count not locate configuration in objects.xml for ' . sprintf('//list[@family="%s"]/addableobject', $this->listClass));
+								throw new Kohana_User_Exception('No List By That Name', 'Count not locate configuration in objects.xml for ' . sprintf('//list[@family="%s"]/addableobject', $this->_family));
 					 }
 					 $template = $template->item(0);
 
 					 $data = array('published' => 'true');
 
-					 $newid = cms::addObject($this->containerObject->id, $template->getAttribute('templateName'), $data);
+					 $newid = cms::addObject($this->_containerObject->id, $template->getAttribute('templateName'), $data);
 
 					 $item = ORM::Factory('page', $newid);
 					 $htmlChunks = cms::buildUIHtmlChunksForObject($item);
@@ -172,9 +171,9 @@ class List_Controller extends MOP_CMSInterface {
 
 					 $data = array();
 					 $data['id'] = $newid;
-					 $data['page_id'] = $this->containerObject->id;
+					 $data['page_id'] = $this->_containerObject->id;
 					 ;
-					 $data['instance'] = $this->listClass;
+					 $data['instance'] = $this->_family;
 
 
 					 $itemt->data = $data;

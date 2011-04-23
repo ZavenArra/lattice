@@ -217,7 +217,7 @@ class MoPCMS {
 												$element['controllertype'] = 'list';
 												
 												$requestURI = 'list'.$element['family'].'/'.$object->id;
-												$htmlChunks[$element['family']] = Request::factory($requestURI)->execute()->response->body();
+												$htmlChunks[$element['family']] = Request::factory($requestURI)->execute()->body();
 
 												
 												//$htmlChunks[$element['family']] = mop::buildModule($element, $arguments);

@@ -228,7 +228,7 @@ class Model_Page extends ORM {
 			->where('parentid', '=', $this->id)
 			->where('published', '=', 1)
 			->where('activity', 'IS', NULL)
-			->orderby('sortorder')
+			->order_by('sortorder')
 			->find_all();
 		return $children;
 	}
@@ -238,7 +238,7 @@ class Model_Page extends ORM {
 		$children = ORM::Factory('page')
 			->where('parentid', '=', $this->id)
 			->where('activity', 'IS', NULL)
-			->orderby('sortorder')
+			->order_by('sortorder')
 			->find_all();
 		return $children;
 	}
@@ -247,7 +247,7 @@ class Model_Page extends ORM {
 			->where('parentid', '=', $this->parentid)
 			->where('published', '=', 1)
 			->where('activity', 'IS', NULL)
-			->orderby('sortorder', 'ASC')
+			->order_by('sortorder', 'ASC')
 			->where('sortorder', '>', $this->sortorder)
 			->limit(1)
 			->find();
@@ -263,7 +263,7 @@ class Model_Page extends ORM {
 			->where('parentid', '=', $this->parentid)
 			->where('published', '=', 1)
 			->where('activity', 'IS', NULL)
-			->orderby('sortorder', 'DESC')
+			->order_by('sortorder', 'DESC')
 			->where('sortorder', '<', $this->sortorder)
 			->limit(1)
 			->find();
@@ -279,7 +279,7 @@ class Model_Page extends ORM {
 			->where('parentid', '=', $this->parentid)
 			->where('published', '=', 1)
 			->where('activity', 'IS', NULL)
-			->orderby('sortorder', 'ASC')
+			->order_by('sortorder', 'ASC')
 			->limit(1)
 			->find();
 		if($first->loaded){
@@ -294,7 +294,7 @@ class Model_Page extends ORM {
 			->where('parentid', '=', $this->parentid)
 			->where('published', '=', 1)
 			->where('activity', 'IS', NULL)
-			->orderby('sortorder', 'DESC')
+			->order_by('sortorder', 'DESC')
 			->limit(1)
 			->find();
 		if($last->loaded){

@@ -21,18 +21,8 @@ Route::set('html', '<controller>(/<uri>)', array(
 						  'action' => 'html'
 		  ));
 
-/*
-Route::set('list', '<family>', array(
-	 'family'=>'list[A-z]+'
- )
-)
-->defaults(
-		  array(
-'controller' => 'list',
-'action' => 'index',
-));
-*/
-/*
+
+
 Route::set('list', 'list<family>/<parentid>(/<action>)', array(
 
  )
@@ -42,7 +32,7 @@ Route::set('list', 'list<family>/<parentid>(/<action>)', array(
 'controller' => 'list',
 'action' => 'index',
 ));
-*/
+
 
 Route::set('header', 'header(/<id>)')
 	->defaults(

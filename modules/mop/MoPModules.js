@@ -1,4 +1,4 @@
-
+127
 /*
 	Section: mop.module
 	mop Modules
@@ -124,7 +124,7 @@ mop.modules.Module = new Class({
 		classPath.each( function( node ){
 			ref = ( !ref )? this[node] : ref[node];
 		});
-		var newModule = new ref( element, this.getChildMarshal() );
+    	var newModule = new ref( element, this.getChildMarshal() );
 		return newModule;		
 	},
 	
