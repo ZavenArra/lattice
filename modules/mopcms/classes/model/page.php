@@ -597,14 +597,15 @@ class Model_Page extends ORM {
 	}
 
 	public function noContainerObjects(){
-			$db = new Database();
-			$res = $db->query("Select id from templates where nodeType = 'container'");
+			$res = ORM::Factory('template')
+				->where('nodeType', '=', 'container')
+				->find_all();
 			$tIds = array();
 			foreach($res as $container){
 				$tIds[] = $container->id;
 			}
 			if(count($tIds)){
-				$this->notin('template_id', $tIds);
+				$this->where('template_id', 'NOT IN',  DB::Expr('('. implode(',', $tIds).')' ) );
 			}
 			return $this;
 	}

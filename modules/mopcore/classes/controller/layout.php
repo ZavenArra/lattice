@@ -1,11 +1,15 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 class Controller_Layout extends Controller_MOP {
+	
+	
+	protected $subRequest;
 
-	public function action_htmlLayout($controller, $action=null, $arguments=null)
+	public function action_htmlLayout($uri)
 	{
-			$subRequest = Request::Factory($controller.'/'.$action.'/'.$arguments);
-			$this->response->body($subRequest->execute()->body());	
+		
+			$this->subRequest = Request::Factory($uri);
+			$this->response->body($this->subRequest->execute()->body());	
 			$this->outputLayout();
 	}
 
@@ -15,7 +19,8 @@ class Controller_Layout extends Controller_MOP {
  */
 	public function outputLayout(){
 		//set layout - read from config file
-		$layout = 'LayoutAdmin';	
+		$layout = Kohana::config($this->subRequest->controller() . '.layout');
+		echo $layout;
 		$layoutView = View::Factory($layout);
 
 		//get js and css for this layout .. ??? not the way to do this

@@ -36,13 +36,16 @@ Route::set('footer', 'footer(/<id>)')
 		)
 	);
 
-Route::set('layout', 'mop:(<request>)')
+Route::set('layout', 'mop:(<request>)', array(
+	    'request' => '[A-z\/0-9\-]++'
+		)
+	)
 	->defaults(
 		array(
-			'controller'=>'layout',
-			'action'=>'htmlLayout'
+		    'controller' => 'layout',
+		    'action' => 'htmlLayout'
 		)
-	);
+);
 
 
 //using the framework means that other controllers aren't going to automatically load via the default

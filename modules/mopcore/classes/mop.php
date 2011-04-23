@@ -159,8 +159,8 @@ Class mop {
 		if(!Kohana::find_file('controllers', $module['modulename'] ) ){
 			if(!isset($module['controllertype'])){
 				$view = new View($module['modulename']);
-				$object = ORM::Factory('page', $module['modulename']);
-				if($object->loaded){ // in this case it's a slug for a specific object
+				$object = ORM::Factory('page')->where('slug', '=', $module['modulename'])->find();
+				if($object->loaded()){ // in this case it's a slug for a specific object
 					foreach(mop::getViewContent($object->id, $object->template->templatename) as $key=>$content){
 						$view->$key = $content;
 					}
@@ -205,63 +205,63 @@ Class mop {
 		}
 	}
 
-	public static function getViewContent($view, $slug=null){
+	public static function getViewContent($view, $slug=null) {
 
 		$data = array();
 
-    if($view == 'default'){
-			$object = ORM::Factory('page', $slug);
-			if(!$object->loaded){
-				die('mop::getViewContent : Default view callled with no slug');
+		if ($view == 'default') {
+			$object = ORM::Factory('page')->where('slug', '=', $slug)->find();
+			if (!$object->loaded()) {
+				throw new Koahan_Exception('mop::getViewContent : Default view callled with no slug');
 			}
 			$data['content']['main'] = $object->getPageContent();
-      return $data;
-    }
+			return $data;
+		}
 
 		$viewConfig = mop::config('frontend', "//view[@name=\"$view\"]")->item(0);
-		if(!$viewConfig){
+		if (!$viewConfig) {
 			die("No View setup in frontend.xml by that name: $view");
 		}
-		if($viewConfig->getAttribute('loadPage')){
-			$object = ORM::Factory('page', $slug);
-			if(!$object->loaded){
-				die('mop::getViewContent : View specifies loadPage but no page to load');
+		if ($viewConfig->getAttribute('loadPage')) {
+			$object = ORM::Factory('page')->where('slug', '=', $slug)->find();
+			if (!$object->loaded()) {
+				throw new Kohana_Exception('mop::getViewContent : View specifies loadPage but no page to load');
 			}
 			$data['content']['main'] = $object->getPageContent();
-    }
+		}
 
-    $includeContent = mop::getIncludeContent($viewConfig, $object->id);
-    foreach($includeContent as $key=>$values){
-      $data['content'][$key] = $values;
-    }
+		$includeContent = mop::getIncludeContent($viewConfig, $object->id);
+		foreach ($includeContent as $key => $values) {
+			$data['content'][$key] = $values;
+		}
 
-		if($subViews = mop::config('frontend',"subView", $viewConfig)){
-			foreach($subViews as $subview){
+		if ($subViews = mop::config('frontend', "subView", $viewConfig)) {
+			foreach ($subViews as $subview) {
 				$view = $subview->getAttribute('view');
 				$slug = $subview->getAttribute('slug');
 				$label = $subview->getAttribute('label');
-				if(mop::config('frontend', "//view[@name=\"$view\"]")){
+				if (mop::config('frontend', "//view[@name=\"$view\"]")) {
 
-					if($view && $slug){
+					if ($view && $slug) {
 						$subViewContent = mop::getViewContent($view, $slug);
-					} else if($slug){
-						$object = ORM::Factory('page', $slug);
+					} else if ($slug) {
+						$object = ORM::Factory('page')->where('slug', '=', $slug)->find();
 						$view = $object->template->templatename;
 						$subViewContent = mop::getViewContent($view, $slug);
-					} else if($view){
+					} else if ($view) {
 						$subViewContent = mop::getViewContent($view);
 					} else {
 						die("subview $label must have either view or slug");
 					}
 					$subView = new View($view);
 
-					foreach($subViewContent as $key=>$content){
+					foreach ($subViewContent as $key => $content) {
 						$subView->$key = $content;
 					}
 					$data[$label] = $subView->render();
 				} else {
 					//assume it's a module
-					$data[$label] = mop::buildModule(array('modulename'=>$view/*, 'controllertype'=>'object'*/), $subview->getAttribute('label'));
+					$data[$label] = mop::buildModule(array('modulename' => $view/* , 'controllertype'=>'object' */), $subview->getAttribute('label'));
 				}
 			}
 		}
@@ -269,7 +269,7 @@ Class mop {
 		return $data;
 	}
 
-  function getIncludeContent($includeTier, $parentid){
+	public static function getIncludeContent($includeTier, $parentid){
     $content = array();
     if($eDataNodes = mop::config('frontend',"includeData", $includeTier)){
       foreach($eDataNodes as $eDataConfig){
@@ -281,7 +281,7 @@ Class mop {
           if($from=='parent'){
             $objects->where('parentid', '=', $parentid);
           } else {
-            $from = ORM::Factory('page', $from);
+            $from = ORM::Factory('page')->where('id', '=', $from)->find();
             $objects->where('parentid', '=', $from->id);	
           }
         }
