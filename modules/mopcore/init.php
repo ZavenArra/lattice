@@ -1,24 +1,48 @@
 <?
 
-Route::set('ajax', '<controller>/(<action>)/(<uri>)',
-	array(
-		'controller'=>'ajax',
-		'action' => '[A-z]+',
-		'uri' => '[A-z\/0-9]++',		
-	)
-)
-->defaults(
-	array(
-		'controller'=>'ajax',
-	));
+Route::set('ajax', '<controller>/(<action>)/(<uri>)', array(
+			'controller' => 'ajax',
+			'action' => '[A-z]+',
+			'uri' => '[A-z\/0-9]++',
+				)
+		)
+		->defaults(
+				array(
+					'controller' => 'ajax',
+		));
+
+Route::set('html', '<controller>(/<uri>)', array(
+				'controller' => 'html',
+					 )
+		  )
+		  ->defaults(
+					 array(
+						  'controller' => 'html',
+						  'action' => 'html'
+		  ));
 
 /*
-Route::set('ajax', '(<controller>(/<action>(/<uri>)))',
-	array(
-		'controller'=>'ajax',
-		'uri' => '[A-z\/]++',		
-	));
- */
+Route::set('list', '<family>', array(
+	 'family'=>'list[A-z]+'
+ )
+)
+->defaults(
+		  array(
+'controller' => 'list',
+'action' => 'index',
+));
+*/
+/*
+Route::set('list', 'list<family>/<parentid>(/<action>)', array(
+
+ )
+)
+->defaults(
+		  array(
+'controller' => 'list',
+'action' => 'index',
+));
+*/
 
 Route::set('header', 'header(/<id>)')
 	->defaults(
@@ -36,25 +60,3 @@ Route::set('footer', 'footer(/<id>)')
 		)
 	);
 
-Route::set('layout', 'mop:(<request>)', array(
-	    'request' => '[A-z\/0-9\-]++'
-		)
-	)
-	->defaults(
-		array(
-		    'controller' => 'layout',
-		    'action' => 'htmlLayout'
-		)
-);
-
-
-//using the framework means that other controllers aren't going to automatically load via the default
-//they will always get wrapped by the layout controller
-
-/*
-Route::set('mopdefault', '(m:<requestController>(/<requestAction>(/<id>)))')
-	->defaults(array(
-		'controller' => 'layout',
-		'action' => 'htmlLayout',
-	));
- */

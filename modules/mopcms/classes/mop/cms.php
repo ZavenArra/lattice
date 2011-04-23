@@ -10,7 +10,13 @@
 
 class MOP_CMS extends MOP_CMSInterface {
 
-	/*
+		
+	protected $_actionsThatGetLayout = array(
+		'index',
+	);
+
+
+		/*
 	*  Variable: page_id
 	*  static int the global page id when operating within the CMS submodules get the page id
 	*  we could just reference the primaryId attribute of Display as well...
@@ -36,9 +42,6 @@ class MOP_CMS extends MOP_CMSInterface {
 	* Build the cms's included modules
 	*
 	*/
-	public $subModules =  array();
-
-
 
 	protected $defaulttemplate='mop_cms';
 
@@ -69,6 +72,7 @@ class MOP_CMS extends MOP_CMSInterface {
 		//with the same controller as a parent at runtime
 		$this->view->navigation = Request::factory(Kohana::config($this->controllerName.'.navigationRequest'))->execute()->body();
 
+		
 		$this->response->body($this->view->render());
 		//$this->outputLayout();  //consider using AFTER for this, but need to know whats up with ajax, etc
 		//can we route through a layout controller???
@@ -111,6 +115,8 @@ class MOP_CMS extends MOP_CMSInterface {
 
 		$controller = $id;
 		if(Kohana::find_file('controllers', $controller)){
+				
+				//needs to be recoded
 			$controller = $id.'_Controller';
 			$controller = new $controller;
 			$controller->createIndexView();
@@ -123,7 +129,7 @@ class MOP_CMS extends MOP_CMSInterface {
 		
 		$page = ORM::factory('page', $id);
 		if($page->id == 0){
-			throw new Kohana_User_Exception('Invalid Id', 'Invalid Page Id '.$id);
+			throw new Kohana_User_Exception('Invalid Page Id '.$id);
 		}
 		
 		//new generation of page

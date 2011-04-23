@@ -30,7 +30,7 @@ class Controller_Ajax extends Controller_MOP {
 			//return HTML from exception
                         $message = $e->getMessage() . $e->getTrace();
 			$ajaxResponse = array(
-				'returnValue' => TRUE,
+				'returnValue' => FALSE,
                                 'response' => $message
                                 
 			);

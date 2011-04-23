@@ -150,147 +150,139 @@ class MoPCMS {
 	 * $parameters - the parameters array from an object type configuration
 	 * Returns: Associative array of html, one entry for each ui element
 	 */
-	public static function buildUIHtmlChunks($parameters, $object = null){
-		$view = new View();
-		$htmlChunks = array();
-		if(is_array($parameters)){
-			foreach($parameters as $element){
+
+		public static function buildUIHtmlChunks($parameters, $object = null) {
+				$view = new View();
+				$htmlChunks = array();
+				if (is_array($parameters)) {
+						foreach ($parameters as $element) {
+
+								//check if this element type is in fact a template
+								$tConfig = mop::config('objects', sprintf('//template[@name="%s"]', $element['type']))->item(0);
+								//echo $object->id;
+								//echo $object->template->id;
+								if ($tConfig) {
+										//	echo '<br>T CONFIG FOUND';
+										$field = $element['field'];
+										//echo $field;
+										$clusterObject = $object->contenttable->$field;
+										//this should really happen within the models
+										if (!$clusterObject) {
+												$id = mopcms::addObject(null, $element['type']);
+												$object->contenttable->$field = $id;
+												$object->contenttable->save();
+												$clusterObject = $object->contenttable->$field;
+										}
+										$clusterHtmlChunks = mopcms::buildUIHtmlChunksForObject($clusterObject);
+
+										$customview = 'templates/' . $clusterObject->template->templatename; //check for custom view for this template
+										$usecustomview = false;
+										if (Kohana::find_file('views', $customview)) {
+												$usecustomview = true;
+										}
+										if (!$usecustomview) {
+												$html = implode($clusterHtmlChunks);
+												$view = new View('clusters_wrapper');
+												$view->label = $element['label'];
+												$view->html = $html;
+												$view->objectId = $clusterObject->id;
+												$html = $view->render();
+										} else {
+												$view = new View($customview);
+												$view->loadResources();
+												foreach ($clusterHtmlChunks as $key => $value) {
+														$view->$key = $value;
+												}
+												$html = $view->render();
+										}
+										$htmlChunks[$element['type'] . '_' . $element['field']] = $html;
+										continue;
+								}
 
 
-				//check if this element type is in fact a template
-				$tConfig = mop::config('objects', sprintf('//template[@name="%s"]', $element['type']))->item(0);
-				//echo $object->id;
-				//echo $object->template->id;
-				if($tConfig){
-					//	echo '<br>T CONFIG FOUND';
-					$field = $element['field'];
-					//echo $field;
-					$clusterObject = $object->contenttable->$field;
-					//this should really happen within the models
-					if(!$clusterObject){
-						$id = mopcms::addObject(null, $element['type']);
-						$object->contenttable->$field = $id;
-						$object->contenttable->save();
-						$clusterObject = $object->contenttable->$field;
-					}
-					$clusterHtmlChunks = mopcms::buildUIHtmlChunksForObject($clusterObject);
+								switch ($element['type']) {
+										case 'element':
+												if (isset($element['arguments'])) {
+														$html = mop::buildModule($element, $element['elementname'], $element['arguments']);
+												} else {
+														$html = mop::buildModule($element, $element['elementname']);
+												}
+												$htmlChunks[$element['modulename']] = $html;
+												break;
+										case 'list':
+												if (isset($element['display']) && $element['display'] != 'inline') {
+														break; //element is being displayed via navi, skip
+												}
+												$element['elementname'] = $element['family'];
+												$element['controllertype'] = 'list';
+												
+												$requestURI = 'list'.$element['family'].'/'.$object->id;
+												$htmlChunks[$element['family']] = Request::factory($requestURI)->execute()->response->body();
 
-					$customview = 'templates/'.$clusterObject->template->templatename; //check for custom view for this template
-					$usecustomview = false;
-					if(Kohana::find_file('views', $customview)){
-						$usecustomview = true;	
-					}
-					if(!$usecustomview){
-						$html = implode($clusterHtmlChunks);
-						$view = new View('clusters_wrapper');
-						$view->label = $element['label'];
-						$view->html = $html;
-						$view->objectId = $clusterObject->id;
-						$html=$view->render();
-					} else {
-						$view = new View($customview);
-						$view->loadResources();
-						foreach($clusterHtmlChunks as $key=>$value){
-							$view->$key = $value;
+												
+												//$htmlChunks[$element['family']] = mop::buildModule($element, $arguments);
+												break;
+										case 'associator':
+												$controller = new Associator_Controller($element['filters'], $object->id, $element['field']);
+												$controller->createIndexView();
+												$controller->view->loadResources();
+												$key = $element['type'] . '_' . $element['field'];
+												$htmlChunks[$key] = $controller->view->render();
+												break;
+										default:
+												//deal with html template elements
+												$key = $element['type'] . '_' . $element['field'];
+												$html = null;
+												if (!isset($element['field'])) {
+														$element['field'] = CMS_Controller::$unique++;
+														$html = mopui::buildUIElement($element, null);
+												} else if (!$html = mopui::buildUIElement($element, $object->contenttable->$element['field'])) {
+														throw new Kohana_Exception('bad config in cms: bad ui element');
+												}
+												$htmlChunks[$key] = $html;
+												break;
+								}
 						}
-						$html = $view->render();
-					}
-					$htmlChunks[$element['type'].'_'.$element['field']] = $html;
-					continue;
 				}
-
-
-				switch($element['type']){
-				case 'element':
-					if(isset($element['arguments'])){
-						$html = mop::buildModule($element, $element['elementname'], $element['arguments']);
-					} else {
-						$html = mop::buildModule($element, $element['elementname']);
-					}
-					$htmlChunks[$element['modulename']] = $html;
-					break;
-				case 'list':
-					if(isset($element['display']) && $element['display'] != 'inline'){
-						break; //element is being displayed via navi, skip
-					}
-					$element['elementname'] = $element['family'];
-					$element['controllertype'] = 'list';
-					$lt = ORM::Factory('template', $element['family']);
-					$containerObject = ORM::Factory('page')
-						->where('parentid', '=', $object->id)
-						->where('template_id', '=', $lt->id)
-						->where('activity', 'IS', NULL)
-						->find();
-          if(!$containerObject->loaded()){
-            throw new Kohana_Exception('Did not find list container List object is missing container: :id', array(':id'=>$lt->id) );
-          }
-					$arguments = array(
-						'containerObject'=>$containerObject
-					);
-					$htmlChunks[$element['family']] = mop::buildModule($element, $arguments);
-					break;
-				case 'associator':
-					$controller = new Associator_Controller($element['filters'], $object->id, $element['field']);
-					$controller->createIndexView();
-					$controller->view->loadResources();
-					$key = $element['type'].'_'.$element['field']; 
-					$htmlChunks[$key] = $controller->view->render();
-					break;
-				default:
-					//deal with html template elements
-					$key = $element['type'].'_'.$element['field']; 
-					$html = null;
-					if(!isset($element['field'])){
-						$element['field'] = CMS_Controller::$unique++;
-						$html = mopui::buildUIElement($element, null);
-					} else if(!$html = mopui::buildUIElement($element, $object->contenttable->$element['field'])){
-						throw new Kohana_Exception('bad config in cms: bad ui element');
-					}
-					$htmlChunks[$key] = $html;
-					break;
-				}
-			}
+				//print_r($htmlChunks);
+				return $htmlChunks;
 		}
-		//print_r($htmlChunks);
-		return $htmlChunks;
-	}
 
-  
-	public static function buildUIHtmlChunksForObject($object){
-		$elements = mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename));
-    $elementsConfig = array();
-		//echo 'BUILDING'.$object->template->templatename.'<br>'; 
-		foreach($elements as $element){
-			//echo 'FOUND AN ELEMENT '.$element->tagName.'<br>';
-			$entry = array();
-      $entry['type'] = $element->tagName;
-			for($i=0; $i<$element->attributes->length; $i++){
-				$entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
-			}	
-      //make sure defaults load
-      $entry['tag'] = $element->getAttribute('tag');
-      $entry['rows'] = $element->getAttribute('rows');
-      //any special xml reading that is necessary
-      switch($entry['type']){
-      case 'file':
-      case 'image':
-        $ext = array();
-        //echo sprintf('/template[@name="%s"]/elements/image[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
-        $children = mop::config('objects', 'ext', $element);
-        foreach($children as $child){
-          if($child->tagName == 'ext'){
-            $ext[] = $child->nodeValue; 
-          }
-        }
-        $entry['extensions'] = implode(',', $ext);
-        break;
-      case 'radioGroup':
-        $children = mop::config('objects', 'radio', $element);
-        $radios = array();
-        foreach($children as $child){
-          $label = $child->getAttribute('label');
-          $value = $child->getAttribute('value');
-          $radios[$label] =$value;
+		public static function buildUIHtmlChunksForObject($object) {
+				$elements = mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename));
+				$elementsConfig = array();
+				//echo 'BUILDING'.$object->template->templatename.'<br>'; 
+				foreach ($elements as $element) {
+						//echo 'FOUND AN ELEMENT '.$element->tagName.'<br>';
+						$entry = array();
+						$entry['type'] = $element->tagName;
+						for ($i = 0; $i < $element->attributes->length; $i++) {
+								$entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
+						}
+						//make sure defaults load
+						$entry['tag'] = $element->getAttribute('tag');
+						$entry['rows'] = $element->getAttribute('rows');
+						//any special xml reading that is necessary
+						switch ($entry['type']) {
+								case 'file':
+								case 'image':
+										$ext = array();
+										//echo sprintf('/template[@name="%s"]/elements/image[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
+										$children = mop::config('objects', 'ext', $element);
+										foreach ($children as $child) {
+												if ($child->tagName == 'ext') {
+														$ext[] = $child->nodeValue;
+												}
+										}
+										$entry['extensions'] = implode(',', $ext);
+										break;
+								case 'radioGroup':
+										$children = mop::config('objects', 'radio', $element);
+										$radios = array();
+										foreach ($children as $child) {
+												$label = $child->getAttribute('label');
+												$value = $child->getAttribute('value');
+												$radios[$label] =$value;
         }
         $entry['radios'] = $radios;
         break;

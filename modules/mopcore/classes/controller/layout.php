@@ -1,26 +1,36 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
+
+/*
+ * Class: Controller_Layout
+ * Extension of Controller_MOP which handles automatic wrapping of the main request in header and footer layout.
+ * Extend this class and set $_aactionsThatGetLayout with actions that should always be wraped with the layout specified in their config.
+ * In the future, config could have a mapping of actions to layouts, if necessary.
+ * Auto wrapping can be manually bypassed by calling the html action as html/controller/action/etc.
+ */
+
 class Controller_Layout extends Controller_MOP {
 	
+	protected $_actionsThatGetLayout = array();
 	
 	protected $subRequest;
-
-	public function action_htmlLayout($uri)
-	{
+	
+	public function after(){
+		if($this->request == Request::initial() ){
+			if(in_array($this->request->action(), $this->_actionsThatGetLayout)){
+				$this->wrapWithLayout();
+			} 
 		
-			$this->subRequest = Request::Factory($uri);
-			$this->response->body($this->subRequest->execute()->body());	
-			$this->outputLayout();
+		}
 	}
-
+	
 /*
  * Function: outputLayout
  * Wrap the response in its configured layout
  */
-	public function outputLayout(){
+	public function wrapWithLayout(){
 		//set layout - read from config file
-		$layout = Kohana::config($this->subRequest->controller() . '.layout');
-		echo $layout;
+		$layout = Kohana::config($this->request->controller() . '.layout');
 		$layoutView = View::Factory($layout);
 
 		//get js and css for this layout .. ??? not the way to do this

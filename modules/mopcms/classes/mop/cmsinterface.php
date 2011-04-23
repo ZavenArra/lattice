@@ -8,7 +8,7 @@
  */
 
 
-class MOP_CMSInterface extends Controller_MOP {
+class MOP_CMSInterface extends Controller_Layout {
 
 
 	/*

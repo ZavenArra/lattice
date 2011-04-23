@@ -153,8 +153,6 @@ Class mop {
 		if(isset($module['elementname'])){
 			$module['modulename'] = $module['elementname'];
 		}
-		Kohana::log('debug', 'Loading module: ' . $module['modulename']);
-		Kohana::log('debug', 'Loading controller: ' . $module['modulename']);
 
 		if(!Kohana::find_file('controllers', $module['modulename'] ) ){
 			if(!isset($module['controllertype'])){

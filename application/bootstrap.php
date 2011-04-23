@@ -114,7 +114,8 @@ Kohana::modules(array(
 	'mopcms' => MODPATH.'mopcms',
 	'mopui' => MODPATH.'mopui',
 	'mopextras' => MODPATH.'mopextras',
-	'navigation' => MODPATH.'navigation',
+	'mopfrontend' => MODPATH.'mopfrontend',
+        'navigation' => MODPATH.'navigation',
 	'tools' => MODPATH.'tools',
 	'usermanagement' => MODPATH.'usermanagement',
 
