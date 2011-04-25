@@ -34,7 +34,7 @@ class Controller_Ajax extends Controller_MOP {
                                 'response' => $message
                                 
 			);
-												$this->response->body(json_encode($data));
+												$this->response->body(json_encode($subRequest->execute()->data()));
  //                       throw $e;
 			return;
 		}
