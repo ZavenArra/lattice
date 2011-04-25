@@ -69,10 +69,6 @@ mop.modules.Module = new Class({
 		return this.instanceName;
 	},
 	
-	getChildMarshal: function(){
-		return this;
-	},
-	
 	/*
 		Function: initModules	
 		Loops through elements with the class "module" and initializes each as a module
@@ -122,9 +118,10 @@ mop.modules.Module = new Class({
 		var classPath = mop.util.getValueFromClassName( "classPath", element.get( "class" ) ).split( "_" );
 		ref = null;
 		classPath.each( function( node ){
-			ref = ( !ref )? this[node] : ref[node];
+		    ref = ( !ref )? this[node] : ref[node]; 
+		    console.log( ref, node );
 		});
-    	var newModule = new ref( element, this.getChildMarshal() );
+    	var newModule = new ref( element, this );
 		return newModule;		
 	},
 	
@@ -135,12 +132,14 @@ mop.modules.Module = new Class({
 		var elements = [];
 		anElement.getChildren().each( function( aChild, anIndex ){
 			if( aChild.get( "class" ).indexOf( "ui-" ) > -1 ){
+			    console.log( "\t\tgetModuleUIElements ", aChild );
 				elements.combine( [ aChild ] );
 			} else if( !aChild.hasClass( "modal" ) && !aChild.hasClass( "module" ) && !aChild.hasClass( "listItem" ) ){
+			    console.log( "\t\tgetModuleUIElements ", aChild );
 				elements.combine( this.getModuleUIElements( aChild ) );
 			}
 		}, this );
-//		console.log( "getModuleUIElements", this.toString(), anElement, elements );
+		console.log( "getModuleUIElements", this.toString(), anElement, elements );
 		return elements;
 	},
 	/*

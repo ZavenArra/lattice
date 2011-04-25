@@ -516,7 +516,7 @@ console.log( "A : ", newList );
 	onOrderChanged: function( sortableElement, sortedItem ){
 //		console.log( "onOrderChanged, ", tier.retrieve( "tier" ) );
 		var newOrder = this.serialize( sortableElement, sortedItem );
-		$clear( this.submitDelay );
+		clearInterval( this.submitDelay );
 		if( this.oldSort != newOrder ) this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder );
 		newOrder = null;
 	},
@@ -536,7 +536,7 @@ console.log( "A : ", newList );
 
 	submitSortOrder: function( newOrder, whichTier ){
 		if( this.oldSort != newOrder ){
-			$clear( this.submitDelay );
+			clearInterval( this.submitDelay );
 			this.JSONSend( "saveSortOrder", { sortorder: newOrder } );
 			this.oldSort = newOrder;
 		}

@@ -80,6 +80,23 @@ String.implement( "encodeUTF8", function(  ){
 });
 
 /*
+	Function: Function.bindWithEvent
+	Implements the now deprecated bindWithEvent
+ 	Parameters:
+ 		bind - {obj} a scope for the closure (what's "this")
+	    args: Single argument, or an array
+*/
+Function.implement({ 
+    bindWithEvent: function(bind, args){ 
+        var self = this; 
+        if (args != null) args = Array.from(args); 
+        return function(event){ 
+            return self.apply( bind, (args == null) ? arguments : event.concat( args ) );
+        }
+    }
+});
+
+/*
 	Section: MoP Package
 	Mop is a namespace, quick definition of namespace, more useful for documentation than anything else.
 */
@@ -102,7 +119,6 @@ mop.util.loadStyleSheet = function( cssURL, mediaString, opts ){
 	var options = ( opts )? opts : {};
 	options.media = ( mediaString )? mediaString : "screen";
 	new Asset.css( cssURL, options ); 
-	options = null;
 }
 
 /*
@@ -641,13 +657,13 @@ mop.util.LoginMonitor = new Class({
 	},
 
 	onMouseMove: function(){
-		$clear( this.inactivityTimeout );
+		clearInterval( this.inactivityTimeout );
 		if( this.status == "notshowing" ) this.inactivityTimeout = this.onInactivity.periodical( this.secondsOfInactivityTilPrompt, this );
 	},
 
 	onInactivity: function(){
 		this.status = "showing";
-		$clear( this.inactivityTimeout );
+		clearInterval( this.inactivityTimeout );
 		this.date = new Date();
 		if( !this.dialogue ) this.dialogue = new mop.ui.InactivityDialogue( this, "Inactivity", "", this.keepAlive.bind( this ), this.logout.bind( this ), "Stay logged in?", "Logout" );
 		this.dialogue.setContent( this.inactivityMessage.substitute( { inactiveMins: this.secondsOfInactivityTilPrompt/this.millisecondsInAMinute, minutes: Math.floor( this.secondsTilLogout*.001 ), seconds: 00 } ) );
@@ -670,16 +686,16 @@ mop.util.LoginMonitor = new Class({
 
 	keepAlive: function(){
 		this.status = "notshowing";
-		$clear( this.inactivityTimeout );
-		$clear( this.logoutTimeout );
+		clearInterval( this.inactivityTimeout );
+		clearInterval( this.logoutTimeout );
 		this.inactivityTimeout = this.onInactivity.periodical( this.secondsOfInactivityTilPrompt, this );
 		new Request.JSON( { url: mop.util.getAppURL()+"keepalive" } ).post();
 	},
 
 	logout: function(){
 //		console.log( "timeout exceeded performing logout" );
-		$clear( this.logoutTimeout );
-		$clear( this.inactivityTimeout );
+		clearInterval( this.logoutTimeout );
+		clearInterval( this.inactivityTimeout );
 		delete this.status;
 		window.removeEvents();
 		this.dialogue.destroy();

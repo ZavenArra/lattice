@@ -285,7 +285,7 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 	width: 16px;
 	height:16px;
 	display:block;
-	background: url( ../../mopui/views/images/spinner.gif );
+	background: url( ../../../mopui/views/images/spinner.gif );
 }
 
 .ui-FileElement .controls,

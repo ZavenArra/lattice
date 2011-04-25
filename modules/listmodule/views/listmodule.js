@@ -114,14 +114,14 @@ mop.modules.ListModule = new Class({
 	
 	onOrderChanged: function(){
 		var newOrder = this.serialize();
-		$clear( this.submitDelay );
+		clearInterval( this.submitDelay );
 		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder.join(",") );
 		newOrder = null;
 	},
 	
 	submitSortOrder: function( newOrder ){
 		if( this.sortable && this.oldSort != newOrder ){
-			$clear( this.submitDelay );
+			clearInterval( this.submitDelay );
 			this.submitDelay = null;
 			this.JSONSend( "saveSortOrder", { sortorder: newOrder } );
 			this.oldSort = newOrder;
@@ -232,7 +232,7 @@ mop.modules.ListModule = new Class({
 
 		};
 
-		$clear( this.submitDelay );		
+		clearInterval( this.submitDelay );		
 		
 		this.removeModal();
 		

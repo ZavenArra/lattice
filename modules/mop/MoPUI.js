@@ -3681,7 +3681,8 @@ mop.ui.Text = new Class({
 	showSaving: function(){
 		this.mode = "saving";
 		this.ipeElement.removeEvents();
-		this.ipeElement.set( "html", '<img class="icon" src="modules/cms/views/images/spinner.gif" width="12" height="12" alt="working..." /> saving');//'&hellip;' );
+		this.ipeElement.addClass(".spinner");
+		this.ipeElement.set( "html", 'saving&hellip;' );
 		mop.util.EventManager.broadcastEvent("resize");
 	},
 
@@ -3694,7 +3695,7 @@ mop.ui.Text = new Class({
 
 		this.ipeElement.addEvent( 'click', this.enterEditMode.bindWithEvent( this ) );
 		this.ipeElement.setStyle( "height", "auto" );
-
+        this.ipeElement.removeClass("spinner");
 		if( json && json.error ){
 			this.validationSticky = new mop.ui.Sticky( this, { title: "Error:", message: json.message, scrollContext: this.options.scrollContext } );
 			this.validationSticky.show();
