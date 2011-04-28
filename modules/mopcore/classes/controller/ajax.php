@@ -34,7 +34,7 @@ class Controller_Ajax extends Controller_MOP {
 				'response' => $message
 
 			);
-			$this->response->body(json_encode($subRequest->execute()->data()));
+			$this->response->body(json_encode($ajaxResponse));
 			//                       throw $e;
 			return;
 		}
@@ -78,10 +78,33 @@ class Controller_Ajax extends Controller_MOP {
 		$this->response->body(json_encode($ajaxResponse));
 	}
 
-	public function action_compound()
+	public function action_compound($uri)
 	{
-		//request to child, just data
-		$this->response->body('This should return a compound data object - html and data');
+     try {
+			$subRequest = Request::Factory($uri);
+			$requestResponse = $subRequest->execute();
+		} catch (Exception $e) {
+			//return HTML from exception
+			$message = $e->getMessage() . $e->getTrace();
+			$ajaxResponse = array(
+				'returnValue' => FALSE,
+				'response' => $message
+
+			);
+			$this->response->body(json_encode($ajaxResponse));
+			return;
+		}
+      $compoundResponse = array(
+          'data' => $requestResponse->data(),
+          'html' => $requestResponse->body()
+      );
+		$ajaxResponse = array(
+			'returnValue' => TRUE,
+			'response'=>$compoundResponse
+		);
+      echo 'yo';
+      print_r($ajaxResponse);
+		$this->response->body(json_encode($ajaxResponse));
 	}
 
 } // End Welcome
