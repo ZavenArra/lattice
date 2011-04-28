@@ -225,9 +225,9 @@ class Controller_Navigation extends Controller_MOP{
 
 
 
-	public function getNavNode($parentid, $deeplink=NULL, &$follow=false){
-		$parent = ORM::Factory($this->objectModel, $parentid); //it would be nice to be able to just look up the heap
-
+	public function action_getTier($parentid, $deeplink=NULL, &$follow=false){
+		$parent = ORM::Factory($this->objectModel, $parentid); 
+      
 		$items = ORM::factory($this->objectModel);
 		$items->where('parentid', 'AND',  $parentid);
 	//	$items->where('activity IS NULL');
@@ -294,11 +294,23 @@ class Controller_Navigation extends Controller_MOP{
 			} else {
 				//this is where we would handle the addition to modules on a template basis
 			}
+         
+         $this->response->data(array('nodes'=>$sendItemObjects));
 
-			return $sendItemObjects;
-		} else {
-			return array();
-		}
+         $nodes = array();
+         foreach($sendItemObjects as $item){
+            
+            $nodeView = new View('navigationNode');
+            $nodeView->content = $item;
+            $nodes[] = $nodeView->render();
+         }
+         
+         $tierView = new View('navigationTier');
+         $tierView->nodes = $nodes;
+         $tierView->tierMethodsDrawer = null;
+         $this->response->body($tierView->render());
+         
+		} 
 	}
 
 	public function getTemplates(){

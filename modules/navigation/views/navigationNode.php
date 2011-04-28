@@ -1,6 +1,6 @@
-<li class="node nodeType contentType" id="node_nodeId">
+<li class="node nodeType contentType" id="node_<?=$content['id'];?>">
 
-<h5>NodeTitle</h5>
+<h5><?=$content['title'];?></h5>
 
 <div class="methods">
 

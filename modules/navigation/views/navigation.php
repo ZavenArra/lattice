@@ -1,25 +1,7 @@
 <div id="navigation" class="module classPath-mop_modules_navigation_Navigation addObjectPosition-bottom">
+	<?for($i=0, $numPanes=Kohana::config('navigation.numberOfPanes'); $i<$numPanes; $i++):?>
         <div class="pane">
-            <ul class="nodes">
-            </ul>
+						<!-- Tiers Here -->
         </div>
-        <div class="pane">
-            <ul class="nodes">
-            </ul>
-        </div>
-        <div class="pane">
-            <ul class="nodes">
-            </ul>
-            <div class="tierMethodsDrawer">
-<!--
-                <h3>Add an Item to this tier.</h3>
-                <ul class="methods">
-                    <li class="nodeType contentType">Add a Section</li>
-                    <li class="nodeType contentType">Add any object</li>
-                </ul>
--->
-            </div>
-        </div>
-       
-       
-    </div>
+	<?endfor;?>
+</div>
