@@ -116,7 +116,7 @@ class Model_Page extends ORM {
       } else {
         $content = ORM::Factory($this->template->contenttable);
       }
-			if(!$content->where('page_id', '=', $this->id)->find()->loaded){
+			if(!$content->where('page_id', '=', $this->id)->find()->loaded()){
 				$content = ORM::Factory('content');
 				$content->page_id = $this->id;
 				$content->save();
@@ -251,7 +251,7 @@ class Model_Page extends ORM {
 			->where('sortorder', '>', $this->sortorder)
 			->limit(1)
 			->find();
-		if($next->loaded){
+		if($next->loaded()){
 			return $next;
 		} else{
 			return null;
@@ -267,7 +267,7 @@ class Model_Page extends ORM {
 			->where('sortorder', '<', $this->sortorder)
 			->limit(1)
 			->find();
-		if($next->loaded){
+		if($next->loaded()){
 			return $next;
 		} else{
 			return null;
@@ -282,7 +282,7 @@ class Model_Page extends ORM {
 			->order_by('sortorder', 'ASC')
 			->limit(1)
 			->find();
-		if($first->loaded){
+		if($first->loaded()){
 			return $first;
 		} else{
 			return null;
@@ -297,7 +297,7 @@ class Model_Page extends ORM {
 			->order_by('sortorder', 'DESC')
 			->limit(1)
 			->find();
-		if($last->loaded){
+		if($last->loaded()){
 			return $last;
 		} else{
 			return null;

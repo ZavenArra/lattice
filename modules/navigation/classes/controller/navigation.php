@@ -229,14 +229,15 @@ class Controller_Navigation extends Controller_MOP{
 		$parent = ORM::Factory($this->objectModel, $parentid); 
       
 		$items = ORM::factory($this->objectModel);
-		$items->where('parentid', 'AND',  $parentid);
+		$items->where('parentid', '=',  $parentid);
 	//	$items->where('activity IS NULL');
 		$items->order_by('sortorder');
-		if($iitems = $items->find_all()){
-			$sendItemContainers = array(); //these will go first
+      $iitems = $items->find_all();
+    	if($iitems){
+    		$sendItemContainers = array(); //these will go first
 			$sendItemObjects = array();
 			foreach($iitems as $child){
-				if(strtolower($child->template->nodeType) == 'container'){
+         	if(strtolower($child->template->nodeType) == 'container'){
 					//we might be skipping this node
 
 					//echo sprintf('//template[@name="%s"]/elements/list[@family="%s"]', $parent->template->templatename, $child->template->templatename);
@@ -244,7 +245,7 @@ class Controller_Navigation extends Controller_MOP{
 																										$parent->template->templatename,
                                                     $child->template->templatename))
                                                     ->item(0)
-																										->getAttribute('display');
+																	  ->getAttribute('display');
 					if($display == 'inline'){
 						continue;
 					}
@@ -275,10 +276,10 @@ class Controller_Navigation extends Controller_MOP{
 			}
 			//this puts the folders first
 			$sendItemObjects = array_merge($sendItemContainers, $sendItemObjects);
-
+         
 
 			//add in any objects
-			if(!$parent->loaded){
+			if(!$parent->loaded()){
 				$cmsModules = mop::config('cmsModules', '//module');
 				foreach($cmsModules as $m){
 
