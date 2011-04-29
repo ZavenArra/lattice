@@ -102,8 +102,6 @@ class Controller_Ajax extends Controller_MOP {
 			'returnValue' => TRUE,
 			'response'=>$compoundResponse
 		);
-      echo 'yo';
-      print_r($ajaxResponse);
 		$this->response->body(json_encode($ajaxResponse));
 	}
 
