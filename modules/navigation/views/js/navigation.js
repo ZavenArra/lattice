@@ -83,61 +83,70 @@ mop.modules.navigation.Tier = new Class({
 	
 	render: function( data, html ){
         // focus/blur events are good for keyboard activation/indication
-        this.element.set( 'html', html );
         console.log( this.toString(), "render", this.element, data, html );
+        this.element.set( 'html', html );
 	    this.nodes = this.element.getElements(".node");
 	    this.nodes.each( function( aNodeElement, index ){
-	        if( aNodeElement.getElement(".togglePublish") ) aNodeElement.getElement(".togglePublish").store( "nodeElement", aNodeElement );
-	        if( aNodeElement.getElement(".remove") ) aNodeElement.getElement(".removeNode").store( "nodeElement", aNodeElement );
-	    });
-	    this.element.addEvent( "focus:relay(.node)", this.indicateNode.bindWithEvent( this ) );
-	    this.element.addEvent( "blur:relay(.node)", this.deindicateNode.bindWithEvent( this ) );
-	    this.element.addEvent( "click:relay(.node)", this.onNodeClicked.bindWithEvent( this ) );
-	    this.element.addEvent( "click:relay(.node .togglePublish)", this.onTogglePublishClicked.bindWithEvent( this ) );
-	    this.element.addEvent( "click:relay(.node .remove)", this.onRemoveNodeClicked.bindWithEvent( this ) );
-	    
+//    	    aNodeElement.addEvent( "focus", this.indicateNode.bindWithEvent( this, aNodeElement ) );
+  //  	    aNodeElement.addEvent( "blur", this.deindicateNode.bindWithEvent( this, aNodeElement ) );
+    	    aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
+	        var togglePublishElement = aNodeElement.getElement(".togglePublish");
+	        if( togglePublishElement ){
+        	    togglePublishElement.addEvent( "click", this.onTogglePublishClicked.bindWithEvent( this, aNodeElement ) );
+	        }
+	        var removeNodeElement = aNodeElement.getElement(".removeNode");
+	        if( removeNodeElement ){
+        	    removeNodeElement.addEvent( "click", this.onRemoveNodeClicked.bindWithEvent( this, aNodeElement ) );
+	        }
+	    }, this );
 	},
+	
+	indicateNode: function( nodeElement ){ nodeElement.addClass( "active"); },
+	
+	deindicateNode: function( nodeElement ){ nodeElement.removeClass("active"); },
 	
 	/**
 	 * Section: Event Handlers
 	 */
-	indicateNode: function( e, clickedElement ){
+	 
+	onMouseEnter: function( e, nodeElement ){
 	    mop.util.stopEvent( e );
-	    e.target.addClass("active");
+	    this.indicateNode( aNodeElement );
 	},
 	
-	deindicateNode: function( e, clickedElement ){
+	onMouseLeave: function( e, nodeElement ){
 	    mop.util.stopEvent( e );
-	    if( this.activeNode != e.target ) e.target.removeClass("active");	    
-	},
-	
-	onNodeClicked: function( e, clickedElement ){
-	    mop.util.stopEvent( e );
-	    console.log( "onNodeClicked" );
-	    this.displayNode( this.getNodeIdFromElement( clickedElement ) );  
+	    if( this.activeNode != nodeElement ) this.deindicateNode( nodeElement );
 	},
 		
-    onRemoveNodeClicked: function( e, clickedElement ){
+	onNodeClicked: function( e, nodeElement ){
+	    mop.util.stopEvent( e );
+	    console.log( "onNodeClicked" );
+	    if( this.activeNode ) this.deindicateNode( this.activeNode );
+        this.activeNode = nodeElement;        
+	    this.indicateNode( nodeElement );
+	    this.displayNode( this.getNodeIdFromElement( nodeElement ) );  
+	},
+		
+    onRemoveNodeClicked: function( e, nodeElement ){
 	    console.log( "onRemoveNodeClicked" );
 	    mop.util.stopEvent( e );
-        var nodeId = this.getNodeIdFromElement( clickedElement.retrieve("nodeElement") );
+        var nodeId = this.getNodeIdFromElement( nodeElement );
         clickedElement.retrieve("nodeElement").destroy();
         this.removeObject( nodeId );
     },
 
-    onTogglePublishClicked: function( e, clickedElement ){
-	    console.log( "onTogglePublishClicked" );
+    onTogglePublishClicked: function( e, nodeElement ){
+        mop.util.stopEvent( e );
+	    console.log( "onTogglePublishClicked", e, nodeElement );
     },
     
 	displayNode: function( nodeId ){
-	    if( this.activeNode ) this.activeNode.removeClass( "active" );
-	    this.indicateNode( e );
-	    this.activeNode = e.target;
-	    indicateNode( e );
-	    this.marshal.displayNode( this.getNodeIdFromElement( e.target ) );
+	    this.marshal.displayNode( nodeId );
 	},
 	
 	getNodeIdFromElement: function( anElement ){
+	    console.log( "getNodeIdFromElement", anElement );
 	    return anElement.get("id").split( "_" )[1];
 	},
 	

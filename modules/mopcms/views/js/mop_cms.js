@@ -37,17 +37,17 @@ mop.modules.CMS = new Class({
 		return "[ object, mop.modules.CMS ]";
 	},
 
-	loadPage: function ( pageId ){
+    displayNode: function( nodeId ){
+        console.log( this.toString(), "displayNode", nodeId );
 //		console.log( this.toString(), "loadPage", pageId );
-		this.pageIdToLoad = pageId;
 		this.clearPage();
 		this.pageContent.spin();
-		var url = mop.util.getAppURL() + "ajax/html/cms/getPage/" + pageId;
+		var url = mop.util.getAppURL() + "ajax/html/cms/getPage/" + nodeId;
 		mop.util.JSONSend( url, null, { onSuccess: this.onPageLoaded.bind( this ) } );
 		console.log( "loadPage", url );
- 		mop.util.setObjectId( pageId );
-	},
-	
+ 		mop.util.setObjectId( nodeId );
+    },
+    
 	clearPage: function(){
 	    console.log( "clearPage" );
 		this.destroyChildModules( this.pageContent );

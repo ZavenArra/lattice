@@ -1,4 +1,4 @@
-<li class="node nodeType contentType clearFix" id="node_<?=$content['id'];?>">
+<li class="node <?=$content['nodeType'];?> <?=$content['contentType'];?> clearFix" id="node_<?=$content['id'];?>">
 	<h5><?=$content['title'];?></h5>
 	<div class="methods">
 		<a class="icon togglePublish published" href="#" title="unpublish NodeTitle">publish</a>
