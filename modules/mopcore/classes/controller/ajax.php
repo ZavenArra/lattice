@@ -66,10 +66,12 @@ class Controller_Ajax extends Controller_MOP {
 		$cssResources = array();
 		array_push($cssResources, $this->resources['librarycss']);
 		array_push($cssResources, $this->resources['css']);
+		$cssResources = array_values($cssResources);
 
 		$jsResources = array();
 		array_push($jsResources, $this->resources['libraryjs']);
 		array_push($jsResources, $this->resources['js']);
+		$jsResources = array_values($jsResources);
 
 		$ajaxResponse = array(
 			'response'=>array(
@@ -103,10 +105,12 @@ class Controller_Ajax extends Controller_MOP {
 		$cssResources = array();
 		array_push($cssResources, $this->resources['librarycss']);
 		array_push($cssResources, $this->resources['css']);
+		$cssResources = array_values($cssResources);
 
 		$jsResources = array();
 		array_push($jsResources, $this->resources['libraryjs']);
 		array_push($jsResources, $this->resources['js']);
+		$jsResources = array_values($jsResources);
 
 
 		$compoundResponse = array(
