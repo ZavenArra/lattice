@@ -1,29 +1,13 @@
-/* *** GLOBAL ( NON CMS ) *** */
-
-/* reset.css */
-html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {margin:0;padding:0;border:0;font-weight:inherit;font-style:inherit;font-size:100%;font-family:inherit;vertical-align:baseline;}
-table {border-collapse:separate;border-spacing:0;}
-caption, th, td {text-align:left;font-weight:normal;}
-blockquote:before, blockquote:after, q:before, q:after {content:"";}
-blockquote, q {quotes:"" "";}
-a img {border:none;}
-
-html, body{
-
-}
-/* typography.css */
 body {
 	color:#222;
 	background:#fff;
 	font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size:75%;
+	font-size: .875em;
 	line-height: 18px;
 	padding-bottom:6em;
 }
 
-h1, h2, h3, h4{
-	font-weight:normal;color:#121212;
-}
+h1, h2, h3, h4, h5{ font-weight:normal;color:#121212; }
 
 h1,
 .h1{
@@ -176,7 +160,7 @@ blockquote {
 	font-style:italic;
 }
 
-strong {font-weight:bold;}
+/*strong {font-weight:bold;}
 em, dfn {font-style:italic;}
 dfn {font-weight:bold;}
 sup, sub {line-height:0;}
@@ -195,8 +179,8 @@ dl dt {font-weight:bold;}
 dd {margin-left:1.5em;}
 
 caption {
-	background:#eee;
-	padding: .75em;
+    background:#eee;
+    padding: .75em;
 }
 
 .small {font-size:.8em;margin-bottom:1.875em;line-height:1.875em;}
@@ -210,21 +194,24 @@ caption {
 .first {margin-left:0;padding-left:0;}
 .last {margin-right:0;padding-right:0;}
 .top {margin-top:0;padding-top:0;}
-.bottom {margin-bottom:0;padding-bottom:0;}
+.bottom {margin-bottom:0;padding-bottom:0;}*/
 
 #container {
-	width: 900px;
-	height: 100%;
+/*  width: 900px;
+*/	height: 100%;
 	margin:0 auto;
 }
 
-.block{ display: block; }
-.clear { clear:both; }
 .floatLeft{	float: left; }
 .floatRight{ float:right; }
-.clearLeft{ clear: left; }
-.clearRight{ clear: right; }
 
+.clearFix:after {
+   content: ".";
+   display: block;
+   height: 0;
+   clear: both;
+   visibility: hidden;
+}
 
 legend {font-weight:bold;font-size:.8em;}
 .error, .notice, .success {

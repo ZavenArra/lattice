@@ -11,9 +11,20 @@
 
 	<base href="<?=Kohana::config('config.site_protocol');?>://<?=$_SERVER['HTTP_HOST'];?><?=Kohana::config('config.site_domain');?>" />
 
-	<?=$stylesheet;?>
 	<?=$javascript;?>
-	
+
+	<?=$stylesheet;?>
+
+	<!--[if IE]>
+	<style type="text/css">
+	  .clearfix {
+	    zoom: 1;     /* triggers hasLayout */
+	    }  /* Only IE can see inside the conditional comment
+	    and read this CSS rule. Don't ever use a normal HTML
+	    comment inside the CC or it will close prematurely. */
+	</style>
+	<![endif]-->
+		
 </head>
 <body class=" loginTimeOut-<?=Kohana::config('mop.loginTimeOut');?>">
 	<div id="container" class="container_12">

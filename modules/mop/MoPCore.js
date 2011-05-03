@@ -7,26 +7,13 @@ if( Browser.Engine.trident4 ) window.location.href = $(document).getElement("hea
 Class.Mutators.toString = Class.Mutators.valueOf = $arguments(0);
 
 /*
-	Function: buildConsoleObject
-	Quick hack to prevent browsers w/o a console, or firebug from generating errors when console functions are called. Gets called immediately
+Quick hack to prevent browsers w/o a console, or firebug from generating errors when console functions are called.
+Builds an empty console object with proper members if none is present.
 */
-function buildConsoleObject(){	
-	if (!window.console ){
-	    var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
-	    window.console = {};
-	    for (var i = 0; i < names.length; ++i){
-			window.console[names[i]] = function() {};
-		}
-		names = null;
-	}else if( Browser.Engine.webkit ){
-	    var names = [ "debug", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
-	    for (var i = 0; i < names.length; ++i){
-			window.console[names[i]] = function() {};
-		}
-		names = null;		
-	}
+var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+if (!window.console ){ window.console = {};
+    for (var i = 0; i < names.length; ++i) window.console[names[i]] = function() {};
 }
-buildConsoleObject();
 
 /*
 	Section: Extending Mootools
@@ -51,9 +38,9 @@ Element.implement({
 	Note: calls getSiblings, returns first element of collection
 */
 Element.implement({
-	getSibling: function(match,nocache) {
-		return this.getSiblings(match,nocache)[0];
-	}
+    getSibling: function(match,nocache) {
+	return this.getSiblings(match,nocache)[0];
+    }
 });
 
 /*
@@ -215,7 +202,7 @@ mop.util.getAppURL = function(){
 	Returns: {String} value
 */
 mop.util.getValueFromClassName = function( key, aClassName ){
-	if(!aClassName) return;
+	if(!aClassName) return false;
 	var classNames = aClassName.split( " " );
 	var result = null;
 	classNames.each( function( className ){
@@ -475,7 +462,6 @@ mop.MoPObject = new Class({
 	destroy: function(){
 	    this.element.destroy();
 	    this.element.eliminate( "Class" );
-	    delete this.element, this.elementClass;
 	    this.element = this.elementClass = this.marshal = null 
 	}
 
@@ -535,7 +521,6 @@ mop.util.HistoryManager = new Class({
 	locationListener: null,
 	appState: new Hash(),
 	_instance: null,
-	appState: new Hash(),
 	registeredEvents: new Hash(),
 
 	initialize: function(){
@@ -647,8 +632,6 @@ mop.util.LoginMonitor = new Class({
 
 		if( loginTimeOutClassName != undefined ){
 			this.secondsOfInactivityTilPrompt = Number( loginTimeOutClassName ) * 1000;
-		}else{
-			this.secondsOfInactivityTilPrompt;
 		}
 		
 		this.inactivityTimeout = this.onInactivity.periodical( this.secondsOfInactivityTilPrompt, this );
@@ -677,7 +660,7 @@ mop.util.LoginMonitor = new Class({
 		
 		this.secondsIdle ++;
 		var secondsLeft = this.secondsTilLogout*.001 - this.secondsIdle;
-		if( secondsLeft == 0 ){ this.logout() };
+		if( secondsLeft == 0 ){ this.logout() }
 		var minutesLeft = Math.floor( secondsLeft/60 );
 		secondsLeft = secondsLeft - ( minutesLeft * 60 );
 		this.dialogue.setContent( this.inactivityMessage.substitute( { inactiveMins: this.secondsOfInactivityTilPrompt/this.millisecondsInAMinute, minutes: minutesLeft, seconds: secondsLeft } ) );
@@ -745,22 +728,22 @@ mop.util.MD5 = function (string) {
 	function FF(a,b,c,d,x,s,ac) {
 		a = AddUnsigned(a, AddUnsigned(AddUnsigned(F(b, c, d), x), ac));
 		return AddUnsigned(RotateLeft(a, s), b);
-	};
+	}
  
 	function GG(a,b,c,d,x,s,ac) {
 		a = AddUnsigned(a, AddUnsigned(AddUnsigned(G(b, c, d), x), ac));
 		return AddUnsigned(RotateLeft(a, s), b);
-	};
+	}
  
 	function HH(a,b,c,d,x,s,ac) {
 		a = AddUnsigned(a, AddUnsigned(AddUnsigned(H(b, c, d), x), ac));
 		return AddUnsigned(RotateLeft(a, s), b);
-	};
+	}
  
 	function II(a,b,c,d,x,s,ac) {
 		a = AddUnsigned(a, AddUnsigned(AddUnsigned(I(b, c, d), x), ac));
 		return AddUnsigned(RotateLeft(a, s), b);
-	};
+	}
  
 	function ConvertToWordArray(string) {
 		var lWordCount;
@@ -783,8 +766,8 @@ mop.util.MD5 = function (string) {
 		lWordArray[lNumberOfWords-2] = lMessageLength<<3;
 		lWordArray[lNumberOfWords-1] = lMessageLength>>>29;
 		return lWordArray;
-	};
- 
+	}
+        
 	function WordToHex(lValue) {
 		var WordToHexValue="",WordToHexValue_temp="",lByte,lCount;
 		for (lCount = 0;lCount<=3;lCount++) {
@@ -793,7 +776,7 @@ mop.util.MD5 = function (string) {
 			WordToHexValue = WordToHexValue + WordToHexValue_temp.substr(WordToHexValue_temp.length-2,2);
 		}
 		return WordToHexValue;
-	};
+	}
  
 	function Utf8Encode(string) {
 		string = string.replace(/\r\n/g,"\n");
@@ -817,9 +800,8 @@ mop.util.MD5 = function (string) {
 			}
  
 		}
- 
 		return utftext;
-	};
+	}
  
 	var x=Array();
 	var k,AA,BB,CC,DD,a,b,c,d;

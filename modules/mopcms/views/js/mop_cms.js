@@ -26,7 +26,13 @@ mop.modules.CMS = new Class({
 		this.pageContent = $("nodeContent");
 		this.initModules( this.element );
 	},
-	
+		
+	requestTier: function( parentId, callback ){
+	    var url = mop.util.getAppURL() + "ajax/compound/navigation/getTier/" + parentId;
+		mop.util.JSONSend( url, null, { onSuccess: callback } );
+ 		mop.util.setObjectId( parentId );
+	},
+    
 	toString: function(){
 		return "[ object, mop.modules.CMS ]";
 	},
@@ -38,6 +44,7 @@ mop.modules.CMS = new Class({
 		this.pageContent.spin();
 		var url = mop.util.getAppURL() + "ajax/html/cms/getPage/" + pageId;
 		mop.util.JSONSend( url, null, { onSuccess: this.onPageLoaded.bind( this ) } );
+		console.log( "loadPage", url );
  		mop.util.setObjectId( pageId );
 	},
 	
@@ -54,9 +61,9 @@ mop.modules.CMS = new Class({
 		Arguments:
 			pageJSON - Object : { css: [ "pathToCSSFile", "pathToCSSFile", ... ], js: [ "pathToJSFile", "pathToJSFile", "pathToJSFile", ... ], html: "String" }
 	*/
-	onPageLoaded: function( pageJSON ){
-        
-		var pageData = new Hash( pageJSON.response );
+	onPageLoaded: function( response ){
+        console.log( ">>> ", response );
+		var pageData = response.response;
 		pageData.css.each( function( styleSheetURL, index ){
 		    if( !this.loadedCSS.contains( styleSheetURL ) ) mop.util.loadStyleSheet( styleSheetURL );
 		    this.loadedCSS.push( styleSheetURL );
