@@ -63,15 +63,22 @@ class Controller_Ajax extends Controller_MOP {
 		}
 		$html = $subRequest->execute()->body();
 
+
 		$cssResources = array();
-		array_push($cssResources, $this->resources['librarycss']);
-		array_push($cssResources, $this->resources['css']);
-		$cssResources = array_values($cssResources);
+		foreach($this->resources['librarycss'] as $css){
+			array_push($cssResources, $css);
+		}
+		foreach($this->resources['css'] as $css){
+			array_push($cssResources, $css);
+		}
 
 		$jsResources = array();
-		array_push($jsResources, $this->resources['libraryjs']);
-		array_push($jsResources, $this->resources['js']);
-		$jsResources = array_values($jsResources);
+		foreach($this->resources['libraryjs'] as $js){
+			array_push($jsResources, $js);
+		}
+		foreach($this->resources['js'] as $js){
+			array_push($jsResources, $js);
+		}
 
 		$ajaxResponse = array(
 			'response'=>array(
@@ -103,14 +110,20 @@ class Controller_Ajax extends Controller_MOP {
 
 
 		$cssResources = array();
-		array_push($cssResources, $this->resources['librarycss']);
-		array_push($cssResources, $this->resources['css']);
-		$cssResources = array_values($cssResources);
+		foreach($this->resources['librarycss'] as $css){
+			array_push($cssResources, $css);
+		}
+		foreach($this->resources['css'] as $css){
+			array_push($cssResources, $css);
+		}
 
 		$jsResources = array();
-		array_push($jsResources, $this->resources['libraryjs']);
-		array_push($jsResources, $this->resources['js']);
-		$jsResources = array_values($jsResources);
+		foreach($this->resources['libraryjs'] as $js){
+			array_push($jsResources, $js);
+		}
+		foreach($this->resources['js'] as $js){
+			array_push($jsResources, $js);
+		}
 
 
 		$compoundResponse = array(
