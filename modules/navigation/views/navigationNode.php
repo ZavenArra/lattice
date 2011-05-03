@@ -1,4 +1,4 @@
-<li class="node nodeType contentType" id="node_<?=$content['id'];?>">
+<li class="node <?=$content['nodeType'];?> <?=$content['contentType'];?>" id="node_<?=$content['id'];?>">
 
 <h5><?=$content['title'];?></h5>
 
