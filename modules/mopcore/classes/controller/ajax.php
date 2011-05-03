@@ -51,20 +51,20 @@ class Controller_Ajax extends Controller_MOP {
 		$subRequest = Request::Factory($subRequestUri);
 		$html = $subRequest->execute()->body();
 
-		$cssResources = array();
+		$cssResources = ();
 		foreach($this->resources['librarycss'] as $css){
-			$cssResources[] =	HTML::style($css);
+			$cssResources[] =	$css;
 		}
 		foreach($this->resources['css'] as $css){
-			$cssResources[] = 	HTML::style($css);
+			$cssResources[] = $css;
 		}
 
 		$jsResources = array();
 		foreach($this->resources['libraryjs'] as $js){
-			$jsResources[] = HTML::script($js);		
+			$jsResources[] = $js;		
 		}
 		foreach($this->resources['js'] as $js){
-			$jsResources[] =  HTML::script($js);		
+			$jsResources[] =  $js;		
 		}
 
 
