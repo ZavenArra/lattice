@@ -35,7 +35,6 @@ class Controller_Ajax extends Controller_MOP {
 
 			);
 			$this->response->body(json_encode($ajaxResponse));
-			//                       throw $e;
 			return;
 		}
 		$ajaxResponse = array(
@@ -45,42 +44,47 @@ class Controller_Ajax extends Controller_MOP {
 		$this->response->body(json_encode($ajaxResponse));
 	}
 
-	public function action_html($subRequestUri)
+	public function action_html($uri)
 	{
-		//request to child, just html and js html
-		$subRequest = Request::Factory($subRequestUri);
+
+		try {
+			$subRequest = Request::Factory($uri);
+			$html = $subRequest->execute()->data();
+		} catch (Exception $e) {
+			//return HTML from exception
+			$message = $e->getMessage() . $e->getTrace();
+			$ajaxResponse = array(
+				'returnValue' => FALSE,
+				'response' => $message
+
+			);
+			$this->response->body(json_encode($ajaxResponse));
+			return;
+		}
 		$html = $subRequest->execute()->body();
 
-		$cssResources = ();
-		foreach($this->resources['librarycss'] as $css){
-			$cssResources[] =	$css;
-		}
-		foreach($this->resources['css'] as $css){
-			$cssResources[] = $css;
-		}
+		$cssResources = array();
+		array_push($cssResources, $this->resources['librarycss']);
+		array_push($cssResources, $this->resources['css']);
 
 		$jsResources = array();
-		foreach($this->resources['libraryjs'] as $js){
-			$jsResources[] = $js;		
-		}
-		foreach($this->resources['js'] as $js){
-			$jsResources[] =  $js;		
-		}
-
+		array_push($jsResources, $this->resources['libraryjs']);
+		array_push($jsResources, $this->resources['js']);
 
 		$ajaxResponse = array(
 			'response'=>array(
-					'html'=>$html,
-					'js'=>$jsResources,
-					'css'=>$cssResources
-				)
+				'html'=>$html,
+				'js'=>$jsResources,
+				'css'=>$cssResources
+			),
+			'returnValue' => TRUE,
 		);
 		$this->response->body(json_encode($ajaxResponse));
 	}
 
 	public function action_compound($uri)
 	{
-     try {
+		try {
 			$subRequest = Request::Factory($uri);
 			$requestResponse = $subRequest->execute();
 		} catch (Exception $e) {
@@ -94,10 +98,23 @@ class Controller_Ajax extends Controller_MOP {
 			$this->response->body(json_encode($ajaxResponse));
 			return;
 		}
-      $compoundResponse = array(
-          'data' => $requestResponse->data(),
-          'html' => $requestResponse->body()
-      );
+
+
+		$cssResources = array();
+		array_push($cssResources, $this->resources['librarycss']);
+		array_push($cssResources, $this->resources['css']);
+
+		$jsResources = array();
+		array_push($jsResources, $this->resources['libraryjs']);
+		array_push($jsResources, $this->resources['js']);
+
+
+		$compoundResponse = array(
+			'data' => $requestResponse->data(),
+			'html' => $requestResponse->body(),
+			'css' => $cssResources,
+			'js' => $jsResources,
+		);
 		$ajaxResponse = array(
 			'returnValue' => TRUE,
 			'response'=>$compoundResponse
