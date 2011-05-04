@@ -132,11 +132,9 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 	className: "BreadCrumbTrail",
 	
 	initialize: function( anElement, onBreadCrumbClickedCallback ){
+	    this.element = anElement;
 		this.onBreadCrumbClickedCallback = onBreadCrumbClickedCallback;
-		this.list = new Element( "ul", { "class": "breadCrumb" } );
-		var clear = new Element( "li", { "class": "clear" } );
-		clear.inject( this.list );
-		this.list.inject( anElement );
+		console.log( "BreadCrumbTrail", this, this.element )
 	},
 	
 	toString: function(){
@@ -144,39 +142,26 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 	},
 
 	clearCrumbs: function( anIndex ){
-		var crumb = this.list.getChildren( "li:not(.clear)" )[ anIndex ];
+		var crumb = this.element.getChildren( "li" )[ anIndex ];
 		if( crumb ){
 			subsequentCrumbs = crumb.getAllNext();
 			crumb.destroy();
-			subsequentCrumbs.each( function( aCrumb ){ if( !aCrumb.hasClass("clear") ) aCrumb.destroy(); } );
+			subsequentCrumbs.each( function( aCrumb ){ aCrumb.destroy(); } );
 		}
 	},
 
 	addCrumb: function( obj ){
-
 		var crumb = new Element( "a", {
 			"text": obj.label,
 			"events":{
 				"click": this.onBreadCrumbClicked.bindWithEvent( this, obj )
 			}
 		});
-
 		var listItem = new Element( "li" );
-
 		crumb.inject( listItem );
-
-		if( this.list.getChildren("li:not(.clear)")[ obj.index ] ){
-
-			listItem.replaces( this.list.getChildren("li:not(.clear)")[ obj.index ] );
-		
-		}else{
-		
-			var breadCrumbsClear = this.list.getElement(".clear");
-			listItem.inject( breadCrumbsClear, "before" );
-			breadCrumbsClear = null;
-
+		if( this.element.getChildren("li")[ obj.index ] ){
+			listItem.replaces( this.element.getChildren("li")[ obj.index ] );
 		}
-
 	},
 	
 	onBreadCrumbClicked: function( e, obj ){
@@ -186,12 +171,12 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 	},
 	
 	removeBreadCrumb: function( anIndex ){
-		var crumb = this.list.getChildren( "li:not(.clear)" )[ anIndex ];
+		var crumb = this.element.getChildren( "li" )[ anIndex ];
 		crumb.destroy();
 	},
 	
 	destroy: function(){
-		this.list = null;
+		this.element = null;
 		onBreadCrumbClickedCallback = null;
 	}
 
@@ -1373,7 +1358,7 @@ mop.ui.MultiSelect = new Class({
 	onDocumentClicked: function( e ){
 		mop.util.stopEvent( e );
 	    if( e.target == this.saveButton || e.target == this.cancelButton ) return;
-	    if(	$chk( e ) && ( e.target == this.multiBox || this.multiBox.hasChild( e.target ) ) ) return;
+	    if(	$chk( e ) && ( e.target == this.multiBox || this.multiBox.contains( e.target ) ) ) return;
 //	    console.log( "onDocumentClicked" );
 	    this.updateAndClose( e );
 	},
@@ -1450,7 +1435,7 @@ mop.ui.MultiSelect = new Class({
 	},
 	
 	updateAndClose: function(){
-//		console.log( 'updateAndClose', e, e.target, this.multiBox, this.multiBox.hasChild( e.target ) );
+//		console.log( 'updateAndClose', e, e.target, this.multiBox, this.multiBox.contains( e.target ) );
 		this.ogSelect.removeEvents();
 		this.updateOgSelect();
 //		console.log( "updateAndClose", this.ogSelect.getSelected().length );
@@ -1841,7 +1826,7 @@ mop.ui.DatePicker = new Class({
 			allowEmpty: this.allowEmpty,
 			onShow: this.onShow.bind( this ),
 			onSelect: this.onSelect.bindWithEvent( this  ),
-			onClose: $empty
+			onClose: function(){}
 		});
 	},
 	
@@ -1973,7 +1958,7 @@ mop.ui.DateRangePicker = new Class({
 				format: "m/d/Y",
 				onShow: this.onShow.bind( this ),
 				onSelect: this.onSelect.bindWithEvent( this ),
-				onClose: $empty,
+				onClose: function(){},
 				index: index
 			};
 			var picker = new mop.ui.ExtendedMonkeyPhysicsDatePicker( aDateField, this, opts );
@@ -2486,17 +2471,13 @@ mop.ui.FileElement = new Class({
 		this.element.eliminate( "Class" );
 		if( this.uploadButton ) this.uploadButton.eliminate( "Class" );
 		this.parent();
-
 	}
-
 });
 
 mop.util.Uploader = new Class({
 	
 	Extends: Swiff,
-
 	Implements: Events,
-	
 	box: null,
 	loaded: false,
 	size: null,
@@ -2506,10 +2487,8 @@ mop.util.Uploader = new Class({
 	
 	options: {
 		path: 'Swiff.Uploader.swf',
-		
 		target: null,
 		zIndex: 9999,
-		
 		height: 30,
 		width: 100,
 		callBacks: null,
@@ -2518,34 +2497,26 @@ mop.util.Uploader = new Class({
 			menu: 'false',
 			allowScriptAccess: 'always'
 		},
-
 		typeFilter: null,
 		multiple: false,
 		queued: false,
 		verbose: false,
-
 		url: null,
 		method: null,
 		data: null,
 		mergeData: true,
 		fieldName: null,
-
 		fileSizeMin: 1,
 		fileSizeMax: null, // Official limit is 100 MB for FileReference, but I tested up to 2Gb!
 		allowDuplicates: true,
 		timeLimit: (Browser.Platform.linux) ? 0 : 30,
-
 		buttonImage: null,
 		policyFile: null,
-		
 		fileListMax: 0,
 		fileListSizeMax: 0,
-
 		instantStart: true,
 		appendCookieData: false,
-		
 		fileClass: null
-
 	},
 
 	initialize: function( options ) {
@@ -2749,7 +2720,7 @@ mop.util.Uploader = new Class({
 		// the data is saved right to the instance
 //		console.log( this.toString(), "update", data );
 		if( data ) this.currentFileElementInstance.showProgress( data );
-		$extend(this, data);
+		this.append( data );
 		this.fireEvent('queue', [this], 10);
 		return this;
 	},
@@ -2814,7 +2785,7 @@ mop.util.Uploader = new Class({
 
 		var data = this.options.data || {};
 		if ($type(append) == 'string') data[append] = hash;
-		else $extend(data, hash);
+		else data.append( hash );
 
 //		console.log( this.toString(), "appendCookieData", data );
 
@@ -2917,12 +2888,7 @@ mop.util.Uploader = new Class({
 		this.fileList = null;
 		this.currentFileElementInstance = null;
 		this.status = null;
-
-	}
-
-});
-
-$extend( mop.util.Uploader, {
+	},
 
 	STATUS_QUEUED: 0,
 	STATUS_RUNNING: 1,
@@ -2943,12 +2909,9 @@ $extend( mop.util.Uploader, {
 		var labels = Swiff.Uploader.unitLabels[(type == 'bps') ? 'b' : type];
 		var append = (type == 'bps') ? '/s' : '';
 		var i, l = labels.length, value;
-
 		if (base < 1) return '0 ' + labels[0].unit + append;
-
 		if (type == 's') {
 			var units = [];
-
 			for (i = l - 1; i >= 0; i--) {
 				value = Math.floor(base / labels[i].min);
 				if (value) {
@@ -2957,19 +2920,16 @@ $extend( mop.util.Uploader, {
 					if (!base) break;
 				}
 			}
-
 			return (join === false) ? units : units.join(join || ', ');
 		}
-
 		for (i = l - 1; i >= 0; i--) {
 			value = labels[i].min;
 			if (base >= value) break;
 		}
-
 		return (base / value).toFixed(1) + ' ' + labels[i].unit + append;
 	}
-
 });
+
 
 mop.util.Uploader.qualifyPath = ( function() {
 	var anchor;
@@ -3946,8 +3906,6 @@ mop.ui.ScrollableTable = new Class({
 		this.element = anElement;
 		this.table = anElement.getElement( "table" );
 		this.tableSize = this.table.getSize();
-		this.browser = { version: Browser.Engine.version, name: Browser.Engine.name };
-//		console.log( "Browser: ", this.browser );
 		var newWidth = this.tableSize.x - 16;
 		this.element.setStyles({
 			"overflow": "auto",
@@ -3958,8 +3916,7 @@ mop.ui.ScrollableTable = new Class({
 	},
 	
 	isBrowserIe6orLower: function(){
-//		console.log( "isBrowserIe6orLower", ( this.browser.name.indexOf( "trident" ) && this.browser.version < 7 ) );
-		return( this.browser.name.indexOf( "trident" ) && this.browser.version < 7 );
+		return( Browser.ie && Browser.version < 7 );
 	},
 	
 	setUpTableHead: function(){
@@ -3969,8 +3926,7 @@ mop.ui.ScrollableTable = new Class({
 	},
 	
 	destroy: function(){
-		delete this.browser;
-		this.browser = this.element = this.table = this.tableSize = null;
+        this.element = this.table = this.tableSize = null;
 	}
 	
 });

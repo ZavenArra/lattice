@@ -44,7 +44,7 @@ Swiff.Uploader = new Class({
 
 		var prepare = {}, self = this;
 		['onBrowse', 'onSelect', 'onAllSelect', 'onCancel', 'onBeforeOpen', 'onOpen', 'onProgress', 'onComplete', 'onError', 'onAllComplete'].each(function(index) {
-			var fn = callBacks[index] || $empty;
+			var fn = callBacks[index] || function(){};
 			prepare[index] = function() {
 				self.fireEvent(index, arguments, 10);
 				return fn.apply(self, arguments);
@@ -116,7 +116,7 @@ Swiff.Uploader = new Class({
 
 	upload: function(options){
 		var current = this.options;
-		options = $extend({data: current.data, url: current.url, method: current.method, fieldName: current.fieldName}, options);
+		options = { data: current.data, url: current.url, method: current.method, fieldName: current.fieldName }.append( options );
 		if ($type(options.data) == 'element') options.data = $(options.data).toQueryString();
 //		alert("upload");
 		return this.remote('upload', options);

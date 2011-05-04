@@ -3,11 +3,26 @@
 <data>
 
 	<item templateName="basicCategory">
-		<field name="title">A Category</field>
+		<field name="title">Category 1</field>
 		<item templateName="basicCategory">
-			<field name="title">Category2</field>
+			<field name="title">Category 2</field>
 			<item templateName="basicCategory">
-				<field name="title">Category3</field>
+				<field name="title">Category 3 A</field>
+			</item>
+			<item templateName="basicCategory">
+				<field name="title">Category 3 B</field>
+				<item templateName="basicCategory">
+					<field name="title">Category 4 A</field>
+				</item>
+				<item templateName="basicCategory">
+					<field name="title">Category 4 B</field>
+				</item>
+				<item templateName="basicCategory">
+					<field name="title">Category 4 C</field>
+				</item>
+			</item>
+			<item templateName="basicCategory">
+				<field name="title">Category 3 C</field>
 			</item>
 		</item>
 	</item>

@@ -7,7 +7,6 @@ mop.modules.CMS = new Class({
 	pageContent: null,
 	pageIdToLoad: null,
 	scriptsLoaded: null,
-	scriptsTotal: null,
 	currentPageLoadIndex: null,
 	titleText: "",
 	titleElement: null,
@@ -24,17 +23,15 @@ mop.modules.CMS = new Class({
         this.instanceName = this.element.get("id");
 		this.objectId = this.getValueFromClassName( "objectId" );
 		var scripttags = $$( "script" ).each( function( aScriptTag ){
-		    console.log( "building loaded js array", aScriptTag );
 		    this.loadedJS.push( aScriptTag );
 		}, this );
 		var scripttags = $$( "link[rel=stylesheet]" ).each( function( aStyleSheetTag ){
 		    this.loadedCSS.push(  aStyleSheetTag );
 		}, this );
-		console.log( this.loadedJS );
 	},
 	
 	build: function(){
-	    console.log( "::", this.toString(), "build" );
+//	    console.log( "::", this.toString(), "build" );
 		this.pageContent = $("nodeContent");
 		this.initModules( this.element );
 	},
@@ -53,7 +50,7 @@ mop.modules.CMS = new Class({
         console.log( this.toString(), "displayNode", nodeId );
 //		console.log( this.toString(), "loadPage", pageId );
 		this.clearPage();
-		this.pageContent.spin();
+//		this.pageContent.spin();
 		var url = mop.util.getAppURL() + "ajax/html/cms/getPage/" + nodeId;
 		mop.util.JSONSend( url, null, { onSuccess: this.onNodeLoaded.bind( this ) } );
  		mop.util.setObjectId( nodeId );
@@ -73,25 +70,20 @@ mop.modules.CMS = new Class({
 			pageJSON - Object : { css: [ "pathToCSSFile", "pathToCSSFile", ... ], js: [ "pathToJSFile", "pathToJSFile", "pathToJSFile", ... ], html: "String" }
 	*/
 	onNodeLoaded: function( json ){
-        console.log( "ONNODELOADED!", json.response.js, this.loadedJS );
+//        console.log( "ONNODELOADED!", json.response.js, this.loadedJS );
 		json.response.css.each( function( styleSheetURL, index ){
 		    if( !this.loadedCSS.contains( styleSheetURL ) ) mop.util.loadStyleSheet( styleSheetURL );
 		    this.loadedCSS.push( styleSheetURL );
 		}, this );
-		$("nodeContent").unspin();
 		this.scriptsLoaded = 0;
 		this.currentPageLoadIndex = this.pageLoadCount++;
 //      console.log( "……… onNodeLoaded", pageData.js, this.loadedJS );
 		if( json.response.js.length ){
 			json.response.js.each( function( urlString ){
 			    var isScriptLoaded = ( this.loadedJS.some( function( item ){ item.src == urlString } ) )? true : false;
-			    console.log(":::::::", urlString, "isScriptLoaded", isScriptLoaded );
-			    if( isScriptLoaded ){
-			        this.loadedJS.push( mop.util.loadJS( urlString, { type: "text/javascript", onload: this.onJSLoaded.bind( this, [ json.response.html, this.currentPageLoadIndex ] ) } ));
-    		    }
+			    if( isScriptLoaded ) this.loadedJS.push( mop.util.loadJS( urlString, { type: "text/javascript", onload: this.onJSLoaded.bind( this, [ json.response.html, this.currentPageLoadIndex ] ) } ));
 			}, this );
 		}
-			    console.log(":::::::", this.loadedJS );
 	},
 	
 	onJSLoaded: function( html, pageLoadCount ){
@@ -99,14 +91,15 @@ mop.modules.CMS = new Class({
 		// keeps any callbacks from previous pageloads from registering
 		if( pageLoadCount != this.currentPageLoadIndex ) return;
 		this.scriptsLoaded++;
-		if( this.scriptsLoaded == this.scriptsTotal ){			
-			this.scriptsTotal = null;
+		console.log( this.scriptsLoaded, this.loadedJS.length-1 );
+		if( this.scriptsLoaded == this.loadedJS.length-1 ){			
 			this.populate( html );
 		}
 	},
 	
 	
 	populate: function( html ){
+		$("nodeContent").unspin();
 		this.pageContent.set( 'html', html );
         console.log("CMS.populate", html)
 		this.uiElements = this.initUI( this.pageContent );
@@ -167,6 +160,11 @@ mop.modules.CMS = new Class({
 		callBack = null;
 	},
 
+    removeObject: function( parentId, callback ){        
+		var url = mop.util.getAppURL() + "ajax/data/cms/removeObject/" + parentId + "/";
+		mop.util.JSONSend( url, null, { onComplete: callback } );
+    },
+    
 	onObjectAdded: function( data, parentId , whichTier, placeHolder ){
 //	    console.log( "onObjectAdded", this, this.toString() );
 		this.childModules.get( "navigation" ).onObjectAdded(  data , parentId, whichTier, placeHolder );
@@ -520,8 +518,8 @@ mop.modules.ListItem = new Class({
 			}else{
 				e.returnVal = false;
 			}
-			e.target.removeClass("delete");
-			e.target.addClass("spinner");
+            // e.target.removeClass("delete");
+            // e.target.addClass("spinner");
 		}
 		this.JSONSend( "deleteItem" );
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();

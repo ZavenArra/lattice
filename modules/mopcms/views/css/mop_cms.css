@@ -265,16 +265,33 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 	width: 16px;
 	height:16px;
 	display:block;
-	background: url( images/icon_trash.gif );
+	background: url( ../images/icon_trash.gif );
 }
 
-.icon.spinner{
-	width: 16px;
-	height:16px;
-	display:block;
-	background: url( ../../../mopui/views/images/spinner.gif );
+/* /////////////////////////////////////////////////////////// */
+
+.spinner {
+    display: none;
+	opacity: .8;
+	background: url( ../images/bg_white80.png );
 }
 
+.spinner-img {
+	background: url( ../../../mopui/views/images/spinner.gif ) no-repeat;
+	width: 24px;
+	height: 24px;
+	margin: 0 auto;
+}
+
+/* /////////////////////////////////////////////////////////// */
+
+/*.icon.spinner{
+    width: 16px;
+    height:16px;
+    display:block;
+    background: url( ../../../mopui/views/images/spinner.gif );
+}
+*/
 .ui-FileElement .controls,
 .ui-File .controls,
 .ui-ImageFile .controls{
@@ -342,18 +359,18 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 .ui-FileElement .status .progress,
 .ui-ImageFile .status .progress,
 .ui-File .status .progress{
-	background:	white url( images/progress.gif) no-repeat;
+	background:	white url( ../images/progress.gif) no-repeat;
 	background-position: +50% 0;
 	width:248px;
 	margin:0 auto;
 }
 
 .fileName{ background-repeat: no-repeat; background-image: url( ../../mopui/views/images/icon_doc.gif ) 1em 0; }
-.fileName.pdf{ background-image: url(images/icon_pdf.gif) 1em 0; }
+.fileName.pdf{ background-image: url( ../images/icon_pdf.gif) 1em 0; }
 .fileName.doc{ background-image: url( ../../mopui/views/images/icon_doc.gif ) 1em 0; }
 .fileName.jpg, .fileName.jpeg{	background-image: url(images/icon_jpg.gif) 1em 0; }
-.fileName.gif{ background-image: url(images/icon_gif.gif) 1em 0; }
-.fileName.png{ background-image: url(images/icon_png.gif) 1em 0; }
+.fileName.gif{ background-image: url( ../images/icon_gif.gif) 1em 0; }
+.fileName.png{ background-image: url( ../images/icon_png.gif) 1em 0; }
 
 #nodeContent{ margin: 2em 0 0 0; }
 
@@ -374,17 +391,17 @@ a.icon{
 
 a.icon span{ display: none; }
 
-a.icon.deleteLink{ background: url(images/icon_delete.png); }
+a.icon.deleteLink{ background: url( ../images/icon_delete.png); }
 
-a.delete:hover{ background: url(images/icon_delete_hover.png); }
+a.delete:hover{ background: url( ../images/icon_delete_hover.png); }
 
-a.icon.submit{ background: url(images/icon_confirm.png); }
+a.icon.submit{ background: url( ../images/icon_confirm.png); }
 
-a.icon.cancel{ background: url(images/icon_cancel.png); }
+a.icon.cancel{ background: url( ../images/icon_cancel.png); }
 
-.active a.icon.submit, a.icon.submit:hover{ background: url(images/icon_confirm_hover.png); }
+.active a.icon.submit, a.icon.submit:hover{ background: url( ../images/icon_confirm_hover.png); }
 
-.active a.icon.cancel, a.icon.cancel:hover{ background: url(images/icon_cancel_hover.png); }
+.active a.icon.cancel, a.icon.cancel:hover{ background: url( ../images/icon_cancel_hover.png); }
 
 .invisible{ visibility: hidden; }
 
@@ -431,7 +448,7 @@ a.button{
 	height: 100%;
 	top:0;
 	left:0;
-	background: url( images/bgk90.png );	
+	background: url( ../images/bgk90.png );	
 	overflow: auto;
 
 }
@@ -452,7 +469,7 @@ a.button{
 	padding: 2em 2em 0 2em;
 	width: 50em;
 	margin: 0 auto 0 -27.6em;
-	background: url( images/bgk94.png );
+	background: url( ../images/bgk94.png );
 	color:#fff;
 }
 
@@ -555,11 +572,11 @@ a.button{
 	background:#fff;
 }
 
-.centeredSpinner{
-	min-height: 12em;
-	background:#eee url( ../../mopui/views/images/spinner.gif ) 50% 50% no-repeat !important;
+/*.centeredSpinner{
+    min-height: 12em;
+    background:#eee url( ../../mopui/views/images/spinner.gif ) 50% 50% no-repeat !important;
 }
-
+*/
 th.spinner{
 	background-image: url( ../../mopui/views/images/spinner.gif ) !important;
 	background-position: center .75em;
@@ -632,14 +649,14 @@ input[type='checkbox']{
 .switchbox .scrollarea{
 	width:95px;
 	height:29px;
-	background:url(images/switch_track.png) no-repeat;
+	background:url( ../images/switch_track.png) no-repeat;
 	position:relative;
 	margin: 0;
 }
 .switchbox div.handle{
 	width:49px;
 	height:29px;
-	background: url(images/switch_handle.png) center center no-repeat;
+	background: url( ../images/switch_handle.png) center center no-repeat;
 	cursor:col-resize;
 	position:absolute;
 	left:0;

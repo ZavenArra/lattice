@@ -6,7 +6,7 @@ $config['resources']['librarycss'] = array(
 );
 $config['resources']['libraryjs'] = array(
 	'modules/mop/thirdparty/mootools/mootools.js',
-	'modules/mop/thirdparty/mootools/mootools-more-nc.js',
+	'modules/mop/thirdparty/mootools/mootools-more.js',
 	'modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
 	'modules/mop/thirdparty/monkeyphysics/datepicker.js',
 	'modules/mop/MoPCore.js',

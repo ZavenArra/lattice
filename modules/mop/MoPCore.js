@@ -1,10 +1,7 @@
 // Section: Setting up environment for MoPCore.
 
 //	Redirects ie 6 to a landing page for that browser
-if( Browser.Engine.trident4 ) window.location.href = $(document).getElement("head").getElement("base").get("href") + "msielanding";
-
-/* Note: https://mootools.lighthouseapp.com/projects/2706/tickets/651-classtostring-broken-on-122-big-regression */
-Class.Mutators.toString = Class.Mutators.valueOf = $arguments(0);
+if( Browser.ie && Browser.version < 8 ) window.location.href = $(document).getElement("head").getElement("base").get("href") + "msielanding";
 
 /*
 Quick hack to prevent browsers w/o a console, or firebug from generating errors when console functions are called.
@@ -55,6 +52,16 @@ Element.implement({
 });
 
 
+Function.implement({ 
+    bindWithEvent: function(bind, args){ 
+        var self = this; 
+        if (args != null) args = Array.from(args); 
+        return function(event){ 
+            return self.apply(bind, (args == null) ? arguments : [event].concat(args));
+        }
+    }
+});
+ 
 /*
 	Function: String.encodeUTF8
 	Implements encodeUTF8 into mootools' native String class
@@ -442,7 +449,7 @@ mop.MoPObject = new Class({
 		this.setOptions( options );
 		this.element = $( anElementOrId );
 		this.elementClass = this.element.get("class");
-		this.marshal = ( $type( aMarshal ) == "string" )? mop.ModuleManager.getModuleById( aMarshal ) : aMarshal;
+		this.marshal = aMarshal;
 		this.element.store( 'Class', this );
 	},
 	/*
@@ -568,7 +575,7 @@ mop.util.HistoryManager = new Class({
 	},
 
 	getStrippedHash: function( ){
-		return $defined( window.location.hash && window.location.hash != "#" )? window.location.hash.substr( 1 , window.location.hash.length ) : null;
+		return ( window.location.hash && window.location.hash != "#" )? window.location.hash.substr( 1 , window.location.hash.length ) : null;
 	},
 	
 	checkLocation: function( ){

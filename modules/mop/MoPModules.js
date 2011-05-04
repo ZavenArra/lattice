@@ -80,10 +80,11 @@ mop.modules.Module = new Class({
 		console.log( "\tinitModules", this.toString(), anElement );
 		descendantModules.each( function( aDescendant ){
 			descendantModules.each( function( anotherDescendant ){
-				if(  aDescendant.hasChild( anotherDescendant ) ) filteredOutModules.push( anotherDescendant );
+        		console.log( this.toString(), "\tdescendantloop", aDescendant, anotherDescendant, aDescendant.contains( anotherDescendant ) );
+				if(  aDescendant.contains( anotherDescendant ) && aDescendant != anotherDescendant ) filteredOutModules.push( anotherDescendant );
 			}, this );
 		}, this );
-//		console.log( this.toString(), "\t\tfilteredOutModules", filteredOutModules );
+		console.log( this.toString(), "\t\tfilteredOutModules", filteredOutModules );
 		descendantModules.each( function( aDescendant ){
 			if( !filteredOutModules.contains( aDescendant ) ){
         		if( !this.childModules ) this.childModules = new Hash();
@@ -92,7 +93,7 @@ mop.modules.Module = new Class({
 				this.childModules.set( instanceName, module );
 			}
 		}, this );
-//      console.log( "childModules", this.toString(), this.childModules );
+        console.log( "childModules", this.toString(), this.childModules );
         delete filteredOutModules, descendantModules;
         filteredOutModules = descendantModules = null;
 	},
@@ -111,7 +112,7 @@ mop.modules.Module = new Class({
 		ref = null;
 		classPath.each( function( node ){
 		    ref = ( !ref )? this[node] : ref[node]; 
-//		    console.log( ref, node );
+		    console.log( ref, node );
 		});
     	var newModule = new ref( element, this );
 		return newModule;		
@@ -273,7 +274,7 @@ mop.modules.AjaxFormModule = new Class({
 
 		if( this.resultsContainer ){
 //			this.resultsContainer.setStyle( "height", this.resultsContainer.getCoordinates().height );
-			this.resultsContainer.addClass( "centeredSpinner" );
+//			this.resultsContainer.addClass( "centeredSpinner" );
 		}
 
 		if( this.requiresValidation ){
@@ -310,7 +311,7 @@ mop.modules.AjaxFormModule = new Class({
 //			console.log( this.toString(), anUIElement.type, anUIElement.fieldName, anUIElement );
 
 			if( anUIElement.type != "interfaceWidget" ){
-				$extend( keyValuePairs, anUIElement.getKeyValuePair() );
+				keyValuePairs.append( anUIElement.getKeyValuePair() );
 			}
 		}, this );
 		return keyValuePairs;
@@ -332,7 +333,7 @@ mop.modules.AjaxFormModule = new Class({
 //			console.log( this.toString(), "onFormSubmissionComplete" );
 			if( this.resultsContainer ){
 //				this.resultsContainer.setStyle( "height", 'auto' );
-				this.resultsContainer.removeClass( "centeredSpinner" );
+//				this.resultsContainer.removeClass( "centeredSpinner" );
 				this.resultsContainer.set( "html", json.html );
 			}
 //			log( this.resultsContainer.get( "html" ) );
