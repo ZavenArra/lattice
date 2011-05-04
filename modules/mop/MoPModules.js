@@ -1,4 +1,3 @@
-127
 /*
 	Section: mop.module
 	mop Modules
@@ -49,6 +48,7 @@ mop.modules.Module = new Class({
 	Function build: Instantiates mop.ui elements by calling initUI, can be extended for other purposes...
 	*/ 	
 	build: function(){
+	    console.log("mop.modules.Module.build!")
 		this.UIElements = this.initUI();
 		this.initModules();
 	},
@@ -74,20 +74,15 @@ mop.modules.Module = new Class({
 		Loops through elements with the class "module" and initializes each as a module
 		// there is likely a better ( faster ) way to solve this 
 	*/
-	initModules: function( whereToLook ){
-		
-		var descendantModules = ( whereToLook )? $( whereToLook ).getElements(".module") : this.element.getElements(".module");
+	initModules: function( anElement ){
+		var descendantModules = ( anElement )? anElement.getElements(".module") : this.element.getElements(".module");
 		var filteredOutModules = [];
-
-//		console.log( "initModules", this.toString(), this.childModules, descendantModules );
-
+		console.log( "\tinitModules", this.toString(), anElement );
 		descendantModules.each( function( aDescendant ){
 			descendantModules.each( function( anotherDescendant ){
-//			    console.log( "initModule, looping through descendant of", this.toString(), "\n\t", aDescendant,"\n\t", anotherDescendant );
 				if(  aDescendant.hasChild( anotherDescendant ) ) filteredOutModules.push( anotherDescendant );
 			}, this );
 		}, this );
-		
 //		console.log( this.toString(), "\t\tfilteredOutModules", filteredOutModules );
 		descendantModules.each( function( aDescendant ){
 			if( !filteredOutModules.contains( aDescendant ) ){
@@ -97,12 +92,9 @@ mop.modules.Module = new Class({
 				this.childModules.set( instanceName, module );
 			}
 		}, this );
-		
-//        console.log( "childModules", this.toString(), this.childModules );
-        
+//      console.log( "childModules", this.toString(), this.childModules );
         delete filteredOutModules, descendantModules;
         filteredOutModules = descendantModules = null;
-        
 	},
 	
 	getObjectId: function(){
@@ -114,12 +106,12 @@ mop.modules.Module = new Class({
 		Initializes a specific module
 	*/
 	initModule: function( element ){
-		console.log( "initModule", this.toString(), element, element.get( "class" ) );
 		var classPath = mop.util.getValueFromClassName( "classPath", element.get( "class" ) ).split( "_" );
+		console.log( "\t\tinitModule", this.toString(), element.get( "class" ), classPath );
 		ref = null;
 		classPath.each( function( node ){
 		    ref = ( !ref )? this[node] : ref[node]; 
-		    console.log( ref, node );
+//		    console.log( ref, node );
 		});
     	var newModule = new ref( element, this );
 		return newModule;		
@@ -132,14 +124,14 @@ mop.modules.Module = new Class({
 		var elements = [];
 		anElement.getChildren().each( function( aChild, anIndex ){
 			if( aChild.get( "class" ).indexOf( "ui-" ) > -1 ){
-			    console.log( "\t\tgetModuleUIElements ", aChild );
+//			    console.log( "\t\tgetModuleUIElements ", aChild );
 				elements.combine( [ aChild ] );
 			} else if( !aChild.hasClass( "modal" ) && !aChild.hasClass( "module" ) && !aChild.hasClass( "listItem" ) ){
-			    console.log( "\t\tgetModuleUIElements ", aChild );
+//			    console.log( "\t\tgetModuleUIElements ", aChild );
 				elements.combine( this.getModuleUIElements( aChild ) );
 			}
 		}, this );
-		console.log( "getModuleUIElements", this.toString(), anElement, elements );
+//		console.log( "getModuleUIElements", this.toString(), anElement, elements );
 		return elements;
 	},
 	/*
@@ -187,7 +179,7 @@ mop.modules.Module = new Class({
 	},
 	
 	destroyUIElements: function(){
-		console.log( "destroyUIElements", this, this.instanceName, this.UIElements );
+//		console.log( "destroyUIElements", this, this.instanceName, this.UIElements );
 		if( !this.UIElements || !this.UIElements.length || this.UIElements.length == 0  ) return;
 		this.UIElements.each( function( aUIElement ){
 			var key = aUIElement.fieldName;
@@ -228,7 +220,7 @@ mop.modules.Cluster = new Class({
     Extends: mop.modules.Module,
     initialize: function( anElementOrId, aMarshal, options ){
         this.parent( anElementOrId, aMarshal, options );
-        console.log( "Cluster objectId", this.getObjectId() );
+//        console.log( "Cluster objectId", this.getObjectId() );
     },
     getSubmissionController: function(){
         return this.marshal.getSubmissionController();

@@ -18,11 +18,23 @@ mop.modules.CMS = new Class({
 	
 	initialize: function( anElement, options ){
 //        console.log( "CMS INIT", this.childModules );
-		this.parent( anElement, null, options );		
+    console.log(":::::::", this.toString(), "initialize");
+
+        this.parent( anElement, null, options );
+        this.instanceName = this.element.get("id");
 		this.objectId = this.getValueFromClassName( "objectId" );
+		var scripttags = $$( "script" ).each( function( aScriptTag ){
+		    console.log( "building loaded js array", aScriptTag );
+		    this.loadedJS.push( aScriptTag );
+		}, this );
+		var scripttags = $$( "link[rel=stylesheet]" ).each( function( aStyleSheetTag ){
+		    this.loadedCSS.push(  aStyleSheetTag );
+		}, this );
+		console.log( this.loadedJS );
 	},
 	
 	build: function(){
+	    console.log( "::", this.toString(), "build" );
 		this.pageContent = $("nodeContent");
 		this.initModules( this.element );
 	},
@@ -43,8 +55,7 @@ mop.modules.CMS = new Class({
 		this.clearPage();
 		this.pageContent.spin();
 		var url = mop.util.getAppURL() + "ajax/html/cms/getPage/" + nodeId;
-		mop.util.JSONSend( url, null, { onSuccess: this.onPageLoaded.bind( this ) } );
-		console.log( "loadPage", url );
+		mop.util.JSONSend( url, null, { onSuccess: this.onNodeLoaded.bind( this ) } );
  		mop.util.setObjectId( nodeId );
     },
     
@@ -56,74 +67,60 @@ mop.modules.CMS = new Class({
 	},
 
 	/*
-		Function: onPageLoaded
+		Function: onNodeLoaded
 		Callback to getPage, loops through supplied JSON object and attached css, html, js, in that order then looks through #pageContent and initialize modules therein....
 		Arguments:
 			pageJSON - Object : { css: [ "pathToCSSFile", "pathToCSSFile", ... ], js: [ "pathToJSFile", "pathToJSFile", "pathToJSFile", ... ], html: "String" }
 	*/
-	onPageLoaded: function( response ){
-        console.log( ">>> ", response );
-		var pageData = response.response;
-		pageData.css.each( function( styleSheetURL, index ){
+	onNodeLoaded: function( json ){
+        console.log( "ONNODELOADED!", json.response.js, this.loadedJS );
+		json.response.css.each( function( styleSheetURL, index ){
 		    if( !this.loadedCSS.contains( styleSheetURL ) ) mop.util.loadStyleSheet( styleSheetURL );
 		    this.loadedCSS.push( styleSheetURL );
 		}, this );
 		$("nodeContent").unspin();
-		var scripts = pageData.js;
 		this.scriptsLoaded = 0;
-		this.scriptsTotal = scripts.length;
 		this.currentPageLoadIndex = this.pageLoadCount++;
-        console.log( "onPageLoaded", pageData.js );
-		if( this.scriptsTotal && this.scriptsTotal > 0 ){
-			scripts.each( function( urlString ){
-			    console.log( this.toString(), "loadJS loading ", urlString );
-			    if( !this.loadedJS.contains( urlString ) ) mop.util.loadJS( urlString, { type: "text/javascript", onload: this.onJSLoaded.bind( this, [ pageData.html, this.currentPageLoadIndex ] ) } );
-    		    this.loadedJS.push( urlString );
-			}, this);			
+//      console.log( "……… onNodeLoaded", pageData.js, this.loadedJS );
+		if( json.response.js.length ){
+			json.response.js.each( function( urlString ){
+			    var isScriptLoaded = ( this.loadedJS.some( function( item ){ item.src == urlString } ) )? true : false;
+			    console.log(":::::::", urlString, "isScriptLoaded", isScriptLoaded );
+			    if( isScriptLoaded ){
+			        this.loadedJS.push( mop.util.loadJS( urlString, { type: "text/javascript", onload: this.onJSLoaded.bind( this, [ json.response.html, this.currentPageLoadIndex ] ) } ));
+    		    }
+			}, this );
 		}
-		this.populate( pageData.html );
+			    console.log(":::::::", this.loadedJS );
 	},
 	
-	onJSLoaded: function( pageHTML, pageLoadCount ){
+	onJSLoaded: function( html, pageLoadCount ){
+        console.log( this.toString(), "onJSLoaded", html );
 		// keeps any callbacks from previous pageloads from registering
 		if( pageLoadCount != this.currentPageLoadIndex ) return;
-		
 		this.scriptsLoaded++;
-		
-		if( this.scriptsLoaded == this.scriptsTotal ){
-			
+		if( this.scriptsLoaded == this.scriptsTotal ){			
 			this.scriptsTotal = null;
-			this.populate( pageHTML );
-
+			this.populate( html );
 		}
 	},
 	
 	
 	populate: function( html ){
-		
 		this.pageContent.set( 'html', html );
-
+        console.log("CMS.populate", html)
 		this.uiElements = this.initUI( this.pageContent );
 		this.initModules( this.pageContent );		
-
 		this.titleElement = this.element.getElement( ".pageTitle" );
-		
-        
 		if( this.titleElement ){
-
 			this.titleText = this.titleElement.getElement( "h2" ).get( "text" );
 			this.deletePageLink = this.titleElement.getElement( "a.deleteLink" );
-
     		this.editSlugLink = this.titleElement.getElement( ".field-slug label" );
-			if( this.editSlugLink ){
-				this.editSlugLink.addEvent( "click", this.toggleSlugEditField.bindWithEvent( this ) );
-                // this.editSlugLink.retrieve( "Class" ).registerOnLeaveEditModeCallback( this.onSlugEdited.bind( this ) );
-			}
+			if( this.editSlugLink ) this.editSlugLink.addEvent( "click", this.toggleSlugEditField.bindWithEvent( this ) );
 			var titleIPE = this.titleElement.getElement( ".field-title" ).retrieve("Class");
 			if( titleIPE ) titleIPE.registerOnCompleteCallBack( this.renameNode.bind( this ) );
 			if( titleIPE ) titleIPE.registerOnCompleteCallBack( this.onTitleEdited.bind( this ) );
 			if( this.deletePageLink ) this.deletePageLink.addEvent( "click", this.onDeleteNodeReleased.bindWithEvent( this ) );
-			
 		}
 	},
 	
@@ -156,7 +153,6 @@ mop.modules.CMS = new Class({
 		this.childModules.get( "navigation" ).renameNode( response.value );
 	},
 
-
 	addObject: function( objectName, templateId, parentId, whichTier, placeHolder ){
 	    console.log( "addObject", this.toString(), $A( arguments ) );
 	    // crappy hack to add... fuckit lets do this right.
@@ -185,10 +181,7 @@ mop.modules.CMS = new Class({
 	Callback: onTogglePublish
 	*/
 	togglePublishedStatus: function( nodeId ){
-		new Request.JSON({
-			url: mop.util.getAppURL() + "ajax/data/cms/togglePublish/"+ nodeId
-//			onComplete: this.onPublishedStatusToggled
-		}).send();
+		new Request.JSON({ url: mop.util.getAppURL() + "ajax/data/cms/togglePublish/"+ nodeId }).send();
 	},
 	
 	/*
@@ -198,7 +191,6 @@ mop.modules.CMS = new Class({
 	*/
 	onDeleteNodeReleased: function( e ){
 		mop.util.stopEvent( e );
-//		console.log( "onDeleteNodeReleased", mop.objectId );
 		this.deleteNode( mop.objectId, this.titleText );
 		this.childModules.get( "navigation" ).removeNode( mop.objectId, true );
 	},
@@ -562,6 +554,7 @@ mop.modules.ListItem = new Class({
 
 window.addEvent( "domready", function(){
 
+console.log( "DOMREADY!!!!");
 	mop.HistoryManager = new mop.util.HistoryManager().instance();
 	mop.HistoryManager.init( "pageId", "onPageIdChanged" );
 	mop.ModalManager = new mop.ui.ModalManager();

@@ -49,6 +49,8 @@ mop.modules.navigation.Navigation = new Class({
 	displayNode: function( nodeId ){
         // marshal instead of dataSource here??? Even though at the moment they are the same?
         this.marshal.displayNode( nodeId );
+        this.currentParentId = nodeId;
+        this.requestTier( nodeId );
 	},
 	
 	removeObject: function( nodeId ){
@@ -83,7 +85,7 @@ mop.modules.navigation.Tier = new Class({
 	
 	render: function( data, html ){
         // focus/blur events are good for keyboard activation/indication
-        console.log( this.toString(), "render", this.element, data, html );
+//        console.log( this.toString(), "render", this.element, data );
         this.element.set( 'html', html );
 	    this.nodes = this.element.getElements(".node");
 	    this.nodes.each( function( aNodeElement, index ){
@@ -122,7 +124,7 @@ mop.modules.navigation.Tier = new Class({
 	onNodeClicked: function( e, nodeElement ){
 	    mop.util.stopEvent( e );
 	    console.log( "onNodeClicked" );
-	    if( this.activeNode ) this.deindicateNode( this.activeNode );
+	    if( this.activeNode )this.deindicateNode( this.activeNode );
         this.activeNode = nodeElement;        
 	    this.indicateNode( nodeElement );
 	    this.displayNode( this.getNodeIdFromElement( nodeElement ) );  
@@ -187,3 +189,4 @@ mop.modules.navigation.Tier = new Class({
 	
 
 });
+
