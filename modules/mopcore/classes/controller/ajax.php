@@ -22,6 +22,7 @@ class Controller_Ajax extends Controller_MOP {
 	public function action_data($uri)
 	{
 		//request to child, just data
+		$arguments = explode('/', $uri);
 
 		try {
 			$subRequest = Request::Factory($uri);
@@ -31,7 +32,8 @@ class Controller_Ajax extends Controller_MOP {
 			$message = $e->getMessage() . $e->getTrace();
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
-				'response' => $message
+				'response' => $message,
+				'arguments'=>$arguments
 
 			);
 			$this->response->body(json_encode($ajaxResponse));
@@ -39,13 +41,16 @@ class Controller_Ajax extends Controller_MOP {
 		}
 		$ajaxResponse = array(
 			'returnValue' => TRUE,
-			'response'=>$data
+			'response'=>$data,
+			'arguments'=>$arguments
 		);
 		$this->response->body(json_encode($ajaxResponse));
 	}
 
 	public function action_html($uri)
 	{
+
+		$arguments = explode('/', $uri);
 
 		try {
 			$subRequest = Request::Factory($uri);
@@ -55,7 +60,8 @@ class Controller_Ajax extends Controller_MOP {
 			$message = $e->getMessage() . $e->getTrace();
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
-				'response' => $message
+				'response' => $message,
+				'arguments'=>$arguments
 
 			);
 			$this->response->body(json_encode($ajaxResponse));
@@ -87,12 +93,15 @@ class Controller_Ajax extends Controller_MOP {
 				'css'=>$cssResources
 			),
 			'returnValue' => TRUE,
+			'arguments'=>$arguments
 		);
 		$this->response->body(json_encode($ajaxResponse));
 	}
 
 	public function action_compound($uri)
 	{
+		$arguments = explode('/', $uri);
+
 		try {
 			$subRequest = Request::Factory($uri);
 			$requestResponse = $subRequest->execute();
@@ -101,8 +110,8 @@ class Controller_Ajax extends Controller_MOP {
 			$message = $e->getMessage() . $e->getTrace();
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
-				'response' => $message
-
+				'response' => $message,
+				'arguments'=>$arguments
 			);
 			$this->response->body(json_encode($ajaxResponse));
 			return;
@@ -134,7 +143,8 @@ class Controller_Ajax extends Controller_MOP {
 		);
 		$ajaxResponse = array(
 			'returnValue' => TRUE,
-			'response'=>$compoundResponse
+			'response'=>$compoundResponse,
+			'arguments'=>$arguments
 		);
 		$this->response->body(json_encode($ajaxResponse));
 	}
