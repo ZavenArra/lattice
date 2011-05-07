@@ -1,4 +1,5 @@
-mop.modules.navigation = {};
+if( !mop.modules.navigation) mop.modules.navigation = {};
+
 mop.modules.navigation.Navigation = new Class({
 
 	Extends: mop.MoPObject,
@@ -8,7 +9,6 @@ mop.modules.navigation.Navigation = new Class({
 	nodeData: {},
 	navPanes: [],
 	breadCrumbs: null,
-	tierDepth: 0,
 	tiers: [],
 	numberOfVisiblePanes: null,
 	
@@ -20,15 +20,26 @@ mop.modules.navigation.Navigation = new Class({
 	    this.navPaneTemplate = this.element.getElement( ".pane" ).clone();
 		this.paneContainer.empty();
 		this.navPanes = this.element.getElements( ".pane" );
+		this.breadCrumbs =  new mop.ui.navigation.BreadCrumbTrail( this.element.getElement( ".breadCrumb" ), this.onCrumbClicked.bind( this ) );
 		this.requestTier( 0, null );
-		this.breadCrumbs =  new mop.ui.navigation.BreadCrumbTrail( this.element.getElement( ".breadCrumb" ), this.onBreadCrumbClicked.bind( this ) );
-		this.breadCrumbs.addCrumb( { label: "Main Menu", id: null, index: 0 } );
 	},
 
 	requestTier: function( parentId, parentPane ){
+	    console.log( "requestTier", parentId, parentPane );
+	    var paneIndex = ( parentPane ) ? this.navPanes.indexOf( parentPane ) : 0;
+	    if( this.navPanes.length > 0 ) this.clearPanes( paneIndex );
+	    var title = "";
+	    var parentId = 0;
+	    if( parentId != 0 ){
+	        title = parentPane.retrieve( "tier" ).getActiveNode().getElement( "h5" ).get( 'text' );
+	        parentId = parentPane.retrieve( "tier" ).getActiveNodeId();	        
+	    }else{
+	        title = "Site Root";
+	        parentId = 0;
+	        paneIndex = -1;
+	    }
+        this.addCrumb( title, parentId, paneIndex + 1  );
 	    this.currentParentId = parentId;
-	    paneIndex = this.navPanes.indexOf( parentPane );
-	    console.log( "!!! requestTier", parentPane );
 	    // do we have this tier cached?
 	    if( this.tiers[ parentId ] ){
 //	        console.log( "requestTier", "cached" );
@@ -39,14 +50,16 @@ mop.modules.navigation.Navigation = new Class({
                 parentPane.getElement( "ul" ).spin();
             }
     	    this.dataSource.requestTier( parentId, function( json ){ 
-    	        this.onTierReceived( json, paneIndex );
+    	        this.requestTierResponse( json, paneIndex );
     	    }.bind( this ) );	        
 	    }
 	},
     
-	onTierReceived: function( json, paneIndex ){
+	requestTierResponse: function( json, paneIndex ){
+	    console.log( ":::: ", arguments );
 //	    console.log( "onTierReceived", json );
-	    var tier = new mop.modules.navigation.Tier( this, json.response );
+        this.nodeData[ this.currentParentId ] = json.response.data.nodes;
+	    var tier = new mop.modules.navigation.Tier( this, json.response.html, this.currentParentId );
         this.tiers[ this.currentParentId ] = tier;
 	    this.renderPane( tier, paneIndex );
 	    var pane = this.navPanes[ paneIndex ];
@@ -56,7 +69,6 @@ mop.modules.navigation.Navigation = new Class({
     renderPane: function( aTier, paneIndex ){
         var newPane;
         newPane = this.navPaneTemplate.clone();
-	    if( this.navPanes.length > 0 ) this.clearPanes( paneIndex + 1 );
         this.navPanes.push( newPane );
         var elementDimensions = this.paneContainer.getDimensions();
         this.element.getElement( ".panes" ).adopt( newPane );
@@ -72,43 +84,50 @@ mop.modules.navigation.Navigation = new Class({
     clearPanes: function( startIndex, endIndex ){
         if( startIndex == -1 ) startIndex = 0;
         if( !endIndex ) endIndex = this.navPanes.length;
-
-        var panesToRemove = this.navPanes.filter( function( aPane, i ){
-            if( i >= startIndex && i < endIndex ) return aPane;
-        });
-        console.log( panesToRemove );
+        var panesToRemove = this.navPanes.filter( function( aPane, i ){ if( i >= startIndex && i < endIndex ) return aPane; });
+//        console.log( panesToRemove );
         panesToRemove.each( function( aPane, index ){
-           this.navPanes.erase( aPane );
-           aPane.getElement( "ul" ).unspin();
-           aPane.retrieve( 'tier' ).detach();
-           aPane.destroy();
+            this.removeCrumb( index + 1 ); // we want to remove the crumbs FOLLOWING the crumb that represents the current pane 
+            this.navPanes.erase( aPane );
+            aPane.getElement( "ul" ).unspin();
+            aPane.retrieve( 'tier' ).detach();
+            aPane.destroy();
         }, this );
     },
     
-	displayNode: function( nodeId ){
+	onNodeSelected: function( nodeId ){
         // marshal instead of dataSource here??? Even though at the moment they are the same?
-        this.marshal.displayNode( nodeId );
-        this.currentParentId = nodeId;
+        this.marshal.onNodeSelected( nodeId );
 	},
 
 	removeObject: function( nodeId ){
 	    this.marshal.removeObject( nodeId, this.onRemoveObjectResponse.bind( this ) );
 	},
 
-	onRemoveObjectResponse: function( response ){
-        if( response.error ) console.log( "onRemoveObjectResponse error:", response.error );
-        },
+    togglePublished: function( nodeId ){
+	    this.marshal.togglePublished( nodeId, this.onTogglePublishedResponse.bind( this ) );        
+    },
     
-    onBreadCrumbClicked: function( aNode ){
-		this.requestTier( node, aNode.index );
+	onRemoveObjectResponse: function( json ){
+        if( !json.returnValue ) console.log( "onRemoveObjectResponse error:", json.response.error );
+    },
+
+	onTogglePublishedResponse: function( json ){
+        if( !json.returnValue ) console.log( "onTogglePublishedResponse error:", json.response.error );
+    },
+    
+    onCrumbClicked: function( aNode ){
+        console.log( ":::::::::::: onBreadCrumbClicked ", aNode );
+		this.requestTier( aNode.id, this.navPanes[ aNode.index ] );
 	},
 	
-	addBreadCrumb: function( parentId, parentPane ){
-		if( nodeParentId ){
-			var node = this.tiers[ parentId ];
-			breadCrumbObj = { label: node.data.title, id: node.data.id, index: this.navPanes.indexOf( parentPane ) };
-		}
-		this.breadCrumbs.addCrumb( breadCrumbObj );
+	addCrumb: function( label, id, paneIndex ){
+	    console.log( "addBreadCrumb", label, id, paneIndex );
+		this.breadCrumbs.addCrumb( { label: label, id: id, index: paneIndex } );
+	},
+	
+	removeCrumb: function( paneIndex ){
+	    this.breadCrumbs.removeCrumb( paneIndex );
 	}
 	
 });
@@ -117,16 +136,25 @@ mop.modules.navigation.Tier = new Class({
 
  //       Extends: mop.MoPObject,
 	nodes: null,
-	nodeData: null,
-	initialize: function( aMarshal, nodeData ){
+	html: null,
+	parentId: null,
+	activeNode: null,
+	
+	initialize: function( aMarshal, html, parentId ){
 	    this.marshal = aMarshal;
-	    this.nodeData = nodeData;
+	    this.html = html;
+	    this.parentId = parentId;
 	},
 	
 	toString: function(){ return "[ Object, mop.MoPObject, mop.modules.navigation.Tier ]" },
 	
+	getNodeIdFromElement: function( anElement ){
+//	    console.log( "getNodeIdFromElement", anElement );
+	    return anElement.get("id").split( "_" )[1];
+	},
+    	
 	attachToPane: function( navPane ){
-	    console.log( "attachToPane", this, navPane );
+//	    console.log( "attachToPane", this, navPane );
 	    navPane.store( "tier", this );
 	    this.element = navPane;
 	    navPane.empty();
@@ -134,13 +162,21 @@ mop.modules.navigation.Tier = new Class({
 	},
 	
 	detach: function(){
-        this.nodes = this.element = this.activeNode = null;
+        this.element = this.activeNode = null;
+	},
+	
+	getActiveNode: function(){
+        return this.activeNode;
+	},
+
+	getActiveNodeId: function(){
+        return this.getNodeIdFromElement( this.activeNode );
 	},
 	
 	render: function(){
-        this.element.set( 'html', this.nodeData.html );
+        this.element.set( 'html', this.html );
 	    this.nodes = this.element.getElements(".node");
-	    this.nodes.each( function( aNodeElement, index ){
+	    this.nodes.each( function( aNodeElement, i ){
 //    	    aNodeElement.addEvent( "focus", this.indicateNode.bindWithEvent( this, aNodeElement ) );
   //  	    aNodeElement.addEvent( "blur", this.deindicateNode.bindWithEvent( this, aNodeElement ) );
     	    aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
@@ -181,7 +217,7 @@ mop.modules.navigation.Tier = new Class({
 	    this.indicateNode( nodeElement );
         var nodeId = this.getNodeIdFromElement( nodeElement );
 	    this.marshal.requestTier( nodeId, this.element );
-	    this.displayNode( nodeId );
+	    this.onNodeSelected( nodeId );
 	},
 		
     onRemoveNodeClicked: function( e, nodeElement ){
@@ -195,19 +231,22 @@ mop.modules.navigation.Tier = new Class({
     onTogglePublishClicked: function( e, nodeElement ){
         mop.util.stopEvent( e );
 	    console.log( "onTogglePublishClicked", e, nodeElement );
+        var nodeId = this.getNodeIdFromElement( nodeElement );
+        var togglePublishLink = nodeElement.getElement( ".togglePublish" );
+        if( togglePublishLink.hasClass( "published" ) ){
+            togglePublishLink.removeClass( "published" );
+        }else{
+            togglePublishLink.addClass( "published" );            
+        }
+	    this.togglePublished( nodeId );
     },
     
-	displayNode: function( nodeId ){
-	    this.marshal.displayNode( nodeId );
+	onNodeSelected: function( nodeId ){
+	    this.marshal.onNodeSelected( nodeId );
 	},
 	
-	getNodeIdFromElement: function( anElement ){
-//	    console.log( "getNodeIdFromElement", anElement );
-	    return anElement.get("id").split( "_" )[1];
-	},
-	
-	togglePublish: function( e ){
-	    mop.util.stopEvent( e );
+	togglePublished: function( nodeId ){
+	    this.marshal.togglePublished( nodeId );
 	    
 	},
 	

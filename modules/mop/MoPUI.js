@@ -131,10 +131,10 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 	
 	className: "BreadCrumbTrail",
 	
-	initialize: function( anElement, onBreadCrumbClickedCallback ){
+	initialize: function( anElement, onCrumbClickedCallback ){
 	    this.element = anElement;
-		this.onBreadCrumbClickedCallback = onBreadCrumbClickedCallback;
-		console.log( "BreadCrumbTrail", this, this.element )
+		this.onCrumbClickedCallback = onCrumbClickedCallback;
+//		console.log( "BreadCrumbTrail", this, this.element );
 	},
 	
 	toString: function(){
@@ -151,28 +151,25 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 	},
 
 	addCrumb: function( obj ){
-		var crumb = new Element( "a", {
-			"text": obj.label,
-			"events":{
-				"click": this.onBreadCrumbClicked.bindWithEvent( this, obj )
-			}
-		});
-		var listItem = new Element( "li" );
-		crumb.inject( listItem );
-		if( this.element.getChildren("li")[ obj.index ] ){
-			listItem.replaces( this.element.getChildren("li")[ obj.index ] );
-		}
+//	    console.log( "::::::::", obj );
+		var newCrumb = new Element( "li" ).adopt( 
+		    new Element( "a", { "text": obj.label, "events":{ "click": this.onCrumbClicked.bindWithEvent( this, obj ) } } )
+		);
+		var crumbs = this.element.getElements("li");
+		this.element.getElement("ul").adopt( newCrumb );
+//		console.log( "addCrumb >>>>>> ", newCrumb );
 	},
 	
-	onBreadCrumbClicked: function( e, obj ){
-		mop.util.stopEvent();
-//		console.log( this.toString(), "onBreadCrumbClicked", obj );
-		this.onBreadCrumbClickedCallback( obj );
+	onCrumbClicked: function( e, obj ){
+		mop.util.stopEvent( e );
+//		console.log( "::::: \t onBreadCrumbClicked", obj );
+		this.onCrumbClickedCallback( obj );
 	},
 	
-	removeBreadCrumb: function( anIndex ){
-		var crumb = this.element.getChildren( "li" )[ anIndex ];
-		crumb.destroy();
+	removeCrumb: function( anIndex ){
+	    console.log( "removeCrumb", anIndex );
+		var crumb = this.element.getElements( "li" )[ anIndex ];
+		if( crumb ) crumb.destroy();
 	},
 	
 	destroy: function(){
@@ -2281,7 +2278,7 @@ mop.ui.FileElement = new Class({
 	},
 
 	getSubmitURL: function(){
-		var url = mop.util.getAppURL() + "ajax/data/" + this.marshal.getSubmissionController() + "/" + this.action + "/" + this.marshal.getObjectId();
+		var url = "ajax/data/" + this.marshal.getSubmissionController() + "/" + this.action + "/" + this.marshal.getObjectId();
 //		console.log( ":::: ", this.toString(), "getSubmitURL: ", url );
 		return 	url;
 	},
@@ -2967,7 +2964,7 @@ mop.ui.PulldownNav = new Class({
 	
 	redirect: function(){
 		if( this.getValue() == null || this.getValue() == "" ) return;
-		var url = mop.util.getAppURL() + this.getValue();
+		var url = this.getValue();
 		window.location.href = url;
 	}
 
@@ -3066,7 +3063,7 @@ mop.ui.CheckBox = new Class({
 
 		if( this.showSaving ) this.showSaving();
 
-		var url = mop.util.getAppURL() + "ajax/data/" + this.marshal.getSubmissionController() + "/" + this.action + "/" + this.marshal.getObjectId();
+		var url = "ajax/data/" + this.marshal.getSubmissionController() + "/" + this.action + "/" + this.marshal.getObjectId();
 		var submittedVars = { field: this.fieldName, value: val };
 		console.log( this.toString(), "submit", url, submittedVars );
 		mop.util.JSONSend( url, submittedVars, { onComplete: this.onResponse.bind( this ) } );
@@ -4018,7 +4015,7 @@ mop.ui.PaginationControls = new Class({
 		}else{
 			this.spinner.removeClass( "hidden" );
 			var marshalId = ( this.marshal.instanceName )? this.marshal.instanceName : this.marshal.get("id");
-			var url = mop.util.getAppURL() + "ajax/data/" + marshalId + "/" + this.method + "/" + this.listId + "/" + this.currentPage;
+			var url = "ajax/data/" + marshalId + "/" + this.method + "/" + this.listId + "/" + this.currentPage;
 			var postData = ( this.marshal.getPaginationPostData )? this.marshal.getPaginationPostData() : null ; //getGeneratedDataQueryString() : null;
 //			console.log( this.toString(), "paginate uncached page >> ", url, postData );
 			mop.util.JSONSend( url, postData, { onComplete: this.onPagination.bind( this ) } );

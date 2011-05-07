@@ -14,7 +14,6 @@
 	<?=$javascript;?>
 
 	<?=$stylesheet;?>
-
 	<!--[if IE]>
 	<style type="text/css">
 	  .clearfix {

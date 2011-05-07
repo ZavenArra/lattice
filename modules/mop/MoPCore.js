@@ -14,7 +14,69 @@ if (!window.console ){ window.console = {};
 
 /*
 	Section: Extending Mootools
+*/
 
+/*
+Class: Interfaces
+description: Interfaces provides some Interface functionality to Class (and also provides an Interface Object)
+license: MIT-style
+authors: Sebastian Wohlrab
+requires: core/1.2.4: '*'
+provides: [Class.Interfaces]
+...
+*/
+
+Class.Mutators.Interfaces = function( interfaces ) {
+	this.implement('initialize', function(){});
+	console.log( "Interfaces", interfaces );
+	return interfaces;
+};
+
+Class.Mutators.initialize = function( initialize ) {
+	return function() {
+	    Array.from( this.Interfaces ).each( function( implemented ) {
+	        console.log( ":::", this.Interfaces, implemented, implemented.Interface );
+			implemented.Interface.Check( this );
+		}, this );
+		return initialize.apply( this, arguments );
+	}
+}
+var Interface = function( name, members ) {
+	members.Interface = {
+		Name: name,
+		Check: function( obj ) {
+		    console.log( "What?" );
+			var error = [];
+			for ( p in members ) {
+				switch( p ) {
+					case "Interface": /* reservated */ break;
+					case "Interfaces":
+						var existing = false;
+						$splat(members[p]).each(function(iNeeded) {
+							$splat(obj[p]).each(function(iExisting) {
+								if ( iNeeded.Interface.Name == iExisting.Interface.Name) existing = true;
+							});
+						});
+						if ( !existing ) {
+							error.push( p );
+						}
+					break;
+					default:
+						if ( !(p in obj) ) {
+							error.push( p );
+						}
+					break;
+				}
+			}
+			if ( error.length > 0 ) {
+				throw new Error( "[" + this.Name + "] The following Interface members are not implemented yet: " + error.join(', ') );
+			}
+		}
+	};
+	return members;
+};
+
+/*
 	Function: getSiblings
 	Arguments:
 		match - {Element} an element to get the sibling
@@ -69,7 +131,7 @@ Function.implement({
  		s - {String} a string
 	Returns: {String} argumemt string as UTF-8 string
 */
-String.implement( "encodeUTF8", function(  ){
+String.implement( "encodeUTF8", function(){
   return unescape( encodeURIComponent( this ) );
 });
 
@@ -195,6 +257,7 @@ mop.util.getBaseURL = function(){
 	Gets urls to the application front-controller
 	Returns: baseURL + appention (appurl for ajax purposes)
 */
+
 mop.util.getAppURL = function(){
 	var appURLAppendClassName = mop.util.getValueFromClassName( "appUrlAppend", $(document).getElement("body").get("class") );
 	var appUrlAppend;
@@ -247,6 +310,7 @@ mop.util.getUniqueId = function ( prefix ){
 	Note: Does this need to exist?
 */ 
 mop.util.JSONSend = function( url, data, options ){
+	url.toURI().toAbsolute();
 	if( options ){ 
 		options.url = url;
 	}else{
@@ -464,7 +528,7 @@ mop.MoPObject = new Class({
 		Convenience method that calls mop.util.JSONSend;
 	*/	
 	JSONSend: function( action, data, options ){
-		var url = mop.util.getAppURL() + "ajax/" + this.getSubmissionController() +  "/" + action + "/" + mop.objectId;
+		var url = "ajax/" + this.getSubmissionController() +  "/" + action + "/" + mop.objectId;
     	if( options ){  options.url = url; }else{ options = { url: url }; }
     	new Request.JSON( options ).post( data );
 	},
@@ -529,9 +593,9 @@ mop.util.HistoryManager = new Class({
 
 	Implements: mop.util.Broadcaster,
 	locationListener: null,
-	appState: new Hash(),
+	appState: {},
 	_instance: null,
-	registeredEvents: new Hash(),
+	registeredEvents: {},
 
 	initialize: function(){
 		return this;
@@ -549,7 +613,7 @@ mop.util.HistoryManager = new Class({
 	},
 
 	init: function( eventKey, eventString ){
-		this.registeredEvents.set( eventKey, eventString );
+		this.registeredEvents[ eventKey ] = eventString;
 		this.currentHash = this.getStrippedHash();
 //		console.log( "HistoryManager.init", this.currentHash );
 		this.storeStateFromHash();
@@ -567,7 +631,7 @@ mop.util.HistoryManager = new Class({
 			keyValuePair = keyValuePair.split("-");
 			var key = keyValuePair[0];
 			var value = keyValuePair[1];
-			this.appState.set( key, value );
+			this.appState[ key ] = value;
 			key = null;
 			value = null;
 		}, this );
@@ -590,11 +654,11 @@ mop.util.HistoryManager = new Class({
 	},
 
 	registerEvent: function( eventKey, eventString ){
-		this.registeredEvents.set( eventKey, eventString );
+		this.registeredEvents[ eventKey ] = eventString;
 	},
 
 	changeState: function( key, value ){
-		this.appState.set( key, value );
+		this.appState[ key ] = value;
 		this.updateHash();
 	},
 
@@ -610,7 +674,7 @@ mop.util.HistoryManager = new Class({
 	},
 	
 	getValue: function( key ){
-			return ( this.appState.get( key ) ) ? this.appState.get( key ) : null;
+	    return ( this.appState[ key ] ) ? this.appState[ key ] : null;
 	},
 
 	fireEvents: function(){
@@ -682,7 +746,7 @@ mop.util.LoginMonitor = new Class({
 		clearInterval( this.inactivityTimeout );
 		clearInterval( this.logoutTimeout );
 		this.inactivityTimeout = this.onInactivity.periodical( this.secondsOfInactivityTilPrompt, this );
-		new Request.JSON( { url: mop.util.getAppURL()+"keepalive" } ).post();
+		new Request.JSON( { url:"keepalive" } ).post();
 	},
 
 	logout: function(){
@@ -692,7 +756,7 @@ mop.util.LoginMonitor = new Class({
 		delete this.status;
 		window.removeEvents();
 		this.dialogue.destroy();
-		window.location = mop.util.getAppURL()+"auth/logout";
+		window.location = "auth/logout".toURI().toAbsolute();
 	}
 
 });
