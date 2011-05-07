@@ -70,9 +70,9 @@ class MoPCMS {
 			return self::$mediapath;
 		}
 		if(Kohana::config('mop.staging')){
-			self::$mediapath = Kohana::config('cms.stagingmediapath');
+			self::$mediapath = Kohana::config('mop_cms.stagingmediapath');
 		} else {
-			self::$mediapath = Kohana::config('cms.basemediapath');
+			self::$mediapath = Kohana::config('mop_cms.basemediapath');
 		}
 		return self::$mediapath;
 	}
@@ -367,7 +367,6 @@ class MoPCMS {
 	Returns: the new page id
 	*/
 	public static function addObject($parent_id, $template_ident, $data = array() ){
-		echo $template_ident;
 		$template_id = ORM::Factory('template', $template_ident)->id;
     if(!$template_id){
       //we're trying to add an object of template that doesn't exist in db yet
@@ -433,6 +432,7 @@ class MoPCMS {
 		foreach($lookupTemplates as $tConfig){
 			$templates[] = $tConfig->getAttribute('name');	
 		}
+      Kohana::$log->add(Log::ERROR,'yuh');
 		//add submitted data to content table
 		foreach($data as $field=>$value){
 
@@ -461,13 +461,24 @@ class MoPCMS {
 			}
 
 
+      Kohana::$log->add(Log::ERROR,$fieldInfo->tagName);
 			switch($fieldInfo->tagName){
 			case 'file':
 			case 'image':
-				$file = ORM::Factory('file');
-				$file->filename = $value;			
-				$file->save();
-				$newpage->contenttable->$field = $file->id;
+				//need to get the file out of the FILES array
+				
+    Kohana::$log->add(Log::ERROR, var_export($_POST, true));
+    Kohana::$log->add(Log::ERROR, var_export($_FILES, true));
+      Kohana::$log->add(Log::ERROR,'something'.$field);
+				if(isset($_FILES[$field])){
+          Kohana::$log->add(Log::ERROR,'Adding via post file');
+					$file = mopcms::saveHttpPostFile($newpage->id, $field, $_FILES[$field]);
+				} else {
+					$file = ORM::Factory('file');
+					$file->filename = $value;			
+					$file->save();
+					$newpage->contenttable->$field = $file->id;
+				}
 				break;
 			default:
 				$newpage->contenttable->$field = $data[$field];
@@ -527,7 +538,10 @@ class MoPCMS {
 	}
 
 	public static function saveHttpPostFile($objectid, $field, $postFileVars){
+          Kohana::$log->add(Log::ERROR,'Addasdfasd aing via post file');
 
+      Kohana::$log->add(Log::ERROR, 'save uploaded');
+      Kohana::$log->add(Log::ERROR, var_export($postFileVars, true));
 		$object = ORM::Factory('page', $objectid);
 		//check the file extension
 		$filename = $postFileVars['name'];
@@ -545,6 +559,7 @@ class MoPCMS {
 		case 'tiff':
 		case 'TIF':
 		case 'TIFF':
+      Kohana::$log->add(Log::ERROR, 'save uploaded');
 			return $object->saveUploadedImage($field, $postFileVars['name'], 
 																				$postFileVars['type'], $postFileVars['tmp_name']);
 			break;
