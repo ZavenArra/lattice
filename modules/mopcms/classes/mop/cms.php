@@ -180,12 +180,23 @@ class MOP_CMS extends MOP_CMSInterface {
 
 	}
 
+	public function action_addchild($id, $template_id){
+		$data = $_POST;
+		$newId = mopcms::addObject($id, $template_id, $data);
+		$this->response->data($newId);
+	}
+
+	public function action_save($id){
+
+	}
+
+
 
 	/*
 	 * Function: associate
 	 * Associate an object to another object
 	 */
-	public function function_associate($objectId){
+	public function action_associate($objectId){
 		//gotta issue here
 	}
 
@@ -199,7 +210,7 @@ class MOP_CMS extends MOP_CMSInterface {
 	$_POST - possible array of keys and values to initialize with
 	Returns: nav controller node object
 	*/
-	public function function_addObject($id, $template_id, $title=null){
+	public function action_addObject($id, $template_id, $title=null){
 		$data = $_POST;
 
 		if($title){

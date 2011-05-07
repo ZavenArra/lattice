@@ -105,7 +105,6 @@ class MOP_CMSInterface extends Controller_Layout {
 				throw new Kohana_Exception('Invalid field for template, using XPath : :xpath', array(':xpath'=>$xpath));
 			}
 
-
 			switch($fieldInfo->getAttribute('type')){
 			case 'multiSelect':
 				$object = ORM::Factory('page', $_POST['field']);
@@ -144,6 +143,8 @@ class MOP_CMSInterface extends Controller_Layout {
                 $value = $page->contenttable->$_POST['field'];
                 $this->response->data(array('value'=>$value));
 	}
+
+
 
 	/*
 		Function: togglePublish

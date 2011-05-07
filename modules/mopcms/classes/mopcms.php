@@ -367,7 +367,6 @@ class MoPCMS {
 	Returns: the new page id
 	*/
 	public static function addObject($parent_id, $template_ident, $data = array() ){
-		echo $template_ident;
 		$template_id = ORM::Factory('template', $template_ident)->id;
     if(!$template_id){
       //we're trying to add an object of template that doesn't exist in db yet
@@ -464,10 +463,16 @@ class MoPCMS {
 			switch($fieldInfo->tagName){
 			case 'file':
 			case 'image':
-				$file = ORM::Factory('file');
-				$file->filename = $value;			
-				$file->save();
-				$newpage->contenttable->$field = $file->id;
+				//need to get the file out of the FILES array
+				
+				if(isset($_FILES[$_POST['field']])){
+					$file = mopcms::saveHttpPostFile($pageid, $_POST['field'], $_FILES[$_POST['field']]);
+				} else {
+					$file = ORM::Factory('file');
+					$file->filename = $value;			
+					$file->save();
+					$newpage->contenttable->$field = $file->id;
+				}
 				break;
 			default:
 				$newpage->contenttable->$field = $data[$field];
