@@ -465,8 +465,8 @@ class MoPCMS {
 			case 'image':
 				//need to get the file out of the FILES array
 				
-				if(isset($_FILES[$_POST['field']])){
-					$file = mopcms::saveHttpPostFile($pageid, $_POST['field'], $_FILES[$_POST['field']]);
+				if(isset($_FILES[$_POST[$field]])){
+					$file = mopcms::saveHttpPostFile($pageid, $_POST[$field], $_FILES[$_POST[$field]]);
 				} else {
 					$file = ORM::Factory('file');
 					$file->filename = $value;			

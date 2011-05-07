@@ -183,6 +183,14 @@
 				<link field="theLink" label="A Link for All"/>
       </elements>
 		</template>
+
+
+		<template name="wildflowerTestObject" >
+      <elements>
+				<image field="image" label="Image of the Wildflower"/>
+      </elements>
+		</template>
+
 	</templates>
 
 </configuration>

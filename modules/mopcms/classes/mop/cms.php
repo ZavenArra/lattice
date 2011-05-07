@@ -181,6 +181,8 @@ class MOP_CMS extends MOP_CMSInterface {
 	}
 
 	public function action_addchild($id, $template_id){
+    Kohana::$log->add(Log::ERROR, var_export($_POST, true));
+    Kohana::$log->add(Log::ERROR, var_export($_FILES, true));
 		$data = $_POST;
 		$newId = mopcms::addObject($id, $template_id, $data);
 		$this->response->data($newId);
