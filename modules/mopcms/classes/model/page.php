@@ -217,7 +217,7 @@ class Model_Page extends ORM {
 			->find();
 
 		//get children of
-		Kohana::log('info', 'hasdfasd');
+		Kohana::$log->add(Log::INFO, 'hasdfasd');
 		return $container->getPublishedChildren();
 	}
 
@@ -327,6 +327,7 @@ class Model_Page extends ORM {
 	 * */
 	public function saveUploadedImage($field, $fileName, $type, $tmpName){
 			$tmpName = $this->moveUploadedFileToTmpMedia($tmpName);
+  		Kohana::$log->add(Log::INFO, 'clling save image'.$fileName);
 			$file = $this->saveImage($field, $fileName, $type, $tmpName); 
 
 		return $file;
@@ -342,7 +343,7 @@ class Model_Page extends ORM {
 			);
 			return $result;
 		}
-		Kohana::log('info', 'moved file to '.mopcms::mediapath().$saveName);
+		Kohana::$log->add(Log::INFO, 'tmp moved file to '.mopcms::mediapath().$saveName);
 
 		return $saveName;
 
@@ -375,7 +376,7 @@ class Model_Page extends ORM {
 	public function verifyImage($field, $tmpName){
 		$origwidth = $size[0];
 		$origheight = $size[1];
-		Kohana::log('info', var_export($parameters, true));
+		Kohana::$log->add(Log::INFO, var_export($parameters, true));
 		if(isset($parameters['minheight']) &&  $origheight < $parameters['minheight']){
 			$result = array(
 				'result'=>'failed',
@@ -390,14 +391,14 @@ class Model_Page extends ORM {
 			);
 			return $result;
 		}
-		Kohana::log('info', "passed min tests with {$origwidth} x {$origheight}");
+		Kohana::$log->add(Log::INFO, "passed min tests with {$origwidth} x {$origheight}");
 
 	}
 
 	public function saveImage($field, $fileName, $type, $tmpName){
 		//do the saving of the file
 		$file = $this->saveFile($field, $fileName, $type, $tmpName);
-		Kohana::log('info', 'Returning to saveImage');
+		Kohana::$log->add('info', 'Returning to saveImage');
 
 
 		$imageFileName = $this->processImage($file->filename, $field);
@@ -419,11 +420,11 @@ class Model_Page extends ORM {
 		case 'tif':
 		case 'TIFF':
 		case 'TIF':
-			Kohana::log('info', 'Converting TIFF image to JPG for resize');
+			Kohana::$log->add(Log::INFO, 'Converting TIFF image to JPG for resize');
 
 			$imageFileName =  $filename.'_converted.jpg';
 			$command = sprintf('convert %s %s',addcslashes(mopcms::mediapath().$filename, "'\"\\ "), addcslashes(mopcms::mediapath().$imageFileName, "'\"\\ "));
-			Kohana::log('info', $command);
+			Kohana::$log->add(Log::INFO, $command);
 			system(sprintf('convert %s %s',addcslashes(mopcms::mediapath().$filename, "'\"\\ "),addcslashes(mopcms::mediapath().$imageFileName, "'\"\\ ")));
 			break;
 		default:
