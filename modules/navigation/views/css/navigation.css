@@ -1,6 +1,8 @@
 /*Navigation*/
 
 #navigation{
+    height: 27em;
+    border-bottom: 1px #0af solid;
 }
 
 #navigation .container{
@@ -15,33 +17,6 @@
 #navigation .grid_3,
 #navigation .grid_4{
     margin: 0 0 0 0;
-}
-
-ul.breadCrumb{
-    clear: both;
-	list-style:none;
-	font-family: georgia, helvetica, sans-serif;
-	margin: 0 0 0 0;
-}
-
-ul.breadCrumb li{
-	display: block;
-	float:left;
-}
-
-ul.breadCrumb li a{
-    display: block;
-    width: auto;
-	color:#aaa;
-	background:#eee;
-	cursor: pointer;
-	text-decoration:none;
-	padding: .5em 1em;
-}
-
-ul.breadCrumb li a:hover{
-	background:#0af;
-	color:#fff;
 }
 
 #navigation .panes{
@@ -140,20 +115,20 @@ ul.breadCrumb li a:hover{
 	background: url(images/icon_delete_hover.png);
 }
 
-#navigation .node a.published{
+#navigation .node a.togglePublish{
+	background: url(images/icon_unpublished.png);	
+}
+
+#navigation .node a.togglePublish.published{
 	background: url(images/icon_published.png);	
 }
 
-#navigation .node a.unpublished{
-	background: url(images/icon_unpublished.png);	
+#navigation .node.active a,
+#navigation .node:hover a{
+	background: url(images/icon_unpublished_hover.png);	
 }
 
 #navigation .node.active a.published,
 #navigation .node:hover a.published{
 	background: url(images/icon_published_hover.png);	
-}
-
-#navigation .node.active a.unpublished,
-#navigation .node:hover a.unpublished{
-	background: url(images/icon_unpublished_hover.png);	
 }

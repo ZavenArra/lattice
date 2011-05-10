@@ -11,7 +11,9 @@ $config['resources']['libraryjs'] = array(
 	'modules/mop/thirdparty/monkeyphysics/datepicker.js',
 	'modules/mop/MoPCore.js',
 	'modules/mop/MoPUI.js',
-	'modules/mop/MoPModules.js'
+	'modules/mop/MoPModules.js',
+	'modules/mopcms/views/js/list.js',
+	'modules/navigation/views/js/NavigationDataSourceInterface.js'
 );
 
 

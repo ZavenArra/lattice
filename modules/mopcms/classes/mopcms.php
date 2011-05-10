@@ -70,9 +70,9 @@ class MoPCMS {
 			return self::$mediapath;
 		}
 		if(Kohana::config('mop.staging')){
-			self::$mediapath = Kohana::config('cms.stagingmediapath');
+			self::$mediapath = Kohana::config('mop_cms.stagingmediapath');
 		} else {
-			self::$mediapath = Kohana::config('cms.basemediapath');
+			self::$mediapath = Kohana::config('mop_cms.basemediapath');
 		}
 		return self::$mediapath;
 	}
@@ -432,6 +432,7 @@ class MoPCMS {
 		foreach($lookupTemplates as $tConfig){
 			$templates[] = $tConfig->getAttribute('name');	
 		}
+      Kohana::$log->add(Log::ERROR,'yuh');
 		//add submitted data to content table
 		foreach($data as $field=>$value){
 
@@ -460,13 +461,18 @@ class MoPCMS {
 			}
 
 
+      Kohana::$log->add(Log::ERROR,$fieldInfo->tagName);
 			switch($fieldInfo->tagName){
 			case 'file':
 			case 'image':
 				//need to get the file out of the FILES array
 				
-				if(isset($_FILES[$_POST['field']])){
-					$file = mopcms::saveHttpPostFile($pageid, $_POST['field'], $_FILES[$_POST['field']]);
+    Kohana::$log->add(Log::ERROR, var_export($_POST, true));
+    Kohana::$log->add(Log::ERROR, var_export($_FILES, true));
+      Kohana::$log->add(Log::ERROR,'something'.$field);
+				if(isset($_FILES[$field])){
+          Kohana::$log->add(Log::ERROR,'Adding via post file');
+					$file = mopcms::saveHttpPostFile($newpage->id, $field, $_FILES[$field]);
 				} else {
 					$file = ORM::Factory('file');
 					$file->filename = $value;			
@@ -532,7 +538,10 @@ class MoPCMS {
 	}
 
 	public static function saveHttpPostFile($objectid, $field, $postFileVars){
+          Kohana::$log->add(Log::ERROR,'Addasdfasd aing via post file');
 
+      Kohana::$log->add(Log::ERROR, 'save uploaded');
+      Kohana::$log->add(Log::ERROR, var_export($postFileVars, true));
 		$object = ORM::Factory('page', $objectid);
 		//check the file extension
 		$filename = $postFileVars['name'];
@@ -550,6 +559,7 @@ class MoPCMS {
 		case 'tiff':
 		case 'TIF':
 		case 'TIFF':
+      Kohana::$log->add(Log::ERROR, 'save uploaded');
 			return $object->saveUploadedImage($field, $postFileVars['name'], 
 																				$postFileVars['type'], $postFileVars['tmp_name']);
 			break;

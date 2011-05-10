@@ -3,7 +3,6 @@
 	mop Modules
 */
 mop.modules = {};
-
 /* 
 	Class: mop.modules.Module
 	Base module
@@ -20,12 +19,12 @@ mop.modules.Module = new Class({
 		Variable: UIElements
 		list of this module's UIElements
 	*/
-	UIElements: new Hash(),
+	UIElements: {},
 	/*
 		Variable: childModules
 		Modules loaded within this module
 	*/
-	childModules: null, //new Hash(),
+	childModules: {},
 	
 	initialize: function( anElementOrId, aMarshal, options ){
 //		console.log( "Constructing", this.toString(), this.childModules );
@@ -77,23 +76,18 @@ mop.modules.Module = new Class({
 	initModules: function( anElement ){
 		var descendantModules = ( anElement )? anElement.getElements(".module") : this.element.getElements(".module");
 		var filteredOutModules = [];
-		console.log( "\tinitModules", this.toString(), anElement );
 		descendantModules.each( function( aDescendant ){
 			descendantModules.each( function( anotherDescendant ){
-        		console.log( this.toString(), "\tdescendantloop", aDescendant, anotherDescendant, aDescendant.contains( anotherDescendant ) );
 				if(  aDescendant.contains( anotherDescendant ) && aDescendant != anotherDescendant ) filteredOutModules.push( anotherDescendant );
 			}, this );
 		}, this );
-		console.log( this.toString(), "\t\tfilteredOutModules", filteredOutModules );
 		descendantModules.each( function( aDescendant ){
 			if( !filteredOutModules.contains( aDescendant ) ){
-        		if( !this.childModules ) this.childModules = new Hash();
 				var module = this.initModule( aDescendant );
 				var instanceName = module.instanceName;
-				this.childModules.set( instanceName, module );
+				this.childModules[ instanceName ] = module;
 			}
 		}, this );
-        console.log( "childModules", this.toString(), this.childModules );
         delete filteredOutModules, descendantModules;
         filteredOutModules = descendantModules = null;
 	},
@@ -108,16 +102,16 @@ mop.modules.Module = new Class({
 	*/
 	initModule: function( element ){
 		var classPath = mop.util.getValueFromClassName( "classPath", element.get( "class" ) ).split( "_" );
-		console.log( "\t\tinitModule", this.toString(), element.get( "class" ), classPath );
+//		console.log( "\t\tinitModule", this.toString(), element.get( "class" ), classPath );
 		ref = null;
 		classPath.each( function( node ){
 		    ref = ( !ref )? this[node] : ref[node]; 
-		    console.log( ref, node );
+//		    console.log( ref, node );
 		});
     	var newModule = new ref( element, this );
 		return newModule;		
 	},
-	
+
 	/*
 		Function: getModuleUIElements
 	*/
@@ -150,7 +144,7 @@ mop.modules.Module = new Class({
 
 		UIElements.each( function( anElement ){
 		    var UIElement = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  ]( anElement, this, this.options );
-		    this.UIElements.set( UIElement.fieldName, UIElement );
+		    this.UIElements[ UIElement.fieldName ] = UIElement;
 		}, this );
 		
 		if( this.postInitUIHook ) this.postInitUIHook();
@@ -164,11 +158,11 @@ mop.modules.Module = new Class({
 	@TODO, this shouldnt necessarily be a part of module, but rather something more like an ModuleInstantiator interface */
 	destroyChildModules: function( whereToLook ){
 //		console.log( "destroyChildModules", this.toString(), this.childModules );
-		if( !this.childModules || this.childModules.getLength() == 0 ) return;
+		if( !this.childModules || Object.getLength( this.childModules ) == 0 ) return;
 
         var possibleTargets = ( whereToLook )? whereToLook.getElements( ".module" ) : this.element.getElements( ".module" );
 		
-		this.childModules.each( function( aModule ){
+		Object.each( this.childModules, function( aModule ){
 		    if( possibleTargets.contains( aModule.element ) ){
 		        var key = aModule.instanceName;
 				aModule.destroy();
@@ -221,7 +215,7 @@ mop.modules.Cluster = new Class({
     Extends: mop.modules.Module,
     initialize: function( anElementOrId, aMarshal, options ){
         this.parent( anElementOrId, aMarshal, options );
-//        console.log( "Cluster objectId", this.getObjectId() );
+        // console.log( "Cluster objectId", this.getObjectId() );
     },
     getSubmissionController: function(){
         return this.marshal.getSubmissionController();

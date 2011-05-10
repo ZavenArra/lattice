@@ -1222,3 +1222,41 @@ ul.listing li.menuItem:hover{
     color: #fff;
     
 }
+
+/***************************
+*   BREADCRUMBS
+****************************/
+
+.breadCrumb{
+    clear: both;
+	list-style:none;
+	font-family: "Georgia", "Times", serif;
+	margin: 0 0 0 0;
+}
+
+.breadCrumb ul li{
+	display: block;
+	float:left;
+}
+
+.breadCrumb ul li a:after{
+    content: " /";
+    font-size: 1.5em;
+    position: relative;
+    top: .125em;
+}
+
+.breadCrumb ul li a{
+    display: block;
+    width: auto;
+	color:#aaa;
+/*	background:#eee; */
+	cursor: pointer;
+	text-decoration:none;
+	padding: .5em .5em 0 0;
+}
+
+.breadCrumb ul li a:hover{
+	color:#0af;
+}
+

@@ -4,5 +4,5 @@
 		<div class="panes clearFix"><div class="pane"></div></div>
 	</div>
 <?/*<?endfor;?>*/?>
-	<div class="breadCrumb"></div>
+	<div class="breadCrumb clearFix"><ul></ul></div>
 </div>

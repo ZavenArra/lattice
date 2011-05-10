@@ -182,6 +182,15 @@ class MOP_CMS extends MOP_CMSInterface {
 
 	public function action_addchild($id, $template_id){
 		$data = $_POST;
+
+    //add the file keys in so that we can look them up in the FILES array laster
+    //consider just combining POST and FILES here
+    $fileKeys = array_keys($_FILES);
+    foreach($fileKeys as $fk){
+      $data[$fk] = null; 
+    }
+    Kohana::$log->add(Log::INFO, var_export($data, true));
+    Kohana::$log->add(Log::INFO, var_export($_FILES, true));
 		$newId = mopcms::addObject($id, $template_id, $data);
 		$this->response->data($newId);
 	}

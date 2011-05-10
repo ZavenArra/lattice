@@ -1,12 +1,4 @@
-
 <? $keys = array_keys($content);?>
-<?// echo $keys[2];?>
-<?// echo $content[$keys[2]];?>
-<?// if($keys[2] == 'published'):?>
-<?//=$content['published'];?>
-<?//endif;?>
-<?//=$content['published'];?>
-
 <li class="node <?=$content['nodeType'];?> <?=$content['contentType'];?> clearFix" id="node_<?=$content['id'];?>">
 	<h5><?=$content['title'];?></h5>
 	<div class="methods">
