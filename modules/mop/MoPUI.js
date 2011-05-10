@@ -167,7 +167,7 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 	},
 	
 	removeCrumb: function( anIndex ){
-	    console.log( "removeCrumb", anIndex );
+	    console.log( "removeCrumb", anIndex, this.element.getElements( "li" ), this.element.getElements( "li" )[ anIndex ] );
 		var crumb = this.element.getElements( "li" )[ anIndex ];
 		if( crumb ) crumb.destroy();
 	},

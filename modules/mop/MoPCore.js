@@ -35,7 +35,6 @@ Class.Mutators.Interfaces = function( interfaces ) {
 Class.Mutators.initialize = function( initialize ) {
 	return function() {
 	    Array.from( this.Interfaces ).each( function( implemented ) {
-	        console.log( ":::", this.Interfaces, implemented, implemented.Interface );
 			implemented.Interface.Check( this );
 		}, this );
 		return initialize.apply( this, arguments );
@@ -45,7 +44,6 @@ var Interface = function( name, members ) {
 	members.Interface = {
 		Name: name,
 		Check: function( obj ) {
-		    console.log( "What?" );
 			var error = [];
 			for ( p in members ) {
 				switch( p ) {
@@ -523,6 +521,11 @@ mop.MoPObject = new Class({
 	getValueFromClassName: function( key ){
 		return mop.util.getValueFromClassName( key, this.elementClass );
 	},
+	
+	getElement: function(){
+	    return this.element;
+	},
+	
 	/*
 		Function: JSONSend
 		Convenience method that calls mop.util.JSONSend;

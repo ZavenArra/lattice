@@ -1239,21 +1239,21 @@ ul.listing li.menuItem:hover{
 	float:left;
 }
 
-.breadCrumb ul li a:after{
-    content: " /";
+.breadCrumb ul li a:before{
+    content: "+";
     font-size: 1.5em;
     position: relative;
-    top: .125em;
+    top: .1em;
+   padding-right: .25em;
 }
 
 .breadCrumb ul li a{
     display: block;
     width: auto;
 	color:#aaa;
-/*	background:#eee; */
 	cursor: pointer;
 	text-decoration:none;
-	padding: .5em .5em 0 0;
+	padding: .75em .5em 0 .1em;
 }
 
 .breadCrumb ul li a:hover{

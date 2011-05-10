@@ -254,7 +254,7 @@ mop.modules.AjaxFormModule = new Class({
 	},
 
 	JSONSend: function( action, data, options ){
-		var url = mop.util.getAppURL() + this.getSubmissionController() +  "/ajax/" + action + "/";
+		var url = this.getSubmissionController() + "/ajax/" + action + "/";
 //		console.log( this.toString(), "JSONSend", url, data, options );
 		mop.util.JSONSend( url, data, options );
 	},
