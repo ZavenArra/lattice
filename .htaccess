@@ -12,6 +12,7 @@ RewriteEngine On
 </Files>
 
 RewriteRule ^(crossdomain.xml|index.php|robots.txt|favicon.ico|media) - [PT,L]
+RewriteRule ^application/media/* - [PT,L]
 
 # Protect system files from being viewed
 RewriteRule ^(?:system)\b.* index.php/$0 [L]
