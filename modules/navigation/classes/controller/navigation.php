@@ -227,31 +227,31 @@ class Controller_Navigation extends Controller_MOP{
 
 	public function action_getTier($parentid, $deeplink=NULL, &$follow=false){
 		$parent = ORM::Factory($this->objectModel, $parentid); 
-      
+
 		$items = ORM::factory($this->objectModel);
 		$items->where('parentid', '=',  $parentid);
-	//	$items->where('activity IS NULL');
+		$items->where('activity', 'IS', NULL);
 		$items->order_by('sortorder');
-      $iitems = $items->find_all();
-    	if($iitems){
-    		$sendItemContainers = array(); //these will go first
+		$iitems = $items->find_all();
+		if($iitems){
+			$sendItemContainers = array(); //these will go first
 			$sendItemObjects = array();
 			foreach($iitems as $child){
-         	if(strtolower($child->template->nodeType) == 'container'){
+				if(strtolower($child->template->nodeType) == 'container'){
 					//we might be skipping this node
 
 					//echo sprintf('//template[@name="%s"]/elements/list[@family="%s"]', $parent->template->templatename, $child->template->templatename);
 					$display = mop::config('objects', sprintf('//template[@name="%s"]/elements/list[@family="%s"]', 
-																										$parent->template->templatename,
-                                                    $child->template->templatename))
-                                                    ->item(0)
-																	  ->getAttribute('display');
+						$parent->template->templatename,
+						$child->template->templatename))
+						->item(0)
+						->getAttribute('display');
 					if($display == 'inline'){
 						continue;
 					}
 				}
 				$sendItem = $this->_loadNode($child);
-		
+
 				//implementation of deeplinking
 				$sendItem['follow'] = false;
 				if($child->id == $deeplink){
@@ -295,22 +295,26 @@ class Controller_Navigation extends Controller_MOP{
 			} else {
 				//this is where we would handle the addition to modules on a template basis
 			}
-         
-         $this->response->data(array('nodes'=>$sendItemObjects));
 
-         $nodes = array();
-         foreach($sendItemObjects as $item){
-            
-            $nodeView = new View('navigationNode');
-            $nodeView->content = $item;
-            $nodes[] = $nodeView->render();
-         }
-         
-         $tierView = new View('navigationTier');
-         $tierView->nodes = $nodes;
-         $tierView->tierMethodsDrawer = null;
-         $this->response->body($tierView->render());
-         
+			$this->response->data(array('nodes'=>$sendItemObjects));
+
+			$nodes = array();
+			foreach($sendItemObjects as $item){
+
+				$nodeView = new View('navigationNode');
+				$nodeView->content = $item;
+				$nodes[] = $nodeView->render();
+			}
+
+			$tierView = new View('navigationTier');
+			$tierView->nodes = $nodes;
+
+			$tierMethodsDrawer = new View('tierMethodsDrawer');
+			$tierMethodsDrawer->addableObjects = $parent->template->addableObjects;
+
+			$tierView->tierMethodsDrawer = $tierMethodsDrawer->render();
+			$this->response->body($tierView->render());
+
 		} 
 	}
 
