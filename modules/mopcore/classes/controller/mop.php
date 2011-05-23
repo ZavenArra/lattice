@@ -16,9 +16,9 @@ class Controller_MOP extends Controller {
 
 	//constructor
 	public function __construct($request, $response){
-		parent::__construct($request, $response);	
+		parent::__construct($request, $response);
 
-		$this->controllerName = strtolower(substr(get_class($this), 11)); 
+		$this->controllerName = strtolower(substr(get_class($this), 11));
 		$this->checkAccess();
 
 		if($request->is_initial()){
@@ -26,8 +26,9 @@ class Controller_MOP extends Controller {
 		}
 
 		//look up all matching js and css based off controller name
-		
-		$this->loadResources($this->controllerName);
+
+		$this->loadResources();
+
 	}
 
 	/*
@@ -38,9 +39,11 @@ class Controller_MOP extends Controller {
 	 * Returns: nothing
 	 */
 	public function checkAccess(){
+		Kohana::$log->add(Log::ERROR, 'Skipping login for control panel');
+		/* SKIPPING LOGIN
 		//Authentication check
 		$role = Kohana::config(strtolower($this->controllerName).'.authrole', FALSE, FALSE);
-		
+
 		//checked if logged in
 		if($role && !Auth::instance()->logged_in()){
 			Request::current()->redirect('auth/login/'.Request::initial()->uri());
@@ -77,19 +80,31 @@ class Controller_MOP extends Controller {
 			url::redirect($redirect);
 			exit;
 		}
+		*/
 
 	}
 
+	protected function loadResources(){
+		$this->loadResourcesForKey($this->controllerName);
 
-	protected function loadResources($key){
-		if(is_subclass_of(self::$topController, 'Controller_MOP')){	
-			//should add to self, then merge into topController
-			if($css = Kohana::find_file('views', 'css/'.$key, 'css')){
-				$this->resources['css'][$css] = helper_mop::convertFullPathToWebPath($css);
+		$parents = $this->getParents();
+		foreach($parents as $parent){
+			if($parent == 'MOP_Controller'){
+				break;
 			}
-			if($js = Kohana::find_file('views', 'js/'.$key, 'js')){
-				$this->resources['js'][$js] = helper_mop::convertFullPathToWebPath($js);
-			}
+			$parentKey = strtolower(substr($parent, 11));
+			$this->loadResourcesForKey($parentKey);
+		}	
+	}
+
+	protected function loadResourcesForKey($key){
+
+		//should add to self, then merge into topController
+		if($css = Kohana::find_file('views', 'css/'.$key, 'css')){
+			$this->resources['css'][$css] = helper_mop::convertFullPathToWebPath($css);
+		}
+		if($js = Kohana::find_file('views', 'js/'.$key, 'js')){
+			$this->resources['js'][$js] = helper_mop::convertFullPathToWebPath($js);
 		}
 
 		$config = Kohana::config($key);
@@ -108,6 +123,20 @@ class Controller_MOP extends Controller {
 				self::$topController->resources[$key] = array_merge(self::$topController->resources[$key], $this->resources[$key]);
 			}
 		}
+
 	}
+
+	public function getParents($class=null, $plist=array()) {
+		$class = $class ? $class : $this;
+		$parent = get_parent_class($class);
+		if($parent) {
+			$plist[] = $parent;
+			/*Do not use $this. Use 'self' here instead, or you
+			 *        * will get an infinite loop. */
+			$plist = self::getParents($parent, $plist);
+		}
+		return $plist;
+	}
+
 
 }
