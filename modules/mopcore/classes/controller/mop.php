@@ -89,10 +89,14 @@ class Controller_MOP extends Controller {
 
 		$parents = $this->getParents();
 		foreach($parents as $parent){
-			if($parent == 'MOP_Controller'){
+			if($parent == 'Controller_MOP'){
 				break;
 			}
-			$parentKey = strtolower(substr($parent, 11));
+			if(strstr($parent, 'Controller')){
+				$parentKey = substr($parent, 11);
+			} else {
+				$parentKey = $parent;
+			}
 			$this->loadResourcesForKey($parentKey);
 		}	
 	}
