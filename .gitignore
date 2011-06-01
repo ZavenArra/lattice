@@ -1,3 +1,5 @@
 application/media/*
 application/views/generated/*
+application/config/database.php
 modules/golive/backup/
+/nbproject/private/
