@@ -177,14 +177,14 @@ class Model_Page extends ORM {
 		$content['dateadded'] = $this->dateadded;
 		$content['templateName'] = $this->template->templatename;
 
-		$fields = ORM::Factory('objectmap')
-			->where('template_id', '=', $this->template->id)
-			->find_all();
-		foreach($fields as $map){
-      if(mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $this->template->templatename, $map->column))->length){
-        $content[$map->column] = $this->contenttable->{$map->column};
+		$fields = mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $this->template->templatename));
+
+		foreach ($fields as $fieldInfo) {
+         $field = $fieldInfo->getAttribute('field');
+         if (mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $this->template->templatename, $field))->length) {
+            $content[$field] = $this->contenttable->{$field};
+         }
       }
-		}
 
 		//find any lists
 		foreach(mop::config('objects', sprintf('//template[@name="%s"]/elements/list', $this->template->templatename)) as $list){
