@@ -1,6 +1,6 @@
 <?
 
-Class Ratings_Controller extends Controller {
+Class Controller_Ratings extends Controller {
 
    protected $objectTable = null;
 
