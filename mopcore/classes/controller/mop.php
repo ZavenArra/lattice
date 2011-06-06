@@ -39,8 +39,6 @@ class Controller_MOP extends Controller {
 	 * Returns: nothing
 	 */
 	public function checkAccess(){
-		Kohana::$log->add(Log::ERROR, 'Skipping login for control panel');
-		/* SKIPPING LOGIN
 		//Authentication check
 		$role = Kohana::config(strtolower($this->controllerName).'.authrole', FALSE, FALSE);
 
@@ -80,7 +78,6 @@ class Controller_MOP extends Controller {
 			url::redirect($redirect);
 			exit;
 		}
-		*/
 
 	}
 
