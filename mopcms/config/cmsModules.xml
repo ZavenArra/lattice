@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE configuration SYSTEM "../../mopcms/config/cmsModules.dtd">
+<!DOCTYPE configuration SYSTEM "cmsModules.dtd">
 
 <configuration>
 
 	<module controller="usermanagement" label="User Management" />
-	<module controller="golive" label="Publish Site" />
 
 
 </configuration>

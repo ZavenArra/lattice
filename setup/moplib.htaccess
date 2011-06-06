@@ -11,7 +11,7 @@ RewriteEngine On
 	Deny From All
 </Files>
 
-RewriteRule ^(crossdomain.xml|index.php|robots.txt|favicon.ico|media) - [PT,L]
+RewriteRule ^(crossdomain.xml|index.php|robots.txt|favicon.ico) - [PT,L]
 RewriteRule ^application/media/* - [PT,L]
 
 # Protect system files from being viewed
