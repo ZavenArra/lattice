@@ -100,6 +100,8 @@ class Controller_MOP extends Controller {
 
 	protected function loadResourcesForKey($key){
 
+		 $key = strtolower($key);
+
 		//should add to self, then merge into topController
 		if($css = Kohana::find_file('views', 'css/'.$key, 'css')){
 			$this->resources['css'][$css] = helper_mop::convertFullPathToWebPath($css);
