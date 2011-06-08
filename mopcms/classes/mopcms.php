@@ -216,7 +216,8 @@ class MoPCMS {
 												$element['elementname'] = $element['family'];
 												$element['controllertype'] = 'list';
 												
-												$requestURI = 'list'.$element['family'].'/'.$object->id;
+                                 
+												$requestURI = 'list/getList/'. $object->id.'/'.$element['family'];
 												$htmlChunks[$element['family']] = Request::factory($requestURI)->execute()->body();
 
 												
@@ -366,23 +367,23 @@ class MoPCMS {
 	$data - possible array of keys and values to initialize with
 	Returns: the new page id
 	*/
-	public static function addObject($parent_id, $template_ident, $data = array() ){
-		$template_id = ORM::Factory('template', $template_ident)->id;
-    if(!$template_id){
-      //we're trying to add an object of template that doesn't exist in db yet
-      //check objects.xml for configuration
-      if($templateConfig = mop::config('objects', sprintf('//template[@name="%s"]', $template_ident))->item(0)){
-        //there's a config for this template
-        //go ahead and configure it
-        mopcms::configureTemplate($templateConfig);
-				$template_id = ORM::Factory('template', $template_ident)->id;
-			} else {
-				die('No config for template '.$template_ident );
-			}
-    } 
+  public static function addObject($parent_id, $template_ident, $data = array()) {
+      $template_id = ORM::Factory('template', $template_ident)->id;
+      if (!$template_id) {
+         //we're trying to add an object of template that doesn't exist in db yet
+         //check objects.xml for configuration
+         if ($templateConfig = mop::config('objects', sprintf('//template[@name="%s"]', $template_ident))->item(0)) {
+            //there's a config for this template
+            //go ahead and configure it
+            mopcms::configureTemplate($templateConfig);
+            $template_id = ORM::Factory('template', $template_ident)->id;
+         } else {
+            throw new Kohana_Exception('No config for template ' . $template_iden);
+         }
+      }
 
 
-		if($parent_id!=='0' && $parent_id!==0 && $parent_id !==null){
+      if($parent_id!=='0' && $parent_id!==0 && $parent_id !==null){
 			mopcms::checkForValidPageId($parent_id);
 		}
 		$newpage = ORM::Factory('page');

@@ -16,7 +16,7 @@ $config['resources']['libraryjs'] = array(
 );
 
 $config['layout'] = 'LayoutAdmin';
-$config['authrole'] = 'admin';
+//$config['authrole'] = 'admin';
 
 /*
  * Config: ['resources']['css']

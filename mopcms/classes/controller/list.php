@@ -1,204 +1,232 @@
 <?
 
 /*
+ * This class should have it's API changed to respect calling via the Container object Id
+ * The container object ID is actually the ID of the list object itself, currently we're addressing
+ * lists by family name and parent id, which is actually redundant.
+ */
+
+
+/*
   Class: ListModule_Controller
-  Not doing a 2nd pass on this for documentation, since it's very near to being reimplemented with
-  object paradigm.
+
  */
 
 class Controller_List extends MOP_CMSInterface {
-		  /*
-			*  Variable: page_id
-			*  static int the global page id when operating within the CMS submodules get the page id
-			*  we could just reference the primaryId attribute of Display as well...
-			*/
+   /*
+    *  Variable: page_id
+    *  static int the global page id when operating within the CMS submodules get the page id
+    *  we could just reference the primaryId attribute of Display as well...
+    */
 
-		  private static $page_id = NULL;
-
-
-		  /*
-			 Variable: model
-			 Main model for items content managed by this class
-			*/
-		  protected $model = 'page';
-
-		  /*
-			* Variable: containerObject
-			* The parent object of the lists children
-			*/
-		  protected $_containerObject;
-		  protected $_family;
-
-		  /*
-			 Function:  construct();
-			 Parameters:
-			 containerObject - The object that contains the items for the list.  This should not be null,
-			 but we allow it for call_user_func_array workaround
-			*/
-
-		  public function __construct($request, $response) {
-					parent::__construct($request, $response);
-
-					$this->_family = $request->param('family');
-					$this->_parentid = $request->param('parentid');
-					 
-					$this->lookUpContainerObject();
-
-					 //for now the isntance is just the name of this thing
-					
-					 //support for custom listmodule item templates, but might not be necessary
-					 $custom = $this->_family . '_item';
-					 if (Kohana::find_file('views', $custom)) {
-								$this->itemview = $custom;
-					 } else {
-								$this->itemview = 'list_item';
-					 }
-
-					 //get the sort direction from config
-					 $this->sortdirection = mop::config('objects', sprintf('//list[@family="%s"]', $this->_family))->item(0)->getAttribute('sortDirection');
-
-					 //TODO:read the config and setupd
-		  }
-
-		  /*
-			* Function: lookUpContainerObject
-			* Extendable function for looking up container object.  Overriding enables support for non-cms uses
-			*/
-
-		  protected function lookUpContainerObject() {
-
-					 $lt = ORM::Factory('template')->where('templatename','=',$this->_family)->find();
-					
-					 $containerObject = ORM::Factory('page')
-								->where('parentid', '=', $this->_parentid)
-								->where('template_id', '=', $lt->id)
-								->where('activity', 'IS', NULL)
-								->find();
-					 if (!$containerObject->loaded()) {
-								throw new Kohana_Exception('Did not find list container List object is missing container: :id', array(':id' => $lt->id));
-					 }
-					 $this->_containerObject = $containerObject;
-					
-		  }
-
-		  public function action_index() {
-					 $custom = $this->_family;
-					 if (Kohana::find_file('views', $custom)) {
-								$this->view = new View($custom);
-					 } else {
-								$this->view = new View('list');
-					 }
-
-					 $this->buildIndexData();
-					 $this->response->body($this->view->render());
-		  }
-
-		  public function buildIndexData() {
-
-					 $listMembers = $this->_containerObject->getChildren();
-
-					 $html = '';
-					 foreach ($listMembers as $object) {
-
-								$htmlChunks = mopcms::buildUIHtmlChunksForObject($object);
-								$itemt = new View($this->itemview);
-								$itemt->uiElements = $htmlChunks;
-
-								$data = array();
-								$data['id'] = $object->id;
-								$data['page_id'] = $this->_containerObject->id;
-								$data['instance'] = $this->_family;
-								$itemt->data = $data;
-
-								$html.=$itemt->render();
-					 }
-
-					 //actually we need to do an absolute path for local config
-					 $listConfig = mop::config('objects', sprintf('//list[@family="%s"]', $this->_family))->item(0);
-					 $this->view->label = $listConfig->getAttribute('label');
-					 $this->view->class = $listConfig->getAttribute('cssClasses');
-					 $this->view->class .= ' allowChildSort-' . $listConfig->getAttribute('allowChildSort');
-					 $this->view->class .= ' sortDirection-' . $this->sortdirection;
-					 $this->view->items = $html;
-					 $this->view->instance = $this->_family;
-		  }
-
-		  //this is the new one
-		  public function action_savefield($itemid) {
-					 $object = ORM::Factory($this->model, $itemid);
-					 $object->contenttable->$_POST['field'] = $_POST['value'];
-					 $object->contenttable->save();
-					 return array('value' => $object->contenttable->$_POST['field']);
-		  }
-
-		  private function buildContainerObject($parentid) {
-					 $parent = ORM::Factory($this->model, $parentid);
-					 $containerTemplate = ORM::Factory('template', $this->_family);
-					 $this->_containerObject = ORM::Factory($this->model)
-								->where('parentid', $parentid)
-								->where('template_id', $containerTemplate->id)
-								->where('activity IS NULL')
-								->find();
-		  }
-
-		  /*
-			 Function: addItem()
-			 Adds a list item
-
-			 Returns:
-			 the rendered template of the new item
-			*/
-
-		  public function addItem($parentid) {
-					 $parent = ORM::Factory($this->model, $parentid);
-					 $this->buildContainerObject($parentid);
-
-					 //addable item should be specifid in the addItem call
-					 $template = mop::config('objects', sprintf('//list[@family="%s"]/addableObject', $this->_family));
-					 if (!$template->length > 0) {
-								throw new Kohana_User_Exception('No List By That Name', 'Count not locate configuration in objects.xml for ' . sprintf('//list[@family="%s"]/addableobject', $this->_family));
-					 }
-					 $template = $template->item(0);
-
-					 $data = array('published' => 'true');
-
-					 $newid = cms::addObject($this->_containerObject->id, $template->getAttribute('templateName'), $data);
-
-					 $item = ORM::Factory('page', $newid);
-					 $htmlChunks = cms::buildUIHtmlChunksForObject($item);
-					 $itemt = new View($this->itemview);
-					 $itemt->uiElements = $htmlChunks;
-
-					 $data = array();
-					 $data['id'] = $newid;
-					 $data['page_id'] = $this->_containerObject->id;
-					 ;
-					 $data['instance'] = $this->_family;
+   private static $page_id = NULL;
 
 
-					 $itemt->data = $data;
+   /*
+     Variable: model
+     Main model for items content managed by this class
+    */
+   protected $model = 'page';
 
-					 $html = $itemt->render();
+   /*
+    * Variable: containerObject
+    * The parent object of the lists children
+    */
+   protected $_containerObject;
+   protected $_family;
 
-					 return $html;
-		  }
+   
+   protected $_listObject;
+   protected $_itemView;
+   
+   
+   
+    
+   /*
+     Function:  construct();
+     Parameters:
+    */
 
-		  /*
-			 Function: deleteItem()
-			 Deletes an item (marks as deleted, but does not remove from database.
-			 also sets sortorder to 0)
+   public function __construct($request, $response) {
+      parent::__construct($request, $response);
 
-			 Parameters:
-			 $itemid - the id of thd item to delete
-			*/
+   }
+   
+   
+   protected function setListObject($listObjectIdOrParentId, $family=null) {
 
-		  public function deleteItem($itemid) {
-					 $item = ORM::Factory($this->model, $itemid);
-					 $item->activity = 'D';
-					 $item->sortorder = 0;
-					 $item->save();
-					 return 1;
-		  }
+      if ($family != null) {
+         $lt = ORM::Factory('template')->where('templatename', '=', $family)->find();
+
+         $listObject = ORM::Factory('listcontainer')
+                 ->where('parentid', '=', $listObjectIdOrParentId)
+                 ->where('template_id', '=', $lt->id)
+                 ->where('activity', 'IS', NULL)
+                 ->find();
+
+         if (!$listObject->loaded()) {
+            throw new Kohana_Exception('Did not find list container List object is missing container: :id', array(':id' => $lt->id));
+         }
+
+         $this->_listObject = $listObject;
+      } else {
+
+         $this->_listObject = ORM::Factory('listcontainer', $listObjectIdOrParentId);
+      }
+      
+      
+      
+   }
+   
+   protected function itemView(){
+      
+     if(!$this->_itemView){
+      
+     if(!$this->_listObject->loaded()){
+        throw new Exception('listObject not set: controller must call setListObject before requesting itemView');
+     }
+     
+      
+      $customItemView = $this->_listObject->template->templatename . '_item';
+      if (Kohana::find_file('views', $customItemView)) {
+         $this->_itemView = $customitemView;
+      } else {
+         $this->_itemView = 'list_item';
+      }
+      
+     }
+     
+     return $this->_itemView;
+     
+   
+   }
+
+   
+   /*
+    * Function: action_getList
+    * Supports either calling with list object id directly, or with parentid and family 
+    * for looking in database and config
+    */
+   
+   public function action_getList($listObjectIdOrParentId, $family = null) {
+      
+      $this->setListObject($listObjectIdOrParentId, $family);
+      
+
+      $view = null;
+      if (Kohana::find_file('views', $this->_listObject->template->templatename)) {
+         $view = new View($this->_listObject->template->templatename);
+      } else {
+         $view = new View('list');
+      }
+
+      $listMembers = $this->_listObject->getChildren();
+
+      $html = '';
+      foreach ($listMembers as $object) {
+
+         $htmlChunks = mopcms::buildUIHtmlChunksForObject($object);
+         $itemt = new View($this->itemView());
+         $itemt->uiElements = $htmlChunks;
+
+         $data = array();
+         $data['id'] = $object->id;
+         $data['page_id'] = $this->_listObject->id;
+         $data['instance'] = $this->_listObject->template->templatname;
+         $itemt->data = $data;
+
+         $html.=$itemt->render();
+      }
+
+      //actually we need to do an absolute path for local config
+      $listConfig = $this->_listObject->getConfig();
+      $view->label = $listConfig->getAttribute('label');
+      $view->class = $listConfig->getAttribute('cssClasses');
+      $view->class .= ' allowChildSort-' . $listConfig->getAttribute('allowChildSort');
+      $view->class .= ' sortDirection-' . $this->_listObject->getSortDirection();
+      $view->items = $html;
+      $view->instance = $this->_listObject->template->templatname;
+      $view->listObjectId = $this->_listObject->id;
+
+
+      $this->response->body($view->render());
+   }
+
+   //this is the new one
+   public function action_savefield($itemid) {
+      $object = ORM::Factory($this->model, $itemid);
+      $object->contenttable->$_POST['field'] = $_POST['value'];
+      $object->contenttable->save();
+      $this->response->data( array('value' => $object->contenttable->$_POST['field']) );
+   }
+
+   /*
+     Function: addItem()
+     Adds a list item
+
+     Returns:
+     the rendered template of the new item
+    */
+
+   public function action_addItem($listObjectId, $templateId=null) {
+      
+      $this->setListObject($listObjectId);
+
+      //addable item should be specifid in the addItem call
+      if($templateId == null){
+   
+        $template = mop::config('objects', sprintf('//list[@family="%s"]/addableObject', $this->_listObject->template->templatename));
+        if (!$template->length > 0) {
+           throw new Kohana_Exception('No List By That Name' .' Count not locate configuration in objects.xml for ' . sprintf('//list[@family="%s"]/addableobject', $this->_family));
+        }
+        $addObjectTemplateId = $template->item(0)->getAttribute('templateName');
+
+      } else {
+        
+         $addObjectTemplateId = $templateId;
+      
+      }
+
+      $data = array('published' => 'true');
+
+      
+      $newid = mopcms::addObject($listObjectId, $addObjectTemplateId, $data);
+
+      $item = ORM::Factory('page', $newid);
+      $htmlChunks = mopcms::buildUIHtmlChunksForObject($item);
+      $itemt = new View($this->itemView());
+      $itemt->uiElements = $htmlChunks;
+
+      $data = array();
+      $data['id'] = $newid;
+      $data['page_id'] = $listObjectId;
+      ;
+      $data['instance'] = $this->_listObject->template->templatename;
+
+
+      $itemt->data = $data;
+
+      $html = $itemt->render();
+
+      $this->response->body($html);
+    }
+
+   /*
+     Function: deleteItem()
+     Deletes an item (marks as deleted, but does not remove from database.
+     also sets sortorder to 0)
+
+     Parameters:
+     $itemid - the id of thd item to delete
+    */
+
+   public function action_deleteItem($itemid) {
+      $item = ORM::Factory($this->model, $itemid);
+      $item->activity = 'D';
+      $item->sortorder = 0;
+      $item->save();
+      $this->response->data(array('deleted'=>true));
+   }
 
 }
 

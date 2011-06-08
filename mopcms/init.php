@@ -21,3 +21,16 @@ Route::set('cms_addChild', '<id>/<action>/<type>', array(
 			));
 
 
+Route::set('list', 'list/<action>(/<param1>(/<param2>))', array(
+
+	)
+)
+->defaults(
+	array(
+		'controller' => 'list',
+	));
+
+
+
+
+

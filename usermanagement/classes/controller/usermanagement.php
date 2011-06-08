@@ -154,8 +154,11 @@ Class Controller_UserManagement extends Controller_MOP {
 	 */ 
 	public function action_saveField($id){
 		$user = ORM::factory($this->table, $id);
-
-		switch($_POST['field']){
+      
+      $field = $_POST['field'];
+      $value = $_POST['value'];
+      
+		switch($field){
 		case 'role':
 			//first remove other managedRoles
 			foreach($this->managedRoles as $label => $role){
@@ -164,19 +167,21 @@ Class Controller_UserManagement extends Controller_MOP {
 					$user->remove($roleObj);
 				}
 			}
-			$user->add(ORM::Factory('role', $_POST['value']));	
+			$user->add(ORM::Factory('role', $value));	
 			$user->save();
-			$return = array('value'=>$_POST['value']);
+			$return = array('value'=>$value);
 			break;
 
 		default:
 
-			$errors = $user->checkValue($_POST['field'], $_POST['value']);
-			Kohana::log('info', 'return from errors '.var_export($errors, true) );
+			//$errors = $user->checkValue($_POST['field'], $_POST['value']);
+         $errors  = false;
+         
 			if(!$errors){
-				$user->$_POST['field'] = $_POST['value'];
-				$user->save();
-
+            
+				$user->update_user(array($field=>$value), array($field) )->save();
+            
+            
 				//this might be the first edit on a new record
 				//so set the record to active status
 				$this->activateRecord($user);
@@ -188,10 +193,10 @@ Class Controller_UserManagement extends Controller_MOP {
 					$body->password = $_POST['value'];	
 
 					mail($user->email, Kohana::config('usermanagement.passwordchangeemail.subject'), $body->render());
-					$md5 = $user->password;
-					$return = array('value'=>$md5);
+					$this->response->data(array('value'=>'**********'));
 				} else {
-					$return = array('value'=>$_POST['value']);
+               $value = $user->{$_POST['field']};
+					$this->response->data(array('value' => $value));
 				}
 			} else {
 				$firstkey = array_keys($errors);
@@ -201,11 +206,10 @@ Class Controller_UserManagement extends Controller_MOP {
 				} else {
 					$rval = $_POST['value'];
 				}
-				$return = array('value'=>$rval, 'error'=>'true', 'message'=>$errors[$firstkey]);
+				$return = $this->response->data( array('value'=>$rval, 'error'=>'true', 'message'=>$errors[$firstkey]) );
 			}
 			break;
 		}
-		return $return;
 
 	}
 
@@ -216,7 +220,7 @@ Class Controller_UserManagement extends Controller_MOP {
 	 * $user - an ORM object to update
 	 * Returns: nothing
 	 */
-	protected function action_activateRecord(& $user){
+	protected function activateRecord(& $user){
 		if($user->status == 'INCOMPLETE'){
 			$user->status = 'ACTIVE';
 			$user->save();

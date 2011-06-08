@@ -31,9 +31,16 @@ class Controller_Layout extends Controller_MOP {
 	public function wrapWithLayout(){
 		//set layout - read from config file
 		$layout = Kohana::config($this->request->controller() . '.layout');
+      if(!$layout){
+         throw new Kohana_Exception("Layout controller subclass :controller configured to layout action :action, but no layout set in configuration",
+                                    array(
+                                        ':controller'=>$this->request->controller(),
+                                        ':action'=>$this->request->action()
+                 ));
+         
+      }
 		$layoutView = View::Factory($layout);
 
-		//get js and css for this layout .. ??? not the way to do this
 		
 		//build js and css
 		$stylesheet = '';

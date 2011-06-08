@@ -531,6 +531,9 @@ mop.MoPObject = new Class({
 		Convenience method that calls mop.util.JSONSend;
 	*/	
 	JSONSend: function( action, data, options ){
+      //Note:
+      //Hard coding an object ID here doesn't do anyone any good, since the API
+      //for a given JSON request can be very different.
 		var url = "ajax/" + this.getSubmissionController() +  "/" + action + "/" + mop.objectId;
     	if( options ){  options.url = url; }else{ options = { url: url }; }
     	new Request.JSON( options ).post( data );

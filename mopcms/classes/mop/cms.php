@@ -113,23 +113,26 @@ class MOP_CMS extends MOP_CMSInterface {
 		self::$objectId = $id;
 
 
+      /*
+       * If the reqeuest is actually for a module, instead of a page, build
+       * the subrequest and set the response body to the request.
+       * This should probably be re-engineered to be handled by the navi
+       * module only, and cmsModules.xml should also be a navi thing
+       * since only the navi needs to know about the modules being loaded as long
+       * as the reciever (CMS in this case) has an appropriate container.
+       */
 		$controller = $id;
-		if(Kohana::find_file('controllers', $controller)){
-				
-				//needs to be recoded
-			$controller = $id.'_Controller';
-			$controller = new $controller;
-			$controller->createIndexView();
-			$return = array();
-			$return['html']= $controller->render();
-			$return['css'] = array_values(array_merge($controller->view->resources['librarycss'], $controller->view->resources['css']));
-			$return['js'] = array_values(array_merge($controller->view->resources['libraryjs'], $controller->view->resources['js']));
-			return $return;
+		if(Kohana::find_file('classes/controller', $controller)){   
+         $route = Request::Factory($controller);
+         $this->response->body( $route->execute()->body() );
+         return;
 		}
+      
+      
 		
 		$page = ORM::factory('page', $id);
 		if($page->id == 0){
-			throw new Kohana_User_Exception('Invalid Page Id '.$id);
+			throw new Kohana_Exception('Invalid Page Id '.$id);
 		}
 		
 		//new generation of page

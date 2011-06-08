@@ -29,6 +29,9 @@ mop.modules.List = new Class({
 		this.sortDirection = this.getValueFromClassName( "sortDirection" );
         console.log( "List allowChildSort: ", this.getValueFromClassName( "allowChildSort" ) );
 		if( this.allowChildSort ) this.makeSortable();
+      
+      this.objectId = this.element.get("id").split("_")[1];
+
 	},
 
 	toString: function(){
@@ -80,7 +83,9 @@ mop.modules.List = new Class({
 		this.addItemDialogue = new mop.ui.EnhancedAddItemDialogue( null, this );
 		this.addItemDialogue.showLoading( e.target.get("text") );
 		
-		this.JSONSend( "addItem", null, { 
+      
+      var url = "ajax/html/list/addItem/" + this.getObjectId() );
+		mop.util.JSONSend( url, null, { 
 			onComplete: function( json ){ 
 				this.onItemAdded( json ); 
 			}.bind( this )
@@ -88,7 +93,8 @@ mop.modules.List = new Class({
 	},
 
 	onItemAdded: function( json  ){
-		var element = this.addItemDialogue.setContent( json.response, this.controls.getElement( ".addItem" ).get( "text" ) );
+      console.log(json);
+		var element = this.addItemDialogue.setContent( json.response.html, this.controls.getElement( ".addItem" ).get( "text" ) );
 		var listItem = new mop.modules.ListItem( element, this, this.addItemDialogue, { scrollContext: 'modal' } );
 		listItem.UIElements.each( function( uiInstance ){
 			uiInstance.scrollContext = "modal";
@@ -300,6 +306,10 @@ mop.modules.ListItem = new Class({
             // e.target.addClass("spinner");
 		}
 		this.JSONSend( "deleteItem" );
+      
+      var url = "ajax/data/list/deleteItem/" + this.getObjectId();
+		mop.util.JSONSend( url, null, null);
+      
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
 		this.fadeOut = new Fx.Morph( this.element, { duration: 300, onComplete: this.marshal.onItemDeleted.bind( this.marshal, this ) } );
 		this.fadeOut.start( { opacity: 0 } );

@@ -1,1 +1,1 @@
-<? echo Request::Factory('mopauth')->execute()->body() ;?>
+<? echo Request::Factory('authstatus')->execute()->body() ;?>

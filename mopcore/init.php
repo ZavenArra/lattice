@@ -23,16 +23,6 @@ Route::set('html', '<controller>(/<uri>)', array(
 
 
 
-Route::set('list', 'list<family>/<parentid>(/<action>)', array(
-
- )
-)
-->defaults(
-		  array(
-'controller' => 'list',
-'action' => 'index',
-));
-
 
 Route::set('header', 'header(/<id>)')
 	->defaults(
