@@ -84,7 +84,7 @@ class Controller_MOP extends Controller {
 	protected function loadResources(){
 		$this->loadResourcesForKey($this->controllerName);
 
-		$parents = $this->getParents();
+		$parents = array_reverse($this->getParents());
 		foreach($parents as $parent){
 			if($parent == 'Controller_MOP'){
 				break;
