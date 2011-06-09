@@ -86,6 +86,8 @@ mop.modules.List = new Class({
       //this isn't maintainable since the API can be different.
       //extending for usermanagement is a sloppy solution
       var url = "ajax/html/"+this.getSubmissionController()+"/addItem/";// + this.getObjectId();
+      
+      
 		mop.util.JSONSend( url, null, { 
 			onComplete: function( json ){ 
 				this.onItemAdded( json ); 
