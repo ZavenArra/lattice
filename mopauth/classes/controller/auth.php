@@ -111,9 +111,7 @@ class Controller_Auth extends Controller_Layout {
 			if (isset($formValues['submit']) )
 			{
          	// Load the user
-				$user = ORM::factory('user', $formValues['username']);
-            
-				if (Auth::instance()->login($user, $formValues['password']))
+           if (Auth::instance()->login($formValues['username'], $formValues['password']))
 				{
 					// Login successful, redirect
 					if($form->redirect){
@@ -123,14 +121,15 @@ class Controller_Auth extends Controller_Layout {
 					} else {
 						url::redirect('auth/login');
 					}
+               return;
 				}
 				else
 				{
-					$error = 'Invalid username or password.';
+          		$error = 'Invalid username or password.';
 				}
 			}
 
-
+echo 'hello';
 
 			$view = new View('auth/login');
 
@@ -144,7 +143,7 @@ class Controller_Auth extends Controller_Layout {
 
 
 			$view->redirect = $redirect;
-
+echo 'hello';
 			$this->response->body($view->render());
 
 			}

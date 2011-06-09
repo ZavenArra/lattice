@@ -83,8 +83,9 @@ mop.modules.List = new Class({
 		this.addItemDialogue = new mop.ui.EnhancedAddItemDialogue( null, this );
 		this.addItemDialogue.showLoading( e.target.get("text") );
 		
-      
-      var url = "ajax/html/list/addItem/" + this.getObjectId() );
+      //this isn't maintainable since the API can be different.
+      //extending for usermanagement is a sloppy solution
+      var url = "ajax/html/"+this.getSubmissionController()+"/addItem/";// + this.getObjectId();
 		mop.util.JSONSend( url, null, { 
 			onComplete: function( json ){ 
 				this.onItemAdded( json ); 
@@ -305,7 +306,6 @@ mop.modules.ListItem = new Class({
             // e.target.removeClass("delete");
             // e.target.addClass("spinner");
 		}
-		this.JSONSend( "deleteItem" );
       
       var url = "ajax/data/list/deleteItem/" + this.getObjectId();
 		mop.util.JSONSend( url, null, null);

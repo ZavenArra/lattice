@@ -12,7 +12,7 @@ class Controller_AuthStatus extends Controller {
 	public function action_index(){
 		$view = new View('logged_in_as');
 		if(Auth::instance()->get_user()){
-			$view->username = Auth::instance()->get_user();
+			$view->username = Auth::instance()->get_user()->username;
 		}
       $this->response->body($view->render());
 	}

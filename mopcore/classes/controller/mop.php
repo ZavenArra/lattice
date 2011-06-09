@@ -86,10 +86,7 @@ class Controller_MOP extends Controller {
 
 		$parents = array_reverse($this->getParents());
 		foreach($parents as $parent){
-			if($parent == 'Controller_MOP'){
-				break;
-			}
-			if(strstr($parent, 'Controller')){
+			if(strpos($parent, 'Controller')===0){
 				$parentKey = substr($parent, 11);
 			} else {
 				$parentKey = $parent;

@@ -29,7 +29,12 @@ class Controller_Ajax extends Controller_MOP {
 			$data = $subRequest->execute()->data();
 		} catch (Exception $e) {
 			//return HTML from exception
-			$message = $e->getMessage() . $e->getTrace();
+			$message = $e->getMessage();
+         foreach( $e->getTrace() as $trace){
+           if(isset($trace['file'])){
+            $message .= " ::::: ".$trace['file'].':'.$trace['line'];
+           }
+         }
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
 				'response' => $message,
@@ -57,7 +62,12 @@ class Controller_Ajax extends Controller_MOP {
 			$html = $subRequest->execute()->data();
 		} catch (Exception $e) {
 			//return HTML from exception
-			$message = $e->getMessage() . $e->getTrace();
+			$message = $e->getMessage();
+         foreach( $e->getTrace() as $trace){
+           if(isset($trace['file'])){
+            $message .= " ::::: ".$trace['file'].':'.$trace['line'];
+           }
+         }
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
 				'response' => $message,

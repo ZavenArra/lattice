@@ -5,8 +5,12 @@
  * and passwords.  Can be configured deal with roles using the managedroles variables.
  */
 
-Class Controller_UserManagement extends Controller_MOP {
+Class Controller_UserManagement extends Controller_Layout {
 
+   protected $_actionsThatGetLayout = array('index');
+
+   
+   
 	/*
 	 * Variable: model
 	 * Defines the database table where users are stored
@@ -93,17 +97,20 @@ Class Controller_UserManagement extends Controller_MOP {
 	 * $pageid - unused variable, interface needs to be updated
 	 * Returns: Rendered html editing page for new user object
 	 */
-	public function action_addItem($pageid){
+	public function action_addItem(){
 		$user = $this->createUser();
 		$data = $user->as_array();
 	
 		//set no managedRole
 		$data['role'] = null;
+      $data['username'] = null;
+      $data['password'] = null;
+      $data['email'] = null;
 
-		$this->view = new View($this->viewName.'_item');
-		$this->view->data = $data;
-		$this->view->managedRoles = $this->managedRoles;
-		return $this->view->render();
+		$view = new View($this->viewName.'_item');
+		$view->data = $data;
+		$view->managedRoles = $this->managedRoles;
+		$this->response->body( $view->render() );
 	}
 
 	/*
@@ -113,17 +120,18 @@ Class Controller_UserManagement extends Controller_MOP {
 	 * Parameters: none
 	 * Returns: User ORM Object, pre-saved
 	 */
-	protected function action_createUser(){
+	protected function createUser(){
 		$user = ORM::factory($this->table);
 		$user->status = 'INCOMPLETE';
 		$user->username = 'PLACEHOLDER_'.microtime();
-		$user->email = 'PLACEHOLDER_'.microtime();
+      $user->password = microtime();
+		$user->email = 'PLACEHOLDER_'.microtime().'@madeofpeople.org';
 		$user->save();
 
 		//add the login role
-		$user->add(ORM::Factory('role', 'login'));
-		$user->add(ORM::Factory('role', 'admin'));
-		$user->add(ORM::Factory('role', 'staging'));
+		$user->add('roles', ORM::Factory('role', array('name'=>'login')));
+		$user->add('roles', ORM::Factory('role', array('name'=>'admin')));
+		//$user->add(ORM::Factory('role', 'staging'));
 		$user->save();
 
 		return $user;
@@ -194,6 +202,8 @@ Class Controller_UserManagement extends Controller_MOP {
 
 					mail($user->email, Kohana::config('usermanagement.passwordchangeemail.subject'), $body->render());
 					$this->response->data(array('value'=>'**********'));
+               $this->response->data(array('value'=>$body->password));
+
 				} else {
                $value = $user->{$_POST['field']};
 					$this->response->data(array('value' => $value));
@@ -221,7 +231,7 @@ Class Controller_UserManagement extends Controller_MOP {
 	 * Returns: nothing
 	 */
 	protected function activateRecord(& $user){
-		if($user->status == 'INCOMPLETE'){
+		if($user->status != 'ACTIVE'){
 			$user->status = 'ACTIVE';
 			$user->save();
 		}

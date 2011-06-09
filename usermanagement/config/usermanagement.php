@@ -1,18 +1,17 @@
 <?
 
-//this could be something like a standard include?
 $config['resources']['librarycss'] = array(
-	'modules/mop/thirdparty/960Grid/reset.css',
-	'modules/mop/thirdparty/960Grid/960.css'
+	'moplib/mopjs/thirdparty/960Grid/reset.css',
+	'moplib/mopjs/thirdparty/960Grid/960.css'
 );
 $config['resources']['libraryjs'] = array(
-	'modules/mop/thirdparty/mootools/mootools-1.2.4-core-nc.js',
-	'modules/mop/thirdparty/mootools/mootools-more.js',
-	'modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
-	'modules/mop/thirdparty/monkeyphysics/datepicker-nc.js',
-	'modules/mop/MoPCore.js',
-	'modules/mop/MoPUI.js',
-	'modules/mop/MoPModules.js'
+	'moplib/mopjs/thirdparty/mootools/mootools.js',
+	'moplib/mopjs/thirdparty/mootools/mootools-more.js',
+   'moplib/mopjs/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',  //these are required by MoPUI
+	'moplib/mopjs/thirdparty/monkeyphysics/datepicker.js',               //This should either be bundled in MoPUI or fixed otherwise
+	'moplib/mopjs/MoPCore.js',
+	'moplib/mopjs/MoPUI.js',
+	'moplib/mopjs/MoPModules.js'
 );
 
 $config['layout'] = 'LayoutAdmin';
@@ -22,13 +21,14 @@ $config['layout'] = 'LayoutAdmin';
  * Config: ['resources']['css']
  */
 $config['resources']['css'] = array( 
-	);
+   	'moplib/mopcms/views/css/mop_cms.css'
+);
 
 /*
  * Config: ['resources']['js']
  */
 $config['resources']['js'] = array(
-	'modules/cms/views/list.js'
+	'moplib/mopcms/views/js/list.js'
 );
 
 /*

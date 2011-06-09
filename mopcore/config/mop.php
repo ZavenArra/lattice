@@ -3,7 +3,7 @@
 $config['mediapath'] = 'application/media/';
 $config['stagingmediapath'] = 'staging/application/media/';
 
-$config['staging_enabled'] = true;
+$config['staging_enabled'] = false;
 $config['slugs_enabled'] = true;
 $config['loginTimeOut'] = 1800000;
 
