@@ -11,6 +11,10 @@
  * @author deepwinter1
  */
 class Model_Object extends ORM {
+   
+    protected $_table_name = 'pages';
+
+   
     protected $_belongs_to = array(
         'template' => array()
     );
@@ -169,6 +173,13 @@ class Model_Object extends ORM {
 	}
 
 
+   public function getPublishedObjectBySlug($slug){
+      
+      return $this->where('slug', '=', $slug)
+              ->where('published', '=', 1)
+              ->where('activity', 'IS', NULL)
+              ->find();
+   }
 
 	public function getContent(){
 		return $this->getPageContent();
@@ -476,62 +487,6 @@ class Model_Object extends ORM {
 	}
 
 
-	public function saveMappedPDF(){
-		$result = $this->saveFile();
-		if($result['result'] == 'success'){
-			//rebuild the associations
-
-			$associations = unserialize($this->contenttable->field_associations);
-			if(!is_array($associations)){
-				$associations = array();
-			}
-			//get fields from pdf
-			$p = PDF_new();
-			$indoc = PDF_open_pdi_document($p, $result['src'], "");
-			if ($indoc == 0) {
-				die("Error: " . PDF_get_errmsg($p));
-			}
-			$blockcount = PDF_pcos_get_number($p, $indoc, "length:pages[0]/blocks");
-			/* Loop over all blocks on the $page */
-			$blocks = array();
-			for ($i = 0; $i <  $blockcount; $i++) {
-				$blocks[PDF_pcos_get_string($p, $indoc, "pages[0]/blocks[" . $i . "]/Name")] = true;
-			}
-			//take out blocks that have been removed
-			$remove = array();
-			foreach($associations as $key=>$value){
-				if(!isset($blocks[$key])){
-					$remove[] = $key;
-				}
-			}
-			foreach($remove as $removal){
-				unset($associations[$removal]);
-			}
-			//add in any new blocks
-			$keys = array_keys($associations);
-			foreach($blocks as $key=>$value){
-				if(!in_array($key, $keys)){
-					$associations[$key] = '';
-				}
-			}
-			//and save serialized value
-			$this->contenttable->field_associations = serialize($associations);
-			$this->contenttable->save();
-			//$result['fieldAssociations'] = $associations;
-
-			//and build the html
-			$fieldmapView = new View('ui_fieldmap');
-			$fieldmapView->options = $this->contenttable->getFieldmapOptions();
-			$fieldmapView->values = $this->contenttable->field_associations;
-			$result['html'] = str_replace("\n", '',$fieldmapView->render() ) ;
-			$result['html'] = str_replace("\t", '', $result['html']);
-			$result['html'] = str_replace('"', 'mop_token_2009', $result['html']);
-			//$result['html'] = 'date_completed select id="date_completed" name="date_completed" class="pulldown field-date_completed"';
-		
-		}
-		return $result;
-	}
-
 	//this is gonna change a lot!
 	//this only supports a very special case of multiSelect objects
 	public function saveObject(){
@@ -557,22 +512,6 @@ class Model_Object extends ORM {
 		return true;
 	}
 
-	
-	public function saveFieldMapping($field, $value){
-		$this->contenttable->trans_start();
-		$map = false;
-		if($this->contenttable->field_associations){
-			$map = unserialize($this->contenttable->field_associations);
-		}
-		if(!$map){
-			$map = array();
-		}
-		$map[$field] = $value;
-		$this->contenttable->field_associations = serialize($map);
-		$this->contenttable->save();
-		$this->contenttable->trans_complete();
-		return true;
-	}
 
 
 	/* Query Filters */
