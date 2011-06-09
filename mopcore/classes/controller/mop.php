@@ -54,7 +54,7 @@ class Controller_MOP extends Controller {
 				if($role=='admin'){
 					if(Kohana::config('mop.staging_enabled') && !Kohana::config('mop.staging')){
 						$redirect = 'staging/'. Router::$current_uri;
-						url::redirect($redirect);
+						Request::current()->redirect($redirect);
 					}
 				}
 
@@ -66,7 +66,7 @@ class Controller_MOP extends Controller {
 			if($role=='admin'){
 				if(Kohana::config('mop.staging_enabled') && !Kohana::config('mop.staging')){
 					$redirect = 'staging/'. Router::$current_uri;
-					url::redirect($redirect);
+					Request::current()->redirect($redirect);
 				}
 			}
 
@@ -75,7 +75,7 @@ class Controller_MOP extends Controller {
 
 		if(!$accessGranted){
 			$redirect = 'accessdenied';
-			url::redirect($redirect);
+			Request::current()->redirect($redirect);
 			exit;
 		}
 
