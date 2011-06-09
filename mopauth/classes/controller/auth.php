@@ -66,7 +66,7 @@ class Controller_Auth extends Controller_Layout {
 					Auth::instance()->login($user, $form->password->value);
 
 					// Redirect to the login page
-					url::redirect('auth/login');
+					Request::current()->redirect('auth/login');
 				} 
 
 			} else {
@@ -83,13 +83,10 @@ class Controller_Auth extends Controller_Layout {
 
 		if (Auth::instance()->logged_in())
 		{
-			$view = new View('auth/logout');
-			if($this->message){
-				$view->title = $this->message;
-			} else if($redirect = Kohana::config('auth.redirect')){
-				url::redirect($redirect);
+			if($redirect = Kohana::config('auth.redirect')){
+				Request::current()->redirect($redirect);
 			} else {
-				$view->title = 'User Logout';
+				Request::current()->redirect($redirect);
 			}
 
 			$this->response->body($view->render());
@@ -114,12 +111,12 @@ class Controller_Auth extends Controller_Layout {
            if (Auth::instance()->login($formValues['username'], $formValues['password']))
 				{
 					// Login successful, redirect
-					if($form->redirect){
-						url::redirect($form->redirect->value);
+					if($formValues['redirect']){
+						Request::current()->redirect($formValues['redirect']);
 					} else if($redirect = Kohana::config('auth.redirect')){
-						url::redirect($redirect);
+						Request::current()->redirect($redirect);
 					} else {
-						url::redirect('auth/login');
+						Request::current()->redirect('auth/login');
 					}
                return;
 				}
@@ -129,7 +126,6 @@ class Controller_Auth extends Controller_Layout {
 				}
 			}
 
-echo 'hello';
 
 			$view = new View('auth/login');
 
@@ -143,7 +139,6 @@ echo 'hello';
 
 
 			$view->redirect = $redirect;
-echo 'hello';
 			$this->response->body($view->render());
 
 			}
@@ -155,7 +150,7 @@ echo 'hello';
 		Auth::instance()->logout(TRUE);
 
 		// Redirect back to the login page
-		url::redirect('auth/login');
+		Request::current()->redirect('auth/login');
 	}
 
 	public function action_noaccess($controller = NULL){
@@ -174,7 +169,7 @@ echo 'hello';
 				$body = str_replace('___MOP___username___MOP___', $user->username, $body);
 				$body = str_replace('___MOP___password___MOP___', $password, $body);
 				mail($user->email, Kohana::lang('auth.forgotPasswordEmailSubject'), $body);
-				url::redirect('auth/login/resetPasswordSuccess');
+				Request::current()->redirect('auth/login/resetPasswordSuccess');
 				
 			} else {
 				$this->view = new View('auth/forgot');
