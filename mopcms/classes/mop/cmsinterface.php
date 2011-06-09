@@ -82,7 +82,7 @@ class MOP_CMSInterface extends Controller_Layout {
 			$page->slug = mopcms::createSlug($_POST['value'], $page->id);
 			$page->decoupleSlugTitle = 1;
 			$page->save();
-			return array('value'=>$page->slug);
+			$this->response->data( array('value'=>$page->slug) );
 		} else if($_POST['field']=='title'){ //update slug, but actually we may not want to have slug updatable
 			if(!$page->decoupleSlugTitle){
 				$page->slug = mopcms::createSlug($_POST['value'], $page->id);
@@ -91,7 +91,7 @@ class MOP_CMSInterface extends Controller_Layout {
 			$page->contenttable->$_POST['field'] = mopcms::convertNewlines($_POST['value']);
 			$page->contenttable->save();
 			$page = ORM::Factory('page')->where('id', '=', $id)->find();
-			return array('value'=>$page->contenttable->$_POST['field'], 'slug'=>$page->slug);
+			$this->response->data( array('value'=>$page->contenttable->$_POST['field'], 'slug'=>$page->slug) );
 		}
 		else if(in_array($_POST['field'], array('dateadded'))){
 			$page->$_POST['field'] = $_POST['value'];
@@ -162,7 +162,7 @@ class MOP_CMSInterface extends Controller_Layout {
 			}
 			$page->save();
 
-			return $page->published;
+			$this->response->data( array('published' => $page->published) );
 		}
 
 		/*
@@ -183,7 +183,7 @@ class MOP_CMSInterface extends Controller_Layout {
 				$page->save();
 			}
 
-			return 1;
+			$this->response->data( array('saved'=>true));
 		}
 
 		/*
@@ -194,9 +194,9 @@ class MOP_CMSInterface extends Controller_Layout {
 		public function action_delete($id){
 			$this->cascade_delete($id);
 
-			$this->view = new View('mop_cms_undelete');
-			$this->view->id=$id;
-			return $this->view->render();
+			$view = new View('mop_cms_undelete');
+			$view->id=$id;
+         $this->response->body($view->render());
 		}
 
 
@@ -209,7 +209,8 @@ class MOP_CMSInterface extends Controller_Layout {
 		public function action_undelete($id) {
 			$this->cascade_undelete($id);
 			//should return something about failure...
-			return 1;
+			$this->response->data( array('undeleted'=>true) );
+
 		}
 
 	
@@ -261,14 +262,6 @@ class MOP_CMSInterface extends Controller_Layout {
 
 	}
 
-	/*
-	Function: saveFieldMapping($itemid)
-	Wrapper to saveFieldMapping in CMS_Services_Controller
-	*/
-	public function action_saveFieldMapping($itemid){
-		$object = ORM::Factory($this->model, $itemid);
-		return $object->saveFieldMapping($_POST['field'], $_POST['value']);
-	}
 
 
 }

@@ -19,18 +19,9 @@ class MoPCMS {
 	public static function createSlug($title=NULL, $forPageId=NULL){
 		//create slug
 		if($title!=NULL){
-			$removeChars = array(
-				"'",
-				'"',
-				'&',
-				'?',
-				'/',
-				'\\',
-				')',
-				'(',
-			);
-			$slug = str_replace($removeChars, '', strtolower($title));
+			$slug = preg_replace('/[^a-z0-9]/', '', $strtolower($title));
 			$slug = str_replace(' ', '-', strtolower($slug));
+			$slug = trim($slug);
 			$checkSlug = ORM::Factory('page')
 				->where('slug', 'REGEXP',  '^'.$slug.'[0-9]*$')
 				->order_by("slug");
