@@ -39,7 +39,7 @@ Class Controller_MopFrontend extends Controller_Layout{
 	 * Returns: nothing, renders full webpage to browser or sents html if AJAX request
 	 */
 
-	public function action_page($pageidorslug=null) {
+	public function action_getView($pageidorslug=null) {
 
 		self::$slug = $pageidorslug;
 
