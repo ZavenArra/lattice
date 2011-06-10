@@ -30,7 +30,7 @@ mop.modules.navigation.Navigation = new Class({
         this.element.getElement( ".panes" ).adopt( newPane );
         var elementDimensions = this.paneContainer.getDimensions();
         this.paneContainer.setStyle( "width", elementDimensions.width + newPane.getDimensions().width );
-        newPane.spin();
+        newPane.get( "spinner" ).show(true);
         return newPane;
 	},
 
