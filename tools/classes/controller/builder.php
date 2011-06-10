@@ -8,6 +8,9 @@ class Controller_Builder extends Controller {
 		if(!is_writable('application/views/generated/')){
 			die('application/views/generated/ must be writable');
 		}
+      if(!is_writable('application/views/frontend/')){
+			die('application/views/frontend/ must be writable');
+		}
 	}
 
 	public function destroy($dir) {
@@ -43,7 +46,7 @@ class Controller_Builder extends Controller {
 
 		//clean out media dir
 		$this->destroy('application/media/');
-		$this->destroy('staging/application/media/');
+	//	$this->destroy('staging/application/media/');
 		
 
 		echo "\nInserting Data\n";
