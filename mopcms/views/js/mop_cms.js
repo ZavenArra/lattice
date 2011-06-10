@@ -53,7 +53,6 @@ mop.modules.CMS = new Class({
     		this.editSlugLink = this.titleElement.getElement( ".field-slug label" );
 			if( this.editSlugLink ) this.editSlugLink.addEvent( "click", this.toggleSlugEditField.bindWithEvent( this ) );
 			var titleIPE = this.titleElement.getElement( ".field-title" ).retrieve("Class");
-			if( titleIPE ) titleIPE.registerOnCompleteCallBack( this.renameNodeRequest.bind( this ) );
 			if( titleIPE ) titleIPE.registerOnCompleteCallBack( this.onTitleEdited.bind( this ) );
 		}
 	},
@@ -87,8 +86,8 @@ mop.modules.CMS = new Class({
     Section: Event Handlers
 */
 
-	onTitleEdited: function( response ){
-	    this.editSlugLink.retrieve( "Class" ).setValue( response.slug );
+	onTitleEdited: function( json ){
+	    this.editSlugLink.retrieve( "Class" ).setValue( json.slug );
 	},
 
     // onSlugEdited: function(){
@@ -210,18 +209,7 @@ mop.modules.CMS = new Class({
         if( !json.returnValue ) console.log( this.toString(), "removeObjectRequest error:", json.response.error );
     },
 	
-    renameNodeRequest: function( nodeId, newName ){
-        var url = "ajax/data/navigation/renameNode/" + nodeId + "/" + newName;
-        mop.util.JSONSend( url, null, { onComplete: function(){
-            this.renameNodeResponse();
-            callback();
-        }.bind( this ) } );
-    },
-	
-    renameNodeResponse: function( json ){
-        if( !json.returnValue ) console.log( this.toString(), "renameNodeRequest error:", json.response.error );
-    },
-
+  
     /*
     Function: togglePublishedStatus
     Sends page publish toggle ajax call 
