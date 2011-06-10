@@ -7,12 +7,19 @@ class FrontendRouting {
       $segments = explode('/', $uri);
 
       $slug = $segments[0];
-      $object = ORM::Factory('object')->getPublishedObjectBySlug($slug);
-      if ($object->loaded()) {
+      $object = null;
+      foreach($segments as $slug){
+         $object = ORM::Factory('object')->getPublishedObjectBySlug($slug);
+         if(!$object->loaded()){
+            return;
+         }
+   
+      }
+      if ($object) {
            return array(
                'controller'=>'mopfrontend',
                'action'=>'getView',
-               'pageidorslug'=>$slug
+               'pageidorslug'=>$object->slug
             );
       }
    }
