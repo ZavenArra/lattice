@@ -19,14 +19,16 @@ class MoPCMS {
 	public static function createSlug($title=NULL, $forPageId=NULL){
 		//create slug
 		if($title!=NULL){
-			$slug = preg_replace('/[^a-z0-9]/', '', strtolower($title));
-			$slug = str_replace(' ', '-', strtolower($slug));
+			$slug = preg_replace('/[^a-z0-9\- ]/', '', strtolower($title));
+			$slug = str_replace(' ', '-', $slug);
 			$slug = trim($slug);
+
 			$checkSlug = ORM::Factory('page')
 				->where('slug', 'REGEXP',  '^'.$slug.'[0-9]*$')
 				->order_by("slug");
+      	
 			if($forPageId != NULL){
-				$checkSlug->where('pages.id', '!=', $forPageId);
+				$checkSlug->where('id', '!=', $forPageId);
 			}
 			$checkSlug = $checkSlug->find_all();
 			if(count($checkSlug)){
@@ -358,6 +360,11 @@ class MoPCMS {
 	$data - possible array of keys and values to initialize with
 	Returns: the new page id
 	*/
+
+				/* Consider moving this into Object, and creating a hidden top level object that contains these objects
+				 * then hidden objects or other kinds of data can be stored, but not within the cms object tree
+				 * This makes sense for separating the CMS from the graph, and containing all addObject code within the model.
+				 * */
   public static function addObject($parent_id, $template_ident, $data = array()) {
       $template_id = ORM::Factory('template', $template_ident)->id;
       if (!$template_id) {
@@ -459,8 +466,8 @@ class MoPCMS {
 			case 'image':
 				//need to get the file out of the FILES array
 				
-    Kohana::$log->add(Log::ERROR, var_export($_POST, true));
-    Kohana::$log->add(Log::ERROR, var_export($_FILES, true));
+				Kohana::$log->add(Log::ERROR, var_export($_POST, true));
+				Kohana::$log->add(Log::ERROR, var_export($_FILES, true));
       Kohana::$log->add(Log::ERROR,'something'.$field);
 				if(isset($_FILES[$field])){
           Kohana::$log->add(Log::ERROR,'Adding via post file');
