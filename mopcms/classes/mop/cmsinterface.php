@@ -223,17 +223,17 @@ class MOP_CMSInterface extends Controller_Layout {
 	 * id - the id to delete as well as everything beneath it.
 	 * Returns: nothing 
 	 */
-	private function cascade_delete($id){
+	protected function cascade_delete($id){
 		$page = ORM::Factory('page')->where('id', '=', $id)->find();
 		$page->activity = 'D';
 		$page->sortorder = 0;
-		$page->slug = new Database_Expr('NULL');
+		$page->slug = new Database_Expression(null);
 		$page->save();
 		$page->contenttable->activity = 'D';
 		$page->contenttable->save();
 
 		$children = ORM::Factory('page');
-		$children->where('parentid = '.$id);
+		$children->where('parentid', '=',$id);
 		$iChildren = $children->find_all();
 		foreach($iChildren as $child){
 			$this->cascade_delete($child->id);
@@ -247,16 +247,16 @@ class MOP_CMSInterface extends Controller_Layout {
 	 * id - the id to undelete as well as everything beneath it.
 	 * Returns: Nothing
 	 */
-	private function cascade_undelete($page_id){
+	protected function cascade_undelete($page_id){
 		$page = ORM::Factory('page')->where('id', '=', $id)->find();
-		$page->activity = new Database_Expr('NULL');
+		$page->activity = new Database_Expression(null);
 		$page->slug = mopcms::createSlug($page->contenttable->title, $page->id);
 		$page->save();
-		$page->contenttable->activity = new Database_Expr('NULL');;
+		$page->contenttable->activity = new Database_Expression(null);
 		$page->contenttable->save();
 
 		$children = ORM::Factory('page');
-		$children->where('parentid = '.$id);
+		$children->where('parentid','=',$id);
 		$iChildren = $children->find_all();
 		foreach($iChildren as $child){
 			$this->cascade_undelete($child->id);

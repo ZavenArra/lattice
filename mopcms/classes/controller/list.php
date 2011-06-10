@@ -221,10 +221,8 @@ class Controller_List extends MOP_CMSInterface {
     */
 
    public function action_removeObject($itemid) {
-      $item = ORM::Factory($this->model, $itemid);
-      $item->activity = 'D';
-      $item->sortorder = 0;
-      $item->save();
+      $this->cascade_delete($itemid);
+      
       $this->response->data(array('deleted'=>true));
    }
 
