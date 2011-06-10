@@ -7,18 +7,6 @@ class Controller_Ajax extends Controller_MOP {
 		throw new HTTP_Exception_404('Ajax controller called without action. Check URL.');
 	}
 
-	/*
-	public function action_handleRequest($uri){
-		$subRequest = Request::Factory($uri);
-		$data = $subRequest->execute()->data();
-		$ajaxResponse = array(
-			'returnValue' => TRUE,
-			'response'=>$data
-		);
-		$this->response->body(json_encode($ajaxResponse));
-	}
-	 */
-
 	public function action_data($uri)
 	{
 		//request to child, just data
@@ -41,6 +29,7 @@ class Controller_Ajax extends Controller_MOP {
 				'arguments'=>$arguments
 
 			);
+			$this->response->headers('Content-Type', 'application/json');
 			$this->response->body(json_encode($ajaxResponse));
 			return;
 		}
@@ -49,6 +38,7 @@ class Controller_Ajax extends Controller_MOP {
 			'response'=>$data,
 			'arguments'=>$arguments
 		);
+		$this->response->headers('Content-Type', 'application/json');
 		$this->response->body(json_encode($ajaxResponse));
 	}
 
@@ -74,6 +64,7 @@ class Controller_Ajax extends Controller_MOP {
 				'arguments'=>$arguments
 
 			);
+			$this->response->headers('Content-Type', 'application/json');
 			$this->response->body(json_encode($ajaxResponse));
 			return;
 		}
@@ -105,6 +96,7 @@ class Controller_Ajax extends Controller_MOP {
 			'returnValue' => TRUE,
 			'arguments'=>$arguments
 		);
+		$this->response->headers('Content-Type', 'application/json');
 		$this->response->body(json_encode($ajaxResponse));
 	}
 
@@ -123,6 +115,7 @@ class Controller_Ajax extends Controller_MOP {
 				'response' => $message,
 				'arguments'=>$arguments
 			);
+			$this->response->headers('Content-Type', 'application/json');
 			$this->response->body(json_encode($ajaxResponse));
 			return;
 		}
@@ -156,6 +149,7 @@ class Controller_Ajax extends Controller_MOP {
 			'response'=>$compoundResponse,
 			'arguments'=>$arguments
 		);
+		$this->response->headers('Content-Type', 'application/json');
 		$this->response->body(json_encode($ajaxResponse));
 	}
 
