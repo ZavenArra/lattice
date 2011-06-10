@@ -389,7 +389,7 @@ a.icon{
 	margin:.25em .125em;
 }
 
-a.icon span{ display: none; }
+a.icon{ text-indent: -3000px; }
 
 a.icon.deleteLink{ background: url( ../images/icon_delete.png); }
 
