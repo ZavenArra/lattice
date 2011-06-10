@@ -193,7 +193,7 @@ class MOP_CMSInterface extends Controller_Layout {
 		 deletes a page/category and all categories and leaves underneath
 		 Returns: returns html for undelete pane 
 		*/
-		public function action_delete($id){
+		public function action_removeObject($id){
 			$this->cascade_delete($id);
 
 			$view = new View('mop_cms_undelete');

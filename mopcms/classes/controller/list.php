@@ -168,7 +168,7 @@ class Controller_List extends MOP_CMSInterface {
      the rendered template of the new item
     */
 
-   public function action_addItem($listObjectId, $templateId=null) {
+   public function action_addObject($listObjectId, $templateId=null) {
       
       $this->setListObject($listObjectId);
 
@@ -220,7 +220,7 @@ class Controller_List extends MOP_CMSInterface {
      $itemid - the id of thd item to delete
     */
 
-   public function action_deleteItem($itemid) {
+   public function action_removeObject($itemid) {
       $item = ORM::Factory($this->model, $itemid);
       $item->activity = 'D';
       $item->sortorder = 0;
