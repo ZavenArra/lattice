@@ -33,7 +33,7 @@ Class Controller_MopFrontend extends Controller_Layout{
 	/*
 	 * Function: page($pageidorslug)
 	 * By default called after a rewrite of routing by slugs hooks, gets all content
-	 * for an object and loads
+	 * for an object and loads view
 	 * Parameters:
 	 * $pageidorslug - the id or slug of the object to display, null is allowed but causes exception
 	 * Returns: nothing, renders full webpage to browser or sents html if AJAX request
