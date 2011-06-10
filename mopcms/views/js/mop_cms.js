@@ -1,11 +1,3 @@
-/*
-    @TODO:  Change mop.modules toString to return this.toStringIdentifier
-    @TODO:  Change addNode to take an object (post?) instead of shitload of arguments
-    @TODO:  Discuss callbacks and responses. Should we  do stuff like -this.JSONSend( url, null, { onComplete: function(){ this.addObjectResponse.bind( this ); callback( this ); }.bind( this ); });
-            Should callback be optionally an array ( could be useful )
-            Some of the methods don't specifically need their own responses (as in callbacks are coming from elsewhere, but we should still define them here for strictness of interface no?)
-*/
-
 /* Class: mop.cms.CMS */
 mop.modules.CMS = new Class({
 	/* Constructor: initialize */
@@ -34,7 +26,7 @@ mop.modules.CMS = new Class({
 		var scripttags = $$( "script" ).each( function( aScriptTag ){ this.loadedJS.push( aScriptTag ); }, this );
 		var scripttags = $$( "link[rel=stylesheet]" ).each( function( aStyleSheetTag ){ this.loadedCSS.push(  aStyleSheetTag ); }, this );
 	},
-	
+
 	build: function(){
 		this.pageContent = $("nodeContent");
 		this.initModules( this.element );
@@ -43,7 +35,6 @@ mop.modules.CMS = new Class({
 	populate: function( html ){
 		$("nodeContent").unspin();
 		this.pageContent.set( 'html', html );
-        console.log("CMS.populate", html)
 		this.uiElements = this.initUI( this.pageContent );
 		this.initModules( this.pageContent );		
 		this.titleElement = this.element.getElement( ".pageTitle" );
@@ -86,7 +77,6 @@ mop.modules.CMS = new Class({
 /*  
     Section: Event Handlers
 */
-
 	onTitleEdited: function( response ){
 	    this.editSlugLink.retrieve( "Class" ).setValue( response.slug );
 	},

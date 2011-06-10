@@ -771,11 +771,8 @@ mop.ui.EnhancedModal = new Class({
 			if( !this.loadedModules || !this.loadedModules.length ) return;
 			var count = this.loadedModules.length - this.protectedModules.length;
 			while( this.loadedModules.length >= count ){
-
-				if( !this.loadedModules[ this.loadedModules.length - 1 ].isProtected() ){
-					var moduleReference = this.loadedModules.pop();		
-					mop.ModuleManager.destroyModuleById( moduleReference.instanceName, this.instanceName + "destroyChildModules" );
-				}
+				var moduleReference = this.loadedModules.pop();		
+				mop.ModuleManager.destroyModuleById( moduleReference.instanceName, this.instanceName + "destroyChildModules" );
 			}
 		},
 

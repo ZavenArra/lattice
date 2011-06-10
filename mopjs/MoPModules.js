@@ -39,10 +39,6 @@ mop.modules.Module = new Class({
 		});
 	},
 	
-	isProtected: function(){
-		return this.element.hasClass("protected");
-	},
-
 	/*
 	Function build: Instantiates mop.ui elements by calling initUI, can be extended for other purposes...
 	*/ 	
@@ -59,6 +55,7 @@ mop.modules.Module = new Class({
 	toString: function(){
 		return "[ Object, mop.modules.Module ]";
 	},
+	
 	/*
 		Function: getSubmissionController
 		Returns: Name of controller to submit to.
@@ -136,32 +133,20 @@ mop.modules.Module = new Class({
 	initUI: function( anElement ){
 	    anElement = ( anElement )? anElement : this.element;
 		var UIElements = this.getModuleUIElements( anElement );
-		
-//		this.UIElements = if( !this.childModules ) this.childModules = new Hash();
-		
-
 		if( !UIElements || UIElements.length == 0  ) return null;
-
 		UIElements.each( function( anElement ){
 		    var UIElement = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  ]( anElement, this, this.options );
 		    this.UIElements[ UIElement.fieldName ] = UIElement;
 		}, this );
-		
 		if( this.postInitUIHook ) this.postInitUIHook();
-		
 		return UIElements;
 	},
 
-/*	
-	Function: destroyChildModules
-	Loops through loaded modules, and destroys unprotected ones... 
-	@TODO, this shouldnt necessarily be a part of module, but rather something more like an ModuleInstantiator interface */
+/*  Function: destroyChildModules */
 	destroyChildModules: function( whereToLook ){
 //		console.log( "destroyChildModules", this.toString(), this.childModules );
 		if( !this.childModules || Object.getLength( this.childModules ) == 0 ) return;
-
         var possibleTargets = ( whereToLook )? whereToLook.getElements( ".module" ) : this.element.getElements( ".module" );
-		
 		Object.each( this.childModules, function( aModule ){
 		    if( possibleTargets.contains( aModule.element ) ){
 		        var key = aModule.instanceName;
@@ -253,32 +238,17 @@ mop.modules.AjaxFormModule = new Class({
 		return "[ object, mop.module.Module, mop.modules.AjaxFormModule ]";
 	},
 
-	JSONSend: function( action, data, options ){
-		var url = this.getSubmissionController() + "/ajax/" + action + "/";
-//		console.log( this.toString(), "JSONSend", url, data, options );
-		mop.util.JSONSend( url, data, options );
-	},
-
 	submitForm: function( e ){
-		
         mop.util.stopEvent( e );
-		
-		this.generatedData = $merge( this.generatedData, this.serialize() );
-
-
-		if( this.resultsContainer ){
-//			this.resultsContainer.setStyle( "height", this.resultsContainer.getCoordinates().height );
-//			this.resultsContainer.addClass( "centeredSpinner" );
-		}
-
-		if( this.requiresValidation ){
-			if( this.validateFields() ){
-//				console.log( this.toString(), "submitForm fields validates.... ");
-				this.JSONSend( this.action, this.generatedData, { onComplete: this.onFormSubmissionComplete.bind( this ) } );
-			}
-		}else{
-			this.JSONSend( this.action, this.generatedData, { onComplete: this.onFormSubmissionComplete.bind( this ) } );
-		}
+        var url = this.getSubmitFormURL();
+        this.generatedData = $merge( this.generatedData, this.serialize() );
+		if( this.requiresValidation && !this.validateFields() ) return false;		
+        mop.util.JSONSend( url, this.generatedData, { onComplete: this.onFormSubmissionComplete.bind( this ) } );	    
+        return true;
+	},
+	
+	getSubmitFormURL: function(){
+	    var url = "ajax/" + this.getSubmissionController() +  "/" + this.action + "/" + this.getObjectId();
 	},
 	
 	validateFields: function(){
@@ -338,4 +308,307 @@ mop.modules.AjaxFormModule = new Class({
 	}
 	
 
+});
+
+mop.modules.MoPList = new Class({
+
+	/* TODO write unit tests for List*/
+	Extends: mop.modules.Module,
+	// listing properties and members, helps with maintenance and destruction.... standard practice from now on
+	sortable: null,
+	sortDirection: null,
+	instanceName: null,
+	addItemDialogue: null,
+	items: null,
+	controls: null,
+	sortableList: null,
+	scroller: null,
+	submitDelay: null,
+	oldSort: null,
+	
+	/* Section: Getters & Setters */
+	getAddItemURL: function(){
+	    throw( "Abstract function getAddItemURL must be overriden in", this.toString() );
+	},
+	
+	getDeleteItemURL: function(){
+	    throw( "Abstract function getDeleteItemURL must be overriden in", this.toString() );
+	},
+
+	getSubmitSortOrderURL: function(){ 
+	    throw( "Abstract function getSubmitSortOrderURL must be overriden in", this.toString() );
+	},
+	
+	initialize: function( anElement, aMarshal, options ){
+        this.parent( anElement, aMarshal, options );
+        delete this.items;
+        this.items = null;
+        this.items = [];
+        this.allowChildSort = ( this.getValueFromClassName( "allowChildSort" ) == "false" ) ? false : true;
+        this.sortDirection = this.getValueFromClassName( "sortDirection" );
+        if( this.allowChildSort ) this.makeSortable();
+        this.objectId = this.element.get("id").split("_")[1];
+	},
+
+	toString: function(){
+		return "[ object, mop.modules.List ]";
+	},
+	
+	getInstanceName: function(){
+		return this.instanceName;
+	},
+	
+	build: function(){
+		this.parent();
+		this.initControls();
+		this.addItemDialogue = null;
+		this.initList();
+	},	
+	
+	initList: function(){
+		delete this.items;
+		this.items = null;
+		this.items = [];
+		this.listing = this.element.getElement( ".listing" );
+		var children = this.listing.getChildren("li");
+		children.each( function( element ){
+			this.items.push( new mop.modules.ListItem( element, this, this.addItemDialogue ) ); 
+		}, this );
+	},
+
+	initControls: function(){
+		// console.log( this.element.getElement( "#" + this.instanceName+"AddItemModal" ).retrieve("Class") );
+		this.controls = this.element.getChildren( ".controls" );
+		var addItemButton = this.controls.getElement( ".addItem" ).addEvent("click", this.addItem.bindWithEvent( this ) );//this.showModal.bindWithEvent( this, $( this.instanceName+"AddItemModal" ) ) );
+		if( this.allowChildSort ){
+			var saveSort = this.controls.getElement( ".saveSort" ).addEvent("click", this.saveSort.bindWithEvent( this ) );
+			saveSort = null;
+		}
+		addItemButton = null;
+	},
+	
+	addItem: function( e ){
+	    mop.util.stopEvent( e );
+		if( this.addItemDialogue ) this.removeModal( this.addItemDialogue );
+		this.addItemDialogue = new mop.ui.EnhancedAddItemDialogue( null, this );
+		this.addItemDialogue.showLoading( e.target.get("text") );
+        mop.util.JSONSend( this.getAddItemURL() , null, { onComplete: function( json ){ this.onItemAdded( json ).bind( this ) } } );
+	},
+
+    deleteItem: function( item ){
+        
+    },
+    
+	onItemAdded: function( json  ){
+      console.log(json);
+		var element = this.addItemDialogue.setContent( json.response.html, this.controls.getElement( ".addItem" ).get( "text" ) );
+		var listItem = new mop.modules.ListItem( element, this, this.addItemDialogue, { scrollContext: 'modal' } );
+		listItem.UIElements.each( function( uiInstance ){
+			uiInstance.scrollContext = "modal";
+		});
+		this.items.push( listItem );
+		mop.util.EventManager.broadcastEvent( "resize" );
+		listItem = null;
+	},
+	
+	removeModal: function( aModal ){
+		if( !this.addItemDialogue ) return;
+		this.addItemDialogue = null;
+	},
+
+	insertItem: function( anElement ){
+		var where = ( this.sortDirection == "DESC" )? "top" : "bottom";
+		this.listing.grab( anElement, where );
+		if( this.allowChildSort && this.sortableList ) this.sortableList.addItems( anElement );
+		// reset scrollContexts
+		var listItemInstance = anElement.retrieve("Class");
+		listItemInstance.scrollContext = 'window';
+		listItemInstance.resetFileDepth();
+		listItemInstance.UIElements.each( function( uiInstance ){
+			uiInstance.scrollContext = "window";
+		});
+		anElement.tween( "opacity", 1 );
+	 	anElement.getElement(".itemControls" ).getElement(".delete").removeClass("hidden");
+		if( this.allowChildSort != null ) this.onOrderChanged();
+		listItemInstance = where = null;
+	},
+
+	onItemDeleted: function( anItem ){
+		this.items.erase( anItem );
+		anItem.destroy();
+		delete anItem;
+		anItem = null;
+		mop.util.EventManager.broadcastEvent( "resize" );
+	},
+	
+	makeSortable: function(){
+		if( this.allowChildSort && !this.sortableList ){
+			this.sortableList = new mop.ui.Sortable( this.listing, this, $( 'body' ) );
+		}else if( this.allowChildSort ){
+			this.sortableList.attach();
+		}
+		this.oldSort = this.serialize();
+	},
+	
+	toggleSortable: function(){
+		if( this.sortableList ){ this.removeSortable( this.sortableList ); }else{ this.makeSortable(); }
+		console.log( "toggleSortable", this.sortableList );
+	},
+	
+	resumeSort: function(){
+		if( this.allowChildSort && this.sortableList ) this.sortableList.attach();
+	},
+	
+	suspendSort: function(){
+		if( this.allowChildSort && this.sortableList ) this.sortableList.detach();
+	},
+	
+	removeSortable: function( aSortable ){
+		aSortable.detach();
+		delete aSortable;
+		aSortable = null;
+	},
+	
+	onOrderChanged: function(){
+		var newOrder = this.serialize();
+		clearInterval( this.submitDelay );
+		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder.join(",") );
+		newOrder = null;
+	},
+	
+	submitSortOrder: function( newOrder ){
+		if( this.allowChildSort && this.oldSort != newOrder ){
+			clearInterval( this.submitDelay );
+			this.submitDelay = null;
+            mop.util.JSONSend( this.getSubmitSortOrderURL, { sortorder: newOrder } );
+			this.oldSort = newOrder;
+		}
+	},
+	
+	serialize:function(){
+		var sortArray = [];
+		var children = this.listing.getChildren("li");
+		children.each( function ( aListing ){			
+            var listItemId = aListing.get("id");
+            var listItemIdSplit = listItemId.split( "_" );
+            listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
+            sortArray.push( listItemId );
+		});
+        console.log( this.toString(), "serialize", this.listing, sortArray );
+		return sortArray;
+	},
+
+	destroy: function(){
+		if(this.sortableList) this.removeSortable( this.sortableList );
+		clearInterval( this.submitDelay );		
+		this.removeModal();
+		delete this.modal;
+		delete this.addItemDialogue;
+		delete this.controls;
+		delete this.instanceName;
+		delete this.items;
+		delete this.listing;
+		delete this.oldSort;
+        if( this.scroller ) delete this.scroller;
+		delete this.allowChildSort;
+		delete this.sortDirection;
+		delete this.submitDelay;
+		this.addItemDialogue = null;
+		this.controls = null;
+		this.instanceName = null;
+		this.items = null;
+		this.listing = null;
+		this.oldSort = null;
+        if( this.scroller ) this.scroller = null;
+		this.allowChildSort = null;
+		this.sortDirection = null;
+		this.submitDelay = null;
+		mop.util.EventManager.broadcastEvent( 'resize' );
+		this.parent();
+	}
+});
+
+mop.modules.MoPListItem = new Class({
+
+	Extends: mop.modules.Module,
+	Implements: [ Events, Options ],
+	addItemDialogue: null,
+	objectId: null,
+	scrollContext: null,
+	controls: null,
+	fadeOut: null,
+	
+    /* Section: Getters & Setters */
+	getObjectId: function(){ return this.objectId; },
+
+	getDeleteItemURL: function(){ throw( "Abstract function getDeleteItemURL must be overriden in", this.toString() ); },
+	
+	getSubmissionController: function(){ return this.marshal.instanceName; },
+	
+	initialize: function( anElement, aMarshal, addItemDialogue, options ){
+		this.element = $( anElement);
+		this.element.store( "Class", this );
+		this.marshal = aMarshal;
+		this.instanceName = this.element.get( "id" );
+		this.addItemDialogue = addItemDialogue;
+		this.objectId = this.element.get("id").split("_")[1];
+		if( options && options.scrollContext ) this.scrollContext = options.scrollContext;
+		this.build();
+	},
+
+	toString: function(){ return "[ object, mop.modules.ListItem ]"; },
+
+	build: function(){
+		this.parent();
+		this.initControls();
+	},
+
+	initControls: function(){
+		this.controls = this.element.getElement(".itemControls");
+		if( this.controls.getElement(".delete") ) this.controls.getElement(".delete").addEvent( "click", this.deleteItem.bindWithEvent( this ) );
+	},
+	
+	filesToTop: function(){
+		this.UIElements.each( function( uiElementInstance, indexA ){
+			if( uiElementInstance.type == "file" || uiElementInstance.type == "imageFile" ){
+ 				uiElementInstance.scrollContext = 'modal';
+				uiElementInstance.reposition( 'modal' );
+			}
+		}, this );
+	},
+	
+	resetFileDepth: function(){
+		this.UIElements.each( function( anElement ){
+			if( anElement.type == "file" || anElement.type == "imageFile" ) anElement.reposition( 'window' );
+		});
+	},
+		
+	deleteItem: function( e ){
+	    mop.stopEvent( e );
+		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
+		this.fadeOut = new Fx.Morph( this.element, { duration: 300 } );
+		this.fadeOut.start( { opacity: 0 } );
+		this.marshal.deleteItem( this );
+	},
+	
+	resumeSort: function(){
+		if( this.marshal.sortableList ) this.marshal.resumeSort();
+	},
+	
+	suspendSort: function(){
+		if( this.marshal.sortableList ) this.marshal.suspendSort();
+	},
+	
+	destroy: function(){
+		this.element.destroy();
+//		console.log(this.element);
+		this.parent();  //call the superclass's destroy method
+		this.addItemDialogue = null;
+		this.controls = null;
+		this.fadeOut = null;
+		this.scrollContext = null;
+		this.objectId = null;
+		console.log(this.element);
+	}
+	
 });
