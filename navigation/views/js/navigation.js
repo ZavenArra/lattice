@@ -38,8 +38,6 @@ mop.modules.navigation.Navigation = new Class({
 	    console.log( "requestTier", parentId, parentTier );
 	    var title;
 	    var paneIndex = 0;
-
-
 	    if( parentTier ){
 	        title = parentTier.getActiveNode().getElement( "h5" ).get( 'text' );
 	        parentId = parentTier.getActiveNodeId();
@@ -47,7 +45,6 @@ mop.modules.navigation.Navigation = new Class({
 	        console.log( "addCrumb", paneIndex );
             this.addCrumb( title, parentId, paneIndex );
 	    }
-
 	    if( this.navPanes.length > 0 ) this.clearPanes( paneIndex + 1 );	    
         var newPane = this.addPane( parentId );
 	    this.currentParentId = parentId;
@@ -100,7 +97,11 @@ mop.modules.navigation.Navigation = new Class({
 	},
 
 	removeObject: function( nodeId ){
-	    this.marshal.removeObject( nodeId, this.onRemoveObjectResponse.bind( this ) );
+	    this.marshal.removeObjectRequest( nodeId, this.onRemoveObjectResponse.bind( this ) );
+	},
+	
+	onRemoveObjectResponse: function( json ){
+	    console.log( this.toString(), "onRemoveObjectResponse", json );
 	},
 
     togglePublishedStatus: function( nodeId ){
@@ -223,7 +224,7 @@ mop.modules.navigation.Tier = new Class({
 //	    console.log( "onRemoveNodeClicked" );
 	    mop.util.stopEvent( e );
         var nodeId = this.getNodeIdFromElement( nodeElement );
-        clickedElement.retrieve("nodeElement").destroy();
+        nodeElement.destroy();
         this.removeObject( nodeId );
     },
 
@@ -251,7 +252,7 @@ mop.modules.navigation.Tier = new Class({
 	
     // is it better to have this function here? Or just add it if it ever grows beyond one line of code?
 	removeObject: function( nodeId ){
-	    this.marshal.removeNavNode( nodeId );
+	    this.marshal.removeObject( nodeId );
 	},
 	
 	appendNode: function(){
