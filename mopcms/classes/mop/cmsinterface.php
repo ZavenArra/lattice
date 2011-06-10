@@ -77,21 +77,24 @@ class MOP_CMSInterface extends Controller_Layout {
 	 */
 	public function action_savefield($id){
 		$page = ORM::Factory('page', $id);
-                
+
+      
 		if($_POST['field']=='slug'){
 			$page->slug = mopcms::createSlug($_POST['value'], $page->id);
 			$page->decoupleSlugTitle = 1;
 			$page->save();
 			$this->response->data( array('value'=>$page->slug) );
-		} else if($_POST['field']=='title'){ //update slug, but actually we may not want to have slug updatable
+			return;
+		} else if($_POST['field']=='title'){
 			if(!$page->decoupleSlugTitle){
 				$page->slug = mopcms::createSlug($_POST['value'], $page->id);
 			}
 			$page->save();
-			$page->contenttable->$_POST['field'] = mopcms::convertNewlines($_POST['value']);
+			$page->contenttable->title = mopcms::convertNewlines($_POST['value']);
 			$page->contenttable->save();
 			$page = ORM::Factory('page')->where('id', '=', $id)->find();
 			$this->response->data( array('value'=>$page->contenttable->$_POST['field'], 'slug'=>$page->slug) );
+         return;
 		}
 		else if(in_array($_POST['field'], array('dateadded'))){
 			$page->$_POST['field'] = $_POST['value'];
@@ -135,13 +138,12 @@ class MOP_CMSInterface extends Controller_Layout {
 				break;
 			}
 		} else {
-			throw new Kohana_User_Exception('Invalid POST', 'Invalid POST Arguments');
+			throw new Kohana_Exception('Invalid POST Arguments, POST must contain field and value parameters');
 		}
 
 		$page = ORM::Factory('page')->where('id', '=', $id)->find();
-                //echo $_POST['field'];
-                $value = $page->contenttable->$_POST['field'];
-                $this->response->data(array('value'=>$value));
+      $value = $page->contenttable->$_POST['field'];
+      $this->response->data(array('value'=>$value));
 	}
 
 
@@ -191,7 +193,7 @@ class MOP_CMSInterface extends Controller_Layout {
 		 deletes a page/category and all categories and leaves underneath
 		 Returns: returns html for undelete pane 
 		*/
-		public function action_delete($id){
+		public function action_removeObject($id){
 			$this->cascade_delete($id);
 
 			$view = new View('mop_cms_undelete');

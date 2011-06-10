@@ -83,10 +83,12 @@ class Controller_Auth extends Controller_Layout {
 
 		if (Auth::instance()->logged_in())
 		{
-			if($redirect = Kohana::config('auth.redirect')){
-				Request::current()->redirect($redirect);
+			if($redirect){
+            Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 			} else {
-				Request::current()->redirect($redirect);
+            $redirect = Kohana::config('auth.redirect');
+				Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
+
 			}
 
 			$this->response->body($view->render());
@@ -112,11 +114,11 @@ class Controller_Auth extends Controller_Layout {
 				{
 					// Login successful, redirect
 					if($formValues['redirect']){
-						Request::current()->redirect($formValues['redirect']);
+      				Request::current()->redirect(url::site($formValues['redirect'],Request::current()->protocol(),false));
 					} else if($redirect = Kohana::config('auth.redirect')){
-						Request::current()->redirect($redirect);
+                  Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 					} else {
-						Request::current()->redirect('auth/login');
+      				Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),false));
 					}
                return;
 				}
@@ -150,7 +152,8 @@ class Controller_Auth extends Controller_Layout {
 		Auth::instance()->logout(TRUE);
 
 		// Redirect back to the login page
-		Request::current()->redirect('auth/login');
+		Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),false));
+
 	}
 
 	public function action_noaccess($controller = NULL){

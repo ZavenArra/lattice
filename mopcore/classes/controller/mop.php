@@ -44,7 +44,7 @@ class Controller_MOP extends Controller {
 
 		//checked if logged in
 		if($role && !Auth::instance()->logged_in()){
-			Request::current()->redirect('auth/login/'.Request::initial()->uri());
+			Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
 			exit;
 		}
 
@@ -54,7 +54,7 @@ class Controller_MOP extends Controller {
 				if($role=='admin'){
 					if(Kohana::config('mop.staging_enabled') && !Kohana::config('mop.staging')){
 						$redirect = 'staging/'. Router::$current_uri;
-						Request::current()->redirect($redirect);
+						Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 					}
 				}
 
@@ -66,7 +66,7 @@ class Controller_MOP extends Controller {
 			if($role=='admin'){
 				if(Kohana::config('mop.staging_enabled') && !Kohana::config('mop.staging')){
 					$redirect = 'staging/'. Router::$current_uri;
-					Request::current()->redirect($redirect);
+					Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 				}
 			}
 
@@ -75,7 +75,7 @@ class Controller_MOP extends Controller {
 
 		if(!$accessGranted){
 			$redirect = 'accessdenied';
-			Request::current()->redirect($redirect);
+			Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 			exit;
 		}
 

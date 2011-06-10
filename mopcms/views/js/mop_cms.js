@@ -76,6 +76,10 @@ mop.modules.CMS = new Class({
 /*  
     Section: Event Handlers
 */
+<<<<<<< HEAD
+=======
+
+>>>>>>> f1502c4c781c5b2fe80a3bbd4b4a8acf0ccc4810
 	onTitleEdited: function( json ){
 	    this.editSlugLink.retrieve( "Class" ).setValue( json.response.slug );
 	},
@@ -195,7 +199,12 @@ mop.modules.CMS = new Class({
         console.log( this.toString(), "removeObjectResponse", json );
         if( !json.returnValue ) console.log( this.toString(), "removeObjectRequest error:", json.response.error );
     },
+<<<<<<< HEAD
 
+=======
+	
+  
+>>>>>>> f1502c4c781c5b2fe80a3bbd4b4a8acf0ccc4810
     /*
     Function: togglePublishedStatus
     Sends page publish toggle ajax call 

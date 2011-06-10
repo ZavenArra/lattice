@@ -198,9 +198,7 @@ class MOP_CMS extends MOP_CMSInterface {
 		$this->response->data($newId);
 	}
 
-	public function action_save($id){
-
-	}
+	
 
 
 
