@@ -43,7 +43,7 @@ class Controller_Builder extends Controller {
 
 		//clean out media dir
 		$this->destroy('application/media/');
-		$this->destroy('staging/application/media/');
+//		$this->destroy('staging/application/media/');
 		
 
 		echo "\nInserting Data\n";
