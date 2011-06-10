@@ -2,7 +2,7 @@ mop.modules.List = new Class({
 	Extends: mop.modules.MoPList,	
 	/* Section: Getters & Setters */
 	getAddItemURL: function(){
-	    return "ajax/html/"+this.getSubmissionController()+"/addItem/" + this.getObjectId();
+	    return "ajax/html/"+this.getSubmissionController()+"/addObject/" + this.getObjectId();
 	},
 	
 	getSubmitSortOrderURL: function(){
@@ -10,7 +10,7 @@ mop.modules.List = new Class({
 	},
 
 	getDeleteItemURL: function( item ){ 
-	    return "ajax/data/list/deleteItem/" + item.getObjectId();
+	    return "ajax/data/list/removeObject/" + item.getObjectId();
 	},
 
 	toString: function(){
