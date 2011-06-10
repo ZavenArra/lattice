@@ -250,13 +250,11 @@ mop.ui.ModalManager = new Class({
 
 
 /*	Class: mop.ui.Sortable
-	Simply an extension of the mootools sortable
-	adds a marshal reference, and a scroller instance
+	Simply an extension of the mootools sortable adds a marshal reference, and a scroller instance as well as some callbacks
 */
 mop.ui.Sortable = new Class({
     Implements: Options,
-	Extends: Sortables,
-	
+	Extends: Sortables,	
 	initialize: function( anElement, marshal, scrollerTarget ){
 	    console.log( ":: mop.ui.Sortable", anElement, marshal, scrollerTarget );
 		this.marshal = marshal;
@@ -271,14 +269,15 @@ mop.ui.Sortable = new Class({
 			onComplete: function( droppedItem ){
 				this.isSorting = false; 
 				this.scroller.stop();
-				this.marshal.onOrderChanged( anElement, droppedItem );
+				console.log( "mop.ui.Sortable.onComplete", droppedItem );
+				this.marshal.onOrderChanged( droppedItem );
 			},
 			onStart: function(){
 				this.isSorting = true; 
 				this.scroller.start();
 			}
 	 	});
-	 	var scrollerElement = ( $type( scrollerTarget ) != "element" )? $( document.body ) : scrollerTarget;
+	 	var scrollerElement = ( typeOf( scrollerTarget ) != "element" )? $( document.body ) : scrollerTarget;
         this.scroller = new Scroller( scrollerElement, { area: 20, velocity: 1 } );
         
 	}
@@ -658,9 +657,9 @@ mop.ui.EnhancedModal = new Class({
 		},
 
 		showLoading: function(){
-//			console.log( this.toString(), 'showLoading' );
+			console.log( this.toString(), 'showLoading', this.modal, this.modal.spin );
 			this.content.empty();
-			this.modal.addClass("centeredSpinner");
+            this.modal.spin();
 			this.hideControls();
 			this.show();
 		},
@@ -680,16 +679,13 @@ mop.ui.EnhancedModal = new Class({
 		},
 		
 		show: function(){
-
 			console.log( "show", this.toString(), this );
-
 			this.showControls();
 			mop.ui.windowMode = "modal";
-			this.modal.removeClass("centeredSpinner")
+            this.modal.unspin();
 			this.element.setStyle( "opacity", 0 );
 			this.element.removeClass("hidden");
 			this.showTransition.start( { "opacity": 1 } );
-
 		},
 
 		close: function( e, onComplete ){
@@ -728,20 +724,20 @@ mop.ui.EnhancedModal = new Class({
 		},
 		
 		loadTab: function( aTab ){
-//			console.log( "loadTab", aTab );
+			console.log( "loadTab", aTab );
 			this.content.empty();
-			this.content.addClass( "centeredSpinner" );
+            this.content.spin();
 			this.setTitle( aTab.get( "title" ), "loading..." );
 			mop.util.JSONSend( aTab.get( "href" ), null, { onComplete: this.onTabLoaded.bind( this ) });
 		},
 
 		onTabLoaded: function( json ){
-			this.content.removeClass( "centeredSpinner" );
+			this.content.unspin();
 			this.setContent( json.html );
 		},
 
 		setContent: function( someContent, aTitle ){
-//			console.log( this.toString(), "setContent", aTitle );
+			console.log( this.toString(), "setContent", aTitle );
 		
 			if( aTitle ) this.setTitle( aTitle );
 			
@@ -749,8 +745,7 @@ mop.ui.EnhancedModal = new Class({
 			
 			this.content.empty();
 					
-			if( this.modal.hasClass( "centeredSpinner" ) ) this.modal.removeClass( "centeredSpinner" );
-
+            this.modal.unspin();
 			if( typeof someContent == "string" ){
 				this.content.set( "html", someContent );
 			}else{
@@ -833,7 +828,7 @@ mop.ui.EnhancedAddItemDialogue = new Class({
 	},
 	
 	toString: function(){
-		return "[ Object, mop.ui.EnhancedModal, mop.ui.EnhancedAddItemDialogue ]";
+		return "[ object, mop.ui.EnhancedModal, mop.ui.EnhancedAddItemDialogue ]";
 	},
 	
 	build: function(){
@@ -880,25 +875,21 @@ mop.ui.EnhancedAddItemDialogue = new Class({
 	},
 
 	setContent: function( someContent, aTitle ){
-//		console.log( this.toString(), "setContent" );
-
+//		console.log( this.toString(), "setContent", someContent, typeof someContent );
 		this.content.empty();
-
 //		console.log( this.toString(), "setContent", aTitle );
 		if( aTitle ) this.title.set( "text", aTitle );
-		if( this.modal.hasClass( "centeredSpinner" ) ) this.modal.removeClass( "centeredSpinner" );
-
-
+		console.log( "A" );
+        this.modal.unspin();
+		console.log( "B" );
 		this.itemContainer = new Element( "ul" );
-		
 		this.content.adopt( this.itemContainer );
-
 		if( typeof someContent == "string" ){
 			this.itemContainer.set( "html", someContent );
 		}else{
 			this.itemContainer.adopt( someContent );
 		}
-
+        console.log( "mop.ui.EnhancedAddItemDialogue.setContent", this.itemContainer, someContent );
 		var controls = this.itemContainer.getElement(".itemControls");
 	 	controls.getElement(".delete").addClass("hidden");
 		
@@ -1163,7 +1154,7 @@ mop.ui.AddItemDialogue = new Class({
 	},
 	
 	toString: function(){
-		return "[ Object, mop.ui.Modal, mop.ui.AddItemDialogue ]";
+		return "[ object, mop.ui.Modal, mop.ui.AddItemDialogue ]";
 	},
 	
 	showLoading: function( label ){
@@ -1175,7 +1166,10 @@ mop.ui.AddItemDialogue = new Class({
 	
 	setContent: function( html ){
 //		console.log( this.toString(), "setContent", html );
-		this.modal.removeClass("centeredSpinner");
+console.log( "aa" );
+        this.modal.unspin();
+console.log( "bb" );
+		//this.modal.removeClass("centeredSpinner");
 		this.container.set( "html", html );
 		var controls = this.container.getElement(".itemControls");
 	 	controls.getElement(".delete").addClass("hidden");
@@ -1615,7 +1609,7 @@ mop.ui.ExtendedMonkeyPhysicsDatePicker = new Class({
 	},
 
 	toString: function(){
-		return "[ Object, DatePicker, mop.ui.ExtendedMonkeyPhysicsDatePicker ]";
+		return "[ object, DatePicker, mop.ui.ExtendedMonkeyPhysicsDatePicker ]";
 	},
 
 	getDate: function(){
@@ -1808,7 +1802,7 @@ mop.ui.DatePicker = new Class({
 	
     
 	toString: function(){
-		return '[ Object, mop.ui.UIElement, mop.ui.DatePicker ]';
+		return '[ object, mop.ui.UIElement, mop.ui.DatePicker ]';
 	},
 	
 	buildPicker: function(){ 
@@ -1898,7 +1892,7 @@ mop.ui.TimePicker = new Class({
 	type: "timepicker",
 	
 	toString: function(){
-		return '[ Object, mop.ui.UIElement, mop.ui.DatePicker, mop.ui.TimePicker ]';
+		return '[ object, mop.ui.UIElement, mop.ui.DatePicker, mop.ui.TimePicker ]';
 	},
 		
 	initialize: function( anElement, options ){
@@ -1989,7 +1983,7 @@ mop.ui.DateRangePicker = new Class({
 	},
 	
 	toString: function(){
-		return "[ Object, mop.ui.UIElement, mop.ui.DateRangePicker ]";
+		return "[ object, mop.ui.UIElement, mop.ui.DateRangePicker ]";
 	},
 
 	onResponse: function(){
@@ -2237,7 +2231,7 @@ mop.ui.FileElement = new Class({
 	},
 
 	toString: function(){
-		return "[ Object, mop.ui.UIElement, mop.ui.FileElement ]";
+		return "[ object, mop.ui.UIElement, mop.ui.FileElement ]";
 	},
 	
 	getOptions: function(){
@@ -2578,7 +2572,7 @@ mop.util.Uploader = new Class({
 	},
 
 	toString: function(){
-		return "[ Object, digitarald.Swiff.Uploader, mop.util.Uploader ]";
+		return "[ object, digitarald.Swiff.Uploader, mop.util.Uploader ]";
 	},
 	
 	setFocus: function(){
@@ -3365,7 +3359,7 @@ mop.ui.Input = new Class({
 	},
 
 	toString: function(){
-		return "[ Object, mop.ui.Input ]";
+		return "[ object, mop.ui.Input ]";
 	},
 
 	checkForMaxLength: function( e ){
@@ -3447,7 +3441,7 @@ mop.ui.Text = new Class({
 	},
 
 	toString: function(){
-		return "[ Object, mop.ui.Text ]";
+		return "[ object, mop.ui.Text ]";
 	},
 
 	enterEditMode: function( e ){
@@ -3859,17 +3853,11 @@ mop.ui.MooSwitch = new Class({
 	goTo: function( value ){
 		var cursor = (value ==1 ) ? 'e-resize' : 'w-resize';
 		this.handle.setStyle('cursor', cursor);
-
-//		console.log("MooSwitch value ... ", value );
-
 		if( !this.isVirgin ){
 			this.onChangeHandler( ( value == 1 )? 0 : 1 ); 
-		}else{ this.isVirgin = false; }
-
-//		this.mvalue = value;
-
-		// this.radio_el.set( "checked", true )
-
+		}else{
+		    this.isVirgin = false;
+		}
 		this.handle.morph({
 			'left' : ( value == 0 )? this.maxscroll : 0,
 			'opacity' : 1
@@ -3881,63 +3869,44 @@ mop.ui.MooSwitch = new Class({
 mop.ui.SlideSwitch = new Class({
 	Extends: mop.ui.MooSwitch,
 	type: "switch",
-
-	
 	initialize: function( anElement, aMarshal, options ){
 		this.element = anElement;
-//		console.log( ":::: MOOSWITCH HTML ", anElement, aMarshal, options, this.element.get( "html" ) );
 		this.marshal = aMarshal;
 		this.radios = anElement.getElements( "input[type='radio']" );
 		this.parent( this.radios, options );
-	}
-	
+	}	
 });
 
-
 mop.ui.ScrollableTable = new Class({
-	
+
 	initialize: function( anElement, aMarshal ){
 		this.element = anElement;
 		this.table = anElement.getElement( "table" );
 		this.tableSize = this.table.getSize();
 		var newWidth = this.tableSize.x - 16;
-		this.element.setStyles({
-			"overflow": "auto",
-			"width": newWidth
-		});
+		this.element.setStyles( { "overflow": "auto", "width": newWidth } );
 		this.setUpTableHead();
  		this.setUpTableBody();
 	},
 	
-	isBrowserIe6orLower: function(){
-		return( Browser.ie && Browser.version < 7 );
-	},
+	isBrowserIe6orLower: function(){ return( Browser.ie && Browser.version < 7 ); },
 	
 	setUpTableHead: function(){
-		this.table.getElement( "thead" ).getChildren( "tr" ).each( function( aTr, index ){
-				aTr.setStyle( "position", "relative" );
-		}, this );
+		this.table.getElement( "thead" ).getChildren( "tr" ).each( function( aTr, index ){ aTr.setStyle( "position", "relative" ); }, this );
 	},
 	
-	destroy: function(){
-        this.element = this.table = this.tableSize = null;
-	}
+	destroy: function(){ this.element = this.table = this.tableSize = null; }
 	
 });
 
 mop.ui.PaginationControls = new Class({
 	
 	pages: [],
-	
 	cachePages: false,
-	
 	method: "pagination",
-
 	currentPage: 1,
 	
-	initialize: function( anElement, aMarshal ){
-		
-		
+	initialize: function( anElement, aMarshal ){		
 		this.element = $( anElement );
 		this.instanceName = this.element.get( "id" );
 		this.element.store( "Class" );
@@ -3946,25 +3915,19 @@ mop.ui.PaginationControls = new Class({
 		this.cachePages = ( mop.util.getValueFromClassName( "cachePages", this.element.get( "class" ) ) == "true" )? true : false;
 //		console.log( this.toString(), "initialize", anElement, this.marshal );
 		this.build();
-
 	},
 	
-	build: function(){
-		
+	build: function(){		
 		if( this.getPaginationItemElement().get( "id" ) ){
 			var idArr = this.getPaginationItemElement().get( "id" ).split("_");
 			idArr.splice( idArr.length - 1, 1 );
-			this.itemIdPrefix = idArr.join("_");
+            this.itemIdPrefix = idArr.join("_");
 		}
-		
 		this.spinner = this.element.getElement(".spinner");
-
 		this.listId = mop.util.getValueFromClassName( "listId", this.element.get( "class" ) );
 		this.totalPages = mop.util.getValueFromClassName( "totalPages", this.element.get( "class" ) );
-
 		if( this.element.getElement( ".pagingLeft" ) ) this.previousPageControl = this.element.getElement( ".pagingLeft" ).addEvent( "click", this.previousPage.bindWithEvent( this ) );
 		if( this.element.getElement( ".pagingRight" ) ) this.nextPageControl = this.element.getElement( ".pagingRight" ).addEvent( "click", this.nextPage.bindWithEvent( this ) );
-
 	},
 	
 	getPaginationItemElement: function(){
@@ -3972,20 +3935,18 @@ mop.ui.PaginationControls = new Class({
 	},
 	
 	getPageableItems: function(){
-		return this.container.getElements(".paginationItem");		
+		return this.container.getElements(".paginationItem");
 	},
 	
 	toString: function(){
-		return "[ Object, mop.ui.PaginationControls ]";
+		return "[ object, mop.ui.PaginationControls ]";
 	},
 	
 	nextPage: function( e ){
 		mop.util.stopEvent( e );
 //		console.log( this.toString(), "nextPage", e );
 		this.currentPage ++;
-		if( this.currentPage == this.totalPages ){
-			this.nextPageControl.addClass( "hidden" );
-		};
+		if( this.currentPage == this.totalPages ) this.nextPageControl.addClass( "hidden" );
 		this.previousPageControl.removeClass("hidden");
 		this.paginate();
 	},
@@ -4029,17 +3990,12 @@ mop.ui.PaginationControls = new Class({
 	
 	onPagination: function( array, json ){
 		this.spinner.addClass( "hidden" );
-
 		var contents = this.getPageableItems();
 		var newChildren = this.buildItems( json );
-
 		this.clearElements( contents );
-
-		this.pages[ this.currentPage ] = json;//newChildren;
-
+		this.pages[ this.currentPage ] = json;
 //		console.log( "\n\t", this.toString(), "onPagination", newChildren, this.pages[ this.currentPage ] );
 		this.container.adopt( newChildren );
-
 		if( this.marshal && this.marshal.initList ){ this.marshal.initList(); }
 	},
 	

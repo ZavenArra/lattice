@@ -53,7 +53,7 @@ mop.modules.Module = new Class({
 	},
 
 	toString: function(){
-		return "[ Object, mop.modules.Module ]";
+		return "[ object, mop.modules.Module ]";
 	},
 	
 	/*
@@ -241,7 +241,7 @@ mop.modules.AjaxFormModule = new Class({
 	submitForm: function( e ){
         mop.util.stopEvent( e );
         var url = this.getSubmitFormURL();
-        this.generatedData = $merge( this.generatedData, this.serialize() );
+        this.generatedData = Object.merge( this.generatedData, this.serialize() );
 		if( this.requiresValidation && !this.validateFields() ) return false;		
         mop.util.JSONSend( url, this.generatedData, { onComplete: this.onFormSubmissionComplete.bind( this ) } );	    
         return true;
@@ -372,7 +372,7 @@ mop.modules.MoPList = new Class({
 		this.listing = this.element.getElement( ".listing" );
 		var children = this.listing.getChildren("li");
 		children.each( function( element ){
-			this.items.push( new mop.modules.ListItem( element, this, this.addItemDialogue ) ); 
+			this.items.push( new mop.modules.MoPListItem( element, this, this.addItemDialogue ) ); 
 		}, this );
 	},
 
@@ -392,14 +392,18 @@ mop.modules.MoPList = new Class({
 		if( this.addItemDialogue ) this.removeModal( this.addItemDialogue );
 		this.addItemDialogue = new mop.ui.EnhancedAddItemDialogue( null, this );
 		this.addItemDialogue.showLoading( e.target.get("text") );
-        mop.util.JSONSend( this.getAddItemURL() , null, { onComplete: function( json ){ this.onItemAdded( json ).bind( this ) } } );
+        mop.util.JSONSend( this.getAddItemURL() , null, { onComplete: this.onItemAdded.bind( this ) } );
 	},
 
     deleteItem: function( item ){
-        
+        mop.util.JSONSend( this.getDeleteItemURL( item ) );        
+    	this.items.erase( item );
+		item.destroy();
+		item = null;
+		mop.util.EventManager.broadcastEvent( "resize" );        
     },
     
-	onItemAdded: function( json  ){
+	onItemAdded: function( json ){
       console.log(json);
 		var element = this.addItemDialogue.setContent( json.response.html, this.controls.getElement( ".addItem" ).get( "text" ) );
 		var listItem = new mop.modules.ListItem( element, this, this.addItemDialogue, { scrollContext: 'modal' } );
@@ -433,17 +437,9 @@ mop.modules.MoPList = new Class({
 		listItemInstance = where = null;
 	},
 
-	onItemDeleted: function( anItem ){
-		this.items.erase( anItem );
-		anItem.destroy();
-		delete anItem;
-		anItem = null;
-		mop.util.EventManager.broadcastEvent( "resize" );
-	},
-	
 	makeSortable: function(){
 		if( this.allowChildSort && !this.sortableList ){
-			this.sortableList = new mop.ui.Sortable( this.listing, this, $( 'body' ) );
+			this.sortableList = new mop.ui.Sortable( this.listing, this, $( document.body ) );
 		}else if( this.allowChildSort ){
 			this.sortableList.attach();
 		}
@@ -470,6 +466,7 @@ mop.modules.MoPList = new Class({
 	},
 	
 	onOrderChanged: function(){
+	    console.log( "onOrderChanged", this, this.toString() );
 		var newOrder = this.serialize();
 		clearInterval( this.submitDelay );
 		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder.join(",") );
@@ -488,11 +485,14 @@ mop.modules.MoPList = new Class({
 	serialize:function(){
 		var sortArray = [];
 		var children = this.listing.getChildren("li");
-		children.each( function ( aListing ){			
-            var listItemId = aListing.get("id");
-            var listItemIdSplit = listItemId.split( "_" );
-            listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
-            sortArray.push( listItemId );
+		children.each( function ( aListing ){
+		    if( aListing.get( "id" ) ){
+    		    console.log( this.toString(), aListing, aListing.get( "id" ) ); 	
+                var listItemId = aListing.get("id");
+                var listItemIdSplit = listItemId.split( "_" );
+                listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
+                sortArray.push( listItemId );		        
+		    }
 		});
         console.log( this.toString(), "serialize", this.listing, sortArray );
 		return sortArray;
@@ -558,13 +558,14 @@ mop.modules.MoPListItem = new Class({
 
 	toString: function(){ return "[ object, mop.modules.ListItem ]"; },
 
-	build: function(){
-		this.parent();
-		this.initControls();
+	build: function(){ 
+	    this.parent();
+	    this.initControls();
 	},
 
 	initControls: function(){
 		this.controls = this.element.getElement(".itemControls");
+		console.log( this.controls, this.controls.getElement(".delete") );
 		if( this.controls.getElement(".delete") ) this.controls.getElement(".delete").addEvent( "click", this.deleteItem.bindWithEvent( this ) );
 	},
 	
@@ -584,11 +585,11 @@ mop.modules.MoPListItem = new Class({
 	},
 		
 	deleteItem: function( e ){
-	    mop.stopEvent( e );
+	    mop.util.stopEvent( e );
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
 		this.fadeOut = new Fx.Morph( this.element, { duration: 300 } );
 		this.fadeOut.start( { opacity: 0 } );
-		this.marshal.deleteItem( this );
+		this.marshal.deleteItem( this );	        
 	},
 	
 	resumeSort: function(){
