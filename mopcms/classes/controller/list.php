@@ -211,21 +211,7 @@ class Controller_List extends MOP_CMSInterface {
       $this->response->body($html);
     }
 
-   /*
-     Function: deleteItem()
-     Deletes an item (marks as deleted, but does not remove from database.
-     also sets sortorder to 0)
-
-     Parameters:
-     $itemid - the id of thd item to delete
-    */
-
-   public function action_removeObject($itemid) {
-      $this->cascade_delete($itemid);
-      
-      $this->response->data(array('deleted'=>true));
-   }
-
+ 
 }
 
 ?>

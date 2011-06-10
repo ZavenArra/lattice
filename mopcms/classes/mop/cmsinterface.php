@@ -199,6 +199,8 @@ class MOP_CMSInterface extends Controller_Layout {
 			$view = new View('mop_cms_undelete');
 			$view->id=$id;
          $this->response->body($view->render());
+         $this->response->data(array('deleted'=>true));
+
 		}
 
 
@@ -227,7 +229,7 @@ class MOP_CMSInterface extends Controller_Layout {
 		$page = ORM::Factory('page')->where('id', '=', $id)->find();
 		$page->activity = 'D';
 		$page->sortorder = 0;
-		$page->slug = new Database_Expression(null);
+		$page->slug = DB::expr('null');
 		$page->save();
 		$page->contenttable->activity = 'D';
 		$page->contenttable->save();
