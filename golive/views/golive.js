@@ -30,7 +30,8 @@ mop.modules.GoLive = new Class({
 		var dialogue = confirm("You are about to publish the staged content onto the live server. Are you certain you want to do this, it cannot be undone?");
 		if( dialogue ){
 			this.spinner.removeClass("hidden");
-			this.JSONSend( "copytolive", null, { onComplete: this.onComplete.bind( this ) });
+			var url = this.getSubmissionController() + "/ajax/copytolive";
+			mop.util.JSONSend( url, null, this.onComplete.bind( this ) );
 		}
 	},
 	

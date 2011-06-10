@@ -53,15 +53,15 @@
 
  	<item templateName="singleFile">
                 <field name="title">Single File</field>
-                <field name="file">testimages/ctoolsAllCases.csv</field>
+                <field name="file">moplib/testdata/ctoolsAllCases.csv</field>
         </item>
 
         <item templateName="singleImage">
                 <field name="title">Single Image</field>
-                <field name="file">testimages/29305_390907843268_707068268_4114906_7182725_n.jpg</field>
+                <field name="file">moplib/testdata/29305_390907843268_707068268_4114906_7182725_n.jpg</field>
                 <item templateName="singleImage">
                         <field name="title">Image Build Test</field>
-                        <field name="file">testimages/29305_390907843268_707068268_4114906_7182725_n.jpg</field>
+                        <field name="file">moplib/testdata/29305_390907843268_707068268_4114906_7182725_n.jpg</field>
                 </item>
         </item>
 

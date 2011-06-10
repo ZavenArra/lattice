@@ -2,6 +2,8 @@
 
 #navigation{
     height: 27em;
+    width: 100%;
+    clear: both;
     border-bottom: 1px #0af solid;
 }
 
@@ -102,6 +104,19 @@
 #navigation .node.category.active h5,
 #navigation .node.category:hover h5{
 	background-image: url( images/icon_category_hover.png );	
+	background-position: 1em .5em;
+	background-repeat: no-repeat;
+}
+
+#navigation .node.module h5{
+	background-image: url( images/icon_module.png );
+	background-position: 1em .5em;
+	background-repeat: no-repeat;
+}
+
+#navigation .node.module.active h5,
+#navigation .node.module:hover h5{
+	background-image: url( images/icon_module_hover.png );	
 	background-position: 1em .5em;
 	background-repeat: no-repeat;
 }
