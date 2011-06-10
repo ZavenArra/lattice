@@ -379,7 +379,7 @@ mop.modules.MoPList = new Class({
 	initControls: function(){
 		// console.log( this.element.getElement( "#" + this.instanceName+"AddItemModal" ).retrieve("Class") );
 		this.controls = this.element.getChildren( ".controls" );
-		var addItemButton = this.controls.getElement( ".addItem" ).addEvent("click", this.addItem.bindWithEvent( this ) );//this.showModal.bindWithEvent( this, $( this.instanceName+"AddItemModal" ) ) );
+		var addItemButton = this.controls.getElement( ".addItem" ).addEvent("click", this.addItem.bindWithEvent( this ) );
 		if( this.allowChildSort ){
 			var saveSort = this.controls.getElement( ".saveSort" ).addEvent("click", this.saveSort.bindWithEvent( this ) );
 			saveSort = null;
@@ -404,7 +404,7 @@ mop.modules.MoPList = new Class({
     },
     
 	onItemAdded: function( json ){
-      console.log(json);
+      console.log( json );
 		var element = this.addItemDialogue.setContent( json.response.html, this.controls.getElement( ".addItem" ).get( "text" ) );
 		var listItem = new mop.modules.ListItem( element, this, this.addItemDialogue, { scrollContext: 'modal' } );
 		listItem.UIElements.each( function( uiInstance ){
