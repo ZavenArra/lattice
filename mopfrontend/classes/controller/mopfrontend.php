@@ -52,11 +52,10 @@ Class Controller_MopFrontend extends Controller_Layout{
 			}
 			//look for the template, if it's not there just print out all the data raw
 			$viewName = $page->template->templatename;
-			$viewPath = $viewName;
 			if (file_exists('application/views/frontend/' . $viewName . '.php')) {
-				$viewPath = 'frontend/'.$viewPath;
-			} else if(file_exists('application/views/generated/' . $viewPath . '.php')) {
-				$viewPath = 'generated/'.$viewPath;
+				$viewPath = 'frontend/'.$viewName;
+			} else if(file_exists('application/views/generated/' . $viewName . '.php')) {
+				$viewPath = 'generated/'.$viewName;
 			} else {
 				$viewPath = 'default';
 			}
@@ -70,7 +69,7 @@ Class Controller_MopFrontend extends Controller_Layout{
 
 		//call this->view load data
 		//get all the data for the page
-		$viewContent = mop::getViewContent($viewName, $pageidorslug);
+		$viewContent = mop::getViewContent($viewPath, $pageidorslug);
 		foreach ($viewContent as $key => $value) {
 			$this->view->$key = $value;
 		}
