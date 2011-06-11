@@ -5,7 +5,8 @@
 MOP_Initializer::check(
 	array(
 		'mopcore',
-		'mopcms'
+		'mopcms',
+      'rootgraph'
 	)
 );
 
@@ -41,6 +42,14 @@ Route::set('list', 'list/<action>(/<param1>(/<param2>))', array(
 	));
 
 
+Route::set('cms', 'cms/<action>(/<param1>(/<param2>))', array(
+
+	)
+)
+->defaults(
+	array(
+		'controller' => 'cms',
+	));
 
 
 
