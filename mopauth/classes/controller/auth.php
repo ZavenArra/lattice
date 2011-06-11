@@ -175,13 +175,14 @@ class Controller_Auth extends Controller_Layout {
 				Request::current()->redirect('auth/login/resetPasswordSuccess');
 				
 			} else {
-				$this->view = new View('auth/forgot');
-				$this->view->message = Kohana::lang('auth.resetPasswordFailed');
+				$view = new View('auth/forgot');
+				$view->message = Kohana::lang('auth.resetPasswordFailed');
 
 			}
 		} else {
-			$this->view = new View('auth/forgot');
+			$view = new View('auth/forgot');
 		}
+		$this->response->body($view);
 	}
 
 	public function randomPassword(){

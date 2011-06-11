@@ -26,7 +26,7 @@
 <input type="hidden" name="redirect" value="<?=$redirect;?>" />
 </form>
 
-			<a href="auth/forgot/">Forgot your password?</a> 
+			<a href="<?=URL::base();?>auth/forgot/">Forgot your password?</a> 
 		</div>
 	</div>
 	<a class="modalAnchor"></a>
