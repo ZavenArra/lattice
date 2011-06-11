@@ -201,7 +201,9 @@ class MOP_CMSInterface extends Controller_Layout {
       }
       
       public function action_getTags($id){
-         print_r(ORM::Factory('object', $id)->getTags());
+ 
+        $tags = ORM::Factory('object', $id)->getTags();
+        $this->response->data(array('tags'=>$tags));
       }
 
       

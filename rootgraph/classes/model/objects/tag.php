@@ -10,7 +10,7 @@
  *
  * @author deepwinter1
  */
-class Model_Objects_tags extends ORM {
+class Model_Objects_Tag extends ORM {
 //put your code here
 }
 ?>

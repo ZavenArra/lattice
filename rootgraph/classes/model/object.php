@@ -202,11 +202,11 @@ class Model_Object extends ORM {
    }
    
    public function getTags(){
-      $tagObjects = ORM::Factory('objects_tags')
+      $tagObjects = ORM::Factory('objects_tag')
               ->where('object_id', '=', $this->id)
               ->find_all();
       $tags = array();
-      foreach($tabObjects as $tagObjet){
+      foreach($tagObjects as $tagObject){
          $tags[] = $tagObject->as_array();
       }
       return $tags;
