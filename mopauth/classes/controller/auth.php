@@ -164,7 +164,7 @@ class Controller_Auth extends Controller_Layout {
 	public function action_forgot(){
 		if(isset($_POST['email'])){
 			$user = ORM::Factory('user')->where('email', $_POST['email'])->find();
-			if($user->loaded){
+			if($user->loaded()){
 				$password = $this->randomPassword();
 				$user->password = $password;
 				$user->save();
