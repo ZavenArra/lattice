@@ -1,0 +1,5 @@
+<?
+
+Class Controller_Graph {
+
+}
