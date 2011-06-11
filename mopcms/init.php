@@ -1,5 +1,15 @@
 <?
 
+
+//check for setup
+MOP_Initializer::check(
+	array(
+		'mopcore',
+		'mopcms'
+	)
+);
+
+
 Route::set('cms_save', '<id>/<action>', array(
 	'action' => 'save',
 )
