@@ -7,8 +7,6 @@
 
 	<title><?=Kohana::config('mop.siteTitle');?></title>
 
-<base href="<?=Kohana::config('config.site_protocol');?>://<?=$_SERVER['HTTP_HOST'];?><?=Kohana::config('config.site_domain');?>" ></base> 
-
 	<?=$stylesheet;?>
 	<?=$javascript;?>
 	
