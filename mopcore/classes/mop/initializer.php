@@ -1,6 +1,9 @@
 <?php
 
 Class MOP_Initializer {
+   
+   protected static $messages = array();
+   protected static $problems = array(); //not yet implemented
 
    public static function check($dependencies) {
       try {
@@ -39,12 +42,37 @@ Class MOP_Initializer {
          }
       }
       
-      if(count($allProblems)){
+      if(count($allProblems) || count(self::$messages)){
          $view = new View('initializationproblems');
          $view->problems = $allProblems;
+         $view->messages = self::$messages;
          echo $view->render();
          exit;
       }
+   }
+   
+   public static function reinitialize($module) {
+      $check = ORM::factory('initializedmodule')
+              ->where('module', '=', $module)
+              ->find();
+      $check->status = 'NOTINITIALIZED';
+      $check->save();
+      $allProblems = self::check(array($module));
+
+      if (count($allProblems) || count(self::$messages)) {
+         $view = new View('initializationproblems');
+         $view->problems = $allProblems;
+         $view->messages = self::$messages;
+         echo $view->render();
+         exit;
+      }
+   }
+   
+  
+   
+   public static function addMessage($message){
+      self::$messages[] = $message;
+      
    }
 
 }
