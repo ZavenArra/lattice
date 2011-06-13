@@ -163,9 +163,9 @@ class Controller_Auth extends Controller_Layout {
 
 	public function action_forgot(){
 		if(isset($_POST['email'])){
-			$user = ORM::Factory('user')->where('email', $_POST['email'])->find();
+			$user = ORM::Factory('user')->where('email', '=', $_POST['email'])->find();
 			if($user->loaded){
-				$password = $this->randomPassword();
+				$password = Utility_Auth::randomPassword();
 				$user->password = $password;
 				$user->save();
 				$body = Kohana::lang('auth.forgotPasswordEmailBody');
@@ -175,33 +175,16 @@ class Controller_Auth extends Controller_Layout {
 				Request::current()->redirect('auth/login/resetPasswordSuccess');
 				
 			} else {
-				$this->view = new View('auth/forgot');
-				$this->view->message = Kohana::lang('auth.resetPasswordFailed');
+				$view = new View('auth/forgot');
+				$view->message = Kohana::lang('auth.resetPasswordFailed');
 
 			}
 		} else {
-			$this->view = new View('auth/forgot');
+			$view = new View('auth/forgot');
 		}
+		$this->response->body($view);
 	}
 
-	public function randomPassword(){
-		$password_length = 9;
-
-		function make_seed() {
-			list($usec, $sec) = explode(' ', microtime());
-			return (float) $sec + ((float) $usec * 100000);
-		}
-
-		srand(make_seed());
-
-		$alfa = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
-		$token = "";
-		for($i = 0; $i < $password_length; $i ++) {
-			$token .= $alfa[rand(0, strlen($alfa)-1)];
-		}    
-		return $token;
-
-
-	}
+	
 
 } // End Auth Controller

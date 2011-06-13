@@ -124,8 +124,7 @@ mop.modules.CMS = new Class({
     	Arguments: nodeId MoPObject Id of a page object.
     */
 	requestPage: function( nodeId ){
-		mop.util.JSONSend( this.requestPageURL( nodeId ), null, { onSuccess: this.requestPageResponse.bind( this ) } );
-		console.log( "requestPage", url );
+		mop.util.JSONSend( this.getRequestPageURL( nodeId ), null, { onSuccess: this.requestPageResponse.bind( this ) } );
  		mop.util.setObjectId( nodeId );        
     },
     

@@ -159,6 +159,12 @@ String.implement( "encodeUTF8", function(){
 mop = {}
 
 
+
+if(undefined===window.baseurl){
+	window.baseurl = '/';
+}
+//alert(baseurl);
+
 /*
 	Pakcage: mop.util
 */
@@ -247,7 +253,8 @@ mop.util.isDomReady = function(){
 	Returns: href from html base tag
 */
 mop.util.getBaseURL = function(){
-	return $(document).getElement("head").getElement("base").get("href");
+	return baseurl;
+	//return $(document).getElement("head").getElement("base").get("href");
 },
 
 /*

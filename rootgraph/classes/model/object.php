@@ -21,6 +21,14 @@ class Model_Object extends ORM {
     protected $_has_one = array(
         'template' => array()
     );
+    
+    protected $_has_many = array(
+        'tag' => array(
+            'model' => 'tag',
+            'through' => 'objects_tags'
+        )
+    );
+    
     public $content = null;
     private $object_fields = array('loaded', 'template', 'primary_key', 'primary_val');
 
@@ -173,6 +181,37 @@ class Model_Object extends ORM {
 	}
 
 
+   public function addTag($tagName){
+      $tag = ORM::Factory('tag')->where('tag', '=', $tagName)->find();
+      if(!$tag->loaded()){
+         $tag = ORM::Factory('tag');
+         $tag->tag = $tagName;
+         $tag->save();
+      }
+      $this->add('tag', $tag);
+      return $this;
+   }
+   
+   public function removeTag($tagName){
+      $tag = ORM::Factory('tag')->where('tag', '=', $tagName)->find();
+      if(!$tag->loaded()){
+         throw new Kohana_Exception("Tag :tagName does not exist in the database.", array(':tagName'=>$tagName));
+      }
+      $this->remove('tag', $tag);
+      return $this;
+   }
+   
+   public function getTags(){
+      $tagObjects = ORM::Factory('objects_tag')
+              ->where('object_id', '=', $this->id)
+              ->find_all();
+      $tags = array();
+      foreach($tagObjects as $tagObject){
+         $tags[] = $tagObject->as_array();
+      }
+      return $tags;
+   }
+   
    public function getPublishedObjectBySlug($slug){
       
       return $this->where('slug', '=', $slug)

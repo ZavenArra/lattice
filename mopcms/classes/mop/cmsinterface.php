@@ -188,6 +188,26 @@ class MOP_CMSInterface extends Controller_Layout {
 			$this->response->data( array('saved'=>true));
 		}
 
+      
+      public function action_addTag($id, $tag){
+         $object = ORM::Factory('object', $id);
+         $object->addTag($tag);
+         
+      }
+
+      public function action_removeTag($id, $tag){
+         $object = ORM::Factory('object', $id);
+         $object->removeTag($tag);
+      }
+      
+      public function action_getTags($id){
+ 
+        $tags = ORM::Factory('object', $id)->getTags();
+        $this->response->data(array('tags'=>$tags));
+      }
+
+      
+      
 		/*
 		 Function: delete
 		 deletes a page/category and all categories and leaves underneath

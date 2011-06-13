@@ -1,5 +1,16 @@
 <?
 
+
+//check for setup
+MOP_Initializer::check(
+	array(
+		'mopcore',
+		'mopcms',
+      'rootgraph'
+	)
+);
+
+
 Route::set('cms_save', '<id>/<action>', array(
 	'action' => 'save',
 )
@@ -31,6 +42,14 @@ Route::set('list', 'list/<action>(/<param1>(/<param2>))', array(
 	));
 
 
+Route::set('cms', 'cms/<action>(/<param1>(/<param2>))', array(
+
+	)
+)
+->defaults(
+	array(
+		'controller' => 'cms',
+	));
 
 
 

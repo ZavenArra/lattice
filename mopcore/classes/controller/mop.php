@@ -43,7 +43,7 @@ class Controller_MOP extends Controller {
 		$role = Kohana::config(strtolower($this->controllerName).'.authrole', FALSE, FALSE);
 
 		//checked if logged in
-		if($role && !Auth::instance()->logged_in()){
+		if($role && !Auth::instance()->logged_in($role)){
 			Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
 			exit;
 		}
