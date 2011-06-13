@@ -13,8 +13,10 @@
 class Initializer_Mopauth {
    
    public function initialize() {
-
-      ORM::Factory('user')->where('username', '=', 'admin')->find()->delete();
+		 $admin = ORM::Factory('user')->where('username', '=', 'admin')->find();
+		 if$admin->loaded()){
+			 $admin->delete();
+		 }
       if (!ORM::Factory('user')->where('username', '=', 'admin')->find()->loaded()) {
          $user = ORM::factory('user');
          $user->status = 'ACTIVE';
