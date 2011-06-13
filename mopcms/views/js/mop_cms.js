@@ -17,6 +17,7 @@ mop.modules.CMS = new Class({
 	loadedJS: [],
     stringIdentifier: "[ object, mop.modules.CMS ]",
     
+    /* Section: Getters & Setters */    
     
     getRemoveObjectRequestURL: function( parentId ){
         return "ajax/compound/cms/removeObject/" + parentId;
@@ -37,9 +38,8 @@ mop.modules.CMS = new Class({
     getTogglePublishedStatusRequest: function( nodeId ){            
         return "ajax/data/cms/togglePublish/"+ nodeId;
     },
-    
-    toString: function(){ return this.stringIdentifier },
-	
+
+	/* Section: Constructor */
 	initialize: function( anElement, options ){
         this.parent( anElement, null, options );
         this.instanceName = this.element.get("id");
@@ -47,6 +47,9 @@ mop.modules.CMS = new Class({
 		var scripttags = $$( "script" ).each( function( aScriptTag ){ this.loadedJS.push( aScriptTag ); }, this );
 		var scripttags = $$( "link[rel=stylesheet]" ).each( function( aStyleSheetTag ){ this.loadedCSS.push(  aStyleSheetTag ); }, this );
 	},
+
+	/* Section: Methods */
+    toString: function(){ return this.stringIdentifier },
 
 	build: function(){
 		this.pageContent = $("nodeContent");

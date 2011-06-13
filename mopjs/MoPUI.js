@@ -519,15 +519,11 @@ mop.ui.UIElement = new Class({
 
 
 /*
-	Class: mop.ui.EnhancedModal
+	Class: mop.ui.Modal
 	A lightweight modal class
 */
-mop.ui.EnhancedModal = new Class({
-	
-		/*
-		@TODO : i think mop.ui.windowMode is vestigeous, lets find out and remove it entirely eh?
-		*/
-	
+mop.ui.Modal = new Class({
+		
 		Implements: [ Events, Options ],
 		
 		loadedModules: [],
@@ -550,14 +546,14 @@ mop.ui.EnhancedModal = new Class({
 			destroyOnClose: false,
 			fadeDuration: 300
 		},
-		
+
 		initialize: function( anElement, aMarshal, options ){
 			
 			this.setOptions( options );
 		
 			this.marshal = aMarshal;
 
-//			console.log( ":::::", this.toString(), this.marshal );
+			console.log( "::::: initialize", this.toString(), this.marshal );
 			
 			if( anElement ){
 								
@@ -607,15 +603,11 @@ mop.ui.EnhancedModal = new Class({
 			mop.ModalManager.setActiveModal( this );
 
 			this.element.addEvent( "scroll", mop.ModalManager.onModalScroll.bind( mop.ModalManager, this ) );
-//			console.log( "MODAL", this.element, mop.ModalManager );
+			console.log( "MODAL", this.element, this.modal, mop.ModalManager );
 		},
 		
 		build: function(){
-			
-			this.element = new Element( "div", {
-				"class": "enhancedModalContainer hidden"
-			});
-
+			this.element = new Element( "div", { "class": "enhancedModalContainer hidden" });
 			this.modalAnchor = new Element( "a", {
 				"class": "modalAnchor",
 				"href": "#",
@@ -623,9 +615,7 @@ mop.ui.EnhancedModal = new Class({
 					mop.util.stopEvent( e );
 				}.bindWithEvent( this ) }
 			}).inject( this.element );
-
 			this.modal = new Element( "div", { "class": "modal" }).inject( this.element );
-
 			this.header = new Element( "div", { "class" : "header" } ).inject( this.element );
 			this.title = new Element( "h3", { "text" : "title" } ).inject( this.header );			
 			this.headerControls = new Element( "div", { "class" : "controls" } ).inject( this.header );
@@ -633,17 +623,11 @@ mop.ui.EnhancedModal = new Class({
 				"class" : "icon cancel",
 				"href" : "cancel"
 			}).inject( this.headerControls );
-			
-			
 			this.content = new Element( "div", { "class": "content" } ).inject( this.modal );
-
 			this.footer = new Element( "div", { "class": "footer" } ).inject( this.modal );
 			this.footerControls = this.headerControls.clone().inject( this.footer );
-			
 			$(document).getElement("body").adopt( this.element );
-
 			return this.element;
-
 		},
 		
 		initControls: function(){
@@ -652,12 +636,10 @@ mop.ui.EnhancedModal = new Class({
 			if( this.element.getElement( ".tabNav" ) ) this.tabNav = new mop.ui.navigation.Tabs( this.element.getElement( ".tabNav" ), "a", this.loadTab.bind( this ) );
 		},
 
-		toString: function(){
-			return "[ object, mop.ui.EnhancedModal ]";
-		},
+		toString: function(){ return "[ object, mop.ui.EnhancedModal ]"; },
 
 		showLoading: function(){
-			console.log( this.toString(), 'showLoading', this.modal, this.modal.spin );
+			console.log( ":::::", this.toString(), 'showLoading', this.modal, this.modal.spin );
 			this.content.empty();
             this.modal.spin();
 			this.hideControls();
@@ -681,7 +663,6 @@ mop.ui.EnhancedModal = new Class({
 		show: function(){
 			console.log( "show", this.toString(), this );
 			this.showControls();
-			mop.ui.windowMode = "modal";
             this.modal.unspin();
 			this.element.setStyle( "opacity", 0 );
 			this.element.removeClass("hidden");
@@ -689,12 +670,8 @@ mop.ui.EnhancedModal = new Class({
 		},
 
 		close: function( e, onComplete ){
-			
 			mop.util.stopEvent( e );
-			
-			mop.ui.windowMode = "normal";
 			this.element.setStyle( "opacity", 1 );
-			
 			// this should be part of a mixin or something, 
 			// it should be written once
 			// it should do all ui elements not just Text
@@ -732,28 +709,23 @@ mop.ui.EnhancedModal = new Class({
 		},
 
 		onTabLoaded: function( json ){
+		    console.log( "onTabLoaded" );
 			this.content.unspin();
 			this.setContent( json.html );
 		},
 
 		setContent: function( someContent, aTitle ){
 			console.log( this.toString(), "setContent", aTitle );
-		
 			if( aTitle ) this.setTitle( aTitle );
-			
 			this.destroyChildModules();
-			
 			this.content.empty();
-					
             this.modal.unspin();
 			if( typeof someContent == "string" ){
 				this.content.set( "html", someContent );
 			}else{
 				this.content.adopt( someContent );
 			}
-
 			this.initModules();
-
 		},
 
 		initModules: function(){
@@ -774,6 +746,7 @@ mop.ui.EnhancedModal = new Class({
 		getScrollOffset: function(){
 			return this.element.getScroll();
 		},
+
 		
 		destroy: function(){
 			
@@ -821,7 +794,7 @@ mop.ui.EnhancedModal = new Class({
 
 mop.ui.EnhancedAddItemDialogue = new Class({
 	
-	Extends: mop.ui.EnhancedModal,
+	Extends: mop.ui.Modal,
 	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
@@ -832,11 +805,7 @@ mop.ui.EnhancedAddItemDialogue = new Class({
 	},
 	
 	build: function(){
-		
-		this.element = new Element( "div", {
-			"class": "enhancedModalContainer hidden"
-		});
-
+		this.element = new Element( "div", { "class": "enhancedModalContainer hidden" });
 		this.modalAnchor = new Element( "a", {
 			"class": "modalAnchor",
 			"href": "#",
@@ -844,34 +813,23 @@ mop.ui.EnhancedAddItemDialogue = new Class({
 				mop.util.stopEvent( e );
 			}.bindWithEvent( this ) }
 		}).inject( this.element );
-
 		this.modal = new Element( "div", { "class": "modal" }).inject( this.element );
-
 		this.header = new Element( "div", { "class" : "header" } ).inject( this.element );
 		this.title = new Element( "h3" ).inject( this.header );
 		this.headerControls = new Element( "div", { "class" : "controls" } ).inject( this.header );
-
 		var submitButton = new Element( "a", { 
 			"class" : "icon submit",
 			"href" : "submit"
 		}).inject( this.headerControls );
-
 		var cancelButton = new Element( "a", { 
 			"class" : "icon cancel",
 			"href" : "cancel"
 		}).inject( this.headerControls );
-
-		
-		
 		this.content = new Element( "div", { "class": "content" } ).inject( this.modal );
-
 		this.footer = new Element( "div", { "class": "footer" } ).inject( this.modal );
 		this.footerControls = this.headerControls.clone().inject( this.footer );
-		
 		$(document).getElement("body").adopt( this.element );
-
 		return this.element;
-
 	},
 
 	setContent: function( someContent, aTitle ){
@@ -963,95 +921,6 @@ mop.ui.EnhancedAddItemDialogue = new Class({
 	
 });
 
-/*	Class: mop.ui.Modal
-	A lightweight modal class
-*/
-
-
-mop.ui.Modal = new Class({
-
-	Implements: [ Options, Events ],
-
-	initialize: function( aMarshal, options ){
-		this.setOptions( options );
-		this.marshal = aMarshal;
-
-		this.element = new Element( "div", {
-			"class": "modalContainer",
-			"styles": {
-				"display" : "none",
-				"opacity" : 0
-			}
-		});
-
-		this.modalAnchor = new Element( "a", {
-			"class": "modalAnchor",
-			"styles": { "useHandCursor": false },
-			"href": "#",
-			"events": { "click" : Event.stop }
-		});
-
-		this.modal = new Element( "div", {
-			"class": "modal"
-		}).dropShadow();
-		
-		this.header = new Element( "h3" );
-
-
-		this.element.grab( this.modalAnchor );
-		this.element.grab( this.modal );
-		this.modal.grab( this.header );
-
-		$(document).getElement("body").adopt( this.element );
-
-		this.showMe = new Fx.Morph( this.element, { 
-			"property": "opacity",
-			"duration": 300,
-			"onStart": function(){
-				this.element.setStyle("display","block");
-			}
-		});
-
-		this.hideMe = new Fx.Morph( this.element, { 
-			"property": "opacity",
-			"duration": 300,
-			"onComplete": function(){}
-		});
-
-
-	},
-	
-	toString: function(){ return "[ object, mop.ui.Modal ]"; },
-	
-	show: function(){
-		mop.ui.windowMode = "modal";
-		this.showMe.start({ "opacity": 1 });
-	},
-	
-	cancel: function( e ){
-		this.close( e );
-	},
-	
-	close: function( e, onComplete ){
-		mop.util.stopEvent( e );
-		mop.ui.windowMode = "normal";
-		this.element.setStyle( "opacity", 0 );
-		this.hideMe.start( {
-			onComplete: function(){ if( onComplete ) onComplete(); this.element.setStyle("display","none"); }.bind( this ) } );
-	},
-	
-	destroy: function(){
-	    this.modal.smartDispose();
-		this.modal.destroy();
-		this.modalAnchor.destroy();
-		this.element.destroy();
-		this.header.destroy();
-		this.hideMe = null;
-		this.showMe = null;
-	}
-		
-});
-
 mop.ui.MessageDialogue = new Class({
 
 	Extends: mop.ui.Modal,
@@ -1115,7 +984,9 @@ mop.ui.MessageDialogue = new Class({
 });
 
 mop.ui.InactivityDialogue = new Class({
+
 	Extends: mop.ui.MessageDialogue,
+
 	initialize: function( aMarshal, options ){
 		this.parent( aMarshal, options );
 	},

@@ -99,11 +99,11 @@ mop.modules.Module = new Class({
 	*/
 	initModule: function( element ){
 		var classPath = mop.util.getValueFromClassName( "classPath", element.get( "class" ) ).split( "_" );
-//		console.log( "\t\tinitModule", this.toString(), element.get( "class" ), classPath );
+		console.log( "\t\tinitModule", this.toString(), element.get( "class" ), classPath );
 		ref = null;
 		classPath.each( function( node ){
 		    ref = ( !ref )? this[node] : ref[node]; 
-//		    console.log( ref, node );
+		    console.log( ref, node );
 		});
     	var newModule = new ref( element, this );
 		return newModule;		
