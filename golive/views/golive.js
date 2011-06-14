@@ -34,7 +34,7 @@ mop.modules.GoLive = new Class({
 		var dialogue = confirm("You are about to publish the staged content onto the live server. Are you certain you want to do this, it cannot be undone?");
 		if( dialogue ){
 			this.spinner.removeClass("hidden");
-			mop.util.JSONSend( this.getCopyToLiveURL(), null, this.onComplete.bind( this ) );
+			new Request.JSON( { url: this.getCopyToLiveURL(), onComplete: this.onComplete.bind( this ) } ).post();
 		}
 	},
 	

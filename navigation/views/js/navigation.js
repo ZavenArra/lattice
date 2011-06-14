@@ -10,12 +10,12 @@ mop.modules.navigation.Navigation = new Class({
 	navPanes: [],
 	breadCrumbs: null,
 	tiers: [],
-	numberOfVisiblePanes: null,
+	numberOfVisiblePanes: 3,
 	
 	initialize: function( element, marshal, options ){
 		this.parent( element, marshal, options );
 	    this.dataSource = ( !this.options.dataSource )? this.marshal : this.options.dataSource;
-	    this.numberOfVisiblePanes = Number( this.getValueFromClassName( "numberOfPanes" ) );
+        // this.numberOfVisiblePanes = Number( this.getValueFromClassName( "numberOfPanes" ) );
 	    this.paneContainer = this.element.getElement( ".panes" );
 	    this.navPaneTemplate = this.element.getElement( ".pane" ).dispose();
 		this.paneContainer.empty();
@@ -35,32 +35,31 @@ mop.modules.navigation.Navigation = new Class({
 	},
 
 	requestTier: function( parentId, parentTier ){
-	    console.log( "requestTier", parentId, parentTier );
 	    var title;
 	    var paneIndex = 0;
 	    if( parentTier ){
+	        console.log( parentTier, parentTier.getActiveNode() );
 	        title = parentTier.getActiveNode().getElement( "h5" ).get( 'text' );
 	        parentId = parentTier.getActiveNodeId();
 	        paneIndex = this.navPanes.indexOf( parentTier.getElement() );
-	        console.log( "addCrumb", paneIndex );
             this.addCrumb( title, parentId, paneIndex );
 	    }
 	    if( this.navPanes.length > 0 ) this.clearPanes( paneIndex + 1 );	    
         var newPane = this.addPane( parentId );
 	    this.currentParentId = parentId;
-
-	    // do we have this tier cached?
 	    if( this.tiers[ parentId ] ){
+    	    // if the tier has already been loaded and cached
 	        console.log( "requestTier", "cached" );
 	        this.renderPane( this.tiers[ parentId ], newPane );
 	    }else{
+    	    // otherwise load send a tier request
 	        console.log( "requestTier", "uncached" );
     	    this.dataSource.requestTier( parentId, function( json ){ this.requestTierResponse( json, newPane ); }.bind( this ) );
 	    }
 	},
 
 	requestTierResponse: function( json, newPane ){
-	    console.log( ">>>>>>>>>>>>>>>>>>>>", newPane.getSibling() );
+//	    console.log( ">>>>>>>>>>>>>>>>>>>>", newPane.getSibling() );
 //	    console.log( "onTierReceived", json );
         this.nodeData[ this.currentParentId ] = json.response.data.nodes;
 	    var tier = new mop.modules.navigation.Tier( this, json.response.html, this.currentParentId );
@@ -71,7 +70,7 @@ mop.modules.navigation.Navigation = new Class({
     renderPane: function( aTier, newPane ){
         newPane.unspin();
 	    aTier.attachToPane( newPane );
-	    if( this.navPanes.indexOf( newPane ) < this.numberOfVisiblePanes -1 ){
+	    if( this.navPanes.indexOf( newPane ) < this.numberOfVisiblePanes ){
     	    var myFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toLeft();	        
 	    }else{	        
     	    var myFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toElementEdge( newPane );
@@ -96,8 +95,16 @@ mop.modules.navigation.Navigation = new Class({
         this.marshal.onNodeSelected( nodeId );
 	},
 
+    addObject: function( parentId, templateId, nodeProperties ){
+        this.dataSource.addObjectRequest( parentId, templateId, nodeProperties, this.onAddObjectResponse.bind( this ) );
+    },
+
+    onAddObjectResponse: function( json ){
+        console.log( this.toString(), "onAddObjectResponse", json );
+    },
+    
 	removeObject: function( nodeId ){
-	    this.marshal.removeObjectRequest( nodeId, this.onRemoveObjectResponse.bind( this ) );
+	    this.dataSource.removeObjectRequest( nodeId, this.onRemoveObjectResponse.bind( this ) );
 	},
 	
 	onRemoveObjectResponse: function( json ){
@@ -105,7 +112,7 @@ mop.modules.navigation.Navigation = new Class({
 	},
 
     togglePublishedStatus: function( nodeId ){
-	    this.marshal.togglePublishedStatusRequest( nodeId );        
+	    this.dataSource.togglePublishedStatusRequest( nodeId );        
     },
     
     onCrumbClicked: function( aNode ){
@@ -131,11 +138,14 @@ mop.modules.navigation.Tier = new Class({
 
  //       Extends: mop.MoPObject,
 	nodes: null,
+	nodeElement: null,
 	html: null,
 	parentId: null,
 	activeNode: null,
+	drawer: null,
 	
 	initialize: function( aMarshal, html, parentId ){
+//	    console.log( html );
 	    this.marshal = aMarshal;
 	    this.html = html;
 	    this.parentId = parentId;
@@ -165,9 +175,7 @@ mop.modules.navigation.Tier = new Class({
         this.element = this.activeNode = null;
 	},
 	
-	getActiveNode: function(){
-        return this.activeNode;
-	},
+	getActiveNode: function(){ return this.activeNode; },
 
 	getActiveNodeId: function(){
         return this.getNodeIdFromElement( this.activeNode );
@@ -177,10 +185,11 @@ mop.modules.navigation.Tier = new Class({
         this.element.set( 'html', this.html );
 	    this.nodes = this.element.getElements(".node");
 	    this.nodes.each( function( aNodeElement, i ){
-//    	    aNodeElement.addEvent( "focus", this.indicateNode.bindWithEvent( this, aNodeElement ) );
-  //  	    aNodeElement.addEvent( "blur", this.deindicateNode.bindWithEvent( this, aNodeElement ) );
+//          aNodeElement.addEvent( "focus", this.indicateNode.bindWithEvent( this, aNodeElement ) );
+//          aNodeElement.addEvent( "blur", this.deindicateNode.bindWithEvent( this, aNodeElement ) );
     	    aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
-	        var togglePublishedStatusElement = aNodeElement.getElement(".togglePublish");
+	        var togglePublishedStatusElement = aNodeElement.getElement(".togglePublishedStatus");
+	        console.log( "togglePublishedStatusElement", togglePublishedStatusElement );
 	        if( togglePublishedStatusElement ){
         	    togglePublishedStatusElement.addEvent( "click", this.onTogglePublishedStatusClicked.bindWithEvent( this, aNodeElement ) );
 	        }
@@ -189,16 +198,26 @@ mop.modules.navigation.Tier = new Class({
         	    removeNodeElement.addEvent( "click", this.onRemoveNodeClicked.bindWithEvent( this, aNodeElement ) );
 	        }
 	    }, this );
+	    this.nodeElement = this.element.getElement( ".nodes" );
+	    this.drawer = this.element.getElement( '.tierMethodsDrawer' );
+	    this.drawer.store( "initTop", this.drawer.getStyle( "top" ) );
+	    this.drawer.set( "morph", { duration: 200, transition: Fx.Transitions.Quad.easeInOut } );
+	    this.drawer.addEvent( 'mouseenter', this.onDrawerMouseEnter.bindWithEvent( this ) );
+	    this.drawer.addEvent( 'mouseleave', this.onDrawerMouseLeave.bindWithEvent( this ) );
+	    var addObjectLinks = this.drawer.getElements( "li" );
+	    addObjectLinks.each( function( aLink ){
+	        console.log( aLink );
+	        aLink.addEvent( "click", this.onAddObjectClicked.bindWithEvent( this, aLink ) );
+	    }, this );
 	},
-	
+
 	indicateNode: function( nodeElement ){ nodeElement.addClass( "active"); },
-	
+
 	deindicateNode: function( nodeElement ){ nodeElement.removeClass("active"); },
-	
-	/**
-	 * Section: Event Handlers
-	 */
-	 
+
+    /**
+    * Section: Event Handlers
+	*/
 	onMouseEnter: function( e, nodeElement ){
 	    mop.util.stopEvent( e );
 	    this.indicateNode( aNodeElement );
@@ -212,22 +231,30 @@ mop.modules.navigation.Tier = new Class({
 	onNodeClicked: function( e, nodeElement ){
 	    mop.util.stopEvent( e );
 //	    console.log( "onNodeClicked", this.element );
-	    if( this.activeNode )this.deindicateNode( this.activeNode );
-        this.activeNode = nodeElement;        
-	    this.indicateNode( nodeElement );
         var nodeId = this.getNodeIdFromElement( nodeElement );
-	    this.marshal.requestTier( nodeId, this );
+        // if this specific tier has a pending request, we cancel it so the callback doesn't fire
+	    if( this.activeNode )this.deindicateNode( this.activeNode );
+        this.activeNode = nodeElement;
+	    this.indicateNode( nodeElement );
 	    this.onNodeSelected( nodeId );
+        if( this.currentTierRequest ) this.currentTierRequest.cancel();
+	    this.currentTierRequest = this.marshal.requestTier( nodeId, this );
 	},
 		
     onRemoveNodeClicked: function( e, nodeElement ){
 //	    console.log( "onRemoveNodeClicked" );
 	    mop.util.stopEvent( e );
+	    var confirmation = confirm( "Are you sure you want to remove " + nodeElement.getElement("h5").get("text") + " ?" );
+	    if( !confirmation ) return; 
         var nodeId = this.getNodeIdFromElement( nodeElement );
         nodeElement.destroy();
         this.removeObject( nodeId );
     },
 
+	removeObject: function( nodeId ){
+	    this.marshal.removeObject( nodeId );
+	},
+	
     onTogglePublishedStatusClicked: function( e, nodeElement ){
         mop.util.stopEvent( e );
 	    console.log( "onTogglePublishedStatusClicked", e, nodeElement );
@@ -238,27 +265,38 @@ mop.modules.navigation.Tier = new Class({
         }else{
             togglePublishedStatusLink.addClass( "published" );            
         }
-	    this.togglePublishedStatus( nodeId );
+	    this.marshal.togglePublishedStatus( nodeId );
     },
     
 	onNodeSelected: function( nodeId ){
 	    this.marshal.onNodeSelected( nodeId );
 	},
 	
-	togglePublishedStatus: function( nodeId ){
-	    this.marshal.togglePublishedStatusRequest( nodeId );
+	onDrawerMouseEnter: function( e ){
+	    var top = this.nodeElement.getSize().y - this.drawer.getSize().y;
+	    console.log( ":::::: onDrawerMouseEnter ::", this.nodeElement, this.nodeElement.getSize() );
+	    this.drawer.morph( { 'top': top } );
+	},
+	
+	onDrawerMouseLeave: function( e ){
+	    var top = this.nodeElement.getSize().y - this.drawer.getElement( "h5" ).getSize().y;
+	    this.drawer.morph( { 'top': this.drawer.retrieve( "initTop" ) } );
+	},
+	
+	onAddObjectClicked: function( e, addObjectButton ){
+	    mop.util.stopEvent( e );
+	    var templateId = addObjectButton.getValueFromClassName( "templateId" );
+	    console.log( "onAddObjectClicked", e, addObjectButton );
+	    var addText = addObjectButton.get('text')
+//	    var tempalteId = addObjectButton.getValueFromClassName( "templateId" );//mop.util.getValueFromClassName( 'templateId', addObjectButton.get("class") );
+	    var nodeTitle = prompt( "What would you like to name this " + addText.substr( addText.lastIndexOf( " " ), addText.length ) );
+	    if( !nodeTitle ) return;
 	    
+	    console.log( "NODE TITLE", nodeTitle );
+	    this.marshal.addObject( templateId, this.parentId, { title: nodeTitle } );
 	},
 	
-    // is it better to have this function here? Or just add it if it ever grows beyond one line of code?
-	removeObject: function( nodeId ){
-	    this.marshal.removeObject( nodeId );
-	},
-	
-	appendNode: function(){
-	    
-	},
-	
+	appendNode: function(){},
 	
 	makeSortable: function(){
 	    if( this.isSortable ){
