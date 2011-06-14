@@ -2,6 +2,10 @@ mop.modules.GoLive = new Class({
 
 	Extends: mop.modules.Module,
 	
+	getCopyToLiveURL: function(){
+	    return mop.util.getBaseURL() + "/" + this.getSubmissionController() + "/ajax/copytolive";
+	},
+	
 	initialize: function( anElement, aMarshal ){
 		this.parent( anElement, aMarshal );
 		this.message = this.element.getElement(".message");
@@ -30,8 +34,7 @@ mop.modules.GoLive = new Class({
 		var dialogue = confirm("You are about to publish the staged content onto the live server. Are you certain you want to do this, it cannot be undone?");
 		if( dialogue ){
 			this.spinner.removeClass("hidden");
-			var url = this.getSubmissionController() + "/ajax/copytolive";
-			mop.util.JSONSend( url, null, this.onComplete.bind( this ) );
+			mop.util.JSONSend( this.getCopyToLiveURL(), null, this.onComplete.bind( this ) );
 		}
 	},
 	
