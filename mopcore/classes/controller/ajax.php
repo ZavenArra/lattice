@@ -20,7 +20,7 @@ class Controller_Ajax extends Controller_MOP {
 			$message = $e->getMessage();
          foreach( $e->getTrace() as $trace){
            if(isset($trace['file'])){
-            $message .= " ::::: ".$trace['file'].':'.$trace['line'];
+            $message .= " ::::: ".$trace['file'].':'.$trace['line']."\n;";
            }
          }
 			$ajaxResponse = array(
@@ -55,7 +55,7 @@ class Controller_Ajax extends Controller_MOP {
 			$message = $e->getMessage();
          foreach( $e->getTrace() as $trace){
            if(isset($trace['file'])){
-            $message .= " ::::: ".$trace['file'].':'.$trace['line'];
+            $message .= " ::::: ".$trace['file'].':'.$trace['line']."\n;";
            }
          }
 			$ajaxResponse = array(
@@ -109,8 +109,13 @@ class Controller_Ajax extends Controller_MOP {
 			$requestResponse = $subRequest->execute();
 		} catch (Exception $e) {
 			//return HTML from exception
-			$message = $e->getMessage() . $e->getTrace();
-			$ajaxResponse = array(
+			$message = $e->getMessage();
+         foreach( $e->getTrace() as $trace){
+           if(isset($trace['file'])){
+            $message .= " ::::: ".$trace['file'].':'.$trace['line']."\n;";
+           }
+         }
+         $ajaxResponse = array(
 				'returnValue' => FALSE,
 				'response' => $message,
 				'arguments'=>$arguments

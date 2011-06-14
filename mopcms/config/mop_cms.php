@@ -11,6 +11,7 @@ $config['resources']['libraryjs'] = array(
 	'moplib/mopjs/thirdparty/arian/datepicker/Picker.js',
 	'moplib/mopjs/thirdparty/arian/datepicker/Picker.Attach.js',
 	'moplib/mopjs/thirdparty/arian/datepicker/Picker.Date.js',
+	//include textboxlist here
 	'moplib/mopjs/MoPCore.js',
 	'moplib/mopjs/MoPUI.js',
 	'moplib/mopjs/MoPModules.js',

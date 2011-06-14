@@ -19,14 +19,14 @@ class Controller_List extends MOP_CMSInterface {
     *  we could just reference the primaryId attribute of Display as well...
     */
 
-   private static $page_id = NULL;
+   private static $object_id = NULL;
 
 
    /*
      Variable: model
      Main model for items content managed by this class
     */
-   protected $model = 'page';
+   protected $model = 'object';
 
    /*
     * Variable: containerObject
@@ -192,7 +192,7 @@ class Controller_List extends MOP_CMSInterface {
       
       $newid = mopcms::addObject($listObjectId, $addObjectTemplateId, $data);
 
-      $item = ORM::Factory('page', $newid);
+      $item = ORM::Factory('object', $newid);
       $htmlChunks = mopcms::buildUIHtmlChunksForObject($item);
       $itemt = new View($this->itemView());
       $itemt->uiElements = $htmlChunks;

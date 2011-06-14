@@ -157,7 +157,7 @@ Class mop {
 		if(!Kohana::find_file('controllers', $module['modulename'] ) ){
 			if(!isset($module['controllertype'])){
 				$view = new View($module['modulename']);
-				$object = ORM::Factory('page')->where('slug', '=', $module['modulename'])->find();
+				$object = ORM::Factory('object')->where('slug', '=', $module['modulename'])->find();
 				if($object->loaded()){ // in this case it's a slug for a specific object
 					foreach(mop::getViewContent($object->id, $object->template->templatename) as $key=>$content){
 						$view->$key = $content;
@@ -208,7 +208,7 @@ Class mop {
 		$data = array();
 
 		if ($view == 'default') {
-			$object = ORM::Factory('page')->where('slug', '=', $slug)->find();
+			$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
 			if (!$object->loaded()) {
 				throw new Koahan_Exception('mop::getViewContent : Default view callled with no slug');
 			}
@@ -221,7 +221,7 @@ Class mop {
 			die("No View setup in frontend.xml by that name: $view");
 		}
 		if ($viewConfig->getAttribute('loadPage')) {
-			$object = ORM::Factory('page')->where('slug', '=', $slug)->find();
+			$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
 			if (!$object->loaded()) {
 				throw new Kohana_Exception('mop::getViewContent : View specifies loadPage but no page to load');
 			}
@@ -243,7 +243,7 @@ Class mop {
 					if ($view && $slug) {
 						$subViewContent = mop::getViewContent($view, $slug);
 					} else if ($slug) {
-						$object = ORM::Factory('page')->where('slug', '=', $slug)->find();
+						$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
 						$view = $object->template->templatename;
 						$subViewContent = mop::getViewContent($view, $slug);
 					} else if ($view) {
@@ -272,14 +272,14 @@ Class mop {
     if($eDataNodes = mop::config('frontend',"includeData", $includeTier)){
       foreach($eDataNodes as $eDataConfig){
 
-        $objects = ORM::Factory('page');
+        $objects = ORM::Factory('object');
 
         //apply optional parent filter
         if($from = $eDataConfig->getAttribute('from')){
           if($from=='parent'){
             $objects->where('parentid', '=', $parentid);
           } else {
-            $from = ORM::Factory('page')->where('id', '=', $from)->find();
+            $from = ORM::Factory('object')->where('id', '=', $from)->find();
             $objects->where('parentid', '=', $from->id);	
           }
         }

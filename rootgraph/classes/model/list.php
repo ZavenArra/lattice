@@ -10,8 +10,8 @@ Class List_Model extends ORM {
 		parent::__constructor($id);
 	}
 
-	public function find_by_page_id($page_id, $instance){
-		$this->where('page_id', $page_id)
+	public function find_by_page_id($object_id, $instance){
+		$this->where('page_id', $object_id)
 		->where('instance', $instance)
 		->where('activity', 'NULL')
 		->orderBy('sortorder')

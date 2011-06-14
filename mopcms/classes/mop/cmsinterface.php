@@ -20,7 +20,7 @@ class MOP_CMSInterface extends Controller_Layout {
 	}
 
 	/*
-	 * Function:  saveFile($pageid)
+	 * Function:  saveFile($objectid)
 	 * Function called on file upload
 	 * Parameters:
 	 * pageid  - the page id of the object currently being edited
@@ -34,9 +34,9 @@ class MOP_CMSInterface extends Controller_Layout {
 		 'result'=>'success',
 	 );
 	 */
-	public function action_saveFile($pageid){
+	public function action_saveFile($objectid){
 
-		$file = mopcms::saveHttpPostFile($pageid, $_POST['field'], $_FILES[$_POST['field']]);
+		$file = mopcms::saveHttpPostFile($objectid, $_POST['field'], $_FILES[$_POST['field']]);
 		$result = array(
 			'id'=>$file->id,
 			'src'=>$file->original->fullpath,
@@ -76,32 +76,32 @@ class MOP_CMSInterface extends Controller_Layout {
 	* Returns: array('value'=>{value})
 	 */
 	public function action_savefield($id){
-		$page = ORM::Factory('page', $id);
+		$object = ORM::Factory('object', $id);
 
       
 		if($_POST['field']=='slug'){
-			$page->slug = mopcms::createSlug($_POST['value'], $page->id);
-			$page->decoupleSlugTitle = 1;
-			$page->save();
-			$this->response->data( array('value'=>$page->slug) );
+			$object->slug = mopcms::createSlug($_POST['value'], $object->id);
+			$object->decoupleSlugTitle = 1;
+			$object->save();
+			$this->response->data( array('value'=>$object->slug) );
 			return;
 		} else if($_POST['field']=='title'){
-			if(!$page->decoupleSlugTitle){
-				$page->slug = mopcms::createSlug($_POST['value'], $page->id);
+			if(!$object->decoupleSlugTitle){
+				$object->slug = mopcms::createSlug($_POST['value'], $object->id);
 			}
-			$page->save();
-			$page->contenttable->title = mopcms::convertNewlines($_POST['value']);
-			$page->contenttable->save();
-			$page = ORM::Factory('page')->where('id', '=', $id)->find();
-			$this->response->data( array('value'=>$page->contenttable->$_POST['field'], 'slug'=>$page->slug) );
+			$object->save();
+			$object->contenttable->title = mopcms::convertNewlines($_POST['value']);
+			$object->contenttable->save();
+			$object = ORM::Factory('object')->where('id', '=', $id)->find();
+			$this->response->data( array('value'=>$object->contenttable->$_POST['field'], 'slug'=>$object->slug) );
          return;
 		}
 		else if(in_array($_POST['field'], array('dateadded'))){
-			$page->$_POST['field'] = $_POST['value'];
-			$page->save();
+			$object->$_POST['field'] = $_POST['value'];
+			$object->save();
 		} else if($_POST['field']) {
 			$xpath = sprintf('//template[@name="%s"]/elements/*[@field="%s"]',
-				$page->template->templatename,
+				$object->template->templatename,
 				$_POST['field']);
 			$fieldInfo = mop::config('objects', $xpath)->item(0);
 			if(!$fieldInfo){
@@ -110,12 +110,12 @@ class MOP_CMSInterface extends Controller_Layout {
 
 			switch($fieldInfo->getAttribute('type')){
 			case 'multiSelect':
-				$object = ORM::Factory('page', $_POST['field']);
+				$object = ORM::Factory('object', $_POST['field']);
 				if(!$object->loaded){
 					$object->template_id = ORM::Factory('template', $lookup[$_POST['field']]['object'])->id;
 					$object->save();
-					$page->contenttable->$_POST['field'] = $object->id;
-					$page->contenttable->save();
+					$object->contenttable->$_POST['field'] = $object->id;
+					$object->contenttable->save();
 				}
 				$options = array();
 				foreach(mop::config('objects', sprintf('/template[@name="%s"]/element', $object->template->templatename)) as $field){
@@ -133,16 +133,16 @@ class MOP_CMSInterface extends Controller_Layout {
 				$object->contenttable->save();
 				break;	
 			default:
-				$page->contenttable->$_POST['field'] = mopcms::convertNewlines($_POST['value']);
-				$page->contenttable->save();
+				$object->contenttable->$_POST['field'] = mopcms::convertNewlines($_POST['value']);
+				$object->contenttable->save();
 				break;
 			}
 		} else {
 			throw new Kohana_Exception('Invalid POST Arguments, POST must contain field and value parameters');
 		}
 
-		$page = ORM::Factory('page')->where('id', '=', $id)->find();
-      $value = $page->contenttable->$_POST['field'];
+		$object = ORM::Factory('object')->where('id', '=', $id)->find();
+      $value = $object->contenttable->$_POST['field'];
       $this->response->data(array('value'=>$value));
 	}
 
@@ -156,15 +156,15 @@ class MOP_CMSInterface extends Controller_Layout {
 		Returns: Published status (0 or 1)
 		*/
 		public function action_togglePublish($id){
-			$page = ORM::Factory('page')->where('id', '=', $id)->find();
-			if($page->published==0){
-				$page->published = 1;
+			$object = ORM::Factory('object')->where('id', '=', $id)->find();
+			if($object->published==0){
+				$object->published = 1;
 			} else {
-				$page->published = 0;
+				$object->published = 0;
 			}
-			$page->save();
+			$object->save();
 
-			$this->response->data( array('published' => $page->published) );
+			$this->response->data( array('published' => $object->published) );
 		}
 
 		/*
@@ -180,9 +180,9 @@ class MOP_CMSInterface extends Controller_Layout {
 				if(!is_numeric($order[$i])){
 					throw new Kohana_User_Exception('bad sortorder string', 'bad sortorder string');
 				}
-				$page = ORM::factory('page', $order[$i]);
-				$page->sortorder = $i+1;
-				$page->save();
+				$object = ORM::factory('object', $order[$i]);
+				$object->sortorder = $i+1;
+				$object->save();
 			}
 
 			$this->response->data( array('saved'=>true));
@@ -246,15 +246,15 @@ class MOP_CMSInterface extends Controller_Layout {
 	 * Returns: nothing 
 	 */
 	protected function cascade_delete($id){
-		$page = ORM::Factory('page')->where('id', '=', $id)->find();
-		$page->activity = 'D';
-		$page->sortorder = 0;
-		$page->slug = DB::expr('null');
-		$page->save();
-		$page->contenttable->activity = 'D';
-		$page->contenttable->save();
+		$object = ORM::Factory('object')->where('id', '=', $id)->find();
+		$object->activity = 'D';
+		$object->sortorder = 0;
+		$object->slug = DB::expr('null');
+		$object->save();
+		$object->contenttable->activity = 'D';
+		$object->contenttable->save();
 
-		$children = ORM::Factory('page');
+		$children = ORM::Factory('object');
 		$children->where('parentid', '=',$id);
 		$iChildren = $children->find_all();
 		foreach($iChildren as $child){
@@ -269,15 +269,15 @@ class MOP_CMSInterface extends Controller_Layout {
 	 * id - the id to undelete as well as everything beneath it.
 	 * Returns: Nothing
 	 */
-	protected function cascade_undelete($page_id){
-		$page = ORM::Factory('page')->where('id', '=', $id)->find();
-		$page->activity = new Database_Expression(null);
-		$page->slug = mopcms::createSlug($page->contenttable->title, $page->id);
-		$page->save();
-		$page->contenttable->activity = new Database_Expression(null);
-		$page->contenttable->save();
+	protected function cascade_undelete($object_id){
+		$object = ORM::Factory('object')->where('id', '=', $id)->find();
+		$object->activity = new Database_Expression(null);
+		$object->slug = mopcms::createSlug($object->contenttable->title, $object->id);
+		$object->save();
+		$object->contenttable->activity = new Database_Expression(null);
+		$object->contenttable->save();
 
-		$children = ORM::Factory('page');
+		$children = ORM::Factory('object');
 		$children->where('parentid','=',$id);
 		$iChildren = $children->find_all();
 		foreach($iChildren as $child){
@@ -286,6 +286,12 @@ class MOP_CMSInterface extends Controller_Layout {
 
 	}
 
+   
+   public abstract function cms_getNode($id){
+   }
+
+   public abstract function cms_addObject($parentId, $templateId, $data) { 
+   }
 
 
 }

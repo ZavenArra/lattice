@@ -65,7 +65,7 @@ class Model_Object extends ORM {
             }
             return $this->_related[$column];
         } else if ($column == 'parent') {
-            return ORM::Factory('page', $this->parentid); 
+            return ORM::Factory('object', $this->parentid); 
         } else {
             return parent::__get($column);
         }
@@ -265,7 +265,7 @@ class Model_Object extends ORM {
 	public function getListContent($family){
 		//get container
 		$cTemplate = ORM::Factory('template', $family);
-		$container = ORM::Factory('page')
+		$container = ORM::Factory('object')
 			->where('template_id', '=', $cTemplate->id)
 			->where('parentid', '=', $this->id)
 			->where('activity', 'IS', NULL)
@@ -279,7 +279,7 @@ class Model_Object extends ORM {
 
 	public function getPublishedChildren(){
 
-		$children = ORM::Factory('page')
+		$children = ORM::Factory('object')
 			->where('parentid', '=', $this->id)
 			->where('published', '=', 1)
 			->where('activity', 'IS', NULL)
@@ -290,7 +290,7 @@ class Model_Object extends ORM {
 
 	public function getChildren(){
 
-		$children = ORM::Factory('page')
+		$children = ORM::Factory('object')
 			->where('parentid', '=', $this->id)
 			->where('activity', 'IS', NULL)
 			->order_by('sortorder')
@@ -298,7 +298,7 @@ class Model_Object extends ORM {
 		return $children;
 	}
 	public function getNextPublishedPeer(){
-		$next = ORM::Factory('page')
+		$next = ORM::Factory('object')
 			->where('parentid', '=', $this->parentid)
 			->where('published', '=', 1)
 			->where('activity', 'IS', NULL)
@@ -314,7 +314,7 @@ class Model_Object extends ORM {
 	}
 
 	public function getPrevPublishedPeer(){
-		$next = ORM::Factory('page')
+		$next = ORM::Factory('object')
 			->where('parentid', '=', $this->parentid)
 			->where('published', '=', 1)
 			->where('activity', 'IS', NULL)
@@ -330,7 +330,7 @@ class Model_Object extends ORM {
 	}
 
 	public function getFirstPublishedPeer(){
-		$first = ORM::Factory('page')
+		$first = ORM::Factory('object')
 			->where('parentid', '=', $this->parentid)
 			->where('published', '=', 1)
 			->where('activity', 'IS', NULL)
@@ -345,7 +345,7 @@ class Model_Object extends ORM {
 	}
 
 	public function getLastPublishedPeer(){
-		$last = ORM::Factory('page')
+		$last = ORM::Factory('object')
 			->where('parentid', '=', $this->parentid)
 			->where('published', '=', 1)
 			->where('activity', 'IS', NULL)
@@ -360,7 +360,7 @@ class Model_Object extends ORM {
 	}
 
 	public function getParent(){
-		$parent = ORM::Factory('page', $this->parentid);
+		$parent = ORM::Factory('object', $this->parentid);
 		return $parent;
 	}
 
@@ -529,7 +529,7 @@ class Model_Object extends ORM {
 	//this is gonna change a lot!
 	//this only supports a very special case of multiSelect objects
 	public function saveObject(){
-		$object = ORM::Factory('page', $this->contenttable->$_POST['field']);
+		$object = ORM::Factory('object', $this->contenttable->$_POST['field']);
 		if(!$object->template_id){
 			$object->template_id = 0;
 		}
@@ -605,6 +605,229 @@ class Model_Object extends ORM {
 	}
 
 
+   /*
+	Function: addObject($id)
+	Private function for adding an object to the cms data
+	Parameters:
+	id - the id of the parent category
+	template_id - the type of object to add
+	$data - possible array of keys and values to initialize with
+	Returns: the new page id
+	*/
 
+				/* Consider moving this into Object, and creating a hidden top level object that contains these objects
+				 * then hidden objects or other kinds of data can be stored, but not within the cms object tree
+				 * This makes sense for separating the CMS from the graph, and containing all addObject code within the model.
+				 * */
+  public function addObject($template_ident, $data = array()) {
+      $template_id = ORM::Factory('template', $template_ident)->id;
+      if (!$template_id) {
+         //we're trying to add an object of template that doesn't exist in db yet
+         //check objects.xml for configuration
+         if ($templateConfig = mop::config('objects', sprintf('//template[@name="%s"]', $template_ident))->item(0)) {
+            //there's a config for this template
+            //go ahead and configure it
+            mopcms::configureTemplate($templateConfig);
+            $template_id = ORM::Factory('template', $template_ident)->id;
+         } else {
+            throw new Kohana_Exception('No config for template ' . $template_ident);
+         }
+      }
+
+
+      //suggested new syntax
+//      Graph::object($objectId)->addObject($template, $data);
+      
+		$newObject = Graph::object();
+		$newObject->template_id = $template_id;
+
+		//create slug
+		if(isset($data['title'])){
+			$newObject->slug = mopcms::createSlug($data['title'], $newObject->id);
+		} else {
+			$newObject->slug = mopcms::createSlug();
+		}
+		$newObject->parentid = $this->id;
+
+		//calculate sort order
+		$sort = DB::select(array('sortorder','maxsort'))->from('pages')->where('parentid', '=', $this->id)
+			->order_by('sortorder')->limit(1)
+			->execute()->current();
+		$newObject->sortorder = $sort['maxsort']+1;
+
+		$newObject->save();
+	
+
+		//check for enabled publish/unpublish. 
+		//if not enabled, insert as published
+		$template = ORM::Factory('template', $template_id);
+		$tSettings = mop::config('objects', sprintf('//template[@name="%s"]', $template->templatename) ); 
+		$tSettings = $tSettings->item(0);
+		$newObject->published = 1;
+		if($tSettings){ //entry won't exist for Container objects
+			if($tSettings->getAttribute('allowTogglePublish') == 'true' ) {
+				$newObject->published = 0;
+			}
+		}
+		if(isset($data['published']) && $data['published'] ){
+			$newObject->published = 1;
+			unset($data['published']);
+		}
+
+		$newObject->save();
+
+		//Add defaults to content table
+		$newtemplate = ORM::Factory('template', $newObject->template_id);
+
+
+		$lookupTemplates = mop::config('objects', '//template');
+		$templates = array();
+		foreach($lookupTemplates as $tConfig){
+			$templates[] = $tConfig->getAttribute('name');	
+		}
+      Kohana::$log->add(Log::ERROR,'yuh');
+		//add submitted data to content table
+		foreach($data as $field=>$value){
+
+			//need to switch here on type of field
+			switch($field){
+			case 'slug':
+			case 'decoupleSlugTitle':
+					$newObject->$field = $data[$field];
+					continue(2);
+			case 'title':
+					$newObject->contenttable->$field = $data[$field];
+					continue(2);
+			}
+
+			$fieldInfoXPath = sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field);
+			$fieldInfo = mop::config('objects', $fieldInfoXPath)->item(0);
+			if(!$fieldInfo){
+				throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath'=>$fieldInfoXPath));
+			}
+
+			if(in_array($fieldInfo->tagName, $templates) && is_array($value) ){
+				$clusterTemplateName = $fieldInfo->tagName;
+				$clusterObjectId = mopcms::addObject(null, $clusterTemplateName, $value);
+				$newObject->contenttable->$field = $clusterObjectId;
+				continue;
+			}
+
+
+      Kohana::$log->add(Log::ERROR,$fieldInfo->tagName);
+			switch($fieldInfo->tagName){
+			case 'file':
+			case 'image':
+				//need to get the file out of the FILES array
+				
+				Kohana::$log->add(Log::ERROR, var_export($_POST, true));
+				Kohana::$log->add(Log::ERROR, var_export($_FILES, true));
+      Kohana::$log->add(Log::ERROR,'something'.$field);
+				if(isset($_FILES[$field])){
+          Kohana::$log->add(Log::ERROR,'Adding via post file');
+					$file = mopcms::saveHttpPostFile($newObject->id, $field, $_FILES[$field]);
+				} else {
+					$file = ORM::Factory('file');
+					$file->filename = $value;			
+					$file->save();
+					$newObject->contenttable->$field = $file->id;
+				}
+				break;
+			default:
+				$newObject->contenttable->$field = $data[$field];
+				break;
+			}
+		}
+		$newObject->contenttable->save();
+		$newObject->save();
+
+		//look up any components and add them as well
+
+		//configured components
+		$components = mop::config('objects', sprintf('//template[@name="%s"]/components/component',$newtemplate->templatename));
+		foreach($components as $c){
+			$arguments = array();
+			if($label = $c->getAttribute('label')){
+				$arguments['title'] = $label;
+			}
+			if($c->hasChildNodes()){
+				foreach($c->childNodes as $data){
+					$arguments[$data->tagName] = $data->value;
+				}
+			}
+			mopcms::addObject($newObject->id, $c->getAttribute('templateName'), $arguments);
+		}
+
+		//containers (list)
+		$containers = mop::config('objects', sprintf('//template[@name="%s"]/elements/list',$newtemplate->templatename));
+		foreach($containers as $c){
+			$arguments['title'] = $c->getAttribute('label');
+			mopcms::addObject($newObject->id, $c->getAttribute('family'), $arguments);
+		}
+
+		return $newObject->id;
+	}
+
+	public static function makeFileSaveName($filename){
+    $filename = str_replace('&', '_', $filename);
+
+		$xarray = explode('.', $filename);
+		$nr = count($xarray);
+		$ext = $xarray[$nr-1];
+		$name = array_slice($xarray, 0, $nr-1);
+		$name = implode('.', $name);
+		$i=1;
+		if(!file_exists(mopcms::mediapath()."$name".'.'.$ext)){
+			$i='';
+		} else {
+			for(; file_exists(mopcms::mediapath()."$name".$i.'.'.$ext); $i++){}
+		}
+
+		//clean up extension
+		$ext = strtolower($ext);
+		if($ext=='jpeg'){ $ext = 'jpg'; }
+
+		return $name.$i.'.'.$ext;
+	}
+
+	public static function saveHttpPostFile($objectid, $field, $postFileVars){
+          Kohana::$log->add(Log::ERROR,'Addasdfasd aing via post file');
+
+      Kohana::$log->add(Log::ERROR, 'save uploaded');
+      Kohana::$log->add(Log::ERROR, var_export($postFileVars, true));
+		$object = ORM::Factory('object', $objectid);
+		//check the file extension
+		$filename = $postFileVars['name'];
+		$ext = substr(strrchr($filename, '.'), 1);
+		switch($ext){
+		case 'jpeg':
+		case 'jpg':
+		case 'gif':
+		case 'png':
+		case 'JPEG':
+		case 'JPG':
+		case 'GIF':
+		case 'PNG':
+		case 'tif':
+		case 'tiff':
+		case 'TIF':
+		case 'TIFF':
+      Kohana::$log->add(Log::ERROR, 'save uploaded');
+			return $object->saveUploadedImage($field, $postFileVars['name'], 
+																				$postFileVars['type'], $postFileVars['tmp_name']);
+			break;
+
+		default:
+			return $object->saveUploadedFile($field, $postFileVars['name'], 
+				$postFileVars['type'], $postFileVars['tmp_name']);
+		}
+
+	}
+
+   
+
+  
+   
+   
 }
 ?>

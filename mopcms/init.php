@@ -4,6 +4,7 @@
 //check for setup
 MOP_Initializer::check(
 	array(
+      'cms',
 		'mopcore',
 		'mopcms',
       'rootgraph'

@@ -80,7 +80,7 @@ class Controller_Builder extends Controller {
       //echo "\n found contentnod ".$item->getAttribute('templateName');
 			flush();
 			ob_flush();
-			$object = ORM::Factory('page');
+			$object = ORM::Factory('object');
 			$template = ORM::Factory('template', $item->getAttribute('templateName'));
 			if($template->nodeType == 'container'){
 				die("Can't add list family as template name in data.xml: {$template->templatename} \n");
@@ -150,7 +150,7 @@ class Controller_Builder extends Controller {
 			//if there is a title collision, we assume that this is a component
 			//already added at the next level up, in this case we just
 			//update the objects data
-			$existing = ORM::Factory('page')
+			$existing = ORM::Factory('object')
 				->where('parentid', '=', $parentId)
 				->find_all();
 			$component = null;
@@ -180,7 +180,7 @@ class Controller_Builder extends Controller {
 				//echo "FOUND A LIST\n\n";
 				//find the container
 				$listT = ORM::Factory('template', $list->getAttribute('family'));
-				$container = ORM::Factory('page')
+				$container = ORM::Factory('object')
 					->where('parentid', '=', $objectId)
 					->where('template_id', '=',  $listT->id)
 					->find();
