@@ -435,7 +435,7 @@ a.button{
 	text-decoration:none;
 }
 
-.enhancedModalContainer{
+.modalContainer{
 	position:fixed;
 	width: 100%;
 	height: 100%;
@@ -446,7 +446,7 @@ a.button{
 
 }
 
-.enhancedModalContainer .modal{
+.modalContainer .modal{
 	margin: 7em auto 2em auto;	
 	width: 50em;
 	z-index:11001;
@@ -454,7 +454,7 @@ a.button{
 	padding: 2em 2em 0  2em;
 }
 
-.enhancedModalContainer .header{
+.modalContainer .header{
 	position: fixed;
 	z-index : 11002;
 	left: 50%;
@@ -466,23 +466,23 @@ a.button{
 	color:#fff;
 }
 
-.enhancedModalContainer .header h3{
+.modalContainer .header h3{
 	float: left;
 }
 
-.enhancedModalContainer .controls{
+.modalContainer .controls{
 	border-top: 1px #dedede solid;
 	
 }
 
-.enhancedModalContainer .header .controls{
+.modalContainer .header .controls{
 	border: none;
 	float: right;
 	padding: .5em 2em 2em 2em;
 }
 
 
-.enhancedModalContainer .footer .controls{
+.modalContainer .footer .controls{
 	padding: 1em 0;
 }
 
@@ -548,7 +548,7 @@ a.button{
 	margin:0 0 .5em .5em;
 }
 
-.enhancedModalContainer h3{
+.modalContainer h3{
 	font-family: Georgia, Times, serif;
 	font-weight: normal;
 	color:#fff;
@@ -1227,14 +1227,14 @@ ul.listing li.menuItem:hover{
 	float:left;
 }
 
-.breadCrumb ul li a:before{
+/*.breadCrumb ul li a:before{
     content: "+";
     font-size: 1.5em;
     position: relative;
     top: .1em;
    padding-right: .25em;
 }
-
+*/
 .breadCrumb ul li a{
     display: block;
     width: auto;
