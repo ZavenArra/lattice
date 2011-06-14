@@ -1,0 +1,3 @@
+[submodule "mopjs/thirdparty/textboxlist"]
+	path = mopjs/thirdparty/textboxlist
+	url = git@github.com:codebase/TextboxList.git

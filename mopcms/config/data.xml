@@ -95,5 +95,10 @@
 			<field name="url">lasdf</field>
 			<field name="label">nas as s</field>
 		</object>
+
+	</item>
+
+	<item templateName="tagsObjectType">
+		<field name="title">Tags</field>
 	</item>
 </data>
