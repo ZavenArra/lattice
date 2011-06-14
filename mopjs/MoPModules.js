@@ -135,7 +135,8 @@ mop.modules.Module = new Class({
 		var UIElements = this.getModuleUIElements( anElement );
 		if( !UIElements || UIElements.length == 0  ) return null;
 		UIElements.each( function( anElement ){
-		    var UIElement = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  ]( anElement, this, this.options );
+		    console.log( 'initUI >>>> ', anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  );
+		    var UIElement = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) ) ]( anElement, this, this.options );
 		    this.UIElements[ UIElement.fieldName ] = UIElement;
 		}, this );
 		if( this.postInitUIHook ) this.postInitUIHook();
@@ -200,6 +201,8 @@ mop.modules.Cluster = new Class({
     Extends: mop.modules.Module,
     initialize: function( anElementOrId, aMarshal, options ){
         this.parent( anElementOrId, aMarshal, options );
+        this.objectId = this.element.get("id").split("_")[1];
+		
         // console.log( "Cluster objectId", this.getObjectId() );
     },
     getSubmissionController: function(){
@@ -208,7 +211,7 @@ mop.modules.Cluster = new Class({
         // return this.instanceName;
     },
     getObjectId: function(){
-	    return this.getValueFromClassName( "objectId" );
+	    return this.objectId;
 	}
 });
 
@@ -224,12 +227,14 @@ mop.modules.AjaxFormModule = new Class({
 	action: null,
 	generatedData: {},
 
+	getSubmitFormURL: function(){
+	    return mop.util.getBaseURL() + "ajax/" + this.getSubmissionController() +  "/" + this.action + "/" + this.getObjectId();
+	},
+
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.action = mop.util.getValueFromClassName( "action", this.element.get( "class" ) );
-		
 		this.element.getElement("input[type='submit']").addEvent( "click", this.submitForm.bindWithEvent( this ) );
-		
 		this.resultsContainer = this.element.getElement(".resultsContainer");
 		this.requiresValidation = ( mop.util.getValueFromClassName( "validate", this.element.get( "class" ) ) == "true" )? true : false;
 	},
@@ -240,16 +245,13 @@ mop.modules.AjaxFormModule = new Class({
 
 	submitForm: function( e ){
         mop.util.stopEvent( e );
-        var url = this.getSubmitFormURL();
-        this.generatedData = Object.merge( this.generatedData, this.serialize() );
+        this.gene
+        ratedData = Object.merge( this.generatedData, this.serialize() );
 		if( this.requiresValidation && !this.validateFields() ) return false;		
-        mop.util.JSONSend( url, this.generatedData, { onComplete: this.onFormSubmissionComplete.bind( this ) } );	    
+        mop.util.JSONSend( this.getSubmitFormURL(), this.generatedData, { onComplete: this.onFormSubmissionComplete.bind( this ) } );	    
         return true;
 	},
 	
-	getSubmitFormURL: function(){
-	    var url = "ajax/" + this.getSubmissionController() +  "/" + this.action + "/" + this.getObjectId();
-	},
 	
 	validateFields: function(){
 		var returnVal = true
