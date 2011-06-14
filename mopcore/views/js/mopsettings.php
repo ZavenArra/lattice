@@ -1,1 +1,2 @@
-var baseurl =  "<?echo URL::base();?>"
+if( !mop ) var mop = {};
+mop.baseURL = "<?echo URL::base();?>"
