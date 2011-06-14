@@ -1314,8 +1314,6 @@ mop.ui.VisibilityToggler = new Class({
 
 
 /*	Class: mop.ui.DatePicker
-	mop.ui Wrapper for http://www.monkeyphysics.com/mootools/script/2/datepicker
-	@TODO add some kind of spinner element on save
 */
 
 mop.ui.DatePicker = new Class({
@@ -1326,15 +1324,11 @@ mop.ui.DatePicker = new Class({
 	action: "savefield",
 		
 	initialize: function( anElement, options ){
-		console.log( "\t:::::>>>> ", this.toString(), "initialize", anElement, options );
+//		console.log( this.toString(), "initialize", anElement, options );
 		this.parent( anElement, options );
-		console.log( 1 );
 		this.dateField = this.element.getElement("input");
-		console.log( 2 );
 		this.allowEmpty = (  this.getValueFromClassName( "allowEmpty" ) )? true : false;
-		console.log( 3 );
 	    this.buildPicker();
-		console.log( 4 );
 	},
 	
     
