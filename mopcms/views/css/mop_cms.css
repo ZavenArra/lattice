@@ -277,7 +277,7 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 }
 
 .spinner-img {
-	background: url( ../../../mopui/views/images/spinner.gif ) no-repeat;
+	background: url( ../images/spinner.gif ) no-repeat;
 	width: 24px;
 	height: 24px;
 	margin: 0 auto;
@@ -285,13 +285,6 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 
 /* /////////////////////////////////////////////////////////// */
 
-/*.icon.spinner{
-    width: 16px;
-    height:16px;
-    display:block;
-    background: url( ../../../mopui/views/images/spinner.gif );
-}
-*/
 .ui-FileElement .controls,
 .ui-File .controls,
 .ui-ImageFile .controls{
@@ -365,9 +358,9 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 	margin:0 auto;
 }
 
-.fileName{ background-repeat: no-repeat; background-image: url( ../../mopui/views/images/icon_doc.gif ) 1em 0; }
+.fileName{ background-repeat: no-repeat; background-image: url( ../images/icon_doc.gif ) 1em 0; }
 .fileName.pdf{ background-image: url( ../images/icon_pdf.gif) 1em 0; }
-.fileName.doc{ background-image: url( ../../mopui/views/images/icon_doc.gif ) 1em 0; }
+.fileName.doc{ background-image: url( ../images/icon_doc.gif ) 1em 0; }
 .fileName.jpg, .fileName.jpeg{	background-image: url(images/icon_jpg.gif) 1em 0; }
 .fileName.gif{ background-image: url( ../images/icon_gif.gif) 1em 0; }
 .fileName.png{ background-image: url( ../images/icon_png.gif) 1em 0; }
@@ -572,13 +565,8 @@ a.button{
 	background:#fff;
 }
 
-/*.centeredSpinner{
-    min-height: 12em;
-    background:#eee url( ../../mopui/views/images/spinner.gif ) 50% 50% no-repeat !important;
-}
-*/
 th.spinner{
-	background-image: url( ../../mopui/views/images/spinner.gif ) !important;
+	background-image: url( ../images/spinner.gif ) !important;
 	background-position: center .75em;
 	background-repeat: no-repeat;
 }
@@ -713,7 +701,7 @@ a#bigRedButton:hover{
 
 .sticky .top{
 	padding: .65em .65em 0 .65em;
-	background: url( ../../mopui/views/images/stickyTop.png ) no-repeat;
+	background: url( ../images/stickyTop.png ) no-repeat;
 }
 
 .sticky h4{
@@ -726,7 +714,7 @@ a#bigRedButton:hover{
 }
 
 .sticky a.close{
-	background: url( ../../mopui/views/images/stickyClose.gif );
+	background: url( ../images/stickyClose.gif );
 	width: 12px;
 	height: 12px;
 	margin-left: 96px;
@@ -744,7 +732,7 @@ a#bigRedButton:hover{
 	font-size: .9em;
 	line-height: 1em;
 	margin: 0 0 0 0;
-	background: url( ../../mopui/views/images/stickyBottom.png ) bottom left;	
+	background: url( ../images/stickyBottom.png ) bottom left;	
 }
 
 .controlGroup{
@@ -1024,12 +1012,12 @@ DATE PICKER
 }
 
 .ui-MultiSelect p{
-	background: #FFFAC4 url(  ../../mopui/views/images/iconMultiSelect.gif ) 9em .7em no-repeat; 	
+	background: #FFFAC4 url(  ../images/iconMultiSelect.gif ) 9em .7em no-repeat; 	
 }
 
 .ui-DatePicker input[type~='text'],
 .ui-DateRangePicker input[type~='text']{
-	background: #FFFAC4 url(  ../../mopui/views/images/iconDatePicker.gif ) 7em .7em no-repeat; 
+	background: #FFFAC4 url(  ../images/iconDatePicker.gif ) 7em .7em no-repeat; 
 }
 
 .ui-DateRangePicker label{
@@ -1200,7 +1188,7 @@ ul.listing li.menuItem{
     padding: .5em 1em .5em 1em;
     margin: 0 0 0 0;
     width: 166px;
-    background: url( ../../mopui/views/images/optionBg.png ) bottom left;
+    background: url( ../images/optionBg.png ) bottom left;
     border-left: none;
     border-top: 1px #efefef solid !important;
     border-left: 1px #efefef solid !important

@@ -293,29 +293,37 @@ mop.ui.UIElement = new Class({
 	options:{ action: "savefield" },
 	
 	onCompleteCallbacks: [],
-	
 	type: "Generic UIElement",
-	
 	fieldName: null,
 	autoSubmit: true,
 	action: null,
 	validationOptions: null,
 	validationErrors: [],
 	validationSticky: null,
-	
 	onCompleteCallbacks: [],
 	onEditCallbacks: [],
-
 	enabled: true,
 	clickEvent: null,
 	
-	requiresValidation: function(){
-		return Boolean( this.validationOptions );
+	getValue: function(){
+		console.log( this.toString(), "Subclasses of mop.ui.UIElement must override getValue function" );
+	},
+
+	setValue: function(){
+		console.log( this.toString(), "Subclasses of mop.ui.UIElement must override setValue function" );
 	},
 	
+	getSubmitURL: function(){
+		return mop.util.getBaseURL() +"ajax/data/" + this.marshal.getSubmissionController() + "/" + this.action + "/" + this.marshal.getObjectId();
+	},	
+
 	// TODO: maybe just create an options object, that loops through all 'key-kalue' pairs in class name... seems like it would remove redundancies....   
 	getValueFromClassName: function( key ){
 		return mop.util.getValueFromClassName( key, this.element.get( "class" ) );
+	},
+		
+	requiresValidation: function(){
+		return Boolean( this.validationOptions );
 	},
 
 	registerOnCompleteCallBack: function( func ){
@@ -378,50 +386,31 @@ mop.ui.UIElement = new Class({
 			}
 		}
 
-		console.log( this.toString(), "onResponse", $A( arguments ) );
+		console.log( this.toString(), "onResponse", json );
 
 	},
-
-	getValue: function(){
-		console.log( this.toString(), "Subclasses of mop.ui.UIElement must override getValue function" );
-	},
-
-	setValue: function(){
-		console.log( this.toString(), "Subclasses of mop.ui.UIElement must override setValue function" );
-	},
-	
+		
 	submit: function( e ){
-
 	//	console.log( this.toString(), "submit", e, this.autoSubmit, this.getValue() );
 		mop.util.stopEvent( e );
-		
 		if( this.onEditCallbacks && this.onEditCallbacks.length > 0 ){
 			this.onEditCallbacks.each( function( aFunc ){
 				aFunc();
 			});
 		}
-		
 		var val = this.getValue();
 		this.submittedValue = val;
-		
 		if( !this.validate() ) return;		
-
 		if( !this.autoSubmit ){
 			this.setValue( val );
 			if( this.leaveEditMode ) this.leaveEditMode();
 			return;
-		}
-		
-		if( this.showSaving ) this.showSaving();
-		
-		var url = mop.util.getAppURL() +"ajax/data/" + this.marshal.getSubmissionController() + "/" + this.action + "/" + this.marshal.getObjectId();
+		}		
+		if( this.showSaving ) this.showSaving();		
 		var submittedVars = { field: this.fieldName, value: val };
-		
-		console.log( "SUBMIT ", url, submittedVars );
-		
-		mop.util.JSONSend( url, submittedVars, { onComplete: this.onResponse.bind( this ) } );
+//		console.log( "SUBMIT ", url, submittedVars );
+		mop.util.JSONSend( this.getSubmitURL(), submittedVars, { onComplete: this.onResponse.bind( this ) } );
 		if( this.leaveEditMode ) this.leaveEditMode();
-
 	},
 	
 	validate: function(){
@@ -1123,7 +1112,7 @@ mop.ui.MultiSelect = new Class({
 	onDocumentClicked: function( e ){
 		mop.util.stopEvent( e );
 	    if( e.target == this.saveButton || e.target == this.cancelButton ) return;
-	    if(	$chk( e ) && ( e.target == this.multiBox || this.multiBox.contains( e.target ) ) ) return;
+	    if( e && ( e.target == this.multiBox || this.multiBox.contains( e.target ) ) ) return;
 //	    console.log( "onDocumentClicked" );
 	    this.updateAndClose( e );
 	},
@@ -1323,243 +1312,8 @@ mop.ui.VisibilityToggler = new Class({
 	
 });
 
-mop.ui.ExtendedMonkeyPhysicsDatePicker = new Class({
-
-	Extends: DatePicker,
-
-	Implements: [ Events, Options ],
-
-	initialize: function( attachTo, aMarshal, options ){
-		this.marshal = aMarshal;
-		this.attachTo = attachTo;
-
-		this.setOptions( options );
-
-		//i dont know why i need to do this, setOptions doesnt seem to be adding the "on" Methods to the options array during setoptions... im sure i am just understanding something wrong.
-		this.options.onShow = options.onShow;
-		this.options.onSelect = options.onSelect;
-		this.options.onClose = options.onClose;
-
-		this.attach();
-
-		if (this.options.timePickerOnly) {
-			this.options.timePicker = true;
-			this.options.startView = 'time';
-		}
-
-		this.formatMinMaxDates();
-		document.addEvent('mousedown', this.close.bind(this));
-//		console.log( this.toString(), options, this.options );
-
-	},
-
-	select: function( values ) {
-		this.choice = $merge(this.choice, values);
-		var d = this.dateFromObject(this.choice);
-		this.input.set('value', this.format(d, this.options.inputOutputFormat));
-		this.visual.set('value', this.format(d, this.options.format));
-		this.options.onSelect();
-		this.close(null, true);
-	},
-
-	constructPicker: function() {
-
-		this.picker = new Element( 'div', { 'class': this.options.pickerClass }).inject(document.body);
-		if( this.options.elementId ) this.picker.set( "id", this.options.elementId );
-
-		if (this.options.useFadeInOut) {
-			this.picker.setStyle('opacity', 0).set('tween', { duration: this.options.animationDuration });
-		}
-
-		var h = new Element('div', { 'class': 'header' }).inject(this.picker);
-		var titlecontainer = new Element('div', { 'class': 'title' }).inject(h);
-		new Element('div', { 'class': 'previous' }).addEvent('click', this.previous.bind(this)).set('text', '«').inject(h);
-		new Element('div', { 'class': 'next' }).addEvent('click', this.next.bind(this)).set('text', '»').inject(h);
-		new Element('div', { 'class': 'closeButton' }).addEvent('click', this.close.bindWithEvent(this, true)).set('text', 'x').inject(h);
-		new Element('span', { 'class': 'titleText' }).addEvent('click', this.zoomOut.bind(this)).inject(titlecontainer);
-
-		var b = new Element('div', { 'class': 'body' }).inject(this.picker);
-		this.bodysize = b.getSize();
-		this.slider = new Element('div', { styles: { position: 'absolute', top: 0, left: 0, width: 2 * this.bodysize.x, height: this.bodysize.y }}).set('tween', { duration: this.options.animationDuration, transition: Fx.Transitions.Quad.easeInOut }).inject(b);
-		this.oldContents = new Element('div', { styles: { position: 'absolute', top: 0, left: this.bodysize.x, width: this.bodysize.x, height: this.bodysize.y }}).inject(this.slider);
-		this.newContents = new Element('div', { styles: { position: 'absolute', top: 0, left: 0, width: this.bodysize.x, height: this.bodysize.y }}).inject(this.slider);
-	},
-
-	toString: function(){
-		return "[ object, DatePicker, mop.ui.ExtendedMonkeyPhysicsDatePicker ]";
-	},
-
-	getDate: function(){
-		return this.dateFromObject( this.choice );
-	},
-
-	show: function( position, timestamp){
-
-		this.parent( position, timestamp );
-		var depth = mop.DepthManager.incrementDepth();
-
-//		console.log( this.toString(), "show", this.marshal.scrollContext );
-		if( this.marshal.scrollContext == 'modal' ){
-			mop.ModalManager.addListener( this );
-			this.addEvent( "modalScroll", this.onModalScroll.bind( this ) );
-		}
-		mop.util.EventManager.addListener( this );
-		this.addEvent( "resize", this.reposition.bind( this ) );
-
-		this.reposition();
-		this.picker.setStyle( "z-index", depth );
-
-	},
-
-	setDate: function( date ){
-		this.select( { year: date.getFullYear(), month: date.getMonth(), day: date.getDate() } );
-	},
-
-	attach: function() {
-		// toggle the datepicker through a separate element?
-		if ($chk(this.options.toggleElements)) {
-			var togglers = $$(this.options.toggleElements);
-			document.addEvents({
-				'keydown': function(e) {
-					if (e.key == "tab") {
-						this.close(null, true);
-					}
-				}.bind(this)
-			});
-		};
-
-		// attach functionality to the inputs		
-		$$(this.attachTo).each(function(item, index) {
-
-			// never double attach
-			if (item.retrieve('datepicker')) return;
-
-			// determine starting value(s)
-			if ($chk(item.get('value'))) {
-				var init_clone_val = this.format(new Date(this.unformat(item.get('value'), this.options.inputOutputFormat)), this.options.format);
-			} else if (!this.options.allowEmpty) {
-				var init_clone_val = this.format(new Date(), this.options.format);
-			} else {
-				var init_clone_val = '';
-			}
-
-			// create clone
-			var display = item.getStyle('display');
-			var clone = item
-			.setStyle('display', this.options.debug ? display : 'none')
-			.store('datepicker', true) // to prevent double attachment...
-			.clone()
-			.store('datepicker', true) // ...even for the clone (!)
-			.removeProperty('name')    // secure clean (form)submission
-			.setStyle('display', display)
-			.set('value', init_clone_val)
-			.inject(item, 'after');
-
-			/*added by thiago@madeofpeople.org */
-			this.input = item;
-			this.visual = clone;
-			/*end modificiations*/
-
-			// events
-			if ($chk(this.options.toggleElements)) {
-				togglers[index]
-					.setStyle('cursor', 'pointer')
-					.addEvents({
-						'click': function(e) {
-							this.onFocus(item, clone);
-						}.bind(this)
-					});
-				clone.addEvents({
-					'blur': function() {
-						item.set('value', clone.get('value'));
-					}
-				});
-			} else {
-				clone.addEvents({
-					'keydown': function(e) {
-						if (this.options.allowEmpty && (e.key == "delete" || e.key == "backspace")) {
-							item.set('value', '');
-							e.target.set('value', '');
-							this.close(null, true);
-						} else if (e.key == "tab") {
-							this.close(null, true);
-						} else {
-							mop.util.stopEvent( e );
-						}
-					}.bind(this),
-					'focus': function(e) {
-						this.onFocus(item, clone);
-					}.bind(this)
-				});
-			}
-		}.bind(this));
-	},
-
-	onFocus: function(original_input, visual_input) {
-
-		var init_visual_date, d = visual_input.getCoordinates();
-
-		if ($chk(original_input.get('value'))) {
-			init_visual_date = this.unformat(original_input.get('value'), this.options.inputOutputFormat).valueOf();
-		} else {
-			init_visual_date = new Date();
-			if ($chk(this.options.maxDate) && init_visual_date.valueOf() > this.options.maxDate.valueOf()) {
-				init_visual_date = new Date(this.options.maxDate.valueOf());
-			}
-			if ($chk(this.options.minDate) && init_visual_date.valueOf() < this.options.minDate.valueOf()) {
-				init_visual_date = new Date(this.options.minDate.valueOf());
-			}
-		}
-
-		this.show({ left: d.left + this.options.positionOffset.x, top: d.top + d.height + this.options.positionOffset.y }, init_visual_date);
-		this.input = original_input;
-		this.visual = visual_input;
-//		console.log( this.toString(), "onFocus", this.options );
-		this.options.onShow();
-	},
-
-	getValue: function(){
-		return this.input.get( 'value' );
-	},
-
-	setValue: function( aValue ){
-		if( aValue == null && this.allowEmpty ){
-			this.attachTo.set( 'value', aValue );
-			this.visual.set( "value", aValue );
-		}else{
-			this.attachTo.set( 'value', aValue );
-			this.visual.set( "value", aValue );
-		}		
-	},
-
-	onModalScroll: function( ){
-//		console.log( this.toString(), "onModalScroll" );
-		this.reposition();
-	},
-
-	reposition: function(){
-		if( this.picker && this.marshal.scrollContext == "modal" ){
-			var coords = this.visual.getCoordinates();
-			var left = coords.left;
-			this.picker.setStyles({
-				"top": coords.top + coords.height + this.options.positionOffset.y,
-				"left": left
-			});
-		}
-	},
-
-	destroy: function(){
-		mop.util.EventManager.removeListener( this );
-		mop.ModalManager.removeListener( this );
-		this.removeEvents();
-		this.parent();
-	}
-
-});
 
 /*	Class: mop.ui.DatePicker
-	mop.ui Wrapper for http://www.monkeyphysics.com/mootools/script/2/datepicker
-	@TODO add some kind of spinner element on save
 */
 
 mop.ui.DatePicker = new Class({
@@ -1570,7 +1324,7 @@ mop.ui.DatePicker = new Class({
 	action: "savefield",
 		
 	initialize: function( anElement, options ){
-//		console.log( "\t:::::>>>> ", this.toString(), "initialize", anElement, options );
+//		console.log( this.toString(), "initialize", anElement, options );
 		this.parent( anElement, options );
 		this.dateField = this.element.getElement("input");
 		this.allowEmpty = (  this.getValueFromClassName( "allowEmpty" ) )? true : false;
@@ -1583,15 +1337,16 @@ mop.ui.DatePicker = new Class({
 	},
 	
 	buildPicker: function(){ 
-		this.picker = new mop.ui.ExtendedMonkeyPhysicsDatePicker( this.dateField, this, {
+	    console.log( "a", this.dateField );
+		this.picker = new Picker.Date( this.dateField, {
 			elementId: "datePickerFor_" + this.fieldName,
 			startView: "month",
-			inputOutputFormat: "Y/m/d",
-			format: "m/d/Y",
+            // inputOutputFormat: "Y/m/d",
+			format: "%Y/%m/%d",
 			allowEmpty: this.allowEmpty,
-			onShow: this.onShow.bind( this ),
-			onSelect: this.onSelect.bindWithEvent( this  ),
-			onClose: function(){}
+            // onShow: this.onShow.bind( this ),
+            onSelect: this.onSelect.bindWithEvent( this  ),
+            // onClose: function(){}
 		});
 	},
 	
@@ -1677,7 +1432,7 @@ mop.ui.TimePicker = new Class({
 	},
 	
 	buildPicker: function(){
-		this.picker = new DatePicker( this.dateField, {
+		this.picker = new Picker.Date( this.dateField, {
 			elementId: "datePickerFor_" + this.fieldName,
 			timePicker: true,
 			yearPicker: false,
@@ -1726,7 +1481,7 @@ mop.ui.DateRangePicker = new Class({
 				onClose: function(){},
 				index: index
 			};
-			var picker = new mop.ui.ExtendedMonkeyPhysicsDatePicker( aDateField, this, opts );
+			var picker = new Picker.Date( aDateField, this, opts );
 			aDateField.store( "Class", picker );
 		}, this );
 	},
@@ -2315,7 +2070,7 @@ mop.util.Uploader = new Class({
 		this.options.callBacks = { fireCallback: this.fireCallback.bind(this) };
 
 		var path = this.options.path;
-		if (!path.contains('?')) path += '?noCache=' + $time(); // cache in IE
+		if (!path.contains('?')) path += '?noCache=' + Date.now(); // cache in IE
 
 		// container options for Swiff class
 		this.options.container = this.box = new Element('span', {'class': 'swiff-uploader-box'}).inject( $( this.options.container ) || document.body );

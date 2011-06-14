@@ -20,23 +20,23 @@ mop.modules.CMS = new Class({
     /* Section: Getters & Setters */    
     
     getRemoveObjectRequestURL: function( parentId ){
-        return "ajax/compound/cms/removeObject/" + parentId;
+        return mop.util.getBaseURL() + "ajax/compound/cms/removeObject/" + parentId;
     },
     
     getRequestPageURL: function( nodeId ){
-        return "ajax/html/cms/getPage/" + nodeId;
+        return mop.util.getBaseURL() + "ajax/html/cms/getPage/" + nodeId;
     },
     
     getRequestTierURL: function( parentId ){
-        return "ajax/compound/navigation/getTier/" + parentId;
+        return mop.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId;
     },
 
     getAddObjectRequestURL: function( newObject ){
-        return "ajax/data/cms/addObject/" + newObject.id + "/" + newObject.templateId;
+        return mop.util.getBaseURL() + "ajax/data/cms/addObject/" + newObject.id + "/" + newObject.templateId;
     },
     
     getTogglePublishedStatusRequest: function( nodeId ){            
-        return "ajax/data/cms/togglePublish/"+ nodeId;
+        return mop.util.getBaseURL() + "ajax/data/cms/togglePublish/"+ nodeId;
     },
 
 	/* Section: Constructor */
