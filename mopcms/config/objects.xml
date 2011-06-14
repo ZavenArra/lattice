@@ -184,6 +184,12 @@
       </elements>
 		</template>
 
+		<template name="tagsObjectType" >
+      <elements>
+				<tags label="Tags"/>
+      </elements>
+		</template>
+
 
 		<template name="wildflowerTestObject" >
       <elements>

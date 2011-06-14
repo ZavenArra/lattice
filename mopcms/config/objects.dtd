@@ -28,7 +28,7 @@
 	allowTitleEdit  CDATA "true"
 >
 
-<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator|link|extendedImage|extendedFile)* >
+<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator|link|extendedImage|extendedFile|tags)* >
 
 <!ELEMENT components (component*) >
 
@@ -138,6 +138,11 @@
 <!ELEMENT extendedFile EMPTY>
 <!ATTLIST extendedFile 
 	%uiattrs;
+>
+
+<!ELEMENT tags EMPTY >
+<!ATTLIST tags 
+	label				CDATA	#IMPLIED
 >
 
 <!ELEMENT resize EMPTY >

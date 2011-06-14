@@ -144,20 +144,18 @@ class MoPCMS {
 	 * Returns: Associative array of html, one entry for each ui element
 	 */
 
-		public static function buildUIHtmlChunks($parameters, $object = null) {
+		public static function buildUIHtmlChunks($elements, $object = null) {
 				$view = new View();
 				$htmlChunks = array();
-				if (is_array($parameters)) {
-						foreach ($parameters as $element) {
+				if (is_array($elements)) {
+						foreach ($elements as $element) {
 
 								//check if this element type is in fact a template
 								$tConfig = mop::config('objects', sprintf('//template[@name="%s"]', $element['type']))->item(0);
-								//echo $object->id;
-								//echo $object->template->id;
+
 								if ($tConfig) {
-										//	echo '<br>T CONFIG FOUND';
+                           
 										$field = $element['field'];
-										//echo $field;
 										$clusterObject = $object->contenttable->$field;
 										//this should really happen within the models
 										if (!$clusterObject) {
@@ -192,98 +190,108 @@ class MoPCMS {
 										continue;
 								}
 
+				switch ($element['type']) {
+               case 'element': //this should not be called 'element' as element has a different meaning
+                  if (isset($element['arguments'])) {
+                     $html = mop::buildModule($element, $element['elementname'], $element['arguments']);
+                  } else {
+                     $html = mop::buildModule($element, $element['elementname']);
+                  }
+                  $htmlChunks[$element['modulename']] = $html;
+                  break;
+               case 'list':
+                  if (isset($element['display']) && $element['display'] != 'inline') {
+                     break; //element is being displayed via navi, skip
+                  }
+                  $element['elementname'] = $element['family'];
+                  $element['controllertype'] = 'list';
 
-								switch ($element['type']) {
-										case 'element':
-												if (isset($element['arguments'])) {
-														$html = mop::buildModule($element, $element['elementname'], $element['arguments']);
-												} else {
-														$html = mop::buildModule($element, $element['elementname']);
-												}
-												$htmlChunks[$element['modulename']] = $html;
-												break;
-										case 'list':
-												if (isset($element['display']) && $element['display'] != 'inline') {
-														break; //element is being displayed via navi, skip
-												}
-												$element['elementname'] = $element['family'];
-												$element['controllertype'] = 'list';
-												
-                                 
-												$requestURI = 'list/getList/'. $object->id.'/'.$element['family'];
-												$htmlChunks[$element['family']] = Request::factory($requestURI)->execute()->body();
 
-												
-												//$htmlChunks[$element['family']] = mop::buildModule($element, $arguments);
-												break;
-										case 'associator':
-												$controller = new Associator_Controller($element['filters'], $object->id, $element['field']);
-												$controller->createIndexView();
-												$controller->view->loadResources();
-												$key = $element['type'] . '_' . $element['field'];
-												$htmlChunks[$key] = $controller->view->render();
-												break;
-										default:
-												//deal with html template elements
-												$key = $element['type'] . '_' . $element['field'];
-												$html = null;
-												if (!isset($element['field'])) {
-														$element['field'] = CMS_Controller::$unique++;
-														$html = mopui::buildUIElement($element, null);
-												} else if (!$html = mopui::buildUIElement($element, $object->contenttable->$element['field'])) {
-														throw new Kohana_Exception('bad config in cms: bad ui element');
-												}
-												$htmlChunks[$key] = $html;
-												break;
-								}
-						}
-				}
-				//print_r($htmlChunks);
-				return $htmlChunks;
-		}
+                  $requestURI = 'list/getList/' . $object->id . '/' . $element['family'];
+                  $htmlChunks[$element['family']] = Request::factory($requestURI)->execute()->body();
 
-		public static function buildUIHtmlChunksForObject($object) {
-				$elements = mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename));
-				$elementsConfig = array();
-				//echo 'BUILDING'.$object->template->templatename.'<br>'; 
-				foreach ($elements as $element) {
-						//echo 'FOUND AN ELEMENT '.$element->tagName.'<br>';
-						$entry = array();
-						$entry['type'] = $element->tagName;
-						for ($i = 0; $i < $element->attributes->length; $i++) {
-								$entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
-						}
-						//make sure defaults load
-						$entry['tag'] = $element->getAttribute('tag');
-						$entry['rows'] = $element->getAttribute('rows');
-						//any special xml reading that is necessary
-						switch ($entry['type']) {
-								case 'file':
-								case 'image':
-										$ext = array();
-										//echo sprintf('/template[@name="%s"]/elements/image[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
-										$children = mop::config('objects', 'ext', $element);
-										foreach ($children as $child) {
-												if ($child->tagName == 'ext') {
-														$ext[] = $child->nodeValue;
-												}
-										}
-										$entry['extensions'] = implode(',', $ext);
-										break;
-								case 'radioGroup':
-										$children = mop::config('objects', 'radio', $element);
-										$radios = array();
-										foreach ($children as $child) {
-												$label = $child->getAttribute('label');
-												$value = $child->getAttribute('value');
-												$radios[$label] =$value;
-        }
-        $entry['radios'] = $radios;
-        break;
 
-			case 'associator':
-				//need to load filters here
-				$filters = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]/filter', 
+                  //$htmlChunks[$element['family']] = mop::buildModule($element, $arguments);
+                  break;
+               case 'associator':
+                  $controller = new Associator_Controller($element['filters'], $object->id, $element['field']);
+                  $controller->createIndexView();
+                  $controller->view->loadResources();
+                  $key = $element['type'] . '_' . $element['field'];
+                  $htmlChunks[$key] = $controller->view->render();
+                  
+                  break;
+
+               case 'tags':
+                  $tags = implode(',', $object->getTags());
+                  $elementHtml = mopui::tags($tags);
+                  $key = $element['type'] . '_tags';
+                  $htmlChunks[$key] = $elementHtml;
+
+                  break;
+               default:
+                  //deal with html template elements
+                  $key = $element['type'] . '_' . $element['field'];
+                  $html = null;
+                  if (!isset($element['field'])) {
+                     $element['field'] = CMS_Controller::$unique++;
+                     $html = mopui::buildUIElement($element, null);
+                  } else if (!$html = mopui::buildUIElement($element, $object->contenttable->$element['field'])) {
+                     throw new Kohana_Exception('bad config in cms: bad ui element');
+                  }
+                  $htmlChunks[$key] = $html;
+                  break;
+            }
+         }
+      }
+      //print_r($htmlChunks);
+      return $htmlChunks;
+   }
+
+   public static function buildUIHtmlChunksForObject($object) {
+      $elements = mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename));
+      // should be Model_object->getElements();
+      // this way a different driver could be created for non-xml config if desired
+      $elementsConfig = array();
+      //echo 'BUILDING'.$object->template->templatename.'<br>'; 
+      foreach ($elements as $element) {
+         //echo 'FOUND AN ELEMENT '.$element->tagName.'<br>';
+         $entry = array();
+         $entry['type'] = $element->tagName;
+         for ($i = 0; $i < $element->attributes->length; $i++) {
+            $entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
+         }
+         //make sure defaults load
+         $entry['tag'] = $element->getAttribute('tag');
+         $entry['rows'] = $element->getAttribute('rows');
+         //any special xml reading that is necessary
+         switch ($entry['type']) {
+            case 'file':
+            case 'image':
+               $ext = array();
+               //echo sprintf('/template[@name="%s"]/elements/image[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
+               $children = mop::config('objects', 'ext', $element);
+               foreach ($children as $child) {
+                  if ($child->tagName == 'ext') {
+                     $ext[] = $child->nodeValue;
+                  }
+               }
+               $entry['extensions'] = implode(',', $ext);
+               break;
+            case 'radioGroup':
+               $children = mop::config('objects', 'radio', $element);
+               $radios = array();
+               foreach ($children as $child) {
+                  $label = $child->getAttribute('label');
+                  $value = $child->getAttribute('value');
+                  $radios[$label] = $value;
+               }
+               $entry['radios'] = $radios;
+               break;
+
+            case 'associator':
+               //need to load filters here
+               $filters = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]/filter', 
 							$object->template->templatename,
 							$element->getAttribute('field') ));
 				$filterSettings = array();
@@ -301,7 +309,6 @@ class MoPCMS {
       }
 			$elementsConfig[] = $entry;
 		}
-
     return mopcms::buildUIHtmlChunks($elementsConfig, $object);
   }
 
@@ -570,6 +577,9 @@ class MoPCMS {
 
 	}
 
+   /*
+    * This needs to be moved to rootgraph
+    */
 	public static function configureTemplate($template){
 		//validation
 		//
@@ -618,6 +628,10 @@ class MoPCMS {
 		}
 	}
 
+   
+     /*
+    * This needs to be moved to rootgraph
+    */
 	public static function configureField($templateId, $item){
 
 		switch($item->tagName){
