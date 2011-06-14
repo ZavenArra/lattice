@@ -36,10 +36,6 @@
 	background: #f8f8f8 url( images/nav_bg.gif ) repeat-y;
 }
 
-#navigation .tier{
-    
-}
-
 #navigation ul.nodes{
     list-style: none;
     overflow: auto;
@@ -58,7 +54,7 @@
 #navigation .node:hover h5,
 #navigation .node.active h5{
 	cursor: pointer;
-	background: #0af;
+	background-color: #0af;
 	color:#fff;
 }
 
@@ -122,28 +118,57 @@
 }
 
 #navigation .node a.removeNode{
-	background: url(images/icon_delete.png);
+	background-image: url(images/icon_delete.png);
 }
 
 #navigation .node:hover a.removeNode,
 #navigation .node.active a.removeNode{
-	background: url(images/icon_delete_hover.png);
+	background-image: url(images/icon_delete_hover.png);
 }
 
 #navigation .node a.togglePublish{
-	background: url(images/icon_unpublished.png);	
+	background-image: url(images/icon_unpublished.png);	
 }
 
-#navigation .node a.togglePublish.published{
-	background: url(images/icon_published.png);	
+#navigation .node a.published{
+	background-image: url(images/icon_published.png);	
 }
 
 #navigation .node.active a,
 #navigation .node:hover a{
-	background: url(images/icon_unpublished_hover.png);	
+	background-image: url(images/icon_unpublished_hover.png);	
 }
 
 #navigation .node.active a.published,
 #navigation .node:hover a.published{
-	background: url(images/icon_published_hover.png);	
+	background-image: url(images/icon_published_hover.png);	
+}
+
+.tierMethodsDrawer{
+    position: absolute;
+    width: 100%;
+    font-size: 12px;
+    top: 25.5em;
+    z-index: 1000;
+    background: #fffac4;
+}
+
+.tierMethodsDrawer h5{
+    padding: .5em .5em;
+    font-size: 1em;
+    font-size: 12px;
+    cursor: pointer;
+    border-top: 1px #ddd solid;
+}
+
+.tierMethodsDrawer li{
+    background: #eee;
+    border-bottom: 1px #dedede solid;
+    padding: .25em .5em;
+    cursor: pointer;
+}
+
+.tierMethodsDrawer li:hover{
+    background: #ddd;
+    border-bottom: 1px #ccc solid;
 }
