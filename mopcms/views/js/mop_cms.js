@@ -31,11 +31,11 @@ mop.modules.CMS = new Class({
         return mop.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId;
     },
 
-    getAddObjectRequestURL: function( newObject ){
-        return mop.util.getBaseURL() + "ajax/data/cms/addObject/" + newObject.id + "/" + newObject.templateId;
+    getAddObjectRequestURL: function( parentId, templateId ){
+        return mop.util.getBaseURL() + "ajax/data/cms/addObject/" + parentId + "/" + templateId;
     },
     
-    getTogglePublishedStatusRequest: function( nodeId ){            
+    getTogglePublishedStatusRequestURL: function( nodeId ){            
         return mop.util.getBaseURL() + "ajax/data/cms/togglePublish/"+ nodeId;
     },
 
@@ -127,7 +127,7 @@ mop.modules.CMS = new Class({
     	Arguments: nodeId MoPObject Id of a page object.
     */
 	requestPage: function( nodeId ){
-		mop.util.JSONSend( this.getRequestPageURL( nodeId ), null, { onSuccess: this.requestPageResponse.bind( this ) } );
+	    new Request.JSON( { url: this.getRequestPageURL( nodeId ), onSuccess: this.requestPageResponse.bind( this ) } ).post();
  		mop.util.setObjectId( nodeId );        
     },
     
@@ -140,6 +140,7 @@ mop.modules.CMS = new Class({
 	requestPageResponse: function( json ){
 	    if( !json.returnValue ) console.log( this.toString(), "requestPageResponse error:", json.response.error );
 		json.response.css.each( function( styleSheetURL, index ){
+		    styleSheetURL = mop.util.getBaseURL() + styleSheetURL;
 		    if( !this.loadedCSS.contains( styleSheetURL ) ) mop.util.loadStyleSheet( styleSheetURL );
 		    this.loadedCSS.push( styleSheetURL );
 		}, this );
@@ -147,6 +148,7 @@ mop.modules.CMS = new Class({
 		this.currentPageLoadIndex = this.pageLoadCount++;
 		if( json.response.js.length ){
             json.response.js.each( function( urlString ){
+                urlString = mop.util.getBaseURL() + urlString
                 if( ( this.loadedJS.some( function( item ){ item.src == urlString } ) ) ){
                     this.loadedJS.push( mop.util.loadJS( urlString, { type: "text/javascript", onload: this.onJSLoaded.bind( this, [ json.response.html, this.currentPageLoadIndex ] ) } ) );
                 }else{
@@ -174,11 +176,14 @@ mop.modules.CMS = new Class({
     requestTier: function( parentId, callback ){
         console.log( "requestTier", parentId );
         mop.util.setObjectId( parentId );
-        mop.util.JSONSend( this.getRequestTierURL( parentId ), null, { onSuccess: function( json ){
-            console.log( "requestTier, complete: ", json, json.returnValue );
-            this.requestTierResponse( json );
-            callback( json );
-        }.bind( this ) } );
+	    return new Request.JSON( {
+	        url: this.getRequestTierURL( parentId ),
+	        onSuccess: function( json ){
+                 console.log( "requestTier, complete: ", json, json.returnValue );
+                 this.requestTierResponse( json );
+                 callback( json );
+             }.bind( this )
+        }).post();
     },
 
     requestTierResponse: function( json ){
@@ -192,11 +197,15 @@ mop.modules.CMS = new Class({
 	    if( !json.returnValue ) console.log( this.toString(), "saveSortRequest error:", json.response.error );
 	},
 	
-    addObjectRequest: function( newObject, callback ){
-        mop.util.JSONSend( this.getAddObjectRequestURL(), newObject, { onComplete: function(){
-            this.addObjectResponse();
-            callback();
-        }.bind( this ) } );
+    addObjectRequest: function( parentId, templateId, nodeData, callback ){
+        console.log( "addObjectRequest", parentId, templateId );
+        return new Request.JSON({
+            url: this.getAddObjectRequestURL( parentId, templateId ),
+            onSuccess: function(){
+                this.addObjectResponse();
+                callback();
+            }.bind( this )
+        }).post( nodeData );
     },
 
     addObjectResponse: function( json ){
@@ -204,11 +213,13 @@ mop.modules.CMS = new Class({
     },
 
     removeObjectRequest: function( parentId, callback ){
-        
-        mop.util.JSONSend( this.getRemoveObjectRequestURL( parentId ), null, { onComplete: function( json ){
-            this.removeObjectResponse( json );
-            callback();
-        }.bind( this ) } );
+        return new Request.JSON({
+            url: this.getRemoveObjectRequestURL( parentId ),
+            onSuccess: function( json ){
+                this.removeObjectResponse( json );
+                callback();
+            }.bind( this )
+        }).post();
     },
 
     removeObjectResponse: function( json ){
@@ -223,10 +234,14 @@ mop.modules.CMS = new Class({
     Callback: onTogglePublish
     */
     togglePublishedStatusRequest: function( nodeId, callback ){
-        mop.util.JSONSend( this.getTogglePublishedStatusRequest( nodeId ), null, { onComplete: function(){
-            this.togglePublishStatusResponse();
-            callback();
-        }.bind( this ) } );
+        console.log( "::::", this.getTogglePublishedStatusRequestURL( nodeId ) );
+        return new Request.JSON({
+            url: this.getTogglePublishedStatusRequestURL( nodeId ),
+            onSuccess: function(){
+                this.togglePublishedStatusResponse();
+                callback();
+            }.bind( this )
+        }).post();
     },
 	
     togglePublishedStatusResponse: function( json ){
