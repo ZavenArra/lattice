@@ -6,7 +6,7 @@
 	<templates>
 
 <!-- HOME -->
-		<template name="basicCategory" contentType="category" allowChildSort="false" allowDelete="false" allowTogglePublish="false">
+		<template name="basicCategory" contentType="category" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<addableObject templateName="article" addText="Add an Article" />
 			<addableObject templateName="anotherCategory" addText="Add a Category" />
 		</template>

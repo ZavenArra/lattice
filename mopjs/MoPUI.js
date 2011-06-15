@@ -400,17 +400,15 @@ mop.ui.UIElement = new Class({
 		}
 		var val = this.getValue();
 		this.submittedValue = val;
-		if( !this.validate() ) return;		
+		if( !this.validate() ) return false;		
 		if( !this.autoSubmit ){
 			this.setValue( val );
 			if( this.leaveEditMode ) this.leaveEditMode();
-			return;
+			return true;
 		}		
-		if( this.showSaving ) this.showSaving();		
-		var submittedVars = { field: this.fieldName, value: val };
-//		console.log( "SUBMIT ", url, submittedVars );
-		mop.util.JSONSend( this.getSubmitURL(), submittedVars, { onComplete: this.onResponse.bind( this ) } );
+		if( this.showSaving ) this.showSaving();
 		if( this.leaveEditMode ) this.leaveEditMode();
+		return Request.JSON( { url: this.getSubmitURL(), onSuccess: this.onResponse.bind( this ) } ).post( { field: this.fieldName, value: val } );
 	},
 	
 	validate: function(){
@@ -694,7 +692,7 @@ mop.ui.Modal = new Class({
 			this.content.empty();
             this.content.spin();
 			this.setTitle( aTab.get( "title" ), "loading..." );
-			mop.util.JSONSend( aTab.get( "href" ), null, { onComplete: this.onTabLoaded.bind( this ) });
+			Request.JSON( { url: aTab.get( "href" ), onSuccess: this.onTabLoaded.bind( this ) } ).post();
 		},
 
 		onTabLoaded: function( json ){
@@ -781,7 +779,7 @@ mop.ui.Modal = new Class({
 });
 
 
-mop.ui.EnhancedAddItemDialogue = new Class({
+mop.ui.AddObjectDialogue = new Class({
 	
 	Extends: mop.ui.Modal,
 	
@@ -790,11 +788,11 @@ mop.ui.EnhancedAddItemDialogue = new Class({
 	},
 	
 	toString: function(){
-		return "[ object, mop.ui.EnhancedModal, mop.ui.EnhancedAddItemDialogue ]";
+		return "[ object, mop.ui.EnhancedModal, mop.ui.AddObjectDialogue ]";
 	},
 	
 	build: function(){
-		this.element = new Element( "div", { "class": "enhancedModalContainer hidden" });
+		this.element = new Element( "div", { "class": "modalContainer hidden" });
 		this.modalAnchor = new Element( "a", {
 			"class": "modalAnchor",
 			"href": "#",
@@ -836,7 +834,7 @@ mop.ui.EnhancedAddItemDialogue = new Class({
 		}else{
 			this.itemContainer.adopt( someContent );
 		}
-        console.log( "mop.ui.EnhancedAddItemDialogue.setContent", this.itemContainer, someContent );
+        console.log( "mop.ui.AddOnjectDialogue.setContent", this.itemContainer, someContent );
 		var controls = this.itemContainer.getElement(".itemControls");
 	 	controls.getElement(".delete").addClass("hidden");
 		
@@ -1716,7 +1714,7 @@ mop.ui.FileElement = new Class({
 		
 		this.clearButton = this.element.getElement( ".clearImageLink" );
 		this.clearButton.store( "Class", this );
-        this.clearButton.addEvent( "click", this.sendClearFile.bindWithEvent( this ) );
+        this.clearButton.addEvent( "click", this.clearFileRequest.bindWithEvent( this ) );
         
 		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
         // console.log( ":::::::::::::::", this.Uploader.box.getElement( "object" ).get( "id" ) );
@@ -1827,13 +1825,13 @@ mop.ui.FileElement = new Class({
         this.simulateClick();
 	},
 	
-	sendClearFile: function( e ){
-        var url = this.clearButton.get( 'href' );
-		mop.util.JSONSend( url, null, { onComplete: this.clearFile.bind( this ) } );    
+	clearFileRequest: function( e ){
+	    if( this.previewElement ) this.previewElement.addClass( "hidden" );
+		return Request.JSON( { url: this.clearButton.get( 'href' ), onSuccess: this.onClearFileResponse.bind( this ) } ).post();
 	},
 	
-	clearFile: function(){
-	    if( this.previewElement ) this.previewElement.addClass( "hidden" );
+	onClearFileResponse: function( json ){
+	    if( !json.returnValue ) console.log( this.toString(), "Error: mop.ui.FileElement clearFileRequest:", json.response.error );
 	},
 	
 	reposition: function(){
@@ -1935,59 +1933,13 @@ mop.ui.FileElement = new Class({
 		}).start( { "opacity" : [ 0, 1 ], "width": imageData.width, "height": imageData.height } );
 
 	},
-	
 
 	destroy: function(){
 //		console.log( "destroy\t", this.toString() );
 		mop.util.EventManager.removeListener( this );
-//		this.removeEvents();
 		this.Uploader.destroy();
 		this.statusElement.destroy();
-		
-		delete this.action;
-		delete this.baseURL;
-		delete this.extensions;
-		delete this.fileName;
-		delete this.imagePreview;
-		delete this.imageFadeIn;
-		delete this.imgAsset;
-		delete this.ogInput;
-		delete this.previewElement;
-		delete this.progressBar;
-		delete this.sizeLimitMax;
-		delete this.sizeLimitMin;
-		delete this.statusElement;
-		delete this.statusHide;
-		delete this.statusMessage;
-		delete this.statusShow;
-		delete this.submitURL;
-		delete this.uploadButton;
-		delete this.Uploader;
-		delete this.validationError;
-		delete this.invalid;
-
-		this.action = null,
-		this.baseURL = null,
-		this.extensions = null,
-		this.fileName = null,
-		this.imagePreview = null,
-		this.imageFadeIn = null,
-		this.imgAsset = null,
-		this.ogInput = null,
-		this.previewElement = null,
-		this.progressBar = null,
-		this.sizeLimitMax = null,
-		this.sizeLimitMin = null,
-		this.statusElement = null,
-		this.statusHide = null,
-		this.statusMessage = null,
-		this.statusShow = null,
-		this.submitURL = null,
-		this.uploadButton = null,
-		this.Uploader = null,
-		this.validationError = null,
-		this.invalid = null,
-
+		this.action = this.baseURL = this.extensions = this.fileName = this.imagePreview = this.imageFadeIn = this.imgAsset = this.ogInput = this.previewElement = this.progressBar = this.sizeLimitMax = this.sizeLimitMin = this.statusElement = this.statusHide = this.statusMessage = this.statusShow = this.submitURL = this.uploadButton = this.Uploader = this.validationError = this.invalid = null,
 		this.element.eliminate( "Class" );
 		if( this.uploadButton ) this.uploadButton.eliminate( "Class" );
 		this.parent();
@@ -2543,11 +2495,13 @@ mop.ui.Pulldown = new Class({
 mop.ui.CheckBox = new Class({
 	
 	Extends: mop.ui.UIElement,
-
 	type: "checkBox",
-
 	action: "saveField",
 	checkBox: null,
+	
+	getSubmitURL: function(){
+	    return "ajax/data/" + this.marshal.getSubmissionController() + "/" + this.action + "/" + this.marshal.getObjectId();
+	},
 	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
@@ -2585,11 +2539,8 @@ mop.ui.CheckBox = new Class({
 		}
 
 		if( this.showSaving ) this.showSaving();
-
-		var url = "ajax/data/" + this.marshal.getSubmissionController() + "/" + this.action + "/" + this.marshal.getObjectId();
-		var submittedVars = { field: this.fieldName, value: val };
-		console.log( this.toString(), "submit", url, submittedVars );
-		mop.util.JSONSend( url, submittedVars, { onComplete: this.onResponse.bind( this ) } );
+//		console.log( this.toString(), "submit", url,  { field: this.fieldName, value: val } );
+		Request.JSON( { url: this.getSubmitURL(), onSuccess: this.onResponse.bind( this ) } ).post( { field: this.fieldName, value: val } );
 		if( this.leaveEditMode ) this.leaveEditMode();
 
 	},
@@ -3438,6 +3389,10 @@ mop.ui.PaginationControls = new Class({
 	method: "pagination",
 	currentPage: 1,
 	
+	getPageURL: function( marshalId ){
+	    return mop.util.getBaseURL() + "ajax/data/" + marshalId + "/" + this.method + "/" + this.listId + "/" + this.currentPage;
+	},
+	
 	initialize: function( anElement, aMarshal ){		
 		this.element = $( anElement );
 		this.instanceName = this.element.get( "id" );
@@ -3505,10 +3460,8 @@ mop.ui.PaginationControls = new Class({
 		}else{
 			this.spinner.removeClass( "hidden" );
 			var marshalId = ( this.marshal.instanceName )? this.marshal.instanceName : this.marshal.get("id");
-			var url = "ajax/data/" + marshalId + "/" + this.method + "/" + this.listId + "/" + this.currentPage;
-			var postData = ( this.marshal.getPaginationPostData )? this.marshal.getPaginationPostData() : null ; //getGeneratedDataQueryString() : null;
-//			console.log( this.toString(), "paginate uncached page >> ", url, postData );
-			mop.util.JSONSend( url, postData, { onComplete: this.onPagination.bind( this ) } );
+			var postData = ( this.marshal.getPaginationPostData )? this.marshal.getPaginationPostData() : null ;
+			Request.JSON( { url: this.getPageURL( marshalId ), onSuccess: this.onPagination.bind( this ) } ).post( postData );
 		}
 	},
 	

@@ -112,6 +112,18 @@ Element.implement({
 });
 
 
+Element.implement({
+    getValueFromClassName: function( key ){
+    	if(!this.get("class")) return false;
+    	var classes = this.get("class").split(" ");
+    	var result;
+    	classes.each( function( className ){
+    		if( className.indexOf( key ) == 0 ) result = className.split("-")[1];
+    	});
+//    	console.log( "Element.getValueFromClassName", key, classes, result );
+    	return result;
+    }
+})
 /*
 	Function: Function.bindWithEvent
 	Implements the now deprecated bindWithEvent
@@ -269,20 +281,6 @@ mop.util.getUniqueId = function ( prefix ){
 		newId = null;
 	}
 }
-
-/*
-	Function: mop.util.JSONSend
-	MoP Wrapper for mootools Request.json
-	Note: Does this need to exist?
-*/ 
-mop.util.JSONSend = function( url, data, options ){
-	if( options ){ 
-		options.url = url;
-	}else{
-		options = { url: url };
-	}
-	new Request.JSON( options ).post( data );
-},
 
 /*
 	Function: setId
@@ -490,19 +488,6 @@ mop.MoPObject = new Class({
 	
 	getElement: function(){
 	    return this.element;
-	},
-	
-	/*
-		Function: JSONSend
-		Convenience method that calls mop.util.JSONSend;
-	*/	
-	JSONSend: function( action, data, options ){
-      //Note:
-      //Hard coding an object ID here doesn't do anyone any good, since the API
-      //for a given JSON request can be very different.
-		var url = "ajax/" + this.getSubmissionController() +  "/" + action + "/" + mop.objectId;
-    	if( options ){  options.url = url; }else{ options = { url: url }; }
-    	new Request.JSON( options ).post( data );
 	},
 	
 	destroy: function(){
