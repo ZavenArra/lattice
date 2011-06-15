@@ -50,6 +50,7 @@ class MOP_CMS extends MOP_CMSInterface {
 		Loads subModules to build from config	
 	*/
 	public function __construct($request, $response){
+
 		parent::__construct($request, $response);
      
 		$this->modules = Kohana::config('cms.subModules');
@@ -220,26 +221,12 @@ class MOP_CMS extends MOP_CMSInterface {
 	$_POST - possible array of keys and values to initialize with
 	Returns: nav controller node object
 	*/
-	public function action_addObject($parentId, $templateId){
-      
+	public function action_addObject($parentId, $templateId){      
       $newId = $this->cms_addObject($parentId, $templateId, $_POST);
-      return $this->cms_getNode($newId);	
+      $this->response->data( $this->cms_getNode($newId) );	
 	
    }
    
-   public function cms_addObject($parentId, $templateId, $data) {
-         
-		$newid = Graph::object($id)->addObject($template_id, $data);
-
-   }
-   
-   public function cms_getNode($id){
-      
-      //Dial up associated navi and ask for details
-		$navigation = new Navigation();
-		return $navigation->getNode($newid);
-      
-   }
 
 	public function assignObjectId(){
 

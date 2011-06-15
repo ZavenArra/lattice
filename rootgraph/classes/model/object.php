@@ -61,7 +61,7 @@ class Model_Object extends ORM {
             $content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
             $this->_related[$column] = $content->where('page_id', '=', $this->id)->find();
             if (!$this->_related[$column]->_loaded) {
-                throw new Kohana_User_Exception('BAD_MOP_DB', 'no content record for page ' . $this->id);
+                throw new Kohana_Exception('BAD_MOP_DB' .  'no content record for page ' . $this->id);
             }
             return $this->_related[$column];
         } else if ($column == 'parent') {

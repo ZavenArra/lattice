@@ -9,35 +9,45 @@ class Navigation {
 
 	
 	/*
-		Function:loadNode
+		Function:getNodeInfo
 		Utility function to get one node
 	*/
-	public static function loadNode(& $item){
-		$sendItem = array();
-		foreach($this->navDataFields_page as $send=>$field){
-			$sendItem[$send] = $item->$field;
+	public static function getNodeInfo(& $object){
+		$nodeInfo = array();
+		foreach(Kohana::config('navigation.navDataFields.object') as $send=>$field){
+			$nodeInfo[$send] = $object->$field;
 		}
-		foreach($this->navDataFields_template as $field){
-			$sendItem[$field] = $item->template->$field;
+		foreach(Kohana::config('navigation.navDataFields.objectType') as $field){
+			$nodeInfo[$field] = $object->template->$field;
 		}
-		if(!count($sendItem['addableObjects'])){
-			unset($sendItem['addableObjects']);
+		if(!count($nodeInfo['addableObjects'])){
+			unset($nodeInfo['addableObjects']);
 		}
 
 		
-		if(!is_object($item->contenttable)){
-			throw new Kohana_Exception('No content table for object:' . 'template: ' . $item->template->templatename . ' table: '.$item->template->contenttable);
+		if(!is_object($object->contenttable)){
+			throw new Kohana_Exception('No content table for object:' . 'template: ' . $object->template->templatename . ' table: '.$object->template->contenttable);
 		}
-		foreach($this->navDataFields_content as $send=>$field){
-			$sendItem[$send] = $item->contenttable->$field;
+		foreach(Kohana::config('navigation.navDataFields.content') as $send=>$field){
+			$nodeInfo[$send] = $object->contenttable->$field;
 		}
 		
       
-		if(!$sendItem['title']){
-			$sendItem['title'] = $sendItem['slug'];
+		if(!$nodeInfo['title']){
+			$nodeInfo['title'] = $nodeInfo['slug'];
 		}
 
-		return $sendItem;
+		return $nodeInfo;
+	}
+   
+   /*
+		Function:getNodeInfo
+		Utility function to get one node
+	*/
+	public static function getNodeInfoById($id){
+		$object = Graph::object($id);
+      $nodeInfo = Navigation::getNodeInfo($object);
+		return $nodeInfo;
 	}
 		
 }

@@ -2,14 +2,15 @@
 
 
 //check for setup
+/*
 MOP_Initializer::check(
 	array(
-      'cms',
-		'mopcore',
-		'mopcms',
-      'rootgraph'
+     // 'cms',
+	//	'mopcore',
+	//	'mopcms',
+     // 'rootgraph'
 	)
-);
+);*/
 
 
 Route::set('cms_save', '<id>/<action>', array(

@@ -9,25 +9,6 @@ class Controller_Navigation extends Controller_MOP{
 
 	private $objectModel = 'object';
 
-	private $navDataFields_page = array(
-		'id'=>'id',
-		'slug'=>'slug',
-		'published'=>'published',
-	);
-	public $navDataFields_template = array(
-		'nodeType',
-		'contentType',
-		'allowDelete',
-		'allowTogglePublish',
-		'landing',
-		'allowChildSort',
-		'addableObjects',
-	);
-	/*should title be stored in the PAGE table instead?*/
-	private $navDataFields_content = array(
-		'title'=>'title',
-	);
-
 	private $defaultAddCategoryText = '';
 	private $defaultAddLeafText = '';
 
@@ -47,12 +28,6 @@ class Controller_Navigation extends Controller_MOP{
 		$this->response->body($this->view->render());
 
 	}
-
-	public function loadNode($id){
-      return Navigation::loadNode($id);
-	}
-
-
 
 	
 	public function action_getTier($parentid, $deeplink=NULL, &$follow=false){
@@ -80,7 +55,7 @@ class Controller_Navigation extends Controller_MOP{
 						continue;
 					}
 				}
-				$sendItem = $this->_loadNode($child);
+				$sendItem = Navigation::getNodeInfo($child);
 
 				//implementation of deeplinking
 				$sendItem['follow'] = false;

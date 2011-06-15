@@ -7,8 +7,7 @@
  * @package Kororor
  */
 
-
-class MOP_CMSInterface extends Controller_Layout {
+abstract class MOP_CMSInterface extends Controller_Layout {
 
 
 	/*
@@ -16,7 +15,7 @@ class MOP_CMSInterface extends Controller_Layout {
 		Loads subModules to build from config	
 	*/
 	public function __construct($request, $response){
-		parent::__construct($request, $response);
+    	parent::__construct($request, $response);
 	}
 
 	/*
@@ -286,11 +285,12 @@ class MOP_CMSInterface extends Controller_Layout {
 
 	}
 
-   
-   public abstract function cms_getNode($id){
+   //abstract
+   protected function cms_getNode($id){
    }
 
-   public abstract function cms_addObject($parentId, $templateId, $data) { 
+   //abstract
+   protected function cms_addObject($parentId, $templateId, $data) { 
    }
 
 
