@@ -6,6 +6,7 @@ Class MOP_Initializer {
    protected static $problems = array(); //not yet implemented
 
    public static function check($dependencies) {
+      
       try {
          ORM::Factory('initializedmodule');
       } catch (Exception $e) {
@@ -24,6 +25,8 @@ Class MOP_Initializer {
                  ->where('module', '=', $dependency)
                  ->find();
          if (!$check->loaded() || $check->status != 'INITIALIZED') {
+            // echo "weird\n";
+
             if (Kohana::find_file('classes/initializer', $dependency)) {
                $initializerClass = 'initializer_' . $dependency;
                $initializer = new $initializerClass();
@@ -38,6 +41,13 @@ Class MOP_Initializer {
                } else {
                  $allProblems = array_merge($allProblems, $problems);
                }
+            } else {
+                 if (!$check->loaded()) {
+                  $check = ORM::Factory('initializedmodule');
+               }
+               $check->module = $dependency;
+               $check->status = 'INITIALIZED';
+               $check->save();
             }
          }
       }
@@ -47,6 +57,7 @@ Class MOP_Initializer {
          $view->problems = $allProblems;
          $view->messages = self::$messages;
          echo $view->render();
+				 echo 'here';
          exit;
       }
    }

@@ -9,11 +9,11 @@ Class Associator_Controller extends Controller {
 
 	public function __construct($filters, $object_id, $field){
 		//load parent
-		$this->parent = ORM::Factory('page', $object_id);
+		$this->parent = ORM::Factory('object', $object_id);
 
 		//load pool
 		foreach($filters as $filter){
-			$objects = ORM::Factory('page');
+			$objects = ORM::Factory('object');
 			if($filter['from']){
 				$objects->where('parentid', $this->parent->id);
 			}

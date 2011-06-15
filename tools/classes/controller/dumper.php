@@ -94,7 +94,7 @@ class dumper_Controller extends Controller {
       }
 
       //and get the children
-      $childObjects = ORM::Factory('page')
+      $childObjects = ORM::Factory('object')
         ->where('activity IS NULL')
         ->where('published = 1')
         ->where('parentid', $object->id)
@@ -123,7 +123,7 @@ class dumper_Controller extends Controller {
       }
 
       //and get the children
-      $childObjects = ORM::Factory('page')
+      $childObjects = ORM::Factory('object')
         ->where('activity IS NULL')
         ->where('published = 1')
         ->where('parentid', $object->id)
@@ -145,7 +145,7 @@ class dumper_Controller extends Controller {
     $this->doc->formatOutput = true;
 		$data = $this->doc->createElement('data');
 
-    $objects = ORM::Factory('page')
+    $objects = ORM::Factory('object')
       ->where('activity IS NULL')
       ->where('published', 1)
       ->where('parentid', 0)
@@ -169,7 +169,7 @@ class dumper_Controller extends Controller {
     $this->doc->formatOutput = true;
 		$data = $this->doc->createElement('data');
 
-    $objects = ORM::Factory('page')
+    $objects = ORM::Factory('object')
       ->where('activity IS NULL')
       ->where('published', 1)
       ->where('parentid', 0)
@@ -247,7 +247,7 @@ class dumper_Controller extends Controller {
 			//if there is a title collision, we assume that this is a component
 			//already added at the next level up, in this case we just
 			//update the objects data
-			$existing = ORM::Factory('page')
+			$existing = ORM::Factory('object')
 				->where('parentid', $parentId)
 				->find_all();
 			$component = null;
@@ -277,7 +277,7 @@ class dumper_Controller extends Controller {
 				//echo "FOUND A LIST\n\n";
 				//find the container
 				$listT = ORM::Factory('template', $list->getAttribute('family'));
-				$container = ORM::Factory('page')
+				$container = ORM::Factory('object')
 					->where('parentid', $objectId)
 					->where('template_id', $listT->id)
 					->find();

@@ -66,7 +66,7 @@ Class Builder_Frontend {
 		$templates = array();
 		//if slug defined, get template from slug
 		if($slug = $iDataConfig->getAttribute('slug')){
-			$object = ORM::Factory('page', $slug);
+			$object = ORM::Factory('object', $slug);
 			if(!$object->loaded){
 				//error out,
 				//object must be loaded from data.xml for this type of include conf
@@ -94,7 +94,7 @@ Class Builder_Frontend {
 				}
 
 				//and we can also check all the existing data to see if it has any other templates
-				$parentObjects = ORM::Factory('page')->templateFilter($parentTemplate)->publishedFilter()->find_all();
+				$parentObjects = ORM::Factory('object')->templateFilter($parentTemplate)->publishedFilter()->find_all();
 				foreach($parentObjects as $parent){
 					$children = $parent->getPublishedChildren();
 					foreach($children as $child){
@@ -104,7 +104,7 @@ Class Builder_Frontend {
 				}
 			} else {
 				//see if from is a slug
-				$object = ORM::Factory('page', $from);
+				$object = ORM::Factory('object', $from);
 				if($object->loaded){
 					//find its addable objects
 					foreach(mop::config('objects', sprintf('//template[@name="%s"]/addableObject', $object->template->templatename)) as $addable){

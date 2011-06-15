@@ -4,8 +4,8 @@
  * Class: Template_Model
  */
 class Model_Template extends ORM {
-	protected $_has_many = array('page'=>array());
-        protected $_belongs_to = array('page'=>array());
+	protected $_has_many = array('object'=>array());
+        protected $_belongs_to = array('object'=>array());
 
   /*
    * Variable: nonmappedfield
@@ -15,7 +15,7 @@ class Model_Template extends ORM {
 
 	public function __construct($id=null){
 
-		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id)) {
+      if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id)) {
 			//it's the tmeplate identified, look up the integer primary key
 			$result = DB::select('id')->from('templates')->where('templatename', '=', $id)->execute()->current();
 			$id = $result['id'];
@@ -24,7 +24,7 @@ class Model_Template extends ORM {
 		parent::__construct($id);
 
 	}
-
+   
 	/*
 	 * Function: __get($column)
 	 * Custom getter, allows overriding database values with local file config values
@@ -99,7 +99,7 @@ class Model_Template extends ORM {
 	 */
 	public function getPublishedMembers($limit=null){
 
-		$o = ORM::Factory('page')
+		$o = ORM::Factory('object')
 			->where('template_id', '=', $this->id)
 			->where('published', '=', 1)
 			->where('activity', 'IS', NULL)
@@ -121,7 +121,7 @@ class Model_Template extends ORM {
 	 */
 	public function getActiveMembers($limit=null){
 
-		$o = ORM::Factory('page')
+		$o = ORM::Factory('object')
 			->where('template_id', '=', $this->id)
 			->where('activity', 'IS', NULL)
 			->order_by('sortorder');
@@ -131,6 +131,30 @@ class Model_Template extends ORM {
 		$o = $o->find_all();
 		return $o;
 
+	}
+   
+   
+    
+     /*
+    * This needs to be moved to rootgraph
+    */
+	public static function configureField($item){
+
+		switch($item->tagName){
+
+		case 'list':
+			$ltRecord = ORM::Factory('template');
+			$ltRecord->templatename = $item->getAttribute('family');
+			$ltRecord->nodeType = 'container';
+			$ltRecord->save();
+			break;
+
+		default:
+
+			Model_Objectmap::configureNewField($templateId, $item->getAttribute('field'), $item->tagName );
+			break;
+
+		}
 	}
 
 

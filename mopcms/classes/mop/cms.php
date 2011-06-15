@@ -34,7 +34,7 @@ class MOP_CMS extends MOP_CMSInterface {
 		Variable: model
 		The main data model for content stored by this module
 	*/
-	private $model = 'page';
+	private $model = 'object';
 
 	/*
 	*
@@ -50,8 +50,9 @@ class MOP_CMS extends MOP_CMSInterface {
 		Loads subModules to build from config	
 	*/
 	public function __construct($request, $response){
-		parent::__construct($request, $response);
 
+		parent::__construct($request, $response);
+     
 		$this->modules = Kohana::config('cms.subModules');
 
 		$this->loadResources('mop_cms');
@@ -79,15 +80,15 @@ class MOP_CMS extends MOP_CMSInterface {
 	}
 
 	/*
-	 * Function: setPageId($page_id)
+	 * Function: setPageId($object_id)
 	 * Sets the page id of the object currently being edited
 	 * Parameters:
 	 * page_id  - the page id
 	 * Returns: nothing 
 	 */
-	private function setPageId($page_id){
+	private function setPageId($object_id){
 		if(self::$objectId == NULL){
-			self::$objectId = $page_id;
+			self::$objectId = $object_id;
 		}
 	}
 
@@ -130,18 +131,18 @@ class MOP_CMS extends MOP_CMSInterface {
       
       
 		
-		$page = ORM::factory('page', $id);
-		if($page->id == 0){
+		$object = ORM::factory('object', $id);
+		if($object->id == 0){
 			throw new Kohana_Exception('Invalid Page Id '.$id);
 		}
 		
 		//new generation of page
 		//1 grap cms_nodetitle
 		$this->nodetitle = new View('mop_cms_nodetitle');
-		$this->nodetitle->title = $page->contenttable->title; //this should change to page table
-		$this->nodetitle->slug = $page->slug;
-		$this->nodetitle->allowDelete = $page->template->allowDelete;
-		$this->nodetitle->allowTitleEdit = ($page->template->allowTitleEdit == "true" ? true : false);
+		$this->nodetitle->title = $object->contenttable->title; //this should change to page table
+		$this->nodetitle->slug = $object->slug;
+		$this->nodetitle->allowDelete = $object->template->allowDelete;
+		$this->nodetitle->allowTitleEdit = ($object->template->allowTitleEdit == "true" ? true : false);
 
 		$settings = Kohana::config('cms.defaultsettings');
 		if(is_array($settings)){
@@ -150,7 +151,7 @@ class MOP_CMS extends MOP_CMSInterface {
 			}
 		}
 		//and get settings for specific template
-		$settings = Kohana::config('cms.'.$page->template->templatename.'.defaultsettings');
+		$settings = Kohana::config('cms.'.$object->template->templatename.'.defaultsettings');
 		if(is_array($settings)){
 			foreach($settings as $key=>$value){
 				$this->nodetitle->$key = $value;
@@ -159,8 +160,8 @@ class MOP_CMS extends MOP_CMSInterface {
 		
 		$nodetitlehtml = $this->nodetitle->render();
 
-		$customview = 'templates/'.$page->template->templatename; //check for custom view for this template
-    	$htmlChunks = mopcms::buildUIHtmlChunksForObject($page);
+		$customview = 'templates/'.$object->template->templatename; //check for custom view for this template
+    	$htmlChunks = mopcms::buildUIHtmlChunksForObject($object);
 
 		$usecustomview = false;
 		if(Kohana::find_file('views', $customview)){
@@ -211,7 +212,7 @@ class MOP_CMS extends MOP_CMSInterface {
 	}
 
 	/*
-	Function: addObject($id)
+	Function: action_addObject($id)
 	Public interface for adding an object to the cms data
 	Parameters:
 	id - the id of the parent category
@@ -220,19 +221,12 @@ class MOP_CMS extends MOP_CMSInterface {
 	$_POST - possible array of keys and values to initialize with
 	Returns: nav controller node object
 	*/
-	public function action_addObject($id, $template_id, $title=null){
-		$data = $_POST;
-
-		if($title){
-			$data['title'] = $title;
-		}
-		$newid = mopcms::addObject($id, $template_id, $data);
-
-		//Dial up associated navi and ask for details
-		$nav_controller = ucfirst($this->modules['navigation']).'_Controller';
-		$nav_controller = new $nav_controller();
-		return $nav_controller->getNode($newid);
-	}
+	public function action_addObject($parentId, $templateId){      
+      $newId = $this->cms_addObject($parentId, $templateId, $_POST);
+      $this->response->data( $this->cms_getNode($newId) );	
+	
+   }
+   
 
 	public function assignObjectId(){
 
@@ -246,10 +240,10 @@ class MOP_CMS extends MOP_CMSInterface {
 			}
 		}
 
-		$page = ORM::Factory('page', self::$objectId);
-		self::$objectId = $page->id; //make sure we're storing id and not slug
+		$object = ORM::Factory('object', self::$objectId);
+		self::$objectId = $object->id; //make sure we're storing id and not slug
 
-		$this->view->objectId = $page->id;
+		$this->view->objectId = $object->id;
 	}
 
 }
