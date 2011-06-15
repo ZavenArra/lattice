@@ -51,7 +51,7 @@ class MOP_CMS extends MOP_CMSInterface {
 	*/
 	public function __construct($request, $response){
 		parent::__construct($request, $response);
-
+     
 		$this->modules = Kohana::config('cms.subModules');
 
 		$this->loadResources('mop_cms');
