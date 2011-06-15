@@ -535,62 +535,32 @@ mop.ui.Modal = new Class({
 		},
 
 		initialize: function( anElement, aMarshal, options ){
-			
 			this.setOptions( options );
-		
 			this.marshal = aMarshal;
-
 			console.log( "::::: initialize", this.toString(), this.marshal );
-			
-			if( anElement ){
-								
-				this.element = $( anElement );
-
-				this.modalAnchor = this.element.getElement( ".modalAnchor" );
-
-				this.modal = this.element.getElement( ".modal");
-
-				this.header = this.element.getElement( ".header" );
-				this.headerControls = this.header.getElement( ".controls" );
-				
-				this.title = this.header.getElement( "h3" );
-				
-				this.content = this.element.getElement( ".content" );
-				
-				this.footer = this.element.getElement( ".footer" );
-				this.footerControls = this.footer.getElement( ".controls" );
-
-			}else{
-
-				this.element = this.build();
-
-			}
-			
+            this.element = this.build();
 			this.modalAnchor.setStyles({
 				 "useHandCursor":false
 			});
 			this.modalAnchor.setProperty( 'href', "#" );
 			this.modalAnchor.addEvent( "click", Event.stop );
-			
 			this.initControls();
-			
 			this.showTransition = new Fx.Morph( this.element, { 
-				"property": "opacity",
-				"duration": this.options.fadeDuration,
-				"onStart": function(){
+				property: "opacity",
+				duration: this.options.fadeDuration,
+				transition: Fx.Transitions.Quad.easeInOut,
+				onStart: function(){
 					this.element.setStyle("display","block");
 				}
 			});
-
 			this.hideTransition = new Fx.Morph( this.element, { 
-				"property": "opacity",
-				"duration": this.options.fadeDuration
+				property: "opacity",
+                transition: Fx.Transitions.Quad.easeInOut,
+				duration: this.options.fadeDuration
 			});
-			
 			mop.ModalManager.setActiveModal( this );
-
 			this.element.addEvent( "scroll", mop.ModalManager.onModalScroll.bind( mop.ModalManager, this ) );
-			console.log( "MODAL", this.element, this.modal, mop.ModalManager );
+//			console.log( "MODAL", this.element, this.modal, mop.ModalManager );
 		},
 		
 		build: function(){
@@ -628,7 +598,7 @@ mop.ui.Modal = new Class({
 		showLoading: function(){
 			console.log( ":::::", this.toString(), 'showLoading', this.modal, this.modal.spin );
 			this.content.empty();
-            this.modal.spin();
+//            this.modal.spin();
 			this.hideControls();
 			this.show();
 		},
@@ -649,11 +619,11 @@ mop.ui.Modal = new Class({
 		
 		show: function(){
 			console.log( "show", this.toString(), this );
-			this.showControls();
+            this.showControls();
             this.modal.unspin();
-			this.element.setStyle( "opacity", 0 );
-			this.element.removeClass("hidden");
-			this.showTransition.start( { "opacity": 1 } );
+            this.element.setStyle( "opacity", 0 );
+            this.element.removeClass("hidden");
+            this.showTransition.start( { "opacity": 1 } );
 		},
 
 		close: function( e, onComplete ){
@@ -692,7 +662,7 @@ mop.ui.Modal = new Class({
 			this.content.empty();
             this.content.spin();
 			this.setTitle( aTab.get( "title" ), "loading..." );
-			Request.JSON( { url: aTab.get( "href" ), onSuccess: this.onTabLoaded.bind( this ) } ).post();
+			Request.JSON( { url: aTab.get( "href" ), onSuccess: this.onTabLoaded.bind( this ) } ).send();
 		},
 
 		onTabLoaded: function( json ){
@@ -734,7 +704,6 @@ mop.ui.Modal = new Class({
 			return this.element.getScroll();
 		},
 
-		
 		destroy: function(){
 			
 			console.log( "destroy", this.marshal, this.marshal.instanceName, this.toString() );
@@ -788,7 +757,7 @@ mop.ui.AddObjectDialogue = new Class({
 	},
 	
 	toString: function(){
-		return "[ object, mop.ui.EnhancedModal, mop.ui.AddObjectDialogue ]";
+		return "[ object, mop.ui.Modal, mop.ui.AddObjectDialogue ]";
 	},
 	
 	build: function(){
@@ -1827,7 +1796,7 @@ mop.ui.FileElement = new Class({
 	
 	clearFileRequest: function( e ){
 	    if( this.previewElement ) this.previewElement.addClass( "hidden" );
-		return Request.JSON( { url: this.clearButton.get( 'href' ), onSuccess: this.onClearFileResponse.bind( this ) } ).post();
+		return Request.JSON( { url: this.clearButton.get( 'href' ), onSuccess: this.onClearFileResponse.bind( this ) } ).send();
 	},
 	
 	onClearFileResponse: function( json ){
@@ -2540,9 +2509,8 @@ mop.ui.CheckBox = new Class({
 
 		if( this.showSaving ) this.showSaving();
 //		console.log( this.toString(), "submit", url,  { field: this.fieldName, value: val } );
-		Request.JSON( { url: this.getSubmitURL(), onSuccess: this.onResponse.bind( this ) } ).post( { field: this.fieldName, value: val } );
 		if( this.leaveEditMode ) this.leaveEditMode();
-
+		return Request.JSON( { url: this.getSubmitURL(), onSuccess: this.onResponse.bind( this ) } ).post( { field: this.fieldName, value: val } );
 	},
 	
 	setValue: function( aVal ){
@@ -3461,7 +3429,7 @@ mop.ui.PaginationControls = new Class({
 			this.spinner.removeClass( "hidden" );
 			var marshalId = ( this.marshal.instanceName )? this.marshal.instanceName : this.marshal.get("id");
 			var postData = ( this.marshal.getPaginationPostData )? this.marshal.getPaginationPostData() : null ;
-			Request.JSON( { url: this.getPageURL( marshalId ), onSuccess: this.onPagination.bind( this ) } ).post( postData );
+			return Request.JSON( { url: this.getPageURL( marshalId ), onSuccess: this.onPagination.bind( this ) } ).post( postData );
 		}
 	},
 	

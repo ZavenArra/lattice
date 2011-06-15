@@ -43,7 +43,7 @@ mop.modules.Module = new Class({
 	Function build: Instantiates mop.ui elements by calling initUI, can be extended for other purposes...
 	*/ 	
 	build: function(){
-	    console.log("mop.modules.Module.build!")
+//	    console.log("mop.modules.Module.build!")
 		this.UIElements = this.initUI();
 		this.initModules();
 	},
@@ -103,7 +103,7 @@ mop.modules.Module = new Class({
 		ref = null;
 		classPath.each( function( node ){
 		    ref = ( !ref )? this[node] : ref[node]; 
-		    console.log( ref, node );
+//  		    console.log( ref, node );
 		});
     	var newModule = new ref( element, this );
 		return newModule;		
@@ -332,15 +332,15 @@ mop.modules.MoPList = new Class({
 	
 	/* Section: Getters & Setters */
 	getAddObjectURL: function(){
-	    throw( "Abstract function getAddObjectURL must be overriden in", this.toString() );
+	    throw "Abstract function getAddObjectURL must be overriden in" + this.toString();
 	},
 	
 	getRemoveObjectURL: function(){
-	    throw( "Abstract function getRemoveObjectURL must be overriden in", this.toString() );
+	    throw "Abstract function getRemoveObjectURL must be overriden in" + this.toString();
 	},
 
 	getSubmitSortOrderURL: function(){ 
-	    throw( "Abstract function getSubmitSortOrderURL must be overriden in", this.toString() );
+	    throw "Abstract function getSubmitSortOrderURL must be overriden in" + this.toString();
 	},
 	
 	initialize: function( anElement, aMarshal, options ){
@@ -356,10 +356,6 @@ mop.modules.MoPList = new Class({
 
 	toString: function(){
 		return "[ object, mop.modules.List ]";
-	},
-	
-	getInstanceName: function(){
-		return this.instanceName;
 	},
 	
 	build: function(){
@@ -396,11 +392,11 @@ mop.modules.MoPList = new Class({
 		if( this.addObjectDialogue ) this.removeModal( this.addObjectDialogue );
 		this.addObjectDialogue = new mop.ui.AddObjectDialogue( null, this );
 		this.addObjectDialogue.showLoading( e.target.get("text") );
-        return Request.JSON( { url: this.getAddObjectURL() , onSuccess: this.onAddObjectResponse.bind( this ) } ).post();
+        return new Request.JSON( { url: this.getAddObjectURL(), onSuccess: this.onAddObjectResponse.bind( this ) } ).send();
 	},
     
 	onAddObjectResponse: function( json ){
-        console.log( json );
+        console.log( "::::: ", json );
         var element = this.addObjectDialogue.setContent( json.response.html, this.controls.getElement( ".addItem" ).get( "text" ) );
         var listItem = new mop.modules.ListItem( element, this, this.addObjectDialogue, { scrollContext: 'modal' } );
         listItem.UIElements.each( function( uiInstance ){
@@ -411,13 +407,17 @@ mop.modules.MoPList = new Class({
         listItem = null;
 	},
 	
-    deleteItem: function( item ){
-        var jsonRequest = Request.JSON( { url: this.getDeleteItemURL( item ) } ).post();
+    removeObjectRequest: function( item ){
+        var jsonRequest = Request.JSON( { url: this.getDeleteItemURL( item ) } ).send();
     	this.items.erase( item );
 		item.destroy();
 		item = null;
 		mop.util.EventManager.broadcastEvent( "resize" );        
 		return jsonRequest;
+    },
+    
+    removeObjectResponse: function( json ){
+        console.log( "removeObjectResponse", json );
     },
 
 	removeModal: function( aModal ){
@@ -515,7 +515,6 @@ mop.modules.MoPList = new Class({
 });
 
 mop.modules.MoPListItem = new Class({
-
 	Extends: mop.modules.Module,
 	Implements: [ Events, Options ],
 	addObjectDialogue: null,
@@ -523,13 +522,9 @@ mop.modules.MoPListItem = new Class({
 	scrollContext: null,
 	controls: null,
 	fadeOut: null,
-	
     /* Section: Getters & Setters */
 	getObjectId: function(){ return this.objectId; },
-
-	getDeleteItemURL: function(){ throw( "Abstract function getDeleteItemURL must be overriden in", this.toString() ); },
-	
-	getSubmissionController: function(){ return this.marshal.instanceName; },
+	getDeleteItemURL: function(){ throw( "Abstract function getDeleteItemURL must be overriden in", this.toString() ); },	
 	
 	initialize: function( anElement, aMarshal, addObjectDialogue, options ){
 		this.element = $( anElement);
@@ -542,7 +537,7 @@ mop.modules.MoPListItem = new Class({
 		this.build();
 	},
 
-	toString: function(){ return "[ object, mop.modules.ListItem ]"; },
+	toString: function(){ return "[ object, mop.modules.Module, mop.modules.ListItem ]"; },
 
 	build: function(){ 
 	    this.parent();
@@ -552,7 +547,7 @@ mop.modules.MoPListItem = new Class({
 	initControls: function(){
 		this.controls = this.element.getElement(".itemControls");
 		console.log( this.controls, this.controls.getElement(".delete") );
-		if( this.controls.getElement(".delete") ) this.controls.getElement(".delete").addEvent( "click", this.deleteItem.bindWithEvent( this ) );
+		if( this.controls.getElement(".delete") ) this.controls.getElement(".delete").addEvent( "click", this.removeObject.bindWithEvent( this ) );
 	},
 	
 	filesToTop: function(){
@@ -570,7 +565,7 @@ mop.modules.MoPListItem = new Class({
 		});
 	},
 		
-	deleteItem: function( e ){
+	removeObject: function( e ){
 	    mop.util.stopEvent( e );
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
 		this.fadeOut = new Fx.Morph( this.element, { duration: 300 } );
@@ -588,14 +583,12 @@ mop.modules.MoPListItem = new Class({
 	
 	destroy: function(){
 		this.element.destroy();
-//		console.log(this.element);
 		this.parent();  //call the superclass's destroy method
 		this.addObjectDialogue = null;
 		this.controls = null;
 		this.fadeOut = null;
 		this.scrollContext = null;
 		this.objectId = null;
-		console.log(this.element);
 	}
 	
 });

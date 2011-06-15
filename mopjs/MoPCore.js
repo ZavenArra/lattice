@@ -153,6 +153,31 @@ String.implement( "encodeUTF8", function(){
   return unescape( encodeURIComponent( this ) );
 });
 
+
+/*
+	Function: Request.JSON.success override
+	Better error reporting for MOPCMS specific error reporting
+*/
+Request.JSON.implement({
+    success: function(text){
+		var json;
+		try {
+			json = this.response.json = JSON.decode( text, this.options.secure );
+		} catch ( error ){
+			this.fireEvent('error', [text, error]);
+			return;
+		}
+		if ( json == null ){ 
+		    this.onFailure();
+	    }else if( !json.returnValue ){
+	        throw json.response;
+	    } else {
+            this.onSuccess( json, text );
+	    }
+	}
+});
+
+    
 /*
 	Section: MoP Package
 	Mop is a namespace, quick definition of namespace, more useful for documentation than anything else.
@@ -703,7 +728,7 @@ mop.util.LoginMonitor = new Class({
 		clearInterval( this.inactivityTimeout );
 		clearInterval( this.logoutTimeout );
 		this.inactivityTimeout = this.onInactivity.periodical( this.secondsOfInactivityTilPrompt, this );
-		new Request.JSON( { url:"keepalive" } ).post();
+		new Request.JSON( { url: mop.util.getBaseURL() + "keepalive" } ).send();
 	},
 
 	logout: function(){

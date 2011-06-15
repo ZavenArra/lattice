@@ -127,8 +127,8 @@ mop.modules.CMS = new Class({
     	Arguments: nodeId MoPObject Id of a page object.
     */
 	requestPage: function( nodeId ){
-	    new Request.JSON( { url: this.getRequestPageURL( nodeId ), onSuccess: this.requestPageResponse.bind( this ) } ).post();
  		mop.util.setObjectId( nodeId );        
+	    return new Request.JSON( { url: this.getRequestPageURL( nodeId ), onSuccess: this.requestPageResponse.bind( this ) } ).send();
     },
     
 	/*
@@ -183,7 +183,7 @@ mop.modules.CMS = new Class({
                  this.requestTierResponse( json );
                  callback( json );
              }.bind( this )
-        }).post();
+        }).send();
     },
 
     requestTierResponse: function( json ){
@@ -219,7 +219,7 @@ mop.modules.CMS = new Class({
                 this.removeObjectResponse( json );
                 callback();
             }.bind( this )
-        }).post();
+        }).send();
     },
 
     removeObjectResponse: function( json ){
@@ -241,7 +241,7 @@ mop.modules.CMS = new Class({
                 this.togglePublishedStatusResponse();
                 callback();
             }.bind( this )
-        }).post();
+        }).send();
     },
 	
     togglePublishedStatusResponse: function( json ){
