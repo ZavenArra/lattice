@@ -343,6 +343,10 @@ mop.modules.MoPList = new Class({
 	    throw "Abstract function getSubmitSortOrderURL must be overriden in" + this.toString();
 	},
 	
+	getObjectId: function(){
+	    return this.objectId;
+	},
+	
 	initialize: function( anElement, aMarshal, options ){
         this.parent( anElement, aMarshal, options );
         delete this.items;
@@ -522,6 +526,7 @@ mop.modules.MoPListItem = new Class({
 	scrollContext: null,
 	controls: null,
 	fadeOut: null,
+	
     /* Section: Getters & Setters */
 	getObjectId: function(){ return this.objectId; },
 	getDeleteItemURL: function(){ throw( "Abstract function getDeleteItemURL must be overriden in", this.toString() ); },	

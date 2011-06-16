@@ -2,7 +2,7 @@ mop.modules.List = new Class({
 	Extends: mop.modules.MoPList,	
 	/* Section: Getters & Setters */
 	getAddObjectURL: function( item ){
-	    console.log( "getAddObjectURL", this.getObjectId() );
+	    console.log( "getAddObjectURL", this.getObjectId(), this.element );
 	    return mop.util.getBaseURL() + "ajax/html/list/addObject/" + this.getObjectId();
 	},
 	getSubmitSortOrderURL: function(){
