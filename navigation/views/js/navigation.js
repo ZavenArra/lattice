@@ -189,7 +189,7 @@ mop.modules.navigation.Tier = new Class({
 //          aNodeElement.addEvent( "blur", this.deindicateNode.bindWithEvent( this, aNodeElement ) );
     	    aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
 	        var togglePublishedStatusElement = aNodeElement.getElement(".togglePublishedStatus");
-	        console.log( "togglePublishedStatusElement", togglePublishedStatusElement );
+//	        console.log( "togglePublishedStatusElement", togglePublishedStatusElement );
 	        if( togglePublishedStatusElement ){
         	    togglePublishedStatusElement.addEvent( "click", this.onTogglePublishedStatusClicked.bindWithEvent( this, aNodeElement ) );
 	        }
@@ -198,17 +198,22 @@ mop.modules.navigation.Tier = new Class({
         	    removeNodeElement.addEvent( "click", this.onRemoveNodeClicked.bindWithEvent( this, aNodeElement ) );
 	        }
 	    }, this );
-	    this.nodeElement = this.element.getElement( ".nodes" );
 	    this.drawer = this.element.getElement( '.tierMethodsDrawer' );
-	    this.drawer.store( "initTop", this.drawer.getStyle( "top" ) );
-	    this.drawer.set( "morph", { duration: 200, transition: Fx.Transitions.Quad.easeInOut } );
-	    this.drawer.addEvent( 'mouseenter', this.onDrawerMouseEnter.bindWithEvent( this ) );
-	    this.drawer.addEvent( 'mouseleave', this.onDrawerMouseLeave.bindWithEvent( this ) );
-	    var addObjectLinks = this.drawer.getElements( "li" );
-	    addObjectLinks.each( function( aLink ){
-	        console.log( aLink );
-	        aLink.addEvent( "click", this.onAddObjectClicked.bindWithEvent( this, aLink ) );
-	    }, this );
+	    this.nodeElement = this.element.getElement( ".nodes" );
+	    if( this.drawer ){
+    	    this.drawer.store( "initTop", this.drawer.getStyle( "top" ) );
+    	    this.drawer.set( "morph", { duration: 200, transition: Fx.Transitions.Quad.easeInOut } );
+    	    this.drawer.addEvent( 'mouseenter', this.onDrawerMouseEnter.bindWithEvent( this ) );
+    	    this.drawer.addEvent( 'mouseleave', this.onDrawerMouseLeave.bindWithEvent( this ) );
+    	    
+    	    this.nodeElement.setStyle( "height", this.nodeElement.getSize().y - this.drawer.getElement("h5").getSize().y + 2 );
+	        
+    	    var addObjectLinks = this.drawer.getElements( "li" );
+    	    addObjectLinks.each( function( aLink ){
+    	        console.log( aLink );
+    	        aLink.addEvent( "click", this.onAddObjectClicked.bindWithEvent( this, aLink ) );
+    	    }, this );	        
+	    }
 	},
 
 	indicateNode: function( nodeElement ){ nodeElement.addClass( "active"); },
@@ -273,8 +278,8 @@ mop.modules.navigation.Tier = new Class({
 	},
 	
 	onDrawerMouseEnter: function( e ){
-	    var top = this.nodeElement.getSize().y - this.drawer.getSize().y;
-	    console.log( ":::::: onDrawerMouseEnter ::", this.nodeElement, this.nodeElement.getSize() );
+	    var top = this.element.getSize().y - this.drawer.getSize().y;
+//	    console.log( ":::::: onDrawerMouseEnter ::", this.nodeElement, this.nodeElement.getSize() );
 	    this.drawer.morph( { 'top': top } );
 	},
 	
@@ -289,11 +294,11 @@ mop.modules.navigation.Tier = new Class({
 	    console.log( "onAddObjectClicked", e, addObjectButton );
 	    var addText = addObjectButton.get('text')
 //	    var tempalteId = addObjectButton.getValueFromClassName( "templateId" );//mop.util.getValueFromClassName( 'templateId', addObjectButton.get("class") );
-	    var nodeTitle = prompt( "What would you like to name this " + addText.substr( addText.lastIndexOf( " " ), addText.length ) );
+	    var nodeTitle = prompt( "What would you like to name this" + addText.substr( addText.lastIndexOf( " " ), addText.length ).toLowerCase() );
 	    if( !nodeTitle ) return;
 	    
 	    console.log( "NODE TITLE", nodeTitle );
-	    this.marshal.addObject( templateId, this.parentId, { title: nodeTitle } );
+	    this.marshal.addObject( this.parentId, templateId, { title: nodeTitle } );
 	},
 	
 	appendNode: function(){},
