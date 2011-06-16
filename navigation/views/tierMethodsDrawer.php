@@ -1,3 +1,4 @@
+<?if( count( $addableObjects ) ):?>
 <div class="tierMethodsDrawer">
 	<h5>Add an Item to this tier.</h5>
 	<ul class="methods">
@@ -6,3 +7,4 @@
 		<?endforeach;?>
 	</ul>
 </div>
+<?endif;?>
