@@ -168,37 +168,35 @@ class Controller_List extends MOP_CMSInterface {
      the rendered template of the new item
     */
 
-   public function action_addObject($listObjectId, $templateId=null) {
+   public function action_addObject($listObjectId, $objectTypeId=null) {
+ 
       
-      $this->setListObject($listObjectId);
+      $this->setListObject($listObjectId);  //This function should be removed
+                                                     //and all functionality simply moved to the model.
+
+           
+      $listObject = ORM::Factory('listcontainer', $listObjectId);
+
 
       //addable item should be specifid in the addItem call
-      if($templateId == null){
+      if($objectTypeId == null){
    
-        $template = mop::config('objects', sprintf('//list[@family="%s"]/addableObject', $this->_listObject->template->templatename));
-        if (!$template->length > 0) {
-           throw new Kohana_Exception('No List By That Name' .' Count not locate configuration in objects.xml for ' . sprintf('//list[@family="%s"]/addableobject', $this->_family));
+        $addableObjectTypes = mop::config('objects', sprintf('//list[@family="%s"]/addableObject', $listObject->template->templatename));
+        if (!$addableObjectTypes->length > 0) {
+           throw new Kohana_Exception('No Addable Objects ' .' Count not locate configuration in objects.xml for ' . sprintf('//list[@family="%s"]/addableobject', $this->_family));
         }
-        $addObjectTemplateId = $template->item(0)->getAttribute('templateName');
-
-      } else {
-        
-         $addObjectTemplateId = $templateId;
+        $objectTypeId = $addableObjectTypes->item(0)->getAttribute('templateName');
+      } 
+ 
+      $newId = $listObject->addObject($objectTypeId);
       
-      }
-
-      $data = array('published' => 'true');
-
-      
-      $newid = mopcms::addObject($listObjectId, $addObjectTemplateId, $data);
-
-      $item = ORM::Factory('object', $newid);
+      $item = ORM::Factory('object', $newId);
       $htmlChunks = mopcms::buildUIHtmlChunksForObject($item);
       $itemt = new View($this->itemView());
       $itemt->uiElements = $htmlChunks;
 
       $data = array();
-      $data['id'] = $newid;
+      $data['id'] = $newId;
       $data['page_id'] = $listObjectId;
       ;
       $data['instance'] = $this->_listObject->template->templatename;

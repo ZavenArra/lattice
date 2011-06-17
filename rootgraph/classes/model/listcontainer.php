@@ -36,5 +36,11 @@ class Model_ListContainer extends Model_Object {
       }
       return $this->_xml_config;
    }
+   
+   public function addObject($objectTypeId, $data=array() ){
+      $data['published'] = 'true';
+      return parent::addObject($objectTypeId, $data);
+   }
+
 }
 ?>
