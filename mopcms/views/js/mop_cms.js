@@ -201,9 +201,9 @@ mop.modules.CMS = new Class({
         console.log( "addObjectRequest", parentId, templateId );
         return new Request.JSON({
             url: this.getAddObjectRequestURL( parentId, templateId ),
-            onSuccess: function(){
-                this.addObjectResponse();
-                callback();
+            onSuccess: function(json){
+                this.addObjectResponse(json);
+                callback(json);
             }.bind( this )
         }).post( nodeData );
     },
