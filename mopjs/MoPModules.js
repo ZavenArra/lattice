@@ -43,9 +43,9 @@ mop.modules.Module = new Class({
 	Function build: Instantiates mop.ui elements by calling initUI, can be extended for other purposes...
 	*/ 	
 	build: function(){
-//	    console.log("mop.modules.Module.build!")
+	    console.log("mop.modules.Module.build!", this.element );
 		this.UIElements = this.initUI();
-		this.initModules();
+		this.initModules( this.element );
 	},
 	
 	toElement: function(){
@@ -81,6 +81,7 @@ mop.modules.Module = new Class({
 		descendantModules.each( function( aDescendant ){
 			if( !filteredOutModules.contains( aDescendant ) ){
 				var module = this.initModule( aDescendant );
+				console.log( "::\t", aDescendant );
 				var instanceName = module.instanceName;
 				this.childModules[ instanceName ] = module;
 			}
@@ -99,7 +100,7 @@ mop.modules.Module = new Class({
 	*/
 	initModule: function( element ){
 		var classPath = mop.util.getValueFromClassName( "classPath", element.get( "class" ) ).split( "_" );
-		console.log( "\t\tinitModule", this.toString(), element.get( "class" ), classPath );
+//		console.log( "\t\tinitModule", this.toString(), element, classPath );
 		ref = null;
 		classPath.each( function( node ){
 		    ref = ( !ref )? this[node] : ref[node]; 
@@ -135,7 +136,7 @@ mop.modules.Module = new Class({
 		var UIElements = this.getModuleUIElements( anElement );
 		if( !UIElements || UIElements.length == 0  ) return null;
 		UIElements.each( function( anElement ){
-		    console.log( 'initUI >>>> ', anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  );
+//		    console.log( 'initUI >>>> ', anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  );
 		    var UIElement = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) ) ]( anElement, this, this.options );
 		    this.UIElements[ UIElement.fieldName ] = UIElement;
 		}, this );
@@ -376,7 +377,7 @@ mop.modules.MoPList = new Class({
 		this.listing = this.element.getElement( ".listing" );
 		var children = this.listing.getChildren("li");
 		children.each( function( element ){
-			this.items.push( new mop.modules.MoPListItem( element, this, this.addObjectDialogue ) ); 
+			this.items.push( new mop.modules.ListItem( element, this, this.addObjectDialogue ) ); 
 		}, this );
 	},
 
@@ -410,13 +411,18 @@ mop.modules.MoPList = new Class({
         mop.util.EventManager.broadcastEvent( "resize" );
         listItem = null;
 	},
-	
-    removeObjectRequest: function( item ){
-        var jsonRequest = Request.JSON( { url: this.getDeleteItemURL( item ) } ).send();
-    	this.items.erase( item );
+
+	removeObject: function( item ){
+	    this.removeObjectRequest( item );
+	  	this.items.erase( item );
 		item.destroy();
 		item = null;
-		mop.util.EventManager.broadcastEvent( "resize" );        
+		mop.util.EventManager.broadcastEvent( "resize" );          
+	},
+	
+    removeObjectRequest: function( item ){
+        console.log( "removeObjectRequest", this.toString(), this.getRemoveObjectURL );
+        var jsonRequest = new Request.JSON( { url: this.getRemoveObjectURL( item ) } ).send();
 		return jsonRequest;
     },
     
@@ -486,8 +492,9 @@ mop.modules.MoPList = new Class({
 		if( this.allowChildSort && this.oldSort != newOrder ){
 			clearInterval( this.submitDelay );
 			this.submitDelay = null;
-            Request.JSON( { url: this.getSubmitSortOrderURL } ).post( { sortorder: newOrder } );
+            var request = new Request.JSON( { url: this.getSubmitSortOrderURL } ).post( { sortorder: newOrder } );
 			this.oldSort = newOrder;
+			return request;
 		}
 	},
 	
@@ -496,14 +503,14 @@ mop.modules.MoPList = new Class({
 		var children = this.listing.getChildren("li");
 		children.each( function ( aListing ){
 		    if( aListing.get( "id" ) ){
-    		    console.log( this.toString(), aListing, aListing.get( "id" ) ); 	
+//    		    console.log( this.toString(), aListing, aListing.get( "id" ) ); 	
                 var listItemId = aListing.get("id");
                 var listItemIdSplit = listItemId.split( "_" );
                 listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
                 sortArray.push( listItemId );		        
 		    }
 		});
-        console.log( this.toString(), "serialize", this.listing, sortArray );
+//        console.log( this.toString(), "serialize", this.listing, sortArray );
 		return sortArray;
 	},
 
@@ -518,7 +525,7 @@ mop.modules.MoPList = new Class({
 	}
 });
 
-mop.modules.MoPListItem = new Class({
+mop.modules.ListItem = new Class({
 	Extends: mop.modules.Module,
 	Implements: [ Events, Options ],
 	addObjectDialogue: null,
@@ -526,11 +533,10 @@ mop.modules.MoPListItem = new Class({
 	scrollContext: null,
 	controls: null,
 	fadeOut: null,
-	
+
     /* Section: Getters & Setters */
 	getObjectId: function(){ return this.objectId; },
-	getDeleteItemURL: function(){ throw( "Abstract function getDeleteItemURL must be overriden in", this.toString() ); },	
-	
+
 	initialize: function( anElement, aMarshal, addObjectDialogue, options ){
 		this.element = $( anElement);
 		this.element.store( "Class", this );
@@ -540,6 +546,10 @@ mop.modules.MoPListItem = new Class({
 		this.objectId = this.element.get("id").split("_")[1];
 		if( options && options.scrollContext ) this.scrollContext = options.scrollContext;
 		this.build();
+	},
+	
+	getSubmissionController: function(){
+	    return "list";
 	},
 
 	toString: function(){ return "[ object, mop.modules.Module, mop.modules.ListItem ]"; },
@@ -551,10 +561,10 @@ mop.modules.MoPListItem = new Class({
 
 	initControls: function(){
 		this.controls = this.element.getElement(".itemControls");
-		console.log( this.controls, this.controls.getElement(".delete") );
+//		console.log( this.controls, this.controls.getElement(".delete") );
 		if( this.controls.getElement(".delete") ) this.controls.getElement(".delete").addEvent( "click", this.removeObject.bindWithEvent( this ) );
 	},
-	
+
 	filesToTop: function(){
 		this.UIElements.each( function( uiElementInstance, indexA ){
 			if( uiElementInstance.type == "file" || uiElementInstance.type == "imageFile" ){
@@ -569,13 +579,12 @@ mop.modules.MoPListItem = new Class({
 			if( anElement.type == "file" || anElement.type == "imageFile" ) anElement.reposition( 'window' );
 		});
 	},
-		
+
 	removeObject: function( e ){
 	    mop.util.stopEvent( e );
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
-		this.fadeOut = new Fx.Morph( this.element, { duration: 300 } );
+		this.fadeOut = new Fx.Morph( this.element, { duration: 300, onComplete: function(){ this.marshal.removeObject( this ) }.bind( this ) } );
 		this.fadeOut.start( { opacity: 0 } );
-		this.marshal.deleteItem( this );	        
 	},
 	
 	resumeSort: function(){
