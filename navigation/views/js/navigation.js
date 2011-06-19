@@ -15,11 +15,10 @@ mop.modules.navigation.Navigation = new Class({
 	initialize: function( element, marshal, options ){
 		this.parent( element, marshal, options );
 	    this.dataSource = ( !this.options.dataSource )? this.marshal : this.options.dataSource;
-        // this.numberOfVisiblePanes = Number( this.getValueFromClassName( "numberOfPanes" ) );
-	    this.paneContainer = this.element.getElement( ".panes" );
 	    this.navPaneTemplate = this.element.getElement( ".pane" ).dispose();
-		this.paneContainer.empty();
+        this.paneContainer = this.element.getElement( ".panes" );
 		this.navPanes = this.element.getElements( ".pane" );
+	    this.paneContainer.empty();
 		this.breadCrumbs =  new mop.ui.navigation.BreadCrumbTrail( this.element.getElement( ".breadCrumb" ), this.onCrumbClicked.bind( this ) );
 		this.requestTier( 0, null );
 	},
@@ -46,7 +45,6 @@ mop.modules.navigation.Navigation = new Class({
 	    }
 	    if( this.navPanes.length > 0 ) this.clearPanes( paneIndex + 1 );	    
         var newPane = this.addPane( parentId );
-	    this.currentParentId = parentId;
 	    if( this.tiers[ parentId ] ){
     	    // if the tier has already been loaded and cached
 	        console.log( "requestTier", "cached" );
@@ -54,17 +52,18 @@ mop.modules.navigation.Navigation = new Class({
 	    }else{
     	    // otherwise load send a tier request
 	        console.log( "requestTier", "uncached" );
-    	    this.dataSource.requestTier( parentId, function( json ){ this.requestTierResponse( json, newPane ); }.bind( this ) );
+    	    this.dataSource.requestTier( parentId, function( json ){ this.requestTierResponse( json, parentId, newPane ); }.bind( this ) );
 	    }
 	},
 
-	requestTierResponse: function( json, newPane ){
+	requestTierResponse: function( json, parentId, containerPane ){
 //	    console.log( ">>>>>>>>>>>>>>>>>>>>", newPane.getSibling() );
 //	    console.log( "onTierReceived", json );
-        this.nodeData[ this.currentParentId ] = json.response.data.nodes;
-	    var tier = new mop.modules.navigation.Tier( this, json.response.html, this.currentParentId );
-        this.tiers[ this.currentParentId ] = tier;
-	    this.renderPane( tier, newPane);
+        this.nodeData[ parentId ] = json.response.data.nodes;
+        console.log( "requestTierResponse", this.nodeData, parentId );
+	    var tier = new mop.modules.navigation.Tier( this, json.response.html, parentId );
+        this.tiers[ parentId ] = tier;
+	    this.renderPane( tier, containerPane );
 	},
 
     renderPane: function( aTier, newPane ){
@@ -92,7 +91,9 @@ mop.modules.navigation.Navigation = new Class({
     },
     
 	onNodeSelected: function( nodeId ){
+	    console.log( ">>>> onNodeSelected", this.nodeData );
         this.marshal.onNodeSelected( nodeId );
+//        window.location.hash = this.nodeData[ nodeId ].slug;
 	},
 
     addObject: function( parentId, templateId, nodeProperties ){
