@@ -2,10 +2,10 @@ mop.modules.UserManagement = new Class({
 	Extends: mop.modules.MoPList,	
 	/* Section: Getters & Setters */
 	getAddObjectURL: function(){
-	    return "ajax/html/"+this.getSubmissionController()+"/addItem/";
+	    return "ajax/html/"+this.getSubmissionController()+"/addObject/";
 	},
 	getRemoveObjectURL: function( item ){
-	    return "ajax/data/usermanagement/deleteItem/" + item.getObjectId();
+	    return "ajax/data/usermanagement/removeObject/" + item.getObjectId();
 	},
 	getSubmitSortOrderURL: function(){
 	    return "ajax/html/" + this.getSubmissionController() + "/saveSortOrder/";
