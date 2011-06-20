@@ -256,7 +256,7 @@ mop.ui.Sortable = new Class({
     Implements: Options,
 	Extends: Sortables,	
 	initialize: function( anElement, marshal, scrollerTarget ){
-	    console.log( ":: mop.ui.Sortable", anElement, marshal, scrollerTarget );
+//	    console.log( ":: mop.ui.Sortable", anElement, marshal, scrollerTarget );
 		this.marshal = marshal;
 		this.element = $( anElement );
 		this.parent( anElement, {
@@ -408,7 +408,7 @@ mop.ui.UIElement = new Class({
 		}		
 		if( this.showSaving ) this.showSaving();
 		if( this.leaveEditMode ) this.leaveEditMode();
-		return Request.JSON( { url: this.getSubmitURL(), onSuccess: this.onResponse.bind( this ) } ).post( { field: this.fieldName, value: val } );
+		return new Request.JSON( { url: this.getSubmitURL(), onSuccess: this.onResponse.bind( this ) } ).post( { field: this.fieldName, value: val } );
 	},
 	
 	validate: function(){
@@ -662,7 +662,7 @@ mop.ui.Modal = new Class({
 			this.content.empty();
             this.content.spin();
 			this.setTitle( aTab.get( "title" ), "loading..." );
-			Request.JSON( { url: aTab.get( "href" ), onSuccess: this.onTabLoaded.bind( this ) } ).send();
+			return new Request.JSON( { url: aTab.get( "href" ), onSuccess: this.onTabLoaded.bind( this ) } ).send();
 		},
 
 		onTabLoaded: function( json ){
@@ -682,14 +682,14 @@ mop.ui.Modal = new Class({
 			}else{
 				this.content.adopt( someContent );
 			}
-			this.initModules();
+//			this.initModules();
 		},
 
-		initModules: function(){
-			var newlyInstantiatedModules = mop.ModuleManager.initModules( this.content, 'modal' );
-			this.loadedModules = newlyInstantiatedModules.loadedModules;
-			this.protectedModules = newlyInstantiatedModules.protectedModules;
-		},
+        // initModules: function(){
+        //  var newlyInstantiatedModules = mop.ModuleManager.initModules( this.content, 'modal' );
+        //  this.loadedModules = newlyInstantiatedModules.loadedModules;
+        //  this.protectedModules = newlyInstantiatedModules.protectedModules;
+        // },
 		
 		destroyChildModules: function(){
 			if( !this.loadedModules || !this.loadedModules.length ) return;
@@ -851,7 +851,6 @@ mop.ui.AddObjectDialogue = new Class({
 		
 		delete invalidIpes;
 		invalidIpes = null;
-
 		this.close( e, function(){
 			this.getItemClass().element.setStyle( "opacity", 0 );
 			this.marshal.insertItem( this.getItemClass().element );
@@ -867,7 +866,7 @@ mop.ui.AddObjectDialogue = new Class({
 	cancel: function( e ){
 //		console.log( "cancel,", e, e.target );
 		mop.util.stopEvent( e );
-		this.close( e, this.getItemClass().deleteItem.bind( this.getItemClass() ) );
+		this.close( e, this.getItemClass().removeObject.bind( this.getItemClass() ) );
 	},
 
 	destroy: function(){
@@ -3087,7 +3086,7 @@ mop.ui.Text = new Class({
 
 
 	onResponse: function( txt, json ){
-//		console.log( this.fieldName, "ipe.onResponse ", '\n\t',txt, '\n\t', json );
+		console.log( this.fieldName, "ipe.onResponse ", '\n\t',txt, '\n\t', json );
 		this.destroyValidationSticky();
 		
 		var json = JSON.decode( json );
@@ -3095,8 +3094,9 @@ mop.ui.Text = new Class({
 		this.ipeElement.addEvent( 'click', this.enterEditMode.bindWithEvent( this ) );
 		this.ipeElement.setStyle( "height", "auto" );
         this.ipeElement.removeClass("spinner");
-		if( json && json.error ){
-			this.validationSticky = new mop.ui.Sticky( this, { title: "Error:", message: json.message, scrollContext: this.options.scrollContext } );
+		if( !json.returnValue ){
+		    // throw up validation sticky (move to mootools )
+            this.validationSticky = new mop.ui.Sticky( this, { title: "Error:", message: json.message, scrollContext: this.options.scrollContext } );
 			this.validationSticky.show();
 			this.ipeElement.set( "text", this.submittedValue );
 			this.field.set( "value", this.submittedValue );
@@ -3107,7 +3107,8 @@ mop.ui.Text = new Class({
 			if( this.field && this.field.get( "type" ) == "password" ){
 				this.ipeElement.set( "html", "******" );
 			}else{
-				this.ipeElement.set( "html", json.value );
+			    console.log( "json.value >>> ", json.response.value );
+				this.ipeElement.set( "html", json.response.value );
 			}
 			this.oldValue = json.value;
 			if( this.onCompleteCallbacks.length > 0 ){

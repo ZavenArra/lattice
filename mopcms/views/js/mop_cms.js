@@ -3,12 +3,11 @@ mop.modules.CMS = new Class({
 	/* Constructor: initialize */
 	Extends: mop.modules.Module,
 	Interfaces: [ mop.modules.navigation.NavigationDataSource ],
-	pageLoadCount: 0,
+	
 	objectId: null,
 	pageContent: null,
 	pageIdToLoad: null,
 	scriptsLoaded: null,
-	currentPageLoadIndex: null,
 	titleText: "",
 	titleElement: null,
 	editSlugLink: null,
@@ -43,9 +42,14 @@ mop.modules.CMS = new Class({
 	initialize: function( anElement, options ){
         this.parent( anElement, null, options );
         this.instanceName = this.element.get("id");
-		this.objectId = this.getValueFromClassName( "objectId" );
-		var scripttags = $$( "script" ).each( function( aScriptTag ){ this.loadedJS.push( aScriptTag ); }, this );
-		var scripttags = $$( "link[rel=stylesheet]" ).each( function( aStyleSheetTag ){ this.loadedCSS.push(  aStyleSheetTag ); }, this );
+		this.objectId = this.getValueFromClassName( "objectId" );		
+		$$( "script" ).each( function( aScriptTag ){ 
+		    this.loadedJS.push( aScriptTag.get("src") );
+		}, this );
+		$$( "link[rel=stylesheet]" ).each( 
+		    function( aStyleSheetTag ){ this.loadedCSS.push(  aStyleSheetTag );
+		}, this );
+		console.log( ":::::: ", this.loadedJS );
 	},
 
 	/* Section: Methods */
@@ -104,13 +108,10 @@ mop.modules.CMS = new Class({
 	    this.editSlugLink.retrieve( "Class" ).setValue( json.response.slug );
 	},
 
-	onJSLoaded: function( html, pageLoadCount ){
-	    console.log( "onJSLoaded", html, pageLoadCount );
-        console.log( this.toString(), "onJSLoaded", html );
+	onJSLoaded: function( html, jsLoadCount ){
 		// keeps any callbacks from previous pageloads from registering
-		if( pageLoadCount != this.currentPageLoadIndex ) return;
 		this.scriptsLoaded++;
-		console.log( this.scriptsLoaded, this.loadedJS.length-1 );
+		console.log( "onJSLoaded", html, this.scriptsLoaded, this.loadedJS.length );
 		if( this.scriptsLoaded == this.loadedJS.length-1 ){			
 			this.populate( html );
 		}
@@ -138,23 +139,28 @@ mop.modules.CMS = new Class({
 			json - Object : { css: [ "pathToCSSFile", "pathToCSSFile", ... ], js: [ "pathToJSFile", "pathToJSFile", "pathToJSFile", ... ], html: "String" }
 	*/
 	requestPageResponse: function( json ){
-	    if( !json.returnValue ) console.log( this.toString(), "requestPageResponse error:", json.response.error );
+	    if( !json.returnValue ) throw json.response.error;
 		json.response.css.each( function( styleSheetURL, index ){
 		    styleSheetURL = mop.util.getBaseURL() + styleSheetURL;
 		    if( !this.loadedCSS.contains( styleSheetURL ) ) mop.util.loadStyleSheet( styleSheetURL );
 		    this.loadedCSS.push( styleSheetURL );
 		}, this );
 		this.scriptsLoaded = 0;
-		this.currentPageLoadIndex = this.pageLoadCount++;
-		if( json.response.js.length ){
-            json.response.js.each( function( urlString ){
-                urlString = mop.util.getBaseURL() + urlString
-                if( ( this.loadedJS.some( function( item ){ item.src == urlString } ) ) ){
-                    this.loadedJS.push( mop.util.loadJS( urlString, { type: "text/javascript", onload: this.onJSLoaded.bind( this, [ json.response.html, this.currentPageLoadIndex ] ) } ) );
-                }else{
-         		    this.populate( json.response.html, this.currentPageLoadIndex );           
+        var noneLoaded = true;
+		if( json.response.js.length && json.response.js.length > 0){
+            json.response.js.each( function( urlString, i ){
+                urlString = mop.util.getBaseURL() + urlString;
+                console.log( ":::: ", urlString, this.loadedJS.indexOf( urlString ) );
+                if( this.loadedJS.indexOf( urlString ) == -1 ){
+                    noneLoaded = false;
+                    console.log( "::::::", urlString, "not in loadedJSArray" );
+                    this.loadedJS.push( urlString );
+                    mop.util.loadJS( urlString, { type: "text/javascript", onload: this.onJSLoaded.bind( this, [ json.response.html ] ) } );                    
                 }
             }, this );
+            if( noneLoaded ) this.populate( json.response.html );
+		}else{
+	       this.populate( json.response.html );
 		}
 	},
 
@@ -215,10 +221,7 @@ mop.modules.CMS = new Class({
     removeObjectRequest: function( parentId, callback ){
         return new Request.JSON({
             url: this.getRemoveObjectRequestURL( parentId ),
-            onSuccess: function( json ){
-                this.removeObjectResponse( json );
-                callback();
-            }.bind( this )
+            onSuccess: function( json ){ this.removeObjectResponse( json ); callback(); }.bind( this )
         }).send();
     },
 
