@@ -46,7 +46,7 @@ mop.modules.navigation.Navigation = new Class({
 	    }
 	    if( this.navPanes.length > 0 ) this.clearPanes( paneIndex + 1 );	    
         var newPane = this.addPane( parentId );
-	    this.currentParentId = parentId;
+	    this.currentparentId = parentId;
 	    if( this.tiers[ parentId ] ){
     	    // if the tier has already been loaded and cached
 	        console.log( "requestTier", "cached" );
@@ -61,9 +61,9 @@ mop.modules.navigation.Navigation = new Class({
 	requestTierResponse: function( json, newPane ){
 //	    console.log( ">>>>>>>>>>>>>>>>>>>>", newPane.getSibling() );
 //	    console.log( "onTierReceived", json );
-        this.nodeData[ this.currentParentId ] = json.response.data.nodes;
-	    var tier = new mop.modules.navigation.Tier( this, json.response.html, this.currentParentId );
-        this.tiers[ this.currentParentId ] = tier;
+        this.nodeData[ this.currentparentId ] = json.response.data.nodes;
+	    var tier = new mop.modules.navigation.Tier( this, json.response.html, this.currentparentId );
+        this.tiers[ this.currentparentId ] = tier;
 	    this.renderPane( tier, newPane);
 	},
 

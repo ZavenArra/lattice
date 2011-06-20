@@ -15,7 +15,7 @@ Class Associator_Controller extends Controller {
 		foreach($filters as $filter){
 			$objects = ORM::Factory('object');
 			if($filter['from']){
-				$objects->where('parentid', $this->parent->id);
+				$objects->where('parentId', $this->parent->id);
 			}
 			if($filter['templateName']){
 				$t = ORM::Factory('template', $filter['templateName']);

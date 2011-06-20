@@ -30,11 +30,16 @@ class Controller_Navigation extends Controller_MOP{
 	}
 
 	
-	public function action_getTier($parentid, $deeplink=NULL, &$follow=false){
-		$parent = ORM::Factory($this->objectModel, $parentid); 
+	public function action_getTier($parentId, $deeplink=NULL, &$follow=false){
+      if($parentId != 0){
+      	$parent = ORM::Factory($this->objectModel, $parentId); 
+      } else {
+         $parentId = Graph::getRootNode(Kohana::config('cms.graphRootNode'))->id;  //this is a codependency
+         $parent = ORM::Factory($this->objectModel, $parentId);
+      }
 
 		$items = ORM::factory($this->objectModel);
-		$items->where('parentid', '=',  $parentid);
+		$items->where('parentId', '=',  $parentId);
 		$items->where('activity', 'IS', NULL);
 		$items->order_by('sortorder');
 		$iitems = $items->find_all();

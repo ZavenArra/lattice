@@ -254,7 +254,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 		$object->contenttable->save();
 
 		$children = ORM::Factory('object');
-		$children->where('parentid', '=',$id);
+		$children->where('parentId', '=',$id);
 		$iChildren = $children->find_all();
 		foreach($iChildren as $child){
 			$this->cascade_delete($child->id);
@@ -277,7 +277,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 		$object->contenttable->save();
 
 		$children = ORM::Factory('object');
-		$children->where('parentid','=',$id);
+		$children->where('parentId','=',$id);
 		$iChildren = $children->find_all();
 		foreach($iChildren as $child){
 			$this->cascade_undelete($child->id);

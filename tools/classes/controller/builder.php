@@ -31,8 +31,6 @@ class Controller_Builder extends Controller {
 	}
 
 	public function action_initializeSite($xmlFile='data'){
-		//get directory listing of application/media
-		//and unlink all files
 
 		$db = Database::instance();
 		$db->query(Database::DELETE, 'delete from pages');
@@ -46,11 +44,14 @@ class Controller_Builder extends Controller {
 
 		//clean out media dir
 		$this->destroy('application/media/');
-	//	$this->destroy('staging/application/media/');
 		
+		//reinitialize the graph
+		$this->rootNodeObjectType = Kohana::config('cms.graphRootNode');
+		Graph::configureTemplate($this->rootNodeObjectType);
+		Graph::addRootNode($this->rootNodeObjectType);
 
 		echo "\nInserting Data\n";
-		$this->insertData($xmlFile);
+		$this->insertData($xmlFile );
 
 		mopcms::regenerateImages();
 
@@ -69,7 +70,14 @@ class Controller_Builder extends Controller {
 
 
 
-	public function insertData($xmlFile, $parentId = 0, $context=null){
+	public function insertData($xmlFile, $parentId = null, $context=null){
+		if($parentId == null){
+         echo $this->rootNodeObjectType;
+			$parentObject = Graph::getRootNode($this->rootNodeObjectType);
+		} else {
+			$parentObject = Graph::object($parentId);
+		}
+ 
 
 		foreach(mop::config($xmlFile, 'item', $context)  as $item){
 			$lists = array();
@@ -151,7 +159,7 @@ class Controller_Builder extends Controller {
 			//already added at the next level up, in this case we just
 			//update the objects data
 			$existing = ORM::Factory('object')
-				->where('parentid', '=', $parentId)
+				->where('parentId', '=', $parentObject->id)
 				->find_all();
 			$component = null;
 			foreach($existing as $aComponent){
@@ -167,7 +175,7 @@ class Controller_Builder extends Controller {
 				$component->updateWithArray($data);
 				$objectId = $component->id;
 			} else {
-				$objectId = mopcms::addObject($parentId, $item->getAttribute('templateName'), $data);
+				$objectId = $parentObject->addObject($item->getAttribute('templateName'), $data);
 				$this->newObjectIds[] = $objectId;
 			}
 
@@ -181,7 +189,7 @@ class Controller_Builder extends Controller {
 				//find the container
 				$listT = ORM::Factory('template', $list->getAttribute('family'));
 				$container = ORM::Factory('object')
-					->where('parentid', '=', $objectId)
+					->where('parentId', '=', $objectId)
 					->where('template_id', '=',  $listT->id)
 					->find();
 				//jump down a level to add object
@@ -190,7 +198,6 @@ class Controller_Builder extends Controller {
 
 		}
 
-		//and regenerate all files
 	}
 
 }

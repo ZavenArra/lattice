@@ -53,13 +53,13 @@ class Controller_List extends MOP_CMSInterface {
    }
    
    
-   protected function setListObject($listObjectIdOrParentId, $family=null) {
+   protected function setListObject($listObjectIdOrparentId, $family=null) {
 
       if ($family != null) {
          $lt = ORM::Factory('template')->where('templatename', '=', $family)->find();
 
          $listObject = ORM::Factory('listcontainer')
-                 ->where('parentid', '=', $listObjectIdOrParentId)
+                 ->where('parentId', '=', $listObjectIdOrparentId)
                  ->where('template_id', '=', $lt->id)
                  ->where('activity', 'IS', NULL)
                  ->find();
@@ -71,7 +71,7 @@ class Controller_List extends MOP_CMSInterface {
          $this->_listObject = $listObject;
       } else {
 
-         $this->_listObject = ORM::Factory('listcontainer', $listObjectIdOrParentId);
+         $this->_listObject = ORM::Factory('listcontainer', $listObjectIdOrparentId);
       }
       
       
@@ -104,13 +104,13 @@ class Controller_List extends MOP_CMSInterface {
    
    /*
     * Function: action_getList
-    * Supports either calling with list object id directly, or with parentid and family 
+    * Supports either calling with list object id directly, or with parentId and family 
     * for looking in database and config
     */
    
-   public function action_getList($listObjectIdOrParentId, $family = null) {
+   public function action_getList($listObjectIdOrparentId, $family = null) {
       
-      $this->setListObject($listObjectIdOrParentId, $family);
+      $this->setListObject($listObjectIdOrparentId, $family);
       
 
       $view = null;

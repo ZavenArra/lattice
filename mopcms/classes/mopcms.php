@@ -344,6 +344,62 @@ class MoPCMS {
 		}
 	}
 
+public static function makeFileSaveName($filename) {
+      $filename = str_replace('&', '_', $filename);
+
+      $xarray = explode('.', $filename);
+      $nr = count($xarray);
+      $ext = $xarray[$nr - 1];
+      $name = array_slice($xarray, 0, $nr - 1);
+      $name = implode('.', $name);
+      $i = 1;
+      if (!file_exists(mopcms::mediapath() . "$name" . '.' . $ext)) {
+         $i = '';
+      } else {
+         for (; file_exists(mopcms::mediapath() . "$name" . $i . '.' . $ext); $i++) {
+            
+         }
+      }
+
+      //clean up extension
+      $ext = strtolower($ext);
+      if ($ext == 'jpeg') {
+         $ext = 'jpg';
+      }
+
+      return $name . $i . '.' . $ext;
+   }
+
+   public static function saveHttpPostFile($objectid, $field, $postFileVars) {
+      Kohana::$log->add(Log::ERROR, 'Addasdfasd aing via post file');
+
+      Kohana::$log->add(Log::ERROR, 'save uploaded');
+      Kohana::$log->add(Log::ERROR, var_export($postFileVars, true));
+      $object = ORM::Factory('object', $objectid);
+      //check the file extension
+      $filename = $postFileVars['name'];
+      $ext = substr(strrchr($filename, '.'), 1);
+      switch ($ext) {
+         case 'jpeg':
+         case 'jpg':
+         case 'gif':
+         case 'png':
+         case 'JPEG':
+         case 'JPG':
+         case 'GIF':
+         case 'PNG':
+         case 'tif':
+         case 'tiff':
+         case 'TIF':
+         case 'TIFF':
+            Kohana::$log->add(Log::ERROR, 'save uploaded');
+            return $object->saveUploadedImage($field, $postFileVars['name'], $postFileVars['type'], $postFileVars['tmp_name']);
+            break;
+
+         default:
+            return $object->saveUploadedFile($field, $postFileVars['name'], $postFileVars['type'], $postFileVars['tmp_name']);
+      }
+   }
 
 	
 

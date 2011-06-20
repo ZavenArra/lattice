@@ -267,7 +267,7 @@ Class mop {
 		return $data;
 	}
 
-	public static function getIncludeContent($includeTier, $parentid){
+	public static function getIncludeContent($includeTier, $parentId){
     $content = array();
     if($eDataNodes = mop::config('frontend',"includeData", $includeTier)){
       foreach($eDataNodes as $eDataConfig){
@@ -277,10 +277,10 @@ Class mop {
         //apply optional parent filter
         if($from = $eDataConfig->getAttribute('from')){
           if($from=='parent'){
-            $objects->where('parentid', '=', $parentid);
+            $objects->where('parentId', '=', $parentId);
           } else {
             $from = ORM::Factory('object')->where('id', '=', $from)->find();
-            $objects->where('parentid', '=', $from->id);	
+            $objects->where('parentId', '=', $from->id);	
           }
         }
 

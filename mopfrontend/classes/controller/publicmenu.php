@@ -7,7 +7,7 @@ Class Controller_PublicMenu extends Controller_MOP {
 		$this->view = new View('publicnav');
 
 		$topLevel = ORM::Factory('object')
-			->where('parentid', '=', 0)
+			->where('parentId', '=', 0)
 			->publishedFilter()
 			->noContainerObjects()
 			->find_all();
@@ -28,7 +28,7 @@ Class Controller_PublicMenu extends Controller_MOP {
 
 			$object = ORM::Factory('object', $slug);
 			$children = ORM::Factory('object')
-				->where('parentid', '=', $object->id)
+				->where('parentId', '=', $object->id)
 				->publishedFilter()
 				->noContainerObjects()
 				->find_all();

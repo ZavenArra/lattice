@@ -97,7 +97,7 @@ class dumper_Controller extends Controller {
       $childObjects = ORM::Factory('object')
         ->where('activity IS NULL')
         ->where('published = 1')
-        ->where('parentid', $object->id)
+        ->where('parentId', $object->id)
         ->find_all();
       foreach($this->exportTier($childObjects) as $childItem){
         $item->appendChild($childItem);
@@ -126,7 +126,7 @@ class dumper_Controller extends Controller {
       $childObjects = ORM::Factory('object')
         ->where('activity IS NULL')
         ->where('published = 1')
-        ->where('parentid', $object->id)
+        ->where('parentId', $object->id)
         ->find_all();
       foreach($this->exportTierMOPFormat($childObjects) as $childItem){
         $item->appendChild($childItem);
@@ -148,7 +148,7 @@ class dumper_Controller extends Controller {
     $objects = ORM::Factory('object')
       ->where('activity IS NULL')
       ->where('published', 1)
-      ->where('parentid', 0)
+      ->where('parentId', 0)
       ->find_all();
 
     foreach($this->exportTierMOPFormat($objects) as $item){
@@ -172,7 +172,7 @@ class dumper_Controller extends Controller {
     $objects = ORM::Factory('object')
       ->where('activity IS NULL')
       ->where('published', 1)
-      ->where('parentid', 0)
+      ->where('parentId', 0)
       ->find_all();
 
     foreach($this->exportTier($objects) as $item){
@@ -248,7 +248,7 @@ class dumper_Controller extends Controller {
 			//already added at the next level up, in this case we just
 			//update the objects data
 			$existing = ORM::Factory('object')
-				->where('parentid', $parentId)
+				->where('parentId', $parentId)
 				->find_all();
 			$component = null;
 			foreach($existing as $aComponent){
@@ -278,7 +278,7 @@ class dumper_Controller extends Controller {
 				//find the container
 				$listT = ORM::Factory('template', $list->getAttribute('family'));
 				$container = ORM::Factory('object')
-					->where('parentid', $objectId)
+					->where('parentId', $objectId)
 					->where('template_id', $listT->id)
 					->find();
 				//jump down a level to add object
