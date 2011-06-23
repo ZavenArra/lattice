@@ -29,6 +29,7 @@ class Controller_Auth extends Controller_Layout {
 	public function __construct($request, $response){
 		parent::__construct($request, $response);
 
+		I18n::lang('en');
 	}
 
 	public function action_index()
@@ -84,9 +85,9 @@ class Controller_Auth extends Controller_Layout {
 		if (Auth::instance()->logged_in())
 		{
 			if($redirect){
-            Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
+				Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 			} else {
-            $redirect = Kohana::config('auth.redirect');
+				$redirect = Kohana::config('redirect');
 				Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 
 			}
@@ -109,22 +110,22 @@ class Controller_Auth extends Controller_Layout {
 
 			if (isset($formValues['submit']) )
 			{
-         	// Load the user
-           if (Auth::instance()->login($formValues['username'], $formValues['password']))
+				// Load the user
+				if (Auth::instance()->login($formValues['username'], $formValues['password']))
 				{
 					// Login successful, redirect
 					if($formValues['redirect']){
-      				Request::current()->redirect(url::site($formValues['redirect'],Request::current()->protocol(),false));
-					} else if($redirect = Kohana::config('auth.redirect')){
-                  Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
+						Request::current()->redirect(url::site($formValues['redirect'],Request::current()->protocol(),false));
+					} else if($redirect = Kohana::config('redirect')){
+						Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 					} else {
-      				Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),false));
+						Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),false));
 					}
-               return;
+					return;
 				}
 				else
 				{
-          		$error = 'Invalid username or password.';
+					$error = 'Invalid username or password.';
 				}
 			}
 
@@ -132,7 +133,7 @@ class Controller_Auth extends Controller_Layout {
 			$view = new View('auth/login');
 
 			if($redirect == 'resetPasswordSuccess'){
-				$view->message = Kohana::lang('auth.resetPasswordSuccess');
+				$view->message = I18n::get('resetPasswordSuccess');
 				$redirect = null;
 			} else if($error){
 				$view->message = $error;
@@ -168,15 +169,17 @@ class Controller_Auth extends Controller_Layout {
 				$password = $this->randomPassword();
 				$user->password = $password;
 				$user->save();
-				$body = Kohana::lang('auth.forgotPasswordEmailBody');
+				$body = I18n::get('forgotPasswordEmailBody');
 				$body = str_replace('___MOP___username___MOP___', $user->username, $body);
 				$body = str_replace('___MOP___password___MOP___', $password, $body);
-				mail($user->email, Kohana::lang('auth.forgotPasswordEmailSubject'), $body);
+die($password . '-'.$user->password);
+
+				mail($user->email, I18n::get('forgotPasswordEmailSubject'), $body);
 				Request::current()->redirect('auth/login/resetPasswordSuccess');
 				
 			} else {
 				$view = new View('auth/forgot');
-				$view->message = Kohana::lang('auth.resetPasswordFailed');
+				$view->message = I18n::get('resetPasswordFailed');
 
 			}
 		} else {
