@@ -13,7 +13,7 @@ $config['resources']['libraryjs'] = array(
 	'moplib/mopjs/MoPUI.js',
 	'moplib/mopjs/MoPModules.js',
 	'moplib/mopcms/views/js/list.js',
-	'moplib/navigation/views/js/NavigationDataSourceInterface.js'
+	'moplib/navigation/views/js/navigationDataSourceInterface.js'
 );
 
 
