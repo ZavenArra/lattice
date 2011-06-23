@@ -166,7 +166,7 @@ class Controller_Auth extends Controller_Layout {
 		if(isset($_POST['email'])){
 			$user = ORM::Factory('user')->where('email', '=', $_POST['email'])->find();
 			if($user->loaded() ){
-				$password = $this->randomPassword();
+				$password = Utility_Auth::randomPassword();
 				$user->password = $password;
 				$user->save();
 				$body = I18n::get('forgotPasswordEmailBody');
@@ -188,24 +188,6 @@ die($password . '-'.$user->password);
 		$this->response->body($view);
 	}
 
-	public function randomPassword(){
-		$password_length = 9;
-
-		function make_seed() {
-			list($usec, $sec) = explode(' ', microtime());
-			return (float) $sec + ((float) $usec * 100000);
-		}
-
-		srand(make_seed());
-
-		$alfa = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
-		$token = "";
-		for($i = 0; $i < $password_length; $i ++) {
-			$token .= $alfa[rand(0, strlen($alfa)-1)];
-		}    
-		return $token;
-
-
-	}
+	
 
 } // End Auth Controller

@@ -112,6 +112,26 @@ Element.implement({
 });
 
 
+Element.implement({
+    getValueFromClassName: function( key ){
+    	if(!this.get("class")) return false;
+    	var classes = this.get("class").split(" ");
+    	var result;
+    	classes.each( function( className ){
+    		if( className.indexOf( key ) == 0 ) result = className.split("-")[1];
+    	});
+//    	console.log( "Element.getValueFromClassName", key, classes, result );
+    	return result;
+    }
+})
+/*
+	Function: Function.bindWithEvent
+	Implements the now deprecated bindWithEvent
+ 	Parameters:
+ 		bind - {obj} a scope for the closure (what's "this")
+	    args: Single argument, or an array
+*/
+
 Function.implement({ 
     bindWithEvent: function(bind, args){ 
         var self = this; 
@@ -133,31 +153,36 @@ String.implement( "encodeUTF8", function(){
   return unescape( encodeURIComponent( this ) );
 });
 
+
 /*
-	Function: Function.bindWithEvent
-	Implements the now deprecated bindWithEvent
- 	Parameters:
- 		bind - {obj} a scope for the closure (what's "this")
-	    args: Single argument, or an array
+	Function: Request.JSON.success override
+	Better error reporting for MOPCMS specific error reporting
 */
+Request.JSON.implement({
+    success: function(text){
+		var json;
+		try {
+			json = this.response.json = JSON.decode( text, this.options.secure );
+		} catch ( error ){
+			this.fireEvent('error', [text, error]);
+			return;
+		}
+		if ( json == null ){ 
+		    this.onFailure();
+	    }else if( !json.returnValue ){
+	        throw json.response;
+	    } else {
+            this.onSuccess( json, text );
+	    }
+	}
+});
 
-// Function.implement({
-//  bindWithEvent: function( bind, args ){
-//      console.log( "bindWithEvent", bind, args );
-//          var self = this;
-//      if ( args != null ) args = Array.from( args );
-//      return function( event ){
-//              return self.apply( bind, (args == null) ? arguments : [event].concat(args));
-//      };
-//      }
-// });
-
+    
 /*
 	Section: MoP Package
 	Mop is a namespace, quick definition of namespace, more useful for documentation than anything else.
 */
-mop = {}
-
+if( !mop ) var mop = {};
 
 /*
 	Pakcage: mop.util
@@ -198,16 +223,6 @@ mop.util.domIsReady = function(){
 }
 
 /*
- 	Function: mop.util.isUnsignedInteger 
-	Is the passed value an integer or not?
-*/
-mop.util.isUnsignedInteger = function( s ){
-    console.log( s );
-    return ( s.toString().search(/^[0-9]+$/ ) == 0);
-}
-
-
-/*
  	Function: mop.util.stopEvent 
 	Stops event bubbling, normally this is handled in each instance
 	But this will serve as a nice shortcut given the verbosity needed to deal with some IE's ( the whole return value conditional )
@@ -243,29 +258,19 @@ mop.util.isDomReady = function(){
 }
 
 /*
+ 	Function: mop.util.setBaseURL 
+	Returns: sets mop.baseURL for later use
+*/
+mop.util.setBaseURL = function( base ){
+    mop.baseURL = base;
+}
+
+/*
  	Function: mop.util.getBaseURL 
 	Returns: href from html base tag
 */
 mop.util.getBaseURL = function(){
-	return $(document).getElement("head").getElement("base").get("href");
-},
-
-/*
- 	Function: mop.util.getAppURL 
-	Gets urls to the application front-controller
-	Returns: baseURL + appention (appurl for ajax purposes)
-*/
-
-mop.util.getAppURL = function(){
-	var appURLAppendClassName = mop.util.getValueFromClassName( "appUrlAppend", $(document).getElement("body").get("class") );
-	var appUrlAppend;
-	if( typeof appURLAppendClassName == "string" ){
-		appUrlAppend = appURLAppendClassName + ".php/";
-	}else{
-		appUrlAppend = "";
-	}
-	return mop.util.getBaseURL() + appUrlAppend;
-
+	return mop.baseURL;
 }
 
 /* Function: mop.util.getValueFromClassName
@@ -303,21 +308,6 @@ mop.util.getUniqueId = function ( prefix ){
 }
 
 /*
-	Function: mop.util.JSONSend
-	MoP Wrapper for mootools Request.json
-	Note: Does this need to exist?
-*/ 
-mop.util.JSONSend = function( url, data, options ){
-	url.toURI().toAbsolute();
-	if( options ){ 
-		options.url = url;
-	}else{
-		options = { url: url };
-	}
-	new Request.JSON( options ).post( data );
-},
-
-/*
 	Function: setId
 	Sets the module id... 
 */
@@ -341,7 +331,6 @@ mop.util.getObjectId = function(){
 	Note: (Capitalize)
 */
 mop.util.validation = {
-
 	regEx : {
 		required : /[^.+]/,
 		nonEmpty : /[^.+]/,
@@ -524,19 +513,6 @@ mop.MoPObject = new Class({
 	
 	getElement: function(){
 	    return this.element;
-	},
-	
-	/*
-		Function: JSONSend
-		Convenience method that calls mop.util.JSONSend;
-	*/	
-	JSONSend: function( action, data, options ){
-      //Note:
-      //Hard coding an object ID here doesn't do anyone any good, since the API
-      //for a given JSON request can be very different.
-		var url = "ajax/" + this.getSubmissionController() +  "/" + action + "/" + mop.objectId;
-    	if( options ){  options.url = url; }else{ options = { url: url }; }
-    	new Request.JSON( options ).post( data );
 	},
 	
 	destroy: function(){
@@ -752,7 +728,7 @@ mop.util.LoginMonitor = new Class({
 		clearInterval( this.inactivityTimeout );
 		clearInterval( this.logoutTimeout );
 		this.inactivityTimeout = this.onInactivity.periodical( this.secondsOfInactivityTilPrompt, this );
-		new Request.JSON( { url:"keepalive" } ).post();
+		new Request.JSON( { url: mop.util.getBaseURL() + "keepalive" } ).send();
 	},
 
 	logout: function(){
@@ -984,4 +960,5 @@ window.addEvent( "scroll", function(){
 
 window.addEvent( "domready", function(){
 	mop.util.domIsReady();
+	if(undefined===mop.baseURL) mop.util.setBaseURL( "/" );
 });

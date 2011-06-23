@@ -8,12 +8,18 @@ $config['resources']['libraryjs'] = array(
 	'moplib/mopjs/thirdparty/mootools/mootools.js',
 	'moplib/mopjs/thirdparty/mootools/mootools-more.js',
 	'moplib/mopjs/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
-	'moplib/mopjs/thirdparty/monkeyphysics/datepicker.js',
+	'moplib/mopjs/thirdparty/arian/datepicker/Picker.js',
+	'moplib/mopjs/thirdparty/arian/datepicker/Picker.Attach.js',
+	'moplib/mopjs/thirdparty/arian/datepicker/Picker.Date.js',
+	//include textboxlist here
 	'moplib/mopjs/MoPCore.js',
 	'moplib/mopjs/MoPUI.js',
 	'moplib/mopjs/MoPModules.js',
+	'moplib/navigation/views/js/navigationDataSourceInterface.js',
+);
+
+$config['resources']['js'] = array(
 	'moplib/mopcms/views/js/list.js',
-	'moplib/navigation/views/js/navigationDataSourceInterface.js'
 );
 
 

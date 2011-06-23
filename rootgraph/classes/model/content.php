@@ -3,7 +3,7 @@
 * Class: Model for Content_Small
 */
 class Model_Content extends ORM {
-	//protected $has_one = array('page');
+	//protected $has_one = array('object');
 	//
 
 	protected $dbmap = false;
@@ -43,7 +43,7 @@ class Model_Content extends ORM {
 		}
 	
 		//check for dbmap
-		$object =  ORM::Factory('page', parent::__get('page_id'));
+		$object =  ORM::Factory('object', parent::__get('page_id'));
 		//echo 'FROM '.$object->id.'<br>';
                
 		$column = mop::dbmap( $object->template_id, $column);
@@ -53,7 +53,7 @@ class Model_Content extends ORM {
 
 		if(strstr($column, 'object')){
 			//echo 'iTS AN OBJECT<br>';
-			$sub = ORM::Factory('page', parent::__get($column));
+			$sub = ORM::Factory('object', parent::__get($column));
 			if(!$sub->_loaded){
 				return null;
 			}
@@ -84,7 +84,7 @@ class Model_Content extends ORM {
 			return parent::__set($column, $value);
 		}
 
-		$object = ORM::Factory('page', parent::__get('page_id'));
+		$object = ORM::Factory('object', parent::__get('page_id'));
 
 		//check for dbmap
 		if($mappedcolumn = mop::dbmap( $object->template_id, $column) ){

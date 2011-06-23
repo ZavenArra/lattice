@@ -3,7 +3,7 @@
 //this also implies that name is a templatename
 ob_start();
 foreach(mop::config('objects', 
-	sprintf('//template[@name="%s"]/elements/*', ORM::Factory('page', $content['main']['id'])->template->templatename )) as $element){
+	sprintf('//template[@name="%s"]/elements/*', ORM::Factory('object', $content['main']['id'])->template->templatename )) as $element){
 		frontend::makeHtmlElement($element, "\$content['main']");
 }
 $html = ob_get_contents();

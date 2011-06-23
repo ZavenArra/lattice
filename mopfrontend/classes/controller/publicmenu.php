@@ -6,8 +6,8 @@ Class Controller_PublicMenu extends Controller_MOP {
 	public function action_index(){
 		$this->view = new View('publicnav');
 
-		$topLevel = ORM::Factory('page')
-			->where('parentid', '=', 0)
+		$topLevel = ORM::Factory('object')
+			->where('parentId', '=', 0)
 			->publishedFilter()
 			->noContainerObjects()
 			->find_all();
@@ -26,9 +26,9 @@ Class Controller_PublicMenu extends Controller_MOP {
 		//check for children
 		foreach($navi as $slug => $entry){
 
-			$object = ORM::Factory('page', $slug);
-			$children = ORM::Factory('page')
-				->where('parentid', '=', $object->id)
+			$object = ORM::Factory('object', $slug);
+			$children = ORM::Factory('object')
+				->where('parentId', '=', $object->id)
 				->publishedFilter()
 				->noContainerObjects()
 				->find_all();

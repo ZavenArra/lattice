@@ -94,10 +94,10 @@ class dumper_Controller extends Controller {
       }
 
       //and get the children
-      $childObjects = ORM::Factory('page')
+      $childObjects = ORM::Factory('object')
         ->where('activity IS NULL')
         ->where('published = 1')
-        ->where('parentid', $object->id)
+        ->where('parentId', $object->id)
         ->find_all();
       foreach($this->exportTier($childObjects) as $childItem){
         $item->appendChild($childItem);
@@ -123,10 +123,10 @@ class dumper_Controller extends Controller {
       }
 
       //and get the children
-      $childObjects = ORM::Factory('page')
+      $childObjects = ORM::Factory('object')
         ->where('activity IS NULL')
         ->where('published = 1')
-        ->where('parentid', $object->id)
+        ->where('parentId', $object->id)
         ->find_all();
       foreach($this->exportTierMOPFormat($childObjects) as $childItem){
         $item->appendChild($childItem);
@@ -145,10 +145,10 @@ class dumper_Controller extends Controller {
     $this->doc->formatOutput = true;
 		$data = $this->doc->createElement('data');
 
-    $objects = ORM::Factory('page')
+    $objects = ORM::Factory('object')
       ->where('activity IS NULL')
       ->where('published', 1)
-      ->where('parentid', 0)
+      ->where('parentId', 0)
       ->find_all();
 
     foreach($this->exportTierMOPFormat($objects) as $item){
@@ -169,10 +169,10 @@ class dumper_Controller extends Controller {
     $this->doc->formatOutput = true;
 		$data = $this->doc->createElement('data');
 
-    $objects = ORM::Factory('page')
+    $objects = ORM::Factory('object')
       ->where('activity IS NULL')
       ->where('published', 1)
-      ->where('parentid', 0)
+      ->where('parentId', 0)
       ->find_all();
 
     foreach($this->exportTier($objects) as $item){
@@ -247,8 +247,8 @@ class dumper_Controller extends Controller {
 			//if there is a title collision, we assume that this is a component
 			//already added at the next level up, in this case we just
 			//update the objects data
-			$existing = ORM::Factory('page')
-				->where('parentid', $parentId)
+			$existing = ORM::Factory('object')
+				->where('parentId', $parentId)
 				->find_all();
 			$component = null;
 			foreach($existing as $aComponent){
@@ -277,8 +277,8 @@ class dumper_Controller extends Controller {
 				//echo "FOUND A LIST\n\n";
 				//find the container
 				$listT = ORM::Factory('template', $list->getAttribute('family'));
-				$container = ORM::Factory('page')
-					->where('parentid', $objectId)
+				$container = ORM::Factory('object')
+					->where('parentId', $objectId)
 					->where('template_id', $listT->id)
 					->find();
 				//jump down a level to add object

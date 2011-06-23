@@ -91,10 +91,10 @@ Class Controller_UserManagement extends Controller_Layout {
 	}	
 
 	/*
-	 * Function: addItem($pageid)
+	 * Function: addItem($objectid)
 	 * Ajax interface to add a new user object to the users table.
 	 * Parameters:
-	 * $pageid - unused variable, interface needs to be updated
+	 * $objectid - unused variable, interface needs to be updated
 	 * Returns: Rendered html editing page for new user object
 	 */
 	public function action_addItem(){

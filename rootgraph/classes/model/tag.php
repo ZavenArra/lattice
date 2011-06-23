@@ -13,4 +13,4 @@
 class Model_Tag extends ORM {
 //put your code here
 }
-?>
+

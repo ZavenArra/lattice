@@ -6,7 +6,7 @@
 	<templates>
 
 <!-- HOME -->
-		<template name="basicCategory" contentType="category" allowChildSort="false" allowDelete="false" allowTogglePublish="false">
+		<template name="basicCategory" contentType="category" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<addableObject templateName="article" addText="Add an Article" />
 			<addableObject templateName="anotherCategory" addText="Add a Category" />
 		</template>
@@ -181,6 +181,12 @@
 		<template name="linkTest" >
       <elements>
 				<link field="theLink" label="A Link for All"/>
+      </elements>
+		</template>
+
+		<template name="tagsObjectType" >
+      <elements>
+				<tags label="Tags"/>
       </elements>
 		</template>
 

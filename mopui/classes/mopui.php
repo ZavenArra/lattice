@@ -180,5 +180,13 @@ Class mopui{
 	public static function fieldmap($values, $options){
 		return mopui::buildUIElement(array('type'=>'fieldmap', 'values'=>$values, 'options'=>$options) );
 	}
+   
+   public static function tags($currentTags){
+      $view = new View('ui_tags');
+      $view->tags = $currentTags;
+      return $view->render();
+
+   
+   }
 }
 

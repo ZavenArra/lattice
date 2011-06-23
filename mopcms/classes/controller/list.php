@@ -19,14 +19,14 @@ class Controller_List extends MOP_CMSInterface {
     *  we could just reference the primaryId attribute of Display as well...
     */
 
-   private static $page_id = NULL;
+   private static $object_id = NULL;
 
 
    /*
      Variable: model
      Main model for items content managed by this class
     */
-   protected $model = 'page';
+   protected $model = 'object';
 
    /*
     * Variable: containerObject
@@ -53,13 +53,13 @@ class Controller_List extends MOP_CMSInterface {
    }
    
    
-   protected function setListObject($listObjectIdOrParentId, $family=null) {
+   protected function setListObject($listObjectIdOrparentId, $family=null) {
 
       if ($family != null) {
          $lt = ORM::Factory('template')->where('templatename', '=', $family)->find();
 
          $listObject = ORM::Factory('listcontainer')
-                 ->where('parentid', '=', $listObjectIdOrParentId)
+                 ->where('parentId', '=', $listObjectIdOrparentId)
                  ->where('template_id', '=', $lt->id)
                  ->where('activity', 'IS', NULL)
                  ->find();
@@ -71,7 +71,7 @@ class Controller_List extends MOP_CMSInterface {
          $this->_listObject = $listObject;
       } else {
 
-         $this->_listObject = ORM::Factory('listcontainer', $listObjectIdOrParentId);
+         $this->_listObject = ORM::Factory('listcontainer', $listObjectIdOrparentId);
       }
       
       
@@ -104,13 +104,13 @@ class Controller_List extends MOP_CMSInterface {
    
    /*
     * Function: action_getList
-    * Supports either calling with list object id directly, or with parentid and family 
+    * Supports either calling with list object id directly, or with parentId and family 
     * for looking in database and config
     */
    
-   public function action_getList($listObjectIdOrParentId, $family = null) {
+   public function action_getList($listObjectIdOrparentId, $family = null) {
       
-      $this->setListObject($listObjectIdOrParentId, $family);
+      $this->setListObject($listObjectIdOrparentId, $family);
       
 
       $view = null;
@@ -168,37 +168,35 @@ class Controller_List extends MOP_CMSInterface {
      the rendered template of the new item
     */
 
-   public function action_addObject($listObjectId, $templateId=null) {
+   public function action_addObject($listObjectId, $objectTypeId=null) {
+ 
       
-      $this->setListObject($listObjectId);
+      $this->setListObject($listObjectId);  //This function should be removed
+                                                     //and all functionality simply moved to the model.
+
+           
+      $listObject = ORM::Factory('listcontainer', $listObjectId);
+
 
       //addable item should be specifid in the addItem call
-      if($templateId == null){
+      if($objectTypeId == null){
    
-        $template = mop::config('objects', sprintf('//list[@family="%s"]/addableObject', $this->_listObject->template->templatename));
-        if (!$template->length > 0) {
-           throw new Kohana_Exception('No List By That Name' .' Count not locate configuration in objects.xml for ' . sprintf('//list[@family="%s"]/addableobject', $this->_family));
+        $addableObjectTypes = mop::config('objects', sprintf('//list[@family="%s"]/addableObject', $listObject->template->templatename));
+        if (!$addableObjectTypes->length > 0) {
+           throw new Kohana_Exception('No Addable Objects ' .' Count not locate configuration in objects.xml for ' . sprintf('//list[@family="%s"]/addableobject', $this->_family));
         }
-        $addObjectTemplateId = $template->item(0)->getAttribute('templateName');
-
-      } else {
-        
-         $addObjectTemplateId = $templateId;
+        $objectTypeId = $addableObjectTypes->item(0)->getAttribute('templateName');
+      } 
+ 
+      $newId = $listObject->addObject($objectTypeId);
       
-      }
-
-      $data = array('published' => 'true');
-
-      
-      $newid = mopcms::addObject($listObjectId, $addObjectTemplateId, $data);
-
-      $item = ORM::Factory('page', $newid);
+      $item = ORM::Factory('object', $newId);
       $htmlChunks = mopcms::buildUIHtmlChunksForObject($item);
       $itemt = new View($this->itemView());
       $itemt->uiElements = $htmlChunks;
 
       $data = array();
-      $data['id'] = $newid;
+      $data['id'] = $newId;
       $data['page_id'] = $listObjectId;
       ;
       $data['instance'] = $this->_listObject->template->templatename;
