@@ -1682,7 +1682,7 @@ mop.ui.FileElement = new Class({
 		
 		this.clearButton = this.element.getElement( ".clearImageLink" );
 		this.clearButton.store( "Class", this );
-        this.clearButton.addEvent( "click", this.clearFileRequest.bindWithEvent( this ) );
+      this.clearButton.addEvent( "click", this.clearFileRequest.bindWithEvent( this ) );
         
 		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
         // console.log( ":::::::::::::::", this.Uploader.box.getElement( "object" ).get( "id" ) );
@@ -1767,10 +1767,15 @@ mop.ui.FileElement = new Class({
 	},
 
 	getSubmitURL: function(){
-		var url = "ajax/data/" + this.marshal.getSubmissionController() + "/" + this.action + "/" + this.marshal.getObjectId();
+		var url = "ajax/data/"+this.marshal.getSubmissionController()+"/"+this.action+"/"+this.marshal.getObjectId()+"/"+this.fieldName;
 //		console.log( ":::: ", this.toString(), "getSubmitURL: ", url );
 		return 	url;
 	},
+   
+   getClearFileURL: function(){
+      var url = "ajax/data/" + this.marshal.getSubmissionController() + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
+      return url;
+   },
 	
 	onFocus: function( e ){
 //		console.log( this.toString(), "onFocus", e );
@@ -1794,12 +1799,17 @@ mop.ui.FileElement = new Class({
 	},
 	
 	clearFileRequest: function( e ){
-	    if( this.previewElement ) this.previewElement.addClass( "hidden" );
-		return Request.JSON( { url: this.clearButton.get( 'href' ), onSuccess: this.onClearFileResponse.bind( this ) } ).send();
+	   if( this.previewElement ) this.previewElement.addClass( "hidden" );
+		var myRequest =  new Request.JSON( { url: this.getClearFileURL(), onSuccess: this.onClearFileResponse.bind( this ) } );
+      return myRequest.send();
 	},
 	
 	onClearFileResponse: function( json ){
-	    if( !json.returnValue ) console.log( this.toString(), "Error: mop.ui.FileElement clearFileRequest:", json.response.error );
+	    if( !json.returnValue ) console.log( this.toString(), "Error: mop.ui.FileElement clearFileRequest:", json.response.error )
+       else {
+         //clear the image controls
+       
+       }
 	},
 	
 	reposition: function(){
