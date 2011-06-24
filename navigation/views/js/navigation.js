@@ -100,14 +100,14 @@ mop.modules.navigation.Navigation = new Class({
    //        window.location.hash = this.nodeData[ nodeId ].slug;
    },
 
-   addObject: function( parentId, templateId, nodeProperties ){
-      this.dataSource.addObjectRequest( parentId, templateId, nodeProperties, this.onAddObjectResponse.bind( this ) );
+   addObject: function( parentId, templateId, nodeProperties, callback ){
+      this.dataSource.addObjectRequest( parentId, templateId, nodeProperties, callback );
    },
 
-   onAddObjectResponse: function( json ){
+  /* onAddObjectResponse: function( json ){
       console.log( this.toString(), "onAddObjectResponse", json );
    },
-    
+    */
   
     
    removeObject: function( nodeId ){
@@ -327,7 +327,14 @@ mop.modules.navigation.Tier = new Class({
       var placeHolder = this.addPlaceHolder(nodeTitle);
       this.marshal.addObject( this.parentId, templateId, {
          title: nodeTitle
-      } );
+      },
+      function(json) { this.onAddObjectResponse( json, placeHolder ); }.bind(this) );
+   },
+   
+//   /this.onAddObjectResponse.bind( json, placeHolder );/
+   onAddObjectResponse: function (json, placeHolder){
+      placeHolder.destroy();
+     
    },
    
    
