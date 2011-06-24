@@ -4,7 +4,7 @@
 	<?endif;?>
 	<fieldset>
 	<? foreach ($radios as $radioLabel => $radioValue):?>
-		<label for="<?=$radioname;?>_<?=$radioValue;?>"><?=form::radio( $radioname, $radioValue, $value==$radioValue, 'id="'.$radioname.'_'.$radioValue.'"' ); ?><?=$radioLabel;?></label>
+		<label for="<?=$radioname;?>_<?=$radioValue;?>"><?=form::radio( $radioname, $radioValue, $value==$radioValue, array('id'=>$radioname.'_'.$radioValue) ); ?><?=$radioLabel;?></label>
 	<?endforeach;?>
 	</fieldset>
 </div>
