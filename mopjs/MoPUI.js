@@ -1682,7 +1682,7 @@ mop.ui.FileElement = new Class({
 		
 		this.clearButton = this.element.getElement( ".clearImageLink" );
 		this.clearButton.store( "Class", this );
-      this.clearButton.addEvent( "click", this.clearFileRequest.bindWithEvent( this ) );
+        this.clearButton.addEvent( "click", this.clearFileRequest.bindWithEvent( this ) );
         
 		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
         // console.log( ":::::::::::::::", this.Uploader.box.getElement( "object" ).get( "id" ) );
@@ -1799,7 +1799,8 @@ mop.ui.FileElement = new Class({
 	},
 	
 	clearFileRequest: function( e ){
-	   if( this.previewElement ) this.previewElement.addClass( "hidden" );
+	   if( this.previewElement ) this.previewElement.fade( "out" );
+	   if( this.clearButton ) this.clearButton.fade("out");
 		var myRequest =  new Request.JSON( { url: this.getClearFileURL(), onSuccess: this.onClearFileResponse.bind( this ) } );
       return myRequest.send();
 	},
@@ -1876,6 +1877,7 @@ mop.ui.FileElement = new Class({
 	onFileComplete: function( data ){
 //		console.log( this.toString(), "onFileComplete", $A( arguments ), this.previewElement );
 		var json = JSON.decode( data.response.text );
+		this.clearButton.fade( "in" );
 //		console.log( "-------------------------------- ", $A( arguments ) );
 		if( this.fileName ) this.fileName.set( "html",  '<a href="' + json.src + '" target="_blank">'+json.filename+'</a>' );
         this.downloadButton.set( "href", json.src );
