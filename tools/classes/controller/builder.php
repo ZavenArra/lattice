@@ -127,7 +127,7 @@ class Controller_Builder extends Controller {
 						$path_parts = pathinfo($content->nodeValue);
 						$savename = mopcms::makeFileSaveName($path_parts['basename']);	
 						if(file_exists($content->nodeValue)){
-							copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']).$content->nodeValue, mopcms::mediapath($savename).$savename);
+							copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']).$content->nodeValue, Graph::mediapath($savename).$savename);
 						} else {
 							echo "File does not exist {$content->nodeValue} \n";
               die();

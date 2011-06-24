@@ -19,7 +19,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	}
 
 	/*
-	 * Function:  saveFile($objectid)
+	 * Function:  saveFile($objectId)
 	 * Function called on file upload
 	 * Parameters:
 	 * pageid  - the page id of the object currently being edited
@@ -33,9 +33,9 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 		 'result'=>'success',
 	 );
 	 */
-	public function action_saveFile($objectid){
+	public function action_saveFile($objectId){
 
-		$file = mopcms::saveHttpPostFile($objectid, $_POST['field'], $_FILES[$_POST['field']]);
+		$file = mopcms::saveHttpPostFile($objectId, $_POST['field'], $_FILES[$_POST['field']]);
 		$result = array(
 			'id'=>$file->id,
 			'src'=>$file->original->fullpath,
@@ -47,8 +47,8 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 		//if it's an image
 		$thumbSrc = null;
 		if($file->uithumb->filename){
-			if(file_exists(mopcms::mediapath().$file->uithumb->filename)){
-				$resultpath = mopcms::mediapath().$file->uithumb->filename;
+			if(file_exists(Graph::mediapath().$file->uithumb->filename)){
+				$resultpath = Graph::mediapath().$file->uithumb->filename;
 				$thumbSrc = Kohana::config('cms.basemediapath').$file->uithumb->filename;
 			}
 		}
@@ -62,6 +62,17 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 
 		return $result;
 
+	}
+
+	public function action_clearField($objectId, $field){
+		$object = Graph::object($objectId);
+		if(Graph::isFileModel($object->contenttable->$field) && $object->contenttable->$field->loaded()){
+			$file = $object->contenttable->$field;
+			$file->delete(); //may or may not want to do this
+		}
+		$object->contenttable->$field = null;
+      $return = array('cleared'=>'true');
+      $this->response->data($return);
 	}
 
 	/*

@@ -61,7 +61,7 @@ class Model_Object extends ORM {
          }
          return $this->_related[$column];
       } else if ($column == 'parent') {
-         return ORM::Factory('object', $this->parentId);
+         return ORM::Factory('object', $this->parentid);
       } else {
          return parent::__get($column);
       }
@@ -104,13 +104,13 @@ class Model_Object extends ORM {
       if ($inserting) {
          //and we need to update the sort, this should be the last
          //
-			if ($this->parentId != NULL) {
+			if ($this->parentid != NULL) {
             if (Kohana::config('cms.newObjectPlacement') == 'top') {
 
-               $sort = DB::query(Database::SELECT, 'select min(sortorder) as minsort from pages where parentId = ' . $this->parentId)->execute()->current();
+               $sort = DB::query(Database::SELECT, 'select min(sortorder) as minsort from pages where parentid = ' . $this->parentid)->execute()->current();
                $this->sortorder = $sort['minsort'] - 1;
             } else {
-               $query = 'select max(sortorder) as maxsort from pages where parentId = ' . $this->parentId;
+               $query = 'select max(sortorder) as maxsort from pages where parentid = ' . $this->parentid;
                $sort = DB::query(Database::SELECT, $query)->execute()->current();
                $this->sortorder = $sort['maxsort'] + 1;
             }
@@ -256,7 +256,7 @@ class Model_Object extends ORM {
       $cTemplate = ORM::Factory('template', $family);
       $container = ORM::Factory('object')
               ->where('template_id', '=', $cTemplate->id)
-              ->where('parentId', '=', $this->id)
+              ->where('parentid', '=', $this->id)
               ->where('activity', 'IS', NULL)
               ->find();
 
@@ -268,7 +268,7 @@ class Model_Object extends ORM {
    public function getPublishedChildren() {
 
       $children = ORM::Factory('object')
-              ->where('parentId', '=', $this->id)
+              ->where('parentid', '=', $this->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder')
@@ -279,7 +279,7 @@ class Model_Object extends ORM {
    public function getChildren() {
 
       $children = ORM::Factory('object')
-              ->where('parentId', '=', $this->id)
+              ->where('parentid', '=', $this->id)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder')
               ->find_all();
@@ -288,7 +288,7 @@ class Model_Object extends ORM {
 
    public function getNextPublishedPeer() {
       $next = ORM::Factory('object')
-              ->where('parentId', '=', $this->parentId)
+              ->where('parentid', '=', $this->parentid)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder', 'ASC')
@@ -304,7 +304,7 @@ class Model_Object extends ORM {
 
    public function getPrevPublishedPeer() {
       $next = ORM::Factory('object')
-              ->where('parentId', '=', $this->parentId)
+              ->where('parentid', '=', $this->parentid)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder', 'DESC')
@@ -320,7 +320,7 @@ class Model_Object extends ORM {
 
    public function getFirstPublishedPeer() {
       $first = ORM::Factory('object')
-              ->where('parentId', '=', $this->parentId)
+              ->where('parentid', '=', $this->parentid)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder', 'ASC')
@@ -335,7 +335,7 @@ class Model_Object extends ORM {
 
    public function getLastPublishedPeer() {
       $last = ORM::Factory('object')
-              ->where('parentId', '=', $this->parentId)
+              ->where('parentid', '=', $this->parentid)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder', 'DESC')
@@ -349,7 +349,7 @@ class Model_Object extends ORM {
    }
 
    public function getParent() {
-      $parent = ORM::Factory('object', $this->parentId);
+      $parent = ORM::Factory('object', $this->parentid);
       return $parent;
    }
 
@@ -380,14 +380,14 @@ class Model_Object extends ORM {
    private function moveUploadedFileToTmpMedia($tmpName) {
       $saveName = mopcms::makeFileSaveName('tmp') . microtime();
 
-      if (!move_uploaded_file($tmpName, mopcms::mediapath() . $saveName)) {
+      if (!move_uploaded_file($tmpName, Graph::mediapath() . $saveName)) {
          $result = array(
              'result' => 'failed',
              'error' => 'internal error, contact system administrator',
          );
          return $result;
       }
-      Kohana::$log->add(Log::INFO, 'tmp moved file to ' . mopcms::mediapath() . $saveName);
+      Kohana::$log->add(Log::INFO, 'tmp moved file to ' . Graph::mediapath() . $saveName);
 
       return $saveName;
    }
@@ -400,10 +400,10 @@ class Model_Object extends ORM {
       $file->unlinkOldFile();
       $saveName = mopcms::makeFileSaveName($fileName);
 
-      if (!copy(mopcms::mediapath() . $tmpName, mopcms::mediapath() . $saveName)) {
+      if (!copy(Graph::mediapath() . $tmpName, Graph::mediapath() . $saveName)) {
          throw new MOP_Exception('this is a MOP Exception');
       }
-      unlink(mopcms::mediapath() . $tmpName);
+      unlink(Graph::mediapath() . $tmpName);
 
       $file->filename = $saveName;
       $file->mime = $type;
@@ -464,9 +464,9 @@ class Model_Object extends ORM {
             Kohana::$log->add(Log::INFO, 'Converting TIFF image to JPG for resize');
 
             $imageFileName = $filename . '_converted.jpg';
-            $command = sprintf('convert %s %s', addcslashes(mopcms::mediapath() . $filename, "'\"\\ "), addcslashes(mopcms::mediapath() . $imageFileName, "'\"\\ "));
+            $command = sprintf('convert %s %s', addcslashes(Graph::mediapath() . $filename, "'\"\\ "), addcslashes(Graph::mediapath() . $imageFileName, "'\"\\ "));
             Kohana::$log->add(Log::INFO, $command);
-            system(sprintf('convert %s %s', addcslashes(mopcms::mediapath() . $filename, "'\"\\ "), addcslashes(mopcms::mediapath() . $imageFileName, "'\"\\ ")));
+            system(sprintf('convert %s %s', addcslashes(Graph::mediapath() . $filename, "'\"\\ "), addcslashes(Graph::mediapath() . $imageFileName, "'\"\\ ")));
             break;
          default:
             $imageFileName = $filename;
@@ -486,14 +486,14 @@ class Model_Object extends ORM {
             $prefix = '';
          }
          $newFilename = $prefix . $imageFileName;
-         $saveName = mopcms::mediapath() . $newFilename;
+         $saveName = Graph::mediapath() . $newFilename;
 
          mopcms::resizeImage($imageFileName, $newFilename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('forceDimension'), $resize->getAttribute('crop')
          );
 
          if (isset($oldFilename) && $newFilename != $prefix . $oldFilename) {
-            if (file_exists(mopcms::mediapath() . $oldFilename)) {
-               unlink(mopcms::mediapath() . $oldFilename);
+            if (file_exists(Graph::mediapath() . $oldFilename)) {
+               unlink(Graph::mediapath() . $oldFilename);
             }
          }
       }
@@ -554,8 +554,8 @@ class Model_Object extends ORM {
       return $this;
    }
 
-   public function parentFilter($parentId) {
-      $this->where('parentId', '=', $parentId);
+   public function parentFilter($parentid) {
+      $this->where('parentid', '=', $parentid);
    }
 
    public function noContainerObjects() {
@@ -626,10 +626,10 @@ class Model_Object extends ORM {
       } else {
          $newObject->slug = mopcms::createSlug();
       }
-      $newObject->parentId = $this->id;
+      $newObject->parentid = $this->id;
 
       //calculate sort order
-      $sort = DB::select(array('sortorder', 'maxsort'))->from('pages')->where('parentId', '=', $this->id)
+      $sort = DB::select(array('sortorder', 'maxsort'))->from('pages')->where('parentid', '=', $this->id)
                       ->order_by('sortorder')->limit(1)
                       ->execute()->current();
       $newObject->sortorder = $sort['maxsort'] + 1;

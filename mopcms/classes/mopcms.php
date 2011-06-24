@@ -6,8 +6,6 @@
 
 class MoPCMS {
 
-	private static $mediapath;
-
 	/*
 	 * Variable: createSlug($title, $forPageId)
 	 * Creates a unique slug to identify a page
@@ -58,18 +56,6 @@ class MoPCMS {
 		return $value;
 	}
 
-	public static function mediapath(){
-		if(self::$mediapath){
-			return self::$mediapath;
-		}
-		if(Kohana::config('mop.staging')){
-			self::$mediapath = Kohana::config('mop_cms.stagingmediapath');
-		} else {
-			self::$mediapath = Kohana::config('mop_cms.basemediapath');
-		}
-		return self::$mediapath;
-	}
-
 	/*
 	 *
 	 */
@@ -87,7 +73,7 @@ class MoPCMS {
 			break;
 		}
 
-		$image = Image::factory(mopcms::mediapath().$originalFilename);
+		$image = Image::factory(Graph::mediapath().$originalFilename);
 		if($crop) {
 			//resample with crop
 			//set up sizes, and crop
@@ -98,7 +84,7 @@ class MoPCMS {
 			}
 			$image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
       $quality = Kohana::config('cms.imagequality');
-			$image->save(mopcms::mediapath().$newFilename, $quality);
+			$image->save(Graph::mediapath().$newFilename, $quality);
 
 		} else {
 			//just do the resample
@@ -107,7 +93,7 @@ class MoPCMS {
 			$resizeheight = $height;
 
 			if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
-				$osize = getimagesize(mopcms::mediapath().$imageFilename);
+				$osize = getimagesize(Graph::mediapath().$imageFilename);
 				$horizontal = false;
 				if($osize[0] > $osize[1]){
 					//horizontal
@@ -130,7 +116,7 @@ class MoPCMS {
 			$image->resize($resizewidth, $resizeheight, $keydimension);
 
       $quality = Kohana::config('cms.imagequality');
-			$image->save(mopcms::mediapath() .$newFilename, $quality);
+			$image->save(Graph::mediapath() .$newFilename, $quality);
 
 		}
 
@@ -321,7 +307,7 @@ class MoPCMS {
 					$objects = ORM::Factory('template', $template->getAttribute('name'))->getActiveMembers();
 					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
-						if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(mopcms::mediapath() . $object->contenttable->$fieldname->filename)){
+						if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(Graph::mediapath() . $object->contenttable->$fieldname->filename)){
 							$object->processImage($object->contenttable->$fieldname->filename, $fieldname);
 						}
 					}
@@ -336,7 +322,7 @@ class MoPCMS {
 			foreach(mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename)) as $element){
 				if($element->tagName == 'image'){
 					$fieldname = $element->getAttribute('field');
-					if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(mopcms::mediapath() . $object->contenttable->$fieldname->filename)){
+					if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(Graph::mediapath() . $object->contenttable->$fieldname->filename)){
 						$object->processImage($object->contenttable->$fieldname->filename, $fieldname);
 					}
 				}
@@ -353,10 +339,10 @@ public static function makeFileSaveName($filename) {
       $name = array_slice($xarray, 0, $nr - 1);
       $name = implode('.', $name);
       $i = 1;
-      if (!file_exists(mopcms::mediapath() . "$name" . '.' . $ext)) {
+      if (!file_exists(Graph::mediapath() . "$name" . '.' . $ext)) {
          $i = '';
       } else {
-         for (; file_exists(mopcms::mediapath() . "$name" . $i . '.' . $ext); $i++) {
+         for (; file_exists(Graph::mediapath() . "$name" . $i . '.' . $ext); $i++) {
             
          }
       }
