@@ -1776,6 +1776,7 @@ mop.ui.FileElement = new Class({
       var url = "ajax/data/" + this.marshal.getSubmissionController() + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
       return url;
    },
+   
 	
 	onFocus: function( e ){
 //		console.log( this.toString(), "onFocus", e );
