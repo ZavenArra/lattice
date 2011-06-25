@@ -63,13 +63,13 @@ Class Controller_MopFrontend extends Controller_Layout{
 		} else {
 			//check for a virtual page specified in frontend.xml
 			//a virtual page will be one that does not match a template
-			$viewname = $objectidorslug;
-			$this->view = new View($viewname);
+			$viewName = $objectidorslug;
+			$this->view = new View($viewName);
 		}
 
 		//call this->view load data
 		//get all the data for the page
-		$viewContent = mop::getViewContent($viewPath, $objectidorslug);
+		$viewContent = mop::getViewContent($viewName, $objectidorslug);
 		foreach ($viewContent as $key => $value) {
 			$this->view->$key = $value;
 		}

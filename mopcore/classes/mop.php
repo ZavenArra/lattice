@@ -37,6 +37,8 @@
         $this->_validationErrors[] = preg_replace("/^.+: */", "", $pString).$pLine;
       }
     }
+    
+    
 Class mop {
 
 	private static $config;
@@ -218,7 +220,7 @@ Class mop {
 
 		$viewConfig = mop::config('frontend', "//view[@name=\"$view\"]")->item(0);
 		if (!$viewConfig) {
-			die("No View setup in frontend.xml by that name: $view");
+         throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
 		}
 		if ($viewConfig->getAttribute('loadPage')) {
 			$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
@@ -269,46 +271,23 @@ Class mop {
 
 	public static function getIncludeContent($includeTier, $parentId){
     $content = array();
-    if($eDataNodes = mop::config('frontend',"includeData", $includeTier)){
-      foreach($eDataNodes as $eDataConfig){
+    if($includeContentQueries = mop::config('frontend', 'includeData', $includeTier)) {
+         foreach ($includeContentQueries as $includeContentQueryParams) {
+            $query = new Graph_ObjectQuery();
+            $query->initWithXml($includeContentQueryParams);
+            $includeContent = $query->run();
 
-        $objects = ORM::Factory('object');
-
-        //apply optional parent filter
-        if($from = $eDataConfig->getAttribute('from')){
-          if($from=='parent'){
-            $objects->where('parentId', '=', $parentId);
-          } else {
-            $from = ORM::Factory('object')->where('id', '=', $from)->find();
-            $objects->where('parentId', '=', $from->id);	
-          }
-        }
-
-        //apply optional template filter
-        $objects = $objects->templateFilter($eDataConfig->getAttribute('templateFilter'));
-
-        //apply optional SQL where filter
-        if($where = $eDataConfig->getAttribute('where')){
-          $objects->where($where);
-        }
-
-        $objects->publishedFilter();
-        $objects->orderBy('sortorder');
-        $objects = $objects->find_all();
-
-        $label = $eDataConfig->getAttribute('label');
-        $items = array();
-        foreach($objects as $includeObject){
-          $itemsData = $includeObject->getContent();
-          $itemsData = array_merge($itemsData, mop::getIncludeContent($eDataConfig, $includeObject->id ) );
-          $items[] = $itemsData;
-        }
-        $content[$label] = $items;
-      }
+            for ($i = 0; i < count($includeContent); $i++) {
+               $children = mop::getIncludeContent($includeContentQuery, $includeContent[$i]['id']);
+               $includeContent[$i] = array_merge($includeContent[$i], $children);
+            }
+            $content[$query->label] = $includeContent;
+         }
     }
     return $content;
   }
-
+  
+  
 
 
 }

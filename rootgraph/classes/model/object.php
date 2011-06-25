@@ -536,20 +536,19 @@ class Model_Object extends ORM {
       if (!$templates) {
          return $this;
       }
-      $db = new Database();
       if (strpos(',', $templates)) {
          $tNames = explode(',', $templates);
          $tIds = array();
          foreach ($tNames as $tname) {
-            $result = $db->query("Select id from templates where templatename = '$templates'");
+            $result = DB::query("Select id from templates where templatename = '$templates'")->execute();
             $tIds[] = $result->current()->id;
          }
          $this->in('template_id', $tIds);
       } else if ($templates == 'all') {
          //set no filter
       } else {
-         $result = $db->query("Select id from templates where templatename = '$templates'");
-         $this->where('template_id', '=', $result->current()->id);
+         $result = DB::query(Database::SELECT, "Select id from templates where templatename = '$templates'")->execute()->current();
+         $this->where('template_id', '=', $result['id']);
       }
       return $this;
    }
