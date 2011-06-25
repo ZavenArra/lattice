@@ -2,6 +2,11 @@
 
 Class Controller_CSV extends Controller {
 
+   public function action_index(){
+         $view = new View('csv/index');
+        $this->response->body($view->render());
+   }
+   
 	/*
 	 * Function: createImportTemplateFilled($view)
 	 * This function creates a csv import template which has data pre-filled from the table
@@ -25,8 +30,7 @@ Class Controller_CSV extends Controller {
 			$columns = array();
 			foreach($data as $item){
 					foreach($item as $field => $value){
-					//	$label = mop::config('objects', 
-						$columns[$field] = $field;
+                  $columns[$field] = $field;
 					}	
 			}
 			fputcsv($outputCSV, $columns);
@@ -49,4 +53,34 @@ Class Controller_CSV extends Controller {
 			fclose($outputCSV);
          echo 'Exported to application/media/'.$exportParamterKey.'.csv';
 	}
+   
+   public function action_importUploadForm(){
+       $view = new View('csv/uploadform');
+       $this->response->body($view->render());
+   }
+   
+   public function action_importCSVFile(){
+      $csvFile = fopen($_FILES['upload']['tmp_name'], 'r');
+      $columns = fgetcsv($csvFile); //skip 
+      $columns = array_flip($columns);
+      if(!$columns['id']){
+         throw new Kohana_Exception("CSV File must have ID column");
+      }
+      while($csvRow = fgetcsv($csvFile)){
+         $id = $csvRow[$columns['id']];
+         $object = Graph::object($id);
+         foreach($columns as $column => $index){
+            if($column == 'id' || $column == 'dateAdded' ){
+               continue;
+            } else if ($column == 'slug'){
+               
+              continue;
+            }
+            //the update array should be passed to the object, not hanlded here
+            //and slug coupling should also be handled in the object
+            $object->contentTable->$column = $csvRow[$index];
+         }
+         $object->save();
+      }
+   }
 }

@@ -88,7 +88,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	public function action_savefield($id){
 		$object = ORM::Factory('object', $id);
 
-      
+      //all this logic should be moved to object model
 		if($_POST['field']=='slug'){
 			$object->slug = mopcms::createSlug($_POST['value'], $object->id);
 			$object->decoupleSlugTitle = 1;
