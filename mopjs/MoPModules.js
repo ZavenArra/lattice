@@ -81,9 +81,8 @@ mop.modules.Module = new Class({
 		descendantModules.each( function( aDescendant ){
 			if( !filteredOutModules.contains( aDescendant ) ){
 				var module = this.initModule( aDescendant );
-				console.log( "::\t", aDescendant );
 				var instanceName = module.instanceName;
-            console.log('kkasdf'+module.instanceName);
+                console.log( "\n::\t", module.instanceName, "is a descendant of ", this.toString());
 				this.childModules[ instanceName ] = module;
 			}
 		}, this );
@@ -168,7 +167,7 @@ mop.modules.Module = new Class({
 	destroyUIElements: function(){
 //		console.log( "destroyUIElements", this, this.instanceName, this.UIElements );
 		if( !this.UIElements || !this.UIElements.length || this.UIElements.length == 0  ) return;
-		this.UIElements.each( function( aUIElement ){
+		Object.each( this.UIElements, function( aUIElement ){
 			aUIElement.destroy();
 			this.UIElements.erase( aUIElement );
 			delete aUIElement;
@@ -405,10 +404,10 @@ mop.modules.MoPList = new Class({
 	},
     
 	onAddObjectResponse: function( json ){
-        console.log( "::::: ", json );
         var element = this.addObjectDialogue.setContent( json.response.html, this.controls.getElement( ".addItem" ).get( "text" ) );
         var listItem = new mop.modules.ListItem( element, this, this.addObjectDialogue, { scrollContext: 'modal' } );
-        listItem.UIElements.each( function( uiInstance ){
+        console.log( "::::: ", json, typeof listItem.UIElements );
+        Object.each( listItem.UIElements, function( uiInstance ){
         	uiInstance.scrollContext = "modal";
         });
         this.items.push( listItem );
@@ -447,7 +446,7 @@ mop.modules.MoPList = new Class({
 		var listItemInstance = anElement.retrieve("Class");
 		listItemInstance.scrollContext = 'window';
 		listItemInstance.resetFileDepth();
-		listItemInstance.UIElements.each( function( uiInstance ){
+		Object.each( listItemInstance.UIElements, function( uiInstance ){
 			uiInstance.scrollContext = "window";
 		});
 		anElement.tween( "opacity", 1 );
@@ -579,7 +578,8 @@ mop.modules.ListItem = new Class({
 	},
 	
 	resetFileDepth: function(){
-		this.UIElements.each( function( anElement ){
+	    console.log( this, this.toString(), this.UIElements );
+		Object.each( this.UIElements, function( anElement ){
 			if( anElement.type == "file" || anElement.type == "imageFile" ) anElement.reposition( 'window' );
 		});
 	},
