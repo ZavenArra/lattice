@@ -63,24 +63,22 @@ Class Controller_CSV extends Controller {
       $csvFile = fopen($_FILES['upload']['tmp_name'], 'r');
       $columns = fgetcsv($csvFile); //skip 
       $columns = array_flip($columns);
-      if(!$columns['id']){
+      if(!isset($columns['id'])){
          throw new Kohana_Exception("CSV File must have ID column");
       }
       while($csvRow = fgetcsv($csvFile)){
          $id = $csvRow[$columns['id']];
          $object = Graph::object($id);
          foreach($columns as $column => $index){
-            if($column == 'id' || $column == 'dateAdded' ){
+            if($column == 'id' || $column == 'dateAdded' || $column == 'templateName' ){
                continue;
-            } else if ($column == 'slug'){
-               
-              continue;
-            }
+            } 
+            $object->$column = $csvRow[$index];
             //the update array should be passed to the object, not hanlded here
-            //and slug coupling should also be handled in the object
-            $object->contentTable->$column = $csvRow[$index];
+//            $object->contentTable->$column = $csvRow[$index];
          }
          $object->save();
       }
+      echo 'Done';
    }
 }

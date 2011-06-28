@@ -66,6 +66,7 @@ class Graph_ObjectQuery {
          $items[] = $itemsData;
       }
       return $items;
+      
    }
 }
 

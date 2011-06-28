@@ -112,23 +112,23 @@ class Model_Object extends ORM {
 
          
          if ($column == 'slug') {
-            $this->slug = mopcms::createSlug($field, $object->id);
-            $this->decoupleSlugTitle = 1;
+            parent::__set('slug', mopcms::createSlug($value, $this->id));
+            parent::__set('decoupleSlugTitle', 1);
             $this->save();
             return;
          } else if ($column == 'title') {
             if (!$this->decoupleSlugTitle) {
-               $this->slug = mopcms::createSlug($field, $object->id);
+               $this->slug = mopcms::createSlug($value, $this->id);
             }
             $this->save();
             $this->contenttable->title = $value;
             $this->contenttable->save();
             return;
          } else if (in_array($column, array('dateadded'))) {
-            $this->$column = $value;
+            parent::__set($column, $value);
             $this->save();
          } else if($this->_table_columns && in_array($column, $this->_table_columns)){
-            $this->$column = $value;
+            parent::__set($column, $value);
             $this->save();
          } else if ($column) {
             $o = $this->_object;
