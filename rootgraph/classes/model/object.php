@@ -62,7 +62,7 @@ class Model_Object extends ORM {
             throw new Kohana_Exception('BAD_MOP_DB' . 'no content record for page ' . $this->id);
          }
          return $this->_related[$column];
-      } else if (in_array($column, $this->_table_columns)){
+      } else if (in_array($column, array_keys($this->_table_columns))){
          return parent::__get($column);
       } else if ($column == 'parent') {
          return Graph::object($this->parentid);
@@ -98,6 +98,7 @@ class Model_Object extends ORM {
       }
       
       
+      
       if ($column == 'contenttable') {
          $this->_changed[$column] = $column;
 
@@ -127,7 +128,7 @@ class Model_Object extends ORM {
          } else if (in_array($column, array('dateadded'))) {
             parent::__set($column, $value);
             $this->save();
-         } else if($this->_table_columns && in_array($column, $this->_table_columns)){
+         } else if($this->_table_columns && in_array($column, array_keys($this->_table_columns))){
             parent::__set($column, $value);
             $this->save();
          } else if ($column) {
