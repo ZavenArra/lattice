@@ -27,11 +27,12 @@ mop.modules.CMS = new Class({
     },
     
     getRequestTierURL: function( parentId ){
+        if( !parentId ) parentId = "NULL";
         return mop.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId;
     },
 
     getAddObjectRequestURL: function( parentId, templateId ){
-        return mop.util.getBaseURL() + "ajax/data/cms/addObject/" + parentId + "/" + templateId;
+        return mop.util.getBaseURL() + "ajax/compound/cms/addObject/" + parentId + "/" + templateId;
     },
     
     getTogglePublishedStatusRequestURL: function( nodeId ){            
@@ -246,6 +247,7 @@ mop.modules.CMS = new Class({
     },
 
     addObjectResponse: function( json ){
+        console.log( "addObjectResponse", json );
         if( !json.returnValue ) console.log( this.toString(), "addObjectRequest error:", json.response.error );
     },
 
