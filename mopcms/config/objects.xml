@@ -8,6 +8,9 @@
 <!-- HOME -->
 		<template name="basicCategory" contentType="category" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<addableObject templateName="article" addText="Add an Article" />
+			<addableObject templateName="multilineIPE" addText="Add an Article" />
+			<addableObject templateName="singleIPE" addText="Add an Article" />
+			<addableObject templateName="singleDate" addText="Add an Article" />
 			<addableObject templateName="anotherCategory" addText="Add a Category" />
 		</template>
 

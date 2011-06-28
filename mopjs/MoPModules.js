@@ -158,7 +158,7 @@ mop.modules.Module = new Class({
 		    if( possibleTargets.contains( aModule.element ) ){
 		        var key = aModule.instanceName;
 				aModule.destroy();
-			//	this.childModules.erase( key );
+				delete this.childModules[key];
 				delete aModule;
 				aModule = null;
 			}
@@ -169,9 +169,8 @@ mop.modules.Module = new Class({
 //		console.log( "destroyUIElements", this, this.instanceName, this.UIElements );
 		if( !this.UIElements || !this.UIElements.length || this.UIElements.length == 0  ) return;
 		this.UIElements.each( function( aUIElement ){
-			var key = aUIElement.fieldName;
 			aUIElement.destroy();
-			this.UIElements.erase( key );
+			this.UIElements.erase( aUIElement );
 			delete aUIElement;
 			aUIElement = null;
 		}, this );
