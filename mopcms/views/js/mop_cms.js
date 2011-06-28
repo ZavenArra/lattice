@@ -37,12 +37,36 @@ mop.modules.CMS = new Class({
     getTogglePublishedStatusRequestURL: function( nodeId ){            
         return mop.util.getBaseURL() + "ajax/data/cms/togglePublish/"+ nodeId;
     },
+    
+    getRootNodeId: function(){       
+       return this.rootNodeId;
+    },
+
+
 
 	/* Section: Constructor */
 	initialize: function( anElement, options ){
-        this.parent( anElement, null, options );
-        this.instanceName = this.element.get("id");
-		this.objectId = this.getValueFromClassName( "objectId" );		
+     
+     //this initializer and the initializer parent chain need to be rethough
+     //because submodules are required to be initialize before the parent
+     //what is the submodule have devependencies on the parent?
+     //
+     //this.parent( anElement, null, options );
+
+      var aMarshal = null;
+      this.setOptions( options );
+		this.element = $( anElement );
+		this.elementClass = this.element.get("class");
+		this.marshal = aMarshal;
+		this.element.store( 'Class', this );
+		this.instanceName = this.element.get("id");
+
+
+     	this.rootNodeId = this.getValueFromClassName( "objectId" );	
+
+
+     
+      console.log('hey'+this.element.get("id"));
 		$$( "script" ).each( function( aScriptTag ){ 
 		    this.loadedJS.push( aScriptTag.get("src") );
 		}, this );
@@ -50,6 +74,11 @@ mop.modules.CMS = new Class({
 		    function( aStyleSheetTag ){ this.loadedCSS.push(  aStyleSheetTag );
 		}, this );
 		console.log( ":::::: ", this.loadedJS );
+      
+      //this code needs to be reorganized
+      this.pageContent = $("nodeContent");
+      this.UIElements = this.initUI();
+		this.initModules( this.element );
 	},
 
 	/* Section: Methods */
@@ -63,7 +92,7 @@ mop.modules.CMS = new Class({
 	populate: function( html ){
 		$("nodeContent").unspin();
 		this.pageContent.set( 'html', html );
-		this.uiElements = this.initUI( this.pageContent );
+		this.UIElements = this.initUI( this.pageContent );
 		this.initModules( this.pageContent );		
 		this.titleElement = this.element.getElement( ".pageTitle" );
 		if( this.titleElement ){
@@ -80,7 +109,7 @@ mop.modules.CMS = new Class({
 	    console.log( "clearPage" );
 		this.destroyChildModules( this.pageContent );
 		this.destroyUIElements();
-		this.pageContent.empty();
+      this.pageContent.empty();
 	},
 
 	
@@ -171,7 +200,9 @@ mop.modules.CMS = new Class({
     onNodeSelected: function( nodeId ){
         console.log( this.toString(), "onNodeSelected", nodeId );
         this.clearPage();
+        if(this.pageContent){
         this.pageContent.spin();
+         }
         this.requestPage( nodeId );
     },
     

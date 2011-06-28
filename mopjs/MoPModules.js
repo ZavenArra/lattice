@@ -28,7 +28,7 @@ mop.modules.Module = new Class({
 	
 	initialize: function( anElementOrId, aMarshal, options ){
 //		console.log( "Constructing", this.toString(), this.childModules );
-		this.parent( anElementOrId, aMarshal, options );
+		this.parent( anElementOrId, aMarshal, options );  
 		this.instanceName = this.element.get("id");
 		this.build();			
 	},
@@ -83,6 +83,7 @@ mop.modules.Module = new Class({
 				var module = this.initModule( aDescendant );
 				console.log( "::\t", aDescendant );
 				var instanceName = module.instanceName;
+            console.log('kkasdf'+module.instanceName);
 				this.childModules[ instanceName ] = module;
 			}
 		}, this );
@@ -133,27 +134,31 @@ mop.modules.Module = new Class({
 	*/
 	initUI: function( anElement ){
 	    anElement = ( anElement )? anElement : this.element;
-		var UIElements = this.getModuleUIElements( anElement );
-		if( !UIElements || UIElements.length == 0  ) return null;
-		UIElements.each( function( anElement ){
+		var ModuleUIElements = this.getModuleUIElements( anElement );
+		if( !ModuleUIElements || ModuleUIElements.length == 0  ) {
+         this.UIElements = new Array();
+         return this.UIElements;
+      }
+		ModuleUIElements.each( function( anElement ){
 //		    console.log( 'initUI >>>> ', anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  );
 		    var UIElement = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) ) ]( anElement, this, this.options );
 		    this.UIElements[ UIElement.fieldName ] = UIElement;
 		}, this );
 		if( this.postInitUIHook ) this.postInitUIHook();
-		return UIElements;
+		return this.UIElements;
 	},
 
 /*  Function: destroyChildModules */
 	destroyChildModules: function( whereToLook ){
 //		console.log( "destroyChildModules", this.toString(), this.childModules );
+
 		if( !this.childModules || Object.getLength( this.childModules ) == 0 ) return;
         var possibleTargets = ( whereToLook )? whereToLook.getElements( ".module" ) : this.element.getElements( ".module" );
 		Object.each( this.childModules, function( aModule ){
 		    if( possibleTargets.contains( aModule.element ) ){
 		        var key = aModule.instanceName;
 				aModule.destroy();
-				this.childModules.erase( key );
+			//	this.childModules.erase( key );
 				delete aModule;
 				aModule = null;
 			}

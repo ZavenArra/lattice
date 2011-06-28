@@ -51,7 +51,9 @@ class Model_Object extends ORM {
     *         */
 
    public function __get($column) {
-
+//echo $column;
+     // print_r($this->_table_columns);
+      
       if ($column == 'contenttable' && !isset($this->_related[$column])) {
          $content = ORM::factory(inflector::singular('contents'));
          $content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
@@ -60,10 +62,26 @@ class Model_Object extends ORM {
             throw new Kohana_Exception('BAD_MOP_DB' . 'no content record for page ' . $this->id);
          }
          return $this->_related[$column];
-      } else if ($column == 'parent') {
-         return ORM::Factory('object', $this->parentid);
-      } else {
+      } else if (in_array($column, $this->_table_columns)){
          return parent::__get($column);
+      } else if ($column == 'parent') {
+         return Graph::object($this->parentid);
+      } else if ($column == 'contenttable'){
+         return parent::__get($column);
+      } else {
+         $values = $this->_object;
+         $template_id = $values['template_id'];
+        
+         $objectmap = ORM::Factory('objectmap')
+                 ->where('template_id', '=', $template_id)
+                 ->where('column', '=', $column)
+                 ->find();
+         
+        if($objectmap->loaded()){
+            return $this->contenttable->$column;
+         } else {
+            return parent::__get($column);
+         }
       }
    }
 
@@ -73,6 +91,13 @@ class Model_Object extends ORM {
     */
 
    public function __set($column, $value) {
+      
+      if(!$this->_loaded){
+         //Bypass special logic when just loading the object
+         return parent::__set($column, $value);
+      }
+      
+      
       if ($column == 'contenttable') {
          $this->_changed[$column] = $column;
 
@@ -81,10 +106,74 @@ class Model_Object extends ORM {
 
          $this->object[$column] = $this->load_type($column, $value);
       } else {
-         if (is_object($value)) {
-            return parent::__set($column, $value);
+         if (!is_object($value)) {
+            $value = mopcms::convertNewlines($value);
+         }
+
+         
+         if ($column == 'slug') {
+            $this->slug = mopcms::createSlug($field, $object->id);
+            $this->decoupleSlugTitle = 1;
+            $this->save();
+            return;
+         } else if ($column == 'title') {
+            if (!$this->decoupleSlugTitle) {
+               $this->slug = mopcms::createSlug($field, $object->id);
+            }
+            $this->save();
+            $this->contenttable->title = $value;
+            $this->contenttable->save();
+            return;
+         } else if (in_array($column, array('dateadded'))) {
+            $this->$column = $value;
+            $this->save();
+         } else if($this->_table_columns && in_array($column, $this->_table_columns)){
+            $this->$column = $value;
+            $this->save();
+         } else if ($column) {
+            $o = $this->_object;
+            $template_id = $o['template_id'];
+            
+            $objectType = ORM::Factory('objecttype',$template_id);
+            
+            $xpath = sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $objectType->templatename, $column);
+            $fieldInfo = mop::config('objects', $xpath)->item(0);
+            if (!$fieldInfo) {
+               throw new Kohana_Exception('Invalid field for template, using XPath : :xpath', array(':xpath' => $xpath));
+            }
+
+/*
+            switch ($fieldInfo->getAttribute('type')) {
+               case 'multiSelect':
+                  $object = ORM::Factory('object', $field);
+                  if (!$object->loaded) {
+                     $object->template_id = ORM::Factory('template', $lookup[$field]['object'])->id;
+                     $object->save();
+                     $object->contenttable->$field = $object->id;
+                     $object->contenttable->save();
+                  }
+                  $options = array();
+                  foreach (mop::config('objects', sprintf('/template[@name="%s"]/element', $object->template->templatename)) as $field) {
+                     if ($field->getAttribute('type') == 'checkbox') {
+                        $options[] = $field['field'];
+                     }
+                  }
+                  foreach ($options as $field) {
+                     $object->contenttable->$field = 0;
+                  }
+
+                  foreach ($field as $value) {
+                     $object->contenttable->$value = 1;
+                  }
+                  $object->contenttable->save();
+                  break;
+               default:*/
+              $this->contenttable->$column = $value;
+              $this->contenttable->save();
+   //               break;
+           // }
          } else {
-            return parent::__set($column, mopcms::convertNewlines($value));
+            throw new Kohana_Exception('Invalid POST Arguments, POST must contain field and value parameters');
          }
       }
    }
@@ -508,7 +597,7 @@ class Model_Object extends ORM {
    //this is gonna change a lot!
    //this only supports a very special case of multiSelect objects
    public function saveObject() {
-      $object = ORM::Factory('object', $this->contenttable->$_POST['field']);
+      $object = ORM::Factory('object', $this->contenttable->$field);
       if (!$object->template_id) {
          $object->template_id = 0;
       }
@@ -745,7 +834,6 @@ class Model_Object extends ORM {
       return $newObject->id;
    }
 
-   
 }
 
 ?>

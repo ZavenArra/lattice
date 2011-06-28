@@ -86,74 +86,16 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	* Returns: array('value'=>{value})
 	 */
 	public function action_savefield($id){
-		$object = ORM::Factory('object', $id);
-
-      //all this logic should be moved to object model
-		if($_POST['field']=='slug'){
-			$object->slug = mopcms::createSlug($_POST['value'], $object->id);
-			$object->decoupleSlugTitle = 1;
-			$object->save();
-			$this->response->data( array('value'=>$object->slug) );
-			return;
-		} else if($_POST['field']=='title'){
-			if(!$object->decoupleSlugTitle){
-				$object->slug = mopcms::createSlug($_POST['value'], $object->id);
-			}
-			$object->save();
-			$object->contenttable->title = mopcms::convertNewlines($_POST['value']);
-			$object->contenttable->save();
-			$object = ORM::Factory('object')->where('id', '=', $id)->find();
-			$this->response->data( array('value'=>$object->contenttable->$_POST['field'], 'slug'=>$object->slug) );
-         return;
-		}
-		else if(in_array($_POST['field'], array('dateadded'))){
-			$object->$_POST['field'] = $_POST['value'];
-			$object->save();
-		} else if($_POST['field']) {
-			$xpath = sprintf('//template[@name="%s"]/elements/*[@field="%s"]',
-				$object->template->templatename,
-				$_POST['field']);
-			$fieldInfo = mop::config('objects', $xpath)->item(0);
-			if(!$fieldInfo){
-				throw new Kohana_Exception('Invalid field for template, using XPath : :xpath', array(':xpath'=>$xpath));
-			}
-
-			switch($fieldInfo->getAttribute('type')){
-			case 'multiSelect':
-				$object = ORM::Factory('object', $_POST['field']);
-				if(!$object->loaded){
-					$object->template_id = ORM::Factory('template', $lookup[$_POST['field']]['object'])->id;
-					$object->save();
-					$object->contenttable->$_POST['field'] = $object->id;
-					$object->contenttable->save();
-				}
-				$options = array();
-				foreach(mop::config('objects', sprintf('/template[@name="%s"]/element', $object->template->templatename)) as $field){
-					if($field->getAttribute('type') == 'checkbox'){
-						$options[] = $field['field'];
-					}
-				}
-				foreach($options as $field){
-					$object->contenttable->$field  = 0;
-				}
-
-				foreach($_POST['value'] as $value){
-					$object->contenttable->$value = 1;
-				}
-				$object->contenttable->save();
-				break;	
-			default:
-				$object->contenttable->$_POST['field'] = mopcms::convertNewlines($_POST['value']);
-				$object->contenttable->save();
-				break;
-			}
-		} else {
-			throw new Kohana_Exception('Invalid POST Arguments, POST must contain field and value parameters');
-		}
-
-		$object = ORM::Factory('object')->where('id', '=', $id)->find();
-      $value = $object->contenttable->$_POST['field'];
-      $this->response->data(array('value'=>$value));
+      $object = Graph::object($id);
+      $object->$_POST['field'] = $_POST['value'];
+		$object = Graph::object($id);
+      $value = $object->$_POST['field'];
+      
+      $returnData = array('value'=>$value);
+      if($_POST['field']=='title'){
+         $returnData['slug'] = $object->slug;
+      }
+      $this->response->data($returnData);
 	}
 
 

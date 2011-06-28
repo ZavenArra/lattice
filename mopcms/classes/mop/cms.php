@@ -66,8 +66,16 @@ class MOP_CMS extends MOP_CMSInterface {
 		} else {
 			$this->view->userlevel = 'basic';
 		}	
-		$this->assignObjectId();
+      
+      
+	//get the default 
 
+      
+      $rootObjectType = ORM::factory('template')->where('templateName', '=', Kohana::config('cms.graphRootNode'))->find();
+      $rootObject = ORM::Factory('object')->where('template_id', '=', $rootObjectType->id)->find();
+
+      $this->view->objectId = $rootObject->id;
+      
 		
 		//basically this is an issue with wanting to have multiple things going on
 		//with the same controller as a parent at runtime
@@ -230,22 +238,10 @@ class MOP_CMS extends MOP_CMSInterface {
 
 	public function assignObjectId(){
 
-		//get the default 
-		if(!self::$objectId){ //this allows for the controller to force it, 
-			//but the below initialization should happen first in the future
-			if(!Request::initial()->param('id')){
-				self::$objectId = null;
-			} else {
-				self::$objectId = Request::initial()->param('id');
-			}
-		}
+   }
 
-		$object = ORM::Factory('object', self::$objectId);
-		self::$objectId = $object->id; //make sure we're storing id and not slug
-
-		$this->view->objectId = $object->id;
-	}
-
+   
+  
 }
 
 ?>

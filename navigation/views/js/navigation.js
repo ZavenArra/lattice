@@ -19,8 +19,11 @@ mop.modules.navigation.Navigation = new Class({
       this.paneContainer = this.element.getElement( ".panes" );
       this.navPanes = this.element.getElements( ".pane" );
       this.paneContainer.empty();
+      this.instanceName = this.element.get("id");
+
       this.breadCrumbs =  new mop.ui.navigation.BreadCrumbTrail( this.element.getElement( ".breadCrumb" ), this.onCrumbClicked.bind( this ) );
-      this.requestTier( 0, null );
+      var rootId = this.dataSource.getRootNodeId();
+      this.requestTier( rootId, null );
    },
 
    addPane: function( parentId ){

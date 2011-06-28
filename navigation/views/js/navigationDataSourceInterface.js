@@ -11,4 +11,5 @@ mop.modules.navigation.NavigationDataSource = new Interface( "NavigationDataSour
     saveSortRequest: function( parentId, serializedIds, callback ){},
     removeObjectRequest: function( nodeId, callback ){},
     togglePublishedStatusRequest: function( nodeId, callback ){},
+    getRootNodeId: function(){},
 });
