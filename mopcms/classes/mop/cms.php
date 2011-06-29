@@ -231,7 +231,8 @@ class MOP_CMS extends MOP_CMSInterface {
 	*/
 	public function action_addObject($parentId, $templateId){      
       $newId = $this->cms_addObject($parentId, $templateId, $_POST);
-      $this->response->data( $this->cms_getNode($newId) );	
+      $this->response->data( $this->cms_getNodeInfo($newId) );	
+      $this->response->body( $this->cms_getNodeHtml($newId));
 	
    }
    
