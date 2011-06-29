@@ -7,7 +7,7 @@ $config['resources']['librarycss'] = array(
 $config['resources']['libraryjs'] = array(
 	'moplib/mopjs/thirdparty/mootools/mootools.js',
 	'moplib/mopjs/thirdparty/mootools/mootools-more.js',
-	'moplib/mopjs/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
+	'moplib/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
 	'moplib/mopjs/thirdparty/arian/datepicker/Picker.js',
 	'moplib/mopjs/thirdparty/arian/datepicker/Picker.Attach.js',
 	'moplib/mopjs/thirdparty/arian/datepicker/Picker.Date.js',
