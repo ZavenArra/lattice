@@ -1,6 +1,5 @@
 <?$instance=$data['instance'];?>
-<li id="item_<?=$data['id'];?>" class="listItem whaaAa?"> 
-<?/*<?=moputil::modulo( "$instance", array( "alpha","","omega" ));?>">*/?>
+<li id="item_<?=$data['id'];?>" class="listItem"> 
 
 	<?foreach($uiElements as $htmlChunk):?>
 		<?=$htmlChunk;?>
