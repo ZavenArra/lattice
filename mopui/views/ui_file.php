@@ -4,7 +4,7 @@
 		<input type="file" class="hidden" />
 		<p class="<?=str_replace(',',' ',$extensions);?> fileName"><?if($value):?><?=$value['filename'];?><?else:?>No file uploaded yet.<?endif;?></p>
 		<div class="status hidden">
-			<img src="modules/cms/views/images/bar.gif" class="progress" />
+			<img src="moplib/mopcms/views/images/bar.gif" class="progress" />
 			<span class="message hidden"></span>
 		</div>
 		<div class="controls">

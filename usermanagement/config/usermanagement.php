@@ -7,7 +7,7 @@ $config['resources']['librarycss'] = array(
 $config['resources']['libraryjs'] = array(
 	'moplib/mopjs/thirdparty/mootools/mootools.js',
 	'moplib/mopjs/thirdparty/mootools/mootools-more.js',
-   'moplib/mopjs/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',  //these are required by MoPUI
+   'moplib/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',  //these are required by MoPUI
 	'moplib/mopjs/thirdparty/monkeyphysics/datepicker.js',               //This should either be bundled in MoPUI or fixed otherwise
 	'moplib/mopjs/MoPCore.js',
 	'moplib/mopjs/MoPUI.js',

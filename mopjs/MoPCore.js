@@ -28,7 +28,6 @@ provides: [Class.Interfaces]
 
 Class.Mutators.Interfaces = function( interfaces ) {
 	this.implement('initialize', function(){});
-	console.log( "Interfaces", interfaces );
 	return interfaces;
 };
 
@@ -112,18 +111,18 @@ Element.implement({
 });
 
 
-Element.implement({
-    getValueFromClassName: function( key ){
-    	if(!this.get("class")) return false;
-    	var classes = this.get("class").split(" ");
-    	var result;
-    	classes.each( function( className ){
-    		if( className.indexOf( key ) == 0 ) result = className.split("-")[1];
-    	});
-//    	console.log( "Element.getValueFromClassName", key, classes, result );
-    	return result;
-    }
-})
+// Element.implement({
+//     getValueFromClassName: function( key ){
+//      if(!this.get("class")) return false;
+//      var classes = this.get("class").split(" ");
+//      var result;
+//      classes.each( function( className ){
+//          if( className.indexOf( key ) == 0 ) result = className.split("-")[1];
+//      });
+//      return result;
+//     }
+// })
+
 /*
 	Function: Function.bindWithEvent
 	Implements the now deprecated bindWithEvent
@@ -495,20 +494,32 @@ mop.MoPObject = new Class({
 	/*
 		Function: initialize
 		Constructor
-	*/	
+	*/
 	initialize: function( anElementOrId, aMarshal, options ){
-		this.setOptions( options );
 		this.element = $( anElementOrId );
 		this.elementClass = this.element.get("class");
+		this.setOptions( options );
+		this.buildOptionsFromClassName();
 		this.marshal = aMarshal;
 		this.element.store( 'Class', this );
 	},
 	/*
-		Function: getValueFromClassName
-		Convenience method that calls mop.util.getValueFromClassName;
+		Function: buildOptionsFromClassName
+        Loops through a classes className, splits it by 
 	*/	
-	getValueFromClassName: function( key ){
-		return mop.util.getValueFromClassName( key, this.elementClass );
+	buildOptionsFromClassName: function(){
+    	if(!this.elementClass) return false;
+    	var classes = this.elementClass.split(" ");
+    	var opts = {};
+    	classes.each( function( className ){
+    	    if( className.indexOf( "-" ) > -1 ){
+        	    var opt = className.split("-");
+        	    console.log( this.toString(), "buildOptionsFromClassName", className, opt[0], opt[1])
+        		opts[ opt[0] ] = opt[1];
+    	    }
+    	}, this );
+    	this.options = Object.merge( opts, this.options );
+    	return this.options;
 	},
 	
 	getElement: function(){
@@ -684,8 +695,6 @@ mop.util.LoginMonitor = new Class({
 		
 		window.addEvent( "mousemove", this.onMouseMove.bind( this ) );
 		var loginTimeOutClassName = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
-//		console.log( loginTimeOutClassName, $(document).getElement("body"), $(document).getElement("body").get("class") );
-
 		if( loginTimeOutClassName != undefined ){
 			this.secondsOfInactivityTilPrompt = Number( loginTimeOutClassName ) * 1000;
 		}

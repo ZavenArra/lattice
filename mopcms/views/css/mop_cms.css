@@ -2,7 +2,7 @@ body {
 	color:#222;
 	background:#fff;
 	font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: .875em;
+	font-size: .75em;
 	line-height: 18px;
 	padding-bottom:6em;
 }
@@ -27,7 +27,8 @@ h2,
 }
 
 .pageTitle .ipe.h2{
-	margin-bottom: 0 !important;
+	margin-bottom: 0;
+	margin-left: 0;
 }
 
 h3,
@@ -77,6 +78,10 @@ h6,
 	margin-left: 20em;
 }
 
+.ui-Text{
+    margin-left: 0 !important;
+}
+
 .displayField,
 .ui-Text .ipe{
 	border: none;
@@ -89,7 +94,7 @@ h6,
 .ui-Text textarea,
 .ui-Input input{
 	font-family: Georgia, Times, Serif;
-	margin: 0 0 .5em 0;
+	margin: 0em 0em .5em 0em;
 	padding: 4px .5em;
 	color:#222;
 	line-height: 1.5em;
@@ -369,10 +374,9 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 
 .pageTitle{ margin: 0 0 2em 0; }
 .pageTitle .deleteLink{ margin: 2em 0 0 .5em; }
-.pageTitle .field-slug{ margin: .5em 0 0 0; clear: both; }
-.pageTitle .field-slug label{ float: left; line-height: 2.25; }
-.pageTitle .field-slug p.ipe, .pageTitle .field-slug .IPEForm{ margin: 0 0 0 5  em !important; }
-.pageTitle .field-slug .IPEField{ width: 12em !important; }
+.pageTitle .field-slug{ font-size: 10px; margin: .5em 0 0 0; clear: both; }
+.pageTitle .field-slug label{ float: left; line-height: 2.75; }
+.pageTitle .field-slug p.ipe, .pageTitle .field-slug .IPEForm{ margin: 0 0 0 3em !important; }
 
 a.icon{
 	display:block;
@@ -597,7 +601,7 @@ th.spinner{
 .boxModule>*{ margin-left: 12px; }
 
 input[type='radio']{ margin-top: .5em; }
-.ipe{ height: auto !important; }
+.ipe{ min-height: 1.2em; height: auto !important; }
 .rows-10 .ipe{ min-height: 10em; }
 .rows-6 .ipe{ min-height: 6em; }
 .rows-5 .ipe{ min-height: 5em; }

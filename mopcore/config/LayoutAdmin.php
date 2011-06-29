@@ -6,7 +6,7 @@
 	$config['resources']['js'] = array(
 		'moplib/mopjs/thirdparty/mootools/mootools.js',
  		'moplib/mopjs/thirdparty/mootools/mootools-more.js',
-		'moplib/mopjs/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
+		'moplib/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
 		'moplib/mopjs/MoPCore.js',
 		'moplib/mopjs/MoPUI.js',
 		'moplib/mopjs/MoPModules.js'

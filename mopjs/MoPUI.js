@@ -219,11 +219,6 @@ mop.ui.ModalManager = new Class({
 		this.activeModal = this.getPreviousModal();
 	},
 	
-	onModalScroll: function( aModal ){
-//		console.log( "broadcastEvent onModalScroll", aModal, aModal.element.getScroll() );
-		this.broadcastEvent( "modalScroll", aModal, aModal.element.getScroll() );
-	},
-	
 	getScroll: function(){
 		var returnVal =  ( this.activeModal )? this.activeModal.element.getScroll() : window.getScroll();
 //		console.log( this.toString(), "getScroll", returnVal );
@@ -289,22 +284,23 @@ mop.ui.UIElement = new Class({
 
 	Implements: [ Options, Events ],
     Extends: mop.MoPObject,
-
-	options:{ action: "savefield" },
-	
 	onCompleteCallbacks: [],
 	type: "Generic UIElement",
 	fieldName: null,
-	autoSubmit: true,
-	action: null,
 	validationOptions: null,
 	validationErrors: [],
 	validationSticky: null,
 	onCompleteCallbacks: [],
 	onEditCallbacks: [],
-	enabled: true,
 	clickEvent: null,
-	
+
+	options: {
+	    autoSubmit: true,
+	    enabled: true,
+	    action: 'savefield'
+	},
+
+	/* Section: getters / setters */
 	getValue: function(){
 		console.log( this.toString(), "Subclasses of mop.ui.UIElement must override getValue function" );
 	},
@@ -314,17 +310,8 @@ mop.ui.UIElement = new Class({
 	},
 	
 	getSubmitURL: function(){
-		return mop.util.getBaseURL() +"ajax/data/" + this.marshal.getSubmissionController() + "/" + this.action + "/" + this.marshal.getObjectId();
+		return mop.util.getBaseURL() +"ajax/data/" + this.marshal.getSubmissionController() + "/" + this.options.action + "/" + this.marshal.getObjectId();
 	},	
-
-	// TODO: maybe just create an options object, that loops through all 'key-kalue' pairs in class name... seems like it would remove redundancies....   
-	getValueFromClassName: function( key ){
-		return mop.util.getValueFromClassName( key, this.element.get( "class" ) );
-	},
-		
-	requiresValidation: function(){
-		return Boolean( this.validationOptions );
-	},
 
 	registerOnCompleteCallBack: function( func ){
 		this.onCompleteCallbacks.push( func );
@@ -343,24 +330,15 @@ mop.ui.UIElement = new Class({
 		this.enabled = true;
 		this.element.removeClass( "disabled" );
 	},
-	
+
+	/*Constructor*/
 	initialize: function( anElement, aMarshal, options ) {
-
         this.parent( anElement, aMarshal, options );
-       
-		this.fieldName = this.getValueFromClassName( 'field' );
-
-		// if autosubmit is set in the class as autoSubmit-false then set to false, otherwise default to true
-		this.autoSubmit = (  mop.util.getValueFromClassName( "autoSubmit", this.element.get( "class" ) ) == "false" )? false : this.autoSubmit;
-//		console.log( this.toString(), this.field, this.autoSubmit );
-		this.action = ( this.getValueFromClassName( "action" ) )? this.getValueFromClassName( "action" ) : this.options.action;
-
-		if( this.getValueFromClassName('validation') ) this.validationOptions = this.getValueFromClassName( 'validation' ).split("_");
-
-		if( !this.fieldName ) console.log( "ERROR", this.toString(), "has no fieldName, check html class for field-{fieldName}" );	
-
-//		console.log( "Constructor", this.toString(), this.fieldName, this.options );
-
+	    console.log( ":::::::", this.options, anElement.get( 'class' ) );
+		this.fieldName = this.options.field;
+		if( !this.fieldName ){
+		    throw ( "ERROR", this.toString(), "has no fieldName, check html class for field-{fieldName}" );	
+		}
 	},
 	
 	toString: function(){
@@ -391,7 +369,7 @@ mop.ui.UIElement = new Class({
 	},
 		
 	submit: function( e ){
-	//	console.log( this.toString(), "submit", e, this.autoSubmit, this.getValue() );
+	//	console.log( this.toString(), "submit", e, this.options.autoSubmit, this.getValue() );
 		mop.util.stopEvent( e );
 		if( this.onEditCallbacks && this.onEditCallbacks.length > 0 ){
 			this.onEditCallbacks.each( function( aFunc ){
@@ -401,7 +379,7 @@ mop.ui.UIElement = new Class({
 		var val = this.getValue();
 		this.submittedValue = val;
 		if( !this.validate() ) return false;		
-		if( !this.autoSubmit ){
+		if( !this.options.autoSubmit ){
 			this.setValue( val );
 			if( this.leaveEditMode ) this.leaveEditMode();
 			return true;
@@ -476,12 +454,10 @@ mop.ui.UIElement = new Class({
 		delete this.element;
 		delete this.elementClass;
 		delete this.fieldName;
-		delete this.autoSubmit;
 
 		delete this.onCompleteCallbacks;
 		delete this.onEditCallbacks;
 
-		delete this.action;
 		delete this.validationOptions;
 		delete this.validationErrors;
 		delete this.validationSticky;
@@ -490,12 +466,10 @@ mop.ui.UIElement = new Class({
 		this.marshal = null;
 		this.elementClass = null;
 		this.fieldName = null;
-		this.autoSubmit = null;
 		
 		this.onCompleteCallbacks = null;		
 		this.onEditCallbacks = null;
 		
-		this.action = null;
 		this.validationOptions = null;
 		this.validationSticky = null;	
 		
@@ -559,7 +533,6 @@ mop.ui.Modal = new Class({
 				duration: this.options.fadeDuration
 			});
 			mop.ModalManager.setActiveModal( this );
-			this.element.addEvent( "scroll", mop.ModalManager.onModalScroll.bind( mop.ModalManager, this ) );
 //			console.log( "MODAL", this.element, this.modal, mop.ModalManager );
 		},
 		
@@ -974,23 +947,20 @@ mop.ui.MultiSelect = new Class({
 	
 	type: "multiSelect",
 	
-	initialize: function( anElement, aMarshal, options ){
-		
+	options: {
+	    firstIsNull: false
+	},
+	
+	initialize: function( anElement, aMarshal, options ){		
 		this.parent( anElement, aMarshal, options );
-		
-		this.firstIsNull = mop.util.getValueFromClassName( "firstIsNull", this.element.get( "class" ) );
-
 		this.ogSelect = this.element.getElement("select").setStyles( {
 			"position": "absolute",
 			"top": "-3000px",
 			"left": "-1000px"
 		});
-
 		this.ogSelect.addEvent( "focus", this.showMultiSelect.bindWithEvent( this ) );
 		this.ogSelect.addEvent( "keydown", this.updateAndClose.bindWithEvent( this ) );
-
 		var selectedOptions = this.ogSelect.getSelected();
-
 		var initVal = ( selectedOptions.length > 1 )? "Multiple" : ( selectedOptions.length )? selectedOptions[0].get( "text" ) : this.ogSelect.getChildren()[0].get("text");
 		this.valueElement = new Element( "p", {
 			"text": initVal
@@ -1102,7 +1072,7 @@ mop.ui.MultiSelect = new Class({
 			var opt = new Element( "li" );
 			var checkBox = new Element( "input", { "type" : "checkbox", "value": anOption.get( "value" ) } );
 
-			if( this.firstIsNull == "true" ){
+			if( this.options.firstIsNull ){
 
 				if( anIndex == 0 ){
 
@@ -1194,91 +1164,6 @@ mop.ui.MultiSelect = new Class({
 
 });
 
-mop.ui.HideShowGroup = new Class({
-	
-	type: "interfaceWidget",
-	
-	initialize: function( anElement, aMarshal, options ){
-		this.element = $( anElement );
-		this.toggle = $( "hideShowActuatorFor_" + this.element.get("id") );
-		this.toggle.addEvent( "click", this.toggleVisibility.bindWithEvent( this ) );
-	},
-	
-	toggleVisibility: function( e ){
-
-		mop.util.stopEvent( e );
-
-		this.element.toggleClass( ".hidden" );
-
-	}
-	
-});
-
-/*
-	Class: mop.ui.VisibilityToggler
-	Hides and shows nextSibling
-*/
-mop.ui.VisibilityToggler = new Class({
-
-	type: "interfaceWidget",
-	subType: "visibilityToggler",
-	
-	initialize: function( aToggleElement, options ){
-		this.toggler = aToggleElement;
-		this.toggler.setStyle("cursor","pointer");
-		var toggleId = this.toggler.get("id");
-		var targetId = toggleId.substring( "accordionActuatorFor_".length, toggleId.length );
-		this.targetElement = $( targetId );
-
-		console.log( this.toString(), toggleId, targetId, $( targetId ) );
-	
-		var duration = mop.util.getValueFromClassName( 'duration', aToggleElement.get( "class" ) );
-		var display = mop.util.getValueFromClassName( 'display', aToggleElement.get( "class" ) );
-		if( display ){
-			if( display == "false" ){
-				display = -1;
-			}
-		}
-
-		// console.log( "ACCORDION", toggleId, targetId, this.targetElement )
-		this.accordion = new Fx.Accordion( $$( this.toggler ), $$( this.targetElement ), {
-			alwaysHide: true,
-			display: ( display )? display : -1,
-			duration: ( duration )? duration : 250,
-			initialDisplayFx: false,
-			onBackground: function ( toggler ){
-				var text = toggler.get( "text" );
-				console.log( toggler, text );
-				text = text.replace(/\-/gi,'+');
-				text = text.replace(/hide/gi,'Show');
-				toggler.set( "text", text );
-			},
-
-			onActive: function ( toggler, element ){
-				var text = toggler.get( "text" );
-				console.log( toggler, text );
-				text = text.replace(/\+/g,'-');
-				text = text.replace(/show/gi,'Hide');
-				toggler.set( "text", text );
-			}
-		});
-		this.toggler.store( "accordion", this.accordion );
-	},
-	
-	toString: function(){
-		return "[ object, mop.ui.VisibilityToggler ]";
-	},
-	
-	destroy: function(){
-		this.toggler.eliminate( "accordion" );
-		delete this.accordion;
-		this.accordion = this.toggler = this.type = this.subType = this.toggleElement = this.targetElement = null;
-	}
-
-	
-});
-
-
 /*	Class: mop.ui.DatePicker
 */
 
@@ -1287,13 +1172,17 @@ mop.ui.DatePicker = new Class({
 	Extends: mop.ui.UIElement,
 	
 	type: "datePicker",
-	action: "savefield",
+	
+	options: {
+	    action: "savefield",
+	    allowEmpty: false,
+	    format: "%Y/%m/%d"
+	},
 		
 	initialize: function( anElement, options ){
 //		console.log( this.toString(), "initialize", anElement, options );
 		this.parent( anElement, options );
 		this.dateField = this.element.getElement("input");
-		this.allowEmpty = (  this.getValueFromClassName( "allowEmpty" ) )? true : false;
 	    this.buildPicker();
 	},
 	
@@ -1307,12 +1196,9 @@ mop.ui.DatePicker = new Class({
 		this.picker = new Picker.Date( this.dateField, {
 			elementId: "datePickerFor_" + this.fieldName,
 			startView: "month",
-            // inputOutputFormat: "Y/m/d",
-			format: "%Y/%m/%d",
-			allowEmpty: this.allowEmpty,
-            // onShow: this.onShow.bind( this ),
+			format: this.options.format,
+			allowEmpty: this.options.allowEmpty,
             onSelect: this.onSelect.bindWithEvent( this  ),
-            // onClose: function(){}
 		});
 	},
 	
@@ -1360,7 +1246,7 @@ mop.ui.DatePicker = new Class({
 	},
 	
 	getDateFormat: function(){
-		return ( mop.util.getValueFromClassName( "format", this.element.get( "class" ) ) )? mop.util.getValueFromClassName("format", this.element.get( "class") ) : "dmY";
+	    return this.options.format;
 	},
 	
 	getCurrentDateString: function(){
@@ -1423,7 +1309,9 @@ mop.ui.DateRangePicker = new Class({
 	options: {
 		alerts:{
 			endDateLessThanStartDateError : "The end date cannot be earlier than the start date."
-		}
+		},
+		ellowEmpty: false,
+		startView: 'month'
 	},
 	
 	initialize: function( anElement, aMarshal ){
@@ -1431,15 +1319,12 @@ mop.ui.DateRangePicker = new Class({
 		this.parent( anElement, aMarshal );
 		
 		this.dateFields = this.element.getElements("input");
-		
-		this.allowEmpty = ( this.getValueFromClassName( "allowEmpty" ) == "true" )? true : false;
-		
+			
 		this.dateFields.each( function( aDateField, index ){
-//			console.log( "DATERANGE",  index, aDateField, this.elementClass, this.autoSubmit, this.allowEmpty, this.getValueFromClassName( "allowEmpty" ) );
 			var opts = {
 				elementId: "datePickerFor_" + this.fieldName,
-				startView: ( mop.util.getValueFromClassName( "startView", this.element.get( "class" ) ) )?  mop.util.getValueFromClassName( "startView", this.element.get( "class" ) ) : "month",
-				allowEmpty: this.allowEmpty,
+				startView: this.options.startView,
+				allowEmpty: this.options.allowEmpty,
 				inputOutputFormat: "Y/m/d",
 				format: "m/d/Y",
 				onShow: this.onShow.bind( this ),
@@ -1638,7 +1523,8 @@ mop.ui.FileElement = new Class({
 	type: "file",
 	
 	options:{
-		action: "savefile"
+		action: "savefile",
+		extensions: [ 'jpg', 'png', 'gif', 'pdf', 'doc', 'txt', 'zip' ]
 	},
 	
 	ogInput: null,
@@ -1652,7 +1538,6 @@ mop.ui.FileElement = new Class({
 	fileName: null,
 	action: null,
 	extensions: null,
-	sizeLimitMax: null,
 	sizeLimitMin: null,
 	submitURL: null,
 	statusShow: null,
@@ -1684,7 +1569,8 @@ mop.ui.FileElement = new Class({
 		this.clearButton.store( "Class", this );
         this.clearButton.addEvent( "click", this.clearFileRequest.bindWithEvent( this ) );
         
-		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "modules/mop/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
+		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "moplib/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
+
         // console.log( ":::::::::::::::", this.Uploader.box.getElement( "object" ).get( "id" ) );
 		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );
 
@@ -1710,17 +1596,18 @@ mop.ui.FileElement = new Class({
 		});
 
 		this.previewElement = this.element.getElement(".preview");
+		
 		if( this.previewElement ) this.imagePreview = this.previewElement.getElement( "img" );
 
 		this.fileName = this.element.getElement( ".fileName" );
+		
 		mop.util.EventManager.addListener( this );
-
-		this.action = ( this.getValueFromClassName( "action" ) )? this.getValueFromClassName( "action" ) : this.options.action;
-
-//		this.fieldName = this.getValueFromClassName( "field" );
-		this.extensions = this.buildExtensionsObject();
-		this.submitURL = this.getSubmitURL();
-		this.sizeLimitMax = Number( mop.util.getValueFromClassName( "maxlength", this.element.get("class") ) ) * 1024;
+		
+		if( mop.util.getValueFromClassName( 'extensions', this.element.get("class") ) ){
+		    this.options.extensions = this.buildExtensionsObject()
+		}
+		
+        this.getSubmitURL();
 	},
 	
 	simulateClick: function(){
@@ -1736,22 +1623,20 @@ mop.ui.FileElement = new Class({
 		var opts = {
 			target: this.element,
 			fieldName: this.fieldName,
-			url: this.submitURL,
+			url: this.getSubmitURL(),
 			data: {
 				field: this.fieldName,
-				url: this.submitURL
+				url: this.getSubmitURL()
 			},
-			typeFilter: this.extensions,
+			typeFilter: this.options.extensions,
 			sizeLimitMin: 0,
-			sizeLimitMax: this.sizeLimitMax
+			sizeLimitMax: this.optio
 		}
 		return opts;
 	},
 	
 	buildExtensionsObject: function(){
-//		console.log( this, "::", this.getValueFromClassName( "extensions" ) );
-		var extensionsArray = ( this.getValueFromClassName( "extensions" ).split("_") )? this.getValueFromClassName( "extensions" ).split("_") : this.getValueFromClassName( "extensions" ) ;
-		if(!extensionsArray) return null;
+	    var extensionsArray = mop.util.getValueFromClassName( 'extensions', this.elementClass );
 		var desc = "";
 		var exts = "";
 		extensionsArray.each( function( extension, index ){
@@ -1767,7 +1652,7 @@ mop.ui.FileElement = new Class({
 	},
 
 	getSubmitURL: function(){
-		var url = "ajax/data/"+this.marshal.getSubmissionController()+"/"+this.action+"/"+this.marshal.getObjectId()+"/"+this.fieldName;
+		var url = "ajax/data/"+this.marshal.getSubmissionController()+"/"+this.options.action+"/"+this.marshal.getObjectId()+"/"+this.fieldName;
 //		console.log( ":::: ", this.toString(), "getSubmitURL: ", url );
 		return 	url;
 	},
@@ -1776,12 +1661,11 @@ mop.ui.FileElement = new Class({
       var url = "ajax/data/" + this.marshal.getSubmissionController() + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
       return url;
    },
-   
 	
 	onFocus: function( e ){
-//		console.log( this.toString(), "onFocus", e );
+		console.log( this.toString(), "onFocus", e );
 		mop.util.stopEvent( e );
-        console.log( "::", this.Uploader );
+        console.log( "UPLOADER ::", this.Uploader );
 		this.Uploader.setFocus( this, this.getPosition() );
 	},
 	
@@ -1875,13 +1759,13 @@ mop.ui.FileElement = new Class({
 		this.statusHide.start( { "opacity":[1,0] });
 	},
 	
-	onFileComplete: function( data ){
-//		console.log( this.toString(), "onFileComplete", $A( arguments ), this.previewElement );
-		var json = JSON.decode( data.response.text );
+	onFileComplete: function( json ){
+		console.log( this.toString(), "onFileComplete", json, Array.from( arguments )  );
+		var json = JSON.decode( json.response.text );
 		this.clearButton.fade( "in" );
 //		console.log( "-------------------------------- ", $A( arguments ) );
-		if( this.fileName ) this.fileName.set( "html",  '<a href="' + json.src + '" target="_blank">'+json.filename+'</a>' );
-        this.downloadButton.set( "href", json.src );
+		if( this.fileName ) this.fileName.set( "html",  '<a href="' + json.src + '" target="_blank">'+json.response.name+'</a>' );
+        this.downloadButton.set( "href", json.res );
         this.downloadButton.removeClass("hidden");
         
 		if( this.previewElement ){
@@ -1920,7 +1804,7 @@ mop.ui.FileElement = new Class({
 		mop.util.EventManager.removeListener( this );
 		this.Uploader.destroy();
 		this.statusElement.destroy();
-		this.action = this.baseURL = this.extensions = this.fileName = this.imagePreview = this.imageFadeIn = this.imgAsset = this.ogInput = this.previewElement = this.progressBar = this.sizeLimitMax = this.sizeLimitMin = this.statusElement = this.statusHide = this.statusMessage = this.statusShow = this.submitURL = this.uploadButton = this.Uploader = this.validationError = this.invalid = null,
+		this.baseURL = this.extensions = this.fileName = this.imagePreview = this.imageFadeIn = this.imgAsset = this.ogInput = this.previewElement = this.progressBar = this.sizeLimitMin = this.statusElement = this.statusHide = this.statusMessage = this.statusShow = this.uploadButton = this.Uploader = this.validationError = this.invalid = null,
 		this.element.eliminate( "Class" );
 		if( this.uploadButton ) this.uploadButton.eliminate( "Class" );
 		this.parent();
@@ -2173,7 +2057,7 @@ mop.util.Uploader = new Class({
 		// the data is saved right to the instance
 //		console.log( this.toString(), "update", data );
 		if( data ) this.currentFileElementInstance.showProgress( data );
-		this.append( data );
+		Object.append( this,    data );
 		this.fireEvent('queue', [this], 10);
 		return this;
 	},
@@ -2431,9 +2315,12 @@ mop.ui.Pulldown = new Class({
 	Extends: mop.ui.UIElement,
 
 	type: "pulldown",
-	action: "savefield",
 	pulldown: null,
 	
+	options:{
+	    action: "savefield"
+	},
+
 	initialize: function( anElement, aMarshal, option ){
 		this.parent( anElement, aMarshal, option );
 		this.pulldown = this.element.getElement( "select" );
@@ -2477,12 +2364,13 @@ mop.ui.CheckBox = new Class({
 	
 	Extends: mop.ui.UIElement,
 	type: "checkBox",
-	action: "saveField",
 	checkBox: null,
-	
-	getSubmitURL: function(){
-	    return "ajax/data/" + this.marshal.getSubmissionController() + "/" + this.action + "/" + this.marshal.getObjectId();
+	options: {
+	    action: "saveField"
 	},
+    // getSubmitURL: function(){
+    //     return "ajax/data/" + this.marshal.getSubmissionController() + "/" + this.options.action + "/" + this.marshal.getObjectId();
+    // },
 	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
@@ -2513,7 +2401,7 @@ mop.ui.CheckBox = new Class({
 
 		if( !this.validate() ) return;		
 
-		if( !this.autoSubmit ){
+		if( !this.options.autoSubmit ){
 			this.setValue( val );
 			if( this.leaveEditMode ) this.leaveEditMode();
 			return;
@@ -2522,7 +2410,7 @@ mop.ui.CheckBox = new Class({
 		if( this.showSaving ) this.showSaving();
 //		console.log( this.toString(), "submit", url,  { field: this.fieldName, value: val } );
 		if( this.leaveEditMode ) this.leaveEditMode();
-		return Request.JSON( { url: this.getSubmitURL(), onSuccess: this.onResponse.bind( this ) } ).post( { field: this.fieldName, value: val } );
+		this.marshal.saveField( { field: this.fieldName, value: val }, this.onResponse.bind( this ) );
 	},
 	
 	setValue: function( aVal ){
@@ -2651,7 +2539,6 @@ mop.ui.Sticky = new Class({
 
 		if( this.marshal.scrollContext == 'modal' || this.marshal.options.scrollContext == 'modal' ){
 			mop.ModalManager.addListener( this );
-			this.addEvent( "modalScroll", this.onModalScroll.bind( this ) );
 		}
 
 		this.element = new Element( "div", {
@@ -2699,13 +2586,7 @@ mop.ui.Sticky = new Class({
 
 	},
 	
-	onModalScroll: function(){
-		this.reposition( mop.ModalManager.getScroll() );
-	},
-	
 	reposition: function( scrollData ){
-
-
 		//A Hack to deal with empty but not-destroyed sticky objects
 		//This is indicative of another memory leak.
 		if( this.marshal.element == null){
@@ -2790,14 +2671,20 @@ mop.ui.Input = new Class({
 	
 
 	Extends: mop.ui.UIElement,
-
 	type: "input",
+	
+	options: {
+	    maxLength: 0,
+	    autoSubmit: true,
+	    enabled: true,
+		action: "savefield",
+		rows: 1
+	},
 
 	initialize: function( anElement, aMarshal, options ) {
 		this.parent( anElement, aMarshal, options );
 		this.inputElement = this.element.getElement( "input" );
-		this.maxlength = this.getValueFromClassName("maxlength");
-		if( this.maxlength ) this.element.addEvent("keydown", this.checkForMaxLength.bindWithEvent( this ) );
+		if( this.options.maxlength ) this.element.addEvent("keydown", this.checkForMaxLength.bindWithEvent( this ) );
 	},
 	
 	enableElement: function( e ){
@@ -2805,8 +2692,7 @@ mop.ui.Input = new Class({
 		this.parent();
 		this.inputElement.erase( "disabled" );
 		this.inputElement.removeEvents();
-		// this.inputElement.addEvent( "click", this.enterEditMode.bindWithEvent( this ) );
-		if( this.maxlength ) this.element.addEvent("keydown", this.checkForMaxLength.bindWithEvent( this ) );
+		if( this.options.maxlength ) this.element.addEvent("keydown", this.checkForMaxLength.bindWithEvent( this ) );
 	},
 	
 	disableElement: function( e ){
@@ -2817,19 +2703,15 @@ mop.ui.Input = new Class({
 		this.inputElement.addEvent( "focus", Event.stop );
 	},
 
-	requiresValidation: function(){
-		return Boolean( this.validationOptions );
-	},
-
 	toString: function(){
 		return "[ object, mop.ui.Input ]";
 	},
 
 	checkForMaxLength: function( e ){
 //		console.log(this.maxlength, e.target.get("value").length);
-		if( e.target.get("value").length >= this.maxlength && e.key != "shift" && e.key != "enter" && e.key != "return" && e.key != "tab" && e.keycode != 46 && e.keycode != 8 ){
+		if( e.target.get("value").length >= this.options.maxlength && e.key != "shift" && e.key != "enter" && e.key != "return" && e.key != "tab" && e.keycode != 46 && e.keycode != 8 ){
 			mop.util.stopEvent( e );
-			alert( "The maximum length this field allows is " + this.maxlength + " characters");
+			alert( "The maximum length this field allows is " + this.options.maxlength + " characters");
 		}
 	},
 
@@ -2860,8 +2742,15 @@ mop.ui.Text = new Class({
 	type: "text",
 	form: null,
 	options:{
-		messages: { clickToEdit: "click to edit." },
-		action: "savefield"
+	    autoSubmit: true,
+	    enabled: true,
+		messages: {
+		    hover: "click to edit.",
+		    saving:"saving field, please wait&hellip;" 
+		},
+		action: "savefield",
+	    maxLength: 0,
+//		rows: 1
 	},
 
 	registerOnLeaveEditModeCallback: function( func ){
@@ -2884,23 +2773,17 @@ mop.ui.Text = new Class({
 	},
 	
 	initialize: function( anElement, aMarshal, options ) {
-
 		this.parent( anElement, aMarshal, options );
-
+        console.log( this.toString(), this.options );
 		this.mode = "resting";
 		this.ipeElement = this.element.getElement(".ipe");
 		this.ipeElement.store( "Class", this );
-		this.rows = this.getValueFromClassName( "rows" );
 		this.ogBgColor = this.ipeElement.getStyle("background-color");
 		this.ogTextColor = this.ipeElement.getStyle("color");
-
 		this.enableElement();
-		
-		this.ipeElement.set( "title", this.options.messages.clickToEdit );
+		this.ipeElement.set( "title", this.options.messages.hover );
 		this.ipeElement.setStyle( "height", "auto" );
-
 		this.oldValue = this.ipeElement.get( "html" );
-
 	},
 
 	toString: function(){
@@ -2983,21 +2866,19 @@ mop.ui.Text = new Class({
         
 
 	buildForm: function(){
-
 		this.form = new Element( 'div', {
 			"class": "IPEForm ",
 			"events": { "submit": this.submitHandler }
 		});
-	
 		var size = this.ipeElement.getSize();
 		var contents = this.ipeElement.get( 'html' );
-		
-		var tag = ( this.rows > 1 )? "textarea" : "input";
-
+		var tag = ( this.options.rows > 1 )? "textarea" : "input";
 		var opts;
-		if( this.rows > 1 ){
+		console.log( "IPE", this.options.rows );
+		if( this.options.rows > 1 ){
+		    console.log( "MULTILINE" );
 			opts = {
-				"rows": this.rows,
+				"rows": this.options.rows,
 				"cols": this.cols,
 				"text":   this.html_entity_decode( contents.replace( /<br( ?)(\/?)>/g, "\n" ) ),
 				"value": this.formatForEditing( contents ),
@@ -3011,39 +2892,31 @@ mop.ui.Text = new Class({
 			this.field.addEvent( "keyup", this.fitToContent.bind( this ) );
 		}else{
 			opts = {
-				"rows": this.rows,
-				"type": ( this.getValueFromClassName( 'type') == "password" )? "password" : "text",
+				"rows": this.options.rows,
+				"type": ( mop.util.getValueFromClassName( 'type', this.elementClass ) == "password" )? "password" : "text",
 				"class": "ipeField " + this.ipeElement.get( "tag" ),
 				"value": this.formatForEditing( contents ),
 				"styles": {
-					"width": size.x,
-					"height": size.y
+					"width": size.x
+                    // "height": size.y
 				}
 			}
 			this.field = new Element( tag, opts );
 		};
-
-
-		this.maxlength = this.getValueFromClassName("maxlength");
-		if( this.maxlength ) this.field.addEvent("keydown", this.checkForMaxLength.bindWithEvent( this ) );
+		if( this.options.maxlength ) this.field.addEvent("keydown", this.checkForMaxLength.bindWithEvent( this ) );
 		this.field.removeClass( "editable" );
 		this.formControls = this.buildControls();
 		this.field.inject( this.form );
 		this.formControls.inject( this.form );
-
-		this.submitOnBlur = ( this.getValueFromClassName( "submitOnBlur" ) == "true" )? this.getValueFromClassName( "submitOnBlur" ) : false;
-		if( this.submitOnBlur == 'true' ) this.submitOnBlur = true;
-//		console.log( this.submitOnBlur );
-		if( this.submitOnBlur ) this.field.addEvent( "blur", this.submit.bindWithEvent( this ) );
-		this.fitToContent();
+		if( this.options.submitOnBlur ) this.field.addEvent( "blur", this.submit.bindWithEvent( this ) );
+		if( this.options.rows > 1 ) this.fitToContent();
 		return this.form;
 	},
 	
 	checkForMaxLength: function(e){
-//		console.log(this.maxlength, e.target.get("value").length);
-		if( e.target.get("value").length > this.maxlength && e.keycode != 46 && e.keycode != 8 ){
+		if( e.target.get("value").length > this.options.maxlength && e.keycode != 46 && e.keycode != 8 ){
 			mop.util.stopEvent( e );
-			alert( "The maximum length this field allows is " + this.maxlength + " characters");
+			alert( "The maximum length this field allows is " + this.options.maxlength + " characters");
 		}
 	},
 
@@ -3085,6 +2958,7 @@ mop.ui.Text = new Class({
 	},
 	
 	setValue: function( aValue ){
+	    console.log( ":::::: ", this.toString(), aValue );
 		if( this.field ) this.field.set( "value", aValue );
 		this.ipeElement.set( "html", aValue );
 	},
@@ -3093,13 +2967,13 @@ mop.ui.Text = new Class({
 		this.mode = "saving";
 		this.ipeElement.removeEvents();
 		this.ipeElement.addClass(".spinner");
-		this.ipeElement.set( "html", 'saving&hellip;' );
+		this.ipeElement.set( "html", this.options.messages.saving );
 		mop.util.EventManager.broadcastEvent("resize");
 	},
 
 
 	onResponse: function( txt, json ){
-		console.log( this.fieldName, "ipe.onResponse ", '\n\t',txt, '\n\t', json );
+		console.log( this.fieldName, "ipe.onResponse ", '\n\t', txt, '\n\t', json );
 		this.destroyValidationSticky();
 		
 		var json = JSON.decode( json );
@@ -3372,7 +3246,7 @@ mop.ui.PaginationControls = new Class({
 	currentPage: 1,
 	
 	getPageURL: function( marshalId ){
-	    return mop.util.getBaseURL() + "ajax/data/" + marshalId + "/" + this.method + "/" + this.listId + "/" + this.currentPage;
+	    return mop.util.getBaseURL() + "ajax/data/" + marshalId + "/" + this.method + "/" + this.options.listId + "/" + this.currentPage;
 	},
 	
 	initialize: function( anElement, aMarshal ){		
@@ -3381,7 +3255,6 @@ mop.ui.PaginationControls = new Class({
 		this.element.store( "Class" );
 		this.marshal = ( aMarshal )? aMarshal : $( this.element.get("id").subString( 0, this.element.get("id").indexOf("_pagination") ) );
 		this.container = ( this.marshal.element.getElement( ".container" ) )? this.marshal.element.getElement( ".container" ) : this.marshal.element;
-		this.cachePages = ( mop.util.getValueFromClassName( "cachePages", this.element.get( "class" ) ) == "true" )? true : false;
 //		console.log( this.toString(), "initialize", anElement, this.marshal );
 		this.build();
 	},
@@ -3393,8 +3266,6 @@ mop.ui.PaginationControls = new Class({
             this.itemIdPrefix = idArr.join("_");
 		}
 		this.spinner = this.element.getElement(".spinner");
-		this.listId = mop.util.getValueFromClassName( "listId", this.element.get( "class" ) );
-		this.totalPages = mop.util.getValueFromClassName( "totalPages", this.element.get( "class" ) );
 		if( this.element.getElement( ".pagingLeft" ) ) this.previousPageControl = this.element.getElement( ".pagingLeft" ).addEvent( "click", this.previousPage.bindWithEvent( this ) );
 		if( this.element.getElement( ".pagingRight" ) ) this.nextPageControl = this.element.getElement( ".pagingRight" ).addEvent( "click", this.nextPage.bindWithEvent( this ) );
 	},
@@ -3415,7 +3286,7 @@ mop.ui.PaginationControls = new Class({
 		mop.util.stopEvent( e );
 //		console.log( this.toString(), "nextPage", e );
 		this.currentPage ++;
-		if( this.currentPage == this.totalPages ) this.nextPageControl.addClass( "hidden" );
+		if( this.currentPage == this.options.totalPages ) this.nextPageControl.addClass( "hidden" );
 		this.previousPageControl.removeClass("hidden");
 		this.paginate();
 	},
@@ -3431,8 +3302,7 @@ mop.ui.PaginationControls = new Class({
 	},
 
 	paginate: function(){
-//		console.log( "this.cachePages", this.cachePages );
-		if( this.pages[ this.currentPage ] && this.cachePages ){
+		if( this.pages[ this.currentPage ] && this.options.cachePages ){
 			var newChildren = this.buildItems( this.pages[ this.currentPage ] );
 			this.clearElements( this.getPageableItems() ); 
 			this.container.adopt( newChildren );
@@ -3518,13 +3388,12 @@ mop.ui.PaginationControls = new Class({
 		delete	this.container;		   
 		delete	this.spinner;		   
 		delete	this.marshal;		   
-		delete	this.listId;			   
 		delete	this.pages;			   
 		delete	this.container;		   
 		delete	this.currentPage; 	   
 		delete	this.pageableElement;   
-		delete	this.totalPages;
-
+        
+        this.options = null;
 		this.element		 	= null;
 		this.instanceName	 	= null;
 		this.itemIdPrefix	 	= null;
@@ -3536,12 +3405,10 @@ mop.ui.PaginationControls = new Class({
 		this.container		 	= null;
 		this.spinner		 	= null;
 		this.marshal		 	= null;
-		this.listId			 	= null;
 		this.pages 			 	= null;
 		this.container		 	= null;
 		this.currentPage 	 	= null;
 		this.pageableElement 	= null;
-		this.totalPages 		= null;
 
 	}
 

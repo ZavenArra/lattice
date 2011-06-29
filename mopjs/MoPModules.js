@@ -12,31 +12,34 @@ mop.modules.Module = new Class({
 	Extends: mop.MoPObject,	
 	/*
 		Variable: instanceName
-		id of element, also used as unique id for module manager.
+		unique id
 	*/
 	instanceName: null,
 	/*
 		Variable: UIElements
-		list of this module's UIElements
+		Object that stores module's ui elements
 	*/
 	UIElements: {},
 	/*
 		Variable: childModules
-		Modules loaded within this module
+		Modules within this module
 	*/
 	childModules: {},
+	
+	getSaveFieldURL: function( objectId ){
+	    return mop.util.getBaseURL() +"ajax/data/" + this.getSubmissionController() + "/savefield/" + this.objectId;
+	},
+	
+	saveField: function( postData, callback ){
+	    return new Request.JSON( { url: this.getSaveFieldURL(), onSuccess: callback } ).post( postData );
+	},
 	
 	initialize: function( anElementOrId, aMarshal, options ){
 //		console.log( "Constructing", this.toString(), this.childModules );
 		this.parent( anElementOrId, aMarshal, options );  
 		this.instanceName = this.element.get("id");
-		this.build();			
-	},
-	
-	onModalScroll: function( scrollData ){
-		this.UIElements.each( function( anUIElement ){
-			anUIElement.reposition( mop.ModalManager.getActiveModal() );
-		});
+		this.build();
+		console.log( "B" );	
 	},
 	
 	/*
@@ -228,19 +231,16 @@ mop.modules.Cluster = new Class({
 mop.modules.AjaxFormModule = new Class({
 
 	Extends: mop.modules.Module,
-	action: null,
 	generatedData: {},
 
 	getSubmitFormURL: function(){
-	    return mop.util.getBaseURL() + "ajax/" + this.getSubmissionController() +  "/" + this.action + "/" + this.getObjectId();
+	    return mop.util.getBaseURL() + "ajax/" + this.getSubmissionController() +  "/" + this.options.action + "/" + this.getObjectId();
 	},
 
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
-		this.action = mop.util.getValueFromClassName( "action", this.element.get( "class" ) );
 		this.element.getElement("input[type='submit']").addEvent( "click", this.submitForm.bindWithEvent( this ) );
 		this.resultsContainer = this.element.getElement(".resultsContainer");
-		this.requiresValidation = ( mop.util.getValueFromClassName( "validate", this.element.get( "class" ) ) == "true" )? true : false;
 	},
 
 	toString: function(){
@@ -251,7 +251,7 @@ mop.modules.AjaxFormModule = new Class({
         mop.util.stopEvent( e );
         this.gene
         ratedData = Object.merge( this.generatedData, this.serialize() );
-		if( this.requiresValidation && !this.validateFields() ) return false;	
+		if( this.options.validate && !this.validateFields() ) return false;	
 		return new Request.JSON({
             url:  this.getSubmitFormURL(),
             onSuccess: this.onFormSubmissionComplete.bind( this )
@@ -356,9 +356,7 @@ mop.modules.MoPList = new Class({
         delete this.items;
         this.items = null;
         this.items = [];
-        this.allowChildSort = ( this.getValueFromClassName( "allowChildSort" ) == "false" ) ? false : true;
-        this.sortDirection = this.getValueFromClassName( "sortDirection" );
-        if( this.allowChildSort ) this.makeSortable();
+        if( this.options.allowChildSort ) this.makeSortable();
         this.objectId = this.element.get("id").split("_")[1];
 	},
 
@@ -439,7 +437,7 @@ mop.modules.MoPList = new Class({
 	},
 
 	insertItem: function( anElement ){
-		var where = ( this.sortDirection == "DESC" )? "top" : "bottom";
+		var where = ( this.options.sortDirection == "DESC" )? "top" : "bottom";
 		this.listing.grab( anElement, where );
 		if( this.allowChildSort && this.sortableList ) this.sortableList.addItems( anElement );
 		// reset scrollContexts

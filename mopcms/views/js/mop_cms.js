@@ -10,12 +10,12 @@ mop.modules.CMS = new Class({
 	scriptsLoaded: null,
 	titleText: "",
 	titleElement: null,
-	editSlugLink: null,
+	slugIPE: null,
 	deletePageLink: null,
 	loadedCSS: [],
 	loadedJS: [],
     stringIdentifier: "[ object, mop.modules.CMS ]",
-    
+    options: {},
     /* Section: Getters & Setters */    
     
     getRemoveObjectRequestURL: function( parentId ){
@@ -40,46 +40,20 @@ mop.modules.CMS = new Class({
     },
     
     getRootNodeId: function(){       
-       return this.rootNodeId;
+       return this.options.objectId;
     },
-
-
 
 	/* Section: Constructor */
 	initialize: function( anElement, options ){
-     
-     //this initializer and the initializer parent chain need to be rethough
-     //because submodules are required to be initialize before the parent
-     //what is the submodule have devependencies on the parent?
-     //
-     //this.parent( anElement, null, options );
-
-      var aMarshal = null;
-      this.setOptions( options );
-		this.element = $( anElement );
-		this.elementClass = this.element.get("class");
-		this.marshal = aMarshal;
-		this.element.store( 'Class', this );
-		this.instanceName = this.element.get("id");
-
-
-     	this.rootNodeId = this.getValueFromClassName( "objectId" );	
-
-
-     
-      console.log('hey'+this.element.get("id"));
-		$$( "script" ).each( function( aScriptTag ){ 
-		    this.loadedJS.push( aScriptTag.get("src") );
-		}, this );
-		$$( "link[rel=stylesheet]" ).each( 
-		    function( aStyleSheetTag ){ this.loadedCSS.push(  aStyleSheetTag );
-		}, this );
-		console.log( ":::::: ", this.loadedJS );
-      
-      //this code needs to be reorganized
-      this.pageContent = $("nodeContent");
-      this.UIElements = this.initUI();
-		this.initModules( this.element );
+        this.parent( anElement, null, options );
+        console.log( this.options, this.elementClass, this.options.objectId );
+        this.rootNodeId = this.options.objectId;
+        $$( "script" ).each( function( aScriptTag ){ 
+            this.loadedJS.push( aScriptTag.get("src") );
+        }, this );
+        $$( "link[rel=stylesheet]" ).each( 
+            function( aStyleSheetTag ){ this.loadedCSS.push(  aStyleSheetTag );
+        }, this );
 	},
 
 	/* Section: Methods */
@@ -99,8 +73,7 @@ mop.modules.CMS = new Class({
 		if( this.titleElement ){
 			this.titleText = this.titleElement.getElement( "h2" ).get( "text" );
 			this.deletePageLink = this.titleElement.getElement( "a.deleteLink" );
-    		this.editSlugLink = this.titleElement.getElement( ".field-slug label" );
-			if( this.editSlugLink ) this.editSlugLink.addEvent( "click", this.toggleSlugEditField.bindWithEvent( this ) );
+   		    this.slugIPE = this.titleElement.getElement( ".field-slug" );
 			var titleIPE = this.titleElement.getElement( ".field-title" ).retrieve("Class");
 			if( titleIPE ) titleIPE.registerOnCompleteCallBack( this.onTitleEdited.bind( this ) );
 		}
@@ -113,29 +86,12 @@ mop.modules.CMS = new Class({
       this.pageContent.empty();
 	},
 
-	
-	toggleSlugEditField: function( e ){
-//	    console.log( "revealSlugEditField", e );
-		mop.util.stopEvent( e );
-		var slug = this.titleElement.getElement( ".field-slug" );
-		var ipe = slug.getElement( ".ipe" )
-		var label = slug.getElement( "label" );
-		if( ipe.hasClass( "hidden" ) ){
-    		this.titleElement.getElement( ".field-slug .ipe" ).removeClass("hidden");
-    		this.titleElement.getElement( ".field-slug" ).retrieve( "Class" ).enterEditMode();		    
-    		label.set( "text", "Hide slug" );
-		}else{
-		    ipe.addClass( "hidden" );
-		    slug.retrieve( "Class" ).cancelEditing( null );
-    		label.set( "text", "Edit slug" );
-		}
-	},
-
 /*  
     Section: Event Handlers
 */
 	onTitleEdited: function( json ){
-	    this.editSlugLink.retrieve( "Class" ).setValue( json.response.slug );
+	    console.log( "*---------------> ", json );
+	    this.slugIPE.retrieve( "Class" ).setValue( json.response.slug );
 	},
 
 	onJSLoaded: function( html, jsLoadCount ){
