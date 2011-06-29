@@ -236,7 +236,6 @@ class MOP_CMS extends MOP_CMSInterface {
 	
    }
    
-
 	public function assignObjectId(){
 
    }
