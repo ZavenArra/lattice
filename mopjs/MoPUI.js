@@ -1761,10 +1761,9 @@ mop.ui.FileElement = new Class({
 	
 	onFileComplete: function( json ){
 		console.log( this.toString(), "onFileComplete", json, Array.from( arguments )  );
-		var json = JSON.decode( json.response.text );
 		this.clearButton.fade( "in" );
 //		console.log( "-------------------------------- ", $A( arguments ) );
-		if( this.fileName ) this.fileName.set( "html",  '<a href="' + json.src + '" target="_blank">'+json.response.name+'</a>' );
+		if( this.fileName ) this.fileName.set( "html",  '<a href="' + json.response.src + '" target="_blank">'+json.response.name+'</a>' );
         this.downloadButton.set( "href", json.res );
         this.downloadButton.removeClass("hidden");
         
