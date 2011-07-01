@@ -1523,7 +1523,7 @@ mop.ui.FileElement = new Class({
 	type: "file",
 	
 	options:{
-		action: "savefile",
+		action: "saveFile",
 		extensions: [ 'jpg', 'png', 'gif', 'pdf', 'doc', 'txt', 'zip' ]
 	},
 	

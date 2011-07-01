@@ -1,4 +1,4 @@
-	<div class="ui-FileElement field-<?=$field;?> action-savefile extensions-<?=str_replace(',','_',$extensions);?> maxlength-<?=$maxlength;?> grid_3">
+	<div class="ui-FileElement field-<?=$field;?> action-saveFile extensions-<?=str_replace(',','_',$extensions);?> maxlength-<?=$maxlength;?> grid_3">
 		<label><?=(isset($label))?$label:"Image File";?></label>
 		<div class="wrapper">
 			<input type="file" class="hidden" />
