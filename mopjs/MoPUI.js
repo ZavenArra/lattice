@@ -1636,13 +1636,21 @@ mop.ui.FileElement = new Class({
 	},
 	
 	buildExtensionsObject: function(){
-	    var extensionsArray = mop.util.getValueFromClassName( 'extensions', this.elementClass );
+
+	    var extensionsArray = mop.util.getValueFromClassName( 'extensions', this.elementClass ).split( "_" );
+	    
 		var desc = "";
 		var exts = "";
-		extensionsArray.each( function( extension, index ){
-			desc = ( index < extensionsArray.length-1 )? desc +  "*." + extension + ", " : desc +  "*." + extension;
-			exts = ( index < extensionsArray.length-1 )? exts + "*." + extension + ";" : exts + "*." + extension;
-		});
+		
+		if( extensionsArray.length ){
+		    extensionsArray.each( function( extension, index ){
+			    desc = ( index < extensionsArray.length-1 )? desc +  "*." + extension + ", " : desc +  "*." + extension;
+			    exts = ( index < extensionsArray.length-1 )? exts + "*." + extension + ";" : exts + "*." + extension;
+		    });
+		}else{
+		    desc = ( index < extensionsArray.length-1 )? desc +  "*." + extension + ", " : desc +  "*." + extension;
+		    exts = ( index < extensionsArray.length-1 )? exts + "*." + extension + ";" : exts + "*." + extension;		    
+		}
 		desc = "'Allowed Files: " + desc + "'";
 		exts = exts;
 		var ret =  {};
@@ -1761,10 +1769,9 @@ mop.ui.FileElement = new Class({
 	
 	onFileComplete: function( json ){
 		console.log( this.toString(), "onFileComplete", json, Array.from( arguments )  );
-		var json = JSON.decode( json.response.text );
 		this.clearButton.fade( "in" );
 //		console.log( "-------------------------------- ", $A( arguments ) );
-		if( this.fileName ) this.fileName.set( "html",  '<a href="' + json.src + '" target="_blank">'+json.response.name+'</a>' );
+		if( this.fileName ) this.fileName.set( "html",  '<a href="' + json.response.src + '" target="_blank">'+json.response.name+'</a>' );
         this.downloadButton.set( "href", json.res );
         this.downloadButton.removeClass("hidden");
         

@@ -168,12 +168,12 @@ mop.modules.CMS = new Class({
 */
 
     requestTier: function( parentId, callback ){
-        console.log( "requestTier", parentId );
+        // console.log( "requestTier", parentId );
         mop.util.setObjectId( parentId );
 	    return new Request.JSON( {
 	        url: this.getRequestTierURL( parentId ),
 	        onSuccess: function( json ){
-                 console.log( "requestTier, complete: ", json, json.returnValue );
+//                 console.log( "requestTier, complete: ", json, json.returnValue );
                  this.requestTierResponse( json );
                  callback( json );
              }.bind( this )
@@ -181,7 +181,7 @@ mop.modules.CMS = new Class({
     },
 
     requestTierResponse: function( json ){
-        console.log( this.toString(), "requestTierResponse", json );
+//        console.log( this.toString(), "requestTierResponse", json );
         if( !json.returnValue ) console.log( this.toString(), "requestTier error:", json.response.error );
     },
 
@@ -191,15 +191,15 @@ mop.modules.CMS = new Class({
 	    if( !json.returnValue ) console.log( this.toString(), "saveSortRequest error:", json.response.error );
 	},
 	
-    addObjectRequest: function( parentId, templateId, nodeData, callback ){
-        console.log( "addObjectRequest", parentId, templateId );
+    addObjectRequest: function( parentId, templateId, nodeProperties, callback ){
+        console.log( "addObjectRequest", parentId, templateId, nodeProperties, callback );
         return new Request.JSON({
             url: this.getAddObjectRequestURL( parentId, templateId ),
-            onSuccess: function(json){
-                this.addObjectResponse(json);
-                callback(json);
+            onSuccess: function( json  ){
+                this.addObjectResponse( json );
+                callback( json );
             }.bind( this )
-        }).post( nodeData );
+        }).post( nodeProperties );
     },
 
     addObjectResponse: function( json ){
@@ -229,14 +229,15 @@ mop.modules.CMS = new Class({
         console.log( "::::", this.getTogglePublishedStatusRequestURL( nodeId ) );
         return new Request.JSON({
             url: this.getTogglePublishedStatusRequestURL( nodeId ),
-            onSuccess: function(){
-                this.togglePublishedStatusResponse();
-                callback();
+            onSuccess: function( json ){
+                this.togglePublishedStatusResponse( json );
+                if( callback ) callback( json );
             }.bind( this )
         }).send();
     },
 	
     togglePublishedStatusResponse: function( json ){
+	console.log( "#### ", json );
         if( !json.returnValue ) console.log( this.toString(), "togglePublishedStatusRequest error:", json.response.error );        
     }
 	

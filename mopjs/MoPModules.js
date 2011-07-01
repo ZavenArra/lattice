@@ -39,7 +39,6 @@ mop.modules.Module = new Class({
 		this.parent( anElementOrId, aMarshal, options );  
 		this.instanceName = this.element.get("id");
 		this.build();
-		console.log( "B" );	
 	},
 	
 	/*
@@ -85,7 +84,7 @@ mop.modules.Module = new Class({
 			if( !filteredOutModules.contains( aDescendant ) ){
 				var module = this.initModule( aDescendant );
 				var instanceName = module.instanceName;
-                console.log( "\n::\t", module.instanceName, "is a descendant of ", this.toString());
+//                console.log( "\n::\t", module.instanceName, "is a descendant of ", this.toString());
 				this.childModules[ instanceName ] = module;
 			}
 		}, this );

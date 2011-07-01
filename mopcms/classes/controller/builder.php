@@ -5,12 +5,6 @@ class Controller_Builder extends Controller {
 	private $newObjectIds = array();
 
   public function __construct(){
-		if(!is_writable('application/views/generated/')){
-			die('application/views/generated/ must be writable');
-		}
-      if(!is_writable('application/views/frontend/')){
-			die('application/views/frontend/ must be writable');
-		}
 	}
 
 	public function destroy($dir) {

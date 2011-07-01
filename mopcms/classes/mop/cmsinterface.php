@@ -59,8 +59,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 			$result['thumbSrc']= $thumbSrc;
 		}
 
-
-		return $result;
+    $this->response->data($result);
 
 	}
 
@@ -88,7 +87,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	public function action_savefield($id){
       $object = Graph::object($id);
       $object->$_POST['field'] = $_POST['value'];
-		$object = Graph::object($id);
+      $object = Graph::object($id);
       $value = $object->$_POST['field'];
       
       $returnData = array('value'=>$value);
