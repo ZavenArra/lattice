@@ -97,7 +97,7 @@ Class Controller_UserManagement extends Controller_Layout {
 	 * $objectid - unused variable, interface needs to be updated
 	 * Returns: Rendered html editing page for new user object
 	 */
-	public function action_addItem(){
+	public function action_addObject(){
 		$user = $this->createUser();
 		$data = $user->as_array();
 	
