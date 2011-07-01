@@ -1,16 +1,17 @@
 <?
 
 $config['resources']['librarycss'] = array(
-	'moplib/mopjs/thirdparty/960Grid/reset.css',
-	'moplib/mopjs/thirdparty/960Grid/960.css'
+	'moplib/thirdparty/960Grid/reset.css',
+	'moplib/thirdparty/960Grid/960.css'
 );
 $config['resources']['libraryjs'] = array(
-	'moplib/mopjs/thirdparty/mootools/mootools.js',
-	'moplib/mopjs/thirdparty/mootools/mootools-more.js',
+	'moplib/thirdparty/mootools/mootools.js',
+	'moplib/thirdparty/mootools/mootools-more.js',
+	//these are required by MoPUI
 	'moplib/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
-	'moplib/mopjs/thirdparty/arian/datepicker/Picker.js',
-	'moplib/mopjs/thirdparty/arian/datepicker/Picker.Attach.js',
-	'moplib/mopjs/thirdparty/arian/datepicker/Picker.Date.js',
+	'moplib/thirdparty/arian/datepicker/Picker.js',
+	'moplib/thirdparty/arian/datepicker/Picker.Attach.js',
+	'moplib/thirdparty/arian/datepicker/Picker.Date.js',
 	//include textboxlist here
 	'moplib/mopjs/MoPCore.js',
 	'moplib/mopjs/MoPUI.js',
