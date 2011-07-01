@@ -65,6 +65,7 @@ mop.modules.CMS = new Class({
 	},
 
 	populate: function( html ){
+		console.log("!");
 		$("nodeContent").unspin();
 		this.pageContent.set( 'html', html );
 		this.UIElements = this.initUI( this.pageContent );
@@ -97,8 +98,8 @@ mop.modules.CMS = new Class({
 	onJSLoaded: function( html, jsLoadCount ){
 		// keeps any callbacks from previous pageloads from registering
 		this.scriptsLoaded++;
-		console.log( "onJSLoaded", html, this.scriptsLoaded, this.loadedJS.length );
-		if( this.scriptsLoaded == this.loadedJS.length-1 ){			
+		console.log( this, "onJSLoaded", html, this.scriptsLoaded, this.loadedJS.length );
+		if( this.loadedJS.length == this.loadedJS.length ){			
 			this.populate( html );
 		}
 	},
