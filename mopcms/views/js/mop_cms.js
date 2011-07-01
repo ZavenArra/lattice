@@ -229,14 +229,15 @@ mop.modules.CMS = new Class({
         console.log( "::::", this.getTogglePublishedStatusRequestURL( nodeId ) );
         return new Request.JSON({
             url: this.getTogglePublishedStatusRequestURL( nodeId ),
-            onSuccess: function(){
-                this.togglePublishedStatusResponse();
-                callback();
+            onSuccess: function( json ){
+                this.togglePublishedStatusResponse( json );
+                if( callback ) callback( json );
             }.bind( this )
         }).send();
     },
 	
     togglePublishedStatusResponse: function( json ){
+	console.log( "#### ", json );
         if( !json.returnValue ) console.log( this.toString(), "togglePublishedStatusRequest error:", json.response.error );        
     }
 	

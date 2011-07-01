@@ -51,7 +51,6 @@ mop.modules.navigation.Navigation = new Class({
 		}
 		if( this.navPanes.length > 0 ) this.clearPanes( paneIndex + 1 );	    
 		var newPane = this.addPane( parentId );
-
 		if( this.tiers[ parentId ] ){
 			// if the tier has already been loaded and cached
 			console.log( "requestTier", "cached" );
@@ -126,7 +125,7 @@ mop.modules.navigation.Navigation = new Class({
 	removeObject: function( nodeId ){
 		this.dataSource.removeObjectRequest( nodeId, this.onRemoveObjectResponse.bind( this, nodeId ) );
 	},
-	
+  	
 	onRemoveObjectResponse: function( nodeId ){
 		delete this.nodeData[ nodeId ];
 		console.log( "\tB removeObject", this.nodeData, "(", Object.getLength(this.nodeData), ")"  );
@@ -214,32 +213,22 @@ mop.modules.navigation.Tier = new Class({
       return this.getNodeIdFromElement( this.activeNode );
    },
 	
-   adoptNode: function( newNode ){
+	adoptNode: function( newNode ){
 		if( this.options.addPosition == "top" ){
-	       this.nodeElement.grab( newNode, 'top' );			
+			this.nodeElement.grab( newNode, 'top' );			
 		}else{
-	       this.nodeElement.grab( newNode, 'bottom' );			
+			this.nodeElement.grab( newNode, 'bottom' );			
 		}
-       this.html = this.element.get( "html" );
-   },
+		this.html = this.element.get( "html" );
+		this.initNode( newNode );
+	},
    
    render: function(){
       this.element.set( 'html', this.html );
       this.nodeElement = this.element.getElement( ".nodes" );
       this.nodes = this.element.getElements(".node");
-      this.nodes.each( function( aNodeElement, i ){
-         //          aNodeElement.addEvent( "focus", this.indicateNode.bindWithEvent( this, aNodeElement ) );
-         //          aNodeElement.addEvent( "blur", this.deindicateNode.bindWithEvent( this, aNodeElement ) );
-         aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
-         var togglePublishedStatusElement = aNodeElement.getElement(".togglePublishedStatus");
-         //	        console.log( "togglePublishedStatusElement", togglePublishedStatusElement );
-         if( togglePublishedStatusElement ){
-            togglePublishedStatusElement.addEvent( "click", this.onTogglePublishedStatusClicked.bindWithEvent( this, aNodeElement ) );
-         }
-         var removeNodeElement = aNodeElement.getElement(".removeNode");
-         if( removeNodeElement ){
-            removeNodeElement.addEvent( "click", this.onRemoveNodeClicked.bindWithEvent( this, aNodeElement ) );
-         }
+      this.nodes.each( function( aNodeElement ){
+		this.initNode( aNodeElement );
       }, this );
       this.drawer = this.element.getElement( '.tierMethodsDrawer' );
       if( this.drawer ){
@@ -260,6 +249,21 @@ mop.modules.navigation.Tier = new Class({
          }, this );	        
       }
    },
+
+	initNode: function( aNodeElement ){
+//          aNodeElement.addEvent( "focus", this.indicateNode.bindWithEvent( this, aNodeElement ) );
+//          aNodeElement.addEvent( "blur", this.deindicateNode.bindWithEvent( this, aNodeElement ) );
+		aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
+		var togglePublishedStatusElement = aNodeElement.getElement(".togglePublishedStatus");
+		//        console.log( "togglePublishedStatusElement", togglePublishedStatusElement );
+		if( togglePublishedStatusElement ){
+			togglePublishedStatusElement.addEvent( "click", this.onTogglePublishedStatusClicked.bindWithEvent( this, aNodeElement ) );
+		}
+		var removeNodeElement = aNodeElement.getElement(".removeNode");
+		if( removeNodeElement ){
+			removeNodeElement.addEvent( "click", this.onRemoveNodeClicked.bindWithEvent( this, aNodeElement ) );
+		}
+	},
 
    indicateNode: function( nodeElement ){
       nodeElement.addClass( "active");
@@ -343,11 +347,21 @@ mop.modules.navigation.Tier = new Class({
 		var addText = addObjectButton.get( 'text' );
 		//this.element.setStyle( "border", "1px #f00 solid" );
 		console.log( this, this.element, this.spinner );
-		this.spinner.show( true );
 		var nodeTitle = prompt( "What would you like to name this" + addText.substr( addText.lastIndexOf( " " ), addText.length ).toLowerCase() );
 		if( !nodeTitle ) return;
+		this.spinner.show( true );
 		this.marshal.addObject( this.parentId, templateId, { title: nodeTitle }, this );
 	},
+
+   onAddObjectResponse: function (json, placeHolder){
+       placeHolder.destroy();
+//       var newElement = 
+       if( this.marshal.options.addPosition ){
+           
+       }else{
+           
+       }
+   },
 	
 	onObjectAdded: function(){
 		this.spinner.hide();
