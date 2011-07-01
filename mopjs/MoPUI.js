@@ -1636,13 +1636,21 @@ mop.ui.FileElement = new Class({
 	},
 	
 	buildExtensionsObject: function(){
-	    var extensionsArray = mop.util.getValueFromClassName( 'extensions', this.elementClass );
+
+	    var extensionsArray = mop.util.getValueFromClassName( 'extensions', this.elementClass ).split( "_" );
+	    
 		var desc = "";
 		var exts = "";
-		extensionsArray.each( function( extension, index ){
-			desc = ( index < extensionsArray.length-1 )? desc +  "*." + extension + ", " : desc +  "*." + extension;
-			exts = ( index < extensionsArray.length-1 )? exts + "*." + extension + ";" : exts + "*." + extension;
-		});
+		
+		if( extensionsArray.length ){
+		    extensionsArray.each( function( extension, index ){
+			    desc = ( index < extensionsArray.length-1 )? desc +  "*." + extension + ", " : desc +  "*." + extension;
+			    exts = ( index < extensionsArray.length-1 )? exts + "*." + extension + ";" : exts + "*." + extension;
+		    });
+		}else{
+		    desc = ( index < extensionsArray.length-1 )? desc +  "*." + extension + ", " : desc +  "*." + extension;
+		    exts = ( index < extensionsArray.length-1 )? exts + "*." + extension + ";" : exts + "*." + extension;		    
+		}
 		desc = "'Allowed Files: " + desc + "'";
 		exts = exts;
 		var ret =  {};
