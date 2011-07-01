@@ -74,6 +74,16 @@ var Interface = function( name, members ) {
 };
 
 /*
+	Function: String.toElement
+	returns a dom element from a string
+*/
+String.implement({ 
+  toElement: function() { 
+    return new Element('div', { html:this } ).getFirst(); 
+  } 
+});
+
+/*
 	Function: getSiblings
 	Arguments:
 		match - {Element} an element to get the sibling
@@ -98,6 +108,26 @@ Element.implement({
 	return this.getSiblings(match,nocache)[0];
     }
 });
+
+/*
+	Function: getOptionsFromClassName
+     Loops through a classes className, splits it by 
+*/	
+Element.implement({
+	getOptionsFromClassName: function(){
+   		if(!this.get("class")) return false;
+   		var classes = this.get('class').split(" ");
+   		var opts = {};
+   		classes.each( function( className ){
+   	    	if( className.indexOf( "-" ) > -1 ){
+       	    	var opt = className.split("-");
+       			opts[ opt[0] ] = opt[1];
+   	    	}
+   		});
+   		return opts;
+	}
+});
+
 
 /*
 	Function: isBody
@@ -287,24 +317,9 @@ mop.util.getValueFromClassName = function( key, aClassName ){
 }
 
 /*
-	Function: mop.util.getUniqueId
-	Get a unique string based on the unix date string
- 	Arguments -
-		prefix- {String}  A prefix to prepend to the id string.
-	Returns: {String} unique id with prefix (if specified)
+	Deprecated Function: mop.util.getUniqueId
+	as of mootools 1.3 use String.uniqueID()
 */
-mop.util.getUniqueId = function ( prefix ){
-	var now = new Date();
-	var newId = now.getYear() + now.getMonth() + now.getHours() + now.getMinutes() + now.getSeconds() + now.getMilliseconds() + now.getMilliseconds() + Math.random( 10000000 );
-	try{
-		return (prefix) ? String( prefix + newId ) : String( newId );
-	}finally{
-		delete now;
-		delete newId;
-		now = null;
-		newId = null;
-	}
-}
 
 /*
 	Function: setId
@@ -499,27 +514,9 @@ mop.MoPObject = new Class({
 		this.element = $( anElementOrId );
 		this.elementClass = this.element.get("class");
 		this.setOptions( options );
-		this.buildOptionsFromClassName();
+		this.options = Object.merge( this.options, this.element.getOptionsFromClassName() );
 		this.marshal = aMarshal;
 		this.element.store( 'Class', this );
-	},
-	/*
-		Function: buildOptionsFromClassName
-        Loops through a classes className, splits it by 
-	*/	
-	buildOptionsFromClassName: function(){
-    	if(!this.elementClass) return false;
-    	var classes = this.elementClass.split(" ");
-    	var opts = {};
-    	classes.each( function( className ){
-    	    if( className.indexOf( "-" ) > -1 ){
-        	    var opt = className.split("-");
-        	    console.log( this.toString(), "buildOptionsFromClassName", className, opt[0], opt[1])
-        		opts[ opt[0] ] = opt[1];
-    	    }
-    	}, this );
-    	this.options = Object.merge( opts, this.options );
-    	return this.options;
 	},
 	
 	getElement: function(){
