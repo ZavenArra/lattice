@@ -253,6 +253,7 @@ mop.modules.navigation.Tier = new Class({
 	initNode: function( aNodeElement ){
 //          aNodeElement.addEvent( "focus", this.indicateNode.bindWithEvent( this, aNodeElement ) );
 //          aNodeElement.addEvent( "blur", this.deindicateNode.bindWithEvent( this, aNodeElement ) );
+		aNodeElement.store( "options", aNodeElement.getOptionsFromClassName() );
 		aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
 		var togglePublishedStatusElement = aNodeElement.getElement(".togglePublishedStatus");
 		//        console.log( "togglePublishedStatusElement", togglePublishedStatusElement );
@@ -296,7 +297,7 @@ mop.modules.navigation.Tier = new Class({
       this.indicateNode( nodeElement );
       this.onNodeSelected( nodeId );
       if( this.currentTierRequest ) this.currentTierRequest.cancel();
-      this.currentTierRequest = this.marshal.requestTier( nodeId, this );
+      if( !nodeElement.hasClass( "module" ) ) this.currentTierRequest = this.marshal.requestTier( nodeId, this );
    },
 		
 	onRemoveNodeClicked: function( e, nodeElement ){
