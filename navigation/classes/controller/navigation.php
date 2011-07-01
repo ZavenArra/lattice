@@ -33,10 +33,11 @@ class Controller_Navigation extends Controller_MOP{
 	public function action_getTier($parentId, $deeplink=NULL, &$follow=false){
       if($parentId != 0){
       	$parent = ORM::Factory($this->objectModel, $parentId); 
-      } else {
+			}
+		 /*	else {
          $parentId = Graph::getRootNode(Kohana::config('cms.graphRootNode'))->id;  //this is a codependency
          $parent = ORM::Factory($this->objectModel, $parentId);
-      }
+		 }*/
 
 		$items = ORM::factory($this->objectModel);
 		$items->where('parentId', '=',  $parentId);
@@ -89,7 +90,8 @@ class Controller_Navigation extends Controller_MOP{
          
 
 			//add in any modules
-			if(!$parent->loaded()){
+			//if(!$parent->loaded()){
+			if($parent->id == Graph::getRootNode(Kohana::config('cms.graphRootNode'))->id ){
 				$cmsModules = mop::config('cmsModules', '//module');
 				foreach($cmsModules as $m){
 
@@ -102,9 +104,10 @@ class Controller_Navigation extends Controller_MOP{
 					$entry['children'] = array();
 					$sendItemObjects[] = $entry;
 				}
-			} else {
-				//this is where we would handle the addition to modules on a template basis
 			}
+		//	} else {
+				//this is where we would handle the addition to modules on a template basis
+		//	}
 
 			$this->response->data(array('nodes'=>$sendItemObjects));
 
