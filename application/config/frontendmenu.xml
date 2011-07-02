@@ -1,0 +1,5 @@
+<menu>
+	<books />    <!-- the idea i had was for these to map to the 'names' in the frontend.xml, or be specific slugs -->
+	<contact />  <!-- each item could also have the frontend sub-items in it -->
+	<wheretofind /> <!-- somehow this will generate the default code for the menu -->
+</menu>

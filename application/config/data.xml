@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data SYSTEM "../../modules/mopmvc/config/data.dtd">
+<data>
+
+	<item templateName="basicCategory">
+		<field name="title">Category 1</field>
+		<item templateName="basicCategory">
+			<field name="title">Category 2</field>
+			<item templateName="basicCategory">
+				<field name="title">Category 3 A</field>
+			</item>
+			<item templateName="basicCategory">
+				<field name="title">Category 3 B</field>
+				<item templateName="basicCategory">
+					<field name="title">Category 4 A</field>
+				</item>
+				<item templateName="basicCategory">
+					<field name="title">Category 4 B</field>
+				</item>
+				<item templateName="basicCategory">
+					<field name="title">Category 4 C</field>
+				</item>
+			</item>
+			<item templateName="basicCategory">
+				<field name="title">Category 3 C</field>
+			</item>
+		</item>
+	</item>
+
+	<item templateName="singleIPE">
+		<field name="title">Single IPE</field>
+	</item>
+
+	<item templateName="multilineIPE">
+		<field name="title">Multiline IPE</field>
+	</item>
+
+	<item templateName="singleRadioGroup">
+		<field name="title">Single Radio Group</field>
+	</item>
+	
+	<item templateName="singleCheckbox">
+		<field name="title">Single checkbox</field>
+	</item>
+
+	<item templateName="singleDate">
+		<field name="title">Single Date</field>
+	</item>
+
+	<item templateName="singleTime">
+		<field name="title">Single Time</field>
+	</item>
+
+ 	<item templateName="singleFile">
+                <field name="title">Single File</field>
+                <field name="file">testimages/ctoolsAllCases.csv</field>
+        </item>
+
+        <item templateName="singleImage">
+                <field name="title">Single Image</field>
+                <field name="file">testimages/29305_390907843268_707068268_4114906_7182725_n.jpg</field>
+                <item templateName="singleImage">
+                        <field name="title">Image Build Test</field>
+                        <field name="file">testimages/29305_390907843268_707068268_4114906_7182725_n.jpg</field>
+                </item>
+        </item>
+
+	<item templateName="simpleListModule">
+		<field name="title">Simple List Module</field>
+		<list family="simplelist">
+			<item templateName="simpleListModuleItem">
+				<field name="title">THIS IS THE TITLE</field>
+			</item>
+		</list>
+	</item>
+	
+	<item templateName="complexListModule">
+		<field name="title">Complex List Module</field>
+	</item>
+	
+	<item templateName="imageListModule">
+		<field name="title">Image List</field>
+	</item>
+	
+	<item templateName="fileListModule">
+		<field name="title">File List</field>
+  </item>
+
+	<item templateName="singleAssociator">
+		<field name="title">Associator</field>
+	</item>
+	<item templateName="linkTest">
+		<field name="title">Link Test</field>
+		<object name="theLink">
+			<field name="url">lasdf</field>
+			<field name="label">nas as s</field>
+		</object>
+	</item>
+</data>
