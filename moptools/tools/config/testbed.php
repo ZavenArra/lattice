@@ -1,4 +1,0 @@
-<?
-
-$config['tablesToRevert'] = array(
-	);
