@@ -275,7 +275,7 @@ Class mop {
          foreach ($includeContentQueries as $includeContentQueryParams) {
             $query = new Graph_ObjectQuery();
             $query->initWithXml($includeContentQueryParams);
-            $includeContent = $query->run();
+            $includeContent = $query->run($parentId);
 
             for ($i = 0; i < count($includeContent); $i++) {
                $children = mop::getIncludeContent($includeContentQuery, $includeContent[$i]['id']);
