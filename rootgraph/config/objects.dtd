@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+	MoPCMS Backend Configuration File DTD
+	Revision: 0.1
+	Date: 2010/08/26	
+-->
+
+<!ENTITY % elementAttributes
+	"field				CDATA	#REQUIRED "
+>
+
+<!ELEMENT configuration (templates) >
+
+<!ELEMENT templates (template*) >
+
+<!ELEMENT template ( elements?,addableObject*,components* ) >
+<!ATTLIST template
+	name				CDATA #REQUIRED
+	nodeType			CDATA "object"
+	contentType			CDATA "document"
+	allowDelete 		(true|false) "true"
+	allowTogglePublish	(true|false) "true"
+	allowChildSort		(true|false) "true"
+	sortDirection		(ASC|DESC)	"ASC"
+	allowTitleEdit  CDATA "true"
+>
+
+<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator|link|extendedImage|extendedFile|tags)* >
+
+<!ELEMENT components (component*) >
+
+<!ELEMENT addableObject EMPTY >
+<!ATTLIST addableObject
+	templateName		CDATA #REQUIRED
+	addText				CDATA #IMPLIED
+>
+
+<!ELEMENT component ANY>
+<!ATTLIST component
+	templateName	CDATA #REQUIRED
+	label			CDATA #REQUIRED
+>
+
+<!ELEMENT list (addableObject*) >
+<!ATTLIST list
+	family				CDATA #REQUIRED
+	label				CDATA #REQUIRED
+	display				(inline|component)	"inline"
+	allowChildSort   	(true|false)		"true"
+	sortDirection		(ASC|DESC)			"ASC"
+	allowTogglePublish	(true|false)		"true"	
+	contentType  		CDATA "document"
+>
+
+
+<!-- Associator DTD -->
+<!ELEMENT associator (filter*)>
+<!ATTLIST associator  
+	field         CDATA #REQUIRED
+	label         CDATA #IMPLIED
+	parent        CDATA  #IMPLIED
+	templateName  CDATA  #IMPLIED 
+>   
+
+<!ELEMENT filter EMPTY >
+<!ATTLIST filter
+	from           CDATA #IMPLIED
+	templateName   CDATA #IMPLIED
+	tagged         CDATA #IMPLIED
+>
+<!-- /Associator DTD -->
+
+<!ELEMENT text EMPTY >
+<!ATTLIST text
+	%elementAttributes;
+>
+
+<!ELEMENT image (resize|ext)* >
+<!ATTLIST image
+	%elementAttributes;
+>
+
+<!ELEMENT file (ext)* >
+<!ATTLIST file
+	%elementAttributes;
+>
+
+<!ELEMENT radioGroup (radio*) >
+<!ATTLIST radioGroup
+	%elementAttributes;
+	groupLabel			CDATA #REQUIRED
+>
+
+<!ELEMENT radio EMPTY >
+<!ATTLIST radio
+	label				CDATA #REQUIRED
+	value				CDATA #REQUIRED
+>
+
+<!ELEMENT multiSelect EMPTY >
+<!ATTLIST multiSelect
+	%elementAttributes;
+>
+
+
+<!ELEMENT date EMPTY>
+<!ATTLIST date
+	%elementAttributes;
+>
+
+<!ELEMENT time EMPTY>
+<!ATTLIST time
+	%elementAttributes;
+>
+
+
+<!ELEMENT checkbox EMPTY>
+<!ATTLIST checkbox
+	%elementAttributes;
+>
+
+<!ELEMENT link EMPTY>
+<!ATTLIST link
+	%elementAttributes;
+>
+
+<!ELEMENT extendedImage EMPTY>
+<!ATTLIST extendedImage 
+	%elementAttributes;
+>
+
+<!ELEMENT extendedFile EMPTY>
+<!ATTLIST extendedFile 
+	%elementAttributes;
+>
+
+<!ELEMENT tags EMPTY >
+<!ATTLIST tags 
+	label				CDATA	#IMPLIED
+>
+
+<!ELEMENT resize EMPTY >
+<!ATTLIST resize
+	name				CDATA #REQUIRED
+	width				CDATA #REQUIRED
+	height				CDATA #REQUIRED
+	forceDimension		(width|height) #IMPLIED
+	crop				(true|false) "false"
+>
+
+<!ELEMENT ext (#PCDATA) >
+
+<!ELEMENT data (item*) >
+
+<!ELEMENT item ANY >
+<!ATTLIST item
+	templateName		CDATA #REQUIRED
+>
+
+<!ELEMENT content ANY >
+
+<!ELEMENT title (CDATA) >

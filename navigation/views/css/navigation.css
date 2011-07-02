@@ -1,0 +1,178 @@
+/*Navigation*/
+
+#navigation{
+    height: 27em;
+    width: 100%;
+    clear: both;
+    border-bottom: 1px #0af solid;
+}
+
+#navigation .container{
+	height:24em;    
+	overflow:hidden;
+	border-top:1px #ccc solid;
+	border-bottom:1px #ccc solid;
+	background: #f8f8f8 url( images/navContainer_bg.gif );
+}
+
+#navigation .grid_2,
+#navigation .grid_3,
+#navigation .grid_4{
+    margin: 0 0 0 0;
+}
+
+#navigation .panes{
+    height: 100%;
+    position: relative;
+}
+
+#navigation .pane{
+    position: relative;
+    height: 100%;
+    width: 300px;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    float: left;
+	background: #f8f8f8 url( images/nav_bg.gif ) repeat-y;
+}
+
+#navigation ul.nodes{
+    list-style: none;
+    overflow: auto;
+    height: 100%;
+}
+
+
+
+#navigation .node{
+    line-height: 24px;
+    padding:0;
+    border-bottom:1px #cdf solid;    
+    font-size: 1.125em;
+}
+
+
+#navigation .node.active,
+#navigation .node:hover,
+#navigation .node:hover h5,
+#navigation .node.active h5{
+	cursor: pointer;
+	background-color: #0af;
+	color:#fff;
+}
+
+#navigation .node h5{
+	font-size: .875em;
+	line-height:1.2em;
+	margin: 0 0 0 0;
+	padding:.5em 0 .5em 2.5em;
+	float: left;
+	background-image: url( images/icon_leaf.png );
+	background-position: 1em .5em;
+	background-repeat: no-repeat;	
+}
+
+
+#navigation .node .methods{
+	float: right;
+	padding: 0 .5em 0 0;
+}
+
+#navigation a.icon{
+    text-indent: -3000px;
+	display:block;
+	float:left;
+	width: 12px;
+	height: 12px;
+	margin:.5em .25em;
+}
+
+#navigation .node.active h5,
+#navigation .node:hover h5{
+	background-image: url( images/icon_leaf_hover.png );
+	background-position: 1em .5em;
+	background-repeat: no-repeat;
+}
+
+#navigation .node.category h5{
+	background-image: url( images/icon_category.png );
+	background-position: 1em .5em;
+	background-repeat: no-repeat;
+}
+
+#navigation .node.category.active h5,
+#navigation .node.category:hover h5{
+	background-image: url( images/icon_category_hover.png );	
+	background-position: 1em .5em;
+	background-repeat: no-repeat;
+}
+
+#navigation .node.module h5{
+	background-image: url( images/icon_module.png );
+	background-position: 1em .5em;
+	background-repeat: no-repeat;
+}
+
+#navigation .node.module.active h5,
+#navigation .node.module:hover h5{
+	background-image: url( images/icon_module_hover.png );	
+	background-position: 1em .5em;
+	background-repeat: no-repeat;
+}
+
+#navigation .node a.removeNode{
+	background-image: url(images/icon_delete.png);
+}
+
+#navigation .node:hover a.removeNode,
+#navigation .node.active a.removeNode{
+	background-image: url(images/icon_delete_hover.png);
+}
+
+#navigation .node a.togglePublish{
+	background-image: url(images/icon_unpublished.png);	
+}
+
+#navigation .node a.published{
+	background-image: url(images/icon_published.png);	
+}
+
+#navigation .node.active a,
+#navigation .node:hover a{
+	background-image: url(images/icon_unpublished_hover.png);	
+}
+
+#navigation .node.active a.published,
+#navigation .node:hover a.published{
+	background-image: url(images/icon_published_hover.png);	
+}
+
+.tierMethodsDrawer{
+    position: absolute;
+    width: 100%;
+    font-size: 12px;
+    top: 21.5em;
+    z-index: 1000;
+    background: #fffac4;
+}
+
+.tierMethodsDrawer h5{
+    padding: .5em .5em;
+    font-size: 1em;
+    font-size: 12px;
+    cursor: pointer;
+    border-top: 1px #ddd solid;
+    border-right: 1px #dedede solid;
+}
+
+.tierMethodsDrawer li{
+    background: #eee;
+    border-bottom: 1px #dedede solid;
+    padding: .25em .5em;
+    cursor: pointer;
+}
+
+.tierMethodsDrawer li:hover{
+    background: #ddd;
+    border-bottom: 1px #ccc solid;
+}
