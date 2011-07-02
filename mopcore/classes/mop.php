@@ -281,7 +281,7 @@ Class mop {
                $children = mop::getIncludeContent($includeContentQuery, $includeContent[$i]['id']);
                $includeContent[$i] = array_merge($includeContent[$i], $children);
             }
-            $content[$query->label] = $includeContent;
+            $content[$query->attributes['label']] = $includeContent;
          }
     }
     return $content;
