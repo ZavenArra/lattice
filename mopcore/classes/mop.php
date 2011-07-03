@@ -43,7 +43,6 @@ Class mop {
 
 	private static $config;
 
-	private static $dbmaps;
 
 	public static function config($arena, $xpath, $contextNode=null){
 		if(!is_array(self::$config)){
@@ -118,28 +117,6 @@ Class mop {
 			$xmlNodes = self::$config[$arena]->evaluate($xpath);
 		}
 		return $xmlNodes;
-	}
-
-	public static function dbmap($template_id, $column=null){
-            	if(!isset(self::$dbmaps[$template_id])){
-			$dbmaps = ORM::Factory('objectmap')->where('template_id', '=', $template_id)->find_all();
-			self::$dbmaps[$template_id] = array();
-			foreach($dbmaps as $map){
-				self::$dbmaps[$template_id][$map->column] = $map->type.$map->index;
-			}
-		}
-		if(!isset($column)){
-			return self::$dbmaps[$template_id];
-		} else {
-			if(isset(self::$dbmaps[$template_id][$column])){
-				return self::$dbmaps[$template_id][$column];
-			} else {
-				return null;
-			}
-		}
-	}
-	public static function reinitDbmap($template_id){
-		unset(self::$dbmaps[$template_id]);
 	}
 
 	/*
