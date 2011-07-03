@@ -278,7 +278,7 @@ Class mop {
             $includeContent = $query->run($parentId);
 
             for ($i = 0; $i < count($includeContent); $i++) {
-               $children = mop::getIncludeContent($includeContentQuery, $includeContent[$i]['id']);
+               $children = mop::getIncludeContent($includeContentQueryParams, $includeContent[$i]['id']);
                $includeContent[$i] = array_merge($includeContent[$i], $children);
             }
             $content[$query->attributes['label']] = $includeContent;
