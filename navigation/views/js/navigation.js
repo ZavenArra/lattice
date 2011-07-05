@@ -14,6 +14,14 @@ mop.modules.navigation.Navigation = new Class({
        addObjectPosition: 'bottom'
    },
 
+	getNodeTypeFromId: function( nodeId ){
+		return this.nodeData[ nodeId ].nodeType;
+	},
+
+	getContentTypeFromId: function( nodeId ){
+		return this.nodeData[ nodeId ].contentType;
+	},
+
 	initialize: function( element, marshal, options ){
 		this.setOptions( options );
 		this.parent( element, marshal, options );
@@ -51,6 +59,7 @@ mop.modules.navigation.Navigation = new Class({
 		}
 		if( this.navPanes.length > 0 ) this.clearPanes( paneIndex + 1 );	    
 		var newPane = this.addPane( parentId );
+		newPane.store( 'paneIndex', paneIndex );
 		if( this.tiers[ parentId ] ){
 			// if the tier has already been loaded and cached
 			console.log( "requestTier", "cached" );
@@ -287,18 +296,22 @@ mop.modules.navigation.Tier = new Class({
       if( this.activeNode != nodeElement ) this.deindicateNode( nodeElement );
    },
 		
-   onNodeClicked: function( e, nodeElement ){
-      mop.util.stopEvent( e );
-      //	    console.log( "onNodeClicked", this.element );
-      var nodeId = this.getNodeIdFromElement( nodeElement );
-      // if this specific tier has a pending request, we cancel it so the callback doesn't fire
-      if( this.activeNode )this.deindicateNode( this.activeNode );
-      this.activeNode = nodeElement;
-      this.indicateNode( nodeElement );
-      this.onNodeSelected( nodeId );
-      if( this.currentTierRequest ) this.currentTierRequest.cancel();
-      if( !nodeElement.hasClass( "module" ) ) this.currentTierRequest = this.marshal.requestTier( nodeId, this );
-   },
+	onNodeClicked: function( e, nodeElement ){
+		mop.util.stopEvent( e );
+		//    console.log( "onNodeClicked", this.element );
+		var nodeId = this.getNodeIdFromElement( nodeElement );
+		// if this specific tier has a pending request, we cancel it so the callback doesn't fire
+		if( this.activeNode )this.deindicateNode( this.activeNode );
+		this.activeNode = nodeElement;
+		this.indicateNode( nodeElement );
+		this.onNodeSelected( nodeId );
+		if( this.currentTierRequest ) this.currentTierRequest.cancel();
+		if( this.marshal.getNodeTypeFromId( nodeId ) != "module" ){
+			this.currentTierRequest = this.marshal.requestTier( nodeId, this );
+		}else{
+			this.marshal.clearPanes( this.element.retrieve( 'paneIndex' ) + 1 );
+		}
+	},
 		
 	onRemoveNodeClicked: function( e, nodeElement ){
 		console.log( "\tonRemoveNodeClicked", this.marshal.nodeData, "(" , Object.getLength( this.marshal.nodeData ), ")" );
