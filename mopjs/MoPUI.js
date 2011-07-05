@@ -1289,8 +1289,7 @@ mop.ui.TimePicker = new Class({
 			timePicker: true,
 			yearPicker: false,
 			startView: "time",
-			inputOutputFormat: "H:i",
-			format: "h:i:a",
+			format: "%I:%M:%S",
 			debug: false,
 			onSelect: this.onSelect.bindWithEvent( this )
 		});
@@ -1325,8 +1324,7 @@ mop.ui.DateRangePicker = new Class({
 				elementId: "datePickerFor_" + this.fieldName,
 				startView: this.options.startView,
 				allowEmpty: this.options.allowEmpty,
-				inputOutputFormat: "Y/m/d",
-				format: "m/d/Y",
+				format: "%Y/%m/%d",
 				onShow: this.onShow.bind( this ),
 				onSelect: this.onSelect.bindWithEvent( this ),
 				onClose: function(){},
