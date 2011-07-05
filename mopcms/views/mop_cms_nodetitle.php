@@ -1,4 +1,4 @@
-<div class="pageTitle grid_12">	
+<div class="pageTitle">	
 
 	<div class="<?if($allowTitleEdit):?>ui-Text<?endif;?> grid_8 rows-1 field-title">
 		<h2 class="ipe h2"><?=$title;?></h2>
