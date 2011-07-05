@@ -16,7 +16,6 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	*/
 	public function __construct($request, $response){
 
-     Kohana::$log->add(Log::ERROR,  $_POST['cookie']);
       if($request->action() == 'savefile'){
         $cookies = explode('; ', $_POST['cookie']);
         $cookieName = null;
