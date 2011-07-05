@@ -241,16 +241,21 @@ mop.modules.CMS = new Class({
 	console.log( "#### ", json );
         if( !json.returnValue ) console.log( this.toString(), "togglePublishedStatusRequest error:", json.response.error );        
     }
-	
+
 });
 
+if( !mop.util.hasDOMReadyFired() ){
+	
 window.addEvent( "domready", function(){
+	mop.util.DOMReadyHasFired();
 	mop.HistoryManager = new mop.util.HistoryManager().instance();
 	mop.HistoryManager.init( "pageId", "onPageIdChanged" );
 	mop.ModalManager = new mop.ui.ModalManager();
-    mop.DepthManager = new mop.util.DepthManager();    
-    var doAuthTimeout = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
-    if( window.location.href.indexOf( "auth" ) == -1 && doAuthTimeout && doAuthTimeout != "0" ) mop.loginMonitor = new mop.util.LoginMonitor();
-    mop.util.EventManager.broadcastEvent("resize");
-    mop.CMS = new mop.modules.CMS( "cms" );
+	mop.DepthManager = new mop.util.DepthManager(); 
+	var doAuthTimeout = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
+	if( window.location.href.indexOf( "auth" ) == -1 && doAuthTimeout && doAuthTimeout != "0" ) mop.loginMonitor = new mop.util.LoginMonitor();
+	mop.util.EventManager.broadcastEvent("resize");
+	mop.CMS = new mop.modules.CMS( "cms" );
 });
+
+}

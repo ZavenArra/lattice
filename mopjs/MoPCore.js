@@ -218,6 +218,30 @@ if( !mop ) var mop = {};
 */
 mop.util = {};
 
+/* Variable: mop._domIsReady read only */
+mop._domIsReady = false;
+
+
+/*
+ 	Function: mop.util.isDomReady 
+	Simple getter
+	Returns: mop._domIsReady
+*/
+mop.util.hasDOMReadyFired = function(){
+	return mop._domIsReady;
+}
+
+/*
+	Function: mop.util.domIsReady
+	So a module can know if an initial domready has been called
+	This is key to having modules not call domready if they are loaded from within another module, but still able to self-instantiate is loaded alone)
+	Set mop._domIsReady to true
+*/
+mop.util.DOMReadyHasFired = function(){
+	mop._domIsReady = true;
+}
+
+
 /*
 	Function: mop.util.loadStyleSheet
 	Attach a stylesheet element to head element via DOM
@@ -240,15 +264,6 @@ mop.util.loadStyleSheet = function( cssURL, mediaString, opts ){
 mop.util.loadJS = function( jsURL, options ){
     console.log( "loadJS", jsURL)
 	return new Asset.javascript( jsURL, options );
-}
-
-/*
-	Function: mop.util.domIsReady
-	So a module can know if the initial domready has been called (say its loaded via ajax)
-	Set mop._domIsReady to true
-*/
-mop.util.domIsReady = function(){
-	mop._domIsReady = true;
 }
 
 /*
@@ -278,15 +293,6 @@ mop.util.preventDefault = function( e ){
 }
 
 /*
- 	Function: mop.util.isDomReady 
-	Simple getter
-	Returns: mop._domIsReady
-*/
-mop.util.isDomReady = function(){
-	return mop._domIsReady;
-}
-
-/*
  	Function: mop.util.setBaseURL 
 	Returns: sets mop.baseURL for later use
 */
@@ -299,7 +305,7 @@ mop.util.setBaseURL = function( base ){
 	Returns: href from html base tag
 */
 mop.util.getBaseURL = function(){
-	return mop.baseURL;
+	return ( mop.baseURL )? mop.baseURL : "/";
 }
 
 /* Function: mop.util.getValueFromClassName
@@ -962,9 +968,4 @@ window.addEvent( "resize", function(){
 
 window.addEvent( "scroll", function(){
 	mop.util.EventManager.broadcastEvent( "onWindowScroll");
-});
-
-window.addEvent( "domready", function(){
-	mop.util.domIsReady();
-	if(undefined===mop.baseURL) mop.util.setBaseURL( "/" );
 });
