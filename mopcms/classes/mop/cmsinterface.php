@@ -15,19 +15,23 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 		Loads subModules to build from config	
 	*/
 	public function __construct($request, $response){
-		echo 'asdf asdf asdf ajsdl;f kjas;dlf kja;sdkjf ;askdjf ;asd f';
-			die('nonononono');
     	parent::__construct($request, $response);
 	}
 
 
 	public function checkAccess(){
-		if($this->request->action == 'savefile'){
-			list($cookieName, $cookieValue) = str_split('=', $_GET['cookie']);
+		if($this->request->action() == 'savefile'){
+      $cookies = explode('; ', $_POST['cookie']);
+      $cookieName = null;
+      $cookieValue = null;
+      foreach($cookies as $cookie){
+        if(strpos( $cookie, 'session') !== false){
+			    list($cookieName, $cookieValue) = explode('=', $cookie);
+        }
+      }
 
 			session_name($cookieName);
 			session_id($cookieValue);
-
 			session_start();
 	
 		}
