@@ -50,7 +50,6 @@ class MOP_CMS extends MOP_CMSInterface {
 		Loads subModules to build from config	
 	*/
 	public function __construct($request, $response){
-
 		parent::__construct($request, $response);
      
 		$this->modules = Kohana::config('cms.subModules');

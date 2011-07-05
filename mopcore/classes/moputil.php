@@ -60,6 +60,7 @@ Class moputil {
 	 */
 	public static function checkRoleAccess($role){
 
+    Kohana::$log->add(Log::ERROR, '&&'.Auth::instance()->_session->id());
 		if($role && !Auth::instance()->logged_in($role)){
 			return false;
 		} else {
