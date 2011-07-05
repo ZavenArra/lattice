@@ -87,6 +87,7 @@ class Model_Content extends ORM {
 			if($fieldConfig->item(0)){
 				//field is configured but not initialized in database
 				$object->template->configureField($fieldConfig->item(0));	
+				self::reinitDbmap($object->template_id);
 
 				//now go aheand and get the mapped column
 				$column = self::dbmap( $object->template_id, $columnName);
@@ -151,10 +152,10 @@ class Model_Content extends ORM {
 		if($fieldConfig->item(0)){
 			//field is configured but not initialized in database
 			$object->template->configureField($fieldConfig->item(0));	
+			self::reinitDbmap($object->template_id);
 
 			//now go aheand and save on the mapped column
 
-			self::reinitDbmap($object->template_id);
 			$mappedcolumn = self::dbmap( $object->template_id, $column);
 			return parent::__set($mappedcolumn, $value);
 		}

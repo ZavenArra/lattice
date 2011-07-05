@@ -156,7 +156,6 @@ class Model_ObjectType extends ORM {
 
 		}
 
-		mop::reinitDbmap($this->id);
 	}
 
 
