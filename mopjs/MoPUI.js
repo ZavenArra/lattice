@@ -1547,8 +1547,8 @@ mop.ui.FileElement = new Class({
 	imageFadeIn: null,
 
 	getSubmitURL: function(){
-		var url = "ajax/data/"+this.marshal.getSubmissionController()+"/"+this.options.action+"/"+this.marshal.getObjectId()+"/"+this.fieldName;
-//		console.log( ":::: ", this.toString(), "getSubmitURL: ", url );
+		var url = mop.util.getBaseURL() + "ajax/data/savefile/"+this.marshal.getObjectId()+"/"+this.fieldName;
+		console.log( ":::: ", this.toString(), "getSubmitURL: ", url );
 		return 	url;
 	},
 
@@ -1578,7 +1578,7 @@ mop.ui.FileElement = new Class({
 		this.clearButton.store( "Class", this );
         this.clearButton.addEvent( "click", this.clearFileRequest.bindWithEvent( this ) );
         
-		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "moplib/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton } );
+		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "moplib/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton, cookie: document.cookie } );
 
         // console.log( ":::::::::::::::", this.Uploader.box.getElement( "object" ).get( "id" ) );
 		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );
@@ -2129,7 +2129,7 @@ mop.util.Uploader = new Class({
 		if ($type(append) == 'string') data[append] = hash;
 		else data.append( hash );
 
-//		console.log( this.toString(), "appendCookieData", data );
+		console.log( this.toString(), "appendCookieData", data );
 
 		this.setOptions( { data: data } );
 	},
