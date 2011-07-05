@@ -87,6 +87,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	public function action_savefield($id){
       $object = Graph::object($id);
       $object->$_POST['field'] = $_POST['value'];
+			$object->save();
       $object = Graph::object($id);
       $value = $object->$_POST['field'];
       

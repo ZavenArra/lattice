@@ -33,7 +33,7 @@ class Graph_ObjectQuery {
       $this->attributes['from'] = $xml->getAttribute('from');
    }
    
-   public function run(){
+   public function run($parentId = null){
           
      $objects = Graph::object();
 
