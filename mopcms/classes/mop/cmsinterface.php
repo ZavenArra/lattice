@@ -35,6 +35,13 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	 */
 	public function action_saveFile($objectId){
 
+		list($cookieName, $cookieValue) = str_split('=', $_GET['cookie']);
+
+		session_name($cookieName);
+		session_id($cookieValue);
+
+		session_start();
+
 		$file = mopcms::saveHttpPostFile($objectId, $_POST['field'], $_FILES[$_POST['field']]);
 		$result = array(
 			'id'=>$file->id,
