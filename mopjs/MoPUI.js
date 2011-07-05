@@ -1548,6 +1548,17 @@ mop.ui.FileElement = new Class({
 	imgAsset: null,
 	imageFadeIn: null,
 
+	getSubmitURL: function(){
+		var url = "ajax/data/"+this.marshal.getSubmissionController()+"/"+this.options.action+"/"+this.marshal.getObjectId()+"/"+this.fieldName;
+//		console.log( ":::: ", this.toString(), "getSubmitURL: ", url );
+		return 	url;
+	},
+
+   getClearFileURL: function(){
+      var url = "ajax/data/" + this.marshal.getSubmissionController() + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
+      return url;
+   },
+
 	initialize: function( anElement, aMarshal, options ){
 
 		this.parent( anElement, aMarshal, options );
@@ -1620,6 +1631,7 @@ mop.ui.FileElement = new Class({
 	},
 	
 	getOptions: function(){
+		console.log( "getOptions", "{", this.options.extensions, "}");
 		var opts = {
 			target: this.element,
 			fieldName: this.fieldName,
@@ -1628,7 +1640,7 @@ mop.ui.FileElement = new Class({
 				field: this.fieldName,
 				url: this.getSubmitURL()
 			},
-			typeFilter: this.options.extensions,
+			typeFilter: this.buildExtensionsObject(),
 			sizeLimitMin: 0,
 			sizeLimitMax: this.optio
 		}
@@ -1636,7 +1648,7 @@ mop.ui.FileElement = new Class({
 	},
 	
 	buildExtensionsObject: function(){
-
+		console.log( "buildExtensionsObject" );
 	    var extensionsArray = mop.util.getValueFromClassName( 'extensions', this.elementClass ).split( "_" );
 	    
 		var desc = "";
@@ -1655,30 +1667,20 @@ mop.ui.FileElement = new Class({
 		exts = exts;
 		var ret =  {};
 		ret[desc] = exts;
-//		console.log( this, "buildExtensionsObject ", ret );
+		
+		console.log( this, "buildExtensionsObject ", ret );
+		
 		return ret;
 	},
-
-	getSubmitURL: function(){
-		var url = "ajax/data/"+this.marshal.getSubmissionController()+"/"+this.options.action+"/"+this.marshal.getObjectId()+"/"+this.fieldName;
-//		console.log( ":::: ", this.toString(), "getSubmitURL: ", url );
-		return 	url;
-	},
-   
-   getClearFileURL: function(){
-      var url = "ajax/data/" + this.marshal.getSubmissionController() + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
-      return url;
-   },
 	
 	onFocus: function( e ){
-		console.log( this.toString(), "onFocus", e );
+		console.log( "mop.ui.FileElement", "onFocus", e );
 		mop.util.stopEvent( e );
-        console.log( "UPLOADER ::", this.Uploader );
 		this.Uploader.setFocus( this, this.getPosition() );
 	},
 	
-	
 	onUploadButtonClicked: function( e ){
+		console.log( "onUploadButtonClicked", e );
 		mop.util.stopEvent( e );
 	},
 	
@@ -1688,7 +1690,6 @@ mop.ui.FileElement = new Class({
 		console.log( this.toString(), "onTargetHovered", depth );
 		this.Uploader.onTargetHovered( this, this.uploadButton, this.getCoordinates(), depth, this.getOptions() );
 		this.reposition();
-        this.simulateClick();
 	},
 	
 	clearFileRequest: function( e ){
@@ -1768,7 +1769,9 @@ mop.ui.FileElement = new Class({
 	},
 	
 	onFileComplete: function( json ){
-		console.log( this.toString(), "onFileComplete", json, Array.from( arguments )  );
+		console.log( this.toString(), "onFileComplete", json  );
+		var json = JSON.decode( json.response.text.returnValue );
+		console.log( this.toString(), "onFileComplete", json  );
 		this.clearButton.fade( "in" );
 //		console.log( "-------------------------------- ", $A( arguments ) );
 		if( this.fileName ) this.fileName.set( "html",  '<a href="' + json.response.src + '" target="_blank">'+json.response.name+'</a>' );
@@ -1910,11 +1913,11 @@ mop.util.Uploader = new Class({
 
 
 		this.addEvents({
-			buttonEnter: this.targetRelay.bind(this, ['mouseenter'] ),
-			buttonLeave: this.targetRelay.bind(this, ['mouseleave'] ),
-			buttonDown: this.targetRelay.bind(this, ['mousedown'] ),
-			buttonDisable: this.targetRelay.bind(this, ['disable'] ),
-			fileComplete: this.targetRelay.bind( this, ['fileComplete'] )
+			buttonEnter: this.targetRelay.bind( this, 'mouseenter' ),
+			buttonLeave: this.targetRelay.bind( this, 'mouseleave' ),
+			buttonDown: this.targetRelay.bind( this, 'mousedown' ),
+			buttonDisable: this.targetRelay.bind( this, 'disable' ),
+			fileComplete: this.targetRelay.bind( this, 'fileComplete' )
 		});
 		
 		this.size = this.uploading = this.bytesLoaded = this.percentLoaded = 0;
@@ -1927,20 +1930,18 @@ mop.util.Uploader = new Class({
 		}
 	},
 
-	toString: function(){
-		return "[ object, digitarald.Swiff.Uploader, mop.util.Uploader ]";
-	},
+	// toString: function(){
+	// 	return "[ object, digitarald.Swiff.Uploader, mop.util.Uploader ]";
+	// },
 	
 	setFocus: function(){
+		console.log("!!!!!!!!!!!!!!!!!!")
 		this.box.getChildren()[0].focus();
 	},
 	
 	verifyLoad: function() {
-
-//		console.log( this.toString(), "verifyLoad", this.object );
-
+		console.log( this.toString(), "verifyLoad", this.object );
 		if (this.loaded) return;
-
 		if (!this.object.parentNode) {
 			this.fireEvent('fail', ['disabled']);
 		} else if (this.object.style.display == 'none') {
@@ -1948,15 +1949,15 @@ mop.util.Uploader = new Class({
 		} else if (!this.object.offsetWidth) {
 			this.fireEvent('fail', ['empty']);
 		}
-
 	},
 
 	fireCallback: function( name, args ) {
 
 		// file* callbacks are relayed to the specific file
-//		console.log( this.toString(), "fireCallback", name, args );
+		console.log( this.toString(), "fireCallback", name );
 
-		if (name.substr(0, 4) == 'file') {
+		if ( name.substr(0, 4) == 'file') {
+			console.log( "\tA" );
 			// updated queue data is the second argument
 			if (args.length > 1) this.update(args[1]);
 			var data = args[0];
@@ -1964,12 +1965,11 @@ mop.util.Uploader = new Class({
 			var file = this.findFile( data.id );
 			this.fireEvent( name, file || data, 5 );
 			if (file) {
-				var fire = name.replace(/^file([A-Z])/, function($0, $1) {
-					return $1.toLowerCase();
-				});
+				var fire = name.replace(/^file([A-Z])/, function($0, $1) { return $1.toLowerCase(); });
 				file.update(data).fireEvent( fire, [ data ], 10 );
 			}
 		} else {
+			console.log( "\tB" );
 			this.fireEvent( name, args, 5 );
 		}
 	},
@@ -1984,6 +1984,7 @@ mop.util.Uploader = new Class({
 	},
 
 	initializeSwiff: function() {
+		console.log( "initializeSwiff A" );
 //		console.log( this.toString(), "initializeSwiff" );
 		// extracted options for the swf 
 		this.remote('initialize', {
@@ -2005,39 +2006,36 @@ mop.util.Uploader = new Class({
 			buttonImage: this.options.buttonImage,
 			policyFile: this.options.policyFile
 		});
-
 		this.loaded = true;
-
+		console.log( "initializeSwiff B" );
 		this.appendCookieData();
 	},
 
 	targetRelay: function(name) {
-//		console.log( "targetRelay", name );
+//		console.log( "!!!! targetRelay", name );
 		if ( this.currentFileElementInstance ) this.currentFileElementInstance.fireEvent( name );
 	},
 
 	setOptions: function( options ) {
-
 		if (options) {
-//			console.log( this.toString(), "setOptions", options );
+		console.log( this.toString(), "setOptions", options );
 			if ( options.url) options.url = mop.util.Uploader.qualifyPath( options.url );
 			if ( options.buttonImage) options.buttonImage = mop.util.Uploader.qualifyPath( options.buttonImage );
 			this.parent( options );
 			if( this.loaded ) this.remote( 'setOptions', options );
 		}
-
 		return this;
-
 	},
 
 	onTargetHovered: function( target, targetElement, coords, depth, options ){
 		if( this.currentFileElementInstance == target ) return;
-//		console.log( this.toString(), options );
+		console.log( "mop.util.Uploader", target, targetElement, coords, depth, options );
 		this.setTarget( target, targetElement, coords, depth, options );
+		console.log("****")
 	},
 
 	setEnabled: function(status) {
-//		console.log( "setEnabled" );
+		console.log( "setEnabled" );
 		this.remote('setEnabled', status);
 	},
 
@@ -2062,9 +2060,9 @@ mop.util.Uploader = new Class({
 
 	update: function( data ) {
 		// the data is saved right to the instance
-//		console.log( this.toString(), "update", data );
+		console.log( "mop.util.Uploader", "update", data );
 		if( data ) this.currentFileElementInstance.showProgress( data );
-		Object.append( this,    data );
+		Object.append( this,  data );
 		this.fireEvent('queue', [this], 10);
 		return this;
 	},
@@ -2115,17 +2113,19 @@ mop.util.Uploader = new Class({
 	},
 	
 	appendCookieData: function() {
-//		console.log( "appendCookieData" );
 		var append = this.options.appendCookieData;
+	console.log( "appendCookieData A", this.options.appendCookieData, document.cookie );//, document.cookie.split(/;\s*/) );
 		if (!append) return;
 
 		var hash = {};
+		
 		document.cookie.split(/;\s*/).each(function(cookie) {
 			cookie = cookie.split('=');
 			if (cookie.length == 2) {
 				hash[decodeURIComponent(cookie[0])] = decodeURIComponent(cookie[1]);
 			}
 		});
+		console.log( "appendCookieData B" );
 
 		var data = this.options.data || {};
 		if ($type(append) == 'string') data[append] = hash;
@@ -2172,28 +2172,21 @@ mop.util.Uploader = new Class({
 	},
 
 	setTarget: function( uiElement, targetElement, coords, depth, options ){
-
+//		console.log( "mop.util.Uploader.setTarget", uiElement, targetElement, coords, depth, options );
 		this.currentFileElementInstance = uiElement;
 		this.target = targetElement;
 		this.setOptions( options );
 		this.reposition();
-
 	},
 
 	onResize: function(){
 		this.reposition();
 	},
 	
-	reposition: function( scrollContext ) {
-		
+	reposition: function( scrollContext ) {		
 		if( !this.currentFileElementInstance ) return;
-
 		var coords = this.currentFileElementInstance.getCoordinates();
-
 		var newDepth = mop.DepthManager.incrementDepth();
-
-//		console.log( this.toString(), "reposition", this.scrollContext, depthContext, this.currentFileElementInstance.getCoordinates(), newDepth );
-
 		this.box.setStyles( {
 			position: 'absolute',
 			display: 'block',
@@ -2208,7 +2201,7 @@ mop.util.Uploader = new Class({
 	},
 
 	render: function() {
-//		console.log( this.toString(), "render", this.invalid, $A( arguments ) );
+		console.log( this.toString(), "render", this.invalid, $A( arguments ) );
 	},
 	
 	destroy: function(){
@@ -2250,6 +2243,7 @@ mop.util.Uploader = new Class({
 	},
 
 	formatUnit: function(base, type, join) {
+		console.log( "\tformatUnit")
 		var labels = Swiff.Uploader.unitLabels[(type == 'bps') ? 'b' : type];
 		var append = (type == 'bps') ? '/s' : '';
 		var i, l = labels.length, value;
@@ -2270,6 +2264,7 @@ mop.util.Uploader = new Class({
 			value = labels[i].min;
 			if (base >= value) break;
 		}
+		console.log( "\t/ formatUnit")
 		return (base / value).toFixed(1) + ' ' + labels[i].unit + append;
 	}
 });
@@ -2277,7 +2272,9 @@ mop.util.Uploader = new Class({
 
 mop.util.Uploader.qualifyPath = ( function() {
 	var anchor;
+	console.log("mop.util.Uploader.qualifyPath ")
 	return function( path ) {
+		console.log( "\t",path);
 		( anchor || ( anchor = new Element('a') ) ).href = path;
 		return anchor.href;
 	};
@@ -2390,22 +2387,14 @@ mop.ui.CheckBox = new Class({
 	},
 	
 	submit: function( e ){
-
-		console.log( "\t\t:::::", this.getValue(), this.checkBox.getProperty( "checked" ) );
-
-		// var newValue = ( this.checkBox.getProperty( "checked" ) == "checked" )? false : true;
-		// 
-		// this.setValue( newValue );
-
+//		console.log( "\t\t:::::", this.getValue(), this.checkBox.getProperty( "checked" ) );
 		if( this.onEditCallbacks && this.onEditCallbacks.length > 0 ){
 			this.onEditCallbacks.each( function( aFunc ){
 				aFunc( this.field.get( "value" ) );
 			});
 		}
-
 		var val = this.getValue();
 		this.submittedValue = val;
-
 		if( !this.validate() ) return;		
 
 		if( !this.options.autoSubmit ){
@@ -2413,9 +2402,7 @@ mop.ui.CheckBox = new Class({
 			if( this.leaveEditMode ) this.leaveEditMode();
 			return;
 		}
-
 		if( this.showSaving ) this.showSaving();
-//		console.log( this.toString(), "submit", url,  { field: this.fieldName, value: val } );
 		if( this.leaveEditMode ) this.leaveEditMode();
 		this.marshal.saveField( { field: this.fieldName, value: val }, this.onResponse.bind( this ) );
 	},
@@ -3383,22 +3370,6 @@ mop.ui.PaginationControls = new Class({
 		this.element.destroy();
 		
 		if( this.elementToClone ) this.elementToClone.destroy();
-		
-		delete	this.element; 
-		delete	this.instanceName;
-		delete	this.itemIdPrefix;
-		delete	this.elementToClone;	   
-		delete	this.nextPageControl;   
-		delete	this.previousPageContro;
-		delete	this.pageableElement;   
-		delete	this.method;			   
-		delete	this.container;		   
-		delete	this.spinner;		   
-		delete	this.marshal;		   
-		delete	this.pages;			   
-		delete	this.container;		   
-		delete	this.currentPage; 	   
-		delete	this.pageableElement;   
         
         this.options = null;
 		this.element		 	= null;
