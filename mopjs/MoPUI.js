@@ -1636,7 +1636,8 @@ mop.ui.FileElement = new Class({
 			url: this.getSubmitURL(),
 			data: {
 				field: this.fieldName,
-				url: this.getSubmitURL()
+				url: this.getSubmitURL(),
+				cookie: document.cookie
 			},
 			typeFilter: this.buildExtensionsObject(),
 			sizeLimitMin: 0,
