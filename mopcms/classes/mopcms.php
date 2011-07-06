@@ -219,7 +219,6 @@ class MoPCMS {
                   //deal with html template elements
                   $key = $element['type'] . '_' . $element['field'];
                   $html = null;
-									echo $element['field'] .'[[['. $object->$element['field'];
                   if (!isset($element['field'])) {
                      $element['field'] = CMS_Controller::$unique++;
                      $html = mopui::buildUIElement($element, null);
@@ -240,7 +239,6 @@ class MoPCMS {
       // should be Model_object->getElements();
       // this way a different driver could be created for non-xml config if desired
       $elementsConfig = array();
-      //echo 'BUILDING'.$object->template->templatename.'<br>'; 
       foreach ($elements as $element) {
          //echo 'FOUND AN ELEMENT '.$element->tagName.'<br>';
          $entry = array();
