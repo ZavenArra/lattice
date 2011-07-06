@@ -33,6 +33,8 @@ class Controller_Builder extends Controller {
 		$db->query(Database::UPDATE, 'alter table contents AUTO_INCREMENT = 1');
 		$db->query(Database::DELETE, 'delete from templates');
 		$db->query(Database::UPDATE, 'alter table templates AUTO_INCREMENT = 1');
+      $db->query(Database::DELETE, 'delete from objectmaps');
+		$db->query(Database::UPDATE, 'alter table objectmaps AUTO_INCREMENT = 1');
 		flush();
 		ob_flush();
 
@@ -83,7 +85,7 @@ class Controller_Builder extends Controller {
 			$lists = array();
 			if(!$item->getAttribute('templateName')){
 				echo $item->tagName;
-        die("No templatename specified for Item ".$item->tagName."\n\n");
+            die("No templatename specified for Item ".$item->tagName."\n\n");
 			}
       //echo "\n found contentnod ".$item->getAttribute('templateName');
 			flush();
@@ -118,7 +120,6 @@ class Controller_Builder extends Controller {
 				if(!$fieldInfo){
 					die("Bad field in data/objects!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')));
 				}
-        //echo "\ntagname\t".$fieldInfo->tagName."\n";
 
 				//special setup based on field type
 				switch($fieldInfo->tagName){
@@ -141,9 +142,7 @@ class Controller_Builder extends Controller {
 
 			}
 			$data['published'] = true;
-			//echo 'parent'.$parentId;
-			//print_r($data);
-
+			
 
 			foreach(mop::config($xmlFile, 'object', $item) as $object){
 				$clusterData = array();

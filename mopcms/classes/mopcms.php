@@ -142,13 +142,13 @@ class MoPCMS {
 								if ($tConfig) {
                            
 										$field = $element['field'];
-										$clusterObject = $object->contenttable->$field;
+										$clusterObject = $object->$field;
 										//this should really happen within the models
 										if (!$clusterObject) {
 												$id = mopcms::addObject(null, $element['type']);
-												$object->contenttable->$field = $id;
-												$object->contenttable->save();
-												$clusterObject = $object->contenttable->$field;
+												$object->$field = $id;
+												$object->save();
+												$clusterObject = $object->$field;
 										}
 										$clusterHtmlChunks = mopcms::buildUIHtmlChunksForObject($clusterObject);
 
@@ -219,10 +219,11 @@ class MoPCMS {
                   //deal with html template elements
                   $key = $element['type'] . '_' . $element['field'];
                   $html = null;
+									echo $element['field'] .'[[['. $object->$element['field'];
                   if (!isset($element['field'])) {
                      $element['field'] = CMS_Controller::$unique++;
                      $html = mopui::buildUIElement($element, null);
-                  } else if (!$html = mopui::buildUIElement($element, $object->contenttable->$element['field'])) {
+                  } else if (!$html = mopui::buildUIElement($element, $object->$element['field'])) {
                      throw new Kohana_Exception('bad config in cms: bad ui element');
                   }
                   $htmlChunks[$key] = $html;
@@ -307,8 +308,8 @@ class MoPCMS {
 					$objects = ORM::Factory('template', $template->getAttribute('name'))->getActiveMembers();
 					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
-						if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(Graph::mediapath() . $object->contenttable->$fieldname->filename)){
-							$object->processImage($object->contenttable->$fieldname->filename, $fieldname);
+						if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
+							$object->processImage($object->$fieldname->filename, $fieldname);
 						}
 					}
 				}
@@ -322,8 +323,8 @@ class MoPCMS {
 			foreach(mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename)) as $element){
 				if($element->tagName == 'image'){
 					$fieldname = $element->getAttribute('field');
-					if(is_object($object->contenttable->$fieldname) && $object->contenttable->$fieldname->filename && file_exists(Graph::mediapath() . $object->contenttable->$fieldname->filename)){
-						$object->processImage($object->contenttable->$fieldname->filename, $fieldname);
+					if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
+						$object->processImage($object->$fieldname->filename, $fieldname);
 					}
 				}
 			}	

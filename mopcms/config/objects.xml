@@ -103,7 +103,6 @@
 
 		<template name="simpleListModuleItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-				<text field="title" label="Title" rows="1"/>
 				<text field="description" label="Description"/>
 				<text field="detail1" label="Detail 1"/>
 				<text field="detail2" label="Detail 2"/>
@@ -120,7 +119,6 @@
 		
 		<template name="imageListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-				<text field="title" label="Title" rows="1"/>
 				<text field="description" label="Description"/>		
 				<image field="file">
 					<ext>jpg</ext>
@@ -141,7 +139,6 @@
 
 		<template name="fileListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-				<text field="title" label="Title" rows="1"/>
                                 <text field="description" label="Description"/>
                                 <file field="file" label="File">
                                         <ext>html</ext>
@@ -162,7 +159,6 @@
 		
 		<template name="complexListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-				<text field="title" label="Title" rows="1"/>
 				<text field="description" label="Description"/>
 				<checkbox field="singleCheckbox" label="One"/>
 				<radioGroup field="singleRadioGroup" groupLabel="Single Radio Group">
