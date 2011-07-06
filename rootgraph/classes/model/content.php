@@ -87,7 +87,6 @@ class Model_Content extends ORM {
 			if($fieldConfig->item(0)){
 				//field is configured but not initialized in database
 				$object->template->configureField($fieldConfig->item(0));
-                     echo 'Configuring in content get() '.$column."\n";
 
 				self::reinitDbmap($object->template_id);
 
@@ -153,7 +152,6 @@ class Model_Content extends ORM {
 		$fieldConfig = mop::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $column));
 		if($fieldConfig->item(0)){
 			//field is configured but not initialized in database
-         echo 'Configuring in content set() '.$column."\n";
 			$object->template->configureField($fieldConfig->item(0));	
 			self::reinitDbmap($object->template_id);
 
