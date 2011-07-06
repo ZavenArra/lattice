@@ -1637,7 +1637,7 @@ mop.ui.FileElement = new Class({
 			data: {
 				field: this.fieldName,
 				url: this.getSubmitURL(),
-				cookie: Cookie.read( 'kohanasession');
+				cookie: Cookie.read( 'kohanasession')
 			},
 			typeFilter: this.buildExtensionsObject(),
 			sizeLimitMin: 0,
