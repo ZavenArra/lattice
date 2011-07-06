@@ -22,8 +22,8 @@ class Model_Objectmap extends ORM {
 		$result = DB::select(array('index', 'maxIndex'))
               ->from('objectmaps')
               ->where('template_id', '=', $templateId)
-              ->where('column', '=', $fieldType)
-              ->order_by('index')
+              ->where('type', '=', $fieldType)
+              ->order_by('index', 'DESC')
               ->limit(1, 0)
               ->execute()
               ->current();
