@@ -51,8 +51,7 @@ class Model_Object extends ORM {
     *         */
 
    public function __get($column) {
-//echo $column;
-     // print_r($this->_table_columns);
+
       
       if ($column == 'contenttable' && !isset($this->_related[$column])) {
          $content = ORM::factory(inflector::singular('contents'));
@@ -76,6 +75,7 @@ class Model_Object extends ORM {
                  ->where('template_id', '=', $template_id)
                  ->where('column', '=', $column)
                  ->find();
+    
          
         if($objectmap->loaded()){
             return $this->contenttable->$column;
@@ -131,6 +131,7 @@ class Model_Object extends ORM {
          } else if($this->_table_columns && in_array($column, array_keys($this->_table_columns))){
             parent::__set($column, $value);
             $this->save();
+            
          } else if ($column) {
             $o = $this->_object;
             $template_id = $o['template_id'];
@@ -143,36 +144,9 @@ class Model_Object extends ORM {
                throw new Kohana_Exception('Invalid field for template, using XPath : :xpath', array(':xpath' => $xpath));
             }
 
-/*
-            switch ($fieldInfo->getAttribute('type')) {
-               case 'multiSelect':
-                  $object = ORM::Factory('object', $field);
-                  if (!$object->loaded) {
-                     $object->template_id = ORM::Factory('template', $lookup[$field]['object'])->id;
-                     $object->save();
-                     $object->contenttable->$field = $object->id;
-                     $object->contenttable->save();
-                  }
-                  $options = array();
-                  foreach (mop::config('objects', sprintf('/template[@name="%s"]/element', $object->template->templatename)) as $field) {
-                     if ($field->getAttribute('type') == 'checkbox') {
-                        $options[] = $field['field'];
-                     }
-                  }
-                  foreach ($options as $field) {
-                     $object->contenttable->$field = 0;
-                  }
+            $this->contenttable->$column = $value;
+            $this->contenttable->save();
 
-                  foreach ($field as $value) {
-                     $object->contenttable->$value = 1;
-                  }
-                  $object->contenttable->save();
-                  break;
-               default:*/
-              $this->contenttable->$column = $value;
-              $this->contenttable->save();
-   //               break;
-           // }
          } else {
             throw new Kohana_Exception('Invalid POST Arguments, POST must contain field and value parameters');
          }
@@ -753,7 +727,6 @@ class Model_Object extends ORM {
       foreach ($lookupTemplates as $tConfig) {
          $templates[] = $tConfig->getAttribute('name');
       }
-      Kohana::$log->add(Log::ERROR, 'yuh');
       //add submitted data to content table
       foreach ($data as $field => $value) {
 
@@ -782,7 +755,6 @@ class Model_Object extends ORM {
          }
 
 
-         Kohana::$log->add(Log::ERROR, $fieldInfo->tagName);
          switch ($fieldInfo->tagName) {
             case 'file':
             case 'image':
@@ -790,7 +762,7 @@ class Model_Object extends ORM {
 
                Kohana::$log->add(Log::ERROR, var_export($_POST, true));
                Kohana::$log->add(Log::ERROR, var_export($_FILES, true));
-               Kohana::$log->add(Log::ERROR, 'something' . $field);
+
                if (isset($_FILES[$field])) {
                   Kohana::$log->add(Log::ERROR, 'Adding via post file');
                   $file = mopcms::saveHttpPostFile($newObject->id, $field, $_FILES[$field]);
