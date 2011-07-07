@@ -4,6 +4,15 @@
 	<?=mopui::Text( 'email', "rows-1 validation-email grid_4", "p", $data['email'], 'Email' );?>
 	<?=mopui::Text( 'password', "rows-1 validation-nonEmpty type-password grid_4 omega", "p", $data['password'], 'Reset and Mail Password' );?>
 	
+	<div class="options">
+			
+		<?/*
+			add value for third and fourth parameters
+			=mopui::checkBox( 'userlevel', '', '', 'Superuser');
+		*/?>
+			
+	</div>
+	<!-- ALSO YOU ALREADY HAD THIS HERE.... -->
 	<div class="clear">
 		<?=mopui::radioGroup( 'role', '', $managedRoles, $data['role'], 'User Role');?>
 	</div>
