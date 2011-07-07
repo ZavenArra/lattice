@@ -48,7 +48,7 @@ class Model_File extends ORM {
 		if($column == 'urlfilename'){
 			return rawurlencode(parent::__get('filename'));
 		} else if ($column == 'fullpath'){
-			return cms::mediapath().parent::__get('filename');
+			return Graph::mediapath().parent::__get('filename');
 		}
 
 		//otherwise check if it's a valid resize prefix
@@ -70,8 +70,8 @@ class Model_File extends ORM {
 	//and complete the unlinking on destroy
 	public function unlinkOldFile(){
 		$oldFileName = parent::__get('filename');
-		if($oldFileName && file_exists(cms::mediapath().$oldFileName)){
-			unlink(cms::mediapath().$oldFileName);
+		if($oldFileName && file_exists(Graph::mediapath().$oldFileName)){
+			unlink(Graph::mediapath().$oldFileName);
 		}
 	}
 
