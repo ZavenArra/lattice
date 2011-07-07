@@ -67,6 +67,8 @@ class Model_Object extends ORM {
          return Graph::object($this->parentid);
       } else if ($column == 'contenttable'){
          return parent::__get($column);
+      } else if ($column == 'title'){
+         return $this->contenttable->title;
       } else {
          $values = $this->_object;
          $template_id = $values['template_id'];

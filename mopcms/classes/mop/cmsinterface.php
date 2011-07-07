@@ -9,44 +9,8 @@
 
 abstract class MOP_CMSInterface extends Controller_Layout {
 
-
-	/*
-		Function: __constructor
-		Loads subModules to build from config	
-	*/
-	public function __construct($request, $response){
-
-      if($request->action() == 'savefile'){
-        $cookies = explode('; ', $_POST['cookie']);
-        $cookieName = null;
-        $cookieValue = null;
-        foreach($cookies as $cookie){
-          if(strpos( $cookie, 'kohanasession') !== false){
-            list($cookieName, $cookieValue) = explode('=', $cookie);
-          }
-        }
-
-        //session_name($cookieName);
-        //session_id($cookieValue);
-
-        Kohana::$log->add(Log::ERROR,  '>'. $cookieValue.'<');
-       // session_start();
-        session_id($cookieValue);
-        session_name('kohanasession');
-      //  Auth::instance()->_session->read($cookieValue);
-
-      }
-
-    	parent::__construct($request, $response);
-
-	}
-
-
-	public function checkAccess(){
-      			parent::checkAccess();
-
-	}
-
+   
+   
 	/*
 	 * Function:  saveFile($objectId)
 	 * Function called on file upload
