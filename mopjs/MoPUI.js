@@ -1629,7 +1629,7 @@ mop.ui.FileElement = new Class({
 	},
 	
 	getOptions: function(){
-		console.log( "getOptions", "{", this.options.extensions, Cookie.read( 'kohanasession' ), "}");
+		console.log( "getOptions", "{", this.options.extensions, Cookie.read( 'session' ), "}");
 		var opts = {
 			target: this.element,
 			fieldName: this.fieldName,
@@ -1637,7 +1637,7 @@ mop.ui.FileElement = new Class({
 			data: {
 				field: this.fieldName,
 				url: this.getSubmitURL(),
-				cookie: Cookie.read( 'kohanasession')
+				cookie: Cookie.read( 'session')
 			},
 			typeFilter: this.buildExtensionsObject(),
 			sizeLimitMin: 0,
