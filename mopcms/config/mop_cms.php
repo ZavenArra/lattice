@@ -29,8 +29,8 @@ $config['defaultsettings']['editable_title'] = true;
 
 $config['newObjectPlacement'] = 'bottom';
 
-$config['resizes'] =  array(
-	'uiresizes' => array(
+$config['uiresizes'] =  array(
+	'uiresize' => array(
 		'width'=>240,
 		'height'=>120,
 		'prefix' => 'uithumb',

@@ -545,9 +545,8 @@ class Model_Object extends ORM {
       $resizes = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]/resize', $templatename, $field
                       )
       );
-			$resizes = array_merge($resizes, $additionalResizes);
 			Kohana::$log->add(Log::INFO, 'printing out resizess');
-			Kohana::$log->add(Log::INFO, var_export($resizes, true));
+			Kohana::$log->add(Log::INFO, var_export($additionalResizes, true));
       foreach ($resizes as $resize) {
 
          if ($prefix = $resize->getAttribute('name')) {
@@ -569,7 +568,9 @@ class Model_Object extends ORM {
       }
       //and create thumbnail
 			//this is a dependency.  resizes should be passed in from calling controller
-  //    mopcms::resizeImage($imageFileName, $uiresize['prefix'] . '_' . $imageFileName, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
+      foreach($additionalResizes as $uiresize){
+        mopcms::resizeImage($imageFileName, $uiresize['prefix'] . '_' . $imageFileName, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
+      }
 
 
       return $imageFileName;

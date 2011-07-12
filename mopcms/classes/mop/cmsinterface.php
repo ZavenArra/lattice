@@ -9,8 +9,6 @@
 
 abstract class MOP_CMSInterface extends Controller_Layout {
 
-   
-   
 	/*
 	 * Function:  saveFile($objectId)
 	 * Function called on file upload

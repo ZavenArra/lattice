@@ -40,6 +40,7 @@ class Controller_Ajax extends Controller_MOP {
 		);
 		$this->response->headers('Content-Type', 'application/json');
 		$this->response->body(json_encode($ajaxResponse));
+		$this->response->body();
 	}
 
 	public function action_html($uri)

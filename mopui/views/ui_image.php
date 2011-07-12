@@ -8,10 +8,9 @@
 			<?else:?>
 				<p class="fileName <?=str_replace(',',' ',$extensions);?>">No image uploaded yet&hellip;</p>			
 			<?endif;?>
-			
 			<div class="preview">
 				<?if(isset($value['id'])):?>
-					<img src="application/media/<?=$value['thumbSrc'];?>" width="<?=$value['width'];?>" height="<?=$value['height'];?>" alt="<?=$value['filename'];?>"/>
+          <img src="<?=Kohana::config('config.site_path');?>application/media/<?=$value['thumbSrc'];?>" width="<?=$value['width'];?>" height="<?=$value['height'];?>" alt="<?=$value['filename'];?>"/>
 				<?endif;?>
 			</div>
 			<div class="status hidden">

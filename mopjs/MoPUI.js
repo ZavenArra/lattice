@@ -1769,8 +1769,6 @@ mop.ui.FileElement = new Class({
 	
 	onFileComplete: function( json ){
 		console.log( this.toString(), "onFileComplete", json  );
-		var json = JSON.decode( json.response.text.returnValue );
-		console.log( this.toString(), "onFileComplete", json  );
 		this.clearButton.fade( "in" );
 //		console.log( "-------------------------------- ", $A( arguments ) );
 		if( this.fileName ) this.fileName.set( "html",  '<a href="' + json.response.src + '" target="_blank">'+json.response.name+'</a>' );
