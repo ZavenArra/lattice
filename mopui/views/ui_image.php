@@ -10,7 +10,7 @@
 			<?endif;?>
 			<div class="preview">
 				<?if(isset($value['id'])):?>
-          <img src="<?=Kohana::config('config.site_path');?>application/media/<?=$value['thumbSrc'];?>" width="<?=$value['width'];?>" height="<?=$value['height'];?>" alt="<?=$value['filename'];?>"/>
+					<img src="<?=url::site(Graph::mediapath().$value['thumbSrc'], null, false);?>" width="<?=$value['width'];?>" height="<?=$value['height'];?>" alt="<?=$value['filename'];?>"/>
 				<?endif;?>
 			</div>
 			<div class="status hidden">
@@ -20,7 +20,7 @@
 			<div class="controls">
 				<a class="command uploadLink" href="#"><?if(isset($value['id'])):?>reupload file<?else:?>upload a file<?endif;?></a>
 				<?if(isset($value['id'])):?>
-					<a class="command downloadLink" href="<?=Kohana::config('config.site_path');?>file/download/<?=$value['id'];?>">download</a>
+					<a class="command downloadLink" href="<?=url::site("file/download/{$value['id']}");?>">download</a>
 					<a class="command clearImageLink" href="#">clear image</a>
 				<?else:?>
 					<a class="command clearImageLink hidden" href="#">clear image</a>
