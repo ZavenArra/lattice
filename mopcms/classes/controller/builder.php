@@ -33,7 +33,7 @@ class Controller_Builder extends Controller {
 		$db->query(Database::UPDATE, 'alter table contents AUTO_INCREMENT = 1');
 		$db->query(Database::DELETE, 'delete from templates');
 		$db->query(Database::UPDATE, 'alter table templates AUTO_INCREMENT = 1');
-      $db->query(Database::DELETE, 'delete from objectmaps');
+    $db->query(Database::DELETE, 'delete from objectmaps');
 		$db->query(Database::UPDATE, 'alter table objectmaps AUTO_INCREMENT = 1');
 		flush();
 		ob_flush();
