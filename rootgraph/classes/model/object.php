@@ -435,10 +435,10 @@ class Model_Object extends ORM {
     * 	Returns: file model of saved file
     * */
 
-   public function saveUploadedImage($field, $fileName, $type, $tmpName) {
+   public function saveUploadedImage($field, $fileName, $type, $tmpName, $additionalResizes=array()) {
       $tmpName = $this->moveUploadedFileToTmpMedia($tmpName);
       Kohana::$log->add(Log::INFO, 'clling save image' . $fileName);
-      $file = $this->saveImage($field, $fileName, $type, $tmpName);
+      $file = $this->saveImage($field, $fileName, $type, $tmpName, $additionalResizes);
 
       return $file;
    }
@@ -502,13 +502,13 @@ class Model_Object extends ORM {
       Kohana::$log->add(Log::INFO, "passed min tests with {$origwidth} x {$origheight}");
    }
 
-   public function saveImage($field, $fileName, $type, $tmpName) {
+   public function saveImage($field, $fileName, $type, $tmpName, $additionalResizes = array() ) {
       //do the saving of the file
       $file = $this->saveFile($field, $fileName, $type, $tmpName);
-      Kohana::$log->add('info', 'Returning to saveImage');
+      Kohana::$log->add(Log::INFO, 'Returning to saveImage');
 
 
-      $imageFileName = $this->processImage($file->filename, $field);
+      $imageFileName = $this->processImage($file->filename, $field, $additionalResizes );
 
       return $file;
    }
@@ -518,8 +518,9 @@ class Model_Object extends ORM {
     * Create all automatice resizes on this image
     */
 
-   public function processImage($filename, $field) {
+   public function processImage($filename, $field, $additionalResizes = array()) {
 
+			Kohana::$log->add(Log::INFO, 'inasdf asdf asd f');
       //First check for tiff, and convert if necessary
       $ext = substr(strrchr($filename, '.'), 1);
       switch ($ext) {
@@ -544,6 +545,9 @@ class Model_Object extends ORM {
       $resizes = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]/resize', $templatename, $field
                       )
       );
+			$resizes = array_merge($resizes, $additionalResizes);
+			Kohana::$log->add(Log::INFO, 'printing out resizess');
+			Kohana::$log->add(Log::INFO, var_export($resizes, true));
       foreach ($resizes as $resize) {
 
          if ($prefix = $resize->getAttribute('name')) {
@@ -564,8 +568,8 @@ class Model_Object extends ORM {
          }
       }
       //and create thumbnail
-      $uiresize = Kohana::config('cms.uiresize');
-      mopcms::resizeImage($imageFileName, $uiresize['prefix'] . '_' . $imageFileName, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
+			//this is a dependency.  resizes should be passed in from calling controller
+  //    mopcms::resizeImage($imageFileName, $uiresize['prefix'] . '_' . $imageFileName, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
 
 
       return $imageFileName;

@@ -28,6 +28,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	 */
 	public function action_savefile($objectId){
 
+		Kohana::$log->add(Log::INFO, 'please ??');
 		$file = mopcms::saveHttpPostFile($objectId, $_POST['field'], $_FILES[$_POST['field']]);
 		$result = array(
 			'id'=>$file->id,

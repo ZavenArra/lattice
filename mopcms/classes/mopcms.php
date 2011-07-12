@@ -378,7 +378,8 @@ public static function makeFileSaveName($filename) {
          case 'TIF':
          case 'TIFF':
             Kohana::$log->add(Log::ERROR, 'save uploaded');
-            return $object->saveUploadedImage($field, $postFileVars['name'], $postFileVars['type'], $postFileVars['tmp_name']);
+						$uiresizes = Kohana::config('mop_cms.uiresizes');
+            return $object->saveUploadedImage($field, $postFileVars['name'], $postFileVars['type'], $postFileVars['tmp_name'], $uiresizes);
             break;
 
          default:

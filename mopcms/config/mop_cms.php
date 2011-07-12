@@ -29,12 +29,14 @@ $config['defaultsettings']['editable_title'] = true;
 
 $config['newObjectPlacement'] = 'bottom';
 
-$config['uiresize'] =  array(
-	'width'=>240,
-	'height'=>120,
-	'prefix' => 'uithumb',
-	'forceDimension'=>'width',
-	'crop'=>true,
+$config['resizes'] =  array(
+	'uiresizes' => array(
+		'width'=>240,
+		'height'=>120,
+		'prefix' => 'uithumb',
+		'forceDimension'=>'width',
+		'crop'=>true,
+	)
 );
 
 $config['navigationRequest'] = 'navigation';
