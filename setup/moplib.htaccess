@@ -18,8 +18,8 @@ RewriteRule ^application/media/* - [PT,L]
 RewriteRule ^(?:system)\b.* index.php/$0 [L]
 
 # Allow any files or directories that exist to be displayed directly
-#RewriteCond %{REQUEST_FILENAME} !-f
-#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteCond %{REQUEST_filename} !-f
+#RewriteCond %{REQUEST_filename} !-d
 
 RewriteRule ^(.*)staging/application/media/(.*) - [PT,L]
 RewriteRule ^staging/(.*css)$ $1 [PT,L]

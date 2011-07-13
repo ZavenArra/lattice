@@ -4,9 +4,9 @@
 			<input type="file" class="hidden" />
 
 			<?if(isset($value['id'])):?>
-				<p class="fileName <?=str_replace(',',' ',$extensions);?>"><?=$value['filename'];?></p>
+				<p class="filename <?=str_replace(',',' ',$extensions);?>"><?=$value['filename'];?></p>
 			<?else:?>
-				<p class="fileName <?=str_replace(',',' ',$extensions);?>">No image uploaded yet&hellip;</p>			
+				<p class="filename <?=str_replace(',',' ',$extensions);?>">No image uploaded yet&hellip;</p>			
 			<?endif;?>
 			<div class="preview">
 				<?if(isset($value['id'])):?>

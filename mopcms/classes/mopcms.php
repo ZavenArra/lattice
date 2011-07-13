@@ -59,7 +59,7 @@ class MoPCMS {
 	/*
 	 *
 	 */
-	public static function resizeImage($originalFilename, $newFilename, $width, $height, $forceDimension='width', $crop='false'){
+	public static function resizeImage($originalfilename, $newfilename, $width, $height, $forceDimension='width', $crop='false'){
 		//set up dimenion to key off of
 		switch($forceDimension){
 		case 'width':
@@ -73,7 +73,7 @@ class MoPCMS {
 			break;
 		}
 
-		$image = Image::factory(Graph::mediapath().$originalFilename);
+		$image = Image::factory(Graph::mediapath().$originalfilename);
 		if($crop) {
 			//resample with crop
 			//set up sizes, and crop
@@ -84,7 +84,7 @@ class MoPCMS {
 			}
 			$image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
       $quality = Kohana::config('cms.imagequality');
-			$image->save(Graph::mediapath().$newFilename, $quality);
+			$image->save(Graph::mediapath().$newfilename, $quality);
 
 		} else {
 			//just do the resample
@@ -93,7 +93,7 @@ class MoPCMS {
 			$resizeheight = $height;
 
 			if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
-				$osize = getimagesize(Graph::mediapath().$imageFilename);
+				$osize = getimagesize(Graph::mediapath().$imagefilename);
 				$horizontal = false;
 				if($osize[0] > $osize[1]){
 					//horizontal
@@ -116,7 +116,7 @@ class MoPCMS {
 			$image->resize($resizewidth, $resizeheight, $keydimension);
 
       $quality = Kohana::config('cms.imagequality');
-			$image->save(Graph::mediapath() .$newFilename, $quality);
+			$image->save(Graph::mediapath() .$newfilename, $quality);
 
 		}
 

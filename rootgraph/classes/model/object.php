@@ -425,9 +425,9 @@ class Model_Object extends ORM {
       return $this->contenttable->$field;
    }
 
-   public function saveUploadedFile($field, $fileName, $type, $tmpName) {
+   public function saveUploadedFile($field, $filename, $type, $tmpName) {
       $tmpName = $this->moveUploadedFileToTmpMedia($tmpName);
-      return $this->saveFile($field, $fileName, $type, $tmpName);
+      return $this->saveFile($field, $filename, $type, $tmpName);
    }
 
    /*
@@ -435,10 +435,10 @@ class Model_Object extends ORM {
     * 	Returns: file model of saved file
     * */
 
-   public function saveUploadedImage($field, $fileName, $type, $tmpName, $additionalResizes=array()) {
+   public function saveUploadedImage($field, $filename, $type, $tmpName, $additionalResizes=array()) {
       $tmpName = $this->moveUploadedFileToTmpMedia($tmpName);
-      Kohana::$log->add(Log::INFO, 'clling save image' . $fileName);
-      $file = $this->saveImage($field, $fileName, $type, $tmpName, $additionalResizes);
+      Kohana::$log->add(Log::INFO, 'clling save image' . $filename);
+      $file = $this->saveImage($field, $filename, $type, $tmpName, $additionalResizes);
 
       return $file;
    }
@@ -458,13 +458,13 @@ class Model_Object extends ORM {
       return $saveName;
    }
 
-   public function saveFile($field, $fileName, $type, $tmpName) {
+   public function saveFile($field, $filename, $type, $tmpName) {
       if (!is_object($file = $this->contenttable->$field)) {
          $file = ORM::Factory('file', $this->contenttable->$field);
       }
 
       $file->unlinkOldFile();
-      $saveName = mopcms::makeFileSaveName($fileName);
+      $saveName = mopcms::makeFileSaveName($filename);
 
       if (!copy(Graph::mediapath() . $tmpName, Graph::mediapath() . $saveName)) {
          throw new MOP_Exception('this is a MOP Exception');
@@ -502,13 +502,13 @@ class Model_Object extends ORM {
       Kohana::$log->add(Log::INFO, "passed min tests with {$origwidth} x {$origheight}");
    }
 
-   public function saveImage($field, $fileName, $type, $tmpName, $additionalResizes = array() ) {
+   public function saveImage($field, $filename, $type, $tmpName, $additionalResizes = array() ) {
       //do the saving of the file
-      $file = $this->saveFile($field, $fileName, $type, $tmpName);
+      $file = $this->saveFile($field, $filename, $type, $tmpName);
       Kohana::$log->add(Log::INFO, 'Returning to saveImage');
 
 
-      $imageFileName = $this->processImage($file->filename, $field, $additionalResizes );
+      $imagefilename = $this->processImage($file->filename, $field, $additionalResizes );
 
       return $file;
    }
@@ -530,13 +530,13 @@ class Model_Object extends ORM {
          case 'TIF':
             Kohana::$log->add(Log::INFO, 'Converting TIFF image to JPG for resize');
 
-            $imageFileName = $filename . '_converted.jpg';
-            $command = sprintf('convert %s %s', addcslashes(Graph::mediapath() . $filename, "'\"\\ "), addcslashes(Graph::mediapath() . $imageFileName, "'\"\\ "));
+            $imagefilename = $filename . '_converted.jpg';
+            $command = sprintf('convert %s %s', addcslashes(Graph::mediapath() . $filename, "'\"\\ "), addcslashes(Graph::mediapath() . $imagefilename, "'\"\\ "));
             Kohana::$log->add(Log::INFO, $command);
-            system(sprintf('convert %s %s', addcslashes(Graph::mediapath() . $filename, "'\"\\ "), addcslashes(Graph::mediapath() . $imageFileName, "'\"\\ ")));
+            system(sprintf('convert %s %s', addcslashes(Graph::mediapath() . $filename, "'\"\\ "), addcslashes(Graph::mediapath() . $imagefilename, "'\"\\ ")));
             break;
          default:
-            $imageFileName = $filename;
+            $imagefilename = $filename;
             break;
       }
 
@@ -554,26 +554,26 @@ class Model_Object extends ORM {
          } else {
             $prefix = '';
          }
-         $newFilename = $prefix . $imageFileName;
-         $saveName = Graph::mediapath() . $newFilename;
+         $newfilename = $prefix . $imagefilename;
+         $saveName = Graph::mediapath() . $newfilename;
 
-         mopcms::resizeImage($imageFileName, $newFilename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('forceDimension'), $resize->getAttribute('crop')
+         mopcms::resizeImage($imagefilename, $newfilename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('forceDimension'), $resize->getAttribute('crop')
          );
 
-         if (isset($oldFilename) && $newFilename != $prefix . $oldFilename) {
-            if (file_exists(Graph::mediapath() . $oldFilename)) {
-               unlink(Graph::mediapath() . $oldFilename);
+         if (isset($oldfilename) && $newfilename != $prefix . $oldfilename) {
+            if (file_exists(Graph::mediapath() . $oldfilename)) {
+               unlink(Graph::mediapath() . $oldfilename);
             }
          }
       }
       //and create thumbnail
 			//this is a dependency.  resizes should be passed in from calling controller
       foreach($additionalResizes as $uiresize){
-        mopcms::resizeImage($imageFileName, $uiresize['prefix'] . '_' . $imageFileName, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
+        mopcms::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
       }
 
 
-      return $imageFileName;
+      return $imagefilename;
    }
 
    //this is gonna change a lot!
