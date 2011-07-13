@@ -53,10 +53,15 @@ class Controller_Builder extends Controller {
 
     //and run frontend
 		echo "\n Regenerating Fronted";
+    $this->action_frontend();
+
+	}
+
+  public function action_frontend(){
     $frontend = new Builder_Frontend();
     $frontend->index();
 
-	}
+  }
 
   public function action_addData($xmlFile, $seconadryRootNodeObjectType=null){
 
