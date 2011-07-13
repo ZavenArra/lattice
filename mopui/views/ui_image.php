@@ -1,4 +1,4 @@
-	<div class="ui-FileElement field-<?=$field;?> action-saveFile extensions-<?=str_replace(',','_',$extensions);?> maxlength-<?=$maxlength;?> grid_3">
+	<div class="ui-FileElement field-<?=$field;?> action-saveFile extensions-<?=str_replace(',','_',$extensions);?> maxlength-<?=$maxlength;?> grid_4">
 		<label><?=(isset($label))?$label:"Image File";?></label>
 		<div class="wrapper">
 			<input type="file" class="hidden" />
@@ -18,14 +18,15 @@
 				<span class="message hidden"></span>
 			</div>
 			<div class="controls">
-				<a class="command uploadLink" href="#"><?if(isset($value['id'])):?>reupload file<?else:?>upload a file<?endif;?></a>
+				<a class="command uploadLink" href="#">&uarr;</a>
 				<?if(isset($value['id'])):?>
-					<a class="command downloadLink" href="<?=url::site("file/download/{$value['id']}");?>">download</a>
-					<a class="command clearImageLink" href="#">clear image</a>
+					<a class="command downloadLink" href="<?=url::site("file/download/{$value['id']}");?>">&darr;</a>
+					<a class="command clearImageLink" href="#">x</a>
 				<?else:?>
-					<a class="command clearImageLink hidden" href="#">clear image</a>
-					<a class="command downloadLink hidden" target="_blank" href="#">download</a>
+					<a class="command clearImageLink hidden" href="#">x</a>
+					<a class="command downloadLink hidden" target="_blank" href="#">&darr;</a>
 				<?endif;?>
 			</div>
 		</div>
 	</div>
+	
