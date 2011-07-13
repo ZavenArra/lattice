@@ -65,7 +65,7 @@ class Graph {
 		//validation
 		foreach(mop::config('objects', '//template[@name="'.$objectTypeName.'"]/elements/*') as $item){
 			if($item->getAttribute('field')=='title'){
-				//  throw new Kohana_Exception('Title is a reserved field name');
+				throw new Kohana_Exception('Title is a reserved field name');
 			}
 		}
 
@@ -78,31 +78,10 @@ class Graph {
 			$tRecord->save();
 		}
 
-		//create title field
-		$checkMap = ORM::Factory('objectmap')->where('template_id', '=', $tRecord->id)->where('column', '=', 'title')->find();
-		if(!$checkMap->loaded()){
-			$index = 'field';
-			$count = ORM::Factory('objectmap')
-				->select('index')
-				->where('type', '=', $index)
-				->where('template_id', '=', $tRecord->id)
-				->order_by('index')
-				->limit(1, 0)
-				->find();
-			$nextIndex = $count->index+1;
-
-			$newmap = ORM::Factory('objectmap');
-			$newmap->template_id = $tRecord->id;
-			$newmap->type = $index;
-			$newmap->index = $nextIndex;
-			$newmap->column = 'title';
-			$newmap->save();
-		}
-
-
 		foreach( mop::config('objects', '//template[@name="'.$objectTypeName.'"]/elements/*') as $item){
 			$tRecord->configureField($item);
 		}
+      Model_Content::reinitDbmap($tRecord->id); // Rethink this.
 	}
    
    public static function addRootNode($rootNodeObjectType){

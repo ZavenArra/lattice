@@ -27,7 +27,8 @@ mop.modules.Module = new Class({
 	childModules: {},
 	
 	getSaveFieldURL: function( objectId ){
-	    return mop.util.getBaseURL() +"ajax/data/" + this.getSubmissionController() + "/savefield/" + this.objectId;
+		console.log( this.toString(), "getSaveFieldURL", this.getObjectId() );
+	    return mop.util.getBaseURL() +"ajax/data/" + this.getSubmissionController() + "/savefield/" + this.getObjectId();
 	},
 	
 	saveField: function( postData, callback ){

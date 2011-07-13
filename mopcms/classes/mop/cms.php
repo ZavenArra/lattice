@@ -50,7 +50,6 @@ class MOP_CMS extends MOP_CMSInterface {
 		Loads subModules to build from config	
 	*/
 	public function __construct($request, $response){
-
 		parent::__construct($request, $response);
      
 		$this->modules = Kohana::config('cms.subModules');
@@ -169,7 +168,7 @@ class MOP_CMS extends MOP_CMSInterface {
 		$nodetitlehtml = $this->nodetitle->render();
 
 		$customview = 'templates/'.$object->template->templatename; //check for custom view for this template
-    	$htmlChunks = mopcms::buildUIHtmlChunksForObject($object);
+		$htmlChunks = mopcms::buildUIHtmlChunksForObject($object);
 
 		$usecustomview = false;
 		if(Kohana::find_file('views', $customview)){

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE data SYSTEM "data.dtd">
 <data>
-
 	<item templateName="basicCategory">
 		<field name="title">Category 1</field>
 		<item templateName="basicCategory">

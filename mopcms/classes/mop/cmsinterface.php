@@ -9,15 +9,8 @@
 
 abstract class MOP_CMSInterface extends Controller_Layout {
 
-
-	/*
-		Function: __constructor
-		Loads subModules to build from config	
-	*/
-	public function __construct($request, $response){
-    	parent::__construct($request, $response);
-	}
-
+   
+   
 	/*
 	 * Function:  saveFile($objectId)
 	 * Function called on file upload
@@ -33,7 +26,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 		 'result'=>'success',
 	 );
 	 */
-	public function action_saveFile($objectId){
+	public function action_savefile($objectId){
 
 		$file = mopcms::saveHttpPostFile($objectId, $_POST['field'], $_FILES[$_POST['field']]);
 		$result = array(
@@ -87,6 +80,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	public function action_savefield($id){
       $object = Graph::object($id);
       $object->$_POST['field'] = $_POST['value'];
+			$object->save();
       $object = Graph::object($id);
       $value = $object->$_POST['field'];
       

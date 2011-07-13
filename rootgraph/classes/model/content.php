@@ -6,7 +6,7 @@ class Model_Content extends ORM {
 	//protected $has_one = array('object');
 	//
 
-	protected $dbmap = false;
+	private static $dbmaps;
 
 	/*
 	 * Variable: nonmappedfield
@@ -19,6 +19,32 @@ class Model_Content extends ORM {
 	 * Private variable storing the name of the temple the current object is using.
 	 */
 	private $templatename = null;
+
+
+	public static function dbmap($template_id, $column=null){
+		if(!isset(self::$dbmaps[$template_id])){
+			$dbmaps = ORM::Factory('objectmap')->where('template_id', '=', $template_id)->find_all();
+			self::$dbmaps[$template_id] = array();
+			foreach($dbmaps as $map){
+				self::$dbmaps[$template_id][$map->column] = $map->type.$map->index;
+			}
+		}
+		if(!isset($column)){
+			return self::$dbmaps[$template_id];
+		} else {
+			if(isset(self::$dbmaps[$template_id][$column])){
+				return self::$dbmaps[$template_id][$column];
+			} else {
+				return null;
+			}
+		}
+	}
+
+	public static function reinitDbmap($template_id){
+		unset(self::$dbmaps[$template_id]);
+	}
+
+
 
 
 	/*
@@ -37,18 +63,43 @@ class Model_Content extends ORM {
 	Custom getter for this model, links in appropriate content table
 	when related object 'content' is requested
 	*/
-	public function __get($column){
-		if(in_array($column, $this->nonmappedfields)){
-			return parent::__get($column);
+	public function __get($columnName){
+		if(in_array($columnName, $this->nonmappedfields)){
+			return parent::__get($columnName);
 		}
 	
 		//check for dbmap
 		$object =  ORM::Factory('object', parent::__get('page_id'));
 		//echo 'FROM '.$object->id.'<br>';
                
-		$column = mop::dbmap( $object->template_id, $column);
+		$column = self::dbmap( $object->template_id, $columnName);
+
 		if(!$column){
-                    throw new Kohana_Exception('Column :column not found in content model', array(':column', $column));
+			//this column isn't mapped, check to see if it's in the xml
+			if($object->template->nodeType=='container'){
+				//For lists, values will be on the 2nd level 
+				$xPath =  sprintf('//list[@family="%s"]', $object->template->templatename);
+			} else {
+				//everything else is a normal lookup
+				$xPath =  sprintf('//template[@name="%s"]', $object->template->templatename);
+			}
+			$fieldConfig = mop::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $columnName));
+			if($fieldConfig->item(0)){
+				//field is configured but not initialized in database
+				$object->template->configureField($fieldConfig->item(0));
+
+				self::reinitDbmap($object->template_id);
+
+				//now go aheand and get the mapped column
+				$column = self::dbmap( $object->template_id, $columnName);
+				//$column = $object->template->mappedColumn($column);
+				return parent::__get($column);
+			}
+		}
+
+
+		if(!$column){
+			throw new Kohana_Exception('Column :column not found in content model', array(':column'=> $columnName));
 		}
 
 		if(strstr($column, 'object')){
@@ -79,7 +130,6 @@ class Model_Content extends ORM {
 	Interestingly enough, it doesn't pass throug here
 	*/
 	public function __set($column, $value){
-		//echo "SETTING $column <br>";
 		if(in_array($column, $this->nonmappedfields)){
 			return parent::__set($column, $value);
 		}
@@ -87,7 +137,7 @@ class Model_Content extends ORM {
 		$object = ORM::Factory('object', parent::__get('page_id'));
 
 		//check for dbmap
-		if($mappedcolumn = mop::dbmap( $object->template_id, $column) ){
+		if($mappedcolumn = self::dbmap( $object->template_id, $column) ){
 			return parent::__set($mappedcolumn, $value);
 		} 
 
@@ -102,12 +152,12 @@ class Model_Content extends ORM {
 		$fieldConfig = mop::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $column));
 		if($fieldConfig->item(0)){
 			//field is configured but not initialized in database
-			cms::configureField($object->template->id, $fieldConfig->item(0));	
+			$object->template->configureField($fieldConfig->item(0));	
+			self::reinitDbmap($object->template_id);
 
 			//now go aheand and save on the mapped column
 
-			mop::reinitDbmap($object->template_id);
-			$mappedcolumn = mop::dbmap( $object->template_id, $column);
+			$mappedcolumn = self::dbmap( $object->template_id, $column);
 			return parent::__set($mappedcolumn, $value);
 		}
 
