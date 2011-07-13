@@ -1533,7 +1533,7 @@ mop.ui.FileElement = new Class({
 	progressBar: null,
 	statusMessage: null,
 	previewElement: null,
-	fileName: null,
+	filename: null,
 	action: null,
 	extensions: null,
 	sizeLimitMin: null,
@@ -1608,7 +1608,7 @@ mop.ui.FileElement = new Class({
 		
 		if( this.previewElement ) this.imagePreview = this.previewElement.getElement( "img" );
 
-		this.fileName = this.element.getElement( ".fileName" );
+		this.filename = this.element.getElement( ".filename" );
 		
 		mop.util.EventManager.addListener( this );
 		
@@ -1704,7 +1704,7 @@ mop.ui.FileElement = new Class({
 		}else {
 			this.clearButton.addClass("hidden");
 			this.downloadButton.addClass("hidden");
-			this.fileName.set( "text", "" );
+			this.filename.set( "text", "" );
        }
 	},
 	
@@ -1773,7 +1773,7 @@ mop.ui.FileElement = new Class({
 		json = JSON.decode( json.response.text );
 		console.log( this.toString(), "onFileComplete", json  );
 		this.clearButton.fade( "in" );
-		if( this.fileName ) this.fileName.set( "html",  json.response.fileName );
+		if( this.filename ) this.filename.set( "html",  json.response.filename );
 		this.clearButton.removeClass("hidden");
 		this.downloadButton.removeClass("hidden");
 		this.downloadButton.set( "href", mop.util.getBaseURL() + json.response.src );
@@ -1813,7 +1813,7 @@ mop.ui.FileElement = new Class({
 		mop.util.EventManager.removeListener( this );
 		this.Uploader.destroy();
 		this.statusElement.destroy();
-		this.baseURL = this.extensions = this.fileName = this.imagePreview = this.imageFadeIn = this.imgAsset = this.ogInput = this.previewElement = this.progressBar = this.sizeLimitMin = this.statusElement = this.statusHide = this.statusMessage = this.statusShow = this.uploadButton = this.Uploader = this.validationError = this.invalid = null,
+		this.baseURL = this.extensions = this.filename = this.imagePreview = this.imageFadeIn = this.imgAsset = this.ogInput = this.previewElement = this.progressBar = this.sizeLimitMin = this.statusElement = this.statusHide = this.statusMessage = this.statusShow = this.uploadButton = this.Uploader = this.validationError = this.invalid = null,
 		this.element.eliminate( "Class" );
 		if( this.uploadButton ) this.uploadButton.eliminate( "Class" );
 		this.parent();

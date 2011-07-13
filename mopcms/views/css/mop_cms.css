@@ -331,9 +331,9 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 }
 
 
-.ui-FileElement .fileName,
-.ui-ImageFile .fileName,
-.ui-File .fileName{
+.ui-FileElement .filename,
+.ui-ImageFile .filename,
+.ui-File .filename{
 	height: 16px;
 	color: #aaa;
 	font-size: 80%;
@@ -363,12 +363,12 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 	margin:0 auto;
 }
 
-.fileName{ background-repeat: no-repeat; background-image: url( ../images/icon_doc.gif ) 1em 0; }
-.fileName.pdf{ background-image: url( ../images/icon_pdf.gif) 1em 0; }
-.fileName.doc{ background-image: url( ../images/icon_doc.gif ) 1em 0; }
-.fileName.jpg, .fileName.jpeg{	background-image: url(images/icon_jpg.gif) 1em 0; }
-.fileName.gif{ background-image: url( ../images/icon_gif.gif) 1em 0; }
-.fileName.png{ background-image: url( ../images/icon_png.gif) 1em 0; }
+.filename{ background-repeat: no-repeat; background-image: url( ../images/icon_doc.gif ) 1em 0; }
+.filename.pdf{ background-image: url( ../images/icon_pdf.gif) 1em 0; }
+.filename.doc{ background-image: url( ../images/icon_doc.gif ) 1em 0; }
+.filename.jpg, .filename.jpeg{	background-image: url(images/icon_jpg.gif) 1em 0; }
+.filename.gif{ background-image: url( ../images/icon_gif.gif) 1em 0; }
+.filename.png{ background-image: url( ../images/icon_png.gif) 1em 0; }
 
 #nodeContent{ margin: 2em 0 0 0; }
 
