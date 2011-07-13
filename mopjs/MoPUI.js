@@ -1699,10 +1699,12 @@ mop.ui.FileElement = new Class({
 	},
 	
 	onClearFileResponse: function( json ){
-	    if( !json.returnValue ) console.log( this.toString(), "Error: mop.ui.FileElement clearFileRequest:", json.response.error )
-       else {
-         //clear the image controls
-       
+	    if( !json.returnValue ){
+			console.log( this.toString(), "Error: mop.ui.FileElement clearFileRequest:", json.response.error )
+		}else {
+			this.clearButton.addClass("hidden");
+			this.downloadButton.addClass("hidden");
+			this.fileName.set( "text", "" );
        }
 	},
 	
@@ -1772,7 +1774,9 @@ mop.ui.FileElement = new Class({
 		console.log( this.toString(), "onFileComplete", json  );
 		this.clearButton.fade( "in" );
 		if( this.fileName ) this.fileName.set( "html",  json.response.fileName );
-        this.downloadButton.set( "href", mop.util.getBaseURL() + json.response.src );
+		this.clearButton.removeClass("hidden");
+		this.downloadButton.removeClass("hidden");
+		this.downloadButton.set( "href", mop.util.getBaseURL() + json.response.src );
         this.downloadButton.removeClass("hidden");
 		if( this.previewElement ){
 			this.imgAsset = new Asset.image( mop.util.getBaseURL() + json.response.thumbSrc, {  alt: json.filename, onload: this.updateThumb.bind( this, json ) } );
