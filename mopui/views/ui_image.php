@@ -14,7 +14,7 @@
 				<?endif;?>
 			</div>
 			<div class="status hidden">
-				<img src="../moplib/mopcms/views/images/bar.gif" class="progress" />
+			<img src="<?=url::site('moplib/mopcms/views/images/bar.gif', null, false);?>" class="progress" />
 				<span class="message hidden"></span>
 			</div>
 			<div class="controls">
