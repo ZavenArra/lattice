@@ -14,7 +14,7 @@
 				<?endif;?>
 			</div>
 			<div class="status hidden">
-				<img src="moplib/mopcms/views/images/bar.gif" class="progress" />
+				<img src="../moplib/mopcms/views/images/bar.gif" class="progress" />
 				<span class="message hidden"></span>
 			</div>
 			<div class="controls">

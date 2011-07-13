@@ -1553,7 +1553,7 @@ mop.ui.FileElement = new Class({
 	},
 
    getClearFileURL: function(){
-      var url = "ajax/data/" + this.marshal.getSubmissionController() + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
+      var url = mop.util.getBaseURL() + "ajax/data/" + this.marshal.getSubmissionController() + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
       return url;
    },
 
@@ -1768,16 +1768,14 @@ mop.ui.FileElement = new Class({
 	},
 	
 	onFileComplete: function( json ){
+		json = JSON.decode( json.response.text );
 		console.log( this.toString(), "onFileComplete", json  );
 		this.clearButton.fade( "in" );
-//		console.log( "-------------------------------- ", $A( arguments ) );
-		if( this.fileName ) this.fileName.set( "html",  '<a href="' + json.response.src + '" target="_blank">'+json.response.name+'</a>' );
-        this.downloadButton.set( "href", json.res );
+		if( this.fileName ) this.fileName.set( "html",  json.response.fileName );
+        this.downloadButton.set( "href", mop.util.getBaseURL() + json.response.src );
         this.downloadButton.removeClass("hidden");
-        
 		if( this.previewElement ){
-//			console.log( this.toString(), "onFileComplete B ", json, data.response.text, JSON.decode( data.response.text ) );
-			this.imgAsset = new Asset.image( json.thumbSrc, {  alt: json.filename, onload: this.updateThumb.bind( this, json ) } );
+			this.imgAsset = new Asset.image( mop.util.getBaseURL() + json.response.thumbSrc, {  alt: json.filename, onload: this.updateThumb.bind( this, json ) } );
 		}else{
 			this.revertToReadyState();
 		}
