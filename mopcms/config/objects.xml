@@ -90,6 +90,10 @@
          				 <ext>tiff</ext>
          				 <ext>tif</ext>
 				</image>
+				<text field="singleIPE2" label="Single Single Single" rows="1" />
+				<text field="singleIPE3" label="Single Single Single" rows="1" />
+				<text field="singleIPE4" label="Single Single Single" rows="1" />
+				<text field="singleIPE5" label="Single Single Single" rows="1" />
 			</elements>
 		</template>
 
