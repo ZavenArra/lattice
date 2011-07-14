@@ -7,6 +7,10 @@
  */
 Class Controller_MopFrontend extends Controller_Layout{
 
+  protected $_actionsThatGetLayout = array(
+    'getView',
+  );
+   
 	public static $slug;
 
 	/*

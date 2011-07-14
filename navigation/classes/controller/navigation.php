@@ -29,15 +29,9 @@ class Controller_Navigation extends Controller_MOP{
 
 	}
 
-	
-	public function action_getTier($parentId, $deeplink=NULL, &$follow=false){
-      if($parentId != 0){
-      	$parent = ORM::Factory($this->objectModel, $parentId); 
-			}
-		 /*	else {
-         $parentId = Graph::getRootNode(Kohana::config('cms.graphRootNode'))->id;  //this is a codependency
-         $parent = ORM::Factory($this->objectModel, $parentId);
-		 }*/
+   public function getTier($parentId, $deeplinkPath=array(), &$follow=false){
+      $parent = ORM::Factory($this->objectModel, $parentId); 
+			
 
 		$items = ORM::factory($this->objectModel);
 		$items->where('parentId', '=',  $parentId);
@@ -65,19 +59,19 @@ class Controller_Navigation extends Controller_MOP{
 
 				//implementation of deeplinking
 				$sendItem['follow'] = false;
-				if($child->id == $deeplink){
-					$sendItem['follow'] = true;
-					$follow = true;
-				}
+				if (in_array($child->id, $deeplinkPath)) {
+               $sendItem['follow'] = true;
+               $follow = true;
 
-				//and deeplinking for categories
-				$follow_tier = false;
-				// $children = $this->_getNavTree_recurse($child->id, $deeplink, $follow_tier);
-				if($follow_tier==true){
-					$sendItem['follow'] = true;
-					$follow='true';
-				}
-				// $sendItem['children'] = $children;
+               //and deeplinking for categories
+               $follow_tier = false;
+               $children = $this->getTier($child->id, $deeplinkPath, $follow_tier);
+               if ($follow_tier == true) {
+                  $sendItem['follow'] = true;
+                  $follow = 'true';
+               }
+               $sendItem['children'] = $children;
+            }
 
 				if(strtolower($child->template->nodeType)=='container'){
 					$sendItemContainers[] = $sendItem;
@@ -105,31 +99,55 @@ class Controller_Navigation extends Controller_MOP{
 					$sendItemObjects[] = $entry;
 				}
 			}
-		//	} else {
-				//this is where we would handle the addition to modules on a template basis
-		//	}
+         return $sendItemObjects;
+      }
+      
+      return null;
+      
+   }
+	
+	public function action_getTier($parentId, $deeplink=NULL){
+      
+      //plan all parents for following deeplink
+      $deeplinkPath = array();
 
-			$this->response->data(array('nodes'=>$sendItemObjects));
+      if($deeplink){
+         $objectId = $deeplink;
+         while($objectId){
+            $object = ORM::Factory('object', $objectId);
+            $deeplinkPath[] = $object->id;
+            $objectId = $object->parentid;
+         }
+         $deeplinkPath = array_reverse($deeplinkPath);
+      
+      }
+  
+      //this database call happens twice, should be a class variable?
+      $parent = ORM::Factory($this->objectModel, $parentId); 
 
-			$nodes = array();
-			foreach($sendItemObjects as $item){
+      
+      $sendItemObjects = $this->getTier($parentId, $deeplinkPath);
 
-				$nodeView = new View('navigationNode');
-				$nodeView->content = $item;
-				$nodes[] = $nodeView->render();
-			}
 
-			$tierView = new View('navigationTier');
-			$tierView->nodes = $nodes;
+      $this->response->data(array('nodes' => $sendItemObjects));
 
-			$tierMethodsDrawer = new View('tierMethodsDrawer');
-			$tierMethodsDrawer->addableObjects = $parent->template->addableObjects;
+      $nodes = array();
+      foreach ($sendItemObjects as $item) {
 
-			$tierView->tierMethodsDrawer = $tierMethodsDrawer->render();
-			$this->response->body($tierView->render());
+         $nodeView = new View('navigationNode');
+         $nodeView->content = $item;
+         $nodes[] = $nodeView->render();
+      }
 
-		} 
-	}
+      $tierView = new View('navigationTier');
+      $tierView->nodes = $nodes;
+
+      $tierMethodsDrawer = new View('tierMethodsDrawer');
+      $tierMethodsDrawer->addableObjects = $parent->template->addableObjects;
+
+      $tierView->tierMethodsDrawer = $tierMethodsDrawer->render();
+      $this->response->body($tierView->render());
+   }
 
 	public function getTemplates(){
 		$templates = array();
