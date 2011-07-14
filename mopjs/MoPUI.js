@@ -3,7 +3,8 @@ mop.ui.navigation = {};
 
 
 Element.implement({
-    smartDispose: function() {
+    
+	smartDispose: function() {
         // dispose of an element and its dropShadow (if there is one)
         var rel = this.get("data-related");
 	    if ($(rel)) {
@@ -11,6 +12,7 @@ Element.implement({
 	    }
 	    this.destroy();
 	}, // end smartDispose
+	
 	dropShadow: function(options) {
 	    // creates a shadow effect to a rectangular element
 	    // define defaults
@@ -1521,7 +1523,6 @@ mop.ui.FileElement = new Class({
 	type: "file",
 	
 	options:{
-		action: "saveFile",
 		extensions: [ 'jpg', 'png', 'gif', 'pdf', 'doc', 'txt', 'zip' ]
 	},
 	
@@ -2371,9 +2372,6 @@ mop.ui.CheckBox = new Class({
 	options: {
 	    action: "saveField"
 	},
-    // getSubmitURL: function(){
-    //     return "ajax/data/" + this.marshal.getSubmissionController() + "/" + this.options.action + "/" + this.marshal.getObjectId();
-    // },
 	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );

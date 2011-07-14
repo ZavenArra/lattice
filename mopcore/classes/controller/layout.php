@@ -41,10 +41,17 @@ class Controller_Layout extends Controller_MOP {
       }
 		$layoutView = View::Factory($layout);
 
-		
-		//build js and css
-		$stylesheet = '';
-		foreach($this->resources['librarycss'] as $css){
+    if(is_array(Kohana::config($layout.'.resources') ) ){
+      foreach(Kohana::config($layout.'.resources') as $key => $paths){
+        foreach($paths as $path){
+          $this->resources[$key][$path] = $path;
+        }
+      }
+    }
+
+    //build js and css
+    $stylesheet = '';
+    foreach($this->resources['librarycss'] as $css){
 			$stylesheet .=	HTML::style($css)."\n       ";
 		}
 		foreach($this->resources['css'] as $css){
