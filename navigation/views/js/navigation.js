@@ -2,17 +2,17 @@ if( !mop.modules.navigation) mop.modules.navigation = {};
 
 mop.modules.navigation.Navigation = new Class({
 
-   Extends: mop.MoPObject,
-   Implements: [ Events, Options ],
-   dataSource: null,
-   nodeData: {},
-   navPanes: [],
-   breadCrumbs: null,
-   tiers: [],
-   numberOfVisiblePanes: 3,
-   options: {
-       addObjectPosition: 'bottom'
-   },
+	Extends: mop.MoPObject,
+	Implements: [ Events, Options ],
+	dataSource: null,
+	nodeData: {},
+	navPanes: [],
+	breadCrumbs: null,
+	tiers: [],
+	numberOfVisiblePanes: 3,
+	options: {
+		addObjectPosition: 'bottom'
+	},
 
 	getNodeTypeFromId: function( nodeId ){
 		return this.nodeData[ nodeId ].nodeType;
@@ -22,9 +22,25 @@ mop.modules.navigation.Navigation = new Class({
 		return this.nodeData[ nodeId ].contentType;
 	},
 
+	getSlugFromId: function( nodeId ){
+		console.log( ">>>>>>>>>>>>>>>>>>>>>", this.nodeData[ nodeId ].slug );
+		return this.nodeData[ nodeId ].slug;		
+	},
+	
+	onAppStateChanged: function( appState ){
+		console.log( 'mop.modules.navigation.Navigation.appStateChanged', appState );
+	},
+	
 	initialize: function( element, marshal, options ){
 		this.setOptions( options );
 		this.parent( element, marshal, options );
+		mop.historyManager.addListener( this );
+		
+		this.addEvent( 'appstatechanged', function( appState ){
+			console.log( ":::", appState );
+			this.onAppStateChanged( appState );
+		}.bind( this ) );
+		
 		this.dataSource = ( !this.options.dataSource )? this.marshal : this.options.dataSource;
 		this.navPaneTemplate = this.element.getElement( ".pane" ).dispose();
 		this.paneContainer = this.element.getElement( ".panes" );
@@ -37,15 +53,15 @@ mop.modules.navigation.Navigation = new Class({
 		this.requestTier( rootId, null );
 	},
 
-   addPane: function( parentId ){
-      var newPane = this.navPaneTemplate.clone();
-      this.navPanes.push( newPane );
-      this.element.getElement( ".panes" ).adopt( newPane );
-      var elementDimensions = this.paneContainer.getDimensions();
-      this.paneContainer.setStyle( "width", elementDimensions.width + newPane.getDimensions().width );
-      newPane.get( "spinner" ).show( true );
-      return newPane;
-   },
+	addPane: function( parentId ){
+		var newPane = this.navPaneTemplate.clone();
+		this.navPanes.push( newPane );
+		this.element.getElement( ".panes" ).adopt( newPane );
+		var elementDimensions = this.paneContainer.getDimensions();
+		this.paneContainer.setStyle( "width", elementDimensions.width + newPane.getDimensions().width );
+		newPane.get( "spinner" ).show( true );
+		return newPane;
+	},
 
 	requestTier: function( parentId, parentTier ){
 		var title;
@@ -286,25 +302,27 @@ mop.modules.navigation.Tier = new Class({
    /**
     * Section: Event Handlers
 	*/
-   onMouseEnter: function( e, nodeElement ){
-      mop.util.stopEvent( e );
-      this.indicateNode( aNodeElement );
-   },
-	
-   onMouseLeave: function( e, nodeElement ){
-      mop.util.stopEvent( e );
-      if( this.activeNode != nodeElement ) this.deindicateNode( nodeElement );
-   },
-		
+	onMouseEnter: function( e, nodeElement ){
+		mop.util.stopEvent( e );
+		this.indicateNode( aNodeElement );
+	},
+
+	onMouseLeave: function( e, nodeElement ){
+		mop.util.stopEvent( e );
+		if( this.activeNode != nodeElement ) this.deindicateNode( nodeElement );
+	},
+
 	onNodeClicked: function( e, nodeElement ){
 		mop.util.stopEvent( e );
-		//    console.log( "onNodeClicked", this.element );
 		var nodeId = this.getNodeIdFromElement( nodeElement );
-		// if this specific tier has a pending request, we cancel it so the callback doesn't fire
+		var slug = this.marshal.getSlugFromId( nodeId );
+	 	console.log( "onNodeClicked", this.element, slug, nodeId );
+		mop.historyManager.changeState( "slug", slug );
 		if( this.activeNode )this.deindicateNode( this.activeNode );
 		this.activeNode = nodeElement;
 		this.indicateNode( nodeElement );
 		this.onNodeSelected( nodeId );
+		// if this specific tier has a pending request, we cancel it so the callback doesn't fire
 		if( this.currentTierRequest ) this.currentTierRequest.cancel();
 		if( this.marshal.getNodeTypeFromId( nodeId ) != "module" ){
 			this.currentTierRequest = this.marshal.requestTier( nodeId, this );
