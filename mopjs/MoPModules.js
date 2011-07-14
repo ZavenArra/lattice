@@ -583,7 +583,7 @@ mop.modules.ListItem = new Class({
 	},
 
 	removeObject: function( e ){
-	    mop.util.stopEvent( e );
+		mop.util.stopEvent( e );
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
 		this.fadeOut = new Fx.Morph( this.element, { duration: 300, onComplete: function(){ this.marshal.removeObject( this ) }.bind( this ) } );
 		this.fadeOut.start( { opacity: 0 } );
