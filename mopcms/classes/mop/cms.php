@@ -202,7 +202,7 @@ class MOP_CMS extends MOP_CMSInterface {
     }
     Kohana::$log->add(Log::INFO, var_export($data, true));
     Kohana::$log->add(Log::INFO, var_export($_FILES, true));
-		$newId = mopcms::addObject($id, $template_id, $data);
+		$newId = Graph::object($id)->addObject($template_id, $data);
 		$this->response->data($newId);
 	}
 
