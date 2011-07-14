@@ -550,14 +550,14 @@ mop.util.Broadcaster = new Class({
 		if( this.listeners.contains( aListener ) ) this.listeners.erase( aListener );
 	},
 
-	broadcastEvent: function( eventToFire ){
-//		console.log( "broadcastEvent", eventToFire );
+	broadcastEvent: function( eventToFire, arguments ){
+		//console.log( "broadcastEvent", eventToFire );
 		this.listeners.each( function( aListener ){
-//			console.log( "::::", aListener.toString(), eventToFire );
-			aListener.fireEvent( eventToFire );
+			var args = Array.slice( arguments, 1 );
+			aListener.fireEvent( eventToFire, args );
 		});
 	}
-
+	
 });
 
 mop.util.EventManager = new new Class({
@@ -587,103 +587,66 @@ mop.util.DepthManager = new Class({
 
 mop.util.HistoryManager = new Class({
 
-	Implements: mop.util.Broadcaster,
-	locationListener: null,
-	appState: {},
+	Implements: [ Events, mop.util.Broadcaster ],
+	locationMonitor: null,
+	appState: new Hash(),
 	_instance: null,
-	registeredEvents: {},
 
 	initialize: function(){
 		return this;
 	},
 
 	toString: function(){
-		return "[ object, mop.util.HistoryManager ]";
+		return "[ Object, mop.util.HistoryManager ]";
 	},
 
 	instance: function(){
-		if( !this._instance ){
-			this._instance = new mop.util.HistoryManager();
-		}
+		if( !this._instance ){ this._instance = new mop.util.HistoryManager(); }
 		return this._instance;
 	},
 
-	init: function( eventKey, eventString ){
-		this.registeredEvents[ eventKey ] = eventString;
+	init: function(){
 		this.currentHash = this.getStrippedHash();
-//		console.log( "HistoryManager.init", this.currentHash );
 		this.storeStateFromHash();
-		this.startListening();
-	},
-
-	startListening: function(){
-		this.locationListener = this.checkLocation.periodical( 2000, this );	
+		this.locationMonitor = this.checkLocation.periodical( 2000, this );	
 	},
 
 	storeStateFromHash: function(){
 		if( !this.currentHash ) return;
-		var values = this.currentHash.split("&");
-		values.each( function( keyValuePair ){
-			keyValuePair = keyValuePair.split("-");
-			var key = keyValuePair[0];
-			var value = keyValuePair[1];
-			this.appState[ key ] = value;
-			key = null;
-			value = null;
-		}, this );
-		values = null;
+		this.appState.empty();
+		this.appState.combine( this.getStrippedHash().parseQueryString() );
 	},
 
-	getStrippedHash: function( ){
+	getStrippedHash: function(){
 		return ( window.location.hash && window.location.hash != "#" )? window.location.hash.substr( 1 , window.location.hash.length ) : null;
 	},
 	
-	checkLocation: function( ){
+	checkLocation: function(){
 		var hash = this.getStrippedHash();
+		console.log( "checkLocation", hash, this.currentHash );
 		if( hash != this.currentHash ){
-//			console.log( "checkLocation: ", hash, this.currentHash );
 			this.currentHash = hash;
 			this.storeStateFromHash();
-			this.fireEvents();
+			this.broadcastEvent( "appstatechanged", this.appState );
 		}
 		hash = null;
 	},
 
-	registerEvent: function( eventKey, eventString ){
-		this.registeredEvents[ eventKey ] = eventString;
-	},
-
 	changeState: function( key, value ){
-		this.appState[ key ] = value;
+		this.appState.set( key, value );
 		this.updateHash();
 	},
 
 	updateHash: function(){
 		var newHash = "";
 		this.appState.each( function( value, key ){
-//			console.log("updateHash value:", value, " key:", key );
-			newHash += key+"-"+value;
+			newHash += (newHash=="")? key + "=" +  value : "&" + key + "=" + value;
 		});
 		this.currentHash = newHash;
 		window.location.hash = "#"+newHash;
 		newHash = null;
-	},
-	
-	getValue: function( key ){
-	    return ( this.appState[ key ] ) ? this.appState[ key ] : null;
-	},
-
-	fireEvents: function(){
-		if( !this._listeners ) return;
-		this.registeredEvents.each( function( eventString, eventKey ){
-//			console.log( "anEvent >> ", eventKey, eventString );
-			this._listeners.each( function( aListener ){
-//				console.log( "fireEvents... ", "eventKey: " + eventKey, "eventString: "+eventString, "value: "+this.getValue( eventKey ) );
-				aListener.fireEvent( eventString, this.getValue( eventKey ) );
-			}, this );
-		}, this );
 	}
-
+	
 });
 
 mop.util.LoginMonitor = new Class({
