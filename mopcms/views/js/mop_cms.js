@@ -248,8 +248,8 @@ if( !mop.util.hasDOMReadyFired() ){
 	
 window.addEvent( "domready", function(){
 	mop.util.DOMReadyHasFired();
-	mop.HistoryManager = new mop.util.HistoryManager().instance();
-	mop.HistoryManager.init( "pageId", "onPageIdChanged" );
+	mop.historyManager = new mop.util.HistoryManager().instance();
+	mop.historyManager.init();
 	mop.ModalManager = new mop.ui.ModalManager();
 	mop.DepthManager = new mop.util.DepthManager(); 
 	var doAuthTimeout = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
