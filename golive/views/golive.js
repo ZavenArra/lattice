@@ -3,7 +3,7 @@ mop.modules.GoLive = new Class({
 	Extends: mop.modules.Module,
 	
 	getCopyToLiveURL: function(){
-	    return mop.util.getBaseURL() + "/" + this.getSubmissionController() + "/ajax/copytolive";
+	    return mop.util.getBaseURL() + "data/golive/copytolive";
 	},
 	
 	initialize: function( anElement, aMarshal ){

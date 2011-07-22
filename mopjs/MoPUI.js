@@ -311,9 +311,9 @@ mop.ui.UIElement = new Class({
 		console.log( this.toString(), "Subclasses of mop.ui.UIElement must override setValue function" );
 	},
 	
-	getSubmitURL: function(){
-		return mop.util.getBaseURL() +"ajax/data/" + this.marshal.getSubmissionController() + "/" + this.options.action + "/" + this.marshal.getObjectId();
-	},	
+	// getSubmitURL: function(){
+	// 	return mop.util.getBaseURL() +"ajax/data/" + this.marshal.getSubmissionController() + "/" + this.options.action + "/" + this.marshal.getObjectId();
+	// },	
 
 	registerOnCompleteCallBack: function( func ){
 		this.onCompleteCallbacks.push( func );
@@ -335,12 +335,10 @@ mop.ui.UIElement = new Class({
 
 	/*Constructor*/
 	initialize: function( anElement, aMarshal, options ) {
-        this.parent( anElement, aMarshal, options );
-	    console.log( ":::::::", this.options, anElement.get( 'class' ) );
+		this.parent( anElement, aMarshal, options );
+//	console.log( ":::::::", this.options, anElement.get( 'class' ) );
 		this.fieldName = this.options.field;
-		if( !this.fieldName ){
-		    throw ( "ERROR", this.toString(), "has no fieldName, check html class for field-{fieldName}" );	
-		}
+		if( !this.fieldName ) throw ( "ERROR", this.toString(), "has no fieldName, check html class for field-{fieldName}" );	
 	},
 	
 	toString: function(){
@@ -388,7 +386,11 @@ mop.ui.UIElement = new Class({
 		}		
 		if( this.showSaving ) this.showSaving();
 		if( this.leaveEditMode ) this.leaveEditMode();
-		return new Request.JSON( { url: this.getSubmitURL(), onSuccess: this.onResponse.bind( this ) } ).post( { field: this.fieldName, value: val } );
+		
+		this.marshal.saveField( { field: this.fieldName, value: val }, this.onResponse.bind( this ) );
+
+
+//		return new Request.JSON( { url: this., onSuccess: this.onResponse.bind( this ) } ).post( { field: this.fieldName, value: val } );
 	},
 	
 	validate: function(){
@@ -1554,7 +1556,7 @@ mop.ui.FileElement = new Class({
 	},
 
    getClearFileURL: function(){
-      var url = mop.util.getBaseURL() + "ajax/data/" + this.marshal.getSubmissionController() + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
+      var url = mop.util.getBaseURL() + "ajax/data/" + this.marshal.instanceName + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
       return url;
    },
 
@@ -2740,8 +2742,7 @@ mop.ui.Text = new Class({
 		    saving:"saving field, please wait&hellip;" 
 		},
 		action: "savefield",
-	    maxLength: 0,
-//		rows: 1
+	    maxLength: 0
 	},
 
 	registerOnLeaveEditModeCallback: function( func ){
@@ -2765,7 +2766,7 @@ mop.ui.Text = new Class({
 	
 	initialize: function( anElement, aMarshal, options ) {
 		this.parent( anElement, aMarshal, options );
-        console.log( this.toString(), this.options );
+//        console.log( this.toString(), this.options );
 		this.mode = "resting";
 		this.ipeElement = this.element.getElement(".ipe");
 		this.ipeElement.store( "Class", this );

@@ -14,34 +14,35 @@ mop.modules.CMS = new Class({
 	deletePageLink: null,
 	loadedCSS: [],
 	loadedJS: [],
-    stringIdentifier: "[ object, mop.modules.CMS ]",
-    options: {},
-    /* Section: Getters & Setters */    
+	stringIdentifier: "[ object, mop.modules.CMS ]",
+	options: {},
+	
+	/* Section: Getters & Setters */    
     
-    getRemoveObjectRequestURL: function( parentId ){
-        return mop.util.getBaseURL() + "ajax/compound/cms/removeObject/" + parentId;
-    },
-    
-    getRequestPageURL: function( nodeId ){
-        return mop.util.getBaseURL() + "ajax/html/cms/getPage/" + nodeId;
-    },
-    
-    getRequestTierURL: function( parentId ){
-        if( !parentId ) parentId = "NULL";
-        return mop.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId;
-    },
+	getRemoveObjectRequestURL: function( parentId ){
+		return mop.util.getBaseURL() + "ajax/compound/cms/removeObject/" + parentId;
+	},
 
-    getAddObjectRequestURL: function( parentId, templateId ){
-        return mop.util.getBaseURL() + "ajax/compound/cms/addObject/" + parentId + "/" + templateId;
-    },
-    
-    getTogglePublishedStatusRequestURL: function( nodeId ){            
-        return mop.util.getBaseURL() + "ajax/data/cms/togglePublish/"+ nodeId;
-    },
-    
-    getRootNodeId: function(){       
-       return this.options.objectId;
-    },
+	getRequestPageURL: function( nodeId ){
+		return mop.util.getBaseURL() + "ajax/html/cms/getPage/" + nodeId;
+	},
+
+	getRequestTierURL: function( parentId ){
+		if( !parentId ) parentId = "NULL";
+		return mop.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId;
+	},
+
+	getAddObjectRequestURL: function( parentId, templateId ){
+		return mop.util.getBaseURL() + "ajax/compound/cms/addObject/" + parentId + "/" + templateId;
+	},
+
+	getTogglePublishedStatusRequestURL: function( nodeId ){            
+		return mop.util.getBaseURL() + "ajax/data/cms/togglePublish/"+ nodeId;
+	},
+
+	getRootNodeId: function(){       
+		return this.options.objectId;
+	},
 
 	/* Section: Constructor */
 	initialize: function( anElement, options ){
@@ -81,10 +82,10 @@ mop.modules.CMS = new Class({
 	},
     	
 	clearPage: function(){
-	    console.log( "clearPage" );
+		console.log( "clearPage" );
 		this.destroyChildModules( this.pageContent );
 		this.destroyUIElements();
-      this.pageContent.empty();
+		this.pageContent.empty();
 	},
 
 /*  
@@ -98,7 +99,7 @@ mop.modules.CMS = new Class({
 	onJSLoaded: function( html, jsLoadCount ){
 		// keeps any callbacks from previous pageloads from registering
 		this.scriptsLoaded++;
-		console.log( this, "onJSLoaded", html, this.scriptsLoaded, this.loadedJS.length );
+//		console.log( this, "onJSLoaded", html, this.scriptsLoaded, this.loadedJS.length );
 		if( this.loadedJS.length == this.loadedJS.length ){			
 			this.populate( html );
 		}
@@ -115,9 +116,9 @@ mop.modules.CMS = new Class({
     	Arguments: nodeId MoPObject Id of a page object.
     */
 	requestPage: function( nodeId ){
- 		mop.util.setObjectId( nodeId );        
-	    return new Request.JSON( { url: this.getRequestPageURL( nodeId ), onSuccess: this.requestPageResponse.bind( this ) } ).send();
-    },
+		mop.util.setObjectId( nodeId );        
+		return new Request.JSON( { url: this.getRequestPageURL( nodeId ), onSuccess: this.requestPageResponse.bind( this ) } ).send();
+	},
     
 	/*
 		Function: requestPageResponse
@@ -137,10 +138,10 @@ mop.modules.CMS = new Class({
 		if( json.response.js.length && json.response.js.length > 0){
             json.response.js.each( function( urlString, i ){
                 urlString = mop.util.getBaseURL() + urlString;
-                console.log( ":::: ", urlString, this.loadedJS.indexOf( urlString ) );
+//                console.log( ":::: ", urlString, this.loadedJS.indexOf( urlString ) );
                 if( this.loadedJS.indexOf( urlString ) == -1 ){
                     noneLoaded = false;
-                    console.log( "::::::", urlString, "not in loadedJSArray" );
+ //                   console.log( "::::::", urlString, "not in loadedJSArray" );
                     this.loadedJS.push( urlString );
                     mop.util.loadJS( urlString, { type: "text/javascript", onload: this.onJSLoaded.bind( this, [ json.response.html ] ) } );                    
                 }

@@ -27,8 +27,7 @@ mop.modules.Module = new Class({
 	childModules: {},
 	
 	getSaveFieldURL: function( objectId ){
-		console.log( this.toString(), "getSaveFieldURL", this.getObjectId() );
-	    return mop.util.getBaseURL() +"ajax/data/" + this.getSubmissionController() + "/savefield/" + this.getObjectId();
+		throw "Abstract function getSaveFieldURL must be overriden in" + this.toString();
 	},
 	
 	saveField: function( postData, callback ){
@@ -64,9 +63,9 @@ mop.modules.Module = new Class({
 		Returns: Name of controller to submit to.
 		Note: Overriden elsewhere
 	*/
-	getSubmissionController: function(){
-		return this.instanceName;
-	},
+	// getSubmissionController: function(){
+	// 	return this.instanceName;
+	// },
 	
 	/*
 		Function: initModules	
@@ -103,13 +102,14 @@ mop.modules.Module = new Class({
 	*/
 	initModule: function( element ){
 		var classPath = mop.util.getValueFromClassName( "classPath", element.get( "class" ) ).split( "_" );
-//		console.log( "\t\tinitModule", this.toString(), element, classPath );
+		console.log( "\t\tinitModule", this.toString(), element, classPath );
 		ref = null;
 		classPath.each( function( node ){
 		    ref = ( !ref )? this[node] : ref[node]; 
 //  		    console.log( ref, node );
 		});
-    	var newModule = new ref( element, this );
+		var newModule = new ref( element, this );
+		if( newModule.getSaveFieldURL ) console.log( newModule.getAddObjectURL());
 		return newModule;		
 	},
 
@@ -205,21 +205,26 @@ mop.modules.Module = new Class({
 */
 
 mop.modules.Cluster = new Class({
-    Extends: mop.modules.Module,
-    initialize: function( anElementOrId, aMarshal, options ){
-        this.parent( anElementOrId, aMarshal, options );
-        this.objectId = this.element.get("id").split("_")[1];
-		
-        // console.log( "Cluster objectId", this.getObjectId() );
-    },
-    getSubmissionController: function(){
-        return this.marshal.getSubmissionController();
-        // console.log( "instanceName", this.instanceName );
-        // return this.instanceName;
-    },
-    getObjectId: function(){
-	    return this.objectId;
+
+	Extends: mop.modules.Module,
+
+	initialize: function( anElementOrId, aMarshal, options ){
+		this.parent( anElementOrId, aMarshal, options );
+		this.objectId = this.element.get("id").split("_")[1];
+	},
+
+	/*Function: getSubmissionController
+		Clusters send submissions to their marshal
+		returns - the marshals submissioncontroller
+	*/
+	// getSubmissionController: function(){
+	// 	return this.marshal.getSubmissionController();
+	// },
+
+	getObjectId: function(){
+		return this.objectId;
 	}
+
 });
 
 
@@ -233,9 +238,9 @@ mop.modules.AjaxFormModule = new Class({
 	Extends: mop.modules.Module,
 	generatedData: {},
 
-	getSubmitFormURL: function(){
-	    return mop.util.getBaseURL() + "ajax/" + this.getSubmissionController() +  "/" + this.options.action + "/" + this.getObjectId();
-	},
+	// getSubmitFormURL: function(){
+	//     return mop.util.getBaseURL() + "ajax/" + this.getSubmissionController() +  "/" + this.options.action + "/" + this.getObjectId();
+	// },
 
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
@@ -335,6 +340,11 @@ mop.modules.MoPList = new Class({
 	oldSort: null,
 	
 	/* Section: Getters & Setters */
+	
+	getSaveFieldURL: function(){
+    throw "MoPList Abstract function getSaveFieldURL must be overriden in" + this.toString();
+	},
+
 	getAddObjectURL: function(){
 	    throw "Abstract function getAddObjectURL must be overriden in" + this.toString();
 	},
@@ -346,9 +356,17 @@ mop.modules.MoPList = new Class({
 	getSubmitSortOrderURL: function(){ 
 	    throw "Abstract function getSubmitSortOrderURL must be overriden in" + this.toString();
 	},
+
+	// getSubmissionController: function(){
+	//     throw "Abstract function getSubmissionController must be overriden in" + this.toString();		
+	// },
 	
 	getObjectId: function(){
 	    return this.objectId;
+	},
+
+	toString: function(){
+		return "[ Object, mop.MoPObject, mop.modules.Module, mop.modules.MoPList ]";
 	},
 	
 	initialize: function( anElement, aMarshal, options ){
@@ -358,10 +376,6 @@ mop.modules.MoPList = new Class({
         this.items = [];
         if( this.options.allowChildSort ) this.makeSortable();
         this.objectId = this.element.get("id").split("_")[1];
-	},
-
-	toString: function(){
-		return "[ object, mop.modules.List ]";
 	},
 	
 	build: function(){
@@ -527,6 +541,7 @@ mop.modules.MoPList = new Class({
 });
 
 mop.modules.ListItem = new Class({
+	
 	Extends: mop.modules.Module,
 	Implements: [ Events, Options ],
 	addObjectDialogue: null,
@@ -534,9 +549,16 @@ mop.modules.ListItem = new Class({
 	scrollContext: null,
 	controls: null,
 	fadeOut: null,
-
-    /* Section: Getters & Setters */
+	
+  /* Section: Getters & Setters */
+	
 	getObjectId: function(){ return this.objectId; },
+	getSaveFieldURL: function(){
+		console.log( "listItem.getSaveFieldURL", this.marshal.toString(), this.marshal.element, this.marshal.getSaveFieldURL() );
+		return this.marshal.getSaveFieldURL();
+	},
+	
+//	getSubmissionController: function(){ return this.marshal.getSubmissionController(); },
 
 	initialize: function( anElement, aMarshal, addObjectDialogue, options ){
 		this.element = $( anElement);
@@ -547,10 +569,6 @@ mop.modules.ListItem = new Class({
 		this.objectId = this.element.get("id").split("_")[1];
 		if( options && options.scrollContext ) this.scrollContext = options.scrollContext;
 		this.build();
-	},
-	
-	getSubmissionController: function(){
-	    return "list";
 	},
 
 	toString: function(){ return "[ object, mop.modules.Module, mop.modules.ListItem ]"; },

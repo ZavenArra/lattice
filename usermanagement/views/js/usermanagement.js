@@ -1,23 +1,40 @@
 mop.modules.UserManagement = new Class({
+	
 	Extends: mop.modules.MoPList,	
+	
+	/* Section: Constructor */
+
+	initialize: function( anElement, aMarshal, options ){
+		this.parent( anElement, aMarshal, options );
+		alert("USERMANAGEMENT!");
+	},
+	
 	/* Section: Getters & Setters */
+	
+	getSaveFieldURL: function(){
+	  var url = mop.util.getBaseURL() +"ajax/data/usermanagement/savefield/";
+		console.log( "::::::", this.toString(), "getSaveFieldURL", url );
+		return url;
+	},
+	
 	getAddObjectURL: function(){
 	    return mop.util.getBaseURL() + "ajax/data/usermanagement/addObject/";
 	},
+	
 	getRemoveObjectURL: function( item ){
 	    return mop.util.getBaseURL()  + "ajax/data/usermanagement/removeObject/" + item.getObjectId();
 	},
+	
 	getSubmitSortOrderURL: function(){
 	    return mop.util.getBaseURL() + "ajax/data/usermanagement/saveSortOrder/";
 	},
-	/* Section: Constructor */
-	initialize: function( anElement, aMarshal, options ){
-        this.parent( anElement, aMarshal, options );
-	},
-    /* Section: Methods */
+	
+	/* Section: Methods */
+
 	toString: function(){ 
-	    return "[ Object, mop.MoPObject, mop.modules.List, mop.modules.MoPList, mop.modules.Usermanagement ]";
-    }
+		return "[ Object, mop.MoPObject, mop.modules.List, mop.modules.MoPList, mop.modules.Usermanagement ]";
+	}
+
 });
 
 if( !mop.util.hasDOMReadyFired() ){
