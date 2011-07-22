@@ -6,14 +6,12 @@ mop.modules.UserManagement = new Class({
 
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
-		alert("USERMANAGEMENT!");
 	},
 	
 	/* Section: Getters & Setters */
 	
-	getSaveFieldURL: function(){
-	  var url = mop.util.getBaseURL() +"ajax/data/usermanagement/savefield/";
-		console.log( "::::::", this.toString(), "getSaveFieldURL", url );
+	getSaveFieldURL: function( itemId  ){
+	  var url = mop.util.getBaseURL() +"ajax/data/usermanagement/savefield/" + itemId;
 		return url;
 	},
 	

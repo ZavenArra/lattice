@@ -555,7 +555,7 @@ mop.modules.ListItem = new Class({
 	getObjectId: function(){ return this.objectId; },
 	getSaveFieldURL: function(){
 		console.log( "listItem.getSaveFieldURL", this.marshal.toString(), this.marshal.element, this.marshal.getSaveFieldURL() );
-		return this.marshal.getSaveFieldURL();
+		return this.marshal.getSaveFieldURL( this.getObjectId() );
 	},
 	
 //	getSubmissionController: function(){ return this.marshal.getSubmissionController(); },
