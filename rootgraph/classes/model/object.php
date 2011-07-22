@@ -505,9 +505,6 @@ class Model_Object extends ORM {
    public function saveImage($field, $filename, $type, $tmpName, $additionalResizes = array() ) {
       //do the saving of the file
       $file = $this->saveFile($field, $filename, $type, $tmpName);
-      Kohana::$log->add(Log::INFO, 'Returning to saveImage');
-
-
       $imagefilename = $this->processImage($file->filename, $field, $additionalResizes );
 
       return $file;
@@ -557,6 +554,8 @@ class Model_Object extends ORM {
          $newfilename = $prefix . $imagefilename;
          $saveName = Graph::mediapath() . $newfilename;
 
+				 //This dependency should be moved out of mopcms
+				 //Rootgraph should never require mopcms
          mopcms::resizeImage($imagefilename, $newfilename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('forceDimension'), $resize->getAttribute('crop')
          );
 
@@ -566,8 +565,8 @@ class Model_Object extends ORM {
             }
          }
       }
-      //and create thumbnail
-			//this is a dependency.  resizes should be passed in from calling controller
+
+			//And process resizes passed in from caller
       foreach($additionalResizes as $uiresize){
         mopcms::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
       }

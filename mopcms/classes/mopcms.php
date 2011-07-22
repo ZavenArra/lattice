@@ -83,8 +83,7 @@ class MoPCMS {
 				$cropKeyDimension = Image::WIDTH;
 			}
 			$image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
-      $quality = Kohana::config('cms.imagequality');
-			$image->save(Graph::mediapath().$newfilename, $quality);
+			$image->save(Graph::mediapath().$newfilename);
 
 		} else {
 			//just do the resample
@@ -115,8 +114,7 @@ class MoPCMS {
 			//forcing with aspectfolloworientation is gonna give weird results!
 			$image->resize($resizewidth, $resizeheight, $keydimension);
 
-      $quality = Kohana::config('cms.imagequality');
-			$image->save(Graph::mediapath() .$newfilename, $quality);
+			$image->save(Graph::mediapath() .$newfilename);
 
 		}
 
@@ -356,10 +354,7 @@ public static function makeFileSaveName($filename) {
    }
 
    public static function saveHttpPostFile($objectid, $field, $postFileVars) {
-      Kohana::$log->add(Log::ERROR, 'Addasdfasd aing via post file');
-
       Kohana::$log->add(Log::ERROR, 'save uploaded');
-      Kohana::$log->add(Log::ERROR, var_export($postFileVars, true));
       $object = ORM::Factory('object', $objectid);
       //check the file extension
       $filename = $postFileVars['name'];
