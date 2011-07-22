@@ -684,9 +684,6 @@ class Model_Object extends ORM {
       }
 
 
-      //suggested new syntax
-//      Graph::object($objectId)->addObject($template, $data);
-
       $newObject = Graph::object();
       $newObject->template_id = $template_id;
 

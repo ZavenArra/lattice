@@ -16,7 +16,7 @@ mop.modules.UserManagement = new Class({
 	},
 	
 	getAddObjectURL: function(){
-	    return mop.util.getBaseURL() + "ajax/data/usermanagement/addObject/";
+	    return mop.util.getBaseURL() + "ajax/html/usermanagement/addObject/";
 	},
 	
 	getRemoveObjectURL: function( item ){

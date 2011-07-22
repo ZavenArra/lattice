@@ -10,15 +10,19 @@
  *
  * @author deepwinter
  */
+
+function make_seed() {
+			list($usec, $sec) = explode(' ', microtime());
+			return (float) $sec + ((float) $usec * 100000);
+}
+      
+      
 class Utility_Auth {
    
    public static function randomPassword(){
 		$password_length = 12;
 
-		function make_seed() {
-			list($usec, $sec) = explode(' ', microtime());
-			return (float) $sec + ((float) $usec * 100000);
-		}
+		
 
 		mt_srand(make_seed());
 

@@ -123,9 +123,9 @@ Class Controller_UserManagement extends Controller_Layout {
 	protected function createUser(){
 		$user = ORM::factory($this->table);
 		$user->status = 'INCOMPLETE';
-		$user->username = 'PLACEHOLDER_'.microtime();
-      $user->password = microtime();
-		$user->email = 'PLACEHOLDER_'.microtime().'@madeofpeople.org';
+		$user->username = 'PLACEHOLDER_'.Utility_Auth::randomPassword();;
+      $user->password = Utility_Auth::randomPassword();
+		$user->email = 'PLACEHOLDER'.Utility_Auth::randomPassword().'@madeofpeople.org';
 		$user->save();
 
 		//add the login role
@@ -183,41 +183,47 @@ Class Controller_UserManagement extends Controller_Layout {
 		default:
 
 			//$errors = $user->checkValue($_POST['field'], $_POST['value']);
-         $errors  = false;
+         $errors  = array();
          
-			if(!$errors){
-            
-				$user->update_user(array($field=>$value), array($field) )->save();
-            
-            
-				//this might be the first edit on a new record
-				//so set the record to active status
-				$this->activateRecord($user);
-				
+			if (!count($errors)) {
 
-				if($_POST['field'] == 'password'){
-					$body = new View('usermanagement_passwordchangeemail');
-					$body->username = $user->username;
-					$body->password = $_POST['value'];	
+               try {
+                  $user->update_user(array($field => $value), array($field))->save();
 
-					mail($user->email, Kohana::config('usermanagement.passwordchangeemail.subject'), $body->render());
-					$this->response->data(array('value'=>'**********'));
-               $this->response->data(array('value'=>$body->password));
 
-				} else {
-               $value = $user->{$_POST['field']};
-					$this->response->data(array('value' => $value));
-				}
-			} else {
-				$firstkey = array_keys($errors);
-				$firstkey = $firstkey[0];
-				if($_POST['field']=='password'){
-					$rval = null;
-				} else {
-					$rval = $_POST['value'];
-				}
-				$return = $this->response->data( array('value'=>$rval, 'error'=>'true', 'message'=>$errors[$firstkey]) );
-			}
+                  //this might be the first edit on a new record
+                  //so set the record to active status
+                  $this->activateRecord($user);
+
+
+                  if ($_POST['field'] == 'password') {
+                     $body = new View('usermanagement_passwordchangeemail');
+                     $body->username = $user->username;
+                     $body->password = $_POST['value'];
+
+                     mail($user->email, Kohana::config('usermanagement.passwordchangeemail.subject'), $body->render());
+                     $this->response->data(array('value' => '**********'));
+                     $this->response->data(array('value' => $body->password));
+                  } else {
+                     $value = $user->{$_POST['field']};
+                     $this->response->data(array('value' => $value));
+                  }
+               } catch (Exception $e) {
+                  $modelErrors = $e->errors('validation');
+                  $modelErrors = array_values($modelErrors['_external']);
+                  $errors = array_merge($errors, $modelErrors);
+               }
+         }
+         if($errors) {
+               $firstkey = array_keys($errors);
+               $firstkey = $firstkey[0];
+               if ($_POST['field'] == 'password') {
+                  $rval = null;
+               } else {
+                  $rval = $user->{$_POST['field']};
+               }
+               $return = $this->response->data(array('value' => $rval, 'error' => 'true', 'message' => $errors[$firstkey]));
+         }
 			break;
 		}
 
