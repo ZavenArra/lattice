@@ -62,6 +62,8 @@ class Model_Object extends ORM {
          }
          return $this->_related[$column];
       } else if (in_array($column, array_keys($this->_table_columns))){
+         //this catchs the configured columsn for this table
+         Kohana::$log->add(Log::INFO, $column);
          return parent::__get($column);
       } else if ($column == 'parent') {
          return Graph::object($this->parentid);
@@ -69,21 +71,16 @@ class Model_Object extends ORM {
          return parent::__get($column);
       } else if ($column == 'title'){
          return $this->contenttable->title;
+      } else if ($column == 'template'){
+         //this condition should actually check against associations
+         //OR just call parent::__get($column) with an exception
+         //though that seems pretty messy
+         return parent::__get($column);
+
       } else {
-         $values = $this->_object;
-         $template_id = $values['template_id'];
-        
-         $objectmap = ORM::Factory('objectmap')
-                 ->where('template_id', '=', $template_id)
-                 ->where('column', '=', $column)
-                 ->find();
-    
-         
-        if($objectmap->loaded()){
-            return $this->contenttable->$column;
-         } else {
-            return parent::__get($column);
-         }
+         Kohana::$log->add(Log::INFO, 'ya'.$column);
+         return $this->contenttable->$column;
+
       }
    }
 
