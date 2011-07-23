@@ -4,7 +4,8 @@ mop.modules.CMS = new Class({
 	Extends: mop.modules.Module,
 	Interfaces: [ mop.modules.navigation.NavigationDataSource ],
 	
-	objectId: null,
+	rootObjectId: null,
+   currentObjectId: null,
 	pageContent: null,
 	pageIdToLoad: null,
 	scriptsLoaded: null,
@@ -28,7 +29,6 @@ mop.modules.CMS = new Class({
 	},
 
 	getRequestTierURL: function( parentId ){
-		if( !parentId ) parentId = "NULL";
 		return mop.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId;
 	},
 
@@ -40,25 +40,29 @@ mop.modules.CMS = new Class({
 		return mop.util.getBaseURL() + "ajax/data/cms/togglePublish/"+ nodeId;
 	},
 
+	getSaveFieldURL: function(){
+		return  mop.util.getBaseURL() + "ajax/data/cms/savefield/"+this.currentObjectId;
+	},
+
 	getRootNodeId: function(){       
-		return this.options.objectId;
+		return this.options.rootObjectId;
 	},
 
 	/* Section: Constructor */
 	initialize: function( anElement, options ){
         this.parent( anElement, null, options );
-        console.log( this.options, this.elementClass, this.options.objectId );
-        this.rootNodeId = this.options.objectId;
+        console.log( this.options, this.elementClass, this.options.rootObjectId );
+        this.rootNodeId = this.options.rootObjectId;
         $$( "script" ).each( function( aScriptTag ){ 
             this.loadedJS.push( aScriptTag.get("src") );
         }, this );
         $$( "link[rel=stylesheet]" ).each( 
-            function( aStyleSheetTag ){ this.loadedCSS.push(  aStyleSheetTag );
+            function( aStyleSheetTag ){this.loadedCSS.push(  aStyleSheetTag );
         }, this );
 	},
 
 	/* Section: Methods */
-    toString: function(){ return this.stringIdentifier },
+    toString: function(){return this.stringIdentifier},
 
 	build: function(){
 		this.pageContent = $("nodeContent");
@@ -116,8 +120,8 @@ mop.modules.CMS = new Class({
     	Arguments: nodeId MoPObject Id of a page object.
     */
 	requestPage: function( nodeId ){
-		mop.util.setObjectId( nodeId );        
-		return new Request.JSON( { url: this.getRequestPageURL( nodeId ), onSuccess: this.requestPageResponse.bind( this ) } ).send();
+      this.currentObjectId = nodeId;
+		return new Request.JSON( {url: this.getRequestPageURL( nodeId ), onSuccess: this.requestPageResponse.bind( this )} ).send();
 	},
     
 	/*
@@ -126,83 +130,86 @@ mop.modules.CMS = new Class({
 		Arguments:
 			json - Object : { css: [ "pathToCSSFile", "pathToCSSFile", ... ], js: [ "pathToJSFile", "pathToJSFile", "pathToJSFile", ... ], html: "String" }
 	*/
-	requestPageResponse: function( json ){
-	    if( !json.returnValue ) throw json.response.error;
-		json.response.css.each( function( styleSheetURL, index ){
-		    styleSheetURL = mop.util.getBaseURL() + styleSheetURL;
-		    if( !this.loadedCSS.contains( styleSheetURL ) ) mop.util.loadStyleSheet( styleSheetURL );
-		    this.loadedCSS.push( styleSheetURL );
-		}, this );
-		this.scriptsLoaded = 0;
-        var noneLoaded = true;
-		if( json.response.js.length && json.response.js.length > 0){
-            json.response.js.each( function( urlString, i ){
-                urlString = mop.util.getBaseURL() + urlString;
-//                console.log( ":::: ", urlString, this.loadedJS.indexOf( urlString ) );
-                if( this.loadedJS.indexOf( urlString ) == -1 ){
-                    noneLoaded = false;
- //                   console.log( "::::::", urlString, "not in loadedJSArray" );
-                    this.loadedJS.push( urlString );
-                    mop.util.loadJS( urlString, { type: "text/javascript", onload: this.onJSLoaded.bind( this, [ json.response.html ] ) } );                    
-                }
-            }, this );
-            if( noneLoaded ) this.populate( json.response.html );
-		}else{
-	       this.populate( json.response.html );
-		}
-	},
+   requestPageResponse: function( json ){
+      if( !json.returnValue ) throw json.response.error;
+      json.response.css.each( function( styleSheetURL, index ){
+         styleSheetURL = mop.util.getBaseURL() + styleSheetURL;
+         if( !this.loadedCSS.contains( styleSheetURL ) ) mop.util.loadStyleSheet( styleSheetURL );
+         this.loadedCSS.push( styleSheetURL );
+      }, this );
+      this.scriptsLoaded = 0;
+      var noneLoaded = true;
+      if( json.response.js.length && json.response.js.length > 0){
+         json.response.js.each( function( urlString, i ){
+            urlString = mop.util.getBaseURL() + urlString;
+            //                console.log( ":::: ", urlString, this.loadedJS.indexOf( urlString ) );
+            if( this.loadedJS.indexOf( urlString ) == -1 ){
+               noneLoaded = false;
+               //                   console.log( "::::::", urlString, "not in loadedJSArray" );
+               this.loadedJS.push( urlString );
+               mop.util.loadJS( urlString, {
+                  type: "text/javascript", 
+                  onload: this.onJSLoaded.bind( this, [ json.response.html ] )
+               } );                    
+            }
+         }, this );
+         if( noneLoaded ) this.populate( json.response.html );
+      }else{
+         this.populate( json.response.html );
+      }
+   },
 
-/*
+   /*
     Section: mop.modules.navigation.NavigtionDelegate Interface Requests and Response
 */
 
     onNodeSelected: function( nodeId ){
-        console.log( this.toString(), "onNodeSelected", nodeId );
-        this.clearPage();
-        if(this.pageContent){
-        this.pageContent.spin();
-         }
-        this.requestPage( nodeId );
-    },
+      console.log( this.toString(), "onNodeSelected", nodeId );
+      this.clearPage();
+      if(this.pageContent){
+         this.pageContent.spin();
+      }
+      this.requestPage( nodeId );
+   },
     
-/*
+   /*
     Section: mop.modules.navigation.NavigationDataSource Interface Requests and Response
 */
 
-    requestTier: function( parentId, callback ){
-        // console.log( "requestTier", parentId );
-        mop.util.setObjectId( parentId );
-	    return new Request.JSON( {
-	        url: this.getRequestTierURL( parentId ),
-	        onSuccess: function( json ){
-//                 console.log( "requestTier, complete: ", json, json.returnValue );
-                 this.requestTierResponse( json );
-                 callback( json );
-             }.bind( this )
-        }).send();
-    },
+   requestTier: function( parentId, callback ){
+      // console.log( "requestTier", parentId );
+      this.currentObjectId = parentId;
+      return new Request.JSON( {
+         url: this.getRequestTierURL( parentId ),
+         onSuccess: function( json ){
+            //                 console.log( "requestTier, complete: ", json, json.returnValue );
+            this.requestTierResponse( json );
+            callback( json );
+         }.bind( this )
+      }).send();
+   },
 
-    requestTierResponse: function( json ){
-//        console.log( this.toString(), "requestTierResponse", json );
-        if( !json.returnValue ) console.log( this.toString(), "requestTier error:", json.response.error );
-    },
+   requestTierResponse: function( json ){
+      //        console.log( this.toString(), "requestTierResponse", json );
+      if( !json.returnValue ) console.log( this.toString(), "requestTier error:", json.response.error );
+   },
 
-    saveSortRequest: function( objectId, idArray, callback ){},
+   saveSortRequest: function( objectId, idArray, callback ){},
 
-	saveSortResponse: function( json ){
-	    if( !json.returnValue ) console.log( this.toString(), "saveSortRequest error:", json.response.error );
-	},
+   saveSortResponse: function( json ){
+      if( !json.returnValue ) console.log( this.toString(), "saveSortRequest error:", json.response.error );
+   },
 	
-    addObjectRequest: function( parentId, templateId, nodeProperties, callback ){
-        console.log( "addObjectRequest", parentId, templateId, nodeProperties, callback );
-        return new Request.JSON({
-            url: this.getAddObjectRequestURL( parentId, templateId ),
-            onSuccess: function( json  ){
-                this.addObjectResponse( json );
-                callback( json );
-            }.bind( this )
-        }).post( nodeProperties );
-    },
+   addObjectRequest: function( parentId, templateId, nodeProperties, callback ){
+      console.log( "addObjectRequest", parentId, templateId, nodeProperties, callback );
+      return new Request.JSON({
+         url: this.getAddObjectRequestURL( parentId, templateId ),
+         onSuccess: function( json  ){
+            this.addObjectResponse( json );
+            callback( json );
+         }.bind( this )
+      }).post( nodeProperties );
+   },
 
     addObjectResponse: function( json ){
         console.log( "addObjectResponse", json );
@@ -212,7 +219,7 @@ mop.modules.CMS = new Class({
     removeObjectRequest: function( parentId, callback ){
         return new Request.JSON({
             url: this.getRemoveObjectRequestURL( parentId ),
-            onSuccess: function( json ){ this.removeObjectResponse( json ); callback(); }.bind( this )
+            onSuccess: function( json ){this.removeObjectResponse( json );callback();}.bind( this )
         }).send();
     },
 

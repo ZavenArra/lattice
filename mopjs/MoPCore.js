@@ -322,28 +322,6 @@ mop.util.getValueFromClassName = function( key, aClassName ){
 	return result;
 }
 
-/*
-	Deprecated Function: mop.util.getUniqueId
-	as of mootools 1.3 use String.uniqueID()
-*/
-
-/*
-	Function: setId
-	Sets the module id... 
-*/
-mop.util.setObjectId = function( aNumber ){
-	mop.objectId = Number( aNumber );
-}
-
-/*
-	Function: getId
-	Gets module id from the html body's ID with the prefix "id"
-	Returns: Number
-*/
-mop.util.getObjectId = function(){
-	if( !mop.objectId ) mop.objectId = Number( $(document).getElement("body").id.split("id")[1] );
-	return mop.objectId;
-}
 
 /*
 	Package: mop.util.validation
@@ -623,7 +601,6 @@ mop.util.HistoryManager = new Class({
 	
 	checkLocation: function(){
 		var hash = this.getStrippedHash();
-		console.log( "checkLocation", hash, this.currentHash );
 		if( hash != this.currentHash ){
 			this.currentHash = hash;
 			this.storeStateFromHash();

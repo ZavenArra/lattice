@@ -26,7 +26,7 @@ mop.modules.Module = new Class({
 	*/
 	childModules: {},
 	
-	getSaveFieldURL: function( objectId ){
+	getSaveFieldURL: function(){
 		throw "Abstract function getSaveFieldURL must be overriden in" + this.toString();
 	},
 	
@@ -92,9 +92,6 @@ mop.modules.Module = new Class({
         filteredOutModules = descendantModules = null;
 	},
 	
-	getObjectId: function(){
-	    return mop.util.getObjectId();
-	},
 	
 	/*
 		Function: initModule

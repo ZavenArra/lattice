@@ -3037,6 +3037,7 @@ mop.ui.Text = new Class({
 		this.parent();
 	}
 	
+
 });
 
 
