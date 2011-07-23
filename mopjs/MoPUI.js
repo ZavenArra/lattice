@@ -1550,6 +1550,7 @@ mop.ui.FileElement = new Class({
 	imageFadeIn: null,
 
 	getSubmitURL: function(){
+      console.log(this.marshal);
 		var url = mop.util.getBaseURL() + "ajax/data/cms/savefile/"+this.marshal.getObjectId()+"/"+this.fieldName;
 		console.log( ":::: ", this.toString(), "getSubmitURL: ", url );
 		return 	url;

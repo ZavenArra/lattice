@@ -31,12 +31,13 @@
 				<text field="singleIPE2" label="Single Single Single" rows="1" />
 				<text field="ssdfasdfingleIPE2" label="Single Single Single" rows="1" />
 				<text field="ssdfasd fasdfasdfingleIPE2" label="Single Single Single" rows="1" />
-				<text field="leIsdasdasdfasdsdf asdfPE2" label="Single Single Single" rows="1" />
-				<text field="leIasdfasdffPE2" label="Single Single Single" rows="1" />
+				<text field="maritnagus" label="NEW!" rows="1" />
+				<text field="lagunea" label="Test Entry" rows="1" />
 			</elements>
 			
 			<components>
 				<component templateName="singleDate" label="SingleDate as Component" />
+				<component templateName="singleFile" label="Single File as Component"/>
 				<component templateName="singleFile" label="Single File as Component"/>
 			</components>
 		

@@ -5,7 +5,7 @@ mop.modules.CMS = new Class({
 	Interfaces: [ mop.modules.navigation.NavigationDataSource ],
 	
 	rootObjectId: null,
-   currentObjectId: null,
+  currentObjectId: null,
 	pageContent: null,
 	pageIdToLoad: null,
 	scriptsLoaded: null,
@@ -46,6 +46,10 @@ mop.modules.CMS = new Class({
 
 	getRootNodeId: function(){       
 		return this.options.rootObjectId;
+	},
+
+	getObjectId: function(){
+		return this.currentObjectId;
 	},
 
 	/* Section: Constructor */
