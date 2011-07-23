@@ -45,12 +45,12 @@ class Controller_Ajax extends Controller_MOP {
 
 	public function action_html($uri)
 	{
-
+		Kohana::$log->add(Log::INFO, 'Ajax html request begin');
 		$arguments = explode('/', $uri);
 
 		try {
 			$subRequest = Request::Factory($uri);
-			$html = $subRequest->execute()->data();
+			$html = $subRequest->execute()->body();
 		} catch (Exception $e) {
 			//return HTML from exception
 			$message = $e->getMessage();
@@ -69,7 +69,6 @@ class Controller_Ajax extends Controller_MOP {
 			$this->response->body(json_encode($ajaxResponse));
 			return;
 		}
-		$html = $subRequest->execute()->body();
 
 
 		$cssResources = array();
