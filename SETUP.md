@@ -16,3 +16,7 @@ and copy the admin password
 8) Initialize site data
 http://mysite.org/builder/initializeSite
 This will soon contain a default build of the site, rather than the testing data, for deployments
+9) Copy objects.xml and objects.dtd from lattice to application, and configure for your site
+cp moplib/mopcms/config/objects.xml application/config/
+cp moplib/mopcms/config/objects.dtd application/config/
+10) Rerun initialization
