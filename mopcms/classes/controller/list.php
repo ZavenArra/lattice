@@ -155,9 +155,9 @@ class Controller_List extends MOP_CMSInterface {
    //this is the new one
    public function action_savefield($itemid) {
       $object = ORM::Factory($this->model, $itemid);
-      $object->contenttable->$_POST['field'] = $_POST['value'];
-      $object->contenttable->save();
-      $this->response->data( array('value' => $object->contenttable->$_POST['field']) );
+      $object->$_POST['field'] = $_POST['value'];
+      $object->save();
+      $this->response->data( array('value' => $object->$_POST['field']) );
    }
 
    /*

@@ -4,19 +4,19 @@ mop.modules.List = new Class({
 	
 	/* Section: Getters & Setters */	
 
-	getSaveFieldURL: function(){
-	  var url = mop.util.getBaseURL() +"ajax/data/list/savefield/" + this.getObjectId();
+	getSaveFieldURL: function(itemObjectId){
+	  var url = mop.util.getBaseURL() +"ajax/data/list/savefield/" + itemObjectId;
 		console.log( "::::::", this.toString(), "getSaveFieldURL", url );
 		return url;
 	},
 		
-	getAddObjectURL: function( item ){
+	getAddObjectURL: function(){
 	    console.log( "getAddObjectURL", this.getObjectId(), this.element );
 	    return mop.util.getBaseURL() + "ajax/html/list/addObject/" + this.getObjectId();
 	},
 	
-	getRemoveObjectURL: function( item ){
-	    return mop.util.getBaseURL() + "ajax/data/list/removeObject/" + item.getObjectId();
+	getRemoveObjectURL: function( itemObjectId ){
+	    return mop.util.getBaseURL() + "ajax/data/list/removeObject/" + itemObjectId;
 	},
 	
 	getSubmitSortOrderURL: function(){

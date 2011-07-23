@@ -425,16 +425,16 @@ mop.modules.MoPList = new Class({
 	},
 
 	removeObject: function( item ){
-	    this.removeObjectRequest( item );
+	    this.removeObjectRequest( item.getObjectId() );
 	  	this.items.erase( item );
 		item.destroy();
 		item = null;
 		mop.util.EventManager.broadcastEvent( "resize" );          
 	},
 	
-    removeObjectRequest: function( item ){
+    removeObjectRequest: function( itemObjectId ){
         console.log( "removeObjectRequest", this.toString(), this.getRemoveObjectURL );
-        var jsonRequest = new Request.JSON( { url: this.getRemoveObjectURL( item ) } ).send();
+        var jsonRequest = new Request.JSON( { url: this.getRemoveObjectURL( itemObjectId ) } ).send();
 		return jsonRequest;
     },
     
@@ -552,7 +552,7 @@ mop.modules.ListItem = new Class({
 	getObjectId: function(){ return this.objectId; },
 	getSaveFieldURL: function(){
 		console.log( "listItem.getSaveFieldURL", this.marshal.toString(), this.marshal.element, this.marshal.getSaveFieldURL() );
-		return this.marshal.getSaveFieldURL( this.getObjectId() );
+		return this.marshal.getSaveFieldURL( this.getObjectId()  );
 	},
 	
 //	getSubmissionController: function(){ return this.marshal.getSubmissionController(); },
