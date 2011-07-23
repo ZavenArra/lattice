@@ -114,9 +114,10 @@ class Controller_Auth extends Controller_Layout {
 				if (Auth::instance()->login($formValues['username'], $formValues['password']))
 				{
 					// Login successful, redirect
+					print_r($formValues);
 					if($formValues['redirect']){
 						Request::current()->redirect(url::site($formValues['redirect'],Request::current()->protocol(),false));
-					} else if($redirect = Kohana::config('redirect')){
+					} else if($redirect = Kohana::config('auth.redirect')){
 						Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 					} else {
 						Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),false));

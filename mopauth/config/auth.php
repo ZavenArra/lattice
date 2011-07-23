@@ -11,18 +11,20 @@ $config = array(
 
 $config['layout'] = 'LayoutLogin';
 
-  $config['resources']['css'] = array(
-    'moplib/thirdparty/960Grid/reset.css',
-    'moplib/thirdparty/960Grid/960.css',
-    'moplib/mopcms/views/css/mop_cms.css'
-  );
-  
-  
-  $config['resources']['js'] = array(
-    'moplib/thirdparty/mootools/mootools.js',
-    'moplib/thirdparty/mootools/mootools-more.js',
-   
-  );
+$config['resources']['css'] = array(
+	'moplib/thirdparty/960Grid/reset.css',
+	'moplib/thirdparty/960Grid/960.css',
+	'moplib/mopcms/views/css/mop_cms.css'
+);
+
+
+$config['resources']['js'] = array(
+	'moplib/thirdparty/mootools/mootools.js',
+	'moplib/thirdparty/mootools/mootools-more.js',
+
+);
+
+$config['redirect'] = 'cms';
 
 
 return $config;
