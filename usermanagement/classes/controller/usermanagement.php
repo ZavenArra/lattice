@@ -74,7 +74,7 @@ Class Controller_UserManagement extends Controller_Layout {
 			//find role'] = null;
 			$data['role'] = null;
 			foreach($this->managedRoles as $label=>$role){
-				if($user->has(ORM::Factory('role', $role))){
+				if($user->has('roles', ORM::Factory('role', $role))){
 					$data['role'] = $role;
 				}
 			}
@@ -145,7 +145,7 @@ Class Controller_UserManagement extends Controller_Layout {
 	 * $id - the unique key id of the record to delete
 	 * Returns: nothing
 	 */
-	public function action_deleteItem($id){
+	public function action_removeObject($id){
 		$user = ORM::factory($this->table, $id);
 		$user->delete($id);
 
