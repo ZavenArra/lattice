@@ -12,10 +12,10 @@
 		*/?>
 			
 	</div>
-	<!-- ALSO YOU ALREADY HAD THIS HERE.... -->
-	<div class="clear">
-		<?=mopui::radioGroup( 'role', '', $managedRoles, $data['role'], 'User Role');?>
-	</div>
+
+	<div class="clear"></div>
+<?print_r($data['role']);?>
+	<?=mopui::radioGroup( 'role', '', $managedRoles, $data['role'], 'User Role');?>
 	
 	<div class="itemControls">
 		<a href="#" title="delete this list item" class="icon delete"><span>delete</span></a>

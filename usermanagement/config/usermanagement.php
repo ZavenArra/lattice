@@ -45,6 +45,6 @@ $config['passwordchangeemail']['subject'] = 'MoPCMS Password Changed';
  * The roles that the admin can select from when creating a user. 
  * Array is of format array( {label} => {role unique text key})
  */
-$config['managedRoles'] = array('Admin'=>'admin', 'Fruit Bat'=>'fruitbat');
+$config['managedRoles'] = array('Admin'=>'admin', 'Editor Test'=>'editor');
 
 return $config;

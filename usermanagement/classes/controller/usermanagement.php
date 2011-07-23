@@ -71,10 +71,9 @@ Class Controller_UserManagement extends Controller_Layout {
 				$data['password'] = '';
 			}
 
-			//find role'] = null;
 			$data['role'] = null;
 			foreach($this->managedRoles as $label=>$role){
-				if($user->has('roles', ORM::Factory('role', $role))){
+				if($user->has('roles', ORM::Factory('role')->where('name','=',$role)->find()) ){
 					$data['role'] = $role;
 				}
 			}
@@ -170,14 +169,14 @@ Class Controller_UserManagement extends Controller_Layout {
 		case 'role':
 			//first remove other managedRoles
 			foreach($this->managedRoles as $label => $role){
-				$roleObj = ORM::Factory('role', $role);
-				if($user->has($roleObj)){
-					$user->remove($roleObj);
+				$roleObj = ORM::Factory('role')->where('name','=',$role)->find();
+				if($user->has('roles',$roleObj)){
+					$user->remove('roles', $roleObj);
 				}
 			}
-			$user->add(ORM::Factory('role', $value));	
+			$user->add('roles', ORM::Factory('role')->where('name','=',$value)->find());	
 			$user->save();
-			$return = array('value'=>$value);
+			$return = $this->response->data( array('value'=>$value) );
 			break;
 
 		default:
