@@ -12,7 +12,6 @@
  */
 class Model_Object extends ORM {
 
-   protected $_table_name = 'pages';
    protected $_belongs_to = array(
        'template' => array()
    );

@@ -5,8 +5,6 @@
  */
 class Model_ObjectType extends ORM {
 
-	protected $_table_name = 'templates';
-
 	protected $_has_many = array('object'=>array());
 	protected $_belongs_to = array('object'=>array());
 
