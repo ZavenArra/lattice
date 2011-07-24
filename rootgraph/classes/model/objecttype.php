@@ -18,7 +18,7 @@ class Model_ObjectType extends ORM {
 
 		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id)) {
 			//it's the tmeplate identified, look up the integer primary key
-			$result = DB::select('id')->from('objectTypes')->where('objecttypename', '=', $id)->execute()->current();
+			$result = DB::select('id')->from('objecttypes')->where('objecttypename', '=', $id)->execute()->current();
 			$id = $result['id'];
 		}
 

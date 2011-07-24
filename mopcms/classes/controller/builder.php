@@ -31,8 +31,8 @@ class Controller_Builder extends Controller {
 		$db->query(Database::UPDATE, 'alter table objects AUTO_INCREMENT = 1');
 		$db->query(Database::DELETE, 'delete from contents');
 		$db->query(Database::UPDATE, 'alter table contents AUTO_INCREMENT = 1');
-		$db->query(Database::DELETE, 'delete from objectTypes');
-		$db->query(Database::UPDATE, 'alter table objectTypes AUTO_INCREMENT = 1');
+		$db->query(Database::DELETE, 'delete from objecttypes');
+		$db->query(Database::UPDATE, 'alter table objecttypes AUTO_INCREMENT = 1');
     $db->query(Database::DELETE, 'delete from objectmaps');
 		$db->query(Database::UPDATE, 'alter table objectmaps AUTO_INCREMENT = 1');
 		flush();
@@ -96,7 +96,7 @@ class Controller_Builder extends Controller {
 			flush();
 			ob_flush();
 			$object = ORM::Factory('object');
-			$objectType = ORM::Factory('objectType', $item->getAttribute('objectTypeName'));
+			$objectType = ORM::Factory('objecttype', $item->getAttribute('objectTypeName'));
 			if($objectType->nodeType == 'container'){
 				die("Can't add list family as objectType name in data.xml: {$objectType->objecttypename} \n");
 			}

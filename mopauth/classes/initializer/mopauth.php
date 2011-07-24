@@ -22,7 +22,7 @@ class Initializer_Mopauth {
 				 $sqlFile = Kohana::find_file('config', 'auth-schema-mysql', $ext = 'sql');
 
 				 $sql = file_get_contents( $sqlFile[0]);
-         $rval = mysql_query($sql);
+         $rval = mysql_multiquery($sql);
 			 }
 		 }
 

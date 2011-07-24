@@ -665,7 +665,7 @@ class Model_Object extends ORM {
     * */
 
    public function addObject($objectTypeName, $data = array()) {
-      $objecttype_id = ORM::Factory('objectType', $objectTypeName)->id;
+      $objecttype_id = ORM::Factory('objecttype', $objectTypeName)->id;
       if (!$objecttype_id) {
 
 
