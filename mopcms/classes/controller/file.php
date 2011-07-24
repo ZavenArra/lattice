@@ -16,7 +16,7 @@ class Controller_File extends Controller{
 		$file = Graph::file($fileId);
 
 		//check access
-		//don't have page wise access checking at this point
+		//don't have object wise access checking at this point
 
 		$filename = Graph::mediaPath().$file->filename;
 		$ctype = $file->mime;

@@ -17,9 +17,9 @@ Class Associator_Controller extends Controller {
 			if($filter['from']){
 				$objects->where('parentId', $this->parent->id);
 			}
-			if($filter['templateName']){
-				$t = ORM::Factory('template', $filter['templateName']);
-				$object->where('template_id', $t->id);
+			if($filter['objectTypeName']){
+				$t = ORM::Factory('objectType', $filter['objectTypeName']);
+				$object->where('objecttype_id', $t->id);
 			}
 			if(isset($filters['tagged']) && $filters['tagged']){
 

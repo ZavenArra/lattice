@@ -1,7 +1,7 @@
 <?
 /**
  * Class: CMS_Controller
- * The main CMS class, handling add, delete, and retrieval of pages
+ * The main CMS class, handling add, delete, and retrieval of objects
  * @author Matthew Shultz
  * @version 1.0
  * @package Kororor
@@ -17,8 +17,8 @@ class MOP_CMS extends MOP_CMSInterface {
 
 
 		/*
-	*  Variable: page_id
-	*  static int the global page id when operating within the CMS submodules get the page id
+	*  Variable: object_id
+	*  static int the global object id when operating within the CMS submodules get the object id
 	*  we could just reference the primaryId attribute of Display as well...
 	*/
 	private static $objectId = NULL;
@@ -43,7 +43,7 @@ class MOP_CMS extends MOP_CMSInterface {
 	*
 	*/
 
-	protected $defaulttemplate='mop_cms';
+	protected $defaultobjectType='mop_cms';
 
 	/*
 		Function: __constructor
@@ -70,8 +70,8 @@ class MOP_CMS extends MOP_CMSInterface {
 	//get the default 
 
       
-      $rootObjectType = ORM::factory('template')->where('templateName', '=', Kohana::config('cms.graphRootNode'))->find();
-      $rootObject = ORM::Factory('object')->where('template_id', '=', $rootObjectType->id)->find();
+      $rootObjectType = ORM::factory('objectType')->where('objectTypeName', '=', Kohana::config('cms.graphRootNode'))->find();
+      $rootObject = ORM::Factory('object')->where('objecttype_id', '=', $rootObjectType->id)->find();
 
       $this->view->objectId = $rootObject->id;
       
@@ -88,9 +88,9 @@ class MOP_CMS extends MOP_CMSInterface {
 
 	/*
 	 * Function: setPageId($object_id)
-	 * Sets the page id of the object currently being edited
+	 * Sets the object id of the object currently being edited
 	 * Parameters:
-	 * page_id  - the page id
+	 * object_id  - the object id
 	 * Returns: nothing 
 	 */
 	private function setPageId($object_id){
@@ -101,9 +101,9 @@ class MOP_CMS extends MOP_CMSInterface {
 
 	/*
 	 * Function: getPageId() 
-	 * Returns the page id of the object currently being edited
+	 * Returns the object id of the object currently being edited
 	 * Parameters: none
-	 * Returns: page id
+	 * Returns: object id
 	 */
 	public static function getPageId(){
 		return self::$objectId;
@@ -111,9 +111,9 @@ class MOP_CMS extends MOP_CMSInterface {
 
 	/*
 	Function: getPage(id)
-	Builds the editing page for the object currenlty being edited
+	Builds the editing object for the object currenlty being edited
 	Parameters: 
-	id - the page id to be retrieved
+	id - the object id to be retrieved
 	Returns: array('html'=>html, 'js'=>js, 'css'=>css)
 	*/
 	public function action_getPage($id){
@@ -122,7 +122,7 @@ class MOP_CMS extends MOP_CMSInterface {
 
 
       /*
-       * If the reqeuest is actually for a module, instead of a page, build
+       * If the reqeuest is actually for a module, instead of a object, build
        * the subrequest and set the response body to the request.
        * This should probably be re-engineered to be handled by the navi
        * module only, and cmsModules.xml should also be a navi thing
@@ -143,13 +143,13 @@ class MOP_CMS extends MOP_CMSInterface {
 			throw new Kohana_Exception('Invalid Page Id '.$id);
 		}
 		
-		//new generation of page
+		//new generation of object
 		//1 grap cms_nodetitle
 		$this->nodetitle = new View('mop_cms_nodetitle');
-		$this->nodetitle->title = $object->contenttable->title; //this should change to page table
+		$this->nodetitle->title = $object->contenttable->title; //this should change to object table
 		$this->nodetitle->slug = $object->slug;
-		$this->nodetitle->allowDelete = $object->template->allowDelete;
-		$this->nodetitle->allowTitleEdit = ($object->template->allowTitleEdit == "true" ? true : false);
+		$this->nodetitle->allowDelete = $object->objecttype->allowDelete;
+		$this->nodetitle->allowTitleEdit = ($object->objecttype->allowTitleEdit == "true" ? true : false);
 
 		$settings = Kohana::config('cms.defaultsettings');
 		if(is_array($settings)){
@@ -157,8 +157,8 @@ class MOP_CMS extends MOP_CMSInterface {
 				$this->nodetitle->$key = $value;
 			}
 		}
-		//and get settings for specific template
-		$settings = Kohana::config('cms.'.$object->template->templatename.'.defaultsettings');
+		//and get settings for specific objectType
+		$settings = Kohana::config('cms.'.$object->objecttype->objecttypename.'.defaultsettings');
 		if(is_array($settings)){
 			foreach($settings as $key=>$value){
 				$this->nodetitle->$key = $value;
@@ -167,7 +167,7 @@ class MOP_CMS extends MOP_CMSInterface {
 		
 		$nodetitlehtml = $this->nodetitle->render();
 
-		$customview = 'templates/'.$object->template->templatename; //check for custom view for this template
+		$customview = 'objectTypes/'.$object->objecttype->objecttypename; //check for custom view for this objectType
 		$htmlChunks = mopcms::buildUIHtmlChunksForObject($object);
 
 		$usecustomview = false;
@@ -191,7 +191,7 @@ class MOP_CMS extends MOP_CMSInterface {
 
 	}
 
-	public function action_addchild($id, $template_id){
+	public function action_addchild($id, $objecttype_id){
 		$data = $_POST;
 
     //add the file keys in so that we can look them up in the FILES array laster
@@ -202,7 +202,7 @@ class MOP_CMS extends MOP_CMSInterface {
     }
     Kohana::$log->add(Log::INFO, var_export($data, true));
     Kohana::$log->add(Log::INFO, var_export($_FILES, true));
-		$newId = Graph::object($id)->addObject($template_id, $data);
+		$newId = Graph::object($id)->addObject($objecttype_id, $data);
 		$this->response->data($newId);
 	}
 
@@ -223,13 +223,13 @@ class MOP_CMS extends MOP_CMSInterface {
 	Public interface for adding an object to the cms data
 	Parameters:
 	id - the id of the parent category
-	template_id - the type of object to add
+	objecttype_id - the type of object to add
 	title - optional title for initialization
 	$_POST - possible array of keys and values to initialize with
 	Returns: nav controller node object
 	*/
-	public function action_addObject($parentId, $templateId){      
-      $newId = $this->cms_addObject($parentId, $templateId, $_POST);
+	public function action_addObject($parentId, $objectTypeId){      
+      $newId = $this->cms_addObject($parentId, $objectTypeId, $_POST);
       $this->response->data( $this->cms_getNodeInfo($newId) );	
       $this->response->body( $this->cms_getNodeHtml($newId));
 	

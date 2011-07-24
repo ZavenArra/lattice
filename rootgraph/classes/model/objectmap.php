@@ -8,20 +8,20 @@
 
 class Model_Objectmap extends ORM {
 
-   public static function configureNewField($templateId, $fieldName, $uiType) {
+   public static function configureNewField($objectTypeId, $fieldName, $uiType) {
       $mapEntry = ORM::Factory('objectmap');
-      $mapEntry->template_id = $templateId;
+      $mapEntry->objecttype_id = $objectTypeId;
       $mapEntry->type = self::fieldTypeForUI($uiType);
       $mapEntry->column = $fieldName;
-      $mapEntry->index = self::nextIndex($templateId, $mapEntry->type);
+      $mapEntry->index = self::nextIndex($objectTypeId, $mapEntry->type);
       $mapEntry->save();
    }
 
-   private static function nextIndex($templateId, $fieldType) {
+   private static function nextIndex($objectTypeId, $fieldType) {
       
 		$result = DB::select(array('index', 'maxIndex'))
               ->from('objectmaps')
-              ->where('template_id', '=', $templateId)
+              ->where('objecttype_id', '=', $objectTypeId)
               ->where('type', '=', $fieldType)
               ->order_by('index', 'DESC')
               ->limit(1, 0)
@@ -49,13 +49,13 @@ class Model_Objectmap extends ORM {
             $index = 'flag';
             break;
          default:
-            $tConfigs = mop::config('objects', '//template');
-            $templates = array();
-            foreach ($tConfigs as $template) {
-               $templates[] = $template->getAttribute('name');
+            $tConfigs = mop::config('objects', '//objectType');
+            $objectTypes = array();
+            foreach ($tConfigs as $objectType) {
+               $objectTypes[] = $objectType->getAttribute('name');
             }
-            //print_r($templates);
-            if (in_array($uiType, $templates)) {
+            //print_r($objectTypes);
+            if (in_array($uiType, $objectTypes)) {
                $index = 'object';
             } else {
                return null;

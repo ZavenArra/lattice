@@ -1,8 +1,8 @@
 <?php
 
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this objectType, choose Tools | Templates
+ * and open the objectType in the editor.
  */
 
 /**
@@ -13,10 +13,10 @@
 class Model_Object extends ORM {
 
    protected $_belongs_to = array(
-       'template' => array()
+       'objecttype' => array()
    );
    protected $_has_one = array(
-       'template' => array()
+       'objecttype' => array()
    );
    protected $_has_many = array(
        'tag' => array(
@@ -25,7 +25,7 @@ class Model_Object extends ORM {
        )
    );
    public $content = null;
-   private $object_fields = array('loaded', 'template', 'primary_key', 'primary_val');
+   private $object_fields = array('loaded', 'objecttype', 'primary_key', 'primary_val');
 
    public function __construct($id=NULL) {
       parent::__construct($id);
@@ -52,12 +52,13 @@ class Model_Object extends ORM {
    public function __get($column) {
 
       
+      
       if ($column == 'contenttable' && !isset($this->_related[$column])) {
          $content = ORM::factory(inflector::singular('contents'));
-         $content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
-         $this->_related[$column] = $content->where('page_id', '=', $this->id)->find();
+         $content->setTemplateName($this->objecttype->objecttypename); //set the objecttypename for dbmapping
+         $this->_related[$column] = $content->where('object_id', '=', $this->id)->find();
          if (!$this->_related[$column]->_loaded) {
-            throw new Kohana_Exception('BAD_MOP_DB' . 'no content record for page ' . $this->id);
+            throw new Kohana_Exception('BAD_MOP_DB' . 'no content record for object ' . $this->id);
          }
          return $this->_related[$column];
       } else if (in_array($column, array_keys($this->_table_columns))){
@@ -70,16 +71,17 @@ class Model_Object extends ORM {
          return parent::__get($column);
       } else if ($column == 'title'){
          return $this->contenttable->title;
-      } else if ($column == 'template'){
+      } else if ($column == 'objecttype'){
          //this condition should actually check against associations
          //OR just call parent::__get($column) with an exception
          //though that seems pretty messy
          return parent::__get($column);
 
       } else {
+     
          Kohana::$log->add(Log::INFO, 'ya'.$column);
          return $this->contenttable->$column;
-
+ 
       }
    }
 
@@ -132,14 +134,14 @@ class Model_Object extends ORM {
             
          } else if ($column) {
             $o = $this->_object;
-            $template_id = $o['template_id'];
+            $objecttype_id = $o['objecttype_id'];
             
-            $objectType = ORM::Factory('objecttype',$template_id);
+            $objectType = ORM::Factory('objecttype',$objecttype_id);
             
-            $xpath = sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $objectType->templatename, $column);
+            $xpath = sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $objectType->objecttypename, $column);
             $fieldInfo = mop::config('objects', $xpath)->item(0);
             if (!$fieldInfo) {
-               throw new Kohana_Exception('Invalid field for template, using XPath : :xpath', array(':xpath' => $xpath));
+               throw new Kohana_Exception('Invalid field for objectType, using XPath : :xpath', array(':xpath' => $xpath));
             }
 
             $this->contenttable->$column = $value;
@@ -153,7 +155,7 @@ class Model_Object extends ORM {
 
    /*
      Function: save()
-     Custom save function, makes sure the content table has a record when inserting new page
+     Custom save function, makes sure the content table has a record when inserting new object
     */
 
    public function save(Validation $validation = NULL) {
@@ -169,10 +171,10 @@ class Model_Object extends ORM {
 			if ($this->parentid != NULL) {
             if (Kohana::config('cms.newObjectPlacement') == 'top') {
 
-               $sort = DB::query(Database::SELECT, 'select min(sortorder) as minsort from pages where parentid = ' . $this->parentid)->execute()->current();
+               $sort = DB::query(Database::SELECT, 'select min(sortorder) as minsort from objects where parentid = ' . $this->parentid)->execute()->current();
                $this->sortorder = $sort['minsort'] - 1;
             } else {
-               $query = 'select max(sortorder) as maxsort from pages where parentid = ' . $this->parentid;
+               $query = 'select max(sortorder) as maxsort from objects where parentid = ' . $this->parentid;
                $sort = DB::query(Database::SELECT, $query)->execute()->current();
                $this->sortorder = $sort['maxsort'] + 1;
             }
@@ -186,14 +188,14 @@ class Model_Object extends ORM {
          if (!Kohana::config('mop.legacy')) {
             $content = ORM::Factory('content');
          } else {
-            $content = ORM::Factory($this->template->contenttable);
+            $content = ORM::Factory($this->objecttype->contenttable);
          }
-         if (!$content->where('page_id', '=', $this->id)->find()->loaded()) {
+         if (!$content->where('object_id', '=', $this->id)->find()->loaded()) {
             $content = ORM::Factory('content');
-            $content->page_id = $this->id;
+            $content->object_id = $this->id;
             $content->save();
 
-            $content->setTemplateName($this->template->templatename); //set the templatename for dbmapping
+            $content->setTemplateName($this->objecttype->objecttypename); //set the objecttypename for dbmapping
             $this->_related['contenttable'] = $content;
          }
       }
@@ -222,7 +224,7 @@ class Model_Object extends ORM {
    public function getContentAsArray() {
 
       $fields = ORM::Factory('objectmap')
-              ->where('template_id', '=', $this->template->id)
+              ->where('objecttype_id', '=', $this->objecttype->id)
               ->find_all();
       foreach ($fields as $map) {
          $content[$map->column] = $this->contenttable->{$map->column};
@@ -283,19 +285,19 @@ class Model_Object extends ORM {
       $content['title'] = $this->__get('contenttable')->title;
       $content['slug'] = $this->slug;
       $content['dateadded'] = $this->dateadded;
-      $content['templateName'] = $this->template->templatename;
+      $content['objectTypeName'] = $this->objecttype->objecttypename;
 
-      $fields = mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $this->template->templatename));
+      $fields = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
 
       foreach ($fields as $fieldInfo) {
          $field = $fieldInfo->getAttribute('field');
-         if (mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $this->template->templatename, $field))->length) {
+         if (mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $this->objecttype->objecttypename, $field))->length) {
             $content[$field] = $this->contenttable->{$field};
          }
       }
 
       //find any lists
-      foreach (mop::config('objects', sprintf('//template[@name="%s"]/elements/list', $this->template->templatename)) as $list) {
+      foreach (mop::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list) {
 
          $family = $list->getAttribute('family');
          $content[$family] = $this->getListContentAsArray($family);
@@ -315,9 +317,9 @@ class Model_Object extends ORM {
 
    public function getListContent($family) {
       //get container
-      $cTemplate = ORM::Factory('template', $family);
+      $cTemplate = ORM::Factory('objectType', $family);
       $container = ORM::Factory('object')
-              ->where('template_id', '=', $cTemplate->id)
+              ->where('objecttype_id', '=', $cTemplate->id)
               ->where('parentid', '=', $this->id)
               ->where('activity', 'IS', NULL)
               ->find();
@@ -534,8 +536,8 @@ class Model_Object extends ORM {
       }
 
       //do the resizing
-      $templatename = $this->template->templatename;
-      $resizes = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]/resize', $templatename, $field
+      $objecttypename = $this->objecttype->objecttypename;
+      $resizes = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]/resize', $objecttypename, $field
                       )
       );
 			Kohana::$log->add(Log::INFO, 'printing out resizess');
@@ -575,12 +577,12 @@ class Model_Object extends ORM {
    //this only supports a very special case of multiSelect objects
    public function saveObject() {
       $object = ORM::Factory('object', $this->contenttable->$field);
-      if (!$object->template_id) {
-         $object->template_id = 0;
+      if (!$object->objecttype_id) {
+         $object->objecttype_id = 0;
       }
 
       $element['options'] = array();
-      foreach (Kohana::config('cms.templates.' . $object->template->templatename) as $field) {
+      foreach (Kohana::config('cms.objectTypes.' . $object->objecttype->objecttypename) as $field) {
          if ($field['type'] == 'checkbox') {
             $options = $field['field'];
          }
@@ -598,23 +600,23 @@ class Model_Object extends ORM {
 
    /* Query Filters */
 
-   public function templateFilter($templates) {
-      if (!$templates) {
+   public function objectTypeFilter($objectTypes) {
+      if (!$objectTypes) {
          return $this;
       }
-      if (strpos(',', $templates)) {
-         $tNames = explode(',', $templates);
+      if (strpos(',', $objectTypes)) {
+         $tNames = explode(',', $objectTypes);
          $tIds = array();
          foreach ($tNames as $tname) {
-            $result = DB::query("Select id from templates where templatename = '$templates'")->execute();
+            $result = DB::query("Select id from objectTypes where objecttypename = '$objectTypes'")->execute();
             $tIds[] = $result->current()->id;
          }
-         $this->in('template_id', $tIds);
-      } else if ($templates == 'all') {
+         $this->in('objecttype_id', $tIds);
+      } else if ($objectTypes == 'all') {
          //set no filter
       } else {
-         $result = DB::query(Database::SELECT, "Select id from templates where templatename = '$templates'")->execute()->current();
-         $this->where('template_id', '=', $result['id']);
+         $result = DB::query(Database::SELECT, "Select id from objectTypes where objecttypename = '$objectTypes'")->execute()->current();
+         $this->where('objecttype_id', '=', $result['id']);
       }
       return $this;
    }
@@ -624,7 +626,7 @@ class Model_Object extends ORM {
    }
 
    public function noContainerObjects() {
-      $res = ORM::Factory('template')
+      $res = ORM::Factory('objectType')
               ->where('nodeType', '=', 'container')
               ->find_all();
       $tIds = array();
@@ -632,7 +634,7 @@ class Model_Object extends ORM {
          $tIds[] = $container->id;
       }
       if (count($tIds)) {
-         $this->where('template_id', 'NOT IN', DB::Expr('(' . implode(',', $tIds) . ')'));
+         $this->where('objecttype_id', 'NOT IN', DB::Expr('(' . implode(',', $tIds) . ')'));
       }
       return $this;
    }
@@ -652,9 +654,9 @@ class Model_Object extends ORM {
      Private function for adding an object to the cms data
      Parameters:
      id - the id of the parent category
-     template_id - the type of object to add
+     objecttype_id - the type of object to add
      $data - possible array of keys and values to initialize with
-     Returns: the new page id
+     Returns: the new object id
     */
 
    /* Consider moving this into Object, and creating a hidden top level object that contains these objects
@@ -663,24 +665,24 @@ class Model_Object extends ORM {
     * */
 
    public function addObject($objectTypeName, $data = array()) {
-      $template_id = ORM::Factory('template', $objectTypeName)->id;
-      if (!$template_id) {
+      $objecttype_id = ORM::Factory('objectType', $objectTypeName)->id;
+      if (!$objecttype_id) {
 
 
          //check objects.xml for configuration
-         if ($templateConfig = mop::config('objects', sprintf('//template[@name="%s"]', $objectTypeName))->item(0)) {
-            //there's a config for this template
+         if ($objectTypeConfig = mop::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName))->item(0)) {
+            //there's a config for this objectType
             //go ahead and configure it
             Graph::configureTemplate($objectTypeName);
-            $template_id = ORM::Factory('template', $objectTypeName)->id;
+            $objecttype_id = ORM::Factory('objectType', $objectTypeName)->id;
          } else {
-            throw new Kohana_Exception('No config for template ' . $objectTypeName);
+            throw new Kohana_Exception('No config for objectType ' . $objectTypeName);
          }
       }
 
 
       $newObject = Graph::object();
-      $newObject->template_id = $template_id;
+      $newObject->objecttype_id = $objecttype_id;
 
       //create slug
       if (isset($data['title'])) {
@@ -691,7 +693,7 @@ class Model_Object extends ORM {
       $newObject->parentid = $this->id;
 
       //calculate sort order
-      $sort = DB::select(array('sortorder', 'maxsort'))->from('pages')->where('parentid', '=', $this->id)
+      $sort = DB::select(array('sortorder', 'maxsort'))->from('objects')->where('parentid', '=', $this->id)
                       ->order_by('sortorder')->limit(1)
                       ->execute()->current();
       $newObject->sortorder = $sort['maxsort'] + 1;
@@ -701,8 +703,8 @@ class Model_Object extends ORM {
 
       //check for enabled publish/unpublish. 
       //if not enabled, insert as published
-      $template = ORM::Factory('template', $template_id);
-      $tSettings = mop::config('objects', sprintf('//template[@name="%s"]', $template->templatename));
+      $objectType = ORM::Factory('objectType', $objecttype_id);
+      $tSettings = mop::config('objects', sprintf('//objectType[@name="%s"]', $objectType->objecttypename));
       $tSettings = $tSettings->item(0);
       $newObject->published = 1;
       if ($tSettings) { //entry won't exist for Container objects
@@ -718,13 +720,13 @@ class Model_Object extends ORM {
       $newObject->save();
 
       //Add defaults to content table
-      $newtemplate = ORM::Factory('template', $newObject->template_id);
+      $newobjectType = ORM::Factory('objectType', $newObject->objecttype_id);
 
 
-      $lookupTemplates = mop::config('objects', '//template');
-      $templates = array();
+      $lookupTemplates = mop::config('objects', '//objectType');
+      $objectTypes = array();
       foreach ($lookupTemplates as $tConfig) {
-         $templates[] = $tConfig->getAttribute('name');
+         $objectTypes[] = $tConfig->getAttribute('name');
       }
       //add submitted data to content table
       foreach ($data as $field => $value) {
@@ -740,13 +742,13 @@ class Model_Object extends ORM {
                continue(2);
          }
 
-         $fieldInfoXPath = sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $newtemplate->templatename, $field);
+         $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $newobjectType->objecttypename, $field);
          $fieldInfo = mop::config('objects', $fieldInfoXPath)->item(0);
          if (!$fieldInfo) {
             throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath' => $fieldInfoXPath));
          }
 
-         if (in_array($fieldInfo->tagName, $templates) && is_array($value)) {
+         if (in_array($fieldInfo->tagName, $objectTypes) && is_array($value)) {
             $clusterTemplateName = $fieldInfo->tagName;
             $clusterObjectId = ORM::Factory('object')->addObject($clusterTemplateName, $value); //adding object to null parent
             $newObject->contenttable->$field = $clusterObjectId;
@@ -782,7 +784,7 @@ class Model_Object extends ORM {
 
       //look up any components and add them as well
       //configured components
-      $components = mop::config('objects', sprintf('//template[@name="%s"]/components/component', $newtemplate->templatename));
+      $components = mop::config('objects', sprintf('//objectType[@name="%s"]/components/component', $newobjectType->objecttypename));
       foreach ($components as $c) {
          $arguments = array();
          if ($label = $c->getAttribute('label')) {
@@ -793,11 +795,11 @@ class Model_Object extends ORM {
                $arguments[$data->tagName] = $data->value;
             }
          }
-         $newObject->addObject($c->getAttribute('templateName'), $arguments);
+         $newObject->addObject($c->getAttribute('objectTypeName'), $arguments);
       }
 
       //containers (list)
-      $containers = mop::config('objects', sprintf('//template[@name="%s"]/elements/list', $newtemplate->templatename));
+      $containers = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $newobjectType->objecttypename));
       foreach ($containers as $c) {
          $arguments['title'] = $c->getAttribute('label');
          $newObject->addObject($c->getAttribute('family'), $arguments);

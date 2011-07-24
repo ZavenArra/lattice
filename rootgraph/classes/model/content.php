@@ -12,36 +12,36 @@ class Model_Content extends ORM {
 	 * Variable: nonmappedfield
 	 * Array of fields to not pass through to the content field mapping logic
 	 */
-	private $nonmappedfields = array('id', 'page_id', 'title', 'activity', '_loaded');
+	private $nonmappedfields = array('id', 'object_id', 'title', 'activity', '_loaded');
 
 	/*
-	 * Variable: templatename
+	 * Variable: objecttypename
 	 * Private variable storing the name of the temple the current object is using.
 	 */
-	private $templatename = null;
+	private $objecttypename = null;
 
 
-	public static function dbmap($template_id, $column=null){
-		if(!isset(self::$dbmaps[$template_id])){
-			$dbmaps = ORM::Factory('objectmap')->where('template_id', '=', $template_id)->find_all();
-			self::$dbmaps[$template_id] = array();
+	public static function dbmap($objecttype_id, $column=null){
+		if(!isset(self::$dbmaps[$objecttype_id])){
+			$dbmaps = ORM::Factory('objectmap')->where('objecttype_id', '=', $objecttype_id)->find_all();
+			self::$dbmaps[$objecttype_id] = array();
 			foreach($dbmaps as $map){
-				self::$dbmaps[$template_id][$map->column] = $map->type.$map->index;
+				self::$dbmaps[$objecttype_id][$map->column] = $map->type.$map->index;
 			}
 		}
 		if(!isset($column)){
-			return self::$dbmaps[$template_id];
+			return self::$dbmaps[$objecttype_id];
 		} else {
-			if(isset(self::$dbmaps[$template_id][$column])){
-				return self::$dbmaps[$template_id][$column];
+			if(isset(self::$dbmaps[$objecttype_id][$column])){
+				return self::$dbmaps[$objecttype_id][$column];
 			} else {
 				return null;
 			}
 		}
 	}
 
-	public static function reinitDbmap($template_id){
-		unset(self::$dbmaps[$template_id]);
+	public static function reinitDbmap($objecttype_id){
+		unset(self::$dbmaps[$objecttype_id]);
 	}
 
 
@@ -49,13 +49,13 @@ class Model_Content extends ORM {
 
 	/*
 	Function: setTemplateName
-	Set the template name for matching against the optional dbmapping. This is
-	called exclusively from the page model.
+	Set the objectType name for matching against the optional dbmapping. This is
+	called exclusively from the object model.
 	Parameters: 
-	$templatename - the text name of the template being used by the current object.
+	$objecttypename - the text name of the objectType being used by the current object.
 	*/
-	public function setTemplateName($templatename){
-		$this->templatename = $templatename;
+	public function setTemplateName($objecttypename){
+		$this->objecttypename = $objecttypename;
 	}
 
 	/*
@@ -69,30 +69,30 @@ class Model_Content extends ORM {
 		}
 	
 		//check for dbmap
-		$object =  ORM::Factory('object', parent::__get('page_id'));
+		$object =  ORM::Factory('object', parent::__get('object_id'));
 		//echo 'FROM '.$object->id.'<br>';
                
-		$column = self::dbmap( $object->template_id, $columnName);
+		$column = self::dbmap( $object->objecttype_id, $columnName);
 
 		if(!$column){
 			//this column isn't mapped, check to see if it's in the xml
-			if($object->template->nodeType=='container'){
+			if($object->objecttype->nodeType=='container'){
 				//For lists, values will be on the 2nd level 
-				$xPath =  sprintf('//list[@family="%s"]', $object->template->templatename);
+				$xPath =  sprintf('//list[@family="%s"]', $object->objecttype->objecttypename);
 			} else {
 				//everything else is a normal lookup
-				$xPath =  sprintf('//template[@name="%s"]', $object->template->templatename);
+				$xPath =  sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
 			}
 			$fieldConfig = mop::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $columnName));
 			if($fieldConfig->item(0)){
 				//field is configured but not initialized in database
-				$object->template->configureField($fieldConfig->item(0));
+				$object->objecttype->configureField($fieldConfig->item(0));
 
-				self::reinitDbmap($object->template_id);
+				self::reinitDbmap($object->objecttype_id);
 
 				//now go aheand and get the mapped column
-				$column = self::dbmap( $object->template_id, $columnName);
-				//$column = $object->template->mappedColumn($column);
+				$column = self::dbmap( $object->objecttype_id, $columnName);
+				//$column = $object->objecttype->mappedColumn($column);
 				return parent::__get($column);
 			}
 		}
@@ -134,30 +134,30 @@ class Model_Content extends ORM {
 			return parent::__set($column, $value);
 		}
 
-		$object = ORM::Factory('object', parent::__get('page_id'));
+		$object = ORM::Factory('object', parent::__get('object_id'));
 
 		//check for dbmap
-		if($mappedcolumn = self::dbmap( $object->template_id, $column) ){
+		if($mappedcolumn = self::dbmap( $object->objecttype_id, $column) ){
 			return parent::__set($mappedcolumn, $value);
 		} 
 
 		//this column isn't mapped, check to see if it's in the xml
-		if($object->template->nodeType=='container'){
+		if($object->objecttype->nodeType=='container'){
 			//For lists, values will be on the 2nd level 
-			$xPath =  sprintf('//list[@family="%s"]', $object->template->templatename);
+			$xPath =  sprintf('//list[@family="%s"]', $object->objecttype->objecttypename);
 		} else {
 			//everything else is a normal lookup
-			$xPath =  sprintf('//template[@name="%s"]', $object->template->templatename);
+			$xPath =  sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
 		}
 		$fieldConfig = mop::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $column));
 		if($fieldConfig->item(0)){
 			//field is configured but not initialized in database
-			$object->template->configureField($fieldConfig->item(0));	
-			self::reinitDbmap($object->template_id);
+			$object->objecttype->configureField($fieldConfig->item(0));	
+			self::reinitDbmap($object->objecttype_id);
 
 			//now go aheand and save on the mapped column
 
-			$mappedcolumn = self::dbmap( $object->template_id, $column);
+			$mappedcolumn = self::dbmap( $object->objecttype_id, $column);
 			return parent::__set($mappedcolumn, $value);
 		}
 

@@ -8,10 +8,10 @@ class MoPCMS {
 
 	/*
 	 * Variable: createSlug($title, $forPageId)
-	 * Creates a unique slug to identify a page
+	 * Creates a unique slug to identify a object
 	 * Parameters:
 	 * $title - optional title for the slug
-	 * $forPageId - optionally indicate the id of the page this slug is for to avoid false positive slug collisions
+	 * $forPageId - optionally indicate the id of the object this slug is for to avoid false positive slug collisions
 	 * Returns: The new, unique slug
 	 */
 	public static function createSlug($title=NULL, $forPageId=NULL){
@@ -134,8 +134,8 @@ class MoPCMS {
 				if (is_array($elements)) {
 						foreach ($elements as $element) {
 
-								//check if this element type is in fact a template
-								$tConfig = mop::config('objects', sprintf('//template[@name="%s"]', $element['type']))->item(0);
+								//check if this element type is in fact a objectType
+								$tConfig = mop::config('objects', sprintf('//objectType[@name="%s"]', $element['type']))->item(0);
 
 								if ($tConfig) {
                            
@@ -150,7 +150,7 @@ class MoPCMS {
 										}
 										$clusterHtmlChunks = mopcms::buildUIHtmlChunksForObject($clusterObject);
 
-										$customview = 'templates/' . $clusterObject->template->templatename; //check for custom view for this template
+										$customview = 'objectTypes/' . $clusterObject->objecttype->objecttypename; //check for custom view for this objectType
 										$usecustomview = false;
 										if (Kohana::find_file('views', $customview)) {
 												$usecustomview = true;
@@ -214,7 +214,7 @@ class MoPCMS {
 
                   break;
                default:
-                  //deal with html template elements
+                  //deal with html objectType elements
                   $key = $element['type'] . '_' . $element['field'];
                   $html = null;
                   if (!isset($element['field'])) {
@@ -233,7 +233,7 @@ class MoPCMS {
    }
 
    public static function buildUIHtmlChunksForObject($object) {
-      $elements = mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename));
+      $elements = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename));
       // should be Model_object->getElements();
       // this way a different driver could be created for non-xml config if desired
       $elementsConfig = array();
@@ -252,7 +252,7 @@ class MoPCMS {
             case 'file':
             case 'image':
                $ext = array();
-               //echo sprintf('/template[@name="%s"]/elements/image[@field="%s]"/ext', $object->template->templatename, $element->getAttribute('field'));
+               //echo sprintf('/objectType[@name="%s"]/elements/image[@field="%s]"/ext', $object->objecttype->objecttypename, $element->getAttribute('field'));
                $children = mop::config('objects', 'ext', $element);
                foreach ($children as $child) {
                   if ($child->tagName == 'ext') {
@@ -274,14 +274,14 @@ class MoPCMS {
 
             case 'associator':
                //need to load filters here
-               $filters = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]/filter', 
-							$object->template->templatename,
+               $filters = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]/filter', 
+							$object->objecttype->objecttypename,
 							$element->getAttribute('field') ));
 				$filterSettings = array();
 				foreach($filters as $filter){
 					$setting = array();
 					$setting['from'] = $filter->getAttribute('from');
-					$setting['templateName'] = $filter->getAttribute('templateName');
+					$setting['objectTypeName'] = $filter->getAttribute('objectTypeName');
 					$setting['tagged'] = $filter->getAttribute('tagged');
 					$filterSettings[] = $setting;
 				}
@@ -298,10 +298,10 @@ class MoPCMS {
 	public static function regenerateImages(){
 		//find all images
 
-		foreach(mop::config('objects', '//template') as $template){
-			foreach(mop::config('objects', 'elements/*', $template) as $element){
+		foreach(mop::config('objects', '//objectType') as $objectType){
+			foreach(mop::config('objects', 'elements/*', $objectType) as $element){
 				if($element->tagName == 'image'){
-					$objects = ORM::Factory('template', $template->getAttribute('name'))->getActiveMembers();
+					$objects = ORM::Factory('objectType', $objectType->getAttribute('name'))->getActiveMembers();
 					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
 						if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
@@ -316,7 +316,7 @@ class MoPCMS {
 	public static function generateNewImages($objectIds){
 		foreach($objectIds as $id){
 			$object = ORM::Factory('object', $id);
-			foreach(mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $object->template->templatename)) as $element){
+			foreach(mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element){
 				if($element->tagName == 'image'){
 					$fieldname = $element->getAttribute('field');
 					if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){

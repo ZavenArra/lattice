@@ -42,13 +42,13 @@ class Controller_Navigation extends Controller_MOP{
 			$sendItemContainers = array(); //these will go first
 			$sendItemObjects = array();
 			foreach($iitems as $child){
-				if(strtolower($child->template->nodeType) == 'container'){
+				if(strtolower($child->objecttype->nodeType) == 'container'){
 					//we might be skipping this node
 
-					//echo sprintf('//template[@name="%s"]/elements/list[@family="%s"]', $parent->template->templatename, $child->template->templatename);
-					$display = mop::config('objects', sprintf('//template[@name="%s"]/elements/list[@family="%s"]', 
-						$parent->template->templatename,
-						$child->template->templatename))
+					//echo sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]', $parent->objecttype->objecttypename, $child->objecttype->objecttypename);
+					$display = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]', 
+						$parent->objecttype->objecttypename,
+						$child->objecttype->objecttypename))
 						->item(0)
 						->getAttribute('display');
 					if($display == 'inline'){
@@ -73,7 +73,7 @@ class Controller_Navigation extends Controller_MOP{
                $sendItem['children'] = $children;
             }
 
-				if(strtolower($child->template->nodeType)=='container'){
+				if(strtolower($child->objecttype->nodeType)=='container'){
 					$sendItemContainers[] = $sendItem;
 				} else {
 					$sendItemObjects[] = $sendItem;
@@ -143,23 +143,23 @@ class Controller_Navigation extends Controller_MOP{
       $tierView->nodes = $nodes;
 
       $tierMethodsDrawer = new View('tierMethodsDrawer');
-      $tierMethodsDrawer->addableObjects = $parent->template->addableObjects;
+      $tierMethodsDrawer->addableObjects = $parent->objecttype->addableObjects;
 
       $tierView->tierMethodsDrawer = $tierMethodsDrawer->render();
       $this->response->body($tierView->render());
    }
 
 	public function getTemplates(){
-		$templates = array();
-		foreach(mop::config('objects', '//template') as $template){
+		$objectTypes = array();
+		foreach(mop::config('objects', '//objectType') as $objectType){
 			$entry = array();
-			$entry['templateName'] = $template->getAttribute('name');	
-			$entry['label'] = $template->getAttribute('name').' label';	
-			$entry['nodeType'] = $template->getAttribute('nodeType');	
-			$entry['contentType'] = $template->getAttribute('contentType');	
-			$templates[] = $entry;
+			$entry['objectTypeName'] = $objectType->getAttribute('name');	
+			$entry['label'] = $objectType->getAttribute('name').' label';	
+			$entry['nodeType'] = $objectType->getAttribute('nodeType');	
+			$entry['contentType'] = $objectType->getAttribute('contentType');	
+			$objectTypes[] = $entry;
 		}
-		return $templates;
+		return $objectTypes;
 	}
 		
 }

@@ -21,8 +21,8 @@ class Controller_Auth extends Controller_Layout {
        );
 
 
-	// Use the default Kohana template
-	public $defaulttemplate = 'auth/template';
+	// Use the default Kohana objectType
+	public $defaultobjectType = 'auth/objectType';
 
 	public $message = '';
 
@@ -66,7 +66,7 @@ class Controller_Auth extends Controller_Layout {
 				{
 					Auth::instance()->login($user, $form->password->value);
 
-					// Redirect to the login page
+					// Redirect to the login object
 					Request::current()->redirect('auth/login');
 				} 
 
@@ -153,13 +153,13 @@ class Controller_Auth extends Controller_Layout {
 		// Force a complete logout
 		Auth::instance()->logout(TRUE);
 
-		// Redirect back to the login page
+		// Redirect back to the login object
 		Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),false));
 
 	}
 
 	public function action_noaccess($controller = NULL){
-		$this->message = 'You do not have access to the requested page';
+		$this->message = 'You do not have access to the requested object';
 		$this->login($controller);
 	}
 

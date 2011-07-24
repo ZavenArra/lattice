@@ -1,1 +1,1 @@
-You do not have access to the requested page
+You do not have access to the requested object

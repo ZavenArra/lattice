@@ -1,9 +1,9 @@
 <h1><?=$content['main']['title'];?></h1>
 <?
-//this also implies that name is a templatename
+//this also implies that name is a objecttypename
 ob_start();
 foreach(mop::config('objects', 
-	sprintf('//template[@name="%s"]/elements/*', ORM::Factory('object', $content['main']['id'])->template->templatename )) as $element){
+	sprintf('//objectType[@name="%s"]/elements/*', ORM::Factory('object', $content['main']['id'])->objecttype->objecttypename )) as $element){
 		frontend::makeHtmlElement($element, "\$content['main']");
 }
 $html = ob_get_contents();

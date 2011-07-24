@@ -3,9 +3,9 @@
 class Controller_CMS extends MOP_CMS {
 
   
-   public function cms_addObject($parentId, $templateId, $data) {
+   public function cms_addObject($parentId, $objectTypeId, $data) {
          
-		 $newId = Graph::object($parentId)->addObject($templateId, $data);
+		 $newId = Graph::object($parentId)->addObject($objectTypeId, $data);
 		 return $newId;
 
    }

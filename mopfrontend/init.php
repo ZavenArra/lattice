@@ -19,7 +19,7 @@ class FrontendRouting {
            return array(
                'controller'=>'mopfrontend',
                'action'=>'getView',
-               'pageidorslug'=>$object->slug
+               'objectidorslug'=>$object->slug
             );
       }
    }

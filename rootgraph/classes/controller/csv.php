@@ -9,7 +9,7 @@ Class Controller_CSV extends Controller {
    
 	/*
 	 * Function: createImportTemplateFilled($view)
-	 * This function creates a csv import template which has data pre-filled from the table
+	 * This function creates a csv import objectType which has data pre-filled from the table
 	 */
 	public function action_createImportTemplateFilled($exportParamterKey){
 			//$data = mop::getViewContent($view);
@@ -70,7 +70,7 @@ Class Controller_CSV extends Controller {
          $id = $csvRow[$columns['id']];
          $object = Graph::object($id);
          foreach($columns as $column => $index){
-            if($column == 'id' || $column == 'dateAdded' || $column == 'templateName' ){
+            if($column == 'id' || $column == 'dateAdded' || $column == 'objectTypeName' ){
                continue;
             } 
             $object->$column = $csvRow[$index];

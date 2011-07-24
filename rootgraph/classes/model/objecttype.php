@@ -12,13 +12,13 @@ class Model_ObjectType extends ORM {
 	 * Variable: nonmappedfield
 	 * Array of fields to not pass through to the content field mapping logic
 	 */
-	private $nonmappedfields = array('id', 'page_id', 'activity', 'loaded', 'templatename', 'nodeType');
+	private $nonmappedfields = array('id', 'object_id', 'activity', 'loaded', 'objecttypename', 'nodeType');
 
 	public function __construct($id=null){
 
 		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id)) {
 			//it's the tmeplate identified, look up the integer primary key
-			$result = DB::select('id')->from('templates')->where('templatename', '=', $id)->execute()->current();
+			$result = DB::select('id')->from('objectTypes')->where('objecttypename', '=', $id)->execute()->current();
 			$id = $result['id'];
 		}
 
@@ -43,10 +43,10 @@ class Model_ObjectType extends ORM {
 
 		if(parent::__get('nodeType')=='container'){
 			//For lists, values will be on the 2nd level 
-				$xQuery =  sprintf('//list[@family="%s"]', parent::__get('templatename'));
+				$xQuery =  sprintf('//list[@family="%s"]', parent::__get('objecttypename'));
 			} else {
 				//everything else is a normal lookup
-				$xQuery =  sprintf('//template[@name="%s"]', parent::__get('templatename'));
+				$xQuery =  sprintf('//objectType[@name="%s"]', parent::__get('objecttypename'));
 			}
 
 			$valuefromconfig=NULL;
@@ -56,9 +56,9 @@ class Model_ObjectType extends ORM {
 				$valuefromconfig = array();
 				foreach($nodes as $node){
 					$entry = array();
-					$entry['templateId'] = $node->getAttribute('templateName');
-					$entry['templateAddText'] = $node->getAttribute('addText');
-					$tConfig = mop::config('objects', sprintf('//template[@name="%s"]', $entry['templateId'] ))->item(0);
+					$entry['objectTypeId'] = $node->getAttribute('objectTypeName');
+					$entry['objectTypeAddText'] = $node->getAttribute('addText');
+					$tConfig = mop::config('objects', sprintf('//objectType[@name="%s"]', $entry['objectTypeId'] ))->item(0);
 					$entry['nodeType'] = $tConfig->getAttribute('nodeType');
 					$entry['contentType'] = $tConfig->getAttribute('contentType');
 					$valuefromconfig[] = $entry;
@@ -75,7 +75,7 @@ class Model_ObjectType extends ORM {
 
 	/*
 	 * Function: unique_key($id)
-	 * Allows both integer id and templatename text to be unique key,
+	 * Allows both integer id and objecttypename text to be unique key,
 	 * overrides function in base class
 	 * Parameters:
 	 * $id - a primary key
@@ -85,7 +85,7 @@ class Model_ObjectType extends ORM {
 	{
 		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id))
 		{
-			return 'templatename';
+			return 'objecttypename';
 		}
 
 		return parent::unique_key($id);
@@ -93,7 +93,7 @@ class Model_ObjectType extends ORM {
 
 	/*
 	 * Function: getPublishedMembers($limit)
-	 * This function queries all objects that use the current initialized template model object as thier template.
+	 * This function queries all objects that use the current initialized objectType model object as thier objectType.
 	 * Parameters:
 	 * $limit - number of records to return
 	 * Returns: ORM Iterator of matching records
@@ -101,7 +101,7 @@ class Model_ObjectType extends ORM {
 	public function getPublishedMembers($limit=null){
 
 		$o = ORM::Factory('object')
-			->where('template_id', '=', $this->id)
+			->where('objecttype_id', '=', $this->id)
 			->where('published', '=', 1)
 			->where('activity', 'IS', NULL)
 			->order_by('sortorder');
@@ -115,7 +115,7 @@ class Model_ObjectType extends ORM {
 
 	/*
 	 * Function: getActiveMembers($limit)
-	 * This function queries all objects that use the current initialized template model object as thier template.
+	 * This function queries all objects that use the current initialized objectType model object as thier objectType.
 	 * Parameters:
 	 * $limit - number of records to return
 	 * Returns: ORM Iterator of matching records
@@ -123,7 +123,7 @@ class Model_ObjectType extends ORM {
 	public function getActiveMembers($limit=null){
 
 		$o = ORM::Factory('object')
-			->where('template_id', '=', $this->id)
+			->where('objecttype_id', '=', $this->id)
 			->where('activity', 'IS', NULL)
 			->order_by('sortorder');
 		if($limit){
@@ -141,8 +141,8 @@ class Model_ObjectType extends ORM {
 		switch($item->tagName){
 
 		case 'list':
-			$ltRecord = ORM::Factory('template');
-			$ltRecord->templatename = $item->getAttribute('family');
+			$ltRecord = ORM::Factory('objectType');
+			$ltRecord->objecttypename = $item->getAttribute('family');
 			$ltRecord->nodeType = 'container';
 			$ltRecord->save();
 			break;

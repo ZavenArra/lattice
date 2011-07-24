@@ -60,7 +60,7 @@ Class Controller_UserManagement extends Controller_Layout {
 		$users = ORM::Factory($this->table)->find_all();
 		$html = '';
 		foreach($users as $user){
-			$usertemplate = new View($this->viewName.'_item');
+			$userobjectType = new View($this->viewName.'_item');
 			$data['id'] = $user->id;
 			$data['username'] = $user->username;
 			$data['email'] = $user->email;
@@ -78,10 +78,10 @@ Class Controller_UserManagement extends Controller_Layout {
 				}
 			}
 
-			$usertemplate->data = $data;
+			$userobjectType->data = $data;
 
-			$usertemplate->managedRoles = $this->managedRoles;
-			$html .= $usertemplate->render();
+			$userobjectType->managedRoles = $this->managedRoles;
+			$html .= $userobjectType->render();
 		}
 
 		$this->view->items = $html;
@@ -94,7 +94,7 @@ Class Controller_UserManagement extends Controller_Layout {
 	 * Ajax interface to add a new user object to the users table.
 	 * Parameters:
 	 * $objectid - unused variable, interface needs to be updated
-	 * Returns: Rendered html editing page for new user object
+	 * Returns: Rendered html editing object for new user object
 	 */
 	public function action_addObject(){
 		$user = $this->createUser();

@@ -1,8 +1,8 @@
 <?php
 
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this objectType, choose Tools | Templates
+ * and open the objectType in the editor.
  */
 
 /**

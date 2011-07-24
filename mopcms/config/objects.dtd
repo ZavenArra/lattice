@@ -12,12 +12,12 @@
 	 className			CDATA	#IMPLIED"
 >
 
-<!ELEMENT configuration (templates) >
+<!ELEMENT configuration (objectTypes) >
 
-<!ELEMENT templates (template*) >
+<!ELEMENT objectTypes (objectType*) >
 
-<!ELEMENT template ( elements?,addableObject*,components* ) >
-<!ATTLIST template
+<!ELEMENT objectType ( elements?,addableObject*,components* ) >
+<!ATTLIST objectType
 	name				CDATA #REQUIRED
 	nodeType			CDATA "object"
 	contentType			CDATA "document"
@@ -34,13 +34,13 @@
 
 <!ELEMENT addableObject EMPTY >
 <!ATTLIST addableObject
-	templateName		CDATA #REQUIRED
+	objectTypeName		CDATA #REQUIRED
 	addText				CDATA #IMPLIED
 >
 
 <!ELEMENT component ANY>
 <!ATTLIST component
-	templateName	CDATA #REQUIRED
+	objectTypeName	CDATA #REQUIRED
 	label			CDATA #REQUIRED
 >
 
@@ -62,13 +62,13 @@
 	field         CDATA #REQUIRED
 	label         CDATA #IMPLIED
 	parent        CDATA  #IMPLIED
-	templateName  CDATA  #IMPLIED 
+	objectTypeName  CDATA  #IMPLIED 
 >   
 
 <!ELEMENT filter EMPTY >
 <!ATTLIST filter
 	from           CDATA #IMPLIED
-	templateName   CDATA #IMPLIED
+	objectTypeName   CDATA #IMPLIED
 	tagged         CDATA #IMPLIED
 >
 
@@ -160,7 +160,7 @@
 
 <!ELEMENT item ANY >
 <!ATTLIST item
-	templateName		CDATA #REQUIRED
+	objectTypeName		CDATA #REQUIRED
 >
 
 <!ELEMENT content ANY >

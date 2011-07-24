@@ -13,7 +13,7 @@ Class mopui{
 	/*
 	 * Function: buildUIElement
 	 * Builds a UI element from the mopui views directory
-	 * $element -  array of key value pairs passed to the template, including 'type' key which indicates the template to use
+	 * $element -  array of key value pairs passed to the objectType, including 'type' key which indicates the objectType to use
 	 * $fieldvalue - the value to display
 	 * Example: buildTextElement(array('type'=>'text', 'field'=>'fieldname', 'class'=>'className'), {Value})
 	 */
@@ -37,7 +37,7 @@ Class mopui{
 		//provide a unique id always
 		$microtime = str_replace(array(' ', '.'), '', microtime());
 		if(isset($element['field'])){
-			//	$template->id =$element['field'].str_replace(array(' ', '.'), '', microtime());
+			//	$objectType->id =$element['field'].str_replace(array(' ', '.'), '', microtime());
 			$id =$element['field'].mopui::$unique++.$microtime;
 		} else {
 			$id ='field'.mopui::$unique++.$microtime;
@@ -100,7 +100,7 @@ Class mopui{
 
 		case 'multiSelect':
 			if(isset($element['object'])){
-				$object = Kohana::config('cms.templates.'.$element['object']);
+				$object = Kohana::config('cms.objectTypes.'.$element['object']);
 				$element['options'] = array();
 				foreach($object as $field){
 					if($field['type'] == 'checkbox'){
@@ -135,17 +135,17 @@ Class mopui{
 
 
 		if($paths = Kohana::find_file('views', $view)){
-			$template = new View($view);
+			$objectType = new View($view);
 
-			$template->id = $id;
+			$objectType->id = $id;
 		
-			$template->class = null;
+			$objectType->class = null;
 
 			foreach($element as $key=>$value){
-				$template->$key = $value;
+				$objectType->$key = $value;
 			}
-			$template->value = $fieldvalue;
-			return $template->render();
+			$objectType->value = $fieldvalue;
+			return $objectType->render();
 		} else {
 			throw new Kohana_User_Exception('bad ui element request', 'view: '.$view.' not found');
 			return false;

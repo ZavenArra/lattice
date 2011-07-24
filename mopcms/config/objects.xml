@@ -3,53 +3,53 @@
 
 <configuration>
 
-	<templates>
+	<objectTypes>
 
 <!-- HOME -->
-		<template name="basicCategory" contentType="category" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
-			<addableObject templateName="article" addText="Add an Article" />
-			<addableObject templateName="multilineIPE" addText="Add an Article" />
-			<addableObject templateName="singleIPE" addText="Add an Article" />
-			<addableObject templateName="singleDate" addText="Add an Article" />
-			<addableObject templateName="anotherCategory" addText="Add a Category" />
-		</template>
+		<objectType name="basicCategory" contentType="category" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+			<addableObject objectTypeName="article" addText="Add an Article" />
+			<addableObject objectTypeName="multilineIPE" addText="Add an Article" />
+			<addableObject objectTypeName="singleIPE" addText="Add an Article" />
+			<addableObject objectTypeName="singleDate" addText="Add an Article" />
+			<addableObject objectTypeName="anotherCategory" addText="Add a Category" />
+		</objectType>
 
-		<template name="anotherCategory" contentType="category" allowChildSort="false" allowDelete="false" allowTogglePublish="false">
-			<addableObject templateName="article" addText="Add an Article" />
-		</template>
+		<objectType name="anotherCategory" contentType="category" allowChildSort="false" allowDelete="false" allowTogglePublish="false">
+			<addableObject objectTypeName="article" addText="Add an Article" />
+		</objectType>
 		
-		<template name="article" contentType="document" allowDelete="true" >
+		<objectType name="article" contentType="document" allowDelete="true" >
 			<elements>
 				<text field="multilineIPE" label="MultiLine IPE" rows="10"/>
 			</elements>
-		</template>
+		</objectType>
 
-		<template name="singleIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="singleIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 
 			<elements>
 				<text field="singleIPE" label="Single Single Single" rows="1" />
 				<text field="singleIPE2" label="Single Single Single" rows="1" />
 				<text field="ssdfasdfingleIPE2" label="Single Single Single" rows="1" />
-				<text field="ssdfasd fasdfasdfingleIPE2" label="Single Single Single" rows="1" />
+				<text field="ssdfasdfasdfasdfingleIPE2" label="Single Single Single" rows="1" />
 				<text field="maritnagus" label="NEW!" rows="1" />
 				<text field="lagunea" label="Test Entry" rows="1" />
 			</elements>
 			
 			<components>
-				<component templateName="singleDate" label="SingleDate as Component" />
-				<component templateName="singleFile" label="Single File as Component"/>
-				<component templateName="singleFile" label="Single File as Component"/>
+				<component objectTypeName="singleDate" label="SingleDate as Component" />
+				<component objectTypeName="singleFile" label="Single File as Component"/>
+				<component objectTypeName="singleFile" label="Single File as Component"/>
 			</components>
 		
-		</template>
+		</objectType>
 
-		<template name="multilineIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="true">
+		<objectType name="multilineIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="true">
 			<elements>
 				<text field="multilineIPE" label="MultiLine IPE" rows="10"/>
 			</elements>
-		</template>
+		</objectType>
 		
-		<template name="singleRadioGroup" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="singleRadioGroup" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
         			<radioGroup field="singleRadioGroup" groupLabel="Single Radio Group">
           				<radio label="One" value="1"/>
@@ -57,33 +57,33 @@
           				<radio label="Three" value="3"/>
         			</radioGroup>
 			</elements>
-		</template>
+		</objectType>
 
-		<template name="singleCheckbox" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="singleCheckbox" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<checkbox field="singleCheckbox" label="Single Checkbox"/>
 			</elements>
-		</template>
+		</objectType>
 
-		<template name="singleDate" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="singleDate" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<date field="singleDate" label="Single Date"/>
 			</elements>
-		</template>
+		</objectType>
 
-		<template name="singleTime" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="singleTime" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<time field="singleTime" label="Single Time"/>
 			</elements>
-		</template>
+		</objectType>
 
-		<template name="singleFile" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="singleFile" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<file field="file" label="Single File"/>
 			</elements>
-		</template>
+		</objectType>
 
-		<template name="singleImage" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="singleImage" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<image field="file" label="Single Image">
 					<resize name="test" width="96" height="58" forceDimension="height" /> 
@@ -96,33 +96,33 @@
 				<text field="singleIPE4" label="Single Single Single" rows="1" />
 				<text field="singleIPE5" label="Single Single Single" rows="1" />
 			</elements>
-		</template>
+		</objectType>
 
-		<template name="simpleListModule" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="simpleListModule" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<list family="simplelist" label="Simple List Module" display="inline">
-					<addableObject templateName="simpleListModuleItem"  addText="Add a field"/>
+					<addableObject objectTypeName="simpleListModuleItem"  addText="Add a field"/>
 				</list>
 			</elements>
-		</template>
+		</objectType>
 
-		<template name="simpleListModuleItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="simpleListModuleItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<text field="description" label="Description"/>
 				<text field="detail1" label="Detail 1"/>
 				<text field="detail2" label="Detail 2"/>
 			</elements>
-		</template>
+		</objectType>
 			
-		<template name="imageListModule" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="imageListModule" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<list family="imageList" label="Image List" display="inline">
-					<addableObject templateName="imageListItem" addText="Add an image"/>
+					<addableObject objectTypeName="imageListItem" addText="Add an image"/>
 				</list>
 			</elements>	
-		</template>
+		</objectType>
 		
-		<template name="imageListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="imageListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<text field="description" label="Description"/>		
 				<image field="file">
@@ -132,17 +132,17 @@
          				 <ext>jpg</ext>
         			</image>
 			</elements>
-		</template>
+		</objectType>
 		
-		<template name="fileListModule" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="fileListModule" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<list family="fileList" label="File List" display="inline" >
-            <addableObject templateName="fileListItem" addText="Add a field"/>
+            <addableObject objectTypeName="fileListItem" addText="Add a field"/>
         </list>
       </elements>
-		</template>
+		</objectType>
 
-		<template name="fileListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="fileListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
                                 <text field="description" label="Description"/>
                                 <file field="file" label="File">
@@ -152,17 +152,17 @@
                                         <ext>pdf</ext>
                                 </file>
 			</elements>
-		</template>
+		</objectType>
 	
-		<template name="complexListModule" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="complexListModule" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<list family="complexList" label="Complex List" display="inline">
-					<addableObject templateName="complexListItem" addText="Add List"/>
+					<addableObject objectTypeName="complexListItem" addText="Add List"/>
 				</list>
 			</elements>
-		</template>
+		</objectType>
 		
-		<template name="complexListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<objectType name="complexListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<text field="description" label="Description"/>
 				<checkbox field="singleCheckbox" label="One"/>
@@ -178,34 +178,34 @@
                                         <ext>pdf</ext>
 				</file>
 			</elements>
-		</template>			
+		</objectType>			
 
-		<template name="singleAssociator" >
+		<objectType name="singleAssociator" >
 			<elements>
 				<associator field="association">
 					<filter></filter>
 				</associator>
 			</elements>
-		</template>
-		<template name="linkTest" >
+		</objectType>
+		<objectType name="linkTest" >
       <elements>
 				<link field="theLink" label="A Link for All"/>
       </elements>
-		</template>
+		</objectType>
 
-		<template name="tagsObjectType" >
+		<objectType name="tagsObjectType" >
       <elements>
 				<tags label="Tags"/>
       </elements>
-		</template>
+		</objectType>
 
 
-		<template name="wildflowerTestObject" >
+		<objectType name="wildflowerTestObject" >
       <elements>
 				<image field="image" label="Image of the Wildflower"/>
       </elements>
-		</template>
+		</objectType>
 
-	</templates>
+	</objectTypes>
 
 </configuration>

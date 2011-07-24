@@ -1,8 +1,8 @@
 <?php
 
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this objectType, choose Tools | Templates
+ * and open the objectType in the editor.
  */
 
 /**
@@ -63,22 +63,22 @@ class Graph {
 	 */
 	public static function configureTemplate($objectTypeName){
 		//validation
-		foreach(mop::config('objects', '//template[@name="'.$objectTypeName.'"]/elements/*') as $item){
+		foreach(mop::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
 			if($item->getAttribute('field')=='title'){
 				throw new Kohana_Exception('Title is a reserved field name');
 			}
 		}
 
-		//find or create template record
+		//find or create objectType record
 		$tRecord = ORM::Factory('objecttype', $objectTypeName );
 		if(!$tRecord->loaded()){
 			$tRecord = ORM::Factory('objecttype');
-			$tRecord->templatename = $objectTypeName;
+			$tRecord->objecttypename = $objectTypeName;
 			$tRecord->nodeType = 'object';
 			$tRecord->save();
 		}
 
-		foreach( mop::config('objects', '//template[@name="'.$objectTypeName.'"]/elements/*') as $item){
+		foreach( mop::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
 			$tRecord->configureField($item);
 		}
       Model_Content::reinitDbmap($tRecord->id); // Rethink this.
@@ -91,8 +91,8 @@ class Graph {
 
    public static function getRootNode($rootNodeObjectType){
       //$this->driver->getObjectTypeObject($rooNodeObjectType)
-		$objectType = ORM::Factory('template')->where('templatename', '=', $rootNodeObjectType)->find();
-      $object =  ORM::Factory('object')->where('template_id', '=', $objectType->id)->find();
+		$objectType = ORM::Factory('objectType')->where('objecttypename', '=', $rootNodeObjectType)->find();
+      $object =  ORM::Factory('object')->where('objecttype_id', '=', $objectType->id)->find();
       return $object;
    }
 }

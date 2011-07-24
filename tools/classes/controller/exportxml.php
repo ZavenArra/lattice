@@ -12,7 +12,7 @@ class Controller_ExportXML extends Controller {
       $nodes = array();
       $content = $object->getContent();
       foreach ($content as $key => $value) {
-         if ($key == 'templateName') {
+         if ($key == 'objectTypeName') {
             continue;
          }
          $node = $this->doc->createElement($key);
@@ -44,7 +44,7 @@ class Controller_ExportXML extends Controller {
       $nodes = array();
       $content = $object->getContent();
       foreach ($content as $key => $value) {
-         if ($key == 'templateName' || $key == 'dateadded') {
+         if ($key == 'objectTypeName' || $key == 'dateadded') {
             continue;
          }
          if ($key == "slug" && $value = "") {
@@ -85,7 +85,7 @@ class Controller_ExportXML extends Controller {
 
       $nodes = array();
       foreach ($objects as $object) {
-         $item = $this->doc->createElement($object->template->templatename);
+         $item = $this->doc->createElement($object->objecttype->objecttypename);
 
          foreach ($this->getObjectFields($object) as $field) {
             $item->appendChild($field);
@@ -108,10 +108,10 @@ class Controller_ExportXML extends Controller {
       $nodes = array();
       foreach ($objects as $object) {
          $item = $this->doc->createElement('item');
-         $templateAttr = $this->doc->createAttribute('templateName');
-         $templateValue = $this->doc->createTextNode($object->template->templatename);
-         $templateAttr->appendChild($templateValue);
-         $item->appendChild($templateAttr);
+         $objectTypeAttr = $this->doc->createAttribute('objectTypeName');
+         $objectTypeValue = $this->doc->createTextNode($object->objecttype->objecttypename);
+         $objectTypeAttr->appendChild($objectTypeValue);
+         $item->appendChild($objectTypeAttr);
 
          foreach ($this->getObjectFieldsMOPFormat($object) as $field) {
             $item->appendChild($field);
@@ -148,12 +148,12 @@ $xslt = new XSLTProcessor();
 
 # IMPORT STYLESHEET 1
 $XSL = new DOMDocument();
-$XSL->load( 'template1.xsl' );
+$XSL->load( 'objectType1.xsl' );
 $xslt->importStylesheet( $XSL );
 
 #IMPORT STYLESHEET 2
 $XSL = new DOMDocument();
-$XSL->load( 'template2.xsl' );
+$XSL->load( 'objectType2.xsl' );
 $xslt->importStylesheet( $XSL );
 
 #PRINT

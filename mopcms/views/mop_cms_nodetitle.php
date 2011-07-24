@@ -1,11 +1,11 @@
-<div class="pageTitle">	
+<div class="objectTitle">	
 
 	<div class="<?if($allowTitleEdit):?>ui-Text<?endif;?> grid_8 rows-1 field-title">
 		<h2 class="ipe h2"><?=$title;?></h2>
 	</div>
 
 	<?if($allowDelete):?>
-		<a class="icon deleteLink" href="#" title="Delete this page."></a>
+		<a class="icon deleteLink" href="#" title="Delete this object."></a>
 	<?endif;?>
 
 	<?if(Kohana::config('cms.enableSlugEditing')):?>

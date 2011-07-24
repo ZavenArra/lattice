@@ -1,8 +1,8 @@
 <?php
 
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this objectType, choose Tools | Templates
+ * and open the objectType in the editor.
  */
 
 /**
@@ -17,7 +17,7 @@ class Graph_ObjectQuery {
    
    public function initWithArray($attributes){
       $this->attributes['label'] = null;
-      $this->attributes['templateFilter'] = null;
+      $this->attributes['objectTypeFilter'] = null;
       $this->attributes['where'] = null;
       $this->attributes['from'] = null;
 
@@ -28,7 +28,7 @@ class Graph_ObjectQuery {
    
    public function initWithXml($xml) {
       $this->attributes['label'] = $xml->getAttribute('label');
-      $this->attributes['templateFilter'] = $xml->getAttribute('filter');
+      $this->attributes['objectTypeFilter'] = $xml->getAttribute('filter');
       $this->attributes['where'] = $xml->getAttribute('where');
       $this->attributes['from'] = $xml->getAttribute('from');
    }
@@ -47,8 +47,8 @@ class Graph_ObjectQuery {
          }
       }
 
-      //apply optional template filter
-      $objects = $objects->templateFilter($this->attributes['templateFilter']); 
+      //apply optional objectType filter
+      $objects = $objects->objecttypeFilter($this->attributes['objectTypeFilter']); 
 
       //apply optional SQL where filter
       if ($where = $this->attributes['where']) { //

@@ -1,7 +1,7 @@
 <?
 /**
  * Class: CMS_Intergace_Controller
- * The main CMS class, handling add, delete, and retrieval of pages
+ * The main CMS class, handling add, delete, and retrieval of objects
  * @author Matthew Shultz
  * @version 1.0
  * @package Kororor
@@ -13,7 +13,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	 * Function:  saveFile($objectId)
 	 * Function called on file upload
 	 * Parameters:
-	 * pageid  - the page id of the object currently being edited
+	 * objectid  - the object id of the object currently being edited
 	 * $_POST['field'] - the content table field for the file
 	 * $_FILES[{fieldname}] - the file being uploaded
 	 * Returns:  array(
@@ -69,7 +69,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	/*
 	*
 	* Function: savefield()
-	* Saves data to a field via ajax.  Call this using /cms/ajax/save/{pageid}/
+	* Saves data to a field via ajax.  Call this using /cms/ajax/save/{objectid}/
 	* Parameters:
 	* $id - the id of the object currently being edited
 	* $_POST['field'] - the content table field being edited
@@ -115,7 +115,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 		Function: saveSortOrder
 		Saves sort order of some ids
 		Parameters:
-		$_POST['sortorder'] - array of page ids in their new sort order
+		$_POST['sortorder'] - array of object ids in their new sort order
 		*/
 		public function action_saveSortOrder(){
 			$order = explode(',', $_POST['sortorder']);
@@ -154,7 +154,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
       
 		/*
 		 Function: delete
-		 deletes a page/category and all categories and leaves underneath
+		 deletes a object/category and all categories and leaves underneath
 		 Returns: returns html for undelete pane 
 		*/
 		public function action_removeObject($id){
@@ -170,7 +170,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 
 		/*
 		 Function: undelete
-		 Undeletes a page/category and all categories and leaves underneath
+		 Undeletes a object/category and all categories and leaves underneath
 
 		 Returns: 1;
 		*/
@@ -235,7 +235,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
    }
 
    //abstract
-   protected function cms_addObject($parentId, $templateId, $data) { 
+   protected function cms_addObject($parentId, $objectTypeId, $data) { 
    }
 
 

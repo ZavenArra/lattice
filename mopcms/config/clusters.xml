@@ -3,12 +3,12 @@
 
 <configuration>
 	<clusters>
-		<template name="link">
+		<objectType name="link">
 			<elements>
 				<text field="url" label="URL" />
 				<text field="label" label="Label" />	
 			</elements>
-		</template>
+		</objectType>
 	</clusters>
 
 </configuration>

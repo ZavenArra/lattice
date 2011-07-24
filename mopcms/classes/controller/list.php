@@ -14,8 +14,8 @@
 
 class Controller_List extends MOP_CMSInterface {
    /*
-    *  Variable: page_id
-    *  static int the global page id when operating within the CMS submodules get the page id
+    *  Variable: object_id
+    *  static int the global object id when operating within the CMS submodules get the object id
     *  we could just reference the primaryId attribute of Display as well...
     */
 
@@ -56,11 +56,11 @@ class Controller_List extends MOP_CMSInterface {
    protected function setListObject($listObjectIdOrparentId, $family=null) {
 
       if ($family != null) {
-         $lt = ORM::Factory('template')->where('templatename', '=', $family)->find();
+         $lt = ORM::Factory('objectType')->where('objecttypename', '=', $family)->find();
 
          $listObject = ORM::Factory('listcontainer')
                  ->where('parentId', '=', $listObjectIdOrparentId)
-                 ->where('template_id', '=', $lt->id)
+                 ->where('objecttype_id', '=', $lt->id)
                  ->where('activity', 'IS', NULL)
                  ->find();
 
@@ -87,7 +87,7 @@ class Controller_List extends MOP_CMSInterface {
      }
      
       
-      $customItemView = $this->_listObject->template->templatename . '_item';
+      $customItemView = $this->_listObject->objecttype->objecttypename . '_item';
       if (Kohana::find_file('views', $customItemView)) {
          $this->_itemView = $customitemView;
       } else {
@@ -114,8 +114,8 @@ class Controller_List extends MOP_CMSInterface {
       
 
       $view = null;
-      if (Kohana::find_file('views', $this->_listObject->template->templatename)) {
-         $view = new View($this->_listObject->template->templatename);
+      if (Kohana::find_file('views', $this->_listObject->objecttype->objecttypename)) {
+         $view = new View($this->_listObject->objecttype->objecttypename);
       } else {
          $view = new View('list');
       }
@@ -131,8 +131,8 @@ class Controller_List extends MOP_CMSInterface {
 
          $data = array();
          $data['id'] = $object->id;
-         $data['page_id'] = $this->_listObject->id;
-         $data['instance'] = $this->_listObject->template->templatname;
+         $data['object_id'] = $this->_listObject->id;
+         $data['instance'] = $this->_listObject->objecttype->templatname;
          $itemt->data = $data;
 
          $html.=$itemt->render();
@@ -145,7 +145,7 @@ class Controller_List extends MOP_CMSInterface {
       $view->class .= ' allowChildSort-' . $listConfig->getAttribute('allowChildSort');
       $view->class .= ' sortDirection-' . $this->_listObject->getSortDirection();
       $view->items = $html;
-      $view->instance = $this->_listObject->template->templatname;
+      $view->instance = $this->_listObject->objecttype->templatname;
       $view->listObjectId = $this->_listObject->id;
 
 
@@ -165,7 +165,7 @@ class Controller_List extends MOP_CMSInterface {
      Adds a list item
 
      Returns:
-     the rendered template of the new item
+     the rendered objectType of the new item
     */
 
    public function action_addObject($listObjectId, $objectTypeId=null) {
@@ -181,11 +181,11 @@ class Controller_List extends MOP_CMSInterface {
       //addable item should be specifid in the addItem call
       if($objectTypeId == null){
    
-        $addableObjectTypes = mop::config('objects', sprintf('//list[@family="%s"]/addableObject', $listObject->template->templatename));
+        $addableObjectTypes = mop::config('objects', sprintf('//list[@family="%s"]/addableObject', $listObject->objecttype->objecttypename));
         if (!$addableObjectTypes->length > 0) {
            throw new Kohana_Exception('No Addable Objects ' .' Count not locate configuration in objects.xml for ' . sprintf('//list[@family="%s"]/addableobject', $this->_family));
         }
-        $objectTypeId = $addableObjectTypes->item(0)->getAttribute('templateName');
+        $objectTypeId = $addableObjectTypes->item(0)->getAttribute('objectTypeName');
       } 
  
       $newId = $listObject->addObject($objectTypeId);
@@ -197,9 +197,9 @@ class Controller_List extends MOP_CMSInterface {
 
       $data = array();
       $data['id'] = $newId;
-      $data['page_id'] = $listObjectId;
+      $data['object_id'] = $listObjectId;
       ;
-      $data['instance'] = $this->_listObject->template->templatename;
+      $data['instance'] = $this->_listObject->objecttype->objecttypename;
 
 
       $itemt->data = $data;

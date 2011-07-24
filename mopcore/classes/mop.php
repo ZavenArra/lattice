@@ -94,11 +94,11 @@ Class mop {
 				$clusters->load( $path[0] );
 				//echo $clusters->_delegate->saveXML();
 				$clusters = new DOMXPath($clusters->_delegate);
-				$clusterNodes = $clusters->evaluate('//template');
+				$clusterNodes = $clusters->evaluate('//objectType');
 				foreach($clusterNodes as $node){
 					$node = $dom->_delegate->importNode($node, true);
-					$templatesNode = $dom->_delegate->getElementsByTagName('templates')->item(0);
-					$templatesNode->appendChild($node);
+					$objectTypesNode = $dom->_delegate->getElementsByTagName('objectTypes')->item(0);
+					$objectTypesNode->appendChild($node);
 					//$dom->_delegate->insertBefore($node, $refNode);
 				}
 				//recreate Xpath object
@@ -138,7 +138,7 @@ Class mop {
 				$view = new View($module['modulename']);
 				$object = ORM::Factory('object')->where('slug', '=', $module['modulename'])->find();
 				if($object->loaded()){ // in this case it's a slug for a specific object
-					foreach(mop::getViewContent($object->id, $object->template->templatename) as $key=>$content){
+					foreach(mop::getViewContent($object->id, $object->objecttype->objecttypename) as $key=>$content){
 						$view->$key = $content;
 					}
 				}
@@ -175,10 +175,10 @@ Class mop {
 		//
 		//BELOW HERE NEEDS TO BE FIXED IN ALL CHILDREN OF MOP_CONTROLLER
 		//CONTROLERS SHOULD JUST ASSIGN TEMPLATE VARS THEN AND THERE
-		if($templatevar==NULL){
+		if($objectTypevar==NULL){
 			$this->view->$module['modulename'] = $module->view->render();
 		} else {
-			$this->view->$templatevar = $module->view->render();
+			$this->view->$objectTypevar = $module->view->render();
 		}
 	}
 
@@ -202,7 +202,7 @@ Class mop {
 		if ($viewConfig->getAttribute('loadPage')) {
 			$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
 			if (!$object->loaded()) {
-				throw new Kohana_Exception('mop::getViewContent : View specifies loadPage but no page to load');
+				throw new Kohana_Exception('mop::getViewContent : View specifies loadPage but no object to load');
 			}
 			$data['content']['main'] = $object->getPageContent();
 		}
@@ -223,7 +223,7 @@ Class mop {
 						$subViewContent = mop::getViewContent($view, $slug);
 					} else if ($slug) {
 						$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
-						$view = $object->template->templatename;
+						$view = $object->objecttype->objecttypename;
 						$subViewContent = mop::getViewContent($view, $slug);
 					} else if ($view) {
 						$subViewContent = mop::getViewContent($view);

@@ -10,7 +10,7 @@
 
 <!ELEMENT item (item|field|list|object)* >
 <!ATTLIST item
-	templateName		CDATA #REQUIRED
+	objectTypeName		CDATA #REQUIRED
 >
 
 <!ELEMENT field ANY >

@@ -2,7 +2,7 @@
 /*
  * Class: Site_Controller
  * Responsible for handing default behaviour of CMS driven sites,
- * using slugs or ids to navigate between pages.  Works hand in
+ * using slugs or ids to navigate between objects.  Works hand in
  * hand with the slugs hook
  */
 Class Controller_MopFrontend extends Controller_Layout{
@@ -15,16 +15,16 @@ Class Controller_MopFrontend extends Controller_Layout{
 
 	/*
 	 * Variable: $content
-	 * Holds the content for a page
+	 * Holds the content for a object
 	 */
 	protected $content = array();
 
 	/*
 	 * Function: index
-	 * Wrapper to page that uses the controller as the slug
+	 * Wrapper to object that uses the controller as the slug
 	 */
 	public function action_index(){
-		$this->action_page(substr(get_class($this), 0, -11));
+		$this->action_object(substr(get_class($this), 0, -11));
 	}
         
         public function validSlug($uri){
@@ -35,12 +35,12 @@ Class Controller_MopFrontend extends Controller_Layout{
 	
 
 	/*
-	 * Function: page($objectidorslug)
+	 * Function: object($objectidorslug)
 	 * By default called after a rewrite of routing by slugs hooks, gets all content
 	 * for an object and loads view
 	 * Parameters:
 	 * $objectidorslug - the id or slug of the object to display, null is allowed but causes exception
-	 * Returns: nothing, renders full webpage to browser or sents html if AJAX request
+	 * Returns: nothing, renders full webobject to browser or sents html if AJAX request
 	 */
 
 	public function action_getView($objectidorslug=null) {
@@ -52,10 +52,10 @@ Class Controller_MopFrontend extends Controller_Layout{
 		$viewName = null;
 		if ($object->loaded()) {
 			if ($object->published == false || $object->activity != null) {
-				throw new Kohana_User_Exception('Page not availabled', 'The page with identifier ' . $id . ' is does not exist or is not available');
+				throw new Kohana_User_Exception('Page not availabled', 'The object with identifier ' . $id . ' is does not exist or is not available');
 			}
-			//look for the template, if it's not there just print out all the data raw
-			$viewName = $object->template->templatename;
+			//look for the objectType, if it's not there just print out all the data raw
+			$viewName = $object->objecttype->objecttypename;
 			if (file_exists('application/views/frontend/' . $viewName . '.php')) {
 				$viewPath = 'frontend/'.$viewName;
 			} else if(file_exists('application/views/generated/' . $viewName . '.php')) {
@@ -65,14 +65,14 @@ Class Controller_MopFrontend extends Controller_Layout{
 			}
 			$this->view = new View($viewPath);
 		} else {
-			//check for a virtual page specified in frontend.xml
-			//a virtual page will be one that does not match a template
+			//check for a virtual object specified in frontend.xml
+			//a virtual object will be one that does not match a objectType
 			$viewName = $objectidorslug;
 			$this->view = new View($viewName);
 		}
 
 		//call this->view load data
-		//get all the data for the page
+		//get all the data for the object
 		$viewContent = mop::getViewContent($viewName, $objectidorslug);
 		foreach ($viewContent as $key => $value) {
 			$this->view->$key = $value;

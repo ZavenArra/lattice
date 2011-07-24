@@ -18,7 +18,7 @@
 <!ATTLIST includeData
 	from		 		CDATA "parent"
 	label				CDATA #REQUIRED
-	templateFilter CDATA "all"
+	objectTypeFilter CDATA "all"
 	where       CDATA #IMPLIED
 	tagged      CDATA #IMPLIED
 	slug        CDATA #IMPLIED

@@ -27,12 +27,12 @@ class Controller_Builder extends Controller {
 	public function action_initializeSite($xmlFile='data'){
 
 		$db = Database::instance();
-		$db->query(Database::DELETE, 'delete from pages');
-		$db->query(Database::UPDATE, 'alter table pages AUTO_INCREMENT = 1');
+		$db->query(Database::DELETE, 'delete from objects');
+		$db->query(Database::UPDATE, 'alter table objects AUTO_INCREMENT = 1');
 		$db->query(Database::DELETE, 'delete from contents');
 		$db->query(Database::UPDATE, 'alter table contents AUTO_INCREMENT = 1');
-		$db->query(Database::DELETE, 'delete from templates');
-		$db->query(Database::UPDATE, 'alter table templates AUTO_INCREMENT = 1');
+		$db->query(Database::DELETE, 'delete from objectTypes');
+		$db->query(Database::UPDATE, 'alter table objectTypes AUTO_INCREMENT = 1');
     $db->query(Database::DELETE, 'delete from objectmaps');
 		$db->query(Database::UPDATE, 'alter table objectmaps AUTO_INCREMENT = 1');
 		flush();
@@ -88,20 +88,20 @@ class Controller_Builder extends Controller {
 
 		foreach(mop::config($xmlFile, 'item', $context)  as $item){
 			$lists = array();
-			if(!$item->getAttribute('templateName')){
+			if(!$item->getAttribute('objectTypeName')){
 				echo $item->tagName;
-            die("No templatename specified for Item ".$item->tagName."\n\n");
+            die("No objecttypename specified for Item ".$item->tagName."\n\n");
 			}
-      //echo "\n found contentnod ".$item->getAttribute('templateName');
+      //echo "\n found contentnod ".$item->getAttribute('objectTypeName');
 			flush();
 			ob_flush();
 			$object = ORM::Factory('object');
-			$template = ORM::Factory('template', $item->getAttribute('templateName'));
-			if($template->nodeType == 'container'){
-				die("Can't add list family as template name in data.xml: {$template->templatename} \n");
+			$objectType = ORM::Factory('objectType', $item->getAttribute('objectTypeName'));
+			if($objectType->nodeType == 'container'){
+				die("Can't add list family as objectType name in data.xml: {$objectType->objecttypename} \n");
 			}
 
-      //echo ')))'.$item->getAttribute('templateName');
+      //echo ')))'.$item->getAttribute('objectTypeName');
 			$data = array();
 			foreach(mop::config($xmlFile, 'field', $item ) as $content){
 				$field = $content->getAttribute('name');
@@ -121,9 +121,9 @@ class Controller_Builder extends Controller {
 
 
 				//need to look up field and switch on field type	
-				$fieldInfo = mop::config('objects', sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')))->item(0);
+				$fieldInfo = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
 				if(!$fieldInfo){
-					die("Bad field in data/objects!\n". sprintf('//template[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('templateName'), $content->getAttribute('name')));
+					die("Bad field in data/objects!\n". sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
 				}
 
 				//special setup based on field type
@@ -179,7 +179,7 @@ class Controller_Builder extends Controller {
 				$component->updateWithArray($data);
 				$objectId = $component->id;
 			} else {
-				$objectId = $parentObject->addObject($item->getAttribute('templateName'), $data);
+				$objectId = $parentObject->addObject($item->getAttribute('objectTypeName'), $data);
 				$this->newObjectIds[] = $objectId;
 			}
 
@@ -191,10 +191,10 @@ class Controller_Builder extends Controller {
 			foreach(mop::config($xmlFile, 'list', $item) as $list){
 				//echo "FOUND A LIST\n\n";
 				//find the container
-				$listT = ORM::Factory('template', $list->getAttribute('family'));
+				$listT = ORM::Factory('objectType', $list->getAttribute('family'));
 				$container = ORM::Factory('object')
 					->where('parentId', '=', $objectId)
-					->where('template_id', '=',  $listT->id)
+					->where('objecttype_id', '=',  $listT->id)
 					->find();
 				//jump down a level to add object
 				$this->insertData($xmlFile, $container->id, $list);

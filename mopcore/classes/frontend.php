@@ -10,11 +10,11 @@ class frontend {
 			$family = $element->getAttribute('family');
 			$addables = mop::config('objects', 'addableObject', $element);		
 			$addable = $addables->item(0);
-			$templateName = $addable->getAttribute('templateName');
-			$listItemElements = mop::config('objects', sprintf('//template[@name="%s"]/elements/*', $templateName));		
+			$objectTypeName = $addable->getAttribute('objectTypeName');
+			$listItemElements = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $objectTypeName));		
 			echo $indent."<ul id=\"$family\" >\n";
 			echo $indent."<?foreach({$prefix}['$family'] as \$label => \${$family}ListItem):?>\n";
-			echo $indent." <li class=\"$templateName\">\n";
+			echo $indent." <li class=\"$objectTypeName\">\n";
 			foreach($listItemElements as $element){
 				frontend::makeHtmlElement($element, "\${$family}ListItem", $indent.'  ');
 			}

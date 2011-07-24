@@ -18,7 +18,7 @@ class Navigation {
 			$nodeInfo[$send] = $object->$field;
 		}
 		foreach(Kohana::config('navigation.navDataFields.objectType') as $field){
-			$nodeInfo[$field] = $object->template->$field;
+			$nodeInfo[$field] = $object->objecttype->$field;
 		}
 		if(!count($nodeInfo['addableObjects'])){
 			unset($nodeInfo['addableObjects']);
@@ -26,7 +26,7 @@ class Navigation {
 
 		
 		if(!is_object($object->contenttable)){
-			throw new Kohana_Exception('No content table for object:' . 'template: ' . $object->template->templatename . ' table: '.$object->template->contenttable);
+			throw new Kohana_Exception('No content table for object:' . 'objectType: ' . $object->objecttype->objecttypename . ' table: '.$object->objecttype->contenttable);
 		}
 		foreach(Kohana::config('navigation.navDataFields.content') as $send=>$field){
 			$nodeInfo[$send] = $object->contenttable->$field;
