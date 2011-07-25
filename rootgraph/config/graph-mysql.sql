@@ -12,7 +12,7 @@ CREATE TABLE `objects` (
   `activity` char(1) CHARACTER SET latin1 DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `identifier` (`slug`)
-) ENGINE=MyISAM AUTO_INCREMENT=86 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=INNODB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
  CREATE TABLE `objecttypes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -22,7 +22,7 @@ CREATE TABLE `objects` (
   `contentType` varchar(20) CHARACTER SET latin1 DEFAULT NULL,
   `sort_order` smallint(2) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=INNODB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objectmaps` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -346,13 +346,13 @@ CREATE TABLE `contents` (
   `activity` char(1) CHARACTER SET latin1 DEFAULT NULL,
   PRIMARY KEY (`object_id`),
   KEY `id` (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=86 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=INNODB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `files` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `filename` varchar(100) DEFAULT NULL,
   `mime` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=11517 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=INNODB AUTO_INCREMENT=11517 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
