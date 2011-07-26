@@ -1,9 +1,10 @@
 /* Class: mop.cms.CMS */
+
 mop.modules.CMS = new Class({
+
 	/* Constructor: initialize */
 	Extends: mop.modules.Module,
 	Interfaces: [ mop.modules.navigation.NavigationDataSource ],
-	
 	rootObjectId: null,
   currentObjectId: null,
 	pageContent: null,
@@ -17,7 +18,7 @@ mop.modules.CMS = new Class({
 	loadedJS: [],
 	stringIdentifier: "[ object, mop.modules.CMS ]",
 	options: {},
-	
+
 	/* Section: Getters & Setters */    
     
 	getRemoveObjectRequestURL: function( parentId ){

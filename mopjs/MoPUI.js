@@ -2,6 +2,106 @@ mop.ui = {};
 mop.ui.navigation = {};
 
 
+mop.ui.ContextualMenu = new Class({
+    
+	Implements: [ Options, Events ],
+
+	element: null,
+	content: null,
+	morph: null,
+	showInterval: null,
+	hideInterval: null,
+	pos: { x: 0, y: 0 },
+	options: {
+		offset: { x: 0, y: 12 },
+		borderRadius: 4,
+		cols: 1
+	},
+
+	initialize: function( attachTo, options ){
+		this.setOptions( options );
+		this.title = attachTo.get( "title" );
+		this.parentElement = attachTo;
+		this.build();
+	},
+    
+	build: function(){
+		this.element = new Element( "div", { "class" : "contextualMenu", styles:{} } );
+		var top = new Element( "div", { "class" : "topCap" } );
+		this.content = new Element( "ul", { "class" : "content" } );
+		var bot = new Element( "div", { "class" : "bottomCap" } );    
+		this.element.adopt( top );
+		this.element.adopt( this.content );
+		this.element.adopt( bot );
+		var borderStyle;
+		if( ( Browser.safari || Browser.chrome ) && Browser.version < 5 ){ borderStyle = "-webkit-border-radius"; }else if( Browser.firefox && Browser.version < 4 ){ borderStyle = "-moz-border-radius"; }else{ borderStyle = "border-radius"; }
+		if( (Browser.ie && Browser.version >= 9) || !Browser.ie  ) this.content.setStyle( borderStyle, this.options.borderRadius + "px" );        
+		this.element.setStyle( "posotion", "relative" );
+		$(document.body).adopt( this.element );
+		this.morph = new Fx.Morph( this.element, { duration: 750, transition: Fx.Transitions.Quad.easeOut } );
+		this.mouseenter = this.parentElement.addEvent( "mouseenter", this.startShow.bindWithEvent( this ) );
+		this.mouseleave = this.parentElement.addEvent( "mouseleave", this.startHide.bindWithEvent( this ) );
+		this.populate( this.options.content );
+	},
+
+  populate: function( content ){
+		this.content.adopt( content );
+	},
+
+  startShow: function( e ){
+		mop.util.stopEvent( e );
+		clearTimeout( this.showInterval );
+		clearTimeout( this.hideInterval );
+		this.showInterval = this.show.delay( 350, this );	
+	},
+	
+	startHide: function( e ){
+		mop.util.stopEvent( e );
+		clearTimeout( this.showInterval );
+		clearTimeout( this.hideInterval );
+		this.hideInterval = this.hide.delay( 350, this );
+	},
+
+	getPos: function(){
+		var parentCoords = this.parentElement.getPosition();
+		this.pos.x = this.parentElement.getSize().x * .5 + parentCoords.x;
+		this.pos.y = parentCoords.y - ( this.parentElement.getSize().y ) - this.options.offset.y;
+		return { x: this.pos.x, y: this.pos.y };
+	},
+	
+	show: function( x, y ){
+		console.log( "tooltip show :", x, y );
+		var pos = { x: 0, y: 0 };//this.getPos();
+		this.element.setStyles( { "left": pos.x, "top": pos.y } );
+		this.element.setStyles( { "display": "block", "opacity": 0 } );
+		this.morph.cancel();
+		this.morph.start.delay( 250,  this.morph, { "opacity" : 1 } );
+	},
+
+	hide: function( e, destroy ){
+		this.morph.cancel();
+		this.morph.start( { "opacity" : 0 } );
+		if( destroy ) this.destroy();
+	},
+
+	onFadeOut: function(){
+		this.removeEvent( this.mousemove );
+		this.element.setStyles( { "top" : "-1000px", "left" : "-1000px" } );
+	},
+    
+	destroy: function(){
+		if( this.morph ) this.morph.cancel();
+		this.parentElement.removeEvent( this.mouseenter );
+		this.parentElement.removeEvent( this.mouseleave );
+		clearInterval( this.mousefollow );
+		this.element.destroy();
+		this.morph = this.parentElement = this.element = this.mouseenter = this.mouseleave = null;
+	}
+    
+    
+});
+
+
 Element.implement({
     
 	smartDispose: function() {
