@@ -93,10 +93,9 @@ mop.modules.navigation.Navigation = new Class({
 //      console.log( "requestTierResponse", json, parentId, containerPane );
 		//this.nodeData[ parentId ] = json.response.data.nodes;
 		json.response.data.nodes.each( function( nodeObj ){
+         console.log(nodeObj.id, nodeObj.slug);
 			this.nodeData[ nodeObj.id ] = nodeObj;
 		}, this );
-		console.log( "requestTierResponse", parentId, this.nodeData );
-		this.nodeData = Object.merge( this.nodeData, json.response.data.nodes );
 		var tier = new mop.modules.navigation.Tier( this, json.response.html, parentId );
 		this.tiers[ parentId ] = tier;
 		this.renderPane( tier, containerPane, parentId );
