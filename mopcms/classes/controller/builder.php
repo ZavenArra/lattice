@@ -63,7 +63,7 @@ class Controller_Builder extends Controller {
 
   }
 
-  public function action_addData($xmlFile, $seconadryRootNodeObjectType=null){
+  public function action_addData($xmlFile, $secondaryRootNodeObjectType=null){
 
 		if(!$parentId = Graph::getRootNode($secondaryRootNodeObjectType)){
 			Graph::configureTemplate($secondaryRootNodeObjectType);
