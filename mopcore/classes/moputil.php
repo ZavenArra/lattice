@@ -66,6 +66,19 @@ Class moputil {
 			return true;
 		}
 	}
+   
+   /*
+    * Check for role access when an array of roles have access
+    */
+   public static function checkAccess($roles){
+      foreach($roles as $role){
+         if(Auth::instance()->logged_in($role)){
+            return true;
+         }
+      }
+      return false;
+      
+   }
 
 	/*
 	 * Function: decode_recurse($value)
