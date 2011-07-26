@@ -68,7 +68,7 @@ Class Controller_MopFrontend extends Controller_Layout{
 			//check for a virtual object specified in frontend.xml
 			//a virtual object will be one that does not match a objectType
 			$viewName = $objectidorslug;
-			$this->view = new View($viewName);
+			$this->view = new View('frontend/'.$viewName);
 		}
 
 		//call this->view load data
