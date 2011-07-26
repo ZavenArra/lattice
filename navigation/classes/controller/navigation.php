@@ -128,7 +128,6 @@ class Controller_Navigation extends Controller_MOP{
       
       $sendItemObjects = $this->getTier($parentId, $deeplinkPath);
 
-
       $this->response->data(array('nodes' => $sendItemObjects));
 
       $nodes = array();

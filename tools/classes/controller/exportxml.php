@@ -15,6 +15,9 @@ class Controller_ExportXML extends Controller {
          if ($key == 'objectTypeName') {
             continue;
          }
+         if ($key == 'id') {
+            continue;
+         }
          $node = $this->doc->createElement($key);
          if (is_array($value)) {
             
@@ -50,15 +53,23 @@ class Controller_ExportXML extends Controller {
          if ($key == "slug" && $value = "") {
             continue;
          }
-         $node = $this->doc->createElement('field');
+         if ($key == "id") {
+            continue;
+         }
+         if (is_array($value)) {
+						//skipping container objects.
+						continue;    
+				 } 
+
+
+				 $node = $this->doc->createElement('field');
          $nodeAttr = $this->doc->createAttribute('name');
          $nodeValue = $this->doc->createTextNode($key);
-         $nodeAttr->appendChild($fieldValue);
-         $node->appendChild($fieldAttr);
-//print_r($value);
-         if (is_array($value)) {
-            
-         } else if (is_object($value)) {
+         $nodeAttr->appendChild($nodeValue);
+         $node->appendChild($nodeAttr);
+ 
+				 
+				 if (is_object($value)) {
             switch (get_class($value)) {
                case 'File_Model':
 //or copy to directory and just use filename
@@ -74,6 +85,7 @@ class Controller_ExportXML extends Controller {
                   break;
             }
          } else {
+
             $node->appendChild($this->doc->createTextNode($value));
          }
          $nodes[] = $node;
@@ -92,7 +104,7 @@ class Controller_ExportXML extends Controller {
          }
 
          //and get the children
-         $childObjects = $object->getPublishedChildren();
+         $childObjects = $object->getChildren();
 
          foreach ($this->exportTier($childObjects) as $childItem) {
             $item->appendChild($childItem);
@@ -118,9 +130,9 @@ class Controller_ExportXML extends Controller {
          }
 
          //and get the children
-         $childObjects = $object->getPublishedChildren();
+         $childObjects = $object->getChildren();
          foreach ($this->exportTierMOPFormat($childObjects) as $childItem) {
-            $item->appendChild($childItem);
+					 $item->appendChild($childItem);
          }
          $nodes[] = $item;
       }
@@ -131,7 +143,7 @@ class Controller_ExportXML extends Controller {
    //this should call action_export and then convert with xslt
    public function action_exportMOPFormat($xslt='') {
 
-      $this->action_export();
+ //     $this->action_export();
       
       
       //do the export
@@ -141,30 +153,34 @@ class Controller_ExportXML extends Controller {
       
       # LOAD XML FILE
 $XML = new DOMDocument();
-$XML->load( 'application/media/export.xml' );
+//$XML->load( 'application/media/export.xml' );
 
+/*
 # START XSLT
 $xslt = new XSLTProcessor();
 
 # IMPORT STYLESHEET 1
 $XSL = new DOMDocument();
-$XSL->load( 'objectType1.xsl' );
+$XSL->load( 'template1.xsl' );
 $xslt->importStylesheet( $XSL );
 
 #IMPORT STYLESHEET 2
 $XSL = new DOMDocument();
-$XSL->load( 'objectType2.xsl' );
+$XSL->load( 'template2.xsl' );
 $xslt->importStylesheet( $XSL );
 
 #PRINT
 print $xslt->transformToXML( $XML ); 
 
 return;      
+ */
+
       $this->doc = new DOMDocument('1.0', 'UTF-8');
       $this->doc->formatOutput = true;
       $data = $this->doc->createElement('data');
 
-      $objects = $object->getPublishedChildren();
+      $object = Graph::getRootNode('cmsRootNode');
+      $objects = $object->getChildren();
 
 
       foreach ($this->exportTierMOPFormat($objects) as $item) {
@@ -185,7 +201,7 @@ return;
       $data = $this->doc->createElement('data');
 
       $object = Graph::getRootNode('cmsRootNode');
-      $objects = $object->getPublishedChildren();
+      $objects = $object->getChildren();
 
 
       foreach ($this->exportTier($objects) as $item) {

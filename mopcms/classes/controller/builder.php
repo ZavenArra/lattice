@@ -98,7 +98,7 @@ class Controller_Builder extends Controller {
 			$object = ORM::Factory('object');
 			$objectType = ORM::Factory('objecttype', $item->getAttribute('objectTypeName'));
 			if($objectType->nodeType == 'container'){
-				die("Can't add list family as objectType name in data.xml: {$objectType->objecttypename} \n");
+			//	die("Can't add list family as objectType name in data.xml: {$objectType->objecttypename} \n");
 			}
 
       //echo ')))'.$item->getAttribute('objectTypeName');
@@ -135,8 +135,10 @@ class Controller_Builder extends Controller {
 						if(file_exists($content->nodeValue)){
 							copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']).$content->nodeValue, Graph::mediapath($savename).$savename);
 						} else {
-							echo "File does not exist {$content->nodeValue} \n";
-              die();
+							if($content->nodeValue){
+								echo "File does not exist {$content->nodeValue} \n";
+								die();
+							}
 						}
 						$data[$field] = $savename;
 						break;
