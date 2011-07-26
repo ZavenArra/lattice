@@ -324,8 +324,6 @@ class Model_Object extends ORM {
               ->where('activity', 'IS', NULL)
               ->find();
 
-      //get children of
-      Kohana::$log->add(Log::INFO, 'hasdfasd');
       return $container->getPublishedChildren();
    }
 
@@ -336,6 +334,8 @@ class Model_Object extends ORM {
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder')
+							->join('objecttypes')->on('objects.objecttype_id', '=', 'objecttypes.id')
+							->where('nodeType', '!=', 'container')
               ->find_all();
       return $children;
    }

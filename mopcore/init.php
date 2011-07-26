@@ -40,9 +40,11 @@ Route::set('footer', 'footer(/<id>)')
 		)
 	);
 
+/*
 Route::set('default4', '(<controller>(/<action>(/<id>(/<thing>))))')
 	->defaults(array(
-		'controller' => 'welcome',
-		'action'     => 'index',
 	));
+ */
+
+
 

@@ -44,6 +44,11 @@ Class Controller_MopFrontend extends Controller_Layout{
 	 */
 
 	public function action_getView($objectidorslug=null) {
+	
+		$access = Kohana::config('mopfrontend.access.'.$objectidorslug);
+		if(!moputil::checkAccess($access)){
+			Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
+		}
 
 		self::$slug = $objectidorslug;
 
