@@ -5,6 +5,7 @@ class Controller_Builder extends Controller {
 	private $newObjectIds = array();
 
   public function __construct(){
+		$this->rootNodeObjectType = Kohana::config('cms.graphRootNode');
 	}
 
 	public function destroy($dir) {
@@ -42,7 +43,6 @@ class Controller_Builder extends Controller {
 		$this->destroy('application/media/');
 		
 		//reinitialize the graph
-		$this->rootNodeObjectType = Kohana::config('cms.graphRootNode');
 		Graph::configureTemplate($this->rootNodeObjectType);
 		Graph::addRootNode($this->rootNodeObjectType);
 
@@ -65,15 +65,18 @@ class Controller_Builder extends Controller {
 
   public function action_addData($xmlFile, $secondaryRootNodeObjectType=null){
 
-		if(!$parentId = Graph::getRootNode($secondaryRootNodeObjectType)){
+		if($secondaryRootNodeObjectType && !$parentId = Graph::getRootNode($secondaryRootNodeObjectType)){
 			Graph::configureTemplate($secondaryRootNodeObjectType);
 			Graph::addRootNode($secondaryRootNodeObjectType);
-			$parentId = Graph::getRootNode($secondaryRootNodeObjectType);
+			$parentObject = Graph::getRootNode($secondaryRootNodeObjectType);
+		} else {
+			$parentObject = Graph::getRootNode($this->rootNodeObjectType);
 		}
 
-		$this->insertData($xmlFile, $parentId);	
 
-		cms::generateNewImages($this->newObjectIds);
+		$this->insertData($xmlFile, $parentObject->id);	
+
+		mopcms::generateNewImages($this->newObjectIds);
 	}
 
 
