@@ -1682,7 +1682,7 @@ mop.ui.FileElement = new Class({
 		this.clearButton.store( "Class", this );
         this.clearButton.addEvent( "click", this.clearFileRequest.bindWithEvent( this ) );
         
-		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "moplib/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton, cookie: document.cookie } );
+		this.Uploader = new mop.util.Uploader( { path: mop.util.getBaseURL() + "lattice/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf", target: this.uploadButton, cookie: document.cookie } );
 
         // console.log( ":::::::::::::::", this.Uploader.box.getElement( "object" ).get( "id" ) );
 		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );

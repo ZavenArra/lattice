@@ -17,12 +17,12 @@ Kohana::init(array(
  * Enable MoPLib Modules
  */
 Kohana::modules(array(
-	'mopcms' => 'moplib/mopcms',
-	'mopcore' => 'moplib/mopcore',
-	'mopjs'  => 'moplib/mopjs',
-	'tools' => 'moplib/tools',
-	'mopfrontend' => 'moplib/mopfrontend',
-	'navigation' => 'moplib/navigation',
-	'mopui' => 'moplib/mopui',
-	'usermanagement' => 'moplib/usermanagement',
+	'mopcms' => 'lattice/mopcms',
+	'mopcore' => 'lattice/mopcore',
+	'mopjs'  => 'lattice/mopjs',
+	'tools' => 'lattice/tools',
+	'mopfrontend' => 'lattice/mopfrontend',
+	'navigation' => 'lattice/navigation',
+	'mopui' => 'lattice/mopui',
+	'usermanagement' => 'lattice/usermanagement',
 );

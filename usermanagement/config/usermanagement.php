@@ -1,20 +1,20 @@
 <?
 
 $config['resources']['librarycss'] = array(
-	'moplib/thirdparty/960Grid/reset.css',
-	'moplib/thirdparty/960Grid/960.css'
+	'lattice/thirdparty/960Grid/reset.css',
+	'lattice/thirdparty/960Grid/960.css'
 );
 $config['resources']['libraryjs'] = array(
-	'moplib/thirdparty/mootools/mootools.js',
-	'moplib/thirdparty/mootools/mootools-more.js',
+	'lattice/thirdparty/mootools/mootools.js',
+	'lattice/thirdparty/mootools/mootools-more.js',
 	//these are required by MoPUI
-	'moplib/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
-	'moplib/thirdparty/arian/datepicker/Picker.js',
-	'moplib/thirdparty/arian/datepicker/Picker.Attach.js',
-	'moplib/thirdparty/arian/datepicker/Picker.Date.js',
-	'moplib/mopjs/MoPCore.js',
-	'moplib/mopjs/MoPUI.js',
-	'moplib/mopjs/MoPModules.js'
+	'lattice/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
+	'lattice/thirdparty/arian/datepicker/Picker.js',
+	'lattice/thirdparty/arian/datepicker/Picker.Attach.js',
+	'lattice/thirdparty/arian/datepicker/Picker.Date.js',
+	'lattice/mopjs/MoPCore.js',
+	'lattice/mopjs/MoPUI.js',
+	'lattice/mopjs/MoPModules.js'
 );
 
 $config['layout'] = 'LayoutAdmin';
@@ -24,14 +24,14 @@ $config['layout'] = 'LayoutAdmin';
  * Config: ['resources']['css']
  */
 $config['resources']['css'] = array( 
-   	'moplib/mopcms/views/css/mop_cms.css'
+   	'lattice/mopcms/views/css/mop_cms.css'
 );
 
 /*
  * Config: ['resources']['js']
  */
 $config['resources']['js'] = array(
-	'moplib/mopcms/views/js/list.js'
+	'lattice/mopcms/views/js/list.js'
 );
 
 /*

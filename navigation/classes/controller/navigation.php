@@ -142,13 +142,25 @@ class Controller_Navigation extends Controller_MOP{
       $tierView->nodes = $nodes;
 
       $tierMethodsDrawer = new View('tierMethodsDrawer');
-      $tierMethodsDrawer->addableObjects = $parent->objecttype->addableObjects;
+			$addableObjects = $parent->objecttype->addableObjects;
+
+			if(moputil::checkAccess('superuser')){
+				foreach($this->getObjectTypes() as $objectType){
+					$addableObject = array();
+					$addableObject['objectTypeId'] = $objectType['objectTypeName'];
+					$addableObject['objectTypeAddText'] = "Add a ".$objectType['objectTypeName'];
+					$addableObject['nodeType'] = $objectType['nodeType'];
+					$addableObject['contentType'] = $objectType['contentType'];
+					$addableObjects[] = $addableObject;
+				}
+			}
+      $tierMethodsDrawer->addableObjects = $addableObjects;
 
       $tierView->tierMethodsDrawer = $tierMethodsDrawer->render();
       $this->response->body($tierView->render());
    }
 
-	public function getTemplates(){
+	public function getObjectTypes(){
 		$objectTypes = array();
 		foreach(mop::config('objects', '//objectType') as $objectType){
 			$entry = array();
