@@ -43,6 +43,7 @@ class Initializer_Mopauth {
          //add the login role
          $user->add('roles', ORM::Factory('role', array('name' => 'login')));
          $user->add('roles', ORM::Factory('role', array('name' => 'admin')));
+         $user->add('roles', ORM::Factory('role', array('name' => 'superuser')));
          //$user->add(ORM::Factory('role', 'staging'));
          $user->save();
          
