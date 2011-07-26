@@ -8,12 +8,12 @@
 			<span class="message hidden"></span>
 		</div>
 		<div class="controls">
-			<a class="command uploadLink" href="#">&uarr;</a>
+			<a class="command uploadLink" href="#">&uarr; Upload</a>
 			<?if($value):?>
-				<a class="command clearImageLink" href="#">x</a>
+				<a class="command clearImageLink" href="#">x Download</a>
 				<a class="command downloadLink" href="<?=url::site("file/download/{$value['id']}");?>">download</a>
 			<?else:?>
-				<a class="command clearImageLink hidden" href="#">x</a>
+				<a class="command clearImageLink hidden" href="#">x Delete</a>
 				<a class="command downloadLink hidden" target="_blank" href="#">&darr;</a>
 			<?endif;?>
 		</div>
