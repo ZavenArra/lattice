@@ -30,5 +30,16 @@ class FrontendRouting {
 
 Route::set('mopCmsSlugs', array('FrontendRouting', 'routeSlug'));
 
+Route::set('defaultMopFrontend', '(<controller>)',
+	array(
+		'controller'=>'',
+	))
+	->defaults(array(
+		'controller' => 'mopfrontend',
+		'action' => 'getView',
+		'id'     => 'home',
+	));
+
+
  
 

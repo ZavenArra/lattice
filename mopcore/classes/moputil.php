@@ -71,6 +71,12 @@ Class moputil {
     * Check for role access when an array of roles have access
     */
    public static function checkAccess($roles){
+      if(!$roles){
+         return true;
+      }
+      if(!is_array($roles)){
+         $roles = array($roles);
+      }
       foreach($roles as $role){
          if(Auth::instance()->logged_in($role)){
             return true;
