@@ -203,24 +203,24 @@ mop.modules.Module = new Class({
 
 mop.modules.Cluster = new Class({
 
-	Extends: mop.modules.Module,
+Extends: mop.modules.Module,
 
-	initialize: function( anElementOrId, aMarshal, options ){
-		this.parent( anElementOrId, aMarshal, options );
-		this.objectId = this.element.get("id").split("_")[1];
-	},
+initialize: function( anElementOrId, aMarshal, options ){
+this.parent( anElementOrId, aMarshal, options );
+this.objectId = this.element.get("id").split("_")[1];
+},
 
-	/*Function: getSubmissionController
-		Clusters send submissions to their marshal
-		returns - the marshals submissioncontroller
-	*/
-	// getSubmissionController: function(){
-	// 	return this.marshal.getSubmissionController();
-	// },
 
-	getObjectId: function(){
-		return this.objectId;
-	}
+getSaveFieldURL: function(objectId){
+var url = mop.util.getBaseURL() +"ajax/data/cms/savefield/" + objectId;
+console.log( "::::::", this.toString(), "getSaveFieldURL", url );
+return url;
+},
+
+
+getObjectId: function(){
+return this.objectId;
+}
 
 });
 
