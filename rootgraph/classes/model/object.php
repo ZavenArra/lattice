@@ -79,7 +79,6 @@ class Model_Object extends ORM {
 
       } else {
      
-         Kohana::$log->add(Log::INFO, 'ya'.$column);
          return $this->contenttable->$column;
  
       }

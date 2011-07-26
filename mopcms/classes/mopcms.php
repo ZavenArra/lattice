@@ -142,12 +142,7 @@ class MoPCMS {
 										$field = $element['field'];
 										$clusterObject = $object->$field;
 										//this should really happen within the models
-										if (!$clusterObject) {
-												$id = mopcms::addObject(null, $element['type']);
-												$object->$field = $id;
-												$object->save();
-												$clusterObject = $object->$field;
-										}
+										
 										$clusterHtmlChunks = mopcms::buildUIHtmlChunksForObject($clusterObject);
 
 										$customview = 'objectTypes/' . $clusterObject->objecttype->objecttypename; //check for custom view for this objectType

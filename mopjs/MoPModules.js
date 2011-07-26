@@ -106,7 +106,6 @@ mop.modules.Module = new Class({
 //  		    console.log( ref, node );
 		});
 		var newModule = new ref( element, this );
-		if( newModule.getSaveFieldURL ) console.log( newModule.getAddObjectURL());
 		return newModule;		
 	},
 
@@ -211,8 +210,8 @@ this.objectId = this.element.get("id").split("_")[1];
 },
 
 
-getSaveFieldURL: function(objectId){
-var url = mop.util.getBaseURL() +"ajax/data/cms/savefield/" + objectId;
+getSaveFieldURL: function(){
+var url = mop.util.getBaseURL() +"ajax/data/cms/savefield/" + this.objectId;
 console.log( "::::::", this.toString(), "getSaveFieldURL", url );
 return url;
 },

@@ -1,4 +1,4 @@
-<div class="module cluster classPath-mop_modules_Cluster objectId-<?=$objectId;?>">
+<div id="object_<?=$objectId;?>" class="module cluster classPath-mop_modules_Cluster objectId-<?=$objectId;?>">
 	<label><?=$label;?></label>
 	<div class="wrapper">
 		<?=$html;?>

@@ -191,6 +191,7 @@
       <elements>
 				<link field="theLink" label="A Link for All"/>
       </elements>
+			<addableObject objectTypeName="linkTest" addText="Add Link Test"/>
 		</objectType>
 
 		<objectType name="tagsObjectType" >

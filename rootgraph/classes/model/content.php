@@ -70,8 +70,8 @@ class Model_Content extends ORM {
 	
 		//check for dbmap
 		$object =  ORM::Factory('object', parent::__get('object_id'));
-		//echo 'FROM '.$object->id.'<br>';
-               
+      //contenttable should not back reference object.
+      
 		$column = self::dbmap( $object->objecttype_id, $columnName);
 
 		if(!$column){
@@ -104,11 +104,20 @@ class Model_Content extends ORM {
 
 		if(strstr($column, 'object')){
 			//echo 'iTS AN OBJECT<br>';
-			$sub = ORM::Factory('object', parent::__get($column));
-			if(!$sub->_loaded){
-				return null;
-			}
-			return $sub;
+			$relatedObject = ORM::Factory('object', parent::__get($column));
+			if(!$relatedObject->loaded()){
+            return null;
+            
+            //build the object
+            
+            /*
+            $id = Graph::object()->addObject($element['type']);
+            parent::__set($column, $id);
+            $relatedObject == Graph::object($id);
+             
+             */
+         }
+			return $relatedObject;
 
 		}
 
