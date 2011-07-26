@@ -20,13 +20,13 @@ class Controller_ExportXML extends Controller {
             
          } else if (is_object($value)) {
             switch (get_class($value)) {
-               case 'File_Model':
+               case 'Model_File':
                   //or copy to directory and just use filename
                   if ($value->fullpath) {
                      $node->appendChild($this->doc->createTextNode($value->fullpath));
                   }
                   break;
-               case 'Page_Model':
+               case 'Model_Page':
                   foreach ($this->getObjectFields($value) as $subField) {
                      $node->appendChild($subField);
                   }
