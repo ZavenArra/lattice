@@ -305,7 +305,8 @@ class MoPCMS {
 					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
 						if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
-							$object->processImage($object->$fieldname->filename, $fieldname);
+							$uiresizes = Kohana::config('mop_cms.uiresizes');
+							$object->processImage($object->$fieldname->filename, $fieldname, $uiresizes);
 						}
 					}
 				}
@@ -320,7 +321,8 @@ class MoPCMS {
 				if($element->tagName == 'image'){
 					$fieldname = $element->getAttribute('field');
 					if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
-						$object->processImage($object->$fieldname->filename, $fieldname);
+						$uiresizes = Kohana::config('mop_cms.uiresizes');
+						$object->processImage($object->$fieldname->filename, $fieldname, $uiresizes);
 					}
 				}
 			}	
