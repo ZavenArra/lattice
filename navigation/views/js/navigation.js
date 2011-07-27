@@ -89,7 +89,11 @@ mop.modules.navigation.Navigation = new Class({
 		}else{
 			// otherwise load send a tier request
 			console.log( "requestTier", "uncached", parentId, newPane );
-			this.dataSource.requestTier( parentId, function( json ){
+			if( this.currentTierRequest ){
+				this.currentTierRequest.cancel();
+//				newPane.get( "spinner" ).hide( true );
+			}
+			this.currentTierRequest = this.dataSource.requestTier( parentId, function( json ){
 				this.requestTierResponse( json, parentId, newPane );
 			}.bind( this ) );
 		}
@@ -363,12 +367,9 @@ mop.modules.navigation.Tier = new Class({
 		this.activeNode = nodeElement;
 		this.indicateNode( nodeElement );
 		this.onNodeSelected( nodeId );
-		
-		// if this specific tier has a pending request, we cancel it so the callback doesn't fire
-		if( this.currentTierRequest ) this.currentTierRequest.cancel();
-		
+		// if this specific tier has a pending request, we cancel it so the callback doesn't fire		
 		if( this.marshal.getNodeTypeFromId( nodeId ) != "module" ){
-			this.currentTierRequest = this.marshal.requestTier( nodeId, this );
+			this.marshal.requestTier( nodeId, this );
 		}else{
 			this.marshal.clearPanes( this.element.retrieve( 'paneIndex' ) + 1 );
 		}
@@ -421,7 +422,6 @@ mop.modules.navigation.Tier = new Class({
 		var templateId = mop.util.getValueFromClassName( "objectTypeId", addObjectButton.get("class") );
 		var addText = addObjectButton.get( 'text' );
 		//this.element.setStyle( "border", "1px #f00 solid" );
-		console.log( this, this.element, this.spinner );
 		var nodeTitle = prompt( "What would you like to name this" + addText.substr( addText.lastIndexOf( " " ), addText.length ).toLowerCase() );
 		if( !nodeTitle ) return;
 		this.spinner.show( true );

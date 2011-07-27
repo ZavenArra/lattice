@@ -126,7 +126,7 @@ mop.modules.CMS = new Class({
     */
 	requestPage: function( nodeId ){
       this.currentObjectId = nodeId;
-		return new Request.JSON( {url: this.getRequestPageURL( nodeId ), onSuccess: this.requestPageResponse.bind( this )} ).send();
+			return new Request.JSON( {url: this.getRequestPageURL( nodeId ), onSuccess: this.requestPageResponse.bind( this )} ).send();
 	},
     
 	/*
@@ -171,10 +171,11 @@ mop.modules.CMS = new Class({
     onNodeSelected: function( nodeId ){
       console.log( this.toString(), "onNodeSelected", nodeId );
       this.clearPage();
-      if(this.pageContent){
-         this.pageContent.spin();
-      }
-      this.requestPage( nodeId );
+      // if(this.pageContent){
+      //    this.pageContent.spin();
+      // }
+			if( this.pageRequest ) this.pageRequest.cancel();
+      this.pageRequest = this.requestPage( nodeId );
    },
     
    /*
