@@ -5,7 +5,7 @@
 		<?=$htmlChunk;?>
 	<?endforeach;?>
 
-	<div class="itemControls">
+	<div class="itemControls clearFix">
 		<a href="#" title="delete this list item" class="icon delete">delete</a>
 		<a href="#" title="Add This Item" class="button submit hidden">submit</a>
 		<a href="#" title="Cancel" class="button cancel hidden">cancel</a>

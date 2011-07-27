@@ -262,14 +262,11 @@ ul.listing li{
 }
 
 ul.listing.allowChildSort-true li{ cursor: pointer; }
-.itemControls, .controls{ clear: both; height: 2em; }
-
+/*.itemControls, .controls{ clear: both; height: 2em; }
+*/
 .classPath-mop_modules_ListModule{ margin-bottom: 2em; }
 
 .listItem>.itemControls .delete{
-	width: 16px;
-	height:16px;
-	display:block;
 	background: url( ../images/icon_trash.gif );
 }
 
@@ -293,24 +290,7 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 .ui-FileElement .controls,
 .ui-File .controls,
 .ui-ImageFile .controls{
-	background: none;
-	border-bottom:none;
-}
-
-.ui-FileElement .controls a,
-.ui-File .controls a,
-.ui-ImageFile .controls a{
-	background: none;
-	text-decoration: underline;
-	font-size: 10px;
-	margin-left: 6px;
-	color: #0af;
-}
-
-.ui-FileElement .controls a:hover,
-.ui-File .controls a:hover,
-.ui-ImageFile .controls a:hover{
-	color: #000;
+	margin-left: .25em;
 }
 
 .ipeControls{
@@ -328,6 +308,7 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 .ui-File .wrapper{
 	background: #f3f3f3;
 	margin:0 0 .5em 0;
+	padding: 0 0 .5em 0;
 }
 
 
@@ -378,15 +359,45 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 .pageTitle .field-slug label{ float: left; line-height: 2.75; }
 .pageTitle .field-slug p.ipe, .pageTitle .field-slug .IPEForm{ margin: 0 0 0 3em !important; }
 
-a.icon{
+
+a.icon, a.command{
 	display:block;
 	float:left;
 	width: 16px;
 	height: 16px;
 	margin:.25em .125em;
+	text-align: center;
+	vertical-align: middle;
 }
 
-a.icon{ text-indent: -3000px; }
+a.icon{
+	text-indent: -3000px;
+}
+
+a.command{
+	background-color: #aaa;
+	color: #eee;
+	text-decoration: none;
+	padding: .15em;
+	-moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -khtml-border-radius: 2px;
+  border-radius: 2px;
+}
+
+a.command:hover,
+a.command.active{
+	color: #fff;
+	background: #0af;
+}
+
+a.command.clearImageLink{
+	vertical-align: -.25em important;
+}
+
+a.command.clearImageLink:hover{
+	background: #f00;
+}
 
 a.icon.deleteLink{ background: url( ../images/icon_delete.png); }
 

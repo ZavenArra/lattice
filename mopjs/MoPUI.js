@@ -1790,9 +1790,13 @@ mop.ui.FileElement = new Class({
 	onMouseOver: function( e ){
 		mop.util.stopEvent( e );
 		var depth = mop.DepthManager.incrementDepth();
-		console.log( this.toString(), "onTargetHovered", depth );
+		// console.log( this.toString(), "onTargetHovered", depth );
 		this.Uploader.onTargetHovered( this, this.uploadButton, this.getCoordinates(), depth, this.getOptions() );
 		this.reposition();
+	},
+	
+	onMouseLeave: function(){
+			alert( "!" );
 	},
 	
 	clearFileRequest: function( e ){
@@ -2016,8 +2020,10 @@ mop.util.Uploader = new Class({
 
 
 		this.addEvents({
-			buttonEnter: this.targetRelay.bind( this, 'mouseenter' ),
-			buttonLeave: this.targetRelay.bind( this, 'mouseleave' ),
+			buttonEnter: this.buttonEnter.bind( this, 'mouseenter' ),
+			//this.targetRelay.bind( this, 'mouseenter' ),
+			buttonLeave: this.buttonLeave.bind( this, 'mouseleave' ),
+			//this.targetRelay.bind( this, 'mouseleave' ),
 			buttonDown: this.targetRelay.bind( this, 'mousedown' ),
 			buttonDisable: this.targetRelay.bind( this, 'disable' ),
 			fileComplete: this.targetRelay.bind( this, 'fileComplete' )
@@ -2033,12 +2039,18 @@ mop.util.Uploader = new Class({
 		}
 	},
 
-	// toString: function(){
-	// 	return "[ object, digitarald.Swiff.Uploader, mop.util.Uploader ]";
-	// },
+	buttonEnter: function( eventName ){
+		this.target.addClass( "active" );
+		this.targetRelay( eventName );
+	},
 	
+	buttonLeave: function( eventName ){
+		this.target.removeClass( "active" );
+		this.targetRelay( eventName );
+	},
+
 	setFocus: function(){
-		console.log("!!!!!!!!!!!!!!!!!!")
+//		console.log("!!!!!!!!!!!!!!!!!!")
 		this.box.getChildren()[0].focus();
 	},
 	
@@ -2134,7 +2146,7 @@ mop.util.Uploader = new Class({
 		if( this.currentFileElementInstance == target ) return;
 		console.log( "mop.util.Uploader", target, targetElement, coords, depth, options );
 		this.setTarget( target, targetElement, coords, depth, options );
-		console.log("****")
+//		targetElement.addClass('active');
 	},
 
 	setEnabled: function(status) {
