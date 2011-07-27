@@ -272,6 +272,9 @@ mop.modules.navigation.Tier = new Class({
 				transition: Fx.Transitions.Quad.easeInOut
 			});
 			
+			// make nodes element shorter by the height of the addableObjects title height
+			this.nodeElement.setStyle( 'height', this.nodeElement.getSize().y - this.drawer.getElement( "div.titleBar" ).getSize().y );
+			
 			this.drawer.getElement( '.close' ).addClass( 'hidden' );
 			this.drawer.setStyle( 'height', 'auto' );
 			this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', 'auto' );

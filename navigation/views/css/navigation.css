@@ -161,7 +161,7 @@
     position: absolute;
 		width: 300px;
     font-size: 12px;
-    top: 21.5em;
+    top: 21em;
     z-index: 1000;
     background: url( ../images/navBgDark.png	);
 		color: #fff;
@@ -215,4 +215,3 @@
 .tierMethodsDrawer .addableObjects li:hover h5{
     color: #eee;
 }
-
