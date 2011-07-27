@@ -23,7 +23,6 @@ mop.modules.navigation.Navigation = new Class({
 	},
 
 	getSlugFromId: function( nodeId ){
-		console.log( ">>>>>>>>>>>>>>>>>>>>>", this.nodeData[ nodeId ].slug );
 		return this.nodeData[ nodeId ].slug;		
 	},
 	
@@ -52,13 +51,12 @@ mop.modules.navigation.Navigation = new Class({
 		this.instanceName = this.element.get("id");
 		this.breadCrumbs =  new mop.ui.navigation.BreadCrumbTrail( this.element.getElement( ".breadCrumb" ), this.onCrumbClicked.bind( this ) );
 		var rootId = this.dataSource.getRootNodeId();
-//	console.log( "rootId", rootId );	
-		
 		this.userLevel = ( Cookie.read( 'userLevel' ) )? Cookie.read( 'userLevel' ) : "superuser";
+		console.log( "/////////////////////////////////" );
+		console.log( "rootId:", rootId );	
 		console.log( "userLevel:", this.userLevel );
-		
-		this.requestTier( rootId, null );
-		
+		console.log( "/////////////////////////////////" );
+		this.requestTier( rootId, null );		
 	},
 
 	addPane: function( parentId ){
@@ -100,7 +98,7 @@ mop.modules.navigation.Navigation = new Class({
 	requestTierResponse: function( json, parentId, containerPane ){
 		console.log( "requestTierResponse", json, parentId, containerPane );
 		json.response.data.nodes.each( function( nodeObj ){
-         console.log(nodeObj.id, nodeObj.slug);
+//			console.log(nodeObj.id, nodeObj.slug);
 			this.nodeData[ nodeObj.id ] = nodeObj;
 		}, this );
 		var tier = new mop.modules.navigation.Tier( this, json.response.html, parentId );
@@ -248,7 +246,11 @@ mop.modules.navigation.Tier = new Class({
 		if( this.options.addPosition == "top" ){
 			this.nodeElement.grab( newNode, 'top' );			
 		}else{
-			this.nodeElement.grab( newNode, 'bottom' );			
+			if( this.nodeElement.getElement( ".module" ) ){
+				this.nodeElement.getElement( ".module" ).grab( newNode, 'before' );
+			}else{
+				this.nodeElement.grab( newNode, 'bottom' );				
+			}
 		}
 		this.html = this.element.get( "html" );
 		this.initNode( newNode );
