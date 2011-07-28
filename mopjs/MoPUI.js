@@ -101,57 +101,6 @@ mop.ui.ContextualMenu = new Class({
     
 });
 
-
-Element.implement({
-    
-	smartDispose: function() {
-        // dispose of an element and its dropShadow (if there is one)
-        var rel = this.get("data-related");
-	    if ($(rel)) {
-	        $(rel).destroy();
-	    }
-	    this.destroy();
-	}, // end smartDispose
-	
-	dropShadow: function(options) {
-	    // creates a shadow effect to a rectangular element
-	    // define defaults
-        var options = $merge({
-            id: "dropShadow" + $random(100,1000),
-            x: 3, // offset from parent
-            y: 3,
-            border: "1px solid #000",
-            background: "#555",
-            opacity: .5,
-            zIndex: this.getStyle("z-index").toInt() - 1 // behind parent
-        }, options);
-
-        // only apply shadow on absolutely positioned elements
-        if (this.getStyle("position") != "absolute")
-            return this;
-
-        var c = this.getCoordinates();
-
-        new Element("div", {
-            id: options.id,
-            styles: {
-                position: "absolute",
-                left: c.left + options.x,
-                top: c.top + options.y,
-                width: c.width,
-                height: c.height,
-                background: options.background,
-                zIndex: options.zIndex
-            },
-            opacity: 0
-        }).injectBefore(this).fade(0, options.opacity);
-
-        // store the shadow id into the element
-        this.set("data-related", options.id);
-
-        return this;
-    } // end dropShadow
-});
 /*
 	Class: mop.ui.navigation.Tabs
 	Generic helper for handling tabbed navigation
@@ -196,35 +145,6 @@ mop.ui.navigation.Tabs = new Class({
 
 });
 
-
-mop.ui.Button = new Class({
-    
-    Implments: [ Options, Events ],
-    enabled: true,
-    onClick: null,
-    
-    initialize: function( anElement, aMarshal, onClick, options ){
-        this.element = $( anElement );
-        this.marshal = aMarshal;
-        this.onClick = onClick;
-        this.element.addEvent( 'click', onClick );
-    },
-    
-    enable: function(){
-        this.element.removeClass( "disabled" );
-        this.element.addEvent( 'click', this.onClick );
-    },
-    
-    disable: function(){
-        this.element.addClass( "disabled" );
-        this.element.removeEvent( 'click' );
-    },
-    
-    destroy: function(){
-        this.enabled = null;
-        this.onClick = null;
-    }
-})
 /*
 	Class: mop.ui.navigation.BreadCrumbTrail
 	Generic class for handling breadcrumb trails
@@ -416,6 +336,7 @@ mop.ui.UIElement = new Class({
 	// },	
 
 	registerOnCompleteCallBack: function( func ){
+//		console.log( "registerOnCompleteCallBack", func );
 		this.onCompleteCallbacks.push( func );
 	},
 
@@ -1793,10 +1714,6 @@ mop.ui.FileElement = new Class({
 		// console.log( this.toString(), "onTargetHovered", depth );
 		this.Uploader.onTargetHovered( this, this.uploadButton, this.getCoordinates(), depth, this.getOptions() );
 		this.reposition();
-	},
-	
-	onMouseLeave: function(){
-			alert( "!" );
 	},
 	
 	clearFileRequest: function( e ){

@@ -20,7 +20,7 @@ mop.modules.List = new Class({
 	},
 	
 	getSubmitSortOrderURL: function(){
-	    return mop.util.getBaseURL() + "ajax/html/list/saveSortOrder/" + this.getObjectId();
+	    return mop.util.getBaseURL() + "ajax/data/list/saveSortOrder/" + this.getObjectId();
 	},
 	
 	toString: function(){

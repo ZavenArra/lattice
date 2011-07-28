@@ -99,11 +99,12 @@ h6,
 	color:#222;
 	line-height: 1.5em;
 	height: 1.5em;
-	cursor:pointer
+	cursor:pointer;
 }
 
 .ui-Text textarea{
     height: auto;
+		resize: none;
 }
 
 .displayField{

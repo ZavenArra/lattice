@@ -528,10 +528,10 @@ mop.util.Broadcaster = new Class({
 		if( this.listeners.contains( aListener ) ) this.listeners.erase( aListener );
 	},
 
-	broadcastEvent: function( eventToFire, arguments ){
-		//console.log( "broadcastEvent", eventToFire );
+	broadcastEvent: function( eventToFire, args ){
+		console.log( "broadcastEvent", eventToFire, args );
 		this.listeners.each( function( aListener ){
-			var args = Array.slice( arguments, 1 );
+//			var args = Array.slice( args, 1 );
 			aListener.fireEvent( eventToFire, args );
 		});
 	}
@@ -570,6 +570,21 @@ mop.util.HistoryManager = new Class({
 	appState: new Hash(),
 	_instance: null,
 
+	getStrippedHash: function(){
+		return ( window.location.hash && window.location.hash != "#" )? window.location.hash.substr( 1 , window.location.hash.length ) : null;
+	},
+	
+	getAppState: function(){
+		return this.appState;
+	},
+
+	setAppState: function(){
+		if( !this.currentHash ) return;
+		this.appState.empty();
+		this.appState.combine( this.getStrippedHash().parseQueryString() );
+	},
+	
+	
 	initialize: function(){
 		return this;
 	},
@@ -585,25 +600,15 @@ mop.util.HistoryManager = new Class({
 
 	init: function(){
 		this.currentHash = this.getStrippedHash();
-		this.storeStateFromHash();
+		this.setAppState();
 		this.locationMonitor = this.checkLocation.periodical( 2000, this );	
 	},
 
-	storeStateFromHash: function(){
-		if( !this.currentHash ) return;
-		this.appState.empty();
-		this.appState.combine( this.getStrippedHash().parseQueryString() );
-	},
-
-	getStrippedHash: function(){
-		return ( window.location.hash && window.location.hash != "#" )? window.location.hash.substr( 1 , window.location.hash.length ) : null;
-	},
-	
 	checkLocation: function(){
 		var hash = this.getStrippedHash();
 		if( hash != this.currentHash ){
 			this.currentHash = hash;
-			this.storeStateFromHash();
+			this.setAppState();
 			this.broadcastEvent( "appstatechanged", this.appState );
 		}
 		hash = null;
