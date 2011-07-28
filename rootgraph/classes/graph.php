@@ -23,7 +23,7 @@ class Graph {
 		if ($objectId == null) {
 			return ORM::Factory('object');
 		} else {
-			if(is_int($objectId)){
+			if(is_numeric($objectId)){
 				return ORM::Factory('object', $objectId);
 			} else {
 				$object = ORM::Factory('object')->where('slug', '=', $objectId)->find();
