@@ -28,7 +28,7 @@ class frontend {
 				$size = 'original';	
 			}
 			echo $indent."<?if(is_object({$prefix}['$field'])):?>\n";
-			echo $indent." <img id=\"$field\" src=\"<?={$prefix}['$field']->{$size}->fullpath;?>\" width=\"<?={$prefix}['$field']->{$size}->width;?>\" height=\"<?={$prefix}['$field']->{$size}->height;?>\" alt=\"<?={$prefix}['$field']->{$size}->filename;?>\" />\n";
+			echo $indent." <img id=\"$field\" src=\"<?=latticeurl::site({$prefix}['$field']->{$size}->fullpath);?>;?>\" width=\"<?={$prefix}['$field']->{$size}->width;?>\" height=\"<?={$prefix}['$field']->{$size}->height;?>\" alt=\"<?={$prefix}['$field']->{$size}->filename;?>\" />\n";
 			echo $indent."<?endif;?>\n\n";
 			break;
 		case 'file':

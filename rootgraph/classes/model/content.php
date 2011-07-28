@@ -114,8 +114,7 @@ class Model_Content extends ORM {
             $id = Graph::object()->addObject($element['type']);
             parent::__set($column, $id);
             $relatedObject == Graph::object($id);
-             
-             */
+			 */
          }
 			return $relatedObject;
 
