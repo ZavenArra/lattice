@@ -3039,6 +3039,7 @@ mop.ui.Text = new Class({
 		if( this.field ) this.field.removeEvents();
 		if( this.marshal.resumeSort ) this.marshal.resumeSort();
 		this.controls.destroy();
+		this.controls = null;
 		this.ipeElement.setStyle( 'display', 'block' );
 		this.destroyValidationSticky();
 		mop.util.EventManager.broadcastEvent('resize');
