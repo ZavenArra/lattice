@@ -103,7 +103,6 @@ class Controller_Navigation extends Controller_MOP{
 					$entry['nodeType'] = 'module';
 					$entry['contentType'] = 'module';
 					$entry['title'] = $m->getAttribute('label');
-					$entry['children'] = array();
 					$sendItemObjects[] = $entry;
 				}
 			}
