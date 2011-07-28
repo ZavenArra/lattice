@@ -143,7 +143,7 @@ class Controller_ExportXML extends Controller {
    }
 
    //this should call action_export and then convert with xslt
-   public function action_exportMOPFormat($xslt='') {
+   public function action_exportMOPFormat($outputfilename='export', $xslt='') {
 
  //     $this->action_export();
       
@@ -190,8 +190,15 @@ return;
       }
       $this->doc->appendChild($data);
 
+			$outputDir = 'application/export/'.$outputfilename;
+			try {
+				mkdir($outputDir, 777);
+			} catch (Exception $e){
 
-      $this->doc->save('application/media/export.xml');
+			}
+			chmod(getcwd().'/'.$outputDir, 0777);
+      $this->doc->save($outputDir.'/'.$outputfilename.'.xml');
+			system('cp -Rp application/media/* '.$outputDir);
    }
 
    public function action_export($xslt='') {
