@@ -96,9 +96,11 @@ mop.ui.Sticky = new Class({
     
 	destroy: function(){
 		if( this.morph ) this.morph.cancel();
+		if( this.showInterval ) clearTimeout( this.showInterval );
+		if( this.hideInterval ) clearTimeout( this.hideInterval );
 		this.element.destroy();
 		this.target.removeEvent( 'mouseenter', this.mouseenter );
-		this.target.removeEvent( 'mouseleave', this.mouseleave );
+		if( this.mouseleave ) this.target.removeEvent( 'mouseleave', this.mouseleave );
 		this.morph = this.target = this.element = this.mouseenter = this.mouseleave = null;
 	}
     
