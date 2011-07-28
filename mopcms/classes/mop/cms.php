@@ -117,7 +117,10 @@ class MOP_CMS extends MOP_CMSInterface {
 	Returns: array('html'=>html, 'js'=>js, 'css'=>css)
 	*/
 	public function action_getPage($id){
-		
+
+		$object = Graph::object($id);
+
+
 		self::$objectId = $id;
 
 
@@ -138,7 +141,6 @@ class MOP_CMS extends MOP_CMSInterface {
       
       
 		
-		$object = ORM::factory('object', $id);
 		if($object->id == 0){
 			throw new Kohana_Exception('Invalid Page Id '.$id);
 		}

@@ -29,12 +29,20 @@ class Controller_Navigation extends Controller_MOP{
 
 	}
 
+	/*
+	 *
+	 * Override this function to use nav on other data sources
+	 *
+	 */
    public function getTier($parentId, $deeplinkPath=array(), &$follow=false){
-      $parent = ORM::Factory($this->objectModel, $parentId); 
+		 $parent = Graph::object($parentId);
+		 if(!$parent->loaded()){
+				throw new Kohana_Exception('Invalid object id sent to getTier');
+		 }
 			
 
 		$items = ORM::factory($this->objectModel);
-		$items->where('parentId', '=',  $parentId);
+		$items->where('parentId', '=',  $parent->id);
 		$items->where('activity', 'IS', NULL);
 		$items->order_by('sortorder');
 		$iitems = $items->find_all();
@@ -114,7 +122,7 @@ class Controller_Navigation extends Controller_MOP{
       if($deeplink){
          $objectId = $deeplink;
          while($objectId){
-            $object = ORM::Factory('object', $objectId);
+            $object = Graph::object($objectId);
             $deeplinkPath[] = $object->id;
             $objectId = $object->parentid;
          }
