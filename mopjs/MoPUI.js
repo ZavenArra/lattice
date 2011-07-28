@@ -26,7 +26,8 @@ mop.ui.Sticky = new Class({
 		relFixedPosition: false,
 		position: 'upperRight',
 		edge: 'lowerLeft',
-		tick: 'tickLeft'
+		tick: 'tickLeft',
+		stayOnBlur: false
 	},
 
 	initialize: function( attachTo, options ){
@@ -42,10 +43,10 @@ mop.ui.Sticky = new Class({
 		if( this.options.cssClassses ) this.element.addClass( this.options.cssClassses );
 		if( this.options.borderRadius ) this.content.roundCorners( this.options.borderRadius );		
 		this.mouseenter = this.target.addEvent( 'mouseenter', this.startShow.bindWithEvent( this ) );
-		this.mouseleave = this.target.addEvent( 'mouseleave', this.startHide.bindWithEvent( this ) );
+		if( !this.options.stayOnBlur ) this.mouseleave = this.target.addEvent( 'mouseleave', this.startHide.bindWithEvent( this ) );
 		// the sticky isn't inside the target
 		this.element.addEvent( 'mouseenter', function(){ clearTimeout( this.hideInterval ) }.bind( this ) );
-		this.element.addEvent( 'mouseleave', this.startHide.bindWithEvent( this ) );
+		if( !this.options.stayOnBlur ) this.element.addEvent( 'mouseleave', this.startHide.bindWithEvent( this ) );
 		this.element.adopt( this.content );
 		this.populate( this.options.content );
 		this.morph = new Fx.Morph( this.element, { duration: 750, transition: Fx.Transitions.Quad.easeOut } );
@@ -2768,7 +2769,7 @@ mop.ui.Text = new Class({
 		autoSubmit: true,
 		enabled: true,
 		messages: {
-			hover: "click to edit.",
+			hover: "Click to edit, ctr+enter to save, esc to cancel.",
 			saving:"saving field, please wait&hellip;" 
 		},
 		action: "savefield",
@@ -2824,6 +2825,7 @@ mop.ui.Text = new Class({
 			borderRadius: 4,
 			offset: ( this.options.rows > 1 )? { x: -8, y: -12 } : { x: -8, y: 0 },
 			position: ( this.options.rows > 1 )? { x: 'right', y: 'bottom' } : { x: 'right', y: 'center' },
+			stayOnBlur: true
 		});
 		this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
 		this.field.focus();
