@@ -5,6 +5,7 @@ mop.modules.CMS = new Class({
 	/* Constructor: initialize */
 	Extends: mop.modules.Module,
 	Interfaces: [ mop.modules.navigation.NavigationDataSource ],
+	Implements: mop.util.Broadcaster,
 	rootObjectId: null,
   currentObjectId: null,
 	pageContent: null,
@@ -42,7 +43,11 @@ mop.modules.CMS = new Class({
 	},
 
 	getSaveFieldURL: function(){
-		return  mop.util.getBaseURL() + "ajax/data/cms/savefield/"+this.currentObjectId;
+		return  mop.util.getBaseURL() + "ajax/data/cms/savefield/"+ this.getObjectId();
+	},	
+
+	getSubmitSortOrderURL: function(){
+	    return mop.util.getBaseURL() + "ajax/data/cms/saveSortOrder/" + this.getObjectId();
 	},
 
 	getRootNodeId: function(){       
@@ -51,6 +56,10 @@ mop.modules.CMS = new Class({
 
 	getObjectId: function(){
 		return this.currentObjectId;
+	},
+	
+	setObjectId: function( objectId ){
+		this.currentObjectId = objectId;	
 	},
 
 	/* Section: Constructor */
@@ -67,7 +76,7 @@ mop.modules.CMS = new Class({
 	},
 
 	/* Section: Methods */
-    toString: function(){return this.stringIdentifier},
+	toString: function(){return this.stringIdentifier},
 
 	build: function(){
 		this.pageContent = $("nodeContent");
@@ -75,16 +84,15 @@ mop.modules.CMS = new Class({
 	},
 
 	populate: function( html ){
-		console.log("!");
 		$("nodeContent").unspin();
 		this.pageContent.set( 'html', html );
 		this.UIElements = this.initUI( this.pageContent );
 		this.initModules( this.pageContent );		
-		this.titleElement = this.element.getElement( ".pageTitle" );
+		this.titleElement = this.element.getElement( ".objectTitle" );
 		if( this.titleElement ){
 			this.titleText = this.titleElement.getElement( "h2" ).get( "text" );
 			this.deletePageLink = this.titleElement.getElement( "a.deleteLink" );
-   		    this.slugIPE = this.titleElement.getElement( ".field-slug" );
+   		this.slugIPE = this.titleElement.getElement( ".field-slug" );
 			var titleIPE = this.titleElement.getElement( ".field-title" ).retrieve("Class");
 			if( titleIPE ) titleIPE.registerOnCompleteCallBack( this.onTitleEdited.bind( this ) );
 		}
@@ -101,8 +109,9 @@ mop.modules.CMS = new Class({
     Section: Event Handlers
 */
 	onTitleEdited: function( json ){
-	    console.log( "*---------------> ", json );
-	    this.slugIPE.retrieve( "Class" ).setValue( json.response.slug );
+    console.log( "*---------------> ", this.getObjectId(), json );
+		this.broadcastEvent( 'objectnamechanged', [ this.getObjectId(), json.response.value ] );
+    this.slugIPE.retrieve( "Class" ).setValue( json.response.slug );
 	},
 
 	onJSLoaded: function( html, jsLoadCount ){
@@ -125,7 +134,7 @@ mop.modules.CMS = new Class({
     	Arguments: nodeId MoPObject Id of a page object.
     */
 	requestPage: function( nodeId ){
-      this.currentObjectId = nodeId;
+			this.setObjectId( nodeId );
 			return new Request.JSON( {url: this.getRequestPageURL( nodeId ), onSuccess: this.requestPageResponse.bind( this )} ).send();
 	},
     
@@ -164,47 +173,44 @@ mop.modules.CMS = new Class({
       }
    },
 
-   /*
-    Section: mop.modules.navigation.NavigtionDelegate Interface Requests and Response
+/*
+	Section: mop.modules.navigation.NavigtionDelegate Interface Requests and Response
 */
 
-    onNodeSelected: function( nodeId ){
-      console.log( this.toString(), "onNodeSelected", nodeId );
-      this.clearPage();
-      // if(this.pageContent){
-      //    this.pageContent.spin();
-      // }
-			if( this.pageRequest ) this.pageRequest.cancel();
-      this.pageRequest = this.requestPage( nodeId );
-   },
-    
-   /*
-    Section: mop.modules.navigation.NavigationDataSource Interface Requests and Response
+	onNodeSelected: function( nodeId ){
+		console.log( this.toString(), "onNodeSelected", nodeId );
+		this.clearPage();
+		if( this.pageRequest ) this.pageRequest.cancel();
+		this.pageRequest = this.requestPage( nodeId );
+	},
+
+/*
+	Section: mop.modules.navigation.NavigationDataSource Interface Requests and Response
 */
 
-   requestTier: function( parentId, callback ){
-      // console.log( "requestTier", parentId );
-      this.currentObjectId = parentId;
-      return new Request.JSON( {
-         url: this.getRequestTierURL( parentId ),
-         onSuccess: function( json ){
-            //                 console.log( "requestTier, complete: ", json, json.returnValue );
-            this.requestTierResponse( json );
-            callback( json );
-         }.bind( this )
-      }).send();
-   },
+	requestTier: function( parentId, callback ){
+		// console.log( "requestTier", parentId );
+		this.currentObjectId = parentId;
+		return new Request.JSON( {
+			url: this.getRequestTierURL( parentId ),
+			onSuccess: function( json ){
+				this.requestTierResponse( json );
+				callback( json );
+			}.bind( this )
+		}).send();
+	},
 
-   requestTierResponse: function( json ){
-      //        console.log( this.toString(), "requestTierResponse", json );
-      if( !json.returnValue ) console.log( this.toString(), "requestTier error:", json.response.error );
-   },
+	requestTierResponse: function( json ){
+		if( !json.returnValue ) console.log( this.toString(), "requestTier error:", json.response.error );
+	},
 
-   saveSortRequest: function( objectId, idArray, callback ){},
+	saveTierSortRequest: function( newOrder ){
+		return new Request.JSON( { url: this.getSubmitSortOrderURL(), onComplete: this.saveSortResponse.bind( this ) } ).post( { sortOrder: newOrder } );	
+	},
 
-   saveSortResponse: function( json ){
-      if( !json.returnValue ) console.log( this.toString(), "saveSortRequest error:", json.response.error );
-   },
+	saveSortResponse: function( json ){
+		if( !json.returnValue ) console.log( this.toString(), "saveSortRequest error:", json.response.error );
+	},
 	
    addObjectRequest: function( parentId, templateId, nodeProperties, callback ){
       console.log( "addObjectRequest", parentId, templateId, nodeProperties, callback );
@@ -252,7 +258,6 @@ mop.modules.CMS = new Class({
     },
 	
     togglePublishedStatusResponse: function( json ){
-	console.log( "#### ", json );
         if( !json.returnValue ) console.log( this.toString(), "togglePublishedStatusRequest error:", json.response.error );        
     }
 

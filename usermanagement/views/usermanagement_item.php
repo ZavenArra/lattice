@@ -17,7 +17,7 @@
 <?print_r($data['role']);?>
 	<?=mopui::radioGroup( 'role', '', $managedRoles, $data['role'], 'User Role');?>
 	
-	<div class="itemControls">
+	<div class="itemControls clearFix">
 		<a href="#" title="delete this list item" class="icon delete"><span>delete</span></a>
 		<a href="#" title="submit" class="button submit hidden">submit</a>
 		<a href="#" title="cancel" class="button cancel hidden">cancel</a>

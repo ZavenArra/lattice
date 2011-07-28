@@ -472,11 +472,6 @@ mop.modules.MoPList = new Class({
 		this.oldSort = this.serialize();
 	},
 	
-	toggleSortable: function(){
-		if( this.sortableList ){ this.removeSortable( this.sortableList ); }else{ this.makeSortable(); }
-		console.log( "toggleSortable", this.sortableList );
-	},
-	
 	resumeSort: function(){
 		if( this.allowChildSort && this.sortableList ) this.sortableList.attach();
 	},

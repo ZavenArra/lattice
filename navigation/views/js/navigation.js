@@ -26,12 +26,21 @@ mop.modules.navigation.Navigation = new Class({
 		return this.nodeData[ nodeId ].slug;		
 	},
 	
+	getNodeById: function( nodeId ){
+		return this.nodeData[ nodeId ].node;
+	},
+	
 	getUserLevel: function(){
 		return this.userLevel;
 	},
 	
 	onAppStateChanged: function( appState ){
 		console.log( 'mop.modules.navigation.Navigation.appStateChanged', appState );
+	},
+	
+	onObjectNameChanged: function( objId, name ){
+		this.nodeData[ objId ].title = name;
+		$( 'node_' + objId ).getElement( "h5" ).set( 'text', name );
 	},
 	
 	initialize: function( element, marshal, options ){
@@ -44,6 +53,9 @@ mop.modules.navigation.Navigation = new Class({
 		}.bind( this ) );
 		
 		this.dataSource = ( !this.options.dataSource )? this.marshal : this.options.dataSource;
+		this.dataSource.addListener( this );
+		this.addEvent( 'objectnamechanged', this.onObjectNameChanged.bind( this ) );
+		
 		this.navPaneTemplate = this.element.getElement( ".pane" ).dispose();
 		this.paneContainer = this.element.getElement( ".panes" );
 		this.navPanes = this.element.getElements( ".pane" );
@@ -55,6 +67,7 @@ mop.modules.navigation.Navigation = new Class({
 		console.log( "/////////////////////////////////" );
 		console.log( "rootId:", rootId );	
 		console.log( "userLevel:", this.userLevel );
+		console.log( "appStatus:", mop.historyManager.getAppState() );
 		console.log( "/////////////////////////////////" );
 		this.requestTier( rootId, null );		
 	},
@@ -99,13 +112,17 @@ mop.modules.navigation.Navigation = new Class({
 		}
 	},
 
+	saveTierSort: function( order ){
+		this.dataSource.saveTierSortRequest( order );
+	},
+
 	requestTierResponse: function( json, parentId, containerPane ){
 		console.log( "requestTierResponse", json, parentId, containerPane );
 		json.response.data.nodes.each( function( nodeObj ){
-//			console.log(nodeObj.id, nodeObj.slug);
+//		console.log( nodeObj.id, nodeObj.slug );
 			this.nodeData[ nodeObj.id ] = nodeObj;
 		}, this );
-		var tier = new mop.modules.navigation.Tier( this, json.response.html, parentId );
+		var tier = new mop.modules.navigation.Tier( this, json.response, parentId );
 		this.tiers[ parentId ] = tier;
 		this.renderPane( tier, containerPane, parentId );
 	},
@@ -164,31 +181,27 @@ mop.modules.navigation.Navigation = new Class({
 		console.log( "\tB removeObject", this.nodeData, "(", Object.getLength(this.nodeData), ")"  );
 	},
 
-   togglePublishedStatus: function( nodeId ){
-      this.dataSource.togglePublishedStatusRequest( nodeId );        
-   },
-    
-   onCrumbClicked: function( aNode ){
-      console.log( ":::::::::::: onBreadCrumbClicked ", aNode.id );
-      console.log( "\t", aNode.index );
-      console.log( "\t", this.navPanes[ aNode.index ].retrieve( "tier" )  );
-      this.requestTier( aNode.id, this.navPanes[ aNode.index ].retrieve( "tier" ) );
-      this.marshal.onNodeSelected( aNode.id );
-   },
-	
-   addCrumb: function( label, id, paneIndex ){
-      console.log( "addBreadCrumb", label, id, paneIndex );
-      this.breadCrumbs.addCrumb( {
-         label: label, 
-         id: id, 
-         index: paneIndex
-      } );
-   },
-	
-   removeCrumb: function( paneIndex ){
-      this.breadCrumbs.removeCrumb( paneIndex );
-   }
-	
+	togglePublishedStatus: function( nodeId ){
+		this.dataSource.togglePublishedStatusRequest( nodeId );        
+	},
+
+	onCrumbClicked: function( aNode ){
+		console.log( ":::::::::::: onBreadCrumbClicked ", aNode.id );
+		console.log( "\t", aNode.index );
+		console.log( "\t", this.navPanes[ aNode.index ].retrieve( "tier" )  );
+		this.requestTier( aNode.id, this.navPanes[ aNode.index ].retrieve( "tier" ) );
+		this.marshal.onNodeSelected( aNode.id );
+	},
+
+	addCrumb: function( label, id, paneIndex ){
+		console.log( "addBreadCrumb", label, id, paneIndex );
+		this.breadCrumbs.addCrumb( { label: label, id: id, index: paneIndex });
+	},
+
+	removeCrumb: function( paneIndex ){
+		this.breadCrumbs.removeCrumb( paneIndex );
+	}
+
 });
 
 mop.modules.navigation.Tier = new Class({
@@ -200,51 +213,48 @@ mop.modules.navigation.Tier = new Class({
 	parentId: null,
 	activeNode: null,
 	drawer: null,
+	sortableList: null,
+
 	options: { 
 		addPosition: 'bottom',
 		allowChildSort: true
 	},
 	
-	initialize: function( aMarshal, html, parentId ){
-		//    console.log( html );
+	initialize: function( aMarshal, response, parentId ){
 		this.marshal = aMarshal;
-		this.html = html;
+		this.html = response.html;
+		this.setOptions( response.data );
 		this.parentId = parentId;
 	},
-	
-   toString: function(){
-      return "[ Object, mop.MoPObject, mop.modules.navigation.Tier ]"
-   },
-	
-   getNodeIdFromElement: function( anElement ){
-      //	    console.log( "getNodeIdFromElement", anElement );
-      return anElement.get("id").split( "_" )[1];
-   },
-    
+
+	toString: function(){
+		return "[ Object, mop.MoPObject, mop.modules.navigation.Tier ]"
+	},
+
+	getNodeIdFromElement: function( anElement ){
+		return anElement.get("id").split( "_" )[1];
+	},
 
 	attachToPane: function( navPane ){
-		//    console.log( "attachToPane", this, navPane );
 		navPane.store( "tier", this );
-		
 		this.options = Object.merge( this.options, navPane.getOptionsFromClassName() );
-		console.log( ":::::::::::::::::", this.options );
 		this.element = navPane;
 		this.render();
 		this.spinner = new Spinner( this.element );
 	},
-
-   detach: function(){
-      this.element.eliminate( "tier" );
-      this.element = this.activeNode = null;
-   },
 	
-   getActiveNode: function(){
-      return this.activeNode;
-   },
-
-   getActiveNodeId: function(){
-      return this.getNodeIdFromElement( this.activeNode );
-   },
+	detach: function(){
+		this.element.eliminate( "tier" );
+		this.element = this.activeNode = null;
+	},
+	
+	getActiveNode: function(){
+		return this.activeNode;
+	},
+	
+	getActiveNodeId: function(){
+		return this.getNodeIdFromElement( this.activeNode );
+	},
 	
 	adoptNode: function( newNode ){
 		if( this.options.addPosition == "top" ){
@@ -265,6 +275,7 @@ mop.modules.navigation.Tier = new Class({
 		mop.util.stopEvent( e );
 		this.element.set( 'html', this.html );
 		this.nodeElement = this.element.getElement( ".nodes" );
+		if( this.options.allowChildSort ) this.makeSortable( this.nodeElement );
 		this.nodes = this.element.getElements(".node");
 		this.nodes.each( function( aNodeElement ){
 			this.initNode( aNodeElement );
@@ -275,24 +286,19 @@ mop.modules.navigation.Tier = new Class({
 				duration: 200, 
 				transition: Fx.Transitions.Quad.easeInOut
 			});
-			
 			// make nodes element shorter by the height of the addableObjects title height
-			this.nodeElement.setStyle( 'height', this.nodeElement.getSize().y - this.drawer.getElement( "div.titleBar" ).getSize().y );
-			
+			this.nodeElement.setStyle( 'height', this.nodeElement.getSize().y - this.drawer.getElement( "div.titleBar" ).getDimensions().height );
 			this.drawer.getElement( '.close' ).addClass( 'hidden' );
 			this.drawer.setStyle( 'height', 'auto' );
 			this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', 'auto' );
 			this.drawer.getElement( '.close' ).addEvent( 'click', this.render.bindWithEvent( this ) );
 			if( !this.drawer.retrieve( 'initTop' ) ) this.drawer.store( "initTop", this.drawer.getStyle( "top" ) );	
 			this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
-			
 			var addObjectLinks = this.drawer.getElements( "li" );
 			// wire addobject links
 			addObjectLinks.each( function( aLink ){
-				console.log( aLink );
 				aLink.addEvent( "click", this.onAddObjectClicked.bindWithEvent( this, aLink ) );
 			}, this );
-			
 			if( this.marshal.getUserLevel() == 'superuser' && addObjectLinks.length > 5  ){
 				this.element.removeClass( "dark" );
 				this.drawer.getElement( ".close" ).addClass("hidden");
@@ -321,8 +327,8 @@ mop.modules.navigation.Tier = new Class({
 	},
 
 	initNode: function( aNodeElement ){
-//          aNodeElement.addEvent( "focus", this.indicateNode.bindWithEvent( this, aNodeElement ) );
-//          aNodeElement.addEvent( "blur", this.deindicateNode.bindWithEvent( this, aNodeElement ) );
+//  aNodeElement.addEvent( "focus", this.indicateNode.bindWithEvent( this, aNodeElement ) );
+//	aNodeElement.addEvent( "blur", this.deindicateNode.bindWithEvent( this, aNodeElement ) );
 		aNodeElement.store( "options", aNodeElement.getOptionsFromClassName() );
 		aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
 		var togglePublishedStatusElement = aNodeElement.getElement(".togglePublishedStatus");
@@ -344,9 +350,8 @@ mop.modules.navigation.Tier = new Class({
       nodeElement.removeClass("active");
    },
 
-   /**
-    * Section: Event Handlers
-	*/
+/*	Section: Event Handlers	*/
+
 	onMouseEnter: function( e, nodeElement ){
 		mop.util.stopEvent( e );
 		this.indicateNode( aNodeElement );
@@ -429,41 +434,65 @@ mop.modules.navigation.Tier = new Class({
 		this.marshal.addObject( this.parentId, templateId, { title: nodeTitle }, this );
 	},
 
-   onAddObjectResponse: function (json, placeHolder){
-       placeHolder.destroy();
-//       var newElement = 
-       if( this.marshal.options.addPosition ){
-           
-       }else{
-           
-       }
-   },
-	
 	onObjectAdded: function(){
 		this.spinner.hide();
 	},
-	
-   makeSortable: function(){
-      if( this.isSortable ){
-	        
-      }
-   },
-	
-   onNodeRenamed: function(){
-	    
-   },
-	
-   onSort: function(){
-	    
-   },
-	
-   clearTier: function(){
-	    
-   },
 
-   dispose: function(){
-	    
-   }
+	makeSortable: function( sortableListElement ){	
+		this.sortableListElement = sortableListElement;
+		if( !this.sortableList ){
+			this.sortableList = new mop.ui.Sortable( this.sortableListElement, this, this.sortableListElement  );
+		}else{
+			this.sortableList.attach();
+		}
+		this.oldSort = this.serialize();
+	},
+	
+	removeSortable: function( aSortable ){
+		aSortable.detach();
+		delete aSortable;
+		aSortable = null;
+	},
+
+	onOrderChanged: function(){
+		var newOrder = this.serialize();
+		console.log( "onOrderChanged", newOrder);
+		clearInterval( this.submitDelay );
+		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder.join(",") );
+		newOrder = null;
+	},
+
+	submitSortOrder: function( newOrder ){
+		if( this.options.allowChildSort && this.oldSort != newOrder ){
+			clearInterval( this.submitDelay );
+			this.submitDelay = null;
+			this.marshal.saveTierSort( newOrder );
+			this.oldSort = newOrder;
+		}
+	},
+
+	serialize:function(){
+		var sortArray = [];
+		var children = this.sortableListElement.getChildren("li");
+		children.each( function ( aListing ){
+			if( aListing.get( "id" ) ){
+	//    		    console.log( this.toString(), aListing, aListing.get( "id" ) ); 	
+				var listItemId = aListing.get("id");
+				var listItemIdSplit = listItemId.split( "_" );
+				listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
+				sortArray.push( listItemId );		        
+			}
+		});
+		return sortArray;
+	},
+		
+	onNodeRenamed: function(){
+
+	},
+
+	dispose: function(){
+
+	}
 	
 
 });
