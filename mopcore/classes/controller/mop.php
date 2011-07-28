@@ -40,20 +40,20 @@ class Controller_MOP extends Controller {
 	 */
 	public function checkAccess(){
 		//Authentication check
-		$role = Kohana::config(strtolower($this->controllerName).'.authrole', FALSE, FALSE);
+		$roles = Kohana::config(strtolower($this->controllerName).'.authrole', FALSE, FALSE);
 
    // echo Session::instance()->id();
     //echo '<<<<<';
 		//checked if logged in
-		if($role && !Auth::instance()->logged_in($role)){
+		if($roles && !Auth::instance()->logged_in()){
 			Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
 			exit;
 		}
 
-		if(is_array($role)){
+		if(is_array($roles)){
 			$accessGranted = false;
-			foreach($role as $aRole){
-				if($role=='admin'){
+			foreach($roles as $aRole){
+				if($aRole=='admin'){
 					if(Kohana::config('mop.staging_enabled') && !Kohana::config('mop.staging')){
 						$redirect = 'staging/'. Router::$current_uri;
 						Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
@@ -65,14 +65,14 @@ class Controller_MOP extends Controller {
 				}
 			}
 		} else {
-			if($role=='admin'){
+			if($roles=='admin'){
 				if(Kohana::config('mop.staging_enabled') && !Kohana::config('mop.staging')){
 					$redirect = 'staging/'. Router::$current_uri;
 					Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 				}
 			}
 
-			$accessGranted = moputil::checkRoleAccess($role);
+			$accessGranted = moputil::checkRoleAccess($roles);
 		}
 
 		if(!$accessGranted){
