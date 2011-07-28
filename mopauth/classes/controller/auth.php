@@ -82,74 +82,58 @@ class Controller_Auth extends Controller_Layout {
 	public function action_login($redirect = null)
 	{
 
-		if (Auth::instance()->logged_in())
+
+		$error = null;
+
+		/*
+		 * Switch to validate library
+		 $form->input('username')->label(TRUE)->rules('required|length[4,32]');
+		$form->password('password')->label(TRUE)->rules('required|length[5,40]');
+		 */
+
+		$formValues = $_POST;
+
+		if (isset($formValues['submit']) )
 		{
-			if($redirect){
-				Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
-			} else {
-				$redirect = Kohana::config('redirect');
-				Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
-
-			}
-
-			$this->response->body($view->render());
-
-		}
-		else
-		{
-
-			$error = null;
-
-			/*
-			 * Switch to validate library
-			 $form->input('username')->label(TRUE)->rules('required|length[4,32]');
-			$form->password('password')->label(TRUE)->rules('required|length[5,40]');
-			 */
-
-			$formValues = $_POST;
-
-			if (isset($formValues['submit']) )
+			// Load the user
+			if (Auth::instance()->login($formValues['username'], $formValues['password']))
 			{
-				// Load the user
-				if (Auth::instance()->login($formValues['username'], $formValues['password']))
-				{
-					// Login successful, redirect
-					if($formValues['redirect']){
-						Request::current()->redirect(url::site($formValues['redirect'],Request::current()->protocol(),false));
-					} else if($redirect = Kohana::config('auth.redirect')){
-						Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
-					} else {
-						Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),false));
-					}
-					return;
+				// Login successful, redirect
+				if($formValues['redirect']){
+					Request::current()->redirect(url::site($formValues['redirect'],Request::current()->protocol(),false));
+				} else if($redirect = Kohana::config('auth.redirect')){
+					Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
+				} else {
+					Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),false));
 				}
-				else
-				{
-					$error = 'Invalid username or password.';
-				}
+				return;
 			}
-
-
-			$view = new View('auth/login');
-
-			if($redirect == 'resetPasswordSuccess'){
-				$view->message = I18n::get('resetPasswordSuccess');
-				$redirect = null;
-			} else if($error){
-				$view->message = $error;
+			else
+			{
+				$error = 'Invalid username or password.';
 			}
-			$view->title = 'User Login';
+		}
 
-			if(!$redirect){
-				if(isset($formValues['redirect'])){
-					$redirect = $formValues['redirect'];
-				}
+
+		$view = new View('auth/login');
+
+		if($redirect == 'resetPasswordSuccess'){
+			$view->message = I18n::get('resetPasswordSuccess');
+			$redirect = null;
+		} else if($error){
+			$view->message = $error;
+		}
+		$view->title = 'User Login';
+
+		if(!$redirect){
+			if(isset($formValues['redirect'])){
+				$redirect = $formValues['redirect'];
 			}
+		}
 
-			$view->redirect = $redirect;
-			$this->response->body($view->render());
+		$view->redirect = $redirect;
+		$this->response->body($view->render());
 
-			}
 	}
 
 	public function action_logout()
