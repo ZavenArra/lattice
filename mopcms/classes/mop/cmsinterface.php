@@ -115,10 +115,10 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 		Function: saveSortOrder
 		Saves sort order of some ids
 		Parameters:
-		$_POST['sortorder'] - array of object ids in their new sort order
+		$_POST['sortOrder'] - array of object ids in their new sort order
 		*/
 		public function action_saveSortOrder(){
-			$order = explode(',', $_POST['sortorder']);
+			$order = explode(',', $_POST['sortOrder']);
 
 			for($i=0; $i<count($order); $i++){
 				if(!is_numeric($order[$i])){
