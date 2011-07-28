@@ -78,53 +78,47 @@ var Interface = function( name, members ) {
 	returns a dom element from a string
 */
 String.implement({ 
-  toElement: function() { 
-    return new Element('div', { html:this } ).getFirst(); 
-  } 
+	toElement: function() { 
+		return new Element('div', { html:this } ).getFirst(); 
+	} 
 });
 
-/*
-	Function: getSiblings
-	Arguments:
-		match - {Element} an element to get the sibling
-		nocache - {Boolean} 
-			
-*/
 Element.implement({
-	getSiblings: function(match,nocache) {
+	/*
+		Function: getSiblings
+		Arguments:
+			match - {Element} an element to get the sibling
+			nocache - {Boolean} 
+
+	*/
+   getSiblings: function(match,nocache) {
 		return this.getParent().getChildren(match,nocache).erase(this);
-	}	
-});
-
-/*
-	Function: getSibling
-	Arguments:
-		match - {Element} an element to get the sibling
-		nocache - {Boolean} 
-	Note: calls getSiblings, returns first element of collection
-*/
-Element.implement({
-    getSibling: function(match,nocache) {
-	return this.getSiblings(match,nocache)[0];
-    }
-});
-
-/*
-	Function: getOptionsFromClassName
-     Loops through a classes className, splits it by 
-*/	
-Element.implement({
+	},
+	/*
+		Function: getSibling
+		Arguments:
+			match - {Element} an element to get the sibling
+			nocache - {Boolean} 
+		Note: calls getSiblings, returns first element of collection
+	*/
+	getSibling: function(match,nocache) {
+		return this.getSiblings(match,nocache)[0];
+   },
+	/*
+		Function: getOptionsFromClassName
+		Loops through a classes className, splits it by 
+	*/
 	getOptionsFromClassName: function(){
-   		if(!this.get("class")) return false;
-   		var classes = this.get('class').split(" ");
-   		var opts = {};
-   		classes.each( function( className ){
-   	    	if( className.indexOf( "-" ) > -1 ){
-       	    	var opt = className.split("-");
-       			opts[ opt[0] ] = opt[1];
-   	    	}
-   		});
-   		return opts;
+		if(!this.get("class")) return false;
+		var classes = this.get('class').split(" ");
+		var opts = {};
+		classes.each( function( className ){
+			if( className.indexOf( "-" ) > -1 ){
+				var opt = className.split("-");
+				opts[ opt[0] ] = opt[1];
+			}
+		});
+		return opts;
 	}
 });
 
@@ -529,9 +523,7 @@ mop.util.Broadcaster = new Class({
 	},
 
 	broadcastEvent: function( eventToFire, args ){
-		console.log( "broadcastEvent", eventToFire, args );
-		this.listeners.each( function( aListener ){
-//			var args = Array.slice( args, 1 );
+			this.listeners.each( function( aListener ){
 			aListener.fireEvent( eventToFire, args );
 		});
 	}

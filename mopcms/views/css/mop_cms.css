@@ -26,9 +26,9 @@ h2,
     left: -3000px;
 }
 
-.pageTitle .ipe.h2{
-	margin-bottom: 0;
-	margin-left: 0;
+.objectTitle .field-title{
+	position: relative;
+	margin: 0 !important;
 }
 
 h3,
@@ -79,13 +79,25 @@ h6,
 }
 
 .ui-Text{
-    margin-left: 0 !important;
+	position: relative;
 }
 
 .displayField,
 .ui-Text .ipe{
 	border: none;
 	background: #FFFAC4; 
+}
+
+.ui-Text .ipe.discrete{
+	background: #fcfcfc;
+	color: #ccc;
+	font-size: .8em;
+	font-family: helvetica, arial, sans-serif;
+}
+
+.ui-Text .ipe.discrete:hover{
+	background-color: #dedede;
+	color: #aaa;
 }
 
 .displayField,
@@ -95,7 +107,7 @@ h6,
 .ui-Input input{
 	font-family: Georgia, Times, Serif;
 	margin: 0em 0em .5em 0em;
-	padding: 4px .5em;
+	padding: .25em .5em;
 	color:#222;
 	line-height: 1.5em;
 	height: 1.5em;
@@ -117,13 +129,10 @@ h6,
 	color:#fff;
 }
 
-textarea, input{
+/*textarea, input{
 	display:block;
-	font-family: georgia, times, serif;
-	font-size:inherit;
-	line-height: inherit;
 }
-
+*/
 h1 img, 
 h2 img,
 h3 img, 
@@ -263,8 +272,6 @@ ul.listing li{
 }
 
 ul.listing.allowChildSort-true li{ cursor: pointer; }
-/*.itemControls, .controls{ clear: both; height: 2em; }
-*/
 .classPath-mop_modules_ListModule{ margin-bottom: 2em; }
 
 .listItem>.itemControls .delete{
@@ -292,11 +299,6 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 .ui-File .controls,
 .ui-ImageFile .controls{
 	margin-left: .25em;
-}
-
-.ipeControls{
-	margin: 0 0 1em 0;
-	height: 1.5em;
 }
 
 .ui-FileElement img{
@@ -354,12 +356,11 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 
 #nodeContent{ margin: 2em 0 0 0; }
 
-.pageTitle{ margin: 0 0 2em 0; }
-.pageTitle .deleteLink{ margin: 2em 0 0 .5em; }
-.pageTitle .field-slug{ font-size: 10px; margin: .5em 0 0 0; clear: both; }
-.pageTitle .field-slug label{ float: left; line-height: 2.75; }
-.pageTitle .field-slug p.ipe, .pageTitle .field-slug .IPEForm{ margin: 0 0 0 3em !important; }
-
+.objectTitle{ margin: 0 0 2em 0 !important; }
+.objectTitle .ipe.h2,
+.objectTitle input.h2{ margin-bottom: .25em !important; }
+.objectTitle .deleteLink{ margin: 2em 0 0 .5em; }
+.objectTitle .field-slug{ margin: 0 0 .5em 0; }
 
 a.icon, a.command{
 	display:block;
@@ -373,6 +374,7 @@ a.icon, a.command{
 
 a.icon{
 	text-indent: -3000px;
+	margin: .25em;
 }
 
 a.command{
@@ -613,7 +615,11 @@ th.spinner{
 .boxModule>*{ margin-left: 12px; }
 
 input[type='radio']{ margin-top: .5em; }
-.ipe{ min-height: 1.2em; height: auto !important; }
+
+.ipe{ 
+	min-height: 1.2em;
+	height: auto !important;
+}
 .rows-10 .ipe{ min-height: 10em; }
 .rows-6 .ipe{ min-height: 6em; }
 .rows-5 .ipe{ min-height: 5em; }
@@ -710,12 +716,30 @@ a#bigRedButton:hover{
 	opacity: .4;
 }
 
-.sticky{
-	color: #eee;
-	width: 120px;
+.sticky.tickRight{
+	padding-right: 9px;
+	background: url( ../images/tickRight.png ) center right no-repeat;
+}
+.sticky.tickLeft{
+	padding-left: 9px;
+	background: url( ../images/tickLeft.png ) center left no-repeat;
+}
+.sticky.tickTop{
+	padding-top: 9px;
+	background: url( ../images/tickTop.png ) top center no-repeat;
+}
+.sticky.tickBottom{
+	padding-bottom: 9px;
+	background: url( ../images/tickBottom.png ) bottom center no-repeat;
 }
 
-.sticky .top{
+.sticky .content{
+	background: #000;
+	height: 1.75em;
+	padding: .125em .125em;
+}
+
+/*.sticky .top{
 	padding: .65em .65em 0 .65em;
 	background: url( ../images/stickyTop.png ) no-repeat;
 }
@@ -750,7 +774,7 @@ a#bigRedButton:hover{
 	margin: 0 0 0 0;
 	background: url( ../images/stickyBottom.png ) bottom left;	
 }
-
+*/
 .controlGroup{
 	border: 1px #dedede solid;
 	padding: 1em;

@@ -370,7 +370,7 @@ mop.modules.MoPList = new Class({
         delete this.items;
         this.items = null;
         this.items = [];
-        if( this.options.allowChildSort ) this.makeSortable();
+        if( this.options.allowChildSort ) this.makeSortable( this.listing );
         this.objectId = this.element.get("id").split("_")[1];
 	},
 	

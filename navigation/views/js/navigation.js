@@ -69,7 +69,7 @@ mop.modules.navigation.Navigation = new Class({
 		console.log( "userLevel:", this.userLevel );
 		console.log( "appStatus:", mop.historyManager.getAppState() );
 		console.log( "/////////////////////////////////" );
-		this.requestTier( rootId, null );		
+		this.requestTier( rootId, null );
 	},
 
 	addPane: function( parentId ){
