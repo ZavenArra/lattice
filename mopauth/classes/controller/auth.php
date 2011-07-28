@@ -141,7 +141,9 @@ class Controller_Auth extends Controller_Layout {
 			$view->title = 'User Login';
 
 			if(!$redirect){
-				$redirect = $formValues['redirect'];
+				if(isset($formValues['redirect'])){
+					$redirect = $formValues['redirect'];
+				}
 			}
 
 			$view->redirect = $redirect;
