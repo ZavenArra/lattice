@@ -50,7 +50,7 @@ class Controller_ExportXML extends Controller {
          if ($key == 'objectTypeName' || $key == 'dateadded') {
             continue;
          }
-         if ($key == "slug" && $value = "") {
+         if ($key == "slug" && $value == "") {
             continue;
          }
          if ($key == "id") {
@@ -70,17 +70,19 @@ class Controller_ExportXML extends Controller {
  
 				 
 				 if (is_object($value)) {
+
             switch (get_class($value)) {
-               case 'File_Model':
+               case 'Model_File':
 //or copy to directory and just use filename
                   if ($value->fullpath) {
                      $node->appendChild($this->doc->createTextNode($value->fullpath));
                   }
                   break;
-               case 'Page_Model':
+               case 'Model_Object':
                   foreach ($this->getObjectFields($value) as $subField) {
 //$field->appendChild($subField);
                      echo "sub objects not yet supported for mop export\n";
+										 echo $key;
                   }
                   break;
             }
