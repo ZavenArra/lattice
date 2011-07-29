@@ -56,6 +56,9 @@ class Controller_ExportXML extends Controller {
          if ($key == "slug" && $value == "") {
             continue;
          }
+				 if($key == "title" && $value == ""){
+					 $value = microtime();
+				 }
          if ($key == "id") {
             continue;
          }

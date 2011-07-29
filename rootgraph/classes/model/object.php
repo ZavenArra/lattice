@@ -687,7 +687,11 @@ class Model_Object extends ORM {
       if (isset($data['title'])) {
          $newObject->slug = mopcms::createSlug($data['title'], $newObject->id);
       } else {
-         $newObject->slug = mopcms::createSlug();
+				//$newObject->title = 'No Title';
+				//Don't want to do this yet because then all objects will have same title
+				//which is a problem for import, which assumes same title same tier objects
+				//are the same object
+				$newObject->slug = mopcms::createSlug();
       }
       $newObject->parentid = $this->id;
 
