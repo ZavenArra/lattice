@@ -7,7 +7,6 @@ if( !mop.modules.navigation ) mop.modules.navigation = {};
 mop.modules.navigation.NavigationDataSource = new Interface( "NavigationDataSource", { 
     requestTier: function( parentId, callback ){},
     onNodeSelected: function( nodeId, callback ){},
-    // saveSort serializedIds should be an array right?
     saveTierSortRequest: function( parentId, serializedIds, callback ){},
     removeObjectRequest: function( nodeId, callback ){},
     togglePublishedStatusRequest: function( nodeId, callback ){},

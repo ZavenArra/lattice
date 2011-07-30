@@ -2,5 +2,9 @@
 	<?if(isset($label)):?>
 		<label><?=$label;?></label>
 	<?endif;?>
-	<div class="ipe <?=$tag;?>"><?=($value!=null)?$value:"";?></div>
+	<?if($rows > 1 ):?>
+		<textarea class="og <?=$tag;?>"><?=($value!=null)?$value:"";?></textarea>
+	<?else:?>
+		<input class="og <?=$tag;?>" type="text" value="<?if($value!=null)echo$value;?>" />
+	<?endif;?>
 </div>

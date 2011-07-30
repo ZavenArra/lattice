@@ -16,10 +16,10 @@ mop.modules.Module = new Class({
 	*/
 	instanceName: null,
 	/*
-		Variable: UIElements
+		Variable: UIFields
 		Object that stores module's ui elements
 	*/
-	UIElements: {},
+	UIFields: {},
 	/*
 		Variable: childModules
 		Modules within this module
@@ -45,9 +45,11 @@ mop.modules.Module = new Class({
 	Function build: Instantiates mop.ui elements by calling initUI, can be extended for other purposes...
 	*/ 	
 	build: function(){
-	    console.log("mop.modules.Module.build!", this.element );
-		this.UIElements = this.initUI();
-		this.initModules( this.element );
+//		console.log( "mop.modules.Module.build!", this.element );
+		this.UIFields = this.initUI();
+//		console.log( ">>> ", this.UIFields );
+		this.childModules = this.initModules( this.element );
+//		console.log( ">>> ", this.childModules );
 	},
 	
 	toElement: function(){
@@ -59,37 +61,34 @@ mop.modules.Module = new Class({
 	},
 	
 	/*
-		Function: getSubmissionController
-		Returns: Name of controller to submit to.
-		Note: Overriden elsewhere
-	*/
-	// getSubmissionController: function(){
-	// 	return this.instanceName;
-	// },
-	
-	/*
 		Function: initModules	
 		Loops through elements with the class "module" and initializes each as a module
 		// there is likely a better ( faster ) way to solve this 
 	*/
 	initModules: function( anElement ){
-		var descendantModules = ( anElement )? anElement.getElements(".module") : this.element.getElements(".module");
-		var filteredOutModules = [];
+//	console.log( 'initModules', anElement );
+		var childModules, filteredOutModules, descendantModules;
+		descendantModules = ( anElement )? anElement.getElements(".module") : this.element.getElements(".module");
+		childModules = [];
+		filteredOutModules = [];
 		descendantModules.each( function( aDescendant ){
 			descendantModules.each( function( anotherDescendant ){
-				if(  aDescendant.contains( anotherDescendant ) && aDescendant != anotherDescendant ) filteredOutModules.push( anotherDescendant );
+				if(  aDescendant.contains( anotherDescendant ) && aDescendant != anotherDescendant ){
+//					console.log( "::::::", anotherDescendant );
+					filteredOutModules.push( anotherDescendant );
+				}
 			}, this );
-		}, this );
+		}, this );		
 		descendantModules.each( function( aDescendant ){
 			if( !filteredOutModules.contains( aDescendant ) ){
+				// console.log( "\t", 'calling initmodule on', aDescendant );
 				var module = this.initModule( aDescendant );
 				var instanceName = module.instanceName;
-//                console.log( "\n::\t", module.instanceName, "is a descendant of ", this.toString());
-				this.childModules[ instanceName ] = module;
+				// console.log( "\n::\t", module.instanceName, "is a descendant of ", this.toString());
+				childModules[ instanceName ] = module;
 			}
 		}, this );
-        delete filteredOutModules, descendantModules;
-        filteredOutModules = descendantModules = null;
+		return childModules;
 	},
 	
 	
@@ -97,33 +96,36 @@ mop.modules.Module = new Class({
 		Function: initModule
 		Initializes a specific module
 	*/
-	initModule: function( element ){
-		var classPath = mop.util.getValueFromClassName( "classPath", element.get( "class" ) ).split( "_" );
-		console.log( "\t\tinitModule", this.toString(), element, classPath );
+	initModule: function( anElement ){
+		// console.log( Array.from( arguments ) );
+		// console.log( "initModule", this.toString(),  "element", anElement );
+		var elementClass = anElement.get( 'class' );
+		var classPath = mop.util.getValueFromClassName( "classPath", elementClass ).split( "_" );
 		ref = null;
+//		console.log( "\t\tinitModule classPath",  classPath );
 		classPath.each( function( node ){
-		    ref = ( !ref )? this[node] : ref[node]; 
-//  		    console.log( ref, node );
+			ref = ( !ref )? this[node] : ref[node]; 
+//		console.log( ref, node );
 		});
-		var newModule = new ref( element, this );
+		var newModule = new ref( anElement, this );
 		return newModule;		
 	},
 
 	/*
-		Function: getModuleUIElements
+		Function: getModuleUIFields
 	*/
-	getModuleUIElements: function( anElement ){
+	getModuleUIFields: function( anElement ){
 		var elements = [];
 		anElement.getChildren().each( function( aChild, anIndex ){
 			if( aChild.get( "class" ).indexOf( "ui-" ) > -1 ){
-//			    console.log( "\t\tgetModuleUIElements ", aChild );
+//			    console.log( "\t\tgetModuleUIFields ", aChild );
 				elements.combine( [ aChild ] );
 			} else if( !aChild.hasClass( "modal" ) && !aChild.hasClass( "module" ) && !aChild.hasClass( "listItem" ) ){
-//			    console.log( "\t\tgetModuleUIElements ", aChild );
-				elements.combine( this.getModuleUIElements( aChild ) );
+//			    console.log( "\t\tgetModuleUIFields ", aChild );
+				elements.combine( this.getModuleUIFields( aChild ) );
 			}
 		}, this );
-//		console.log( "getModuleUIElements", this.toString(), anElement, elements );
+//		console.log( "getModuleUIFields", this.toString(), anElement, elements );
 		return elements;
 	},
 	/*
@@ -131,19 +133,20 @@ mop.modules.Module = new Class({
 		loops through child elements and instantiates ui elements that dont live inside other modules
 	*/
 	initUI: function( anElement ){
-	    anElement = ( anElement )? anElement : this.element;
-		var ModuleUIElements = this.getModuleUIElements( anElement );
-		if( !ModuleUIElements || ModuleUIElements.length == 0  ) {
-         this.UIElements = new Array();
-         return this.UIElements;
-      }
-		ModuleUIElements.each( function( anElement ){
-//		    console.log( 'initUI >>>> ', anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  );
-		    var UIElement = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) ) ]( anElement, this, this.options );
-		    this.UIElements[ UIElement.fieldName ] = UIElement;
+		anElement = ( anElement )? anElement : this.element;
+		var moduleUIFields = this.getModuleUIFields( anElement );
+		if( !moduleUIFields || moduleUIFields.length == 0  ) {
+			this.UIFields = new Array();
+			return this.UIFields;
+		}
+		moduleUIFields.each( function( anElement, index ){
+			console.log( 'initUI >>>> ', anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  );
+			var UIField = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) ) ]( anElement, this, this.options );
+			this.UIFields[ UIField.fieldName ] = UIField;
+			if( UIField.field ) UIField.field.set( 'tabindex', index+1 );
 		}, this );
 		if( this.postInitUIHook ) this.postInitUIHook();
-		return this.UIElements;
+		return this.UIFields;
 	},
 
 /*  Function: destroyChildModules */
@@ -163,30 +166,23 @@ mop.modules.Module = new Class({
 		}, this );
 	},
 	
-	destroyUIElements: function(){
-//		console.log( "destroyUIElements", this, this.instanceName, this.UIElements );
-		if( !this.UIElements || !this.UIElements.length || this.UIElements.length == 0  ) return;
-		Object.each( this.UIElements, function( aUIElement ){
-			aUIElement.destroy();
-			this.UIElements.erase( aUIElement );
-			delete aUIElement;
-			aUIElement = null;
+	destroyUIFields: function(){
+		console.log( "destroyUIFields before", this.instanceName, this.UIFields );
+		Object.each( this.UIFields, function( aUIField ){
+			aUIField.destroy();
+			delete aUIField;
+			aUIField = null;
 		}, this );
-		
-//	console.log( "post destroyUIElements ", this.UIElements );
-
+		this.UIFields = {};
+		console.log( "destroyUIFields after ", this.instanceName, this.UIFields );
 	},
 	
 	destroy: function(){
 		this.destroyChildModules();
-		this.destroyUIElements();
-		
-		delete this.UIElements;
-		delete this.instanceName;
-		delete this.childModules;
+		this.destroyUIFields();
 		
 		this.instanceName = null;
-		this.UIElements = null;
+		this.UIFields = null;
 		this.childModules = null;
 		
 		this.parent();
@@ -258,14 +254,12 @@ mop.modules.AjaxFormModule = new Class({
             onSuccess: this.onFormSubmissionComplete.bind( this )
         }).post( this.generatedData );
 	},
-	
-	
+
 	validateFields: function(){
 		var returnVal = true
-		this.UIElements.each( function( anUIElement, anIndex ){
-//			console.log( "validateFields", anUIElement.fieldName, anUIElement.enabled );
-			if( anUIElement.validationOptions && anUIElement.enabled ){
-				returnVal = ( anUIElement.validate() )? true : false ;
+		this.UIFields.each( function( aUIField, anIndex ){
+			if( aUIField.validationOptions && aUIField.enabled ){
+				returnVal = ( aUIField.validate() )? true : false ;
 			}
 		});
 		return returnVal;
@@ -276,15 +270,11 @@ mop.modules.AjaxFormModule = new Class({
 	},
 
 	serialize: function(){
-//		console.log( this.toString(), "serialize", this.UIElements.length );
 		var query = "";
 		var keyValuePairs = {};
-		this.UIElements.each( function( anUIElement ){
-			
-//			console.log( this.toString(), anUIElement.type, anUIElement.fieldName, anUIElement );
-
-			if( anUIElement.type != "interfaceWidget" ){
-				keyValuePairs.append( anUIElement.getKeyValuePair() );
+		this.UIFields.each( function( aUIField ){
+			if( aUIField.type != "interfaceWidget" ){
+				keyValuePairs.append( aUIField.getKeyValuePair() );
 			}
 		}, this );
 		return keyValuePairs;
@@ -292,9 +282,8 @@ mop.modules.AjaxFormModule = new Class({
 	
 	clearFormFields: function( e ){
 		mop.util.stopEvent( e );
-		this.UIElements.each( function( anUIElement ){
-			//console.log( this.toString(), anUIElement.type, anUIElement.fieldName, anUIElement );
-			if( anUIElement.setValue ) anUIElement.setValue( null );
+		this.UIFields.each( function( aUIField ){
+			aUIField.setValue( null );
 		}, this );
 	},
 
@@ -311,7 +300,7 @@ mop.modules.AjaxFormModule = new Class({
 			}
 //			log( this.resultsContainer.get( "html" ) );
 		}else{
-			console.log( "NO JSON RESPONSE... check for 500 error?" );
+			throw "NO JSON RESPONSE... check for 500 error?";
 		}
 	
 	}
@@ -414,12 +403,11 @@ mop.modules.MoPList = new Class({
 	onAddObjectResponse: function( json ){
         var element = this.addObjectDialogue.setContent( json.response.html, this.controls.getElement( ".addItem" ).get( "text" ) );
         var listItem = new mop.modules.ListItem( element, this, this.addObjectDialogue, { scrollContext: 'modal' } );
-        console.log( "::::: ", json, typeof listItem.UIElements );
-        Object.each( listItem.UIElements, function( uiInstance ){
-        	uiInstance.scrollContext = "modal";
+        Object.each( listItem.UIFields, function( uiFIeld ){
+        	uiFIeld.scrollContext = "modal";
         });
         this.items.push( listItem );
-        mop.util.EventManager.broadcastEvent( "resize" );
+        mop.util.EventManager.broadcastMessage( "resize" );
         listItem = null;
 	},
 
@@ -428,7 +416,7 @@ mop.modules.MoPList = new Class({
 	  	this.items.erase( item );
 		item.destroy();
 		item = null;
-		mop.util.EventManager.broadcastEvent( "resize" );          
+		mop.util.EventManager.broadcastMessage( "resize" );          
 	},
 	
     removeObjectRequest: function( itemObjectId ){
@@ -454,8 +442,8 @@ mop.modules.MoPList = new Class({
 		var listItemInstance = anElement.retrieve("Class");
 		listItemInstance.scrollContext = 'window';
 		listItemInstance.resetFileDepth();
-		Object.each( listItemInstance.UIElements, function( uiInstance ){
-			uiInstance.scrollContext = "window";
+		Object.each( listItemInstance.UIFields, function( aUIField ){
+			aUIField.scrollContext = "window";
 		});
 		anElement.tween( "opacity", 1 );
 	 	anElement.getElement(".itemControls" ).getElement(".delete").removeClass("hidden");
@@ -526,7 +514,7 @@ mop.modules.MoPList = new Class({
 		this.removeModal();
 		this.addObjectDialogue = this.controls = this.instanceName = this.items = this.listing = this.oldSort = this.allowChildSort, this.sortDirection, this.submitDelay = null;
         if( this.scroller ) this.scroller = null;
-		mop.util.EventManager.broadcastEvent( 'resize' );
+		mop.util.EventManager.broadcastMessage( 'resize' );
 		this.parent();
 	}
 });
@@ -576,17 +564,17 @@ mop.modules.ListItem = new Class({
 	},
 
 	filesToTop: function(){
-		this.UIElements.each( function( uiElementInstance, indexA ){
-			if( uiElementInstance.type == "file" || uiElementInstance.type == "imageFile" ){
- 				uiElementInstance.scrollContext = 'modal';
-				uiElementInstance.reposition( 'modal' );
+		Object.each( this.UIFields, function( aUIField, indexA ){
+			if( aUIField.type == "file" || aUIField.type == "imageFile" ){
+ 				aUIField.scrollContext = 'modal';
+				aUIField.reposition( 'modal' );
 			}
 		}, this );
 	},
 	
 	resetFileDepth: function(){
-	    console.log( this, this.toString(), this.UIElements );
-		Object.each( this.UIElements, function( anElement ){
+		console.log( this, this.toString(), this.UIFields );
+		Object.each( this.UIFields, function( anElement ){
 			if( anElement.type == "file" || anElement.type == "imageFile" ) anElement.reposition( 'window' );
 		});
 	},

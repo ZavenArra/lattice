@@ -4,8 +4,9 @@ mop.modules.CMS = new Class({
 
 	/* Constructor: initialize */
 	Extends: mop.modules.Module,
-	Interfaces: [ mop.modules.navigation.NavigationDataSource ],
+	Interfaces: mop.modules.navigation.NavigationDataSource,
 	Implements: mop.util.Broadcaster,
+
 	rootObjectId: null,
   currentObjectId: null,
 	pageContent: null,
@@ -14,7 +15,6 @@ mop.modules.CMS = new Class({
 	titleText: "",
 	titleElement: null,
 	slugIPE: null,
-	deletePageLink: null,
 	loadedCSS: [],
 	loadedJS: [],
 	stringIdentifier: "[ object, mop.modules.CMS ]",
@@ -64,21 +64,24 @@ mop.modules.CMS = new Class({
 
 	/* Section: Constructor */
 	initialize: function( anElement, options ){
-        this.parent( anElement, null, options );
-        console.log( this.options, this.elementClass, this.options.rootObjectId );
-        this.rootNodeId = this.options.rootObjectId;
-        $$( "script" ).each( function( aScriptTag ){ 
-            this.loadedJS.push( aScriptTag.get("src") );
-        }, this );
-        $$( "link[rel=stylesheet]" ).each( 
-            function( aStyleSheetTag ){this.loadedCSS.push(  aStyleSheetTag );
-        }, this );
+    this.parent( anElement, null, options );
+//    console.log( this.options, this.elementClass, this.options.rootObjectId );
+    this.rootNodeId = this.options.rootObjectId;
+    $$( "script" ).each( function( aScriptTag ){ 
+        this.loadedJS.push( aScriptTag.get("src") );
+    }, this );		
+		
+		
+    $$( "link[rel=stylesheet]" ).each( 
+        function( aStyleSheetTag ){this.loadedCSS.push(  aStyleSheetTag );
+    }, this );
 	},
 
 	/* Section: Methods */
 	toString: function(){return this.stringIdentifier},
 
 	build: function(){
+//		console.log( "build", this.element );
 		this.pageContent = $("nodeContent");
 		this.initModules( this.element );
 	},
@@ -86,32 +89,45 @@ mop.modules.CMS = new Class({
 	populate: function( html ){
 		$("nodeContent").unspin();
 		this.pageContent.set( 'html', html );
-		this.UIElements = this.initUI( this.pageContent );
+		this.UIFields = this.initUI( this.pageContent );
+		console.log( "populate", this.toString(), this.pageContent );
 		this.initModules( this.pageContent );		
 		this.titleElement = this.element.getElement( ".objectTitle" );
 		if( this.titleElement ){
-			this.titleText = this.titleElement.getElement( "h2" ).get( "text" );
-			this.deletePageLink = this.titleElement.getElement( "a.deleteLink" );
+			var titleIPE = this.titleElement.getElement('.field-title');
+			console.log( "???", this.titleElement, titleIPE, titleIPE.retrieve('Class') );
+			this.titleText = titleIPE.retrieve('Class').getValue();
    		this.slugIPE = this.titleElement.getElement( ".field-slug" );
-			var titleIPE = this.titleElement.getElement( ".field-title" ).retrieve("Class");
-			if( titleIPE ) titleIPE.registerOnCompleteCallBack( this.onTitleEdited.bind( this ) );
+			// var titleIPE = this.titleElement.getElement( ".field-title" ).retrieve("Class");
+			if( titleIPE ){
+				titleIPE.addListener( this );
+				this.addEvent( 'uifieldsaveresponse', this.onUIFieldSaved.bind( this ) );
+			}
 		}
 	},
     	
 	clearPage: function(){
 		console.log( "clearPage" );
 		this.destroyChildModules( this.pageContent );
-		this.destroyUIElements();
+		this.destroyUIFields();
 		this.pageContent.empty();
+	},
+	
+	onUIFieldSaved: function( fieldName, response ){
+		console.log( "onUIFieldSaved", fieldName, response );
+		switch( fieldName ){
+			case 'title':
+				this.onTitleEdited( response );
+			break;
+		}
 	},
 
 /*  
     Section: Event Handlers
 */
-	onTitleEdited: function( json ){
-    console.log( "*---------------> ", this.getObjectId(), json );
-		this.broadcastEvent( 'objectnamechanged', [ this.getObjectId(), json.response.value ] );
-    this.slugIPE.retrieve( "Class" ).setValue( json.response.slug );
+	onTitleEdited: function( response ){
+		this.broadcastMessage( 'objectnamechanged', [ this.getObjectId(), response.value ] );
+    if( this.slugIPE ) this.slugIPE.retrieve( "Class" ).setValue( response.slug );
 	},
 
 	onJSLoaded: function( html, jsLoadCount ){
@@ -188,7 +204,7 @@ mop.modules.CMS = new Class({
 	Section: mop.modules.navigation.NavigationDataSource Interface Requests and Response
 */
 
-	requestTier: function( parentId, callback ){
+	requestTier: function( parentId, deepLink, callback ){
 		// console.log( "requestTier", parentId );
 		this.currentObjectId = parentId;
 		return new Request.JSON( {
@@ -264,17 +280,15 @@ mop.modules.CMS = new Class({
 });
 
 if( !mop.util.hasDOMReadyFired() ){
-	
-window.addEvent( "domready", function(){
-	mop.util.DOMReadyHasFired();
-	mop.historyManager = new mop.util.HistoryManager().instance();
-	mop.historyManager.init();
-	mop.ModalManager = new mop.ui.ModalManager();
-	mop.DepthManager = new mop.util.DepthManager(); 
-	var doAuthTimeout = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
-	if( window.location.href.indexOf( "auth" ) == -1 && doAuthTimeout && doAuthTimeout != "0" ) mop.loginMonitor = new mop.util.LoginMonitor();
-	mop.util.EventManager.broadcastEvent("resize");
-	mop.CMS = new mop.modules.CMS( "cms" );
-});
-
+	window.addEvent( "domready", function(){
+		mop.util.DOMReadyHasFired();
+		mop.historyManager = new mop.util.HistoryManager().instance();
+		mop.historyManager.init();
+		mop.ModalManager = new mop.ui.ModalManager();
+		mop.DepthManager = new mop.util.DepthManager(); 
+		var doAuthTimeout = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
+		if( window.location.href.indexOf( "auth" ) == -1 && doAuthTimeout && doAuthTimeout != "0" ) mop.loginMonitor = new mop.util.LoginMonitor();
+		mop.util.EventManager.broadcastMessage( "resize" );
+		mop.CMS = new mop.modules.CMS( "cms" );
+	});
 }

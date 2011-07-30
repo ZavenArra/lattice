@@ -119,33 +119,28 @@ Element.implement({
 			}
 		});
 		return opts;
-	}
-});
-
-
-/*
-	Function: isBody
-	Paramaters: 
-		element - {Element}
-*/
-Element.implement({
+	},
+	
+	/*
+		Function: isBody
+		Paramaters: 
+			element - {Element}
+	*/
 	isBody: function(element){
 		return (/^(?:body|html)$/i).test(element.tagName);
+	},
+
+	getValueFromClassName: function( key ){
+		if(!this.get("class")) return false;
+		var classes = this.get("class").split(" ");
+		var result;
+		classes.each( function( className ){
+		  if( className.indexOf( key ) == 0 ) result = className.split("-")[1];
+		});
+		return result;
 	}
+
 });
-
-
-// Element.implement({
-//     getValueFromClassName: function( key ){
-//      if(!this.get("class")) return false;
-//      var classes = this.get("class").split(" ");
-//      var result;
-//      classes.each( function( className ){
-//          if( className.indexOf( key ) == 0 ) result = className.split("-")[1];
-//      });
-//      return result;
-//     }
-// })
 
 /*
 	Function: Function.bindWithEvent
@@ -495,16 +490,17 @@ mop.MoPObject = new Class({
 		this.options = Object.merge( this.options, this.element.getOptionsFromClassName() );
 		this.marshal = aMarshal;
 		this.element.store( 'Class', this );
-	},
+	},	
 	
 	getElement: function(){
 	    return this.element;
 	},
 	
 	destroy: function(){
-	    this.element.destroy();
-	    this.element.eliminate( "Class" );
-	    this.element = this.elementClass = this.marshal = null 
+		console.log( '\t', this.toString() );
+		this.element.destroy();
+		this.element.eliminate( "Class" );
+		this.options = this.element = this.elementClass = this.marshal = null 
 	}
 
 });
@@ -522,9 +518,13 @@ mop.util.Broadcaster = new Class({
 		if( this.listeners.contains( aListener ) ) this.listeners.erase( aListener );
 	},
 
-	broadcastEvent: function( eventToFire, args ){
-			this.listeners.each( function( aListener ){
-			aListener.fireEvent( eventToFire, args );
+	broadcastMessage: function( eventToFire, args ){
+		if( typeof args == 'array' ){
+			args = args.slice(1);
+		}
+		var response = Array.from( arguments )[1];
+		this.listeners.each( function( aListener ){
+				aListener.fireEvent( eventToFire, response );
 		});
 	}
 	
@@ -601,7 +601,7 @@ mop.util.HistoryManager = new Class({
 		if( hash != this.currentHash ){
 			this.currentHash = hash;
 			this.setAppState();
-			this.broadcastEvent( "appstatechanged", this.appState );
+			this.broadcastMessage( "appstatechanged", this.appState );
 		}
 		hash = null;
 	},
@@ -900,9 +900,9 @@ mop.util.MD5 = function (string) {
 
 /* These should be configurable, also are they more App level stuff instead of mopcore? */
 window.addEvent( "resize", function(){
-	mop.util.EventManager.broadcastEvent("resize");
+	mop.util.EventManager.broadcastMessage( "resize" );
 });
 
 window.addEvent( "scroll", function(){
-	mop.util.EventManager.broadcastEvent( "onWindowScroll");
+	mop.util.EventManager.broadcastMessage( "onWindowScroll");
 });

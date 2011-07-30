@@ -9,6 +9,102 @@ Element.implement({
 	}
 });
 
+mop.ui.UIField = new Class({
+
+  Extends: mop.MoPObject,
+	Implements: [ Options, Events, mop.util.Broadcaster ],
+
+	fieldName: null,
+	validationSticky: null,
+	
+	options: {
+	    autoSubmit: true,
+	    enabled: true,
+	},
+
+	/* Section: getters / setters */
+	getValue: function(){
+		throw "UIField Abstract method getValue must be overridden in" + this.toString();
+	},
+
+	setValue: function(){
+		throw "UIField Abstract method setValue must be overridden in" + this.toString();
+	},
+	
+	disableElement: function(){
+		this.enabled = false;
+		this.element.addClass( "disabled" );
+	},
+	
+	enableElement: function(){
+		this.enabled = true;
+		this.element.removeClass( "disabled" );
+	},
+
+	/*Constructor*/
+	initialize: function( anElement, aMarshal, options ) {
+		this.parent( anElement, aMarshal, options );
+//	console.log( ":::::::", this.options, anElement.get( 'class' ) );
+		this.fieldName = this.options.field;
+		if( !this.fieldName ) throw ( "ERROR", this.toString(), "has no fieldName, check html class for field-{fieldName}" );	
+	},
+	
+	toString: function(){
+		return "[ object, mop.ui.UIField ]";
+	},
+	
+	onResponse: function( json ){
+//		console.log( "RESPONSE", json );
+		if( !json.returnValue || !json.response ){
+			throw json;
+		}else if( json.response.error ){
+			this.showValidationError( json.response.error)
+		}else{
+			this.onSaveFieldSuccess( json.response );
+		}
+	},
+
+	onSaveFieldSuccess: function( response ){
+		console.log( '*', this.fieldName, 'onSaveFieldSuccess', response );
+		this.broadcastMessage( 'uifieldsaveresponse', [ this.fieldName, response ] );
+	},
+	
+	showValidationError: function( errorMessage ){
+		this.validationSticky = new mop.ui.Sticky( this.ipeElement, {
+			content: "Error: " + errorMessage,
+			borderRadius: 4,
+			offset: { x: 0, y: -12 },
+			position: { x: 'center', y: 'top' },
+			stayOnBlur: true
+		}).show();
+	},
+		
+	submit: function( e ){
+		mop.util.stopEvent( e );
+		var val = this.getValue();
+		this.submittedValue = val;
+		if( !this.options.autoSubmit ){
+			this.setValue( val );
+			return true;
+		}		
+		if( this.showSaving ) this.showSaving();
+		if( this.leaveEditMode ) this.leaveEditMode();
+		this.marshal.saveField( { field: this.fieldName, value: val }, this.onResponse.bind( this ) );
+},	
+		
+	getCoordinates: function(){
+//	console.log( this.toString(), "getCoordinates", this.scrollContext, this.element.getCoordinates( this.scrollContext ) );
+//	return this.element.getCoordinates( this.scrollContext );
+	},
+	
+	destroy: function(){
+		console.log( ">>>> ", this.fieldName, "destroy!" );
+		this.fieldName = null;	
+		this.parent();
+	}
+	
+});
+
 mop.ui.Sticky = new Class({
     
 	Implements: [ Options, Events ],
@@ -27,13 +123,15 @@ mop.ui.Sticky = new Class({
 		position: 'upperRight',
 		edge: 'lowerLeft',
 		tick: 'tickLeft',
-		stayOnBlur: false
+		stayOnBlur: false,
+		
 	},
 
 	initialize: function( attachTo, options ){
 		this.setOptions( options );
 		this.target = attachTo;
 		this.build();
+		return this;
 	},
     
 	build: function(){
@@ -44,8 +142,13 @@ mop.ui.Sticky = new Class({
 		if( this.options.borderRadius ) this.content.roundCorners( this.options.borderRadius );		
 		this.mouseenter = this.target.addEvent( 'mouseenter', this.startShow.bindWithEvent( this ) );
 		if( !this.options.stayOnBlur ) this.mouseleave = this.target.addEvent( 'mouseleave', this.startHide.bindWithEvent( this ) );
+		
 		// the sticky isn't inside the target
-		this.element.addEvent( 'mouseenter', function(){ clearTimeout( this.hideInterval ) }.bind( this ) );
+		this.element.addEvent( 'mouseenter', function( e ){ clearTimeout( this.hideInterval ) }.bind( this ) );
+		// we may want to pass methods for when the mouse/enter leaves control (say disable submit on blur on ipes );
+		if( this.options.mouseEnter ) this.element.addEvent( 'mouseenter', this.options.mouseEnter )
+		if( this.options.mouseLeave ) this.element.addEvent( 'mouseleave', this.options.mouseLeave );
+		
 		if( !this.options.stayOnBlur ) this.element.addEvent( 'mouseleave', this.startHide.bindWithEvent( this ) );
 		this.element.adopt( this.content );
 		this.populate( this.options.content );
@@ -83,13 +186,11 @@ mop.ui.Sticky = new Class({
 	},
 	
 	show: function(){
-		console.log( 'tooltip show' );
-		this.morph.cancel();
-		this.morph.start.delay( 250,  this.morph, { 'opacity' : 1 } );
+		console.log( this.fieldName, 'tooltip show' );
+		this.morph.start( { 'opacity' : 1 } );
 	},
 
 	hide: function( e, destroy ){
-		this.morph.cancel();
 		this.morph.start( { 'opacity' : 0 } );
 		if( destroy ) this.destroy();
 	},
@@ -113,8 +214,6 @@ mop.ui.Sticky = new Class({
 	More generic than tabs for sure, but what to call? Buton collection?
 */
 mop.ui.navigation.Tabs = new Class({
-	
-	type: "tabbedNavigation",
 	
 	toString: function(){
 		return "[ object, mop.ui.navigation.Tabs ]";
@@ -305,209 +404,6 @@ mop.ui.Sortable = new Class({
 	}
 });
 
-mop.ui.UIElement = new Class({
-
-	type: "UIElement",
-
-	Implements: [ Options, Events ],
-    Extends: mop.MoPObject,
-	onCompleteCallbacks: [],
-	type: "Generic UIElement",
-	fieldName: null,
-	validationOptions: null,
-	validationErrors: [],
-	validationSticky: null,
-	onCompleteCallbacks: [],
-	onEditCallbacks: [],
-	clickEvent: null,
-
-	options: {
-	    autoSubmit: true,
-	    enabled: true,
-	    action: 'savefield'
-	},
-
-	/* Section: getters / setters */
-	getValue: function(){
-		console.log( this.toString(), "Subclasses of mop.ui.UIElement must override getValue function" );
-	},
-
-	setValue: function(){
-		console.log( this.toString(), "Subclasses of mop.ui.UIElement must override setValue function" );
-	},
-	
-	// getSubmitURL: function(){
-	// 	return mop.util.getBaseURL() +"ajax/data/" + this.marshal.getSubmissionController() + "/" + this.options.action + "/" + this.marshal.getObjectId();
-	// },	
-
-	registerOnCompleteCallBack: function( func ){
-//		console.log( "registerOnCompleteCallBack", func );
-		this.onCompleteCallbacks.push( func );
-	},
-
-	registerOnEditCallback: function( func ){
-		this.onEditCallbacks.push( func );
-	},	
-	
-	disableElement: function(){
-		this.enabled = false;
-		this.element.addClass( "disabled" );
-	},
-	
-	enableElement: function(){
-		this.enabled = true;
-		this.element.removeClass( "disabled" );
-	},
-
-	/*Constructor*/
-	initialize: function( anElement, aMarshal, options ) {
-		this.parent( anElement, aMarshal, options );
-//	console.log( ":::::::", this.options, anElement.get( 'class' ) );
-		this.fieldName = this.options.field;
-		if( !this.fieldName ) throw ( "ERROR", this.toString(), "has no fieldName, check html class for field-{fieldName}" );	
-	},
-	
-	toString: function(){
-		return "[ object, mop.ui.UIElement ]";
-	},
-	
-	onResponse: function( json ){
-
-		this.destroyValidationSticky();
-
-		if( json && json.error ){
-			this.validationSticky = new mop.ui.Sticky( this, {
-				title: "Error:",
-				message: json.response.message,
-				scrollContext: this.options.scrollContext
-			});
-			this.validationSticky.show();
-		}else{
-			if( this.onCompleteCallbacks.length > 0 ){
-				for( var i = 0; i < this.onCompleteCallbacks.length; i++ ){
-					this.onCompleteCallbacks[i]( json.response, this );
-				}
-			}
-		}
-
-		console.log( this.toString(), "onResponse", json );
-
-	},
-		
-	submit: function( e ){
-	//	console.log( this.toString(), "submit", e, this.options.autoSubmit, this.getValue() );
-		mop.util.stopEvent( e );
-		if( this.onEditCallbacks && this.onEditCallbacks.length > 0 ){
-			this.onEditCallbacks.each( function( aFunc ){
-				aFunc();
-			});
-		}
-		var val = this.getValue();
-		this.submittedValue = val;
-		if( !this.validate() ) return false;		
-		if( !this.options.autoSubmit ){
-			this.setValue( val );
-			if( this.leaveEditMode ) this.leaveEditMode();
-			return true;
-		}		
-		if( this.showSaving ) this.showSaving();
-		if( this.leaveEditMode ) this.leaveEditMode();
-		
-		this.marshal.saveField( { field: this.fieldName, value: val }, this.onResponse.bind( this ) );
-
-
-//		return new Request.JSON( { url: this., onSuccess: this.onResponse.bind( this ) } ).post( { field: this.fieldName, value: val } );
-	},
-	
-	validate: function(){
-		
-		this.destroyValidationSticky();
-		
-//		console.log( "\nvalidate", this.toString(), this.fieldName, this.getValue(), this.validationOptions );
-		
-		if( this.validationOptions ){
-			for( var i = 0; i < this.validationOptions.length; i++ ){
-				if( !mop.util.validation.checkValueForValidity( this.getValue(), this.validationOptions[i] ) ) this.validationErrors.push( this.validationOptions[i] );
-			}
-		}
-		
-//		console.log( "\tvalidationErrors", this.toString(), this.fieldName, this.validationErrors.length, this.validationErrors );
-		
-		if( this.validationErrors.length > 0 ){
-
-			//add tooltip with all errors
-			var errorMessage = [];
-
-			this.validationErrors.each( function( anError ){
-
-				var error = ( this.marshal.alerts && this.marshal.alerts[ this.fieldName ] )? this.marshal.alerts[ this.fieldName ] : mop.util.validation.alerts[anError];
-				error = ( error )? error : anError;
-				errorMessage.push( error );
-
-			}, this );
-
-			this.validationSticky = new mop.ui.Sticky( this, { title: "Error", message: errorMessage.join( "<br/>" ), scrollContext: this.options.scrollContext } );
-//			console.log( "\t\tvalidationStickyCreated", this.toString(), this.fieldName, this.validationSticky, errorMessage );
-			this.validationSticky.reposition();
-			this.validationSticky.show();
-			
-			this.validationErrors = [];
-			return false;
-
-		}
-
-		this.validationErrors = [];
-		return true;
-
-	},
-	
-	destroyValidationSticky: function(){
-//		console.log( "destroyValidationSticky", this.toString(), this.validationSticky );
-		if( this.validationSticky ){
-			this.validationSticky.destroy();
-			delete this.validationSticky;
-			this.validationSticky = null;			
-		}	
-	},
-		
-	getCoordinates: function(){
-//		console.log( this.toString(), "getCoordinates", this.scrollContext, this.element.getCoordinates( this.scrollContext ) );
-		return this.element.getCoordinates( this.scrollContext );
-	},
-	
-	destroy: function(){
-
-		this.element.eliminate( "Class", this );
-
-		this.destroyValidationSticky();
-		
-		delete this.element;
-		delete this.elementClass;
-		delete this.fieldName;
-
-		delete this.onCompleteCallbacks;
-		delete this.onEditCallbacks;
-
-		delete this.validationOptions;
-		delete this.validationErrors;
-		delete this.validationSticky;
-
-		this.element = null;
-		this.marshal = null;
-		this.elementClass = null;
-		this.fieldName = null;
-		
-		this.onCompleteCallbacks = null;		
-		this.onEditCallbacks = null;
-		
-		this.validationOptions = null;
-		this.validationSticky = null;	
-		
-		
-	}
-	
-});
-
 
 /*
 	Class: mop.ui.Modal
@@ -635,7 +531,7 @@ mop.ui.Modal = new Class({
 			// this should be part of a mixin or something, 
 			// it should be written once
 			// it should do all ui elements not just Text
-			// since modals dont have a uiElement array, it needs a way to find all ui elements...... hmmmm
+			// since modals dont have a UIField array, it needs a way to find all ui elements...... hmmmm
 			var ipes = this.content.getElements( ".ui-Text" );
 			ipes.each( function( anIPE ){
 				anIPE.retrieve( "Class" ).destroyValidationSticky();
@@ -971,9 +867,7 @@ mop.ui.InactivityDialogue = new Class({
 
 mop.ui.MultiSelect = new Class({
 	
-	Extends: mop.ui.UIElement,
-	
-	type: "multiSelect",
+	Extends: mop.ui.UIField,
 	
 	options: {
 	    firstIsNull: false
@@ -1197,12 +1091,9 @@ mop.ui.MultiSelect = new Class({
 
 mop.ui.DatePicker = new Class({
 
-	Extends: mop.ui.UIElement,
-	
-	type: "datePicker",
+	Extends: mop.ui.UIField,
 	
 	options: {
-	    action: "savefield",
 	    allowEmpty: false,
 	    format: "%Y/%m/%d"
 	},
@@ -1216,7 +1107,7 @@ mop.ui.DatePicker = new Class({
 	
     
 	toString: function(){
-		return '[ object, mop.ui.UIElement, mop.ui.DatePicker ]';
+		return '[ object, mop.ui.UIField, mop.ui.DatePicker ]';
 	},
 	
 	buildPicker: function(){ 
@@ -1301,10 +1192,9 @@ mop.ui.DatePicker = new Class({
 mop.ui.TimePicker = new Class({
 
 	Extends: mop.ui.DatePicker,
-	type: "timepicker",
 	
 	toString: function(){
-		return '[ object, mop.ui.UIElement, mop.ui.DatePicker, mop.ui.TimePicker ]';
+		return '[ object, mop.ui.UIField, mop.ui.DatePicker, mop.ui.TimePicker ]';
 	},
 		
 	initialize: function( anElement, options ){
@@ -1329,10 +1219,8 @@ mop.ui.TimePicker = new Class({
 */
 mop.ui.DateRangePicker = new Class({
 
-	Extends: mop.ui.UIElement,
-	
-	type: "dateRange",
-	
+	Extends: mop.ui.UIField,
+		
 	options: {
 		alerts:{
 			endDateLessThanStartDateError : "The end date cannot be earlier than the start date."
@@ -1388,11 +1276,12 @@ mop.ui.DateRangePicker = new Class({
 
 	validate: function(){
 		if( !this.isEndDateAfterStartDate() ) this.validationErrors.push( this.options.alerts.endDateLessThanStartDateError );
+//		.get('validator', {serial: true, evaluateFieldsOnBlur: false}).reset();
 		this.parent();
 	},
 	
 	toString: function(){
-		return "[ object, mop.ui.UIElement, mop.ui.DateRangePicker ]";
+		return "[ object, mop.ui.UIField, mop.ui.DateRangePicker ]";
 	},
 
 	onResponse: function(){
@@ -1535,16 +1424,13 @@ mop.ui.DateRangePicker = new Class({
 });
 
 
-
-
-
 /*	Class: mop.ui.File
 	File uploader with progress
 	Modified and simplified version of fancyupload2 by digitarald.
 */
 mop.ui.FileElement = new Class({
 
-	Extends: mop.ui.UIElement,
+	Extends: mop.ui.UIField,
 	
 	type: "file",
 	
@@ -1620,7 +1506,7 @@ mop.ui.FileElement = new Class({
 		this.statusShow = new Fx.Morph( this.statusElement, { 
 			'duration': 500,
 			'onComplete': function(){
-				mop.util.EventManager.broadcastEvent("resize");
+				mop.util.EventManager.broadcastMessage("resize");
 			}.bind( this )
 		});
 
@@ -1628,7 +1514,7 @@ mop.ui.FileElement = new Class({
 			'duration': 500,
 			"onComplete": function(){
 				this.statusElement.addClass( "hidden" );
-				mop.util.EventManager.broadcastEvent("resize");
+				mop.util.EventManager.broadcastMessage("resize");
 			}.bind( this )
 		});
 
@@ -1636,15 +1522,19 @@ mop.ui.FileElement = new Class({
 		
 		if( this.previewElement ) this.imagePreview = this.previewElement.getElement( "img" );
 
-		this.filename = this.element.getElement( ".filename" );
+		this.filename = this.element.getElement( ".fileName" );
 		
 		mop.util.EventManager.addListener( this );
 		
-		if( mop.util.getValueFromClassName( 'extensions', this.element.get("class") ) ){
-		    this.options.extensions = this.buildExtensionsObject()
-		}
+		if( mop.util.getValueFromClassName( 'extensions', this.element.get("class") ) ) this.options.extensions = this.buildExtensionsObject()
 		
-        this.getSubmitURL();
+		this.getSubmitURL();
+
+		var depth = mop.DepthManager.incrementDepth();
+		this.Uploader.onTargetHovered( this, this.uploadButton, this.getCoordinates(), depth, this.getOptions() );
+		this.Uploader.box.getElement('object').set('title', "Upload a file.");
+		this.reposition();
+
 	},
 	
 	simulateClick: function(){
@@ -1711,13 +1601,7 @@ mop.ui.FileElement = new Class({
 		mop.util.stopEvent( e );
 	},
 	
-	onMouseOver: function( e ){
-		mop.util.stopEvent( e );
-		var depth = mop.DepthManager.incrementDepth();
-		// console.log( this.toString(), "onTargetHovered", depth );
-		this.Uploader.onTargetHovered( this, this.uploadButton, this.getCoordinates(), depth, this.getOptions() );
-		this.reposition();
-	},
+	onMouseOver: function( e ){},
 	
 	clearFileRequest: function( e ){
 	   if( this.previewElement ) this.previewElement.fade( "out" );
@@ -1727,13 +1611,14 @@ mop.ui.FileElement = new Class({
 	},
 	
 	onClearFileResponse: function( json ){
-	    if( !json.returnValue ){
-			console.log( this.toString(), "Error: mop.ui.FileElement clearFileRequest:", json.response.error )
+		if( !json.returnValue ){
+			throw "Error: mop.ui.FileElement clearFileRequest " + json.response.error;
 		}else {
 			this.clearButton.addClass("hidden");
 			this.downloadButton.addClass("hidden");
-			this.filename.set( "text", "" );
-       }
+			var msg = ( this.previewElement )? "No image uploaded yet…" : "No file uploaded yet…";
+			this.filename.set( "text", msg );
+		}
 	},
 	
 	reposition: function(){
@@ -1787,7 +1672,7 @@ mop.ui.FileElement = new Class({
 	
 	showStatus: function(){
 //		console.log( this.toString(), "showStatus", $A( arguments ) );
-		mop.util.EventManager.broadcastEvent("resize");
+		mop.util.EventManager.broadcastMessage("resize");
  		this.statusShow.start( { "opacity": [0,1] } );
 		this.statusElement.removeClass("hidden");
 	},
@@ -1801,7 +1686,7 @@ mop.ui.FileElement = new Class({
 		json = JSON.decode( json.response.text );
 		console.log( this.toString(), "onFileComplete", json  );
 		this.clearButton.fade( "in" );
-		if( this.filename ) this.filename.set( "html",  json.response.filename );
+		if( this.filename ) this.filename.set( "text",  json.response.filename );
 		this.clearButton.removeClass("hidden");
 		this.downloadButton.removeClass("hidden");
 		this.downloadButton.set( 'title', 'download ' + json.response.filename );
@@ -1912,7 +1797,7 @@ mop.util.Uploader = new Class({
 		}.bind(this), true);
 
 		mop.util.EventManager.addListener( this );
-		this.addEvent( "resize", this.reposition );
+//		this.addEvent( "resize", this.reposition );
 
 		// callbacks are no longer in the options, every callback
 		// is fired as event, this is just compat
@@ -1961,12 +1846,12 @@ mop.util.Uploader = new Class({
 	},
 
 	buttonEnter: function( eventName ){
-		this.target.addClass( "active" );
+		if( this.target ) this.target.addClass( "active" );
 		this.targetRelay( eventName );
 	},
 	
 	buttonLeave: function( eventName ){
-		this.target.removeClass( "active" );
+		if( this.target ) this.target.removeClass( "active" );
 		this.targetRelay( eventName );
 	},
 
@@ -1976,7 +1861,7 @@ mop.util.Uploader = new Class({
 	},
 	
 	verifyLoad: function() {
-		console.log( this.toString(), "verifyLoad", this.object );
+//		console.log( this.toString(), "verifyLoad", this.object );
 		if (this.loaded) return;
 		if (!this.object.parentNode) {
 			this.fireEvent('fail', ['disabled']);
@@ -1988,12 +1873,8 @@ mop.util.Uploader = new Class({
 	},
 
 	fireCallback: function( name, args ) {
-
 		// file* callbacks are relayed to the specific file
-		console.log( this.toString(), "fireCallback", name );
-
 		if ( name.substr(0, 4) == 'file') {
-			console.log( "\tA" );
 			// updated queue data is the second argument
 			if (args.length > 1) this.update(args[1]);
 			var data = args[0];
@@ -2005,7 +1886,6 @@ mop.util.Uploader = new Class({
 				file.update(data).fireEvent( fire, [ data ], 10 );
 			}
 		} else {
-			console.log( "\tB" );
 			this.fireEvent( name, args, 5 );
 		}
 	},
@@ -2020,7 +1900,7 @@ mop.util.Uploader = new Class({
 	},
 
 	initializeSwiff: function() {
-		console.log( "initializeSwiff A" );
+//		console.log( "initializeSwiff A" );
 //		console.log( this.toString(), "initializeSwiff" );
 		// extracted options for the swf 
 		this.remote('initialize', {
@@ -2043,7 +1923,6 @@ mop.util.Uploader = new Class({
 			policyFile: this.options.policyFile
 		});
 		this.loaded = true;
-		console.log( "initializeSwiff B" );
 		this.appendCookieData();
 	},
 
@@ -2054,7 +1933,7 @@ mop.util.Uploader = new Class({
 
 	setOptions: function( options ) {
 		if (options) {
-		console.log( this.toString(), "setOptions", options );
+//			console.log( this.toString(), "setOptions", options );
 			if ( options.url) options.url = mop.util.Uploader.qualifyPath( options.url );
 			if ( options.buttonImage) options.buttonImage = mop.util.Uploader.qualifyPath( options.buttonImage );
 			this.parent( options );
@@ -2065,7 +1944,7 @@ mop.util.Uploader = new Class({
 
 	onTargetHovered: function( target, targetElement, coords, depth, options ){
 		if( this.currentFileElementInstance == target ) return;
-		console.log( "mop.util.Uploader", target, targetElement, coords, depth, options );
+//		console.log( "mop.util.Uploader", target, targetElement, coords, depth, options );
 		this.setTarget( target, targetElement, coords, depth, options );
 //		targetElement.addClass('active');
 	},
@@ -2319,9 +2198,7 @@ mop.util.Uploader.qualifyPath = ( function() {
 
 mop.ui.PulldownNav = new Class({
 	
-	type: "pulldownNav",
-	
-	Extends: mop.ui.UIElement,
+	Extends: mop.ui.UIField,
 	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
@@ -2352,15 +2229,10 @@ mop.ui.PulldownNav = new Class({
 
 mop.ui.Pulldown = new Class({
 
-	Extends: mop.ui.UIElement,
+	Extends: mop.ui.UIField,
 
-	type: "pulldown",
 	pulldown: null,
 	
-	options:{
-	    action: "savefield"
-	},
-
 	initialize: function( anElement, aMarshal, option ){
 		this.parent( anElement, aMarshal, option );
 		this.pulldown = this.element.getElement( "select" );
@@ -2402,12 +2274,8 @@ mop.ui.Pulldown = new Class({
 
 mop.ui.CheckBox = new Class({
 	
-	Extends: mop.ui.UIElement,
-	type: "checkBox",
+	Extends: mop.ui.UIField,
 	checkBox: null,
-	options: {
-	    action: "saveField"
-	},
 	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
@@ -2421,11 +2289,6 @@ mop.ui.CheckBox = new Class({
 	
 	submit: function( e ){
 //		console.log( "\t\t:::::", this.getValue(), this.checkBox.getProperty( "checked" ) );
-		if( this.onEditCallbacks && this.onEditCallbacks.length > 0 ){
-			this.onEditCallbacks.each( function( aFunc ){
-				aFunc( this.field.get( "value" ) );
-			});
-		}
 		var val = this.getValue();
 		this.submittedValue = val;
 		if( !this.validate() ) return;		
@@ -2465,9 +2328,7 @@ mop.ui.CheckBox = new Class({
 
 mop.ui.RadioGroup = new Class({
 	
-	Extends: mop.ui.UIElement,
-
-	type: "radioGroup",
+	Extends: mop.ui.UIField,
 
 	radios: null,
 	
@@ -2490,9 +2351,7 @@ mop.ui.RadioGroup = new Class({
 	},
 	
 	disableElement: function( e ){
-		mop.util.stopEvent( e );
-		this.parent();
-
+		this.parent( e );
 		this.radios.each( function( aRadio ){
 			aRadio.set( "disabled", "disabled" );
 			aRadio.removeEvents();
@@ -2545,165 +2404,16 @@ mop.ui.RadioGroup = new Class({
 	}
 
 });
-// 
-// mop.ui.Sticky = new Class({
-// 
-// 	Implements: [ Options, Events ],
-// 	type: "sticky",
-// 	options: {},
-// 	element: null,
-// 	marshal: null,
-// 	top: null,
-// 	title: null,
-// 	closeButton: null,
-// 	message: null,
-// 
-// 	initialize: function( aMarshal, options ){
-// 
-// 		this.marshal = aMarshal;
-// 
-// 		this.setOptions( options );
-// 		if( this.marshal.scrollContext == 'modal' || this.marshal.options.scrollContext == 'modal' ){
-// 			mop.ModalManager.addListener( this );
-// 		}
-// 
-// 		this.element = new Element( "div", {
-// 			"class": "sticky",
-// 			"styles":{ 
-// 				"opacity":0,
-// 				"position": "absolute",
-// 				"left": ( this.options && this.options.offsetX )? this.marshal.element.getPosition().x + this.options.offsetX : this.marshal.element.getPosition().x,
-// 				"cursor": "pointer"
-// 			},
-// 			"events": {
-// 				"click": this.close.bindWithEvent( this )
-// 			}
-// 		});
-// 		
-// 		this.hideTransition = new Fx.Morph( this.element, { 
-// 			duration: 250, onComplete: function(){ 
-// //				console.log( "onComplete", this.marshal, this.marshal.validationSticky );
-// 				this.marshal.destroyValidationSticky();
-// 			}.bind( this ) 
-// 		});
-// 		
-// 		this.top = new Element( "div", { "class":"top" } ).inject( this.element );
-// 
-// 		this.title = new Element( "h4", {
-// 			"text": ( options && options.title )? options.title : ""
-// 		}).inject( this.top );
-// 
-// 		this.closeButton = new Element( "a", {
-// 			"class": "close",
-// 			"events": {
-// 				"click": this.close.bindWithEvent( this )
-// 			}
-// 		}).inject( this.top );
-// 
-// 		this.message = new Element( "p", {
-// 			"text": ( options && options.message)? options.message : ""
-// 		}).inject( this.element );
-// 
-// 		this.element.inject( document.body );
-// 
-// 		mop.util.EventManager.addListener( this );
-// 		this.addEvent( "resize", this.reposition );
-// 		this.reposition();
-// 
-// 	},
-// 	
-// 	reposition: function( scrollData ){
-// 		//A Hack to deal with empty but not-destroyed sticky objects
-// 		//This is indicative of another memory leak.
-// 		if( this.marshal.element == null){
-// 			//alert('null marshal.element');
-// 			return;
-// 		}
-// 		
-// 		// 
-// 		var pos = this.marshal.element.getCoordinates();
-// //		var top = ( this.marshal.scrollContext == "modal" )? ( pos.top - pos.height*.75 ) - mop.ModalManager.getActiveModal().element.getScroll().y : pos.top - pos.height*.75;
-// 		var top = pos.top - pos.height*.75;
-// 		var inModal = ( this.marshal.scrollContext == "modal" || this.marshal.options.scrollContext == "modal" );
-// 		//@TODO, reconcile location of scrollContext, its either an option on a property, should probably be an option, since it gets passed to ui constructors from module 
-// 		var left = ( inModal )? mop.ModalManager.getActiveModal().element.getCoordinates().left + pos.left : pos.left;
-// 		
-// //		console.log( "repositioning", this.toString(), this.marshal.toString(), "{ inModal:", inModal, "}", this.marshal.fieldName, "{ activeModal.coords: ", mop.ModalManager.getActiveModal().element.getCoordinates().left, mop.ModalManager.getActiveModal().element.getCoordinates().top, "}", "{ marshalCoords: ", pos.left, pos.top, "}", top, left );
-// 
-// 		var zIndex = mop.DepthManager.incrementDepth();
-// 		this.element.setStyles({
-// 			"top" : top,
-// 			"left" : left,
-// 			"z-index" : zIndex
-// 		});
-// 
-// 	},
-// 	
-// 	close: function(e){
-// 		mop.util.stopEvent( e );
-// 		this.hide();
-// 	},
-// 	
-// 	show: function( messageObj ){
-// 		this.reposition();
-// 		if( messageObj ){
-// 			this.title.set( "text", messageObj.title );
-// 			this.message.set( "text", messageObj.message );
-// 			if( messageObj.offsetX ) this.element.setStyle( "left", this.marshal.element.getPosition().x + messageObj.offsetX );
-// 		}
-// 		
-// 		this.element.setStyle( "display", "block" );
-// 		this.element.fade( "in" );
-// 
-// 	},
-// 
-// 	hide: function(){
-// 		this.hideTransition.start( { "opacity": 0 } ) ;
-// 	},
-// 
-// 	destroy: function(){
-// 		
-// //		console.log( "destroy", this.toString() );
-// 		
-// 		this.removeEvents();		
-// 		mop.ModalManager.removeListener( this );
-// 		
-// 		this.title.destroy();
-// 		this.message.destroy();
-// 		this.top.destroy();
-// 		this.closeButton.destroy()
-// 		this.element.destroy();
-// 		
-// 		delete this.message;
-// 		delete this.top;
-// 		delete this.title;
-// 		delete this.closeButton;
-// 		delete this.element;
-// 		delete this.hideTransition;
-// 		
-// 		this.title = null;
-// 		this.message = null;
-// 		this.element = null;
-// 		this.top = null;
-// 		this.hideTransition = null;
-// 		this.closeButton = null;
-// 	
-// 	}
-// 
-// });
-// 
 
 mop.ui.Input = new Class({
 	
 
-	Extends: mop.ui.UIElement,
-	type: "input",
+	Extends: mop.ui.UIField,
 	
 	options: {
-	    maxLength: 0,
-	    autoSubmit: true,
-	    enabled: true,
-		action: "savefield",
+		maxLength: 0,
+		autoSubmit: true,
+		enabled: true,
 		rows: 1
 	},
 
@@ -2722,7 +2432,6 @@ mop.ui.Input = new Class({
 	},
 	
 	disableElement: function( e ){
-		mop.util.stopEvent( e );
 		this.parent( e );
 		this.inputElement.set( "disabled", "disabled" );
 		this.inputElement.removeEvents();
@@ -2763,76 +2472,58 @@ mop.ui.Input = new Class({
 
 mop.ui.Text = new Class({
 
-	Extends: mop.ui.UIElement,
-	onLeaveEditModeCallbacks: [],
-	type: "text",
+	Extends: mop.ui.UIField,
+	// Implements: [ Options, Events, mop.util.Broadcaster ],
+
 	form: null,
 	options:{
 		autoSubmit: true,
+		submitOnBlur: true,
 		enabled: true,
 		messages: {
 			hover: "Click to edit, ctr+enter to save, esc to cancel.",
-			saving:"saving field, please wait&hellip;" 
+			saving:"Saving field, please wait&hellip;" 
 		},
-		action: "savefield",
 		maxLength: 0
 	},
 
-	registerOnLeaveEditModeCallback: function( func ){
-		this.onLeaveEditModeCallbacks.push( func );
+	getValue: function(){
+		return ( this.field )? this.field.get( 'value' ) : this.ipeElement.get( 'html' );
 	},
 
-	enableElement: function( e ){
-		mop.util.stopEvent( e );
-		this.parent();
-		this.ipeElement.removeEvents();
-		this.ipeElement.addEvent( "click", this.enterEditMode.bindWithEvent( this ) );
+	getKeyValuePair: function(){
+		var returnVal = {};
+		returnVal[ this.fieldName ] = this.getValue();
+		return returnVal;
 	},
 	
-	disableElement: function( e ){
-		mop.util.stopEvent( e );
-		this.parent();
-		this.ipeElement.removeEvents();
-		this.ipeElement.addEvent( "mouseover", Event.stop );
-		this.ipeElement.addEvent( "focus", Event.stop );
+	setValue: function( aValue ){
+		if( this.field ) this.field.set( 'value', aValue );
+		this.ipeElement.set( 'html', aValue );
 	},
-	
+
 	initialize: function( anElement, aMarshal, options ) {
 		this.parent( anElement, aMarshal, options );
-//        console.log( this.toString(), this.options );
-		this.mode = "resting";
-		this.ipeElement = this.element.getElement(".ipe");
+		this.mode = "atRest";
+		if( this.options.submitOnBlur ) this.allowSubmitOnBlur = true;
+		this.field = anElement.getElement( ".og" );
+		this.ipeElement = new Element( "div", { 
+			"class": "ipe " + this.field.get( 'class' ).split( " " ).splice( 1 ).join(' '),
+			"html": this.field.get( 'value' )
+		}).inject( anElement );
+		this.ipeElement.removeClass('og');
+		this.field.store( "Class", this );
 		this.ipeElement.store( "Class", this );
+		this.field.addEvent( 'focus' , this.onFieldFocus.bind( this ) );
+		this.field.addClass( 'away' );
 		this.enableElement();
-		this.ipeElement.set( "title", this.options.messages.hover );
+		this.ipeElement.set( 'morph' );
 		this.ipeElement.setStyle( "height", "auto" );
 		this.oldValue = this.ipeElement.get( "html" );
 	},
 
 	toString: function(){
 		return "[ object, mop.ui.Text ]";
-	},
-
-	enterEditMode: function( e ){
-		mop.util.stopEvent( e );
-		if( this.marshal.suspendSort ) this.marshal.suspendSort();
-		if( this.mode == "editing ") return false;
-		this.mode = "editing";
-		if( this.form ) this.form.destroy();
-		this.buildForm();
-		this.form.inject( this.element );
-		this.ipeElement.setStyle( "display", "none" );
-		this.controls = new mop.ui.Sticky( this.field, {
-			content: this.getControls(),
-			borderRadius: 4,
-			offset: ( this.options.rows > 1 )? { x: -8, y: -12 } : { x: -8, y: 0 },
-			position: ( this.options.rows > 1 )? { x: 'right', y: 'bottom' } : { x: 'right', y: 'center' },
-			stayOnBlur: true
-		});
-		this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
-		this.field.focus();
-		this.field.select();
-		mop.util.EventManager.broadcastEvent("resize");
 	},
 	
 	onKeyPress: function( e ){
@@ -2845,6 +2536,185 @@ mop.ui.Text = new Class({
 		submitCondition = null;
 	},
 	
+	onFieldFocus: function( e ){
+		console.log( "##", this.mode, this.fieldName, "onFieldFocus", e.target, e.target.tabIndex );
+		if( this.mode == "editing ") return false;
+		this.enterEditMode();
+	},
+	
+	onBlur: function( e ){
+		console.log( "#", this.fieldName, "onBlur", e.target, e.target.tabIndex, this.allowSubmitOnBlur );
+		if( this.allowSubmitOnBlur ) this.submit();
+	},
+	
+	prepareField: function(){
+		this.field.removeEvents();
+		var size = this.ipeElement.getSize();
+		var contents = this.ipeElement.get( 'html' );
+		this.field.set( 'value', this.formatForEditing( contents ) );
+		if( this.options.rows > 1 ){
+			this.field.setStyles({
+				'overflow': 'hidden',
+				'width': size.x - ( 2 + 2*parseInt( this.ipeElement.getStyle('padding-left' ) ) ), 
+				'height': size.y
+			});
+			this.field.addEvent( 'keyup', this.fitToContent.bind( this ) );
+			this.fitToContent();
+		}else{
+			var inputType = ( this.element.getValueFromClassName( 'type' ) == 'password' )? 'password' : 'text';
+			this.field.set( 'type', inputType );
+			this.field.setStyles({
+				'width': size.x - 2*parseInt( this.ipeElement.getStyle('padding-left') )
+			});
+		};
+		if( this.options.maxlength ) this.field.addEvent( 'keydown', this.checkForMaxLength.bindWithEvent( this ) );
+
+		if( this.options.submitOnBlur ){
+			this.submitOnBlurEnabled = true;
+			this.field.addEvent( 'blur', this.onBlur.bindWithEvent( this ) );
+		}else{
+			this.submitOnBlurEnabled = false;
+			this.field.addEvent( 'blur', this.cancelEditing.bind( this ) );
+		}
+		
+		if( this.controls ){
+			this.controls.destroy();
+			this.controls = null;
+		}
+		this.controls = new mop.ui.Sticky( this.field, {
+			content: this.getControls(),
+			borderRadius: 4,
+			offset: ( this.options.rows > 1 )? { x: -8, y: -12 } : { x: -8, y: 0 },
+			position: ( this.options.rows > 1 )? { x: 'right', y: 'bottom' } : { x: 'right', y: 'center' },
+			stayOnBlur: true,
+			mouseEnter: this.setAllowSubmitOnBlur.bind( this, false ),
+			mouseLeave: this.setAllowSubmitOnBlur.bind( this, true )
+		});
+		this.field.select();
+		this.field.addEvent( 'focus' , this.onFieldFocus.bind( this ) );
+		this.field.removeClass('away');
+		this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
+		this.ipeElement.addClass("hidden");
+		this.controls.position();
+		this.controls.show();
+	},
+	
+	setAllowSubmitOnBlur: function( bool ){
+		this.allowSubmitOnBlur = ( this.options.submitOnBlur )? bool : false;
+	},
+	
+	getAllowSubmitOnBlur: function(){
+		return this.allowSubmitOnBlur;
+	},
+	
+	getControls: function(){  		
+		var controls = new Element( 'div.ipeControls.clearFix' );
+		this.okButton = new Element( 'a.icon.submit', {
+			'title': 'save',
+			'text': 'save',
+			'href': '#',
+			'events': {
+				'click': this.submit.bind( this )
+			}
+		});
+		this.cancelButton = new Element( 'a.icon.cancel', {
+			'title': 'cancel',
+			'text' : 'cancel',
+			'href': '#',
+			'events': {
+				'click': this.cancelEditing.bind( this )
+			}
+		});
+		controls.adopt( this.okButton );
+		controls.adopt( this.cancelButton );
+		return controls;
+	},
+	
+	submit: function( e ){
+		this.parent( e );
+	},
+		
+	checkForMaxLength: function(e){
+		if( e.target.get("value").length > this.options.maxlength && e.keycode != 46 && e.keycode != 8 ){
+			mop.util.stopEvent( e );
+			alert( "The maximum length this field allows is " + this.options.maxlength + " characters");
+		}
+	},
+
+	enableElement: function( e ){
+		this.parent( e );
+		this.ipeElement.removeEvents();
+		this.ipeElement.addEvent( "click", this.enterEditMode.bindWithEvent( this ) );
+		this.ipeElement.set( "title", this.options.messages.hover );
+	},
+	
+	disableElement: function( e ){
+		this.parent( e );
+		this.ipeElement.removeEvents();
+		this.ipeElement.addEvent( "mouseover", Event.stop );
+		this.ipeElement.addEvent( "focus", Event.stop );
+	},
+	
+	enterEditMode: function( e ){
+		mop.util.stopEvent( e );
+		if( this.mode == "editing ") return false;
+		this.mode = "editing";
+		if( this.marshal.suspendSort ) this.marshal.suspendSort();
+		this.prepareField();
+	},
+	
+	leaveEditMode: function(){
+		this.mode = 'atRest';
+//		this.field.removeEvents();
+		this.field.addClass('away');
+		this.field.removeEvents('blur');
+		if( this.marshal.resumeSort ) this.marshal.resumeSort();
+		if( this.controls ){
+			this.controls.destroy();
+			this.controls = null;
+		}
+		if( this.options.submitOnBlur ) this.allowSubmitOnBlur = true;
+		this.ipeElement.removeClass( 'hidden' );
+		if( this.validationSticky ){
+			this.validationSticky.destroy();
+			this.validationSticky = null;
+		}
+		this.enableElement();
+	},
+
+	cancelEditing: function( e ){
+		mop.util.preventDefault( e );
+		if( this.oldValue ){
+			var val = this.html_entity_decode( this.oldValue.replace( /<br( ?)(\/?)>/g, '\n' ) )
+			this.field.set( 'value', val );
+			this.ipeElement.set( 'html', this.oldValue );
+		}else{
+			this.ipeElement.set( 'html', '' );
+		}
+		this.leaveEditMode();
+	},
+
+	showSaving: function(){
+		this.mode = 'saving';
+		this.ipeElement.set( "title", this.options.messages.saving );
+		this.ipeElement.set( 'html', this.submittedValue );
+		this.ipeElement.set( 'morph', { duration: 150, onComplete: function(){ this.ipeElement.setStyle( "background-color", "none" ); this.ipeElement.removeClass("atRest"); this.ipeElement.addClass("saving"); }.bind( this ) } );
+		this.ipeElement.morph( '.saving' );
+	},
+
+	showValidationError: function( errorMessage ){
+		this.parent( errorMessage );		
+		this.ipeElement.set( 'text', this.submittedValue );
+		this.field.set( 'value', this.submittedValue );
+		this.enterEditMode();
+		this.field.focus();
+		this.field.select();
+	},
+
+	formatForEditing: function( aString ){
+		return aString.replace	( /<br( ?)(\/?)>/g, "\n" ); 
+	},
+
 	html_entity_decode: function( aString ){
 		var div = new Element("div", { "text": aString });
 		try{
@@ -2879,182 +2749,36 @@ mop.ui.Text = new Class({
 		var val = this.html_entity_decode( this.field.get( "value" ).replace( /\n/g, "<br/>" ) )
 		this.measureDiv.set( "html", val );
 		var size = this.measureDiv.measure( function(){ return this.getComputedSize() } );
-		this.field.setStyle( "height", ( size.height + 16 ) + "px" );
+		this.field.setStyle( "height", ( size.y ) + "px" );
 		if( this.controls ) this.controls.position();
 	},
-        
 
-	buildForm: function(){
-		this.form = new Element( 'div.IPEForm', {
-			// "class": "IPEForm ",
-			"events": { "submit": this.submitHandler }
-		});
-		var size = this.ipeElement.getSize();
-		var contents = this.ipeElement.get( 'html' );
-		var tag = ( this.options.rows > 1 )? 'textarea' : 'input';
-		var opts;
-		if( this.options.rows > 1 ){
-			opts = {
-				'rows': this.options.rows,
-				'cols': this.cols,
-				'text':   this.html_entity_decode( contents.replace( /<br( ?)(\/?)>/g, '\n' ) ),
-				'value': this.formatForEditing( contents ),
-				'styles': {
-						'position': 'relative',
-				    'overflow': 'hidden',
-					'width': size.x - 2*parseInt( this.ipeElement.getStyle('padding-left' ) ),
-					'height': size.y
-				}
-			}
-			this.field = new Element( tag, opts );
-			this.field.addEvent( 'keyup', this.fitToContent.bind( this ) );
-		}else{
-			opts = {
-				'rows': this.options.rows,
-				'type': ( mop.util.getValueFromClassName( 'type', this.elementClass ) == 'password' )? 'password' : 'text',
-				'class': 'ipeField ' + this.ipeElement.get( 'tag' ),
-				'value': this.formatForEditing( contents ),
-				'styles': {
-					'position': 'relative',
-					'width': size.x - 2*parseInt( this.ipeElement.getStyle('padding-left') )
-				}
-			}
-			this.field = new Element( tag, opts );
-		};
-		if( this.options.maxlength ) this.field.addEvent( 'keydown', this.checkForMaxLength.bindWithEvent( this ) );
-		this.form.adopt( this.field );
-		if( this.options.submitOnBlur ) this.field.addEvent( 'blur', this.submit.bindWithEvent( this ) );
-	
-		if( this.options.rows > 1 ) this.fitToContent();
-		return this.form;
-	},
-	
-	checkForMaxLength: function(e){
-		if( e.target.get("value").length > this.options.maxlength && e.keycode != 46 && e.keycode != 8 ){
-			mop.util.stopEvent( e );
-			alert( "The maximum length this field allows is " + this.options.maxlength + " characters");
-		}
-	},
-
-	getControls: function(){  		
-		var controls = new Element( 'div.ipeControls.clearFix' );
-		this.okButton = new Element( 'a.icon.submit', {
-			'title': 'save',
-			'text': 'save',
-			'href': '#',
-			'events': {
-				'click': this.submit.bind( this )
-			}
-		});
-		this.cancelButton = new Element( 'a.icon.cancel', {
-			'title': 'cancel',
-			'text' : 'cancel',
-			'href': '#',
-			'events': {
-				'click': this.cancelEditing.bind( this )
-			}
-		});
-		controls.adopt( this.okButton );
-		controls.adopt( this.cancelButton );
-		return controls;
-	},
-
-	formatForEditing: function( aString ){
-		return aString.replace	( /<br( ?)(\/?)>/g, "\n" ); 
-	},
-
-	getValue: function(){
-		return ( this.field )? this.field.get( 'value' ) : this.ipeElement.get( 'html' );
-	},
-
-	getKeyValuePair: function(){
-		var returnVal = {};
-		returnVal[ this.fieldName ] = this.getValue();
-		return returnVal;
-	},
-	
-	setValue: function( aValue ){
-		if( this.field ) this.field.set( 'value', aValue );
-		this.ipeElement.set( 'html', aValue );
-	},
-
-	showSaving: function(){
-		this.mode = 'saving';
-		this.ipeElement.removeEvents();
-		this.ipeElement.addClass('.spinner');
-		this.ipeElement.set( 'html', this.options.messages.saving );
-		mop.util.EventManager.broadcastEvent('resize');
-	},
-
-	onResponse: function( txt, json ){
-		console.log( this.fieldName, 'ipe.onResponse', '\n\t', txt, '\n\t', json );
-		this.destroyValidationSticky();
-		var json = JSON.decode( json );
-		this.ipeElement.addEvent( 'click', this.enterEditMode.bindWithEvent( this ) );
+	onResponse: function( json ){
+		// this.ipeElement.addEvent( 'click', this.enterEditMode.bindWithEvent( this ) );
 		this.ipeElement.setStyle( 'height', 'auto' );
-        this.ipeElement.removeClass('spinner');
-		if( !json.returnValue ){
-		    // throw up validation sticky (move to mootools )
-            this.validationSticky = new mop.ui.Sticky( this, { title: 'Error:', message: json.message, scrollContext: this.options.scrollContext } );
-			this.validationSticky.show();
-			this.ipeElement.set( 'text', this.submittedValue );
-			this.field.set( 'value', this.submittedValue );
-			this.enterEditMode();
-			this.field.focus();
-			this.field.select();
+		this.parent( json );
+	},
+	
+	onSaveFieldSuccess: function( response ){
+		this.enableElement();
+		val = response.value;
+		if( this.field && this.field.get( 'type' ) == 'password' ){
+			this.ipeElement.set( 'html', '******' );
 		}else{
-			if( this.field && this.field.get( 'type' ) == 'password' ){
-				this.ipeElement.set( 'html', '******' );
-			}else{
-			  console.log( this.toString(), 'onResponse', 'json.response.value', json.response.value );
-				this.ipeElement.set( 'html', json.response.value );
-			}
-			this.oldValue = json.value;
-			if( this.onCompleteCallbacks.length > 0 ){
-				for( var i = 0; i < this.onCompleteCallbacks.length; i++ ){
-					this.onCompleteCallbacks[i]( json, this );
-				}
-			}
+			this.ipeElement.set( 'html', val );
 		}
-		mop.util.EventManager.broadcastEvent( 'resize' );
+		this.oldValue = val;
+		if( this.validationSticky ) this.validationSticky.hide( true );
+		this.parent( response );		
+		this.ipeElement.set( 'morph', { duration: 600, onComplete: function(){ this.ipeElement.setStyle( "background-color", "none" ); this.ipeElement.removeClass( "saving" ); this.ipeElement.addClass("atRest"); }.bind( this ) } );
+		this.ipeElement.morph.delay( 200, this.ipeElement, '.atRest' );
 	},	
 
-	cancelEditing: function( e ){
-		mop.util.stopEvent( e );
-		if( this.oldValue ){
-			var val = this.html_entity_decode( this.oldValue.replace( /<br( ?)(\/?)>/g, '\n' ) )
-			this.field.set( 'value', val );
-			this.ipeElement.set( 'html', this.oldValue );
-		}else{
-			this.ipeElement.set( 'html', '' );
-		}
-		this.leaveEditMode();
-	},
-
-	leaveEditMode: function(){
-		this.mode = 'resting';
-		if( this.onLeaveEditModeCallbacks.length > 0 ){
-			for( var i = 0; i < this.onLeaveEditModeCallbacks.length; i++ ){
-				console.log( '* \t\t' + i, this.onLeaveEditModeCallbacks[i] );
-				this.onLeaveEditModeCallbacks[i]( this );
-			}
-		}
-		if( this.form ) this.form.setStyle('display','none');
-		if( this.field ) this.field.removeEvents();
-		if( this.marshal.resumeSort ) this.marshal.resumeSort();
-		this.controls.destroy();
-		this.controls = null;
-		this.ipeElement.setStyle( 'display', 'block' );
-		this.destroyValidationSticky();
-		mop.util.EventManager.broadcastEvent('resize');
-	},
-
 	destroy: function(){
-		delete this.oldValue;
-		delete this.submittedValue;
-		this.clickEvent = null;
+		if( this.mode == 'editing' ) this.leaveEditMode();
 		this.ipeElement.eliminate( 'Class' );
 		this.ipeElement.destroy();
+		this.ipeElement = this.mode = this.value = this.oldValue = null;
 		this.parent();
 	}
 
@@ -3072,7 +2796,6 @@ mop.ui.Text = new Class({
 
 mop.ui.MooSwitch = new Class({
 	
-	type: "switch",
 	Extends: Drag.Move,
 	isVirgin: true,
 	
@@ -3083,7 +2806,6 @@ mop.ui.MooSwitch = new Class({
 		this.hide_labels = (options.hide_labels ) ? options.hide_labels : false;
 	
 		this.onChangeHandler = ( options.onChange ) ? options.onChange : null;
-//	console.log("MOOSWITCH ", this.onChangeHandler, options.onChange );
 		this.label_position = (options.label_position ) ? options.label_position : 'outside';
 		this.drag_opacity = (options.drag_opacity ) ? options.drag_opacity : 1;
 		this.mouse_over_handle = false;
@@ -3218,7 +2940,6 @@ mop.ui.MooSwitch = new Class({
 
 mop.ui.SlideSwitch = new Class({
 	Extends: mop.ui.MooSwitch,
-	type: "switch",
 	initialize: function( anElement, aMarshal, options ){
 		this.element = anElement;
 		this.marshal = aMarshal;
@@ -3379,32 +3100,27 @@ mop.ui.PaginationControls = new Class({
 	},
 	
 	destroy: function(){
-		
 		this.element.eliminate( "Class" );
-
 		this.nextPageControl.destroy();
 		this.previousPageControl.destroy();
 		this.element.destroy();
-		
 		if( this.elementToClone ) this.elementToClone.destroy();
-        
-        this.options = null;
-		this.element		 	= null;
-		this.instanceName	 	= null;
-		this.itemIdPrefix	 	= null;
-		this.elementToClone		= null;
-		this.nextPageControl	= null;
-		this.previousPageControl= null;
-		this.pageableElement 	= null;
-		this.method				= null;
-		this.container		 	= null;
-		this.spinner		 	= null;
-		this.marshal		 	= null;
-		this.pages 			 	= null;
-		this.container		 	= null;
-		this.currentPage 	 	= null;
-		this.pageableElement 	= null;
-
+		this.options = null;
+		this.element = null;
+		this.instanceName = null;
+		this.itemIdPrefix = null;
+		this.elementToClone	= null;
+		this.nextPageControl = null;
+		this.previousPageControl = null;
+		this.pageableElement = null;
+		this.method = null;
+		this.container = null;
+		this.spinner = null;
+		this.marshal = null;
+		this.pages = null;
+		this.container = null;
+		this.currentPage = null;
+		this.pageableElement = null;
 	}
 
 });

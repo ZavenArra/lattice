@@ -2,7 +2,7 @@
 	<label><?=isset($label)?$label:'File';?></label>
 	<div class="wrapper">
 		<input type="file" class="hidden" />
-		<p class="<?=str_replace(',',' ',$extensions);?> filename"><?if($value):?><?=$value['filename'];?><?else:?>No file uploaded yet.<?endif;?></p>
+		<p class="<?=str_replace(',',' ',$extensions);?> fileName"><?if($value):?><?=$value['filename'];?><?else:?>No file uploaded yet&hellip;<?endif;?></p>
 		<div class="status hidden">
 		<img src="<?=url::site('lattice/mopcms/views/images/bar.gif', null, false);?>" class="progress" />
 			<span class="message hidden"></span>

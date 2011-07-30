@@ -1,4 +1,4 @@
-if( !mop.modules.navigation) mop.modules.navigation = {};
+if( !mop.modules.navigation ) mop.modules.navigation = {};
 
 mop.modules.navigation.Navigation = new Class({
 
@@ -20,6 +20,10 @@ mop.modules.navigation.Navigation = new Class({
 
 	getContentTypeFromId: function( nodeId ){
 		return this.nodeData[ nodeId ].contentType;
+	},
+	
+	getIdFromSlug: function(){
+//		this.nodeData.each( function( aNode ))
 	},
 
 	getSlugFromId: function( nodeId ){
@@ -67,9 +71,10 @@ mop.modules.navigation.Navigation = new Class({
 		console.log( "/////////////////////////////////" );
 		console.log( "rootId:", rootId );	
 		console.log( "userLevel:", this.userLevel );
-		console.log( "appStatus:", mop.historyManager.getAppState() );
+		console.log( "appState:", mop.historyManager.getAppState() );
 		console.log( "/////////////////////////////////" );
-		this.requestTier( rootId, null );
+		var deepLink = null;//( mop.historyManager.getAppState().slug )? this.getNodeIdFromSlug( mop.historyManager.getAppState().slug ) : null;
+		this.requestTier( rootId, null, deepLink );
 	},
 
 	addPane: function( parentId ){
@@ -82,7 +87,7 @@ mop.modules.navigation.Navigation = new Class({
 		return newPane;
 	},
 
-	requestTier: function( parentId, parentTier ){
+	requestTier: function( parentId, parentTier, deepLink ){
 		var title;
 		var paneIndex = 0;
 		if( parentTier ){
@@ -95,18 +100,16 @@ mop.modules.navigation.Navigation = new Class({
 		if( this.navPanes.length > 0 ) this.clearPanes( paneIndex + 1 );	    
 		var newPane = this.addPane( parentId );
 		newPane.store( 'paneIndex', paneIndex );
-		if( this.tiers[ parentId ] ){
+		if( this.tiers[ parentId ] && !deepLink ){
 			// if the tier has already been loaded and cached
 			console.log( "requestTier", "cached", parentId, this.tiers[parentId] );
 			this.renderPane( this.tiers[ parentId ], newPane );
+
 		}else{
 			// otherwise load send a tier request
 			console.log( "requestTier", "uncached", parentId, newPane );
-			if( this.currentTierRequest ){
-				this.currentTierRequest.cancel();
-//				newPane.get( "spinner" ).hide( true );
-			}
-			this.currentTierRequest = this.dataSource.requestTier( parentId, function( json ){
+			if( this.currentTierRequest ) this.currentTierRequest.cancel();
+			this.currentTierRequest = this.dataSource.requestTier( parentId, deepLink, function( json ){
 				this.requestTierResponse( json, parentId, newPane );
 			}.bind( this ) );
 		}
@@ -189,7 +192,7 @@ mop.modules.navigation.Navigation = new Class({
 		console.log( ":::::::::::: onBreadCrumbClicked ", aNode.id );
 		console.log( "\t", aNode.index );
 		console.log( "\t", this.navPanes[ aNode.index ].retrieve( "tier" )  );
-		this.requestTier( aNode.id, this.navPanes[ aNode.index ].retrieve( "tier" ) );
+		this.requestTier( aNode.id, null, this.navPanes[ aNode.index ].retrieve( "tier" ) );
 		this.marshal.onNodeSelected( aNode.id );
 	},
 
@@ -374,7 +377,7 @@ mop.modules.navigation.Tier = new Class({
 		this.onNodeSelected( nodeId );
 		// if this specific tier has a pending request, we cancel it so the callback doesn't fire		
 		if( this.marshal.getNodeTypeFromId( nodeId ) != "module" ){
-			this.marshal.requestTier( nodeId, this );
+			this.marshal.requestTier( nodeId, this, null );
 		}else{
 			this.marshal.clearPanes( this.element.retrieve( 'paneIndex' ) + 1 );
 		}
