@@ -2,6 +2,8 @@
 
 class Controller_ExportXML extends Controller {
 
+	public $outputDir;
+
    public function __construct() {
       if (!is_writable('application/views/xmldumps/')) {
 //	die('application/views/xmldumps/ must be writable');
@@ -25,8 +27,9 @@ class Controller_ExportXML extends Controller {
             switch (get_class($value)) {
                case 'Model_File':
                   //or copy to directory and just use filename
-                  if ($value->fullpath) {
-                     $node->appendChild($this->doc->createTextNode($value->fullpath));
+                  if ($value->filename) {
+										$targetPath = $this->outputDir . $value->filename;
+										$node->appendChild($this->doc->createTextNode($targetPath));
                   }
                   break;
                case 'Model_Page':
@@ -53,6 +56,9 @@ class Controller_ExportXML extends Controller {
          if ($key == "slug" && $value == "") {
             continue;
          }
+				 if($key == "title" && $value == ""){
+					 $value = microtime();
+				 }
          if ($key == "id") {
             continue;
          }
@@ -74,9 +80,10 @@ class Controller_ExportXML extends Controller {
             switch (get_class($value)) {
                case 'Model_File':
 //or copy to directory and just use filename
-                  if ($value->fullpath) {
-                     $node->appendChild($this->doc->createTextNode($value->fullpath));
-                  }
+                  if ($value->filename) {
+										$targetPath = $this->outputDir . $value->filename;
+										$node->appendChild($this->doc->createTextNode($targetPath));
+									}
                   break;
                case 'Model_Object':
                   foreach ($this->getObjectFields($value) as $subField) {
@@ -184,21 +191,21 @@ return;
       $object = Graph::getRootNode('cmsRootNode');
       $objects = $object->getChildren();
 
+			$this->outputDir = 'application/export/'.$outputfilename.'/';
 
       foreach ($this->exportTierMOPFormat($objects) as $item) {
          $data->appendChild($item);
       }
       $this->doc->appendChild($data);
 
-			$outputDir = 'application/export/'.$outputfilename;
 			try {
-				mkdir($outputDir, 777);
+				mkdir($this->outputDir, 777);
 			} catch (Exception $e){
 
 			}
-			chmod(getcwd().'/'.$outputDir, 0777);
-      $this->doc->save($outputDir.'/'.$outputfilename.'.xml');
-			system('cp -Rp application/media/* '.$outputDir);
+			chmod(getcwd().'/'.$this->outputDir, 0777);
+      $this->doc->save($this->outputDir.'/'.$outputfilename.'.xml');
+			system('cp -Rp application/media/* '.$this->outputDir);
    }
 
    public function action_export($xslt='') {

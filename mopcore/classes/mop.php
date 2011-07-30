@@ -72,12 +72,18 @@ Class mop {
 				$arena = $customName;
 			}
 
-			$path = Kohana::find_file('config', $arena, 'xml', true); 
+			if(file_exists($arena)){
+				//if the argument is actually a path to a file
+				$path = getcwd().'/'.$arena;
+			} else {
+				$path = Kohana::find_file('config', $arena, 'xml', true); 
+				$path = $path[count($path)-1];
+			}
 			if(!count($path)){
 				throw new Kohana_Exception('Could not locate xml :file', array(':file'=>$arena));
 			}
 
-			$dom->load( $path[count($path)-1] );
+			$dom->load( $path );
 			if(!$dom->validate()){
 				echo('Validation failed on '.$path[0]);
 				print_r($dom->errors);

@@ -46,6 +46,10 @@ class Controller_Builder extends Controller {
 		Graph::configureTemplate($this->rootNodeObjectType);
 		Graph::addRootNode($this->rootNodeObjectType);
 
+		if($xmlFile != 'data'){
+			//then we are loading an export
+			$xmlFile = 'application/export/'.$xmlFile.'/'.$xmlFile.'.xml';
+		}
 		echo "\nInserting Data\n";
 		$this->insertData($xmlFile );
 
