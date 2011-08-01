@@ -73,7 +73,7 @@ mop.modules.navigation.Navigation = new Class({
 		console.log( "userLevel:", this.userLevel );
 		console.log( "appState:", mop.historyManager.getAppState() );
 		console.log( "/////////////////////////////////" );
-		var deepLink = null;//( mop.historyManager.getAppState().slug )? this.getNodeIdFromSlug( mop.historyManager.getAppState().slug ) : null;
+		var deepLink = ( mop.historyManager.getAppState().slug )? mop.historyManager.getAppState().slug : null;
 		this.requestTier( rootId, null, deepLink );
 	},
 

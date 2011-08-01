@@ -30,8 +30,11 @@ mop.modules.CMS = new Class({
 		return mop.util.getBaseURL() + "ajax/html/cms/getPage/" + nodeId;
 	},
 
-	getRequestTierURL: function( parentId ){
-		return mop.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId;
+	getRequestTierURL: function( parentId, deepLink ){
+		var deepLinkAppend = ( deepLink )? "/" + deepLink : '';
+		var url = mop.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId + deepLinkAppend;
+		alert( url );
+		return url;
 	},
 
 	getAddObjectRequestURL: function( parentId, templateId ){
@@ -90,12 +93,11 @@ mop.modules.CMS = new Class({
 		$("nodeContent").unspin();
 		this.pageContent.set( 'html', html );
 		this.UIFields = this.initUI( this.pageContent );
-		console.log( "populate", this.toString(), this.pageContent );
+//		console.log( "populate", this.toString(), this.pageContent );
 		this.initModules( this.pageContent );		
 		this.titleElement = this.element.getElement( ".objectTitle" );
 		if( this.titleElement ){
 			var titleIPE = this.titleElement.getElement('.field-title');
-			console.log( "???", this.titleElement, titleIPE, titleIPE.retrieve('Class') );
 			this.titleText = titleIPE.retrieve('Class').getValue();
    		this.slugIPE = this.titleElement.getElement( ".field-slug" );
 			// var titleIPE = this.titleElement.getElement( ".field-title" ).retrieve("Class");
@@ -107,7 +109,7 @@ mop.modules.CMS = new Class({
 	},
     	
 	clearPage: function(){
-		console.log( "clearPage" );
+//		console.log( "clearPage" );
 		this.destroyChildModules( this.pageContent );
 		this.destroyUIFields();
 		this.pageContent.empty();
@@ -205,10 +207,10 @@ mop.modules.CMS = new Class({
 */
 
 	requestTier: function( parentId, deepLink, callback ){
-		// console.log( "requestTier", parentId );
+		alert( "requestTier" + ", " + parentId + ", " + deepLink );
 		this.currentObjectId = parentId;
 		return new Request.JSON( {
-			url: this.getRequestTierURL( parentId ),
+			url: this.getRequestTierURL( parentId, deepLink ),
 			onSuccess: function( json ){
 				this.requestTierResponse( json );
 				callback( json );
