@@ -77,10 +77,48 @@ var Interface = function( name, members ) {
 	Function: String.toElement
 	returns a dom element from a string
 */
-String.implement({ 
+String.implement({
+	
 	toElement: function() { 
 		return new Element('div', { html:this } ).getFirst(); 
-	} 
+	},
+	
+	entityDecode: function(){
+		var div = new Element("div", { "text": this });
+		return div.get( "text" );
+	},
+	
+	entityEncode: function(){
+		var matches = this.match(/&#\d+;?/g);
+		var returnString = this;
+		if( matches ){
+			for(var i = 0; i < matches.length; i++){
+				var replacement = String.fromCharCode((matches[i]).replace(/\D/g,""));
+				returnString = this.replace(/&#\d+;?/,replacement);
+			}
+		}
+		return returnString;
+	},
+	
+	htmlBreaksToNewlines: function(){
+		return this.replace( /<br( ?)(\/?)>/g, "\n" );
+	},	
+	
+	newLinesToHTMLBreaks: function(){
+		return this.replace( /\n/g, "<br/>" ).entityDecode();
+	},
+
+	toPlain: function(){
+		console.log( ":: toPlain ::", this.htmlBreaksToNewlines().entityEncode() );
+		return this.htmlBreaksToNewlines().entityEncode();
+	},
+	
+	formatToHTML: function(){
+		console.log( ":: formatToHTML ::", this.newLinesToHTMLBreaks().entityDecode() );
+		return this.newLinesToHTMLBreaks().entityDecode();
+	}
+	
+	
 });
 
 Element.implement({

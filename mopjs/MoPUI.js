@@ -4,8 +4,19 @@ mop.ui.navigation = {};
 Element.implement({
 	roundCorners: function( radius ){
 		var borderStyle;
-		if( ( Browser.safari || Browser.chrome ) && Browser.version < 5 ){ borderStyle = "-webkit-border-radius"; }else if( Browser.firefox && Browser.version < 4 ){ borderStyle = "-moz-border-radius"; }else{ borderStyle = "border-radius"; }
+		if( Browser.safari && Browser.version < 5 ){ borderStyle = "-webkit-border-radius"; }else if( Browser.firefox && Browser.version < 4 ){ borderStyle = "-moz-border-radius"; }else{ borderStyle = "border-radius"; }
 		if( (Browser.ie && Browser.version >= 9) || !Browser.ie  ) this.setStyle( borderStyle, radius + "px" );
+	},
+	addBoxShadow: function( shadow ){
+		/*
+			reffer to http://www.css3.info/preview/box-shadow/
+		*/
+		var styles = ( shadow )? shadow: '1px 1px 3px #999';
+		var styleName;
+		if( Browser.safari && Browser.version <= 5 ){ styleName = "-webkit-box-shadow"; }else if( Browser.firefox && Browser.version < 4 ){ styleName = "-moz-box-shadow"; }else{ styleName = "box-shadow"; }
+		if( (Browser.ie && Browser.version >= 9) || !Browser.ie ){
+			this.setStyle( styleName, styles );
+		}
 	}
 });
 
@@ -41,6 +52,10 @@ mop.ui.UIField = new Class({
 		this.element.removeClass( "disabled" );
 	},
 
+	setTabIndex: function( val ){
+		this.field.set( 'tabindex', val );
+	},
+	
 	/*Constructor*/
 	initialize: function( anElement, aMarshal, options ) {
 		this.parent( anElement, aMarshal, options );
@@ -82,6 +97,7 @@ mop.ui.UIField = new Class({
 	submit: function( e ){
 		mop.util.stopEvent( e );
 		var val = this.getValue();
+//		alert( val );
 		this.submittedValue = val;
 		if( !this.options.autoSubmit ){
 			this.setValue( val );
@@ -124,7 +140,7 @@ mop.ui.Sticky = new Class({
 		edge: 'lowerLeft',
 		tick: 'tickLeft',
 		stayOnBlur: false,
-		
+		boxShadow: '1px 1px 2px #888888'
 	},
 
 	initialize: function( attachTo, options ){
@@ -139,7 +155,6 @@ mop.ui.Sticky = new Class({
 		this.element.addClass( this.options.tick );
 		this.content = new Element( 'div.content.clearFix' );
 		if( this.options.cssClassses ) this.element.addClass( this.options.cssClassses );
-		if( this.options.borderRadius ) this.content.roundCorners( this.options.borderRadius );		
 		this.mouseenter = this.target.addEvent( 'mouseenter', this.startShow.bindWithEvent( this ) );
 		if( !this.options.stayOnBlur ) this.mouseleave = this.target.addEvent( 'mouseleave', this.startHide.bindWithEvent( this ) );
 		
@@ -154,6 +169,8 @@ mop.ui.Sticky = new Class({
 		this.populate( this.options.content );
 		this.morph = new Fx.Morph( this.element, { duration: 750, transition: Fx.Transitions.Quad.easeOut } );
 		$(document.body).adopt( this.element );
+		if( this.options.borderRadius ) this.content.roundCorners( this.options.borderRadius );		
+		if( this.options.boxShadow ) this.content.addBoxShadow();
 		this.position();
 	},
 
@@ -186,7 +203,7 @@ mop.ui.Sticky = new Class({
 	},
 	
 	show: function(){
-		console.log( this.fieldName, 'tooltip show' );
+		console.log( this.fieldName, 'tooltip show', this.element.getStyle('box-shadow') );
 		this.morph.start( { 'opacity' : 1 } );
 	},
 
@@ -2279,20 +2296,17 @@ mop.ui.CheckBox = new Class({
 	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
-		this.checkBox = this.element.getElement( "input[type='checkbox']" );
-		this.checkBox.addEvent( "click", this.submit.bindWithEvent( this ) );
+		this.field = this.element.getElement( "input[type='checkbox']" );
+		this.field.addEvent( "click", this.submit.bindWithEvent( this ) );
 	},
 
 	getValue: function(){
-		return ( this.checkBox.get( "checked" ) )? 1 : 0;
+		return ( this.field.get( "checked" ) )? 1 : 0;
 	},
 	
 	submit: function( e ){
-//		console.log( "\t\t:::::", this.getValue(), this.checkBox.getProperty( "checked" ) );
 		var val = this.getValue();
 		this.submittedValue = val;
-		if( !this.validate() ) return;		
-
 		if( !this.options.autoSubmit ){
 			this.setValue( val );
 			if( this.leaveEditMode ) this.leaveEditMode();
@@ -2304,11 +2318,10 @@ mop.ui.CheckBox = new Class({
 	},
 	
 	setValue: function( aVal ){
-//		this.checkBox.set( "value", aVal );
 		if( aVal == 1 ){
-			this.checkBox.setProperty( "checked", "checked" );
+			this.field.setProperty( "checked", "checked" );
 		}else{
-			this.checkBox.removeProperty( "checked" );
+			this.field.removeProperty( "checked" );
 		} 
 	},
 	
@@ -2319,8 +2332,8 @@ mop.ui.CheckBox = new Class({
 	},
 	
 	destroy: function(){
-		delete this.checkBox;
-		this.checkBox = null;	
+		delete this.field;
+		this.field = null;	
 		this.parent();
 	}
 		
@@ -2487,9 +2500,8 @@ mop.ui.Text = new Class({
 		maxLength: 0
 	},
 
-	getValue: function(){
-		return ( this.field )? this.field.get( 'value' ) : this.ipeElement.get( 'html' );
-	},
+	getValue: function(){		
+		return this.field.get( 'value' );	},
 
 	getKeyValuePair: function(){
 		var returnVal = {};
@@ -2499,7 +2511,7 @@ mop.ui.Text = new Class({
 	
 	setValue: function( aValue ){
 		if( this.field ) this.field.set( 'value', aValue );
-		this.ipeElement.set( 'html', aValue );
+		this.ipeElement.set( 'html', aValue.formatToHTML() );
 	},
 
 	initialize: function( anElement, aMarshal, options ) {
@@ -2518,7 +2530,7 @@ mop.ui.Text = new Class({
 		this.field.addClass( 'away' );
 		this.enableElement();
 		this.ipeElement.set( 'morph' );
-		this.ipeElement.setStyle( "height", "auto" );
+		// this.ipeElement.setStyle( "height", "auto" );
 		this.oldValue = this.ipeElement.get( "html" );
 	},
 
@@ -2549,14 +2561,15 @@ mop.ui.Text = new Class({
 	
 	prepareField: function(){
 		this.field.removeEvents();
+		var val = this.ipeElement.get( 'html' ).toPlain();
 		var size = this.ipeElement.getSize();
-		var contents = this.ipeElement.get( 'html' );
-		this.field.set( 'value', this.formatForEditing( contents ) );
+		this.field.set( 'value', val );
+		var h = this.ipeElement.getComputedSize().height - ( 2*parseInt( this.field.getComputedStyle('border-bottom-width') )  ); 
 		if( this.options.rows > 1 ){
 			this.field.setStyles({
 				'overflow': 'hidden',
 				'width': size.x - ( 2 + 2*parseInt( this.ipeElement.getStyle('padding-left' ) ) ), 
-				'height': size.y
+				'height': h // compensates for inputelements having borders/extra padding
 			});
 			this.field.addEvent( 'keyup', this.fitToContent.bind( this ) );
 			this.fitToContent();
@@ -2564,7 +2577,8 @@ mop.ui.Text = new Class({
 			var inputType = ( this.element.getValueFromClassName( 'type' ) == 'password' )? 'password' : 'text';
 			this.field.set( 'type', inputType );
 			this.field.setStyles({
-				'width': size.x - 2*parseInt( this.ipeElement.getStyle('padding-left') )
+				'width': size.x - 2*parseInt( this.ipeElement.getStyle('padding-left') ),
+				'height': h // compensates for inputelements having borders/extra padding
 			});
 		};
 		if( this.options.maxlength ) this.field.addEvent( 'keydown', this.checkForMaxLength.bindWithEvent( this ) );
@@ -2592,9 +2606,9 @@ mop.ui.Text = new Class({
 		});
 		this.field.select();
 		this.field.addEvent( 'focus' , this.onFieldFocus.bind( this ) );
-		this.field.removeClass('away');
 		this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
-		this.ipeElement.addClass("hidden");
+		this.field.removeClass('away');
+		this.ipeElement.addClass("away");
 		this.controls.position();
 		this.controls.show();
 	},
@@ -2632,6 +2646,9 @@ mop.ui.Text = new Class({
 	
 	submit: function( e ){
 		this.parent( e );
+		var val = this.submittedValue.formatToHTML();
+		this.ipeElement.set( 'html', val );
+		console.log( "SUBMIT **** ", val );
 	},
 		
 	checkForMaxLength: function(e){
@@ -2665,7 +2682,6 @@ mop.ui.Text = new Class({
 	
 	leaveEditMode: function(){
 		this.mode = 'atRest';
-//		this.field.removeEvents();
 		this.field.addClass('away');
 		this.field.removeEvents('blur');
 		if( this.marshal.resumeSort ) this.marshal.resumeSort();
@@ -2674,7 +2690,7 @@ mop.ui.Text = new Class({
 			this.controls = null;
 		}
 		if( this.options.submitOnBlur ) this.allowSubmitOnBlur = true;
-		this.ipeElement.removeClass( 'hidden' );
+		this.ipeElement.removeClass( 'away' );
 		if( this.validationSticky ){
 			this.validationSticky.destroy();
 			this.validationSticky = null;
@@ -2685,7 +2701,7 @@ mop.ui.Text = new Class({
 	cancelEditing: function( e ){
 		mop.util.preventDefault( e );
 		if( this.oldValue ){
-			var val = this.html_entity_decode( this.oldValue.replace( /<br( ?)(\/?)>/g, '\n' ) )
+			var val = this.oldValue.formatToHTML()
 			this.field.set( 'value', val );
 			this.ipeElement.set( 'html', this.oldValue );
 		}else{
@@ -2697,8 +2713,11 @@ mop.ui.Text = new Class({
 	showSaving: function(){
 		this.mode = 'saving';
 		this.ipeElement.set( "title", this.options.messages.saving );
-		this.ipeElement.set( 'html', this.submittedValue );
-		this.ipeElement.set( 'morph', { duration: 150, onComplete: function(){ this.ipeElement.setStyle( "background-color", "none" ); this.ipeElement.removeClass("atRest"); this.ipeElement.addClass("saving"); }.bind( this ) } );
+		this.ipeElement.set( 'morph', { duration: 150, onComplete: function(){
+			this.ipeElement.setStyle( "background-color", "none" );
+			this.ipeElement.removeClass("atRest");
+			this.ipeElement.addClass("saving");
+		}.bind( this ) } );
 		this.ipeElement.morph( '.saving' );
 	},
 
@@ -2710,47 +2729,22 @@ mop.ui.Text = new Class({
 		this.field.focus();
 		this.field.select();
 	},
-
-	formatForEditing: function( aString ){
-		return aString.replace	( /<br( ?)(\/?)>/g, "\n" ); 
-	},
-
-	html_entity_decode: function( aString ){
-		var div = new Element("div", { "text": aString });
-		try{
-			return div.get( "text" );
-		}finally{
-			div.destroy();
-			div = null;
-		}
-	},
-	
-	html_entity_encode: function( aString ){
-		var matches = aString.match(/&#\d+;?/g);
-		for(var i = 0; i < matches.length; i++){
-			var replacement = String.fromCharCode((matches[i]).replace(/\D/g,""));
-			data = data.replace(/&#\d+;?/,replacement);
-		}
-		return data;
-	},
 	
 	fitToContent: function(){
-		if( !this.measureDiv ){
-			this.measureDiv = new Element( "div", { 
-				"class": this.field.get( "class" ) + " " + this.ipeElement.get("class"),
-				"styles" : {
-					"display": "none",
-					// "width": this.field.getStyle( "width" ),
-					"height": 'auto'
-				}
-			});
-			$(document.body).adopt( this.measureDiv );
-		}
-		var val = this.html_entity_decode( this.field.get( "value" ).replace( /\n/g, "<br/>" ) )
-		this.measureDiv.set( "html", val );
-		var size = this.measureDiv.measure( function(){ return this.getComputedSize() } );
-		this.field.setStyle( "height", ( size.y ) + "px" );
+		var val = this.getValue().formatToHTML();
+		var size = this.measureIPEElementWithValue( val );
+		this.field.setStyle( "height", size.y );
 		if( this.controls ) this.controls.position();
+	},
+	
+	measureIPEElementWithValue: function( aValue ){
+		var ogVal = this.getValue();
+		var ogSize = this.ipeElement.getSize();
+		this.ipeElement.setStyle( 'height', 'auto' );
+		this.ipeElement.set( 'html', aValue.formatToHTML() );
+		var newSize = this.ipeElement.getSize();
+//		this.setValue( ogVal );
+		return newSize;
 	},
 
 	onResponse: function( json ){
@@ -2762,6 +2756,7 @@ mop.ui.Text = new Class({
 	onSaveFieldSuccess: function( response ){
 		this.enableElement();
 		val = response.value;
+		console.log( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", response.value );
 		if( this.field && this.field.get( 'type' ) == 'password' ){
 			this.ipeElement.set( 'html', '******' );
 		}else{
@@ -2770,7 +2765,11 @@ mop.ui.Text = new Class({
 		this.oldValue = val;
 		if( this.validationSticky ) this.validationSticky.hide( true );
 		this.parent( response );		
-		this.ipeElement.set( 'morph', { duration: 600, onComplete: function(){ this.ipeElement.setStyle( "background-color", "none" ); this.ipeElement.removeClass( "saving" ); this.ipeElement.addClass("atRest"); }.bind( this ) } );
+		this.ipeElement.set( 'morph', { duration: 600, onComplete: function(){
+			this.ipeElement.setStyle( "background-color", "none" );
+			this.ipeElement.removeClass( "saving" );
+			this.ipeElement.addClass("atRest");
+		}.bind( this ) } );
 		this.ipeElement.morph.delay( 200, this.ipeElement, '.atRest' );
 	},	
 

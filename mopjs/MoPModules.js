@@ -143,7 +143,7 @@ mop.modules.Module = new Class({
 			console.log( 'initUI >>>> ', anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  );
 			var UIField = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) ) ]( anElement, this, this.options );
 			this.UIFields[ UIField.fieldName ] = UIField;
-			if( UIField.field ) UIField.field.set( 'tabindex', index+1 );
+			if( UIField ) UIField.setTabIndex( index+1 );
 		}, this );
 		if( this.postInitUIHook ) this.postInitUIHook();
 		return this.UIFields;

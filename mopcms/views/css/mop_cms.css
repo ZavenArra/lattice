@@ -90,9 +90,11 @@ h6,
 
 .atRest{
 	background-color: #fffac4;	
+	opacity: 1;
 }
+
 .saving{
-	background-color: #0af;
+	opacity: .2;
 }
 
 .ipe:hover,
@@ -131,11 +133,6 @@ input, textarea{
 	line-height: inherit;
 }
 
-.away{
-	position: absolute;
-	left: -15000px;
-}
-
 .ui-Text .p input, 
 .ui-Text .p textarea{
 	font-size: 12px;
@@ -144,8 +141,12 @@ input, textarea{
 
 .ui-Text textarea{
 	display: block;
-	height: auto;
 	resize: none;
+}
+
+.away{
+	position: absolute;
+	left: -15000px;
 }
 
 .displayField{
@@ -604,7 +605,7 @@ input[type='radio']{
 }
 
 .ipe{ 
-	min-height: 1.2em;
+	min-height: 1.5em;
 	height: auto !important;
 }
 
@@ -694,6 +695,7 @@ a#bigRedButton:hover{
 	background-color: #B9E5FB;
 	opacity: .4;
 }
+
 
 .sticky.tickRight{
 	padding-right: 9px;
