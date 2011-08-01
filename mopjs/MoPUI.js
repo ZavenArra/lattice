@@ -53,7 +53,7 @@ mop.ui.UIField = new Class({
 	},
 
 	setTabIndex: function( val ){
-		this.field.set( 'tabindex', val );
+		if( this.field ) this.field.set( 'tabindex', val );
 	},
 	
 	/*Constructor*/
@@ -96,7 +96,6 @@ mop.ui.UIField = new Class({
 	submit: function( e ){
 		mop.util.stopEvent( e );
 		var val = this.getValue();
-//		alert( val );
 		this.submittedValue = val;
 		if( !this.options.autoSubmit ){
 			this.setValue( val );
