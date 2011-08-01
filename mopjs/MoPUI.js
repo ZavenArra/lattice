@@ -80,7 +80,6 @@ mop.ui.UIField = new Class({
 	},
 
 	onSaveFieldSuccess: function( response ){
-		console.log( '*', this.fieldName, 'onSaveFieldSuccess', response );
 		this.broadcastMessage( 'uifieldsaveresponse', [ this.fieldName, response ] );
 	},
 	
@@ -114,7 +113,7 @@ mop.ui.UIField = new Class({
 	},
 	
 	destroy: function(){
-		console.log( ">>>> ", this.fieldName, "destroy!" );
+//		console.log( ">>>> ", this.fieldName, "destroy!" );
 		this.fieldName = null;	
 		this.parent();
 	}
@@ -203,7 +202,7 @@ mop.ui.Sticky = new Class({
 	},
 	
 	show: function(){
-		console.log( this.fieldName, 'tooltip show', this.element.getStyle('box-shadow') );
+//		console.log( this.fieldName, 'tooltip show', this.element.getStyle('box-shadow') );
 		this.morph.start( { 'opacity' : 1 } );
 	},
 
@@ -512,7 +511,7 @@ mop.ui.Modal = new Class({
 		toString: function(){ return "[ object, mop.ui.EnhancedModal ]"; },
 
 		showLoading: function(){
-			console.log( ":::::", this.toString(), 'showLoading', this.modal, this.modal.spin );
+//			console.log( ":::::", this.toString(), 'showLoading', this.modal, this.modal.spin );
 			this.content.empty();
 //            this.modal.spin();
 			this.hideControls();
@@ -2756,7 +2755,6 @@ mop.ui.Text = new Class({
 	onSaveFieldSuccess: function( response ){
 		this.enableElement();
 		val = response.value;
-		console.log( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", response.value );
 		if( this.field && this.field.get( 'type' ) == 'password' ){
 			this.ipeElement.set( 'html', '******' );
 		}else{

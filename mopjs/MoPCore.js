@@ -109,12 +109,10 @@ String.implement({
 	},
 
 	toPlain: function(){
-		console.log( ":: toPlain ::", this.htmlBreaksToNewlines().entityEncode() );
 		return this.htmlBreaksToNewlines().entityEncode();
 	},
 	
 	formatToHTML: function(){
-		console.log( ":: formatToHTML ::", this.newLinesToHTMLBreaks().entityDecode() );
 		return this.newLinesToHTMLBreaks().entityDecode();
 	}
 	
