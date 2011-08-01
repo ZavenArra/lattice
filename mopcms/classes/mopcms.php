@@ -325,6 +325,9 @@ class MoPCMS {
 	}
 
 public static function makeFileSaveName($filename) {
+			if(!$filename){
+				return null;
+			}
       $filename = str_replace('&', '_', $filename);
 
       $xarray = explode('.', $filename);
