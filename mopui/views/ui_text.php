@@ -2,7 +2,7 @@
 	<?if(isset($label)):?>
 		<label><?=$label;?></label>
 	<?endif;?>
-	<?if($rows > 1 ):?>
+	<?if(isset($rows) && $rows > 1 ):?>
 		<textarea class="og <?=$tag;?>"><?=($value!=null)?$value:"";?></textarea>
 	<?else:?>
 		<input class="og <?=$tag;?>" type="text" value="<?if($value!=null)echo$value;?>" />
