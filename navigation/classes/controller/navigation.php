@@ -79,6 +79,7 @@ class Controller_Navigation extends Controller_MOP{
                   $follow = 'true';
                }
                $sendItem['children'] = $children;
+							 $sendItem['tierHtml'] = $this->renderTierView($child, $children);
             }
 
 				if(strtolower($child->objecttype->nodeType)=='container'){
@@ -145,6 +146,11 @@ class Controller_Navigation extends Controller_MOP{
          $nodes[] = $nodeView->render();
       }
 
+      $this->response->body($this->renderTierView($parent, $nodes));
+   }
+
+	private function renderTierView($parent, $nodes){
+
       $tierView = new View('navigationTier');
       $tierView->nodes = $nodes;
 
@@ -164,8 +170,9 @@ class Controller_Navigation extends Controller_MOP{
       $tierMethodsDrawer->addableObjects = $addableObjects;
 
       $tierView->tierMethodsDrawer = $tierMethodsDrawer->render();
-      $this->response->body($tierView->render());
-   }
+			return $tierView->render();
+
+	}
 
 	public function getObjectTypes(){
 		$objectTypes = array();
