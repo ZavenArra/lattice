@@ -1721,25 +1721,23 @@ mop.ui.FileElement = new Class({
 	},
 	
 	updateThumb: function( imageData ){
-
 //		console.log( this.toString(), "updateThumb", imageData );
-
 		var size = ( this.imagePreview )? this.imagePreview.getSize() : { x: 0, y: 0 };
-		this.imgAsset.setStyle( "width", size.x );
-		this.imgAsset.setStyle( "height", size.y );
-		this.imgAsset.setStyle( "opacity", 0 );
+		this.imgAsset.setStyle( 'width', size.x );
+		this.imgAsset.setStyle( 'height', size.y );
+		this.imgAsset.setStyle( 'opacity', 0 );
 		if( !this.imagePreview ){
 			//this.imagePreview = new Element( "img" ).inject( this.previewElement, "top" );
-			this.imgAsset.inject( this.previewElement, "top" );
+			this.imgAsset.inject( this.previewElement, 'top' );
 		}else{
 			this.imgAsset.replaces( this.imagePreview );
 		}
 		this.imagePreview = this.previewElement.getElement( 'img' );
 		this.revertToReadyState();
 		this.imageFadeIn = new Fx.Morph( this.imagePreview, {
-			'duration': 300
-			//"onComplete": this.broadcastResize.bind( this )
-		}).start( { "opacity" : [ 0, 1 ], "width": imageData.width, "height": imageData.height } );
+			'duration': 300,
+			'onComplete': mop.util.EventManager.broadcastMessage.bind( mop.util.EventManager, "resize" )
+		}).start( { 'opacity' : [ 0, 1 ], 'width': imageData.width, 'height': imageData.height } );
 
 	},
 
@@ -1818,7 +1816,7 @@ mop.util.Uploader = new Class({
 		}.bind(this), true);
 
 		mop.util.EventManager.addListener( this );
-//		this.addEvent( "resize", this.reposition );
+		this.addEvent( "resize", this.reposition );
 
 		// callbacks are no longer in the options, every callback
 		// is fired as event, this is just compat
