@@ -6,7 +6,7 @@
 	<objectTypes>
 
 <!-- HOME -->
-		<objectType name="basicCategory" contentType="category" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+		<object Type name="basicCategory" contentType="category" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<addableObject objectTypeName="article" addText="Add an Article" />
 			<addableObject objectTypeName="multilineIPE" addText="Add an Article" />
 			<addableObject objectTypeName="singleIPE" addText="Add an Article" />
