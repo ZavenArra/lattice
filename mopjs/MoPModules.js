@@ -31,6 +31,7 @@ mop.modules.Module = new Class({
 	},
 	
 	saveField: function( postData, callback ){
+//			console.log( "saveField.postData:", postData );
 	    return new Request.JSON( { url: this.getSaveFieldURL(), onSuccess: callback } ).post( postData );
 	},
 	

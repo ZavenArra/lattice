@@ -151,7 +151,7 @@ Element.implement({
 		classes.each( function( className ){
 			if( className.indexOf( '-' ) > -1 ){
 				var opt = className.split( '-' );
-				if( opt[1].split( '_' ) ){
+				if( opt[1].split( '_' ).length > 1 ){
 					opts[ opt[0] ] = opt[1].split('_');
 				}else{
 					opts[ opt[0] ] = opt[1];					

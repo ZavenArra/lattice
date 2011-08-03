@@ -2510,7 +2510,8 @@ mop.ui.Text = new Class({
 	},
 
 	getValue: function(){		
-		return this.field.get( 'value' );	},
+		return this.field.get( 'value' );
+	},
 
 	getKeyValuePair: function(){
 		var returnVal = {};
@@ -2534,8 +2535,6 @@ mop.ui.Text = new Class({
 				// this.validators = new InputValidator( 'this', options);
 			});
 		}
-		
-		
 		this.ipeElement = new Element( "div", { 
 			"class": "ipe " + this.field.get( 'class' ).split( " " ).splice( 1 ).join(' '),
 			"html": this.field.get( 'value' )
