@@ -145,13 +145,17 @@ Element.implement({
 		Loops through a classes className, splits it by 
 	*/
 	getOptionsFromClassName: function(){
-		if(!this.get("class")) return false;
-		var classes = this.get('class').split(" ");
+		if(!this.get('class')) return false;
+		var classes = this.get('class').split(' ');
 		var opts = {};
 		classes.each( function( className ){
-			if( className.indexOf( "-" ) > -1 ){
-				var opt = className.split("-");
-				opts[ opt[0] ] = opt[1];
+			if( className.indexOf( '-' ) > -1 ){
+				var opt = className.split( '-' );
+				if( opt[1].split( '_' ) ){
+					opts[ opt[0] ] = opt[1].split('_');
+				}else{
+					opts[ opt[0] ] = opt[1];					
+				}
 			}
 		});
 		return opts;

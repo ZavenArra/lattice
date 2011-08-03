@@ -143,7 +143,7 @@ mop.modules.Module = new Class({
 			console.log( 'initUI >>>> ', anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  );
 			var UIField = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) ) ]( anElement, this, this.options );
 			this.UIFields[ UIField.fieldName ] = UIField;
-			if( UIField ) UIField.setTabIndex( index+1 );
+			if( UIField ) UIField.setTabIndex( 'tabindex', index+1 );
 		}, this );
 		if( this.postInitUIHook ) this.postInitUIHook();
 		return this.UIFields;
@@ -201,20 +201,19 @@ mop.modules.Cluster = new Class({
 Extends: mop.modules.Module,
 
 initialize: function( anElementOrId, aMarshal, options ){
-this.parent( anElementOrId, aMarshal, options );
-this.objectId = this.element.get("id").split("_")[1];
+	this.parent( anElementOrId, aMarshal, options );
+	this.objectId = this.element.get("id").split("_")[1];
 },
 
 
 getSaveFieldURL: function(){
-var url = mop.util.getBaseURL() +"ajax/data/cms/savefield/" + this.objectId;
-console.log( "::::::", this.toString(), "getSaveFieldURL", url );
-return url;
+	var url = mop.util.getBaseURL() +"ajax/data/cms/savefield/" + this.objectId;
+	console.log( "::::::", this.toString(), "getSaveFieldURL", url );
+	return url;
 },
 
-
 getObjectId: function(){
-return this.objectId;
+	return this.objectId;
 }
 
 });
@@ -393,7 +392,7 @@ mop.modules.MoPList = new Class({
 	},
 	
 	addObjectRequest: function( e ){
-	    mop.util.stopEvent( e );
+		mop.util.stopEvent( e );
 		if( this.addObjectDialogue ) this.removeModal( this.addObjectDialogue );
 		this.addObjectDialogue = new mop.ui.AddObjectDialogue( null, this );
 		this.addObjectDialogue.showLoading( e.target.get("text") );
@@ -419,15 +418,15 @@ mop.modules.MoPList = new Class({
 		mop.util.EventManager.broadcastMessage( "resize" );          
 	},
 	
-    removeObjectRequest: function( itemObjectId ){
-        console.log( "removeObjectRequest", this.toString(), this.getRemoveObjectURL );
-        var jsonRequest = new Request.JSON( { url: this.getRemoveObjectURL( itemObjectId ) } ).send();
+	removeObjectRequest: function( itemObjectId ){
+		console.log( "removeObjectRequest", this.toString(), this.getRemoveObjectURL );
+		var jsonRequest = new Request.JSON( { url: this.getRemoveObjectURL( itemObjectId ) } ).send();
 		return jsonRequest;
-    },
-    
-    removeObjectResponse: function( json ){
-        console.log( "removeObjectResponse", json );
-    },
+	},
+
+	removeObjectResponse: function( json ){
+		console.log( "removeObjectResponse", json );
+	},
 
 	removeModal: function( aModal ){
 		if( !this.addObjectDialogue ) return;
@@ -513,7 +512,7 @@ mop.modules.MoPList = new Class({
 		clearInterval( this.submitDelay );		
 		this.removeModal();
 		this.addObjectDialogue = this.controls = this.instanceName = this.items = this.listing = this.oldSort = this.allowChildSort, this.sortDirection, this.submitDelay = null;
-        if( this.scroller ) this.scroller = null;
+    if( this.scroller ) this.scroller = null;
 		mop.util.EventManager.broadcastMessage( 'resize' );
 		this.parent();
 	}
@@ -533,11 +532,10 @@ mop.modules.ListItem = new Class({
 	
 	getObjectId: function(){ return this.objectId; },
 	getSaveFieldURL: function(){
-		console.log( "listItem.getSaveFieldURL", this.marshal.toString(), this.marshal.element, this.marshal.getSaveFieldURL() );
-		return this.marshal.getSaveFieldURL( this.getObjectId()  );
+		var url =  this.marshal.getSaveFieldURL( this.getObjectId() );
+		console.log( "listItem.getSaveFieldURL", url );
+		return url;
 	},
-	
-//	getSubmissionController: function(){ return this.marshal.getSubmissionController(); },
 
 	initialize: function( anElement, aMarshal, addObjectDialogue, options ){
 		this.element = $( anElement);

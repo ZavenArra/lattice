@@ -10,8 +10,8 @@ mop.modules.UserManagement = new Class({
 	
 	/* Section: Getters & Setters */
 	
-	getSaveFieldURL: function( itemId  ){
-	  var url = mop.util.getBaseURL() +"ajax/data/usermanagement/savefield/" + itemId;
+	getSaveFieldURL: function( itemObjectId  ){
+	  var url = mop.util.getBaseURL() +"ajax/data/usermanagement/savefield/" + itemObjectId;
 		return url;
 	},
 	

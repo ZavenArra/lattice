@@ -73,7 +73,7 @@ mop.ui.UIField = new Class({
 		if( !json.returnValue || !json.response ){
 			throw json;
 		}else if( json.response.error ){
-			this.showValidationError( json.response.error)
+			this.showValidationError( json.response.message );
 		}else{
 			this.onSaveFieldSuccess( json.response );
 		}
@@ -84,13 +84,22 @@ mop.ui.UIField = new Class({
 	},
 	
 	showValidationError: function( errorMessage ){
-		this.validationSticky = new mop.ui.Sticky( this.ipeElement, {
-			content: "Error: " + errorMessage,
-			borderRadius: 4,
-			offset: { x: 0, y: -12 },
-			position: { x: 'center', y: 'top' },
+		this.destroyValidationSticky();
+		this.validationSticky = new mop.ui.Sticky( this.element, {
+			content: "<p>Error: " + errorMessage + "</p>",
+			position: 'centerTop',
+			edge: 'centerBottom',
+			tick: 'tickBottom',
 			stayOnBlur: true
-		}).show();
+		});
+		this.validationSticky.show();
+		console.log('showValidationError', this.validationSticky );
+	},
+	
+	destroyValidationSticky: function(){
+		if( !this.validationSticky ) return;
+		this.validationSticky.destroy();
+		this.validationSticky = null;
 	},
 		
 	submit: function( e ){
@@ -104,13 +113,8 @@ mop.ui.UIField = new Class({
 		if( this.showSaving ) this.showSaving();
 		if( this.leaveEditMode ) this.leaveEditMode();
 		this.marshal.saveField( { field: this.fieldName, value: val }, this.onResponse.bind( this ) );
-},	
-		
-	getCoordinates: function(){
-//	console.log( this.toString(), "getCoordinates", this.scrollContext, this.element.getCoordinates( this.scrollContext ) );
-//	return this.element.getCoordinates( this.scrollContext );
-	},
-	
+	},	
+
 	destroy: function(){
 //		console.log( ">>>> ", this.fieldName, "destroy!" );
 		this.fieldName = null;	
@@ -129,7 +133,6 @@ mop.ui.Sticky = new Class({
 	morph: null,
 	showInterval: null,
 	hideInterval: null,
-	pos: { x: 0, y: 0 },
 	options: {
 		ignoreMargins: true,
 		offset: { x: 0, y: 0 },
@@ -152,6 +155,11 @@ mop.ui.Sticky = new Class({
 		this.element = new Element( 'div.sticky' );
 		this.element.addClass( this.options.tick );
 		this.content = new Element( 'div.content.clearFix' );
+		if( this.options.content && typeof this.options.content == 'string' ){
+			this.content.set( 'html', this.options.content );
+		}else if( this.options.content ){
+			this.content.adopt( this.options.content );			
+		}
 		if( this.options.cssClassses ) this.element.addClass( this.options.cssClassses );
 		this.mouseenter = this.target.addEvent( 'mouseenter', this.startShow.bindWithEvent( this ) );
 		if( !this.options.stayOnBlur ) this.mouseleave = this.target.addEvent( 'mouseleave', this.startHide.bindWithEvent( this ) );
@@ -165,7 +173,7 @@ mop.ui.Sticky = new Class({
 		if( !this.options.stayOnBlur ) this.element.addEvent( 'mouseleave', this.startHide.bindWithEvent( this ) );
 		this.element.adopt( this.content );
 		this.populate( this.options.content );
-		this.morph = new Fx.Morph( this.element, { duration: 750, transition: Fx.Transitions.Quad.easeOut } );
+		this.morph = new Fx.Morph( this.element, { duration: 250, transition: Fx.Transitions.Quad.easeOut } );
 		$(document.body).adopt( this.element );
 		if( this.options.borderRadius ) this.content.roundCorners( this.options.borderRadius );		
 		if( this.options.boxShadow ) this.content.addBoxShadow();
@@ -182,9 +190,7 @@ mop.ui.Sticky = new Class({
 		});
 	},
 	
-  populate: function( content ){
-		this.content.adopt( content );
-	},
+  populate: function( content ){ this.content.adopt( content ); },
 	
   startShow: function( e ){
 		mop.util.stopEvent( e );
@@ -200,24 +206,26 @@ mop.ui.Sticky = new Class({
 		this.hideInterval = this.hide.delay( 350, this );
 	},
 	
-	show: function(){
-//		console.log( this.fieldName, 'tooltip show', this.element.getStyle('box-shadow') );
-		this.morph.start( { 'opacity' : 1 } );
+	show: function(){ 
+		if( this.morph ){
+			this.morph.cancel();
+			this.morph.start( { 'opacity' : 1 } );
+		}
 	},
 
-	hide: function( e, destroy ){
+	hide: function(){
+		if( this.morph ) this.morph.cancel();
 		this.morph.start( { 'opacity' : 0 } );
-		if( destroy ) this.destroy();
 	},
     
 	destroy: function(){
-		if( this.morph ) this.morph.cancel();
+		this.element.destroy();
+		this.morph.cancel();
 		if( this.showInterval ) clearTimeout( this.showInterval );
 		if( this.hideInterval ) clearTimeout( this.hideInterval );
-		this.element.destroy();
-		this.target.removeEvent( 'mouseenter', this.mouseenter );
+		if( this.mouseenter ) this.target.removeEvent( 'mouseenter', this.mouseenter );
 		if( this.mouseleave ) this.target.removeEvent( 'mouseleave', this.mouseleave );
-		this.morph = this.target = this.element = this.mouseenter = this.mouseleave = null;
+		this.element = this.content = this.options = this.target = this.morph = this.mouseenter = this.mouseleave = this.showInterval = this.hideInterval = null;
 	}
     
 });
@@ -486,7 +494,7 @@ mop.ui.Modal = new Class({
 					mop.util.stopEvent( e );
 				}.bindWithEvent( this ) }
 			}).inject( this.element );
-			this.modal = new Element( "div", { "class": "modal" }).inject( this.element );
+			this.modal = new Element( "div", { "class": "modal container_12" }).inject( this.element );
 			this.header = new Element( "div", { "class" : "header" } ).inject( this.element );
 			this.title = new Element( "h3", { "text" : "title" } ).inject( this.header );			
 			this.headerControls = new Element( "div", { "class" : "controls" } ).inject( this.header );
@@ -523,21 +531,17 @@ mop.ui.Modal = new Class({
 		},
 
 		showControls: function(){
-			console.log( "\n============================================================================");
-			console.log( "\tshowControls", this.toString() );
-			console.log( this.header.get("html") )
 			this.headerControls.removeClass("hidden");
 			this.footerControls.removeClass("hidden");	
-			console.log( "============================================================================\n\n");
 		},
 		
 		show: function(){
 			console.log( "show", this.toString(), this );
-            this.showControls();
-            this.modal.unspin();
-            this.element.setStyle( "opacity", 0 );
-            this.element.removeClass("hidden");
-            this.showTransition.start( { "opacity": 1 } );
+			this.showControls();
+			this.modal.unspin();
+			this.element.setStyle( "opacity", 0 );
+			this.element.removeClass("hidden");
+			this.showTransition.start( { "opacity": 1 } );
 		},
 
 		close: function( e, onComplete ){
@@ -683,20 +687,21 @@ mop.ui.AddObjectDialogue = new Class({
 				mop.util.stopEvent( e );
 			}.bindWithEvent( this ) }
 		}).inject( this.element );
-		this.modal = new Element( "div", { "class": "modal" }).inject( this.element );
-		this.header = new Element( "div", { "class" : "header" } ).inject( this.element );
+		this.header = new Element( "div", { "class" : "header container_12 " } ).inject( this.element );
+		this.modal = new Element( "div", { "class": "modal container_12" }).inject( this.element );
 		this.title = new Element( "h3" ).inject( this.header );
-		this.headerControls = new Element( "div", { "class" : "controls" } ).inject( this.header );
+		this.headerControls = new Element( "div", { "class" : "controls clearFix" } ).inject( this.header );
 		var submitButton = new Element( "a", { 
 			"class" : "icon submit",
 			"href" : "submit"
 		}).inject( this.headerControls );
 		var cancelButton = new Element( "a", { 
-			"class" : "icon cancel",
-			"href" : "cancel"
+			'class' : 'icon cancel',
+			'href' : 'cancel',
+			'text' : 'cancel'
 		}).inject( this.headerControls );
 		this.content = new Element( "div", { "class": "content" } ).inject( this.modal );
-		this.footer = new Element( "div", { "class": "footer" } ).inject( this.modal );
+		this.footer = new Element( "div", { "class": "footer clearFix" } ).inject( this.modal );
 		this.footerControls = this.headerControls.clone().inject( this.footer );
 		$(document).getElement("body").adopt( this.element );
 		return this.element;
@@ -715,14 +720,15 @@ mop.ui.AddObjectDialogue = new Class({
 		}else{
 			this.itemContainer.adopt( someContent );
 		}
-        console.log( "mop.ui.AddOnjectDialogue.setContent", this.itemContainer, someContent );
+		console.log( "mop.ui.AddOnjectDialogue.setContent", this.itemContainer, someContent );
 		var controls = this.itemContainer.getElement(".itemControls");
 	 	controls.getElement(".delete").addClass("hidden");
 		
 //		console.log( "setContent\t", this.toString(), this.element.getScrollSize().y, this.element.getSize().y );
+
 		if( this.element.getScrollSize().y <= this.element.getSize().y ){
 //			console.log( "\t", this.header.getStyle( "margin-left" ) );
-			this.header.setStyle( "margin-left", parseInt( this.header.getStyle( "margin-left" ) ) + 7 );
+//			this.header.setStyle( "margin-left", parseInt( this.header.getStyle( "margin-left" ) ) + 7 );
 //			console.log( "\t", this.header.getStyle( "margin-left" ) );
 		}
 
@@ -748,18 +754,18 @@ mop.ui.AddObjectDialogue = new Class({
 		/* @TODO: Figure out how to submit all ui elements inside the modal before submit (that way they all validate and close)*/
 		var ipes = this.content.getElements( ".ui-Text" );
 
-		var invalidIpes = [];
+		// var invalidIpes = [];
 
 		ipes.each( function( anIPE ){
-			var validity = anIPE.retrieve( "Class" ).validate();
-			if( !validity ){
-				invalidIpes.push( anIPE );
-			} else { 
+			// var validity = anIPE.retrieve( "Class" ).validate();
+			// if( !validity ){
+			// 	invalidIpes.push( anIPE );
+			// } else { 
 				if( anIPE.retrieve( "Class" ).mode == "editing" ) anIPE.retrieve( "Class" ).submit();
-			}
+			// }
 		});
 
-		if( invalidIpes.length > 0 ) return;
+		// if( invalidIpes.length > 0 ) return;
 		
 		delete invalidIpes;
 		invalidIpes = null;
@@ -2342,7 +2348,38 @@ mop.ui.RadioGroup = new Class({
 	Extends: mop.ui.UIField,
 
 	radios: null,
+
+	getValue: function(){
+//	console.log( this, "getValue", this.radios, this.radios.length );
+		for( var i = 0; i < this.radios.length; i++ ){
+			if( this.radios[i].get( "checked" ) ) return this.radios[i].get( "value" );
+		}
+		return null;
+	},
+
+	setValue: function( aValue ){
+		if( aValue == null ) aValue = "";
+		for( var i = 0; i < this.radios.length; i++ ){
+			var aRadio = this.radios[i];
+//			console.log( aRadio.get( "value" ), ( aRadio.get( "value" ) == aValue ), ( aRadio.get( "value" ) == "" ) );
+			if( aRadio.get( "value" ) == aValue ) aRadio.setProperty( "checked", "checked" );
+		}
+	},
+
+	getKeyValuePair: function(){
+//		console.log( "getKeyValuePair ", this.element );
+		var returnVal = {};
+		returnVal[ this.fieldName ] = this.getValue();
+		return returnVal;
+	},
 	
+	setTabIndex: function( val ){
+		this.radios.each( function( aRadio, i ){
+			console.log( aRadio, aRadio.get('tabindex') );
+			aRadio.set( "tabindex", val + i );
+		});
+	},
+
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.radios = this.element.getElements("input[type='radio']");
@@ -2375,30 +2412,6 @@ mop.ui.RadioGroup = new Class({
 		return "[ object, mop.ui.RadioGroup ]";
 	},
 	
-	getValue: function(){
-//	console.log( this, "getValue", this.radios, this.radios.length );
-		for( var i = 0; i < this.radios.length; i++ ){
-			if( this.radios[i].get( "checked" ) ) return this.radios[i].get( "value" );
-		}
-		return null;
-	},
-	
-	setValue: function( aValue ){
-		if( aValue == null ) aValue = "";
-		for( var i = 0; i < this.radios.length; i++ ){
-			var aRadio = this.radios[i];
-//			console.log( aRadio.get( "value" ), ( aRadio.get( "value" ) == aValue ), ( aRadio.get( "value" ) == "" ) );
-			if( aRadio.get( "value" ) == aValue ) aRadio.setProperty( "checked", "checked" );
-		}
-	},
-	
-	getKeyValuePair: function(){
-//		console.log( "getKeyValuePair ", this.element );
-		var returnVal = {};
-		returnVal[ this.fieldName ] = this.getValue();
-		return returnVal;
-	},
-
 	onResponse: function( json ){
 		this.parent( json );
 //		console.log( "RadioGroup onResponse,", $A(arguments) );
@@ -2517,6 +2530,14 @@ mop.ui.Text = new Class({
 		this.mode = "atRest";
 		if( this.options.submitOnBlur ) this.allowSubmitOnBlur = true;
 		this.field = anElement.getElement( ".og" );
+		if( this.options.validation ){
+			this.validators = [];
+			Object.each( this.options.validation, function( aValidationString ){
+				// this.validators = new InputValidator( 'this', options);
+			});
+		}
+		
+		
 		this.ipeElement = new Element( "div", { 
 			"class": "ipe " + this.field.get( 'class' ).split( " " ).splice( 1 ).join(' '),
 			"html": this.field.get( 'value' )
@@ -2528,13 +2549,10 @@ mop.ui.Text = new Class({
 		this.field.addClass( 'away' );
 		this.enableElement();
 		this.ipeElement.set( 'morph' );
-		// this.ipeElement.setStyle( "height", "auto" );
 		this.oldValue = this.ipeElement.get( "html" );
 	},
 
-	toString: function(){
-		return "[ object, mop.ui.Text ]";
-	},
+	toString: function(){ return "[ object, mop.ui.Text ]"; },
 	
 	onKeyPress: function( e ){
 		var submitCondition = ( ( e.control || e.meta) && e.key == 'enter' );
@@ -2547,13 +2565,13 @@ mop.ui.Text = new Class({
 	},
 	
 	onFieldFocus: function( e ){
-		console.log( "##", this.mode, this.fieldName, "onFieldFocus", e.target, e.target.tabIndex );
+		console.log( "    ::  ::", this.mode, this.fieldName, "onFieldFocus", e.target, e.target.tabIndex );
 		if( this.mode == "editing ") return false;
 		this.enterEditMode();
 	},
 	
 	onBlur: function( e ){
-		console.log( "#", this.fieldName, "onBlur", e.target, e.target.tabIndex, this.allowSubmitOnBlur );
+		 console.log( "    ::  ::", this.fieldName, "onBlur", e.target, e.target.tabIndex, this.allowSubmitOnBlur );
 		if( this.allowSubmitOnBlur ) this.submit();
 	},
 	
@@ -2564,21 +2582,19 @@ mop.ui.Text = new Class({
 		this.field.set( 'value', val );
 		var h = this.ipeElement.getComputedSize().height - ( 2*parseInt( this.field.getComputedStyle('border-bottom-width') )  ); 
 		if( this.options.rows > 1 ){
-			this.field.setStyles({
-				'overflow': 'hidden',
-				'width': size.x - ( 2 + 2*parseInt( this.ipeElement.getStyle('padding-left' ) ) ), 
-				'height': h // compensates for inputelements having borders/extra padding
-			});
 			this.field.addEvent( 'keyup', this.fitToContent.bind( this ) );
 			this.fitToContent();
 		}else{
 			var inputType = ( this.element.getValueFromClassName( 'type' ) == 'password' )? 'password' : 'text';
 			this.field.set( 'type', inputType );
-			this.field.setStyles({
-				'width': size.x - 2*parseInt( this.ipeElement.getStyle('padding-left') ),
-				'height': h // compensates for inputelements having borders/extra padding
-			});
 		};
+
+		this.field.setStyles({
+			'overflow': 'hidden',
+			'width': size.x - ( 2 + 2*parseInt( this.ipeElement.getStyle('padding-left' ) ) ), 
+			'height': h // compensates for inputelements having borders/extra padding
+		});
+		
 		if( this.options.maxlength ) this.field.addEvent( 'keydown', this.checkForMaxLength.bindWithEvent( this ) );
 
 		if( this.options.submitOnBlur ){
@@ -2588,11 +2604,12 @@ mop.ui.Text = new Class({
 			this.submitOnBlurEnabled = false;
 			this.field.addEvent( 'blur', this.cancelEditing.bind( this ) );
 		}
-		
+
 		if( this.controls ){
 			this.controls.destroy();
 			this.controls = null;
 		}
+
 		this.controls = new mop.ui.Sticky( this.field, {
 			content: this.getControls(),
 			borderRadius: 4,
@@ -2602,6 +2619,7 @@ mop.ui.Text = new Class({
 			mouseEnter: this.setAllowSubmitOnBlur.bind( this, false ),
 			mouseLeave: this.setAllowSubmitOnBlur.bind( this, true )
 		});
+
 		this.field.select();
 		this.field.addEvent( 'focus' , this.onFieldFocus.bind( this ) );
 		this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
@@ -2646,7 +2664,6 @@ mop.ui.Text = new Class({
 		this.parent( e );
 		var val = this.submittedValue.formatToHTML();
 		this.ipeElement.set( 'html', val );
-		console.log( "SUBMIT **** ", val );
 	},
 		
 	checkForMaxLength: function(e){
@@ -2674,6 +2691,7 @@ mop.ui.Text = new Class({
 		mop.util.stopEvent( e );
 		if( this.mode == "editing ") return false;
 		this.mode = "editing";
+		// if we don't suspend parent sorting, then when we click the field we start a drag angle
 		if( this.marshal.suspendSort ) this.marshal.suspendSort();
 		this.prepareField();
 	},
@@ -2682,6 +2700,7 @@ mop.ui.Text = new Class({
 		this.mode = 'atRest';
 		this.field.addClass('away');
 		this.field.removeEvents('blur');
+		// see enterEditMode and sorting
 		if( this.marshal.resumeSort ) this.marshal.resumeSort();
 		if( this.controls ){
 			this.controls.destroy();
@@ -2689,10 +2708,6 @@ mop.ui.Text = new Class({
 		}
 		if( this.options.submitOnBlur ) this.allowSubmitOnBlur = true;
 		this.ipeElement.removeClass( 'away' );
-		if( this.validationSticky ){
-			this.validationSticky.destroy();
-			this.validationSticky = null;
-		}
 		this.enableElement();
 	},
 
@@ -2705,14 +2720,17 @@ mop.ui.Text = new Class({
 		}else{
 			this.ipeElement.set( 'html', '' );
 		}
+		this.ipeElement.removeClass("saving");
+		this.ipeElement.morph( '.atRest' );
 		this.leaveEditMode();
+		this.destroyValidationSticky();
+		console.log( 'validationSticky', this.validationSticky );
 	},
 
 	showSaving: function(){
 		this.mode = 'saving';
 		this.ipeElement.set( "title", this.options.messages.saving );
 		this.ipeElement.set( 'morph', { duration: 150, onComplete: function(){
-			this.ipeElement.setStyle( "background-color", "none" );
 			this.ipeElement.removeClass("atRest");
 			this.ipeElement.addClass("saving");
 		}.bind( this ) } );
@@ -2724,8 +2742,6 @@ mop.ui.Text = new Class({
 		this.ipeElement.set( 'text', this.submittedValue );
 		this.field.set( 'value', this.submittedValue );
 		this.enterEditMode();
-		this.field.focus();
-		this.field.select();
 	},
 	
 	fitToContent: function(){
@@ -2759,11 +2775,10 @@ mop.ui.Text = new Class({
 		}else{
 			this.ipeElement.set( 'html', val );
 		}
+		this.destroyValidationSticky();
 		this.oldValue = val;
-		if( this.validationSticky ) this.validationSticky.hide( true );
 		this.parent( response );		
 		this.ipeElement.set( 'morph', { duration: 600, onComplete: function(){
-			this.ipeElement.setStyle( "background-color", "none" );
 			this.ipeElement.removeClass( "saving" );
 			this.ipeElement.addClass("atRest");
 		}.bind( this ) } );

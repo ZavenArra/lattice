@@ -4,9 +4,9 @@ mop.modules.List = new Class({
 	
 	/* Section: Getters & Setters */	
 
-	getSaveFieldURL: function(itemObjectId){
+	getSaveFieldURL: function( itemObjectId ){
 	  var url = mop.util.getBaseURL() +"ajax/data/list/savefield/" + itemObjectId;
-		console.log( "::::::", this.toString(), "getSaveFieldURL", url );
+		console.log( "::::::", this.toString(), "getSaveFieldURL", url, itemObjectId );
 		return url;
 	},
 		

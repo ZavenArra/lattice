@@ -33,7 +33,6 @@ mop.modules.CMS = new Class({
 	getRequestTierURL: function( parentId, deepLink ){
 		var deepLinkAppend = ( deepLink )? "/" + deepLink : '';
 		var url = mop.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId + deepLinkAppend;
-		alert( url );
 		return url;
 	},
 
@@ -207,7 +206,6 @@ mop.modules.CMS = new Class({
 */
 
 	requestTier: function( parentId, deepLink, callback ){
-		alert( "requestTier" + ", " + parentId + ", " + deepLink );
 		this.currentObjectId = parentId;
 		return new Request.JSON( {
 			url: this.getRequestTierURL( parentId, deepLink ),

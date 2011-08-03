@@ -418,16 +418,14 @@ label{
 
 
 #pageContent .module{
-/*	border-bottom: 1px #dedede solid;
-*/	margin: 12px 0 0 0;
+	margin: 12px 0 0 0;
 	padding:.5em 0 2em 0;
 }
 
 #pageContent>.module{
 	margin: 12px 0 0 0;
 	border-top: 1px #dedede;
-/*	padding:.5em 1em 2em 1em;
-*/}
+}
 
 
 a.button{
@@ -448,45 +446,62 @@ a.button{
 	overflow: auto;
 
 }
-
 .modalContainer .modal{
-	margin: 7em auto 2em auto;	
-	width: 50em;
+	position: fixed;
+	top: 6em;
+	left:50%;
+	margin: -150px 0 0 -480px;	
 	z-index:11001;
 	background: #fff;
-	padding: 2em 2em 0  2em;
 }
+
+.modalContainer a.modalAnchor{
+	z-index:11000;
+	display:block;
+	background: #000;
+	opacity: 0.9;
+	position:fixed;
+	width: 100%;
+	height: 100%;
+	top:0;
+	left:0;
+}
+
 
 .modalContainer .header{
 	position: fixed;
 	z-index : 11002;
 	left: 50%;
 	top: 0;
-	padding: 2em 2em 0 2em;
-	width: 50em;
-	margin: 0 auto 0 -27.6em;
+	padding-top: 1em;
+	margin: 0 0 0 -480px;
 	background: url( ../images/bgk94.png );
 	color:#fff;
 }
 
-.modalContainer .header h3{
+.modalContainer h3{
+	font-family: Georgia, Times, serif;
+	font-weight: normal;
+	color:#fff;
 	float: left;
+	margin:0 0 .5em 1em;
 }
 
-.modalContainer .controls{
-	border-top: 1px #dedede solid;
-	
+.modal .content{
+	margin-top: 12em;
+	padding: 1em 2em 2em 2em;
 }
 
 .modalContainer .header .controls{
 	border: none;
 	float: right;
-	padding: .5em 2em 2em 2em;
+	padding: .5em 2em 1em 2em;
 }
 
 
 .modalContainer .footer .controls{
-	padding: 1em 0;
+	border-top: 1px #dedede solid;
+	padding: 1em 2em 1em 2em;
 }
 
 .tabNav{
@@ -517,55 +532,10 @@ a.button{
 	color: #fff;
 }
 
-
-
-.modalContainer{
-	position:fixed;
-	width: 100%;
-	height: 100%;
-	top:0;
-	left:0;
-/*	background: url( images/bgk90.png );
-*/	
-}
-
-
-.modalContainer .modal{
-	position: fixed;
-	top:45%;
-	left:50%;
-	margin: -150px 0 0 -300px;	
-	width:600px;
-	z-index:11001;
-}
-
-.modal .controls,
-.modal .itemControls{
-	margin-top:1.5em;
-}
-
-.modalContainer h3{
-	font-family: Georgia, Times, serif;
-	font-weight: normal;
-	color:#fff;
-	margin:0 0 .5em .5em;
-}
-
-.modalContainer h3{
-	font-family: Georgia, Times, serif;
-	font-weight: normal;
-	color:#fff;
-}
-
 .loginstatus{
 	float: right;
 	font-size: 10px;
 	margin: 0 0 1em 0;
-}
-
-.modal .container{
-	border: 12px #fff solid;
-	background:#fff;
 }
 
 th.spinner{
@@ -573,31 +543,6 @@ th.spinner{
 	background-position: center .75em;
 	background-repeat: no-repeat;
 }
-	
-.modalContainer a.modalAnchor{
-	z-index:11000;
-	display:block;
-	background: #000;
-	opacity: 0.9;
-	position:fixed;
-	width: 100%;
-	height: 100%;
-	top:0;
-	left:0;
-}
-
-.boxModule{
-	float: left;
-	border-left: 1px #dedede solid !important;
-}
-
-.boxModule a.button{
-	display: inline;
-	background-color: transparent !important;
-	color:#0af;
-}
-
-.boxModule>*{ margin-left: 12px; }
 
 input[type='radio']{
 	margin-top: .5em; 
@@ -696,7 +641,9 @@ a#bigRedButton:hover{
 	opacity: .4;
 }
 
-
+.sticky{
+	z-index: 20000;
+}
 .sticky.tickRight{
 	padding-right: 9px;
 	background: url( ../images/tickRight.png ) center right no-repeat;
@@ -716,16 +663,15 @@ a#bigRedButton:hover{
 
 .sticky .content{
 	background: #000;
+	color: #dedede;
 	height: 1.75em;
 	padding: .125em .125em;
 }
 
 .sticky p{
-	padding: .75em .75em 1.5em .75em;
-	font-size: .9em;
+	font-size: .875em;
+	padding: .5em 1.5em .5em 1.5em;
 	line-height: 1em;
-	margin: 0 0 0 0;
-	background: url( ../images/stickyBottom.png ) bottom left;	
 }
 
 .controlGroup{
