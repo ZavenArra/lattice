@@ -560,7 +560,7 @@ input[type='radio']{
 
 label.groupLabel{ display: block; }
 
-input.checkBox,
+input.checkbox,
 input[type='checkbox']{
 	display: inline;
 }
@@ -1113,7 +1113,9 @@ td{
 }
 
 .swiff-uploader-box{
-	display: none;
+/*	display: none;
+*/
+background:#f00;
 }
 
 .swiff-uploader-box a {

@@ -6,14 +6,20 @@
 		<div class="content">
 			<?if(isset($message)):?><?=$message;?><?endif;?>
 			<form action="<?=url::base();?>auth/login" method="post" class="form">
-				<label for="username">Username</label></th>
-				<input id="username" name="username" value="" class="grid_4" type="text"></td>
-				<label for="password">Password</label></th>
-				<input id="password" name="password" value="" class="grid_4" type="password"></td>
-				<button type="submit" class="submit" name="submit">Login</button></td>
-				<input type="hidden" name="redirect" value="<?=$redirect;?>" />
+				<fieldset class="grid_3">
+					<label for="username">Username</label>
+					<input id="username" name="username" value="" class="" type="text" />
+				</fieldset>
+				<fieldset class="grid_4">
+					<label for="password">Password</label>
+					<input id="password" name="password" value="" class="grid_4" type="password" />
+				</fieldset>
+				<fieldset class="grid_12">
+					<button type="submit" class="submit" name="submit">Login</button>
+					<input type="hidden" name="redirect" value="<?=$redirect;?>" />
+					<a href="<?=URL::base();?>auth/forgot/">Forgot your password?</a> 
+				</fieldset>
 			</form>
-			<a href="<?=URL::base();?>auth/forgot/">Forgot your password?</a> 
 		</div>
 	</div>
 	<a class="modalAnchor"></a>
