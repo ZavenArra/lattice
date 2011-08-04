@@ -17,12 +17,7 @@ class Controller_Ajax extends Controller_MOP {
 			$data = $subRequest->execute()->data();
 		} catch (Exception $e) {
 			//return HTML from exception
-			$message = $e->getMessage();
-         foreach( $e->getTrace() as $trace){
-           if(isset($trace['file'])){
-            $message .= " ::::: ".$trace['file'].':'.$trace['line']."\n;";
-           }
-         }
+			$message = $e->getOneLineErrorReport();
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
 				'response' => $message,
@@ -53,12 +48,8 @@ class Controller_Ajax extends Controller_MOP {
 			$html = $subRequest->execute()->body();
 		} catch (Exception $e) {
 			//return HTML from exception
-			$message = $e->getMessage();
-         foreach( $e->getTrace() as $trace){
-           if(isset($trace['file'])){
-            $message .= " ::::: ".$trace['file'].':'.$trace['line']."\n;";
-           }
-         }
+
+			$message = $e->getOneLineErrorReport();
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
 				'response' => $message,
@@ -109,13 +100,8 @@ class Controller_Ajax extends Controller_MOP {
 			$requestResponse = $subRequest->execute();
 		} catch (Exception $e) {
 			//return HTML from exception
-			$message = $e->getMessage();
-         foreach( $e->getTrace() as $trace){
-           if(isset($trace['file'])){
-            $message .= " ::::: ".$trace['file'].':'.$trace['line']."\n;";
-           }
-         }
-         $ajaxResponse = array(
+			$message = $e->getOneLineErrorReport();
+			$ajaxResponse = array(
 				'returnValue' => FALSE,
 				'response' => $message,
 				'arguments'=>$arguments

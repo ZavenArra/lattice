@@ -56,6 +56,8 @@ class MOP_CMS extends MOP_CMSInterface {
 
 		$this->loadResources('mop_cms');
 
+		mop::config('objects', 'objectTypes');
+
 	}
 
 	public function action_index(){

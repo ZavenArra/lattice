@@ -4,8 +4,8 @@ Informal (for now) list of setup that needs doing
 2) Copy the demo database file to application/config
 cp modules/database/config/database.php application/config/database.php
 3) Edit the database config at application/config/database.php to contain the correct settings
-4) Import a copy of the database sql (this step will soon be removed)
-mysql -u username -p database < sql.sql
+4) Open the cms in the brwoser 
+
 5) For DEV installs, change lattice to master branch
 cd lattice (or lattice)
 git checkout master
