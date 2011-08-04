@@ -665,8 +665,8 @@ mop.util.HistoryManager = new Class({
 
 mop.util.LoginMonitor = new Class({
 
-	secondsOfInactivityTilPrompt: 900000,
-	secondsTilLogout: 300000,
+	millisecondsOfInactivityUntilPrompt: 900000,
+	millisecondsUntilLogout: 300000,
 	millisecondsInAMinute: 60000,
 	secondsIdle: 0,
 	loginTimeout: null,
@@ -676,17 +676,17 @@ mop.util.LoginMonitor = new Class({
 		window.addEvent( "mousemove", this.onMouseMove.bind( this ) );
 		var loginTimeOutClassName = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
 		if( loginTimeOutClassName != undefined ){
-			this.secondsOfInactivityTilPrompt = Number( loginTimeOutClassName ) * 1000;
+			this.millisecondsOfInactivityUntilPrompt = Number( loginTimeOutClassName ) * 1000;
 		}
 		
-		this.inactivityTimeout = this.onInactivity.periodical( this.secondsOfInactivityTilPrompt, this );
+		this.inactivityTimeout = this.onInactivity.periodical( this.millisecondsOfInactivityUntilPrompt, this );
 		this.status = "notshowing";
 		this.inactivityMessage = "You have been inactive for {inactiveMins} minutes. If your dont respond to this message you will be automatically logged out in <b>{minutes} minutes and {seconds} seconds</b>. Would you like to stay logged in?";
 	},
 
 	onMouseMove: function(){
 		clearInterval( this.inactivityTimeout );
-		if( this.status == "notshowing" ) this.inactivityTimeout = this.onInactivity.periodical( this.secondsOfInactivityTilPrompt, this );
+		if( this.status == "notshowing" ) this.inactivityTimeout = this.onInactivity.periodical( this.millisecondsOfInactivityUntilPrompt, this );
 	},
 
 	onInactivity: function(){
@@ -694,7 +694,7 @@ mop.util.LoginMonitor = new Class({
 		clearInterval( this.inactivityTimeout );
 		this.date = new Date();
 		if( !this.dialogue ) this.dialogue = new mop.ui.InactivityDialogue( this, "Inactivity", "", this.keepAlive.bind( this ), this.logout.bind( this ), "Stay logged in?", "Logout" );
-		this.dialogue.setContent( this.inactivityMessage.substitute( { inactiveMins: this.secondsOfInactivityTilPrompt/this.millisecondsInAMinute, minutes: Math.floor( this.secondsTilLogout*.001 ), seconds: 00 } ) );
+		this.dialogue.setContent( this.inactivityMessage.substitute( { inactiveMins: this.millisecondsOfInactivityUntilPrompt/this.millisecondsInAMinute, minutes: Math.floor( this.millisecondsUntilLogout*.001 ), seconds: 00 } ) );
 		this.secondsIdle = 0;
 		this.logoutTimeout = this.logoutCountDown.periodical( 1000, this );
 		this.dialogue.show();
@@ -704,11 +704,11 @@ mop.util.LoginMonitor = new Class({
 //		console.log( "Maximum period of inactivity received starting logout countdown ", message );
 		
 		this.secondsIdle ++;
-		var secondsLeft = this.secondsTilLogout*.001 - this.secondsIdle;
+		var secondsLeft = this.millisecondsUntilLogout*.001 - this.secondsIdle;
 		if( secondsLeft == 0 ){ this.logout() }
 		var minutesLeft = Math.floor( secondsLeft/60 );
 		secondsLeft = secondsLeft - ( minutesLeft * 60 );
-		this.dialogue.setContent( this.inactivityMessage.substitute( { inactiveMins: this.secondsOfInactivityTilPrompt/this.millisecondsInAMinute, minutes: minutesLeft, seconds: secondsLeft } ) );
+		this.dialogue.setContent( this.inactivityMessage.substitute( { inactiveMins: this.millisecondsOfInactivityUntilPrompt/this.millisecondsInAMinute, minutes: minutesLeft, seconds: secondsLeft } ) );
 		minutesLeft = secondsLeft = null;
 	},
 
@@ -716,7 +716,7 @@ mop.util.LoginMonitor = new Class({
 		this.status = "notshowing";
 		clearInterval( this.inactivityTimeout );
 		clearInterval( this.logoutTimeout );
-		this.inactivityTimeout = this.onInactivity.periodical( this.secondsOfInactivityTilPrompt, this );
+		this.inactivityTimeout = this.onInactivity.periodical( this.millisecondsOfInactivityUntilPrompt, this );
 		new Request.JSON( { url: mop.util.getBaseURL() + "keepalive" } ).send();
 	},
 
