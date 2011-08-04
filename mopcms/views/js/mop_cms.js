@@ -207,13 +207,15 @@ mop.modules.CMS = new Class({
 
 	requestTier: function( parentId, deepLink, callback ){
 		this.currentObjectId = parentId;
-		return new Request.JSON( {
+		if( this.currentTierRequest ) this.currentTierRequest.cancel();
+		this.currentTierRequest = new Request.JSON( {
 			url: this.getRequestTierURL( parentId, deepLink ),
 			onSuccess: function( json ){
 				this.requestTierResponse( json );
 				callback( json );
 			}.bind( this )
 		}).send();
+		return this.currentTierRequest;
 	},
 
 	requestTierResponse: function( json ){
@@ -285,7 +287,6 @@ if( !mop.util.hasDOMReadyFired() ){
 		mop.historyManager = new mop.util.HistoryManager().instance();
 		mop.historyManager.init();
 		mop.ModalManager = new mop.ui.ModalManager();
-		mop.DepthManager = new mop.util.DepthManager(); 
 		var doAuthTimeout = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
 		if( window.location.href.indexOf( "auth" ) == -1 && doAuthTimeout && doAuthTimeout != "0" ) mop.loginMonitor = new mop.util.LoginMonitor();
 		mop.util.EventManager.broadcastMessage( "resize" );
