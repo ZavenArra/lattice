@@ -209,7 +209,9 @@ Class Controller_UserManagement extends Controller_Layout {
                   }
                } catch (Exception $e) {
                   $modelErrors = $e->errors('validation');
-                  $modelErrors = array_values($modelErrors['_external']);
+									if(isset($modelErrors['_external'])){
+										$modelErrors = array_values($modelErrors['_external']);
+									} 
                   $errors = array_merge($errors, $modelErrors);
                }
          }
