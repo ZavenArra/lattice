@@ -269,7 +269,25 @@ Class mop {
     }
     return $content;
   }
-  
+
+	//takes Exception as argument
+	public static function getOneLineErrorReport(Exception $e){
+		switch(get_class($e)){
+		case 'Kohana_Exception':
+			case 'Lattice_ApiException':
+				return $e->getOneLineErrorReport();
+				break;
+			default:
+				$message = $e->getMessage();
+				foreach( $e->getTrace() as $trace){
+					if(isset($trace['file'])){
+						$message .= " ::::: ".$trace['file'].':'.$trace['line']."\n;";
+					}
+				}
+				return $message;
+				break;
+		}
+	}	
   
 
 

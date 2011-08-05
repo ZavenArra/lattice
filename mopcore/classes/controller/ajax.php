@@ -17,7 +17,7 @@ class Controller_Ajax extends Controller_MOP {
 			$data = $subRequest->execute()->data();
 		} catch (Exception $e) {
 			//return HTML from exception
-			$message = $e->getOneLineErrorReport();
+			$message = mop::getOneLineErrorReport($e);
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
 				'response' => $message,
@@ -49,7 +49,7 @@ class Controller_Ajax extends Controller_MOP {
 		} catch (Exception $e) {
 			//return HTML from exception
 
-			$message = $e->getOneLineErrorReport();
+			$message = mop::getOneLineErrorReport($e);
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
 				'response' => $message,
@@ -100,7 +100,7 @@ class Controller_Ajax extends Controller_MOP {
 			$requestResponse = $subRequest->execute();
 		} catch (Exception $e) {
 			//return HTML from exception
-			$message = $e->getOneLineErrorReport();
+			$message = mop::getOneLineErrorReport($e);
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
 				'response' => $message,

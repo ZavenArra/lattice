@@ -40,7 +40,7 @@ class Controller_Navigation extends Controller_MOP{
 				throw new Kohana_Exception('Invalid object id sent to getTier');
 		 }
 			
-
+		Kohana::$log->add(Log::INFO, 'here we are');
 		$items = ORM::factory($this->objectModel);
 		$items->where('parentId', '=',  $parent->id);
 		$items->where('activity', 'IS', NULL);
@@ -79,7 +79,6 @@ class Controller_Navigation extends Controller_MOP{
                   $follow = 'true';
                }
                $sendItem['children'] = $children;
-							 $sendItem['tierHtml'] = $this->renderTierView($child, $children);
             }
 
 				if(strtolower($child->objecttype->nodeType)=='container'){
