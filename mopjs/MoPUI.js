@@ -1493,58 +1493,41 @@ mop.ui.FileElement = new Class({
 		return 	url;
 	},
 
-   getClearFileURL: function(){
-      var url = mop.util.getBaseURL() + "ajax/data/" + this.marshal.instanceName + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
-      return url;
-   },
+	getClearFileURL: function(){
+		var url = mop.util.getBaseURL() + "ajax/data/" + this.marshal.instanceName + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
+		return url;
+	},
 
 	initialize: function( anElement, aMarshal, options ){
-
 		this.parent( anElement, aMarshal, options );
-
 		this.ogInput = this.element.getElement( "input[type='file']" );
-		this.ogInput.setStyles({
-			"position": "absolute",
-			"left": "-9999px"
-		});
-
+		this.ogInput.addClass('away');
 		this.uploadButton = this.element.getElement( ".uploadButton" );
-
 		this.uploadLink = this.element.getElement( ".uploadLink" );
 		this.uploadLink.addEvent( 'click', function( e ){ mop.util.stopEvent( e ) } );
 		this.uploadLink.store( "Class", this );
-		// this.uploadLink.addEvent( "mouseover", this.onMouseOver.bindWithEvent( this ) );
-
 		this.downloadButton = this.element.getElement( ".downloadLink" );
 		this.downloadButton.store( "Class", this );
-		
 		this.clearButton = this.element.getElement( ".clearImageLink" );
 		this.clearButton.store( "Class", this );
 		this.clearButton.addEvent( "click", this.clearFileRequest.bindWithEvent( this ) );
-        
 		this.uploader = new mop.util.Uploader({
 			path: mop.util.getBaseURL() + "lattice/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf",
 			container: this.uploadLink,
 			target: this.uploadButton,
-			cookie: document.cookie
+			cookie: Cookie.read( 'session' )
 		});
-
-        // console.log( ":::::::::::::::", this.uploader.box.getElement( "object" ).get( "id" ) );
 		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );
-
 		this.baseURL = mop.util.getBaseURL();
-
 		this.statusElement = this.element.getElement( 'div.status' );
 		this.progressBar = this.statusElement.getElement( "img" );
 		this.statusMessage = this.statusElement.getElement( "span.message" );
-
 		this.statusShow = new Fx.Morph( this.statusElement, { 
 			'duration': 500,
 			'onComplete': function(){
 				mop.util.EventManager.broadcastMessage("resize");
 			}.bind( this )
 		});
-
 		this.statusHide = new Fx.Morph( this.statusElement, { 
 			'duration': 500,
 			"onComplete": function(){
@@ -1552,23 +1535,14 @@ mop.ui.FileElement = new Class({
 				mop.util.EventManager.broadcastMessage("resize");
 			}.bind( this )
 		});
-
 		this.previewElement = this.element.getElement(".preview");
-		
 		if( this.previewElement ) this.imagePreview = this.previewElement.getElement( "img" );
-
 		this.filename = this.element.getElement( ".fileName" );
-		
 		mop.util.EventManager.addListener( this );
-		
 		if( mop.util.getValueFromClassName( 'extensions', this.element.get("class") ) ) this.options.extensions = this.buildExtensionsObject()
-		
 		this.getSubmitURL();
-		
 		this.uploader.setTarget( this, this.uploadLink, this.getOptions() );
-
 		this.reposition();
-		
 	},
 	
 	simulateClick: function(){
@@ -1584,15 +1558,11 @@ mop.ui.FileElement = new Class({
 		console.log( "getOptions", "{", this.options.extensions, Cookie.read( 'session' ), "}");
 		return {
 			target: this.element,
-			cookie: document.cookie,
+			cookie: Cookie.read( 'session'),
 			container: this.element.getElement( '.controls' ),
 			fieldName: this.fieldName,
 			url: this.getSubmitURL(),
-			data: {
-				field: this.fieldName,
-				url: this.getSubmitURL(),
-				cookie: Cookie.read( 'session')
-			},
+			data: { field: this.fieldName, url: this.getSubmitURL(), cookie: Cookie.read( 'session') },
 			typeFilter: this.buildExtensionsObject(),
 			sizeLimitMin: 0,
 			sizeLimitMax: this.options.maxLength
@@ -1630,13 +1600,6 @@ mop.ui.FileElement = new Class({
 		mop.util.stopEvent( e );
 		this.uploader.setFocus( this, this.getPosition() );
 	},
-	
-	// onUploadClicked: function( e ){
-	// 	console.log( "onUploadClicked", e );
-	// 	mop.util.stopEvent( e );
-	// },
-	
-	// onMouseOver: function( e ){},
 	
 	clearFileRequest: function( e ){
 	   if( this.previewElement ) this.previewElement.fade( "out" );
@@ -1728,7 +1691,7 @@ mop.ui.FileElement = new Class({
 		this.downloadButton.set( "href", mop.util.getBaseURL() + json.response.src );
         this.downloadButton.removeClass("hidden");
 		if( this.previewElement ){
-			this.imgAsset = new Asset.image( mop.util.getBaseURL() + json.response.thumbSrc, {  alt: json.filename, onload: this.updateThumb.bind( this, json ) } );
+			this.imgAsset = new Asset.image( mop.util.getBaseURL() + json.response.thumbSrc, {  alt: json.response.filename, onload: this.updateThumb.bind( this, json ) } );
 		}else{
 			this.revertToReadyState();
 		}
@@ -1831,9 +1794,7 @@ mop.util.Uploader = new Class({
 		var path = this.options.path;
 		if (!path.contains('?')) path += '?noCache=' + Date.now(); // cache in IE
 		// container options for Swiff class
-		
-		console.log( "::", this.options.container );
-		
+				
 		this.box = new Element( 'div', { 'class': 'swiff-uploader-box' } ).inject( this.options.container );
 		
 		this.parent( path, { params: { wMode: 'transparent' }, height: '100%', width: '100%' } );
@@ -1849,12 +1810,13 @@ mop.util.Uploader = new Class({
 	},
 
 	buttonEnter: function( eventName ){
-		if( this.target ) this.target.addClass( "active" );
+		console.log( "??", this.target.getParent() );
+		if( this.target.getParent().hasClass("command" ) ) this.target.getParent().addClass( "active" );
 		this.targetRelay( eventName );
 	},
 	
 	buttonLeave: function( eventName ){
-		if( this.target ) this.target.removeClass( "active" );
+		if( this.target.getParent() ) this.target.getParent().removeClass( "active" );
 		this.targetRelay( eventName );
 	},
 
@@ -3095,11 +3057,11 @@ mop.ui.PaginationControls = new Class({
 		if( anIndex%2 != 0 ) clone.addClass("alternate");
 		return clone;
 	},
-	
+
 	setCurrentPage: function( aValue ){
 		this.currentPage = aValue;
 	},
-	
+
 	destroy: function(){
 		this.element.eliminate( "Class" );
 		this.nextPageControl.destroy();
@@ -3123,5 +3085,4 @@ mop.ui.PaginationControls = new Class({
 		this.currentPage = null;
 		this.pageableElement = null;
 	}
-
 });
