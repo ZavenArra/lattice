@@ -102,14 +102,13 @@ mop.modules.navigation.Navigation = new Class({
 		newPane.store( 'paneIndex', paneIndex );
 		if( this.tiers[ parentId ] && !deepLink ){
 			// if the tier has already been loaded and cached
-			console.log( "requestTier", "cached", parentId, this.tiers[parentId] );
+			console.log( "requestTier", "cached", parentId, this.tiers[ parentId ] );
 			this.renderPane( this.tiers[ parentId ], newPane );
 
 		}else{
 			// otherwise load send a tier request
 			console.log( "requestTier", "uncached", parentId, newPane );
-			if( this.currentTierRequest ) this.currentTierRequest.cancel();
-			this.currentTierRequest = this.dataSource.requestTier( parentId, deepLink, function( json ){
+			this.dataSource.requestTier( parentId, deepLink, function( json ){
 				this.requestTierResponse( json, parentId, newPane );
 			}.bind( this ) );
 		}
@@ -445,6 +444,8 @@ mop.modules.navigation.Tier = new Class({
 		this.sortableListElement = sortableListElement;
 		if( !this.sortableList ){
 			this.sortableList = new mop.ui.Sortable( this.sortableListElement, this, this.sortableListElement  );
+			// alert( sortableListElement.getElements( '.module' ).length );
+			// alert( this.sortableList.removeItems( sortableListElement.getElements( '.module' ) ) );
 		}else{
 			this.sortableList.attach();
 		}

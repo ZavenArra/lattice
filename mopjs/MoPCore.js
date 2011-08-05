@@ -120,6 +120,16 @@ String.implement({
 });
 
 Element.implement({
+	
+	/*
+		Function: isBody
+		Paramaters: 
+			element - {Element}
+	*/
+	isBody: function(element){
+		return (/^(?:body|html)$/i).test(element.tagName);
+	},
+
 	/*
 		Function: getSiblings
 		Arguments:
@@ -140,6 +150,17 @@ Element.implement({
 	getSibling: function(match,nocache) {
 		return this.getSiblings(match,nocache)[0];
    },
+
+	getValueFromClassName: function( key ){
+		if(!this.get("class")) return false;
+		var classes = this.get("class").split(" ");
+		var result;
+		classes.each( function( className ){
+		  if( className.indexOf( key ) == 0 ) result = className.split("-")[1];
+		});
+		return result;
+	},
+
 	/*
 		Function: getOptionsFromClassName
 		Loops through a classes className, splits it by 
@@ -159,27 +180,8 @@ Element.implement({
 			}
 		});
 		return opts;
-	},
-	
-	/*
-		Function: isBody
-		Paramaters: 
-			element - {Element}
-	*/
-	isBody: function(element){
-		return (/^(?:body|html)$/i).test(element.tagName);
-	},
-
-	getValueFromClassName: function( key ){
-		if(!this.get("class")) return false;
-		var classes = this.get("class").split(" ");
-		var result;
-		classes.each( function( className ){
-		  if( className.indexOf( key ) == 0 ) result = className.split("-")[1];
-		});
-		return result;
 	}
-
+	
 });
 
 /*
@@ -573,26 +575,6 @@ mop.util.Broadcaster = new Class({
 mop.util.EventManager = new new Class({
 	Implements: mop.util.Broadcaster,
 	initialize: function(){}
-});
-
-mop.util.DepthManager = new Class({
-
-	Extends: mop.util.Broadcaster,
-
-	windowOverlayDepth: 5000,
-	modalDepth:         15000,
-	modalOverlayDepth:  20000, 
-
-	initialize: function(){},
-	
-	incrementDepth: function( context ){
-			return this.modalOverlayDepth++;
-	},
-	
-	getCurrentDepth: function( context ){
-	    return this.modalOverlayDepth;
-	}
-	
 });
 
 mop.util.HistoryManager = new Class({

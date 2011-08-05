@@ -41,7 +41,6 @@ if( !mop.util.hasDOMReadyFired() ){
 		//self instantiates only first instance
 		mop.UserManagement = new mop.modules.UserManagement( $$( ".classPath-mop_modules_UserManagement" )[0] );
 		mop.ModalManager = new mop.ui.ModalManager();
-		mop.DepthManager = new mop.util.DepthManager(); 
 		var doAuthTimeout = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
 		if( doAuthTimeout && doAuthTimeout != "0" ) mop.loginMonitor = new mop.util.LoginMonitor();
 	})

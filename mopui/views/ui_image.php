@@ -1,4 +1,4 @@
-	<div class="ui-FileElement field-<?=$field;?> extensions-<?=str_replace(',','_',$extensions);?> maxlength-<?=$maxlength;?>">
+	<div class="ui-FileElement field-<?=$field;?> extensions-<?=str_replace(',','_',$extensions);?> maxLength-<?=$maxlength;?>">
 		<label><?=(isset($label))?$label:"Image File";?></label>
 		<div class="wrapper">
 			<input type="file" class="hidden" />
@@ -18,7 +18,7 @@
 				<span class="message hidden"></span>
 			</div>
 			<div class="controls clearFix">
-				<a title="upload a file" class="command uploadLink" href="#">&uarr;</a>
+				<div class='icon uploadButton'><a title="Upload a file?" class="command uploadLink" href="#">&uarr;</a></div>
 				<?if(isset($value['id'])):?>
 					<a title="download <?=$value['filename'];?>" class="command downloadLink" href="<?=url::site("file/download/{$value['id']}");?>">&darr;</a>
 					<a title="clear this file" class="command clearImageLink" href="#">&times;</a>

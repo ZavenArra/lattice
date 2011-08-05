@@ -204,10 +204,10 @@ mop.modules.CMS = new Class({
 /*
 	Section: mop.modules.navigation.NavigationDataSource Interface Requests and Response
 */
-
 	requestTier: function( parentId, deepLink, callback ){
 		this.currentObjectId = parentId;
 		if( this.currentTierRequest ) this.currentTierRequest.cancel();
+		this.currentTierRequest = null;
 		this.currentTierRequest = new Request.JSON( {
 			url: this.getRequestTierURL( parentId, deepLink ),
 			onSuccess: function( json ){
@@ -219,6 +219,8 @@ mop.modules.CMS = new Class({
 	},
 
 	requestTierResponse: function( json ){
+		if( this.currentTierRequest ) this.currentTierRequest.cancel();
+		this.currentTierRequest = null;
 		if( !json.returnValue ) console.log( this.toString(), "requestTier error:", json.response.error );
 	},
 

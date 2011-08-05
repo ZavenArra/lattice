@@ -401,19 +401,19 @@ mop.modules.MoPList = new Class({
 	},
     
 	onAddObjectResponse: function( json ){
-        var element = this.addObjectDialogue.setContent( json.response.html, this.controls.getElement( ".addItem" ).get( "text" ) );
-        var listItem = new mop.modules.ListItem( element, this, this.addObjectDialogue, { scrollContext: 'modal' } );
-        Object.each( listItem.UIFields, function( uiFIeld ){
-        	uiFIeld.scrollContext = "modal";
-        });
-        this.items.push( listItem );
-        mop.util.EventManager.broadcastMessage( "resize" );
-        listItem = null;
+		var element = this.addObjectDialogue.setContent( json.response.html, this.controls.getElement( ".addItem" ).get( "text" ) );
+		var listItem = new mop.modules.ListItem( element, this, this.addObjectDialogue );
+		Object.each( listItem.UIFields, function( uiField ){
+			uiField.scrollContext = "modal";
+			if( uiField.reposition ) uiField.reposition('modal');
+		});
+		this.items.push( listItem );
+		mop.util.EventManager.broadcastMessage( "resize" );
 	},
 
 	removeObject: function( item ){
-	    this.removeObjectRequest( item.getObjectId() );
-	  	this.items.erase( item );
+    this.removeObjectRequest( item.getObjectId() );
+  	this.items.erase( item );
 		item.destroy();
 		item = null;
 		mop.util.EventManager.broadcastMessage( "resize" );          
@@ -438,17 +438,14 @@ mop.modules.MoPList = new Class({
 		var where = ( this.options.sortDirection == "DESC" )? "top" : "bottom";
 		this.listing.grab( anElement, where );
 		if( this.allowChildSort && this.sortableList ) this.sortableList.addItems( anElement );
-		// reset scrollContexts
 		var listItemInstance = anElement.retrieve("Class");
-		listItemInstance.scrollContext = 'window';
-		listItemInstance.resetFileDepth();
 		Object.each( listItemInstance.UIFields, function( aUIField ){
 			aUIField.scrollContext = "window";
+			if( aUIField.reposition ) aUIField.reposition()
 		});
 		anElement.tween( "opacity", 1 );
 	 	anElement.getElement(".itemControls" ).getElement(".delete").removeClass("hidden");
 		if( this.allowChildSort != null ) this.onOrderChanged();
-		listItemInstance = where = null;
 	},
 
 	makeSortable: function(){
@@ -497,11 +494,11 @@ mop.modules.MoPList = new Class({
 		var children = this.listing.getChildren("li");
 		children.each( function ( aListing ){
 		    if( aListing.get( "id" ) ){
-//    		    console.log( this.toString(), aListing, aListing.get( "id" ) ); 	
-                var listItemId = aListing.get("id");
-                var listItemIdSplit = listItemId.split( "_" );
-                listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
-                sortArray.push( listItemId );		        
+					// console.log( this.toString(), aListing, aListing.get( "id" ) ); 	
+	        var listItemId = aListing.get("id");
+	        var listItemIdSplit = listItemId.split( "_" );
+	        listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
+	        sortArray.push( listItemId );		        
 		    }
 		});
 //        console.log( this.toString(), "serialize", this.listing, sortArray );
@@ -525,7 +522,6 @@ mop.modules.ListItem = new Class({
 	Implements: [ Events, Options ],
 	addObjectDialogue: null,
 	objectId: null,
-	scrollContext: null,
 	controls: null,
 	fadeOut: null,
 	
@@ -545,7 +541,6 @@ mop.modules.ListItem = new Class({
 		this.instanceName = this.element.get( "id" );
 		this.addObjectDialogue = addObjectDialogue;
 		this.objectId = this.element.get("id").split("_")[1];
-		if( options && options.scrollContext ) this.scrollContext = options.scrollContext;
 		this.build();
 	},
 
@@ -558,26 +553,9 @@ mop.modules.ListItem = new Class({
 
 	initControls: function(){
 		this.controls = this.element.getElement(".itemControls");
-//		console.log( this.controls, this.controls.getElement(".delete") );
 		if( this.controls.getElement(".delete") ) this.controls.getElement(".delete").addEvent( "click", this.removeObject.bindWithEvent( this ) );
 	},
-
-	filesToTop: function(){
-		Object.each( this.UIFields, function( aUIField, indexA ){
-			if( aUIField.type == "file" || aUIField.type == "imageFile" ){
- 				aUIField.scrollContext = 'modal';
-				aUIField.reposition( 'modal' );
-			}
-		}, this );
-	},
 	
-	resetFileDepth: function(){
-		console.log( this, this.toString(), this.UIFields );
-		Object.each( this.UIFields, function( anElement ){
-			if( anElement.type == "file" || anElement.type == "imageFile" ) anElement.reposition( 'window' );
-		});
-	},
-
 	removeObject: function( e ){
 		mop.util.stopEvent( e );
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
@@ -599,7 +577,6 @@ mop.modules.ListItem = new Class({
 		this.addObjectDialogue = null;
 		this.controls = null;
 		this.fadeOut = null;
-		this.scrollContext = null;
 		this.objectId = null;
 	}
 	

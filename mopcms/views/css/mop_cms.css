@@ -60,46 +60,33 @@ h6,
 	clear: both;
 }
 
-.textField{
-	font-family: Georgia, Times, Serif;
-	padding: 0 !important; 
-}
-
-.disabled .ipe,
-.disabled input{
-	opacity: 0.6;
+.disabled{
+	opacity: 0.2;
 	cursor: default;
 }
 
-
-.extend1week{
-	position: relative;
-	top: 1.75em;
-	margin-left: 20em;
-}
-
-.ui-Text{
-	position: relative;
-}
-
-.displayField,
-.ui-Text .ipe{
-	border: none;
-	background-color: #fffac4;
-}
-
 .atRest{
-	background-color: #fffac4;	
 	opacity: 1;
 }
-
 .saving{
 	opacity: .2;
 }
 
-.ipe:hover,
-.atRest:hover{
-	background-color: #F26A35 !important;
+.displayField, .ipe{
+	border: none;
+	background-color: #fffac4;
+	opacity: 1;
+}
+
+.away{
+	position: absolute;
+	width: inherit;
+	top: -9999px;
+	left: -9999px;
+}
+
+.ipe:hover{
+	background-color: #F26A35;
 	color:#fff !important;
 }
 
@@ -115,6 +102,13 @@ h6,
 	color: #aaa;
 }
 
+input, textarea{
+	font-size: inherit;
+	line-height: inherit;
+	display: block;
+	resize: none;
+}
+
 .displayField,
 .ui-Text .ipe,
 .ui-Text input,
@@ -122,31 +116,14 @@ h6,
 .ui-Input input{
 	font-family: Georgia, Times, Serif;
 	margin: 0em 0em .5em 0em;
-	padding: .25em .5em;
+	padding: .25em .5em !important;
 	color:#222;
-	height: 1.5em;
-	cursor:pointer;
-}
-
-input, textarea{
-	font-size: inherit;
-	line-height: inherit;
-}
-
-.ui-Text .p input, 
-.ui-Text .p textarea{
-	font-size: 12px;
-	line-height: 15px;
+	cursor: text;
 }
 
 .ui-Text textarea{
 	display: block;
 	resize: none;
-}
-
-.away{
-	position: absolute;
-	left: -15000px;
 }
 
 .displayField{
@@ -347,7 +324,11 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 .objectTitle .deleteLink{ margin: 2em 0 0 .5em; }
 .objectTitle .field-slug{ margin: 0 0 .5em 0; }
 
-a.icon, a.command{
+/*.uploadLink{
+	position: absolute;
+}
+*/
+.icon, a.command{
 	display:block;
 	float:left;
 	height: 16px;
@@ -444,19 +425,19 @@ a.button{
 	left:0;
 	background: url( ../images/bgk90.png );	
 	overflow: auto;
-
+	z-index: 5000;
 }
 .modalContainer .modal{
 	position: fixed;
 	top: 6em;
 	left:50%;
 	margin: -150px 0 0 -480px;	
-	z-index:11001;
+	z-index: 5002;
 	background: #fff;
 }
 
 .modalContainer a.modalAnchor{
-	z-index:11000;
+	z-index: 5001;
 	display:block;
 	background: #000;
 	opacity: 0.9;
@@ -470,7 +451,7 @@ a.button{
 
 .modalContainer .header{
 	position: fixed;
-	z-index : 11002;
+	z-index : 5005;
 	left: 50%;
 	top: 0;
 	padding-top: 1em;
@@ -1104,23 +1085,20 @@ td{
 	clear: both;
 }
 
-.bordered{
-	border: 1px #f00 solid;
-}
-
 .submissionResponse{
 	margin-top:1em;
 }
 
 .swiff-uploader-box{
-/*	display: none;
-*/
-background:#f00;
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	background: #f00 !important;
 }
 
 .swiff-uploader-box a {
-	display: none !important;
-}
+/*	display: none !important;
+*/}
 
 
 ul.listing li.menuItem{
