@@ -1,7 +1,6 @@
 CREATE TABLE `objects` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `objecttype_id` int(11) NOT NULL DEFAULT '0',
-  `parentid` int(11) DEFAULT NULL,
   `collection_id` int(11) DEFAULT NULL,
   `slug` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
   `decoupleSlugTitle` tinyint(4) DEFAULT '0',
@@ -355,4 +354,18 @@ CREATE TABLE `files` (
   PRIMARY KEY (`id`)
 ) ENGINE=INNODB AUTO_INCREMENT=11517 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE `objectrelationships` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`lattice_id` int(11) NOT NULL,
+	`object_id` int(11) NOT NULL,
+	`connectedobject_id` int(11) NOT NULL,
+	`sortorder` int(11) NOT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `lattices` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`name` varchar(200) NOT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
