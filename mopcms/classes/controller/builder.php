@@ -34,8 +34,10 @@ class Controller_Builder extends Controller {
 		$db->query(Database::UPDATE, 'alter table contents AUTO_INCREMENT = 1');
 		$db->query(Database::DELETE, 'delete from objecttypes');
 		$db->query(Database::UPDATE, 'alter table objecttypes AUTO_INCREMENT = 1');
-    $db->query(Database::DELETE, 'delete from objectmaps');
+      $db->query(Database::DELETE, 'delete from objectmaps');
 		$db->query(Database::UPDATE, 'alter table objectmaps AUTO_INCREMENT = 1');
+      $db->query(Database::DELETE, 'delete from objectrelationships');
+		$db->query(Database::UPDATE, 'alter table objectrelationships AUTO_INCREMENT = 1');
 		flush();
 		ob_flush();
 
@@ -102,7 +104,7 @@ class Controller_Builder extends Controller {
       //echo "\n found contentnod ".$item->getAttribute('objectTypeName');
 			flush();
 			ob_flush();
-			$object = ORM::Factory('object');
+         $object = Graph::instance();
 			$objectType = ORM::Factory('objecttype', $item->getAttribute('objectTypeName'));
 			if($objectType->nodeType == 'container'){
 			//	die("Can't add list family as objectType name in data.xml: {$objectType->objecttypename} \n");
@@ -171,9 +173,10 @@ class Controller_Builder extends Controller {
 			//if there is a title collision, we assume that this is a component
 			//already added at the next level up, in this case we just
 			//update the objects data
-			$existing = ORM::Factory('object')
-				->where('parentId', '=', $parentObject->id)
-				->find_all();
+			$existing = Graph::instance()
+                 ->latticeChildrenQuery()
+                 ->find_all();
+         
 			$component = null;
 			foreach($existing as $aComponent){
 				//echo "\n\n".$aComponent->contenttable->title;
@@ -201,11 +204,12 @@ class Controller_Builder extends Controller {
 				//echo "FOUND A LIST\n\n";
 				//find the container
 				$listT = ORM::Factory('objectType', $list->getAttribute('family'));
-				$container = ORM::Factory('object')
-					->where('parentId', '=', $objectId)
-					->where('objecttype_id', '=',  $listT->id)
-					->find();
-				//jump down a level to add object
+				$container = Graph::object()
+                    ->latticeChildrenFilter($objectId)
+                    ->objectTypeFilter($listT->id)
+                    ->find();
+          
+            //jump down a level to add object
 				$this->insertData($xmlFile, $container->id, $list);
 			}
 

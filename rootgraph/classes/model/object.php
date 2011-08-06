@@ -656,11 +656,17 @@ class Model_Object extends ORM {
       
    }
 
-   public function latticeChildrenFilter($parentid, $lattice){
-      $this->where('parentid', '=', $parentid);
+   public function latticeChildrenFilter($parentid, $lattice="lattice"){
+      $lattice = Graph::lattice($lattice);
+       
+      $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
+      $this->where('objectrelationships.lattice_id', '=', $lattice->id);
+      $this->where('objectrelationships.object_id', '=', $parentid);
+      return $this;
+
    }
    
-   public function latticeChildrenQuery($lattice){
+   public function latticeChildrenQuery($lattice='lattice'){
       return Graph::object()->latticeChildrenFilter($this->id, $lattice);
    
    }
@@ -680,7 +686,9 @@ class Model_Object extends ORM {
     * This makes sense for separating the CMS from the graph, and containing all addObject code within the model.
     * */
 
-   public function addObject($objectTypeName, $data = array()) {
+   public function addObject($objectTypeName, $data = array(), $lattice = null) {
+      
+      
       $objecttype_id = ORM::Factory('objecttype', $objectTypeName)->id;
       if (!$objecttype_id) {
 
@@ -710,13 +718,8 @@ class Model_Object extends ORM {
 				//are the same object
 				$newObject->slug = mopcms::createSlug();
       }
+      //This is being deprecated by lattices
       $newObject->parentid = $this->id;
-
-      //calculate sort order
-      $sort = DB::select(array('sortorder', 'maxsort'))->from('objects')->where('parentid', '=', $this->id)
-                      ->order_by('sortorder')->limit(1)
-                      ->execute()->current();
-      $newObject->sortorder = $sort['maxsort'] + 1;
 
       $newObject->save();
 
@@ -824,6 +827,23 @@ class Model_Object extends ORM {
          $arguments['title'] = $c->getAttribute('label');
          $newObject->addObject($c->getAttribute('family'), $arguments);
       }
+      
+      //The objet has been built, now set it's lattice point
+      $lattice = Graph::lattice();
+      $objectRelationship = ORM::Factory('objectrelationship');
+      $objectRelationship->lattice_id = $lattice->id;
+      $objectRelationship->object_id = $this->id;
+      $objectRelationship->connectedobject_id = $newObject->id;
+      
+      //calculate sort order
+      $sort = DB::select(array('sortorder', 'maxsort'))->from('objectrelationships')
+                        ->where('lattice_id', '=', $lattice->id)
+                        ->where('object_id', '=', $this->id)
+                      ->order_by('sortorder')->limit(1)
+                      ->execute()->current();
+      $objectRelationship->sortorder = $sort['maxsort'] + 1;
+    
+      $objectRelationship->save();
 
       return $newObject->id;
    }

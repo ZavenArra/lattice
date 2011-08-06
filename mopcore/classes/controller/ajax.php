@@ -96,9 +96,9 @@ class Controller_Ajax extends Controller_MOP {
 		$arguments = explode('/', $uri);
 
 		try {
-			$subRequest = Request::Factory($uri);
+   		$subRequest = Request::Factory($uri);
 			$requestResponse = $subRequest->execute();
-		} catch (Exception $e) {
+   	} catch (Exception $e) {
 			//return HTML from exception
 			$message = mop::getOneLineErrorReport($e);
 			$ajaxResponse = array(

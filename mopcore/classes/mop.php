@@ -274,6 +274,8 @@ Class mop {
 	public static function getOneLineErrorReport(Exception $e){
 		switch(get_class($e)){
 			case 'Lattice_ApiException':
+           // echo get_class($e);
+           // die();
 				return $e->getOneLineErrorReport();
 				break;
 			default:

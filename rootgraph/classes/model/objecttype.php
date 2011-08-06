@@ -121,14 +121,19 @@ class Model_ObjectType extends ORM {
 	 */
 	public function getActiveMembers($limit=null){
 
+      if(!$this->loaded()){
+         return array();
+      }
+      
 		$o = Graph::object()
               ->activeFilter()
-              ->objectTypeFilter($this->objectTypeName)
+              ->objectTypeFilter($this->objecttypename)
        		  ->order_by('sortorder');
 		if($limit){
 			$o->limit($limit);
 		}
 		$o = $o->find_all();
+     
 		return $o;
 
 	}

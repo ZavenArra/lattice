@@ -299,7 +299,7 @@ class MoPCMS {
 					$objects = ORM::Factory('objectType', $objectType->getAttribute('name'))->getActiveMembers();
 					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
-						if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
+                	if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
 							$uiresizes = Kohana::config('mop_cms.uiresizes');
 							$object->processImage($object->$fieldname->filename, $fieldname, $uiresizes);
 						}

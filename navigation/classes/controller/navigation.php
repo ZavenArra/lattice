@@ -6,9 +6,7 @@
 */
 
 class Controller_Navigation extends Controller_MOP{
-
-	private $objectModel = 'object';
-
+   
 	private $defaultAddCategoryText = '';
 	private $defaultAddLeafText = '';
 
@@ -40,16 +38,16 @@ class Controller_Navigation extends Controller_MOP{
 				throw new Kohana_Exception('Invalid object id sent to getTier');
 		 }
 			
-		Kohana::$log->add(Log::INFO, 'here we are');
-		$items = ORM::factory($this->objectModel);
-		$items->where('parentId', '=',  $parent->id);
-		$items->where('activity', 'IS', NULL);
-		$items->order_by('sortorder');
-		$iitems = $items->find_all();
-		if($iitems){
+		$items = Graph::object($parent->id)
+              ->latticeChildrenQuery()
+              ->activeFilter()
+              ->order_by('sortorder')
+              ->find_all();
+      
+		if($items){
 			$sendItemContainers = array(); //these will go first
 			$sendItemObjects = array();
-			foreach($iitems as $child){
+			foreach($items as $child){
 				if(strtolower($child->objecttype->nodeType) == 'container'){
 					//we might be skipping this node
 
@@ -130,8 +128,8 @@ class Controller_Navigation extends Controller_MOP{
       }
   
       //this database call happens twice, should be a class variable?
-      $parent = ORM::Factory($this->objectModel, $parentId); 
-
+      $parent = Graph::object($parentId);
+      
       
       $sendItemObjects = $this->getTier($parentId, $deeplinkPath);
 

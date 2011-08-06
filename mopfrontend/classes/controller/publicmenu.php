@@ -9,7 +9,7 @@ Class Controller_PublicMenu extends Controller_MOP {
       $topLevel = Graph::getRootNode('cmsRootNode')
               ->latticeChildrenQuery('publicSite') 
               ->publishedFilter()
-              ->noContainerObjects
+              ->noContainerObjects()
               ->find_all();
 
 
@@ -27,9 +27,8 @@ Class Controller_PublicMenu extends Controller_MOP {
 		foreach($navi as $slug => $entry){
 
          $children = Graph::object($slug)
-            ->latticeChildrenQuery('publicSite')
-     			->where('parentId', '=', $object->id)
-				->publishedFilter()
+            ->latticeChildrenQuery($object->id)
+ 				->publishedFilter()
 				->noContainerObjects()
 				->find_all();
 			if(count($children)){

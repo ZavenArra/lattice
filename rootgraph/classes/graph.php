@@ -15,7 +15,7 @@ class Graph {
 	public static $mediapath;	
 
 	public static function instance(){
-
+      return ORM::Factory('object');
 	}
 
 	public static function object($objectId =null) {
@@ -31,6 +31,16 @@ class Graph {
 			}
 		}
 	}
+   
+   public static function lattice($latticeId = 'lattice'){
+      if(is_numeric($latticeId)){
+         return ORM::Factory('lattice', $latticeId);
+      } else {
+         $lattice = ORM::Factory('lattice')->where('name', '=', $latticeId)->find();
+         return $lattice;
+      }
+   
+   }
 
 	public static function file($fileId = null){
 
