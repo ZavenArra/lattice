@@ -1682,14 +1682,15 @@ mop.ui.FileElement = new Class({
 	
 	onFileComplete: function( json ){
 		console.log("JSON",json);
-		console.log( this.toString(), "onFileComplete", json  );
+		json = JSON.decode( json.response.text );
 		this.clearButton.fade( "in" );
 		if( this.filename ) this.filename.set( "text",  json.response.filename );
 		this.clearButton.removeClass("hidden");
 		this.downloadButton.removeClass("hidden");
 		this.downloadButton.set( 'title', 'download ' + json.response.filename );
 		this.downloadButton.set( "href", mop.util.getBaseURL() + json.response.src );
-        this.downloadButton.removeClass("hidden");
+		console.log( this.toString(), "onFileComplete", mop.util.getBaseURL() + json.response.thumbSrc );
+		this.downloadButton.removeClass("hidden");
 		if( this.previewElement ){
 			this.imgAsset = new Asset.image( mop.util.getBaseURL() + json.response.thumbSrc, {  alt: json.response.filename, onload: this.updateThumb.bind( this, json ) } );
 		}else{

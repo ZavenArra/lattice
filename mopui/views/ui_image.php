@@ -18,7 +18,7 @@
 				<span class="message hidden"></span>
 			</div>
 			<div class="controls clearFix">
-				<div class='icon uploadButton'><a title="Upload a file?" class="command uploadLink" href="#">&uarr;</a></div>
+				<div class='uploadButton command'><a title="upload a file" class="uploadLink" href="#">&uarr;</a></div>
 				<?if(isset($value['id'])):?>
 					<a title="download <?=$value['filename'];?>" class="command downloadLink" href="<?=url::site("file/download/{$value['id']}");?>">&darr;</a>
 					<a title="clear this file" class="command clearImageLink" href="#">&times;</a>
