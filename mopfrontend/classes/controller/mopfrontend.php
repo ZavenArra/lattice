@@ -26,13 +26,7 @@ Class Controller_MopFrontend extends Controller_Layout{
 	public function action_index(){
 		$this->action_object(substr(get_class($this), 0, -11));
 	}
-        
-        public function validSlug($uri){
-            
-            echo 'made it here!!!';
-        }
 
-	
 
 	/*
 	 * Function: object($objectidorslug)

@@ -203,9 +203,9 @@ Class mop {
 
 		$viewConfig = mop::config('frontend', "//view[@name=\"$view\"]")->item(0);
 		if (!$viewConfig) {
-         throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
+        // throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
 		}
-		if ($viewConfig->getAttribute('loadPage')) {
+		if (!$viewConfig || ($viewConfig && $viewConfig->getAttribute('loadPage'))) {
          $object = Graph::object($slug);
          if (!$object->loaded()) {
 				throw new Kohana_Exception('mop::getViewContent : View specifies loadPage but no object to load');
