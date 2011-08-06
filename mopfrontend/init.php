@@ -9,7 +9,8 @@ class FrontendRouting {
       $slug = $segments[0];
       $object = null;
       foreach($segments as $slug){
-         $object = ORM::Factory('object')->getPublishedObjectBySlug($slug);
+         $object = Graph::object()->getPublishedObjectBySlug($slug);
+         
          if(!$object->loaded()){
             return;
          }

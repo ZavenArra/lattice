@@ -100,11 +100,10 @@ class Model_ObjectType extends ORM {
 	 */
 	public function getPublishedMembers($limit=null){
 
-		$o = ORM::Factory('object')
-			->where('objecttype_id', '=', $this->id)
-			->where('published', '=', 1)
-			->where('activity', 'IS', NULL)
-			->order_by('sortorder');
+		$o = Graph::object()
+              ->publishedFilter()
+              ->objectTypeFilter($this->objectTypeName)
+       		  ->order_by('sortorder');
 		if($limit){
 			$o->limit($limit);
 		}
@@ -122,10 +121,10 @@ class Model_ObjectType extends ORM {
 	 */
 	public function getActiveMembers($limit=null){
 
-		$o = ORM::Factory('object')
-			->where('objecttype_id', '=', $this->id)
-			->where('activity', 'IS', NULL)
-			->order_by('sortorder');
+		$o = Graph::object()
+              ->activeFilter()
+              ->objectTypeFilter($this->objectTypeName)
+       		  ->order_by('sortorder');
 		if($limit){
 			$o->limit($limit);
 		}

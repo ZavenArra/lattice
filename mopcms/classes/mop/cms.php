@@ -73,7 +73,7 @@ class MOP_CMS extends MOP_CMSInterface {
 
       
       $rootObjectType = ORM::factory('objectType')->where('objectTypeName', '=', Kohana::config('cms.graphRootNode'))->find();
-      $rootObject = ORM::Factory('object')->where('objecttype_id', '=', $rootObjectType->id)->find();
+      $rootObject = Graph::object()->objectTypeFilter($rootObjectType->id)->find();
 
       $this->view->objectId = $rootObject->id;
       

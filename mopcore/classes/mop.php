@@ -142,8 +142,8 @@ Class mop {
 		if(!Kohana::find_file('controllers', $module['modulename'] ) ){
 			if(!isset($module['controllertype'])){
 				$view = new View($module['modulename']);
-				$object = ORM::Factory('object')->where('slug', '=', $module['modulename'])->find();
-				if($object->loaded()){ // in this case it's a slug for a specific object
+				$object = Graph::object($module['modulename']);
+            if($object->loaded()){ // in this case it's a slug for a specific object
 					foreach(mop::getViewContent($object->id, $object->objecttype->objecttypename) as $key=>$content){
 						$view->$key = $content;
 					}
@@ -193,7 +193,7 @@ Class mop {
 		$data = array();
 
 		if ($view == 'default') {
-			$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
+         $object = Graph::object($slug);
 			if (!$object->loaded()) {
 				throw new Koahan_Exception('mop::getViewContent : Default view callled with no slug');
 			}
@@ -206,8 +206,8 @@ Class mop {
          throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
 		}
 		if ($viewConfig->getAttribute('loadPage')) {
-			$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
-			if (!$object->loaded()) {
+         $object = Graph::object($slug);
+         if (!$object->loaded()) {
 				throw new Kohana_Exception('mop::getViewContent : View specifies loadPage but no object to load');
 			}
 			$data['content']['main'] = $object->getPageContent();
@@ -228,7 +228,7 @@ Class mop {
 					if ($view && $slug) {
 						$subViewContent = mop::getViewContent($view, $slug);
 					} else if ($slug) {
-						$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
+                  $object = Graph::object($slug);
 						$view = $object->objecttype->objecttypename;
 						$subViewContent = mop::getViewContent($view, $slug);
 					} else if ($view) {

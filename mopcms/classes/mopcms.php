@@ -21,7 +21,7 @@ class MoPCMS {
 			$slug = str_replace(' ', '-', $slug);
 			$slug = trim($slug);
 
-			$checkSlug = ORM::Factory('object')
+			$checkSlug = Graph::object()
 				->where('slug', 'REGEXP',  '^'.$slug.'[0-9]*$')
 				->order_by("slug");
       	
@@ -311,8 +311,8 @@ class MoPCMS {
 
 	public static function generateNewImages($objectIds){
 		foreach($objectIds as $id){
-			$object = ORM::Factory('object', $id);
-			foreach(mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element){
+			$object = Graph::object($id);
+         foreach(mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element){
 				if($element->tagName == 'image'){
 					$fieldname = $element->getAttribute('field');
 					if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
@@ -355,7 +355,7 @@ public static function makeFileSaveName($filename) {
 
    public static function saveHttpPostFile($objectid, $field, $postFileVars) {
       Kohana::$log->add(Log::ERROR, 'save uploaded');
-      $object = ORM::Factory('object', $objectid);
+      $object = Graph::object($objectid);
       //check the file extension
       $filename = $postFileVars['name'];
       $ext = substr(strrchr($filename, '.'), 1);

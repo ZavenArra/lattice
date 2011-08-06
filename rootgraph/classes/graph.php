@@ -91,13 +91,13 @@ class Graph {
    
    public static function addRootNode($rootNodeObjectType){
       //$this->driver->getObjectTypeObject($rooNodeObjectType)
-      ORM::Factory('object')->addObject($rootNodeObjectType);
+      Graph::object()->addObject($rootNodeObjectType);
    }
 
    public static function getRootNode($rootNodeObjectType){
       //$this->driver->getObjectTypeObject($rooNodeObjectType)
 		$objectType = ORM::Factory('objectType')->where('objecttypename', '=', $rootNodeObjectType)->find();
-      $object =  ORM::Factory('object')->where('objecttype_id', '=', $objectType->id)->find();
+      $object =  Graph::object()->objectTypeFilter($objectType->objecttypename)->find();
       return $object;
    }
 }

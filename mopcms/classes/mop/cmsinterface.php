@@ -100,8 +100,8 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 		Returns: Published status (0 or 1)
 		*/
 		public function action_togglePublish($id){
-			$object = ORM::Factory('object')->where('id', '=', $id)->find();
-			if($object->published==0){
+			$object = Graph::object($id);
+         if($object->published==0){
 				$object->published = 1;
 			} else {
 				$object->published = 0;
@@ -124,8 +124,8 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 				if(!is_numeric($order[$i])){
 					throw new Kohana_User_Exception('bad sortorder string', 'bad sortorder string');
 				}
-				$object = ORM::factory('object', $order[$i]);
-				$object->sortorder = $i+1;
+				$object = Graph::object($orider[$i]);
+            $object->sortorder = $i+1;
 				$object->save();
 			}
 
@@ -134,19 +134,19 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 
       
       public function action_addTag($id, $tag){
-         $object = ORM::Factory('object', $id);
+         $object = Graph::object($id);
          $object->addTag($tag);
          
       }
 
       public function action_removeTag($id, $tag){
-         $object = ORM::Factory('object', $id);
-         $object->removeTag($tag);
+          $object = Graph::object($id);
+          $object->removeTag($tag);
       }
       
       public function action_getTags($id){
  
-        $tags = ORM::Factory('object', $id)->getTags();
+        $tags = Graph::object($id)->getTags();
         $this->response->data(array('tags'=>$tags));
       }
 
@@ -190,7 +190,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	 * Returns: nothing 
 	 */
 	protected function cascade_delete($id){
-		$object = ORM::Factory('object')->where('id', '=', $id)->find();
+		$object = Graph::object($id);
 		$object->activity = 'D';
 		$object->sortorder = 0;
 		$object->slug = DB::expr('null');
@@ -198,10 +198,8 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 		$object->contenttable->activity = 'D';
 		$object->contenttable->save();
 
-		$children = ORM::Factory('object');
-		$children->where('parentId', '=',$id);
-		$iChildren = $children->find_all();
-		foreach($iChildren as $child){
+		$children = $object->getChildren();
+		foreach($children as $child){
 			$this->cascade_delete($child->id);
 		}
 	}
@@ -209,22 +207,21 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	/*
 	 * Function: cascade_undelete($id)
 	 * Private utility to recursively undelete and object and everything beneath a node
+    * This will cause previously deleted children to reappear
 	 * Parameters:
 	 * id - the id to undelete as well as everything beneath it.
 	 * Returns: Nothing
 	 */
 	protected function cascade_undelete($object_id){
-		$object = ORM::Factory('object')->where('id', '=', $id)->find();
+		$object = Graph::object($id);
 		$object->activity = new Database_Expression(null);
 		$object->slug = mopcms::createSlug($object->contenttable->title, $object->id);
 		$object->save();
 		$object->contenttable->activity = new Database_Expression(null);
 		$object->contenttable->save();
 
-		$children = ORM::Factory('object');
-		$children->where('parentId','=',$id);
-		$iChildren = $children->find_all();
-		foreach($iChildren as $child){
+		$children = $object->getChildren();
+		foreach($children as $child){
 			$this->cascade_undelete($child->id);
 		}
 

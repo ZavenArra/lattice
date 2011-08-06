@@ -66,7 +66,7 @@ Class Builder_Frontend {
 		$objectTypes = array();
 		//if slug defined, get objectType from slug
 		if($slug = $iDataConfig->getAttribute('slug')){
-			$object = ORM::Factory('object', $slug);
+			$object = Graph::object($slug);
 			if(!$object->loaded){
 				//error out,
 				//object must be loaded from data.xml for this type of include conf
@@ -94,7 +94,7 @@ Class Builder_Frontend {
 				}
 
 				//and we can also check all the existing data to see if it has any other objectTypes
-				$parentObjects = ORM::Factory('object')->objecttypeFilter($parentTemplate)->publishedFilter()->find_all();
+				$parentObjects = Graph::object()->objecttypeFilter($parentTemplate)->publishedFilter()->find_all();
 				foreach($parentObjects as $parent){
 					$children = $parent->getPublishedChildren();
 					foreach($children as $child){
@@ -104,8 +104,8 @@ Class Builder_Frontend {
 				}
 			} else {
 				//see if from is a slug
-				$object = ORM::Factory('object', $from);
-				if($object->loaded){
+				$object = Graph::object($from);
+            if($object->loaded){
 					//find its addable objects
 					foreach(mop::config('objects', sprintf('//objectType[@name="%s"]/addableObject', $object->objecttype->objecttypename)) as $addable){
 						$objectTypeName = $addable->getAttribute('objectTypeName');

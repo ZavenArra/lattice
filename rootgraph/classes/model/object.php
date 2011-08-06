@@ -316,7 +316,7 @@ class Model_Object extends ORM {
 
    public function getListContent($family) {
       //get container
-      $cTemplate = ORM::Factory('objectType', $family);
+      $cTemplate = ORM::Factory('objecttype', $family);
       $container = ORM::Factory('object')
               ->where('objecttype_id', '=', $cTemplate->id)
               ->where('parentid', '=', $this->id)
@@ -603,18 +603,21 @@ class Model_Object extends ORM {
       if (!$objectTypes) {
          return $this;
       }
-      if (strpos(',', $objectTypes)) {
+      
+      if(is_numeric($objectTypes)){
+         $this->where('objecttype_id', '=', $objectTypes);
+      } else if (strpos(',', $objectTypes)) {
          $tNames = explode(',', $objectTypes);
          $tIds = array();
          foreach ($tNames as $tname) {
-            $result = DB::query("Select id from objectTypes where objecttypename = '$objectTypes'")->execute();
+            $result = DB::query("Select id from objecttypes where objecttypename = '$objectTypes'")->execute();
             $tIds[] = $result->current()->id;
          }
          $this->in('objecttype_id', $tIds);
       } else if ($objectTypes == 'all') {
          //set no filter
       } else {
-         $result = DB::query(Database::SELECT, "Select id from objectTypes where objecttypename = '$objectTypes'")->execute()->current();
+         $result = DB::query(Database::SELECT, "Select id from objecttypes where objecttypename = '$objectTypes'")->execute()->current();
          $this->where('objecttype_id', '=', $result['id']);
       }
       return $this;
@@ -625,7 +628,7 @@ class Model_Object extends ORM {
    }
 
    public function noContainerObjects() {
-      $res = ORM::Factory('objectType')
+      $res = ORM::Factory('objecttype')
               ->where('nodeType', '=', 'container')
               ->find_all();
       $tIds = array();
@@ -639,15 +642,29 @@ class Model_Object extends ORM {
    }
 
    public function publishedFilter() {
-      $this->where('published', '=', 1)
-              ->where('activity', 'IS', NULL);
+      $this->where('published', '=', 1);
+      $this->activeFilter();
       return $this;
+   }
+   
+   public function activeFilter(){
+    $this->where('activity', 'IS', NULL);
+    return $this;   
    }
 
    public function taggedFilter() {
       
    }
 
+   public function latticeChildrenFilter($parentid, $lattice){
+      $this->where('parentid', '=', $parentid);
+   }
+   
+   public function latticeChildrenQuery($lattice){
+      return Graph::object()->latticeChildrenFilter($this->id, $lattice);
+   
+   }
+   
    /*
      Function: addObject($id)
      Private function for adding an object to the cms data
@@ -673,7 +690,7 @@ class Model_Object extends ORM {
             //there's a config for this objectType
             //go ahead and configure it
             Graph::configureTemplate($objectTypeName);
-            $objecttype_id = ORM::Factory('objectType', $objectTypeName)->id;
+            $objecttype_id = ORM::Factory('objecttype', $objectTypeName)->id;
          } else {
             throw new Kohana_Exception('No config for objectType ' . $objectTypeName);
          }
@@ -706,7 +723,7 @@ class Model_Object extends ORM {
 
       //check for enabled publish/unpublish. 
       //if not enabled, insert as published
-      $objectType = ORM::Factory('objectType', $objecttype_id);
+      $objectType = ORM::Factory('objecttype', $objecttype_id);
       $tSettings = mop::config('objects', sprintf('//objectType[@name="%s"]', $objectType->objecttypename));
       $tSettings = $tSettings->item(0);
       $newObject->published = 1;
@@ -723,7 +740,7 @@ class Model_Object extends ORM {
       $newObject->save();
 
       //Add defaults to content table
-      $newobjectType = ORM::Factory('objectType', $newObject->objecttype_id);
+      $newobjectType = ORM::Factory('objecttype', $newObject->objecttype_id);
 
 
       $lookupTemplates = mop::config('objects', '//objectType');

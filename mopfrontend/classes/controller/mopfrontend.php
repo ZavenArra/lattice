@@ -52,7 +52,7 @@ Class Controller_MopFrontend extends Controller_Layout{
 
 		self::$slug = $objectidorslug;
 
-		$object = ORM::Factory('object')->where('slug', '=', $objectidorslug)->find();
+      $object = Graph::object($objectidorslug);
 		//some access control
 		$viewName = null;
 		if ($object->loaded()) {

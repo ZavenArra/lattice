@@ -190,7 +190,7 @@ class Controller_List extends MOP_CMSInterface {
  
       $newId = $listObject->addObject($objectTypeId);
       
-      $item = ORM::Factory('object', $newId);
+      $item = Graph::object($newId);
       $htmlChunks = mopcms::buildUIHtmlChunksForObject($item);
       $itemt = new View($this->itemView());
       $itemt->uiElements = $htmlChunks;
