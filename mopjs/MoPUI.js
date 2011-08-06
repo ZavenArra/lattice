@@ -1571,11 +1571,9 @@ mop.ui.FileElement = new Class({
 	
 	buildExtensionsObject: function(){
 		console.log( "buildExtensionsObject" );
-	    var extensionsArray = mop.util.getValueFromClassName( 'extensions', this.elementClass ).split( "_" );
-	    
+    var extensionsArray = mop.util.getValueFromClassName( 'extensions', this.elementClass ).split( "_" );
 		var desc = "";
 		var exts = "";
-		
 		if( extensionsArray.length ){
 		    extensionsArray.each( function( extension, index ){
 			    desc = ( index < extensionsArray.length-1 )? desc +  "*." + extension + ", " : desc +  "*." + extension;
@@ -1589,9 +1587,6 @@ mop.ui.FileElement = new Class({
 		exts = exts;
 		var ret =  {};
 		ret[desc] = exts;
-		
-		console.log( this, "buildExtensionsObject ", ret );
-		
 		return ret;
 	},
 	
@@ -1602,10 +1597,15 @@ mop.ui.FileElement = new Class({
 	},
 	
 	clearFileRequest: function( e ){
-	   if( this.previewElement ) this.previewElement.fade( "out" );
-	   if( this.clearButton ) this.clearButton.fade("out");
+		if( this.previewElement ){
+			this.imageFadeOut = new Fx.Morph( this.imagePreview, {
+				'duration': 300,
+				'onComplete': mop.util.EventManager.broadcastMessage.bind( mop.util.EventManager, "resize" )
+			}).start( { 'opacity' : [ 1, 0 ], 'height': 0 } );
+		}
+		if( this.clearButton ) this.clearButton.fade("out");
 		var myRequest =  new Request.JSON( { url: this.getClearFileURL(), onSuccess: this.onClearFileResponse.bind( this ) } );
-      return myRequest.send();
+		return myRequest.send();
 	},
 	
 	onClearFileResponse: function( json ){
