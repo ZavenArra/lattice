@@ -191,7 +191,7 @@ mop.modules.navigation.Navigation = new Class({
 		console.log( ":::::::::::: onBreadCrumbClicked ", aNode.id );
 		console.log( "\t", aNode.index );
 		console.log( "\t", this.navPanes[ aNode.index ].retrieve( "tier" )  );
-		this.requestTier( aNode.id, null, this.navPanes[ aNode.index ].retrieve( "tier" ) );
+		this.requestTier( aNode.id, null, this.navPanes[ aNode.index ].retrieve( "tier" ).parentId );
 		this.marshal.onNodeSelected( aNode.id );
 	},
 
