@@ -92,7 +92,6 @@ class Controller_Navigation extends Controller_MOP{
          
 
 			//add in any modules
-			//if(!$parent->loaded()){
 			if($parent->id == Graph::getRootNode(Kohana::config('cms.graphRootNode'))->id ){
 				$cmsModules = mop::config('cmsModules', '//module');
 				foreach($cmsModules as $m){
@@ -106,12 +105,17 @@ class Controller_Navigation extends Controller_MOP{
 					$sendItemObjects[] = $entry;
 				}
 			}
-         return $sendItemObjects;
-      }
-      
-      return null;
-      
-   }
+			$html = $this->renderTierView($parent, $sendItemObjects);
+			$tier = array(
+					'children' => $sendItemObjects,
+					'html' => $html
+			);
+			return $tier;
+		}
+
+		return null;
+
+	 }
 	
 	public function action_getTier($parentId, $deeplink=NULL){
       
@@ -133,19 +137,10 @@ class Controller_Navigation extends Controller_MOP{
       $parent = ORM::Factory($this->objectModel, $parentId); 
 
       
-      $sendItemObjects = $this->getTier($parentId, $deeplinkPath);
+      $tier = $this->getTier($parentId, $deeplinkPath);
 
-      $this->response->data(array('nodes' => $sendItemObjects));
+      $this->response->data(array('tier' => $tier));
 
-      $nodes = array();
-      foreach ($sendItemObjects as $item) {
-
-         $nodeView = new View('navigationNode');
-         $nodeView->content = $item;
-         $nodes[] = $nodeView->render();
-      }
-
-      $this->response->body($this->renderTierView($parent, $nodes));
    }
 
 	private function renderTierView($parent, $nodes){
