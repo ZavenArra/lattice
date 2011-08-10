@@ -213,4 +213,16 @@ class Controller_Builder extends Controller {
 
 	}
 
+
+	public function action_regenerateImages(){
+		try {
+			mopcms::regenerateImages();
+		} catch(Exception $e){
+			print_r($e->getMessage() . $e->getTrace());
+		}
+		echo 'Done';
+		flush();
+		ob_flush();
+	}
+
 }
