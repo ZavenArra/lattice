@@ -136,8 +136,6 @@ class Controller_Navigation extends Controller_MOP{
       //this database call happens twice, should be a class variable?
       $parent = ORM::Factory($this->objectModel, $parentId); 
 
-			print_r($deeplinkPath);
-      
       $tier = $this->getTier($parentId, $deeplinkPath);
 
       $this->response->data(array('tier' => $tier));
