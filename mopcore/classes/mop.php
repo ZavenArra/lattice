@@ -273,7 +273,6 @@ Class mop {
 	//takes Exception as argument
 	public static function getOneLineErrorReport(Exception $e){
 		switch(get_class($e)){
-		case 'Kohana_Exception':
 			case 'Lattice_ApiException':
 				return $e->getOneLineErrorReport();
 				break;
