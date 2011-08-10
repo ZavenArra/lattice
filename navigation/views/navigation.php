@@ -4,7 +4,7 @@
 			<div class="pane"></div>
 		</div>
 	</div>
-	<div class="breadCrumb clearFix">
+	<div style="display: none" class="breadCrumb clearFix">
 		<ul></ul>
 	</div>
 </div>
