@@ -3,13 +3,7 @@
 
 //check for setup
 MOP_Initializer::check(
-	array(
-		'mopauth',
-		'mopcore',
-		'rootgraph',
-		'cms',
-		'mopcms',
-	)
+	Kohana::config('mop_cms.dependencies')
 );
 
 

@@ -49,4 +49,15 @@ $config['enableSlugEditing'] = true;
 
 $config['baseName'] = 'mop_cms';
 
+//module-wide settings
+$config['dependencies'] = array(
+	'mopauth',
+	'mopcore',
+	'rootgraph',
+	'cms',
+	'mopcms',
+);
+
+
+
 return $config;

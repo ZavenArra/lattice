@@ -6,6 +6,10 @@ Class MOP_Initializer {
    protected static $problems = array(); //not yet implemented
 
    public static function check($dependencies) {
+
+		 if(!$dependencies){
+			return;
+		 }
       
       try {
          ORM::Factory('initializedmodule');
@@ -57,8 +61,6 @@ Class MOP_Initializer {
          $view->problems = $allProblems;
          $view->messages = self::$messages;
          echo $view->render();
-				 echo 'here';
-         exit;
       }
    }
    

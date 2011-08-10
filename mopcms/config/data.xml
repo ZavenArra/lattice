@@ -52,15 +52,15 @@
 
  	<item objectTypeName="singleFile">
                 <field name="title">Single File</field>
-                <field name="file">lattice/testdata/ctoolsAllCases.csv</field>
+                <field name="file">lattice/latticetests/testdata/ctoolsAllCases.csv</field>
         </item>
 
         <item objectTypeName="singleImage">
                 <field name="title">Single Image</field>
-                <field name="file">lattice/testdata/29305_390907843268_707068268_4114906_7182725_n.jpg</field>
+                <field name="file">lattice/latticetests/testdata/29305_390907843268_707068268_4114906_7182725_n.jpg</field>
                 <item objectTypeName="singleImage">
                         <field name="title">Image Build Test</field>
-                        <field name="file">lattice/testdata/29305_390907843268_707068268_4114906_7182725_n.jpg</field>
+                        <field name="file">lattice/latticetests/testdata/29305_390907843268_707068268_4114906_7182725_n.jpg</field>
                 </item>
         </item>
 

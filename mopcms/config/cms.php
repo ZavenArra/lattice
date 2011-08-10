@@ -9,4 +9,5 @@ $config['layout'] = 'LayoutAdmin';
 $config['enableSlugEditing'] = false;
 
 $config['graphRootNode'] = 'cmsRootNode';
+
 return $config;
