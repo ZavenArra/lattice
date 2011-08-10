@@ -73,12 +73,12 @@ class Controller_Navigation extends Controller_MOP{
 
                //and deeplinking for categories
                $follow_tier = false;
-               $children = $this->getTier($child->id, $deeplinkPath, $follow_tier);
+               $childTier = $this->getTier($child->id, $deeplinkPath, $follow_tier);
                if ($follow_tier == true) {
                   $sendItem['follow'] = true;
                   $follow = 'true';
                }
-               $sendItem['children'] = $children;
+               $sendItem['tier'] = $childTier;
             }
 
 				if(strtolower($child->objecttype->nodeType)=='container'){
@@ -107,7 +107,7 @@ class Controller_Navigation extends Controller_MOP{
 			}
 			$html = $this->renderTierView($parent, $sendItemObjects);
 			$tier = array(
-					'children' => $sendItemObjects,
+					'nodes' => $sendItemObjects,
 					'html' => $html
 			);
 			return $tier;
