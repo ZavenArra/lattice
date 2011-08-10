@@ -174,7 +174,11 @@ Class Controller_UserManagement extends Controller_Layout {
 					$user->remove('roles', $roleObj);
 				}
 			}
-			$user->add('roles', ORM::Factory('role')->where('name','=',$value)->find());	
+			$role = ORM::Factory('role')->where('name','=',$value)->find();
+			if(!$role->loaded()){
+				throw new Kohana_Exception('Role :role not found in database.  Update aborted', array(':role'=>$value));
+			}
+			$user->add('roles', $role);	
 			$user->save();
 			$return = $this->response->data( array('value'=>$value) );
 			break;
