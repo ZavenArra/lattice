@@ -324,11 +324,7 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 .objectTitle .deleteLink{ margin: 2em 0 0 .5em; }
 .objectTitle .field-slug{ margin: 0 0 .5em 0; }
 
-/*.uploadLink{
-	position: absolute;
-}
-*/
-.icon, a.command, .uploadButton{
+.icon, a.command, .uploadButton, .icon, a.command{
 	display:block;
 	float:left;
 	height: 16px;
