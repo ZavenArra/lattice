@@ -38,6 +38,8 @@ class Controller_Builder extends Controller {
 		$db->query(Database::UPDATE, 'alter table objectmaps AUTO_INCREMENT = 1');
       $db->query(Database::DELETE, 'delete from objectrelationships');
 		$db->query(Database::UPDATE, 'alter table objectrelationships AUTO_INCREMENT = 1');
+      $db->query(Database::DELETE, 'delete from rosettas');
+		$db->query(Database::UPDATE, 'alter table rosettas AUTO_INCREMENT = 1');
 		flush();
 		ob_flush();
 

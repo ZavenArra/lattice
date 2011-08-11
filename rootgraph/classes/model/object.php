@@ -686,11 +686,27 @@ class Model_Object extends ORM {
     * This makes sense for separating the CMS from the graph, and containing all addObject code within the model.
     * */
 
-   public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
+   
+   private function addNewObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null){
+      
+      if(!$rosettaId){
+         $translationRosettaId = Graph::newRosetta();
+      } else {
+         $translationRosettaId = $rosettaId;
+      }
       
       
-      $objecttype_id = ORM::Factory('objecttype', $objectTypeName)->id;
-      if (!$objecttype_id) {
+      if ($languageId == NULL) {
+         if ($this->language_id == NULL) {
+            $languageId = Graph::defaultLanguage();
+         } else {
+            $languageId = $this->language_id;
+         }
+      }
+      
+      $newObjectType = ORM::Factory('objecttype', $objectTypeName);
+
+      if (!$newObjectType->id) {
 
 
          //check objects.xml for configuration
@@ -698,7 +714,7 @@ class Model_Object extends ORM {
             //there's a config for this objectType
             //go ahead and configure it
             Graph::configureTemplate($objectTypeName);
-            $objecttype_id = ORM::Factory('objecttype', $objectTypeName)->id;
+            $newObjectType = ORM::Factory('objecttype', $objectTypeName);
          } else {
             throw new Kohana_Exception('No config for objectType ' . $objectTypeName);
          }
@@ -706,7 +722,7 @@ class Model_Object extends ORM {
 
 
       $newObject = Graph::object();
-      $newObject->objecttype_id = $objecttype_id;
+      $newObject->objecttype_id = $newObjectType->id;
 
       //create slug
       if (isset($data['title'])) {
@@ -718,18 +734,7 @@ class Model_Object extends ORM {
 				//are the same object
 				$newObject->slug = mopcms::createSlug();
       }
-      if(!$rosettaId){
-         $translationRosettaId = Graph::newRosetta();
-      } else {
-         $translationRosettaId = $rosettaId;
-      }
-      if ($languageId == NULL) {
-         if ($this->language_id == NULL) {
-            $languageId = Graph::defaultLanguage();
-         } else {
-            $languageId = $this->language_id;
-         }
-      }
+     
       $newObject->language_id = $languageId;
       $newObject->rosetta_id = $translationRosettaId;
       
@@ -738,8 +743,7 @@ class Model_Object extends ORM {
 
       //check for enabled publish/unpublish. 
       //if not enabled, insert as published
-      $objectType = ORM::Factory('objecttype', $objecttype_id);
-      $tSettings = mop::config('objects', sprintf('//objectType[@name="%s"]', $objectType->objecttypename));
+      $tSettings = mop::config('objects', sprintf('//objectType[@name="%s"]', $newObjectType->objecttypename));
       $tSettings = $tSettings->item(0);
       $newObject->published = 1;
       if ($tSettings) { //entry won't exist for Container objects
@@ -755,7 +759,6 @@ class Model_Object extends ORM {
       $newObject->save();
 
       //Add defaults to content table
-      $newobjectType = ORM::Factory('objecttype', $newObject->objecttype_id);
 
 
       $lookupTemplates = mop::config('objects', '//objectType');
@@ -777,7 +780,7 @@ class Model_Object extends ORM {
                continue(2);
          }
 
-         $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $newobjectType->objecttypename, $field);
+         $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $newObjectType->objecttypename, $field);
          $fieldInfo = mop::config('objects', $fieldInfoXPath)->item(0);
          if (!$fieldInfo) {
             throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath' => $fieldInfoXPath));
@@ -828,14 +831,22 @@ class Model_Object extends ORM {
       $sort = DB::select(array('sortorder', 'maxsort'))->from('objectrelationships')
                         ->where('lattice_id', '=', $lattice->id)
                         ->where('object_id', '=', $this->id)
-                      ->order_by('sortorder')->limit(1)
+                      ->order_by('sortorder', 'desc')->limit(1)
                       ->execute()->current();
       $objectRelationship->sortorder = $sort['maxsort'] + 1;
     
       $objectRelationship->save();
+      return $newObject;
+   
+   }
+   
+   
+   public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
+      
+      $newObjectType = ORM::Factory('objecttype', $objectTypeName);
 
-      
-      
+      $newObject = $this->addNewObject($objectTypeName, $data, $lattice, $rosettaId, $languageId);
+     
       
       /*
        * Set up any translated peer objects
@@ -845,25 +856,46 @@ class Model_Object extends ORM {
          $languages = Graph::languages();
          foreach ($languages as $translationLanguage) {
            
-            if ($translationLanguage->id == $languageId) {
+            if ($translationLanguage->id == $newObject->language_id) {
                continue;
             }
 
             if ($this->loaded()) {
                $translatedParent = $this->getTranslatedObject($translationLanguage->id);
-               $translatedParent->addObject($objectTypeName, $data, $lattice, $translationRosettaId);
+          
+               $translatedParent->addNewObject($objectTypeName, $data, $lattice, $newObject->rosetta_id);
             } else {
-               Graph::object()->addObject($objectTypeName, $data, $lattice, $translationRosettaId, $translationLanguage->id);
+               Graph::object()->addNewObject($objectTypeName, $data, $lattice, $newObject->rosetta_id, $translationLanguage->id);
             }
          }
 
       }
 
-      //chain problem
+      /*
+       * adding of components is delayed, because data trees need to be built before components go looking
+       * for rosetta ids
+       */
+      $newObject->addComponents();
 
+      return $newObject->id;
+
+   }
+   
+   /*
+    * Called only at object creation time, this function add automatic components to an object as children and also recurses
+    * this functionality down the tree.
+    */
+   private function addComponents(){
+       //chain problem
+      $containers = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename));
+      foreach ($containers as $c) {
+         $arguments['title'] = $c->getAttribute('label');
+         $childObject = $this->addObject($c->getAttribute('family'), $arguments);
+      }
+      
       //look up any components and add them as well
       //configured components
-   /*   $components = mop::config('objects', sprintf('//objectType[@name="%s"]/components/component', $newobjectType->objecttypename));
+      $components = mop::config('objects', sprintf('//objectType[@name="%s"]/components/component', $this->objecttype->objecttypename));
       foreach ($components as $c) {
          $arguments = array();
          if ($label = $c->getAttribute('label')) {
@@ -874,20 +906,14 @@ class Model_Object extends ORM {
                $arguments[$data->tagName] = $data->value;
             }
          }
-         $newObject->addObject($c->getAttribute('objectTypeName'), $arguments);
+         //We have a problem here
+         //with data.xml populated components
+         //the item has already been added by the addObject recursion, but gets added again here
+         //what to do about this??
+         
+         $this->addObject($c->getAttribute('objectTypeName'), $arguments);
       }
-
-      //containers (list)
-      $containers = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $newobjectType->objecttypename));
-      foreach ($containers as $c) {
-         $arguments['title'] = $c->getAttribute('label');
-         $newObject->addObject($c->getAttribute('family'), $arguments);
-      }
-     */ 
-
-      
-
-      return $newObject->id;
+    
 
    }
    
