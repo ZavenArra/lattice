@@ -60,6 +60,10 @@ class MOP_CMS extends MOP_CMSInterface {
 
 	}
 
+	public function getRootNode(){
+		throw new Kohana_Exception('Child class must implement getRootNode()');
+	}
+
 	public function action_index(){
 		$this->view = new View('mop_cms');
 		if(Auth::instance()->logged_in('superuser')){
@@ -71,11 +75,8 @@ class MOP_CMS extends MOP_CMSInterface {
       
 	//get the default 
 
-      
-      $rootObjectType = ORM::factory('objectType')->where('objectTypeName', '=', Kohana::config('cms.graphRootNode'))->find();
-      $rootObject = Graph::object()->objectTypeFilter($rootObjectType->id)->find();
-
-      $this->view->objectId = $rootObject->id;
+		$rootObject = $this->getRootObject();
+      $this->view->rootObjectId = $rootObject->id;
       
 		
 		//basically this is an issue with wanting to have multiple things going on

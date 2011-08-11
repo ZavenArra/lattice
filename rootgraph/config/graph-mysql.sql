@@ -1,7 +1,22 @@
+ CREATE TABLE `objecttypes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `objecttypename` varchar(50) CHARACTER SET latin1 NOT NULL DEFAULT '',
+  `contenttable` varchar(50) CHARACTER SET latin1 DEFAULT NULL,
+  `nodeType` varchar(50) CHARACTER SET latin1 DEFAULT NULL,
+  `contentType` varchar(20) CHARACTER SET latin1 DEFAULT NULL,
+  `sort_order` smallint(2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=INNODB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `rosettas` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
+
 CREATE TABLE `objects` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `objecttype_id` int(11) NOT NULL DEFAULT '0',
-  `collection_id` int(11) DEFAULT NULL,
+  `rosetta_id` int(11) DEFAULT NULL,
   `slug` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
   `decoupleSlugTitle` tinyint(4) DEFAULT '0',
   `dateadded` timestamp NULL DEFAULT NULL,
@@ -12,16 +27,6 @@ CREATE TABLE `objects` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `identifier` (`slug`)
 ) ENGINE=INNODB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
- CREATE TABLE `objecttypes` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `objecttypename` varchar(50) CHARACTER SET latin1 NOT NULL DEFAULT '',
-  `contenttable` varchar(50) CHARACTER SET latin1 DEFAULT NULL,
-  `nodeType` varchar(50) CHARACTER SET latin1 DEFAULT NULL,
-  `contentType` varchar(20) CHARACTER SET latin1 DEFAULT NULL,
-  `sort_order` smallint(2) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objectmaps` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -368,4 +373,5 @@ CREATE TABLE `lattices` (
 	`name` varchar(200) NOT NULL,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
 

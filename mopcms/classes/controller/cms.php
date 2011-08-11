@@ -2,6 +2,12 @@
 
 class Controller_CMS extends MOP_CMS {
 
+	public function getRootObject(){
+		$rootObjectType = ORM::factory('objectType')->where('objectTypeName', '=', Kohana::config('cms.graphRootNode'))->find();
+		$rootObject = Graph::object()->objectTypeFilter($rootObjectType->id)->find();
+		return $rootObject;
+
+	}
   
    public function cms_addObject($parentId, $objectTypeId, $data) {
          

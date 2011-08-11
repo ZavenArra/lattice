@@ -686,7 +686,7 @@ class Model_Object extends ORM {
     * This makes sense for separating the CMS from the graph, and containing all addObject code within the model.
     * */
 
-   public function addObject($objectTypeName, $data = array(), $lattice = null) {
+   public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
       
       
       $objecttype_id = ORM::Factory('objecttype', $objectTypeName)->id;
@@ -718,9 +718,21 @@ class Model_Object extends ORM {
 				//are the same object
 				$newObject->slug = mopcms::createSlug();
       }
-      //This is being deprecated by lattices
-      $newObject->parentid = $this->id;
-
+      if(!$rosettaId){
+         $translationRosettaId = Graph::newRosetta();
+      } else {
+         $translationRosettaId = $rosettaId;
+      }
+      if ($languageId == NULL) {
+         if ($this->language_id == NULL) {
+            $languageId = Graph::defaultLanguage();
+         } else {
+            $languageId = $this->language_id;
+         }
+      }
+      $newObject->language_id = $languageId;
+      $newObject->rosetta_id = $translationRosettaId;
+      
       $newObject->save();
 
 
@@ -805,9 +817,53 @@ class Model_Object extends ORM {
       $newObject->contenttable->save();
       $newObject->save();
 
+      //The objet has been built, now set it's lattice point
+      $lattice = Graph::lattice();
+      $objectRelationship = ORM::Factory('objectrelationship');
+      $objectRelationship->lattice_id = $lattice->id;
+      $objectRelationship->object_id = $this->id;
+      $objectRelationship->connectedobject_id = $newObject->id;
+      
+      //calculate sort order
+      $sort = DB::select(array('sortorder', 'maxsort'))->from('objectrelationships')
+                        ->where('lattice_id', '=', $lattice->id)
+                        ->where('object_id', '=', $this->id)
+                      ->order_by('sortorder')->limit(1)
+                      ->execute()->current();
+      $objectRelationship->sortorder = $sort['maxsort'] + 1;
+    
+      $objectRelationship->save();
+
+      
+      
+      
+      /*
+       * Set up any translated peer objects
+       */
+      if (!$rosettaId) {
+        
+         $languages = Graph::languages();
+         foreach ($languages as $translationLanguage) {
+           
+            if ($translationLanguage->id == $languageId) {
+               continue;
+            }
+
+            if ($this->loaded()) {
+               $translatedParent = $this->getTranslatedObject($translationLanguage->id);
+               $translatedParent->addObject($objectTypeName, $data, $lattice, $translationRosettaId);
+            } else {
+               Graph::object()->addObject($objectTypeName, $data, $lattice, $translationRosettaId, $translationLanguage->id);
+            }
+         }
+
+      }
+
+      //chain problem
+
       //look up any components and add them as well
       //configured components
-      $components = mop::config('objects', sprintf('//objectType[@name="%s"]/components/component', $newobjectType->objecttypename));
+   /*   $components = mop::config('objects', sprintf('//objectType[@name="%s"]/components/component', $newobjectType->objecttypename));
       foreach ($components as $c) {
          $arguments = array();
          if ($label = $c->getAttribute('label')) {
@@ -827,25 +883,27 @@ class Model_Object extends ORM {
          $arguments['title'] = $c->getAttribute('label');
          $newObject->addObject($c->getAttribute('family'), $arguments);
       }
+     */ 
+
       
-      //The objet has been built, now set it's lattice point
-      $lattice = Graph::lattice();
-      $objectRelationship = ORM::Factory('objectrelationship');
-      $objectRelationship->lattice_id = $lattice->id;
-      $objectRelationship->object_id = $this->id;
-      $objectRelationship->connectedobject_id = $newObject->id;
-      
-      //calculate sort order
-      $sort = DB::select(array('sortorder', 'maxsort'))->from('objectrelationships')
-                        ->where('lattice_id', '=', $lattice->id)
-                        ->where('object_id', '=', $this->id)
-                      ->order_by('sortorder')->limit(1)
-                      ->execute()->current();
-      $objectRelationship->sortorder = $sort['maxsort'] + 1;
-    
-      $objectRelationship->save();
 
       return $newObject->id;
+
+   }
+   
+   public function getTranslatedObject($languageId){
+       $parentRosettaId = $this->rosetta_id;
+       $translatedObject = Graph::object()
+               ->where('rosetta_id', '=', $this->rosetta_id)
+               ->where('language_id', '=', $languageId)
+               ->find();
+       if(!$translatedObject->loaded()){
+          throw new Kohana_Exception('No matching translated object for rosetta :rosetta and language :language',
+                  array(':rosetta'=>$this->rosetta_id,
+                        ':language'=>$languageId)
+                  );
+       }
+       return $translatedObject;
    }
 
 }

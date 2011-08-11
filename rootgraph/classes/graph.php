@@ -59,6 +59,22 @@ class Graph {
 			return false;
 		}
 	}
+   
+   public static function languages(){
+      return ORM::Factory('language')->where('activity', 'is', NULL)->find_all();
+      
+   }
+   
+   public static function newRosetta(){
+      $rosetta = ORM::Factory('rosetta');
+      $rosetta->save();
+      return $rosetta->id;
+   
+   }
+   
+   public static function defaultLanguage(){
+      return 1;
+   }
 
 	public static function mediapath(){
 		if(self::$mediapath){
@@ -110,5 +126,7 @@ class Graph {
       $object =  Graph::object()->objectTypeFilter($objectType->objecttypename)->find();
       return $object;
    }
+   
+ 
 }
 

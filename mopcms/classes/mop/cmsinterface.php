@@ -235,6 +235,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
    protected function cms_addObject($parentId, $objectTypeId, $data) { 
    }
 
+	
 
 }
 
