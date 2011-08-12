@@ -99,7 +99,6 @@ mop.modules.CMS = new Class({
 			var titleIPE = this.titleElement.getElement('.field-title');
 			this.titleText = titleIPE.retrieve('Class').getValue();
    		this.slugIPE = this.titleElement.getElement( ".field-slug" );
-			// var titleIPE = this.titleElement.getElement( ".field-title" ).retrieve("Class");
 			if( titleIPE ){
 				titleIPE.addListener( this );
 				this.addEvent( 'uifieldsaveresponse', this.onUIFieldSaved.bind( this ) );

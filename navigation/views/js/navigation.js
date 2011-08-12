@@ -149,10 +149,22 @@ mop.modules.navigation.Navigation = new Class({
 	saveTierSort: function( order ){ this.dataSource.saveTierSortRequest( order ); },
 
 	requestTierResponse: function( json, tierId, containerPane ){
-		var tier;
 		this.pendingPane = null;
-		json.response.data.tier.nodes.each( function( nodeObj ){ this.nodeData[ nodeObj.id ] = nodeObj; }, this );
-		tier = new mop.modules.navigation.Tier( this, json.response.data.tier, tierId );
+		nodes = json.response.data.tier.nodes;
+		console.log( json.response.data )
+		this.processNodeData( nodes, json.response.data.tier, tierId );
+	},
+	
+	processNodeData: function( nodes, tier, tierId ){   
+		var tier, nodes;
+		nodes.each( function( nodeObj ){ 
+			this.nodeData[ nodeObj.id ] = nodeObj;
+			if( nodeObj.tier ){
+				this.processNodeData( nodeObj.tier.nodes );
+			}
+			console.log( '-', nodeObj, nodeObj.title, nodeObj.tier )
+		}, this );
+		tier = new mop.modules.navigation.Tier( this, tier, tierId );
 		this.tiers[ tierId ] = tier;
 		this.renderPane( tier, containerPane, tierId );
 	},
