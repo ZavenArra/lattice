@@ -3,8 +3,8 @@
 		<input type='text' class='og title h2' value="<?=$title;?>" />
 	</div>
 	<?if(Kohana::config('cms.enableSlugEditing')):?>
-	<div class="ui-Text grid_2 field-slug clear">
-		<p class="ipe discrete p"><?=$slug;?></p>
+	<div class="ui-Text field-slug clear">
+				<input class="og p" value="<?=$slug;?>" type="text" />
 	</div>
  	<?endif;?>
 
