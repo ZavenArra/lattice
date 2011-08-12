@@ -31,8 +31,10 @@ mop.modules.CMS = new Class({
 	},
 
 	getRequestTierURL: function( parentId, deepLink ){
-		var deepLinkAppend = ( deepLink )? "/" + deepLink : '';
-		var url = mop.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId + deepLinkAppend;
+		var deepLinkAppend, url;
+		deepLinkAppend = ( deepLink )? "/" + deepLink : '';
+		url = mop.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId + deepLinkAppend;
+//		console.log( 'getRequestTierURL', url );
 		return url;
 	},
 
@@ -193,7 +195,7 @@ mop.modules.CMS = new Class({
 */
 
 	onNodeSelected: function( nodeId ){
-		console.log( this.toString(), "onNodeSelected", nodeId );
+		// console.log( this.toString(), "onNodeSelected", nodeId );
 		this.clearPage();
 		if( this.pageRequest ) this.pageRequest.cancel();
 		this.pageRequest = this.requestPage( nodeId );
@@ -203,11 +205,13 @@ mop.modules.CMS = new Class({
 	Section: mop.modules.navigation.NavigationDataSource Interface Requests and Response
 */
 	requestTier: function( parentId, deepLink, callback ){
+		var url;
+		url = this.getRequestTierURL( parentId, deepLink );
+//		console.log( 'cms.requestTier.url:', url );
 		this.currentObjectId = parentId;
-		if( this.currentTierRequest ) this.currentTierRequest.cancel();
-		this.currentTierRequest = null;
+		this.clearTierRequest()
 		this.currentTierRequest = new Request.JSON( {
-			url: this.getRequestTierURL( parentId, deepLink ),
+			url: url,
 			onSuccess: function( json ){
 				this.requestTierResponse( json );
 				callback( json );
@@ -216,9 +220,13 @@ mop.modules.CMS = new Class({
 		return this.currentTierRequest;
 	},
 
-	requestTierResponse: function( json ){
+	clearTierRequest: function( json ){
 		if( this.currentTierRequest ) this.currentTierRequest.cancel();
 		this.currentTierRequest = null;
+	},
+	
+	requestTierResponse: function( json ){
+		this.clearTierRequest();
 		if( !json.returnValue ) throw  this.toString() + " requestTier error: " + json.response.error;
 	},
 

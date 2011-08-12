@@ -168,7 +168,7 @@ mop.modules.Module = new Class({
 	},
 	
 	destroyUIFields: function(){
-		console.log( "destroyUIFields before", this.instanceName, this.UIFields );
+//		console.log( "destroyUIFields before", this.instanceName, this.UIFields );
 		Object.each( this.UIFields, function( aUIField ){
 			aUIField.destroy();
 			delete aUIField;
