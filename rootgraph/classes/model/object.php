@@ -31,14 +31,24 @@ class Model_Object extends ORM {
       
       
 		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id)) {
-			//it's the tmeplate identified, look up the integer primary key
-			$result = DB::select('id')->from('objects')->where('slug', '=', $id)->execute()->current();
-			$id = $result['id'];
+         
+         //check for translation reference
+         if(strpos('_', $id)){
+            $slug = strtok($id, '_');
+            $languageCode = strtok($id);
+            $object = Graph::object($slug);
+            $translatedObject = $object->translated($languageCode);
+            return $translatedObject;
+        
+         } else {
+         
+            $result = DB::select('id')->from('objects')->where('slug', '=', $id)->execute()->current();
+            $id = $result['id'];
+         }
 		}
 
       
       parent::__construct($id);
-      //	$this->object_fields = array_merge($this->object_fields, array_keys($this->_column_cache) );
    }
 
 

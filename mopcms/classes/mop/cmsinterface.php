@@ -26,8 +26,9 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	 */
 	public function action_savefile($objectId){
 
-		Kohana::$log->add(Log::INFO, 'please ??');
-		$file = mopcms::saveHttpPostFile($objectId, $_POST['field'], $_FILES[$_POST['field']]);
+      $field = strtok($_POST['field'], '_');
+
+		$file = mopcms::saveHttpPostFile($objectId, $$field, $_FILES[$_POST['field']]);
 		$result = array(
 			'id'=>$file->id,
 			'src'=>$file->original->fullpath,
@@ -77,11 +78,14 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	* Returns: array('value'=>{value})
 	 */
 	public function action_savefield($id){
+      
+      $field = strtok($_POST['field'], '_');
+      
       $object = Graph::object($id);
-      $object->$_POST['field'] = $_POST['value'];
+      $object->$field = $_POST['value'];
 			$object->save();
       $object = Graph::object($id);
-      $value = $object->$_POST['field'];
+      $value = $object->$field;
       
       $returnData = array('value'=>$value);
       if($_POST['field']=='title'){

@@ -172,11 +172,16 @@ class MOP_CMS extends MOP_CMSInterface {
 				$this->nodetitle->$key = $value;
 			}
 		}
+      if($languageCode){
+         $this->nodetitle->translationModifier = '_'.$languageCode;
+      } else {
+         $this->nodetitle->translationModifier = '';
+      }
 		
 		$nodetitlehtml = $this->nodetitle->render();
 
 		$customview = 'objectTypes/'.$object->objecttype->objecttypename; //check for custom view for this objectType
-		$htmlChunks = mopcms::buildUIHtmlChunksForObject($object);
+		$htmlChunks = mopcms::buildUIHtmlChunksForObject($object, $languageCode);
 
 		$usecustomview = false;
 		if(Kohana::find_file('views', $customview)){

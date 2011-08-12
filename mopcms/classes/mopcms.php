@@ -168,6 +168,15 @@ class MoPCMS {
 										$htmlChunks[$element['type'] . '_' . $element['field']] = $html;
 										continue;
 								}
+            
+            /*
+             * Set up UI arguments to support uniquely generated field names when
+             * multiple items being displayed have the same field names
+             */
+            $uiArguments = $element;
+            if(isset($element['fieldId'])){
+               $uiArguments['field'] = $element['fieldId'];
+            }
 
 				switch ($element['type']) {
                case 'element': //this should not be called 'element' as element has a different meaning
@@ -196,7 +205,7 @@ class MoPCMS {
                   $controller = new Associator_Controller($element['filters'], $object->id, $element['field']);
                   $controller->createIndexView();
                   $controller->view->loadResources();
-                  $key = $element['type'] . '_' . $element['field'];
+                  $key = $element['type'] . '_' . $uiArguments['field'];
                   $htmlChunks[$key] = $controller->view->render();
                   
                   break;
@@ -210,12 +219,12 @@ class MoPCMS {
                   break;
                default:
                   //deal with html objectType elements
-                  $key = $element['type'] . '_' . $element['field'];
+                  $key = $element['type'] . '_' . $uiArguments['field'];
                   $html = null;
                   if (!isset($element['field'])) {
                      $element['field'] = CMS_Controller::$unique++;
                      $html = mopui::buildUIElement($element, null);
-                  } else if (!$html = mopui::buildUIElement($element, $object->$element['field'])) {
+                  } else if (!$html = mopui::buildUIElement($uiArguments, $object->$element['field'])) {
                      throw new Kohana_Exception('bad config in cms: bad ui element');
                   }
                   $htmlChunks[$key] = $html;
@@ -227,7 +236,7 @@ class MoPCMS {
       return $htmlChunks;
    }
 
-   public static function buildUIHtmlChunksForObject($object) {
+   public static function buildUIHtmlChunksForObject($object, $translatedLanguageCode = null) {
       $elements = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename));
       // should be Model_object->getElements();
       // this way a different driver could be created for non-xml config if desired
@@ -238,6 +247,9 @@ class MoPCMS {
          $entry['type'] = $element->tagName;
          for ($i = 0; $i < $element->attributes->length; $i++) {
             $entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
+         }
+         if($translatedLanguageCode != null){
+            $entry['fieldId'] = $entry['field'].'_'.$translatedLanguageCode;
          }
          //make sure defaults load
          $entry['tag'] = $element->getAttribute('tag');
