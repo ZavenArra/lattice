@@ -831,7 +831,7 @@ class Model_Object extends ORM {
       $sort = DB::select(array('sortorder', 'maxsort'))->from('objectrelationships')
                         ->where('lattice_id', '=', $lattice->id)
                         ->where('object_id', '=', $this->id)
-                      ->order_by('sortorder', 'desc')->limit(1)
+                      ->order_by('sortorder')->limit(1)
                       ->execute()->current();
       $objectRelationship->sortorder = $sort['maxsort'] + 1;
     
@@ -909,9 +909,28 @@ class Model_Object extends ORM {
          //We have a problem here
          //with data.xml populated components
          //the item has already been added by the addObject recursion, but gets added again here
-         //what to do about this??
+         //what to do about this??/on
          
-         $this->addObject($c->getAttribute('objectTypeName'), $arguments);
+         
+         $componentAlreadyPresent = false;
+         if(isset($arguments['title'])){
+            $checkForPreexistingObject = Graph::object()
+                 ->latticeChildrenFilter($this->id)
+                 ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
+                 ->where('title', '=', $arguments['title'])
+                 ->find();
+            echo $arguments['title'];
+            echo 'ar';
+            if($checkForPreexistingObject->loaded()){
+              $componentAlreadyPresent = true;
+              
+            }
+            echo 'ok';
+         }
+                 
+         if(!$componentAlreadyPresent){
+         //   $this->addObject($c->getAttribute('objectTypeName'), $arguments);
+         }
       }
     
 

@@ -38,7 +38,7 @@
 			<components>
 				<component objectTypeName="singleDate" label="SingleDate as Component" />
 				<component objectTypeName="singleFile" label="Single File as Component"/>
-				<component objectTypeName="singleFile" label="Single File as Component"/>
+				<component objectTypeName="singleFile" label="Single markksl  as Component"/>
             <component objectTypeName="multilineIPE" label="Multiline as Component"/>
 
 			</components>
