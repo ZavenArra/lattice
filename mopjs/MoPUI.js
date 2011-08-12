@@ -281,9 +281,9 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 	className: "BreadCrumbTrail",
 	
 	initialize: function( anElement, onCrumbClickedCallback ){
-	    this.element = anElement;
+		this.element = anElement;
 		this.onCrumbClickedCallback = onCrumbClickedCallback;
-//		console.log( "BreadCrumbTrail", this, this.element );
+		// console.log( "BreadCrumbTrail", this, this.element );
 	},
 	
 	toString: function(){
@@ -300,13 +300,13 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 	},
 
 	addCrumb: function( obj ){
-//	    console.log( "::::::::", obj );
-		var newCrumb = new Element( "li" ).adopt( 
-		    new Element( "a", { "text": obj.label, "events":{ "click": this.onCrumbClicked.bindWithEvent( this, obj ) } } )
-		);
-		var crumbs = this.element.getElements("li");
+		var newCrumb = new Element( "li" ).adopt( new Element( "a", { "text": obj.label, "events":{ "click": this.onCrumbClicked.bindWithEvent( this, obj ) } } ) );
+		newCrumb.store( 'data', obj );
 		this.element.getElement("ul").adopt( newCrumb );
-//		console.log( "addCrumb >>>>>> ", newCrumb );
+	},
+	
+	getCrumbs: function(){
+		return this.element.getElements('li');
 	},
 	
 	onCrumbClicked: function( e, obj ){
@@ -315,10 +315,10 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 		this.onCrumbClickedCallback( obj );
 	},
 	
-	removeCrumb: function( anIndex ){
-	    console.log( "removeCrumb", anIndex, this.element.getElements( "li" ), this.element.getElements( "li" )[ anIndex ] );
-		var crumb = this.element.getElements( "li" )[ anIndex ];
-		if( crumb ) crumb.destroy();
+	removeCrumbs: function( crumbs ){
+		crumbs.each( function( aCrumb ){
+			aCrumb.destroy();
+		});
 	},
 	
 	destroy: function(){
@@ -415,7 +415,6 @@ mop.ui.Sortable = new Class({
 			onComplete: function( droppedItem ){
 				this.isSorting = false; 
 				this.scroller.stop();
-				console.log( "mop.ui.Sortable.onComplete", droppedItem );
 				this.marshal.onOrderChanged( droppedItem );
 			},
 			onStart: function(){
@@ -465,8 +464,8 @@ mop.ui.Modal = new Class({
 		initialize: function( anElement, aMarshal, options ){
 			this.setOptions( options );
 			this.marshal = aMarshal;
-			console.log( "::::: initialize", this.toString(), this.marshal );
-            this.element = this.build();
+//			console.log( "::::: initialize", this.toString(), this.marshal );
+			this.element = this.build();
 			this.modalAnchor.setStyles({
 				 "useHandCursor":false
 			});
@@ -583,7 +582,7 @@ mop.ui.Modal = new Class({
 		loadTab: function( aTab ){
 			console.log( "loadTab", aTab );
 			this.content.empty();
-            this.content.spin();
+			this.content.spin();
 			this.setTitle( aTab.get( "title" ), "loading..." );
 			return new Request.JSON( { url: aTab.get( "href" ), onSuccess: this.onTabLoaded.bind( this ) } ).send();
 		},
@@ -2491,7 +2490,7 @@ mop.ui.Text = new Class({
 		this.ipeElement.removeClass('og');
 		this.field.store( "Class", this );
 		this.ipeElement.store( "Class", this );
-		this.field.addEvent( 'focus' , this.onFieldFocus.bind( this ) );
+		this.field.addEvent( 'focus' , this.onFieldFocus.bindWithEvent( this ) );
 		this.field.addClass( 'away' );
 		this.enableElement();
 		// this.ipeElement.set( 'morph' );
@@ -2519,6 +2518,7 @@ mop.ui.Text = new Class({
 	},
 	
 	onFieldFocus: function( e ){
+		mop.util.stopEvent( e );
 		if( this.mode == "editing ") return false;
 		this.enterEditMode( e );
 	},
@@ -2572,9 +2572,9 @@ mop.ui.Text = new Class({
 		if( this.options.rows == 1 ){
 			this.field.select();
 		}else{
-			this.field.focus();
+			this.field.select();
 		}
-		this.field.addEvent( 'focus' , this.onFieldFocus.bind( this ) );
+		this.field.addEvent( 'focus' , this.onFieldFocus.bindWithEvent( this ) );
 		this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
 		this.ipeElement.addClass("away");
 		this.field.removeClass('away');
@@ -2684,8 +2684,7 @@ mop.ui.Text = new Class({
 	showSaving: function(){
 		this.mode = 'saving';
 		this.ipeElement.addClass( 'saving' );
-		this.ipeElement.setStyle( 'opacity', 1 );
-		this.ipeElement.morph( { opacity: .2 } );
+		this.ipeElement.setStyle( 'opacity', .2 );
 		this.ipeElement.set( "title", this.options.messages.saving );
 	},
 

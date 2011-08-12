@@ -73,12 +73,12 @@ class Controller_Navigation extends Controller_MOP{
 
                //and deeplinking for categories
                $follow_tier = false;
-               $children = $this->getTier($child->id, $deeplinkPath, $follow_tier);
+               $childTier = $this->getTier($child->id, $deeplinkPath, $follow_tier);
                if ($follow_tier == true) {
                   $sendItem['follow'] = true;
                   $follow = 'true';
                }
-               $sendItem['children'] = $children;
+               $sendItem['tier'] = $childTier;
             }
 
 				if(strtolower($child->objecttype->nodeType)=='container'){
@@ -92,7 +92,6 @@ class Controller_Navigation extends Controller_MOP{
          
 
 			//add in any modules
-			//if(!$parent->loaded()){
 			if($parent->id == Graph::getRootNode(Kohana::config('cms.graphRootNode'))->id ){
 				$cmsModules = mop::config('cmsModules', '//module');
 				foreach($cmsModules as $m){
@@ -106,12 +105,17 @@ class Controller_Navigation extends Controller_MOP{
 					$sendItemObjects[] = $entry;
 				}
 			}
-         return $sendItemObjects;
-      }
-      
-      return null;
-      
-   }
+			$html = $this->renderTierView($parent, $sendItemObjects);
+			$tier = array(
+					'nodes' => $sendItemObjects,
+					'html' => $html
+			);
+			return $tier;
+		}
+
+		return null;
+
+	 }
 	
 	public function action_getTier($parentId, $deeplink=NULL){
       
@@ -132,26 +136,22 @@ class Controller_Navigation extends Controller_MOP{
       //this database call happens twice, should be a class variable?
       $parent = ORM::Factory($this->objectModel, $parentId); 
 
-      
-      $sendItemObjects = $this->getTier($parentId, $deeplinkPath);
+      $tier = $this->getTier($parentId, $deeplinkPath);
 
-      $this->response->data(array('nodes' => $sendItemObjects));
+      $this->response->data(array('tier' => $tier));
 
-      $nodes = array();
-      foreach ($sendItemObjects as $item) {
-
-         $nodeView = new View('navigationNode');
-         $nodeView->content = $item;
-         $nodes[] = $nodeView->render();
-      }
-
-      $this->response->body($this->renderTierView($parent, $nodes));
    }
 
 	private function renderTierView($parent, $nodes){
 
       $tierView = new View('navigationTier');
-      $tierView->nodes = $nodes;
+			$nodesHtml = array();
+			foreach($nodes as $node){
+				$nodeView = new View('navigationNode');
+				$nodeView->content = $node;	
+				$nodesHtml[] = $nodeView->render();
+			}
+      $tierView->nodes = $nodesHtml;
 
       $tierMethodsDrawer = new View('tierMethodsDrawer');
 			$addableObjects = $parent->objecttype->addableObjects;
