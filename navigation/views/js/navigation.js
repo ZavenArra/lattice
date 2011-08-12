@@ -39,42 +39,55 @@ mop.modules.navigation.Navigation = new Class({
 	},
 
 	onNodeClicked: function( nodeId, tier ){ 
-		var paneIndex;
-		this.clearTierRequest();
+		var paneIndex, node;
+		this.clearPendingTierRequest();
+		node = this.nodeData[ nodeId ]
+		
 		paneIndex = ( this.getVisibleTiers().indexOf( tier ) > 0 )? this.getVisibleTiers().indexOf( tier ) : 0;
-//		console.log( 'onNodeClicked', nodeId, this.getVisibleTiers(), tier.element, this.getVisibleTiers().indexOf( tier.element ) > 0, paneIndex );
-		this.prepareTier( tier, paneIndex + 1, this.nodeData[ nodeId ] );
+		
+		console.log( "prepareTier ", tier, paneIndex, node );
+
+		this.detachTiers( paneIndex + 1 );
+		this.removeCrumbs( paneIndex + 1 );
+
+		this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
+
 		this.marshal.onNodeSelected( nodeId );
 		if( this.getNodeTypeFromId( nodeId ) == 'object' ) this.requestTier( nodeId, tier );
 	},
 	
-	clearTierRequest: function(){
-		if( this.pendingPane ) this.pendingPane.destroy();
-		this.marshal.clearTierRequest();
-	},
-	
 	onCrumbClicked: function( crumbData ){
-		var paneIndex, node, tier;
-		this.clearTierRequest();
-		paneIndex = ( crumbData.tier )? this.getVisibleTiers().indexOf( crumbData.tier ) : 0;
+		var paneIndex, node, tier, slug;
+		this.clearPendingTierRequest();
 		tier = crumbData.tier;
 		node = crumbData.nodeData;
-		this.prepareTier( tier, paneIndex + 1, node );
-		console.log( "onCrumbClicked", node.id, tier );
+		paneIndex = ( this.getVisibleTiers().indexOf( tier ) > 0 )? this.getVisibleTiers().indexOf( crumbData.tier ) : 0;
+		console.log( "prepareTier ", tier, paneIndex, node );
+		this.detachTiers( paneIndex + 1 );
+		this.removeCrumbs( paneIndex + 1 );
 		if( node ){
+			this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
+			console.log( "onCrumbClicked", node, node.id, tier );
 			if( node.objectType == 'object' ) this.requestTier( node.id, tier );
-			this.marshal.onNodeSelected( crumbData.nodeData );
+			if( this.getNodeTypeFromId( node.id ) == 'object' ){ 
+				this.marshal.onNodeSelected( node.id );
+			}else{
+				this.slideToCurrentTier( null );
+				this.marshal.clearPage();				
+			}
 			if( this.getNodeTypeFromId( node.id ) == 'object' ) this.requestTier( node.id, tier );
 		}else{
+			this.slideToCurrentTier( null );
 			this.marshal.clearPage();
 		}
 	},
 	
-	prepareTier: function( tier, i, node ){
-		console.log( "prepareTier ", tier, i, node );
-		this.detachTiers( i );
-		this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
-		this.removeCrumbs( i );
+	clearPendingTierRequest: function(){
+		if( this.pendingPane ){
+			this.pendingPane.get('spinner').hide();
+			this.pendingPane.destroy();
+		}
+		this.marshal.clearPendingTierRequest();
 	},
 	
 	requestTier: function( nodeId, parentTier, deepLink ){
@@ -117,6 +130,9 @@ mop.modules.navigation.Navigation = new Class({
 		console.log( "appState:", mop.historyManager.getAppState() );
 		console.log( "/////////////////////////////////" );
 		var deepLink = ( mop.historyManager.getAppState().slug )? mop.historyManager.getAppState().slug : null;
+		
+		this.breadCrumbs.addCrumb( { label: '/' } );
+		
 		this.requestTier( this.rootId, null, deepLink );
 	},
 
@@ -142,7 +158,6 @@ mop.modules.navigation.Navigation = new Class({
 	},
 
 	renderPane: function( aTier, newPane, nodeId ){
-		
 		var nodeId, navSlideFx, nodeTitle;
 //		console.log( "::::::", Array.from( arguments ) );
 		if( !newPane ){ // cached
@@ -154,13 +169,17 @@ mop.modules.navigation.Navigation = new Class({
 			newPane.unspin();
 			aTier.attachToPane( newPane );			
 		}
-		if( this.getPanes().indexOf( newPane ) < this.numberOfVisiblePanes ){
-			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toLeft();	        
-		}else{	        
-			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toElementEdge( newPane );
-		}
-		nodeTitle = ( this.getNodeTitleFromId( nodeId ) )? this.getNodeTitleFromId( nodeId ) : '/';  
+		this.slideToCurrentTier( newPane );
 	},
+	
+	slideToCurrentTier: function( target ){
+		if( !target || this.getPanes().indexOf( target ) < this.numberOfVisiblePanes ){
+			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toLeft();
+		}else{
+			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toElementEdge( target );
+		}		
+	},
+	
 
 	detachTiers: function( startIndex, endIndex ){
 		var visibleTiers, tiersToDetach;
@@ -174,6 +193,7 @@ mop.modules.navigation.Navigation = new Class({
 	},
 	
 	removeCrumbs: function( startIndex, endIndex ){
+		console.log( startIndex, endIndex );
 		var crumbs, crumbsToRemove;
 		crumbs = this.breadCrumbs.getCrumbs();
 		if( startIndex < 0 ) startIndex = 0;
