@@ -28,20 +28,19 @@ class Model_Object extends ORM {
    private $object_fields = array('loaded', 'objecttype', 'primary_key', 'primary_val');
 
    public function __construct($id=NULL) {
+      
+      
+		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id)) {
+			//it's the tmeplate identified, look up the integer primary key
+			$result = DB::select('id')->from('objects')->where('slug', '=', $id)->execute()->current();
+			$id = $result['id'];
+		}
+
+      
       parent::__construct($id);
       //	$this->object_fields = array_merge($this->object_fields, array_keys($this->_column_cache) );
    }
 
-   /**
-    *    * Allows a model to be loaded by username or email address.
-    *       */
-   public function unique_key($id) {
-      if (!empty($id) AND is_string($id) AND !ctype_digit($id)) {
-         return 'slug';
-      }
-
-      return parent::unique_key($id);
-   }
 
    /*
     *   Function: __get
@@ -200,6 +199,34 @@ class Model_Object extends ORM {
       }
    }
 
+   
+   
+   public function translate($languageCode){
+      $rosettaId = $this->rosetta_id;
+      if(!$rosettaId){
+         throw new Kohana_Exception('No Rosetta ID found for object during translation with objectId :objectId',
+                                    array(':objectId'=>$objectId)
+                 );
+      }
+      $languageId = ORM::Factory('language', $languageCode)->id;
+      if(!$languageId){
+         throw new Kohana_Exception('Invalid language code :code', array(':code'=>$languageCode));
+      }
+         
+      $translatedObject = ORM::Factory('object')
+              ->where('rosetta_id', '=', $rosettaId)
+              ->where('language_id', '=', $languageId)
+              ->find();
+      if(!$translatedObject->loaded()){
+         throw new Kohana_Exception('No translated object available for objectId :id with language :language',
+                 array(':id'=>$objectId,
+                        ':language'=>$languageCode));
+         
+      }
+      return $translatedObject;
+      
+   }
+   
    public function updateWithArray($data) {
       foreach ($data as $field => $value) {
          switch ($field) {

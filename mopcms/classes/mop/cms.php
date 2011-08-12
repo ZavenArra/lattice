@@ -119,10 +119,13 @@ class MOP_CMS extends MOP_CMSInterface {
 	id - the object id to be retrieved
 	Returns: array('html'=>html, 'js'=>js, 'css'=>css)
 	*/
-	public function action_getPage($id){
+	public function action_getPage($id, $languageCode = null){
 
-		$object = Graph::object($id);
-
+      if(!$languageCode){
+   		$object = Graph::object($id);
+      } else {
+         $object = Graph::object($id)->translate($languageCode);
+      }
 
 		self::$objectId = $id;
 
@@ -195,6 +198,11 @@ class MOP_CMS extends MOP_CMSInterface {
 		$this->response->body($html);
 
 	}
+   
+   
+   public function action_getTranslatedPage($objectId, $languageCode){
+      return $this->action_getPage($objectId, $languageCode);
+   }
 
 	public function action_addchild($id, $objecttype_id){
 		$data = $_POST;

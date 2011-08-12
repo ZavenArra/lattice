@@ -32,6 +32,8 @@ class Graph {
 		}
 	}
    
+   
+   
    public static function lattice($latticeId = 'lattice'){
       if(is_numeric($latticeId)){
          return ORM::Factory('lattice', $latticeId);
