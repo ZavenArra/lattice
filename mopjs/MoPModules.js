@@ -141,7 +141,7 @@ mop.modules.Module = new Class({
 			return this.UIFields;
 		}
 		moduleUIFields.each( function( anElement, index ){
-			console.log( 'initUI >>>> ', anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  );
+//			console.log( 'initUI >>>> ', anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  );
 			var UIField = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) ) ]( anElement, this, this.options );
 			this.UIFields[ UIField.fieldName ] = UIField;
 			if( UIField ) UIField.setTabIndex( 'tabindex', index+1 );
@@ -175,7 +175,7 @@ mop.modules.Module = new Class({
 			aUIField = null;
 		}, this );
 		this.UIFields = {};
-		console.log( "destroyUIFields after ", this.instanceName, this.UIFields );
+//		console.log( "destroyUIFields after ", this.instanceName, this.UIFields );
 	},
 	
 	destroy: function(){
@@ -209,7 +209,6 @@ initialize: function( anElementOrId, aMarshal, options ){
 
 getSaveFieldURL: function(){
 	var url = mop.util.getBaseURL() +"ajax/data/cms/savefield/" + this.objectId;
-	console.log( "::::::", this.toString(), "getSaveFieldURL", url );
 	return url;
 },
 
@@ -420,13 +419,13 @@ mop.modules.MoPList = new Class({
 	},
 	
 	removeObjectRequest: function( itemObjectId ){
-		console.log( "removeObjectRequest", this.toString(), this.getRemoveObjectURL );
+//		console.log( "removeObjectRequest", this.toString(), this.getRemoveObjectURL );
 		var jsonRequest = new Request.JSON( { url: this.getRemoveObjectURL( itemObjectId ) } ).send();
 		return jsonRequest;
 	},
 
 	removeObjectResponse: function( json ){
-		console.log( "removeObjectResponse", json );
+//		console.log( "removeObjectResponse", json );
 	},
 
 	removeModal: function( aModal ){
@@ -472,7 +471,7 @@ mop.modules.MoPList = new Class({
 	},
 	
 	onOrderChanged: function(){
-	    console.log( "onOrderChanged", this, this.toString() );
+//	console.log( "onOrderChanged", this, this.toString() );
 		var newOrder = this.serialize();
 		clearInterval( this.submitDelay );
 		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder.join(",") );
@@ -530,7 +529,7 @@ mop.modules.ListItem = new Class({
 	getObjectId: function(){ return this.objectId; },
 	getSaveFieldURL: function(){
 		var url =  this.marshal.getSaveFieldURL( this.getObjectId() );
-		console.log( "listItem.getSaveFieldURL", url );
+//		console.log( "listItem.getSaveFieldURL", url );
 		return url;
 	},
 

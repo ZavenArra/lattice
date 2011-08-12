@@ -71,9 +71,7 @@ mop.modules.CMS = new Class({
     this.rootNodeId = this.options.rootObjectId;
     $$( "script" ).each( function( aScriptTag ){ 
         this.loadedJS.push( aScriptTag.get("src") );
-    }, this );		
-		
-		
+    }, this );
     $$( "link[rel=stylesheet]" ).each( 
         function( aStyleSheetTag ){this.loadedCSS.push(  aStyleSheetTag );
     }, this );
@@ -221,7 +219,7 @@ mop.modules.CMS = new Class({
 	requestTierResponse: function( json ){
 		if( this.currentTierRequest ) this.currentTierRequest.cancel();
 		this.currentTierRequest = null;
-		if( !json.returnValue ) console.log( this.toString(), "requestTier error:", json.response.error );
+		if( !json.returnValue ) throw  this.toString() + " requestTier error: " + json.response.error;
 	},
 
 	saveTierSortRequest: function( newOrder ){

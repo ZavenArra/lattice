@@ -4,9 +4,9 @@ mop.modules.navigation.Navigation = new Class({
 
 	Extends: mop.MoPObject,
 	Implements: [ Events, Options ],
+	rootId: 0,
 	dataSource: null,
 	nodeData: {},
-	navPanes: [],
 	breadCrumbs: null,
 	tiers: [],
 	numberOfVisiblePanes: 3,
@@ -14,34 +14,26 @@ mop.modules.navigation.Navigation = new Class({
 		addObjectPosition: 'bottom'
 	},
 
-	getNodeTypeFromId: function( nodeId ){
-		return this.nodeData[ nodeId ].nodeType;
-	},
-
-	getContentTypeFromId: function( nodeId ){
-		return this.nodeData[ nodeId ].contentType;
-	},
-	
-	getIdFromSlug: function(){
-//		this.nodeData.each( function( aNode ))
-	},
-
-	getSlugFromId: function( nodeId ){
-		return this.nodeData[ nodeId ].slug;		
-	},
-	
-	getNodeById: function( nodeId ){
-		return this.nodeData[ nodeId ].node;
+	getNodeTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].nodeType; },
+	getContentTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].contentType; },
+	getNodeTitleFromId: function( nodeId ){ if( this.nodeData[ nodeId ] ){ return this.nodeData[ nodeId ].title; }else{ return null; } },
+	getSlugFromId: function( nodeId ){ return this.nodeData[ nodeId ].slug; },
+	getNodeById: function( nodeId ){ return this.nodeData[ nodeId ].node; },
+	getUserLevel: function(){ return this.userLevel; },
+	getPanes: function(){ return this.container.getElements('.pane'); },
+	getPaneTemplate: function(){ return this.navPaneTemplate.clone(); },
+	getVisibleTiers: function(){
+		var visibleTiers = [];
+		this.getPanes().each( function( aPane ){
+			visibleTiers.push( aPane.retrieve('tier') );
+		});
+		return visibleTiers;
 	},
 	
-	getUserLevel: function(){
-		return this.userLevel;
+	onAppStateChanged: function( appState ){ console.log( 'mop.modules.navigation.Navigation.appStateChanged', appState ); },	
+	onNodeSelected: function( nodeId ){ 
+		this.marshal.onNodeSelected( nodeId );
 	},
-	
-	onAppStateChanged: function( appState ){
-		console.log( 'mop.modules.navigation.Navigation.appStateChanged', appState );
-	},
-	
 	onObjectNameChanged: function( objId, name ){
 		this.nodeData[ objId ].title = name;
 		$( 'node_' + objId ).getElement( "h5" ).set( 'text', name );
@@ -61,56 +53,43 @@ mop.modules.navigation.Navigation = new Class({
 		this.addEvent( 'objectnamechanged', this.onObjectNameChanged.bind( this ) );
 		
 		this.navPaneTemplate = this.element.getElement( ".pane" ).dispose();
-		this.paneContainer = this.element.getElement( ".panes" );
-		this.navPanes = this.element.getElements( ".pane" );
-		this.paneContainer.empty();
+		this.container = this.element.getElement( ".panes" );
+		
+		this.container.empty();
 		this.instanceName = this.element.get("id");
 		this.breadCrumbs =  new mop.ui.navigation.BreadCrumbTrail( this.element.getElement( ".breadCrumb" ), this.onCrumbClicked.bind( this ) );
-		var rootId = this.dataSource.getRootNodeId();
+		this.rootId = this.dataSource.getRootNodeId();
 		this.userLevel = ( Cookie.read( 'userLevel' ) )? Cookie.read( 'userLevel' ) : "superuser";
 		console.log( "/////////////////////////////////" );
-		console.log( "rootId:", rootId );	
+		console.log( "rootId:", this.rootId );	
 		console.log( "userLevel:", this.userLevel );
 		console.log( "appState:", mop.historyManager.getAppState() );
 		console.log( "/////////////////////////////////" );
 		var deepLink = ( mop.historyManager.getAppState().slug )? mop.historyManager.getAppState().slug : null;
-		this.requestTier( rootId, null, deepLink );
+		this.requestTier( this.rootId, null, deepLink );
 	},
 
-	addPane: function( parentId ){
-		var newPane = this.navPaneTemplate.clone();
-		this.navPanes.push( newPane );
+	addPane: function(){
+		var newPane = this.getPaneTemplate();
 		this.element.getElement( ".panes" ).adopt( newPane );
-		var elementDimensions = this.paneContainer.getDimensions();
-		this.paneContainer.setStyle( "width", elementDimensions.width + newPane.getDimensions().width );
+		var elementDimensions = this.container.getDimensions();
+		this.container.setStyle( "width", elementDimensions.width + newPane.getDimensions().width );
 		newPane.get( "spinner" ).show( true );
 		return newPane;
 	},
+	
+	adoptPane: function( pane ){
+		this.element.getElement( ".panes").adopt( pane );
+		return pane;
+	},
 
-	requestTier: function( parentId, parentTier, deepLink ){
-		var title;
-		var paneIndex = 0;
-		if( parentTier ){
-			console.log( parentTier, parentTier.getActiveNode() );
-			title = parentTier.getActiveNode().getElement( "h5" ).get( 'text' );
-			parentId = parentTier.getActiveNodeId();
-			paneIndex = this.navPanes.indexOf( parentTier.element );
-			this.addCrumb( title, parentId, paneIndex );
-		}
-		if( this.navPanes.length > 0 ) this.clearPanes( paneIndex + 1 );	    
-		var newPane = this.addPane( parentId );
-		newPane.store( 'paneIndex', paneIndex );
-		if( this.tiers[ parentId ] && !deepLink ){
-			// if the tier has already been loaded and cached
-			console.log( "requestTier", "cached", parentId, this.tiers[ parentId ] );
-			this.renderPane( this.tiers[ parentId ], newPane );
-
+	requestTier: function( nodeId, parentTier, deepLink ){
+		cached = ( this.tiers[ nodeId ] && !deepLink )? 'cached' : 'not cached';
+		if( this.tiers[ nodeId ] && !deepLink ){
+			this.renderPane( this.tiers[ nodeId ] );
 		}else{
-			// otherwise load send a tier request
-			console.log( "requestTier", "uncached", parentId, newPane );
-			this.dataSource.requestTier( parentId, deepLink, function( json ){
-				this.requestTierResponse( json, parentId, newPane );
-			}.bind( this ) );
+			pane = this.addPane();
+			this.dataSource.requestTier( nodeId, deepLink, function( json ){ this.requestTierResponse( json, nodeId, pane ); }.bind( this ) );
 		}
 	},
 
@@ -118,57 +97,68 @@ mop.modules.navigation.Navigation = new Class({
 		this.dataSource.saveTierSortRequest( order );
 	},
 
-	requestTierResponse: function( json, parentId, containerPane ){
-		console.log( "requestTierResponse", json, parentId, containerPane );
-		json.response.data.nodes.each( function( nodeObj ){
-//		console.log( nodeObj.id, nodeObj.slug );
+	requestTierResponse: function( json, tierId, containerPane ){
+		var tier;
+		json.response.data.tier.nodes.each( function( nodeObj ){
 			this.nodeData[ nodeObj.id ] = nodeObj;
 		}, this );
-		var tier = new mop.modules.navigation.Tier( this, json.response, parentId );
-		this.tiers[ parentId ] = tier;
-		this.renderPane( tier, containerPane, parentId );
+		console.log( "nodeData", this.nodeData );
+		tier = new mop.modules.navigation.Tier( this, json.response.data.tier, tierId );
+		this.tiers[ tierId ] = tier;
+		this.renderPane( tier, containerPane, tierId );
 	},
 
-	renderPane: function( aTier, newPane, parentId ){
-		newPane.unspin();
-		console.log( aTier, newPane, parentId );
-		newPane.set( 'id', 'pane-'+parentId );
-		aTier.attachToPane( newPane );
-		if( this.navPanes.indexOf( newPane ) < this.numberOfVisiblePanes ){
-			var myFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toLeft();	        
-		}else{	        
-			var myFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toElementEdge( newPane );
+	renderPane: function( aTier, newPane, nodeId ){
+		
+		var nodeId, navSlideFx, nodeTitle;
+		
+		if( Array.from( arguments ).length == 1 ){ //if cached
+			aTier.render();
+			newPane = aTier.element;
+			nodeId = aTier.id;
+			aTier.attachToPane();
+		}else{
+			newPane.unspin();
+			aTier.attachToPane( newPane );			
 		}
-	},
-    
-	clearPanes: function( startIndex, endIndex ){
-		if( startIndex == -1 ) startIndex = 0;
-		if( !endIndex ) endIndex = this.navPanes.length;
-		var panesToRemove = this.navPanes.filter( function( aPane, i ){
-			if( i >= startIndex && i < endIndex ) return aPane;
-		});
-		console.log( ":: panesToRemove", "\n\t", startIndex, "\n\t", endIndex, "\n\t", panesToRemove );
-		panesToRemove.each( function( aPane, index ){
-			this.removeCrumb( this.navPanes.indexOf( aPane ) -1 ); // we want to remove the crumbs FOLLOWING the crumb that represents the current pane 
-			this.navPanes.erase( aPane );
-			aPane.unspin();
-			aPane.retrieve( 'tier' ).detach();
-			aPane.destroy();
-		}, this );
-	},
-    
-	onNodeSelected: function( nodeId ){
-		console.log( ">>>> onNodeSelected", this.nodeData );
-		this.marshal.onNodeSelected( nodeId );
+		if( this.getPanes().indexOf( newPane ) < this.numberOfVisiblePanes ){
+			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toLeft();	        
+		}else{	        
+			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toElementEdge( newPane );
+		}
+		nodeTitle = ( this.getNodeTitleFromId( nodeId ) )? this.getNodeTitleFromId( nodeId ) : '/';  
+		this.addCrumb( nodeTitle, aTier );
 	},
 
+	detachTiers: function( startIndex, endIndex ){
+		var visibleTiers, tiersToDetach;
+		visibleTiers = this.getVisibleTiers();
+		if( startIndex < 0 ) startIndex = 0;
+		if( !endIndex ) endIndex = visibleTiers.length;		
+		var tiersToDetach = visibleTiers.filter( function( aTier, i ){
+			if( i >= startIndex && i < endIndex ) return aTier;
+		});
+		tiersToDetach.each( function( aTier ){ aTier.detach(); });
+	},
+	
+	removeCrumbs: function( startIndex, endIndex ){
+		var crumbs, crumbsToRemove;
+		crumbs = this.breadCrumbs.getCrumbs();
+		if( startIndex < 0 ) startIndex = 0;
+		if( !endIndex ) endIndex = crumbs.length;		
+		var crumbsToRemove = crumbs.filter( function( aCrumb, i ){
+			if( i >= startIndex && i < endIndex ) return aCrumb;
+		});
+		this.breadCrumbs.removeCrumbs( crumbsToRemove );		
+	},
+    
 	addObject: function( parentId, templateId, nodeProperties, tierInstance ){
 		this.dataSource.addObjectRequest( parentId, templateId, nodeProperties, function( json ){ this.onAddObjectResponse( json, parentId, tierInstance ); }.bind( this ) );
 	},
 
 	onAddObjectResponse: function( json, parentId, tierInstance ){
 		this.nodeData[ json.response.data.id ] = json.response.data;
-		console.log( "\t addObjectResponse", this.nodeData, "(", Object.getLength(this.nodeData), ")"  );
+//		console.log( "\t addObjectResponse", this.nodeData, "(", Object.getLength(this.nodeData), ")"  );
 		var newNode = json.response.html.toElement();
 		tierInstance.adoptNode( newNode );
 		tierInstance.onObjectAdded();
@@ -176,33 +166,44 @@ mop.modules.navigation.Navigation = new Class({
 
 	removeObject: function( nodeId ){
 		this.dataSource.removeObjectRequest( nodeId, this.onRemoveObjectResponse.bind( this, nodeId ) );
+		// if object is loaded we need to call
+		// this.marshal.clearPage();
+		// and rmove the breadcrumb
 	},
   	
 	onRemoveObjectResponse: function( nodeId ){
 		delete this.nodeData[ nodeId ];
-		console.log( "\tB removeObject", this.nodeData, "(", Object.getLength(this.nodeData), ")"  );
+//		console.log( "\tB removeObject", this.nodeData, "(", Object.getLength(this.nodeData), ")"  );
 	},
 
 	togglePublishedStatus: function( nodeId ){
 		this.dataSource.togglePublishedStatusRequest( nodeId );        
 	},
 
-	onCrumbClicked: function( aNode ){
-		console.log( ":::::::::::: onBreadCrumbClicked ", aNode.id );
-		console.log( "\t", aNode.index );
-		console.log( "\t", this.navPanes[ aNode.index ].retrieve( "tier" )  );
-		this.requestTier( aNode.id, null, this.navPanes[ aNode.index ].retrieve( "tier" ) );
-		this.marshal.onNodeSelected( aNode.id );
+	prepareTier: function( parentTier ){
+		var visibleTiers, paneIndex, pane, nodeTitle;
+		visibleTiers = this.container.getElements( '.pane' );
+		paneIndex = ( parentTier )? visibleTiers.indexOf( parentTier.element ) : 0;
+		console.log( "requestTier detach ", paneIndex + 1 );
+		this.removeCrumbs( paneIndex + 1 );
+		this.detachTiers( paneIndex + 1 );
 	},
 
-	addCrumb: function( label, id, paneIndex ){
-		console.log( "addBreadCrumb", label, id, paneIndex );
-		this.breadCrumbs.addCrumb( { label: label, id: id, index: paneIndex });
+	onCrumbClicked: function( crumbData ){
+		console.log( "onCrumbClicked", crumbData );
+//		prepareTier( )
+		this.requestTier( crumbData.tier.id, crumbData.tier );
+		if( this.nodeData[ crumbData.tier.id ] ){
+			this.marshal.onNodeSelected( crumbData.tier.id );
+		}else{
+			this.marshal.clearPage();
+		}
 	},
 
-	removeCrumb: function( paneIndex ){
-		this.breadCrumbs.removeCrumb( paneIndex );
+	addCrumb: function( label, tier ){
+		this.breadCrumbs.addCrumb( { label: label, tier: tier } );
 	}
+
 
 });
 
@@ -210,6 +211,7 @@ mop.modules.navigation.Tier = new Class({
 
 	Implements: [ Options, Events ],
 	nodes: null,
+	element: null,
 	nodeElement: null,
 	html: null,
 	parentId: null,
@@ -222,11 +224,22 @@ mop.modules.navigation.Tier = new Class({
 		allowChildSort: true
 	},
 	
-	initialize: function( aMarshal, response, parentId ){
+	getActiveNode: function(){ return this.activeNode; },
+	
+	setActiveNode: function( el ){
+		if( this.activeNode )this.deindicateNode( this.activeNode );
+		this.activeNode = el;
+		this.indicateNode( el );
+	},
+	
+	getActiveNodeId: function(){
+		return this.getNodeIdFromElement( this.activeNode );
+	},
+	
+	initialize: function( aMarshal, data, nodeId ){
 		this.marshal = aMarshal;
-		this.html = response.html;
-		this.setOptions( response.data );
-		this.parentId = parentId;
+		this.html = data.html;
+		this.id = nodeId;
 	},
 
 	toString: function(){
@@ -236,28 +249,31 @@ mop.modules.navigation.Tier = new Class({
 	getNodeIdFromElement: function( anElement ){
 		return anElement.get("id").split( "_" )[1];
 	},
+	
+	getNodeById: function( id ){
+		return this.element.getElement( "#node_"+id );
+	},
 
-	attachToPane: function( navPane ){
-		navPane.store( "tier", this );
-		this.options = Object.merge( this.options, navPane.getOptionsFromClassName() );
-		this.element = navPane;
+	attachToPane: function( pane ){
+		if( pane ){
+			pane.store( "tier", this );
+			pane.set( 'id', 'pane-' + this.id );
+			this.options = Object.merge( this.options, pane.getOptionsFromClassName() );
+			this.element = pane;			
+			this.spinner = new Spinner( this.element );
+		}else{
+			this.marshal.adoptPane( this.element );
+		}
 		this.render();
-		this.spinner = new Spinner( this.element );
+		
 	},
 	
 	detach: function(){
-		this.element.eliminate( "tier" );
-		this.element = this.activeNode = null;
+		this.element.unspin();
+		this.element = this.element.dispose();
+		this.activeNode = null;
 	},
-	
-	getActiveNode: function(){
-		return this.activeNode;
-	},
-	
-	getActiveNodeId: function(){
-		return this.getNodeIdFromElement( this.activeNode );
-	},
-	
+		
 	adoptNode: function( newNode ){
 		if( this.options.addPosition == "top" ){
 			this.nodeElement.grab( newNode, 'top' );			
@@ -272,16 +288,12 @@ mop.modules.navigation.Tier = new Class({
 		this.initNode( newNode );
 	},
    
-	render: function( e ){
-		console.log( 'render' );
-		mop.util.stopEvent( e );
-		this.element.set( 'html', this.html );
+	render: function(){
+		if( this.element.get('html') != this.html ) this.element.set( 'html', this.html );
 		this.nodeElement = this.element.getElement( ".nodes" );
 		if( this.options.allowChildSort ) this.makeSortable( this.nodeElement );
 		this.nodes = this.element.getElements(".node");
-		this.nodes.each( function( aNodeElement ){
-			this.initNode( aNodeElement );
-		}, this );
+		this.nodes.each( function( aNodeElement ){ this.initNode( aNodeElement ); }, this );
 		this.drawer = this.element.getElement( '.tierMethodsDrawer' );
  		if( this.drawer ){
 			this.drawer.set( "morph", {
@@ -306,11 +318,6 @@ mop.modules.navigation.Tier = new Class({
 				this.drawer.getElement( ".close" ).addClass("hidden");
 			 	this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
 				this.drawer.addEvent( 'click', this.renderAddObjectSelection.bindWithEvent( this, addObjectLinks ) );
-				// this.superUserContextualMenu = new mop.ui.ContextualMenu( this.drawer, {
-				// 	offset: { x: 0, y: 18 },
-				// 	cols: 3,
-				// 	content: this.drawer.getElements( "li" )
-				// });
 			}else{
 				this.drawer.addEvent( 'mouseenter', this.onDrawerMouseEnter.bindWithEvent( this ) );
 				this.drawer.addEvent( 'mouseleave', this.onDrawerMouseLeave.bindWithEvent( this ) );
@@ -329,12 +336,9 @@ mop.modules.navigation.Tier = new Class({
 	},
 
 	initNode: function( aNodeElement ){
-//  aNodeElement.addEvent( "focus", this.indicateNode.bindWithEvent( this, aNodeElement ) );
-//	aNodeElement.addEvent( "blur", this.deindicateNode.bindWithEvent( this, aNodeElement ) );
 		aNodeElement.store( "options", aNodeElement.getOptionsFromClassName() );
 		aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
 		var togglePublishedStatusElement = aNodeElement.getElement(".togglePublishedStatus");
-		//        console.log( "togglePublishedStatusElement", togglePublishedStatusElement );
 		if( togglePublishedStatusElement ){
 			togglePublishedStatusElement.addEvent( "click", this.onTogglePublishedStatusClicked.bindWithEvent( this, aNodeElement ) );
 		}
@@ -344,13 +348,13 @@ mop.modules.navigation.Tier = new Class({
 		}
 	},
 
-   indicateNode: function( nodeElement ){
-      nodeElement.addClass( "active");
-   },
+	indicateNode: function( nodeElement ){
+		nodeElement.addClass( "active");
+	},
 
-   deindicateNode: function( nodeElement ){
-      nodeElement.removeClass("active");
-   },
+	deindicateNode: function( nodeElement ){
+		nodeElement.removeClass("active");
+	},
 
 /*	Section: Event Handlers	*/
 
@@ -364,26 +368,13 @@ mop.modules.navigation.Tier = new Class({
 		if( this.activeNode != nodeElement ) this.deindicateNode( nodeElement );
 	},
 
-	onNodeClicked: function( e, nodeElement ){
+	onNodeClicked: function( e, el ){
 		mop.util.stopEvent( e );
-		var nodeId = this.getNodeIdFromElement( nodeElement );
-		var slug = this.marshal.getSlugFromId( nodeId );
-	 	console.log( "onNodeClicked", this.element, slug, nodeId );
-		mop.historyManager.changeState( "slug", slug );
-		if( this.activeNode )this.deindicateNode( this.activeNode );
-		this.activeNode = nodeElement;
-		this.indicateNode( nodeElement );
-		this.onNodeSelected( nodeId );
-		// if this specific tier has a pending request, we cancel it so the callback doesn't fire		
-		if( this.marshal.getNodeTypeFromId( nodeId ) != "module" ){
-			this.marshal.requestTier( nodeId, this, null );
-		}else{
-			this.marshal.clearPanes( this.element.retrieve( 'paneIndex' ) + 1 );
-		}
+		this.onNodeSelected( el );
 	},
 		
 	onRemoveNodeClicked: function( e, nodeElement ){
-		console.log( "\tonRemoveNodeClicked", this.marshal.nodeData, "(" , Object.getLength( this.marshal.nodeData ), ")" );
+//		console.log( "\tonRemoveNodeClicked", this.marshal.nodeData, "(" , Object.getLength( this.marshal.nodeData ), ")" );
 		mop.util.stopEvent( e );
 		var confirmation = confirm( "Are you sure you want to remove " + nodeElement.getElement("h5").get("text") + " ?" );
 		if( !confirmation ) return; 
@@ -392,15 +383,15 @@ mop.modules.navigation.Tier = new Class({
 		this.removeObject( nodeId );
 	},
 
-   removeObject: function( nodeId ){
+   removeObject: function( nodeElement, nodeId ){
       this.marshal.removeObject( nodeId );
    },
 	
    onTogglePublishedStatusClicked: function( e, nodeElement ){
       mop.util.stopEvent( e );
-      console.log( "onTogglePublishedStatusClicked", e, nodeElement );
-      var nodeId = this.getNodeIdFromElement( nodeElement );
-      var togglePublishedStatusLink = nodeElement.getElement( ".togglePublishedStatus" );
+			var nodeId, togglePublishedStatusLink;
+      nodeId = this.getNodeIdFromElement( nodeElement );
+      togglePublishedStatusLink = nodeElement.getElement( ".togglePublishedStatus" );
       if( togglePublishedStatusLink.hasClass( "published" ) ){
          togglePublishedStatusLink.removeClass( "published" );
       }else{
@@ -409,7 +400,14 @@ mop.modules.navigation.Tier = new Class({
       this.marshal.togglePublishedStatus( nodeId );
    },
     
-   onNodeSelected: function( nodeId ){
+   onNodeSelected: function( el ){
+			var nodeId, slug;
+			nodeId = this.getNodeIdFromElement( el );
+			slug = this.marshal.getSlugFromId( nodeId );
+			this.setActiveNode( el );
+			console.log( ":::", el.getOptionsFromClassName() );
+			mop.historyManager.changeState( "slug", slug );
+			if( this.marshal.getNodeTypeFromId( nodeId ) != "module" ) this.marshal.requestTier( nodeId, this, null );
       this.marshal.onNodeSelected( nodeId );
    },
 	
@@ -428,17 +426,14 @@ mop.modules.navigation.Tier = new Class({
 		mop.util.stopEvent( e );
 		var templateId = mop.util.getValueFromClassName( "objectTypeId", addObjectButton.get("class") );
 		var addText = addObjectButton.get( 'text' );
-		//this.element.setStyle( "border", "1px #f00 solid" );
 		var nodeTitle = prompt( "What would you like to name this" + addText.substr( addText.lastIndexOf( " " ), addText.length ).toLowerCase() );
 		if( !nodeTitle ) return;
 		this.spinner.show( true );
 		this.render();
-		this.marshal.addObject( this.parentId, templateId, { title: nodeTitle }, this );
+		this.marshal.addObject( this.id, templateId, { title: nodeTitle }, this );
 	},
 
-	onObjectAdded: function(){
-		this.spinner.hide();
-	},
+	onObjectAdded: function(){ this.spinner.hide(); },
 
 	makeSortable: function( sortableListElement ){	
 		this.sortableListElement = sortableListElement;
@@ -460,7 +455,7 @@ mop.modules.navigation.Tier = new Class({
 
 	onOrderChanged: function(){
 		var newOrder = this.serialize();
-		console.log( "onOrderChanged", newOrder);
+//		console.log( "onOrderChanged", newOrder);
 		clearInterval( this.submitDelay );
 		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder.join(",") );
 		newOrder = null;

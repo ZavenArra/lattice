@@ -300,13 +300,15 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 	},
 
 	addCrumb: function( obj ){
-//	    console.log( "::::::::", obj );
 		var newCrumb = new Element( "li" ).adopt( 
 		    new Element( "a", { "text": obj.label, "events":{ "click": this.onCrumbClicked.bindWithEvent( this, obj ) } } )
-		);
-		var crumbs = this.element.getElements("li");
+		)
+		newCrumb.store( 'data', obj );
 		this.element.getElement("ul").adopt( newCrumb );
-//		console.log( "addCrumb >>>>>> ", newCrumb );
+	},
+	
+	getCrumbs: function(){
+		return this.element.getElements('li');
 	},
 	
 	onCrumbClicked: function( e, obj ){
@@ -315,10 +317,10 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 		this.onCrumbClickedCallback( obj );
 	},
 	
-	removeCrumb: function( anIndex ){
-	    console.log( "removeCrumb", anIndex, this.element.getElements( "li" ), this.element.getElements( "li" )[ anIndex ] );
-		var crumb = this.element.getElements( "li" )[ anIndex ];
-		if( crumb ) crumb.destroy();
+	removeCrumbs: function( crumbs ){
+		crumbs.each( function( aCrumb ){
+			aCrumb.destroy();
+		});
 	},
 	
 	destroy: function(){
