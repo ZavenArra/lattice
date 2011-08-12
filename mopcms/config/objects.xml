@@ -32,7 +32,15 @@
 				<text field="ssdfasdfingleIPE2" label="Single Single Single" rows="1" />
 				<text field="ssdfasdfasdfasdfingleIPE2" label="Single Single Single" rows="1" />
 				<text field="maritnagus" label="NEW!" rows="1" />
-				<text field="lagunea" label="Test Entry" rows="1" />
+				<text field="lagunea" label="Test Entry" rows="10" />
+				<text field="lagunea1" label="Test Entry" rows="5" />
+				<text field="lagunea2" label="Test Entry" rows="1" />
+				<text field="lagunea3" label="Test Entry" rows="7" />
+				<text field="lagunea4" label="Test Entry" rows="1" />
+				<text field="lagunea5" label="Test Entry" rows="1" />
+				<text field="lagunea6" label="Test Entry" rows="1" />
+				<text field="lagunea7" label="Test Entry" rows="1" />
+				<text field="lagunea8" label="Test Entry" rows="10" />
 			</elements>
 			
 			<components>
