@@ -504,7 +504,7 @@ class Model_Object extends ORM {
       }
       
       $replacingEmptyFile = false;
-      if(!$file->loaded()){
+      if(!$file->filename){
          $replacingEmptyFile = true;
       }
 
@@ -535,7 +535,7 @@ class Model_Object extends ORM {
 
             $translatedObject = $this->translate($translationLanguage->id);
             $translatedObject->contenttable->$field = $file->id;
-            $translatedObject->save();
+            $translatedObject->contenttable->save();
 
          }   
       }
