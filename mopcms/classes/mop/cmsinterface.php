@@ -128,7 +128,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 				if(!is_numeric($order[$i])){
 					throw new Kohana_User_Exception('bad sortorder string', 'bad sortorder string');
 				}
-				$object = Graph::object($orider[$i]);
+				$object = Graph::object($order[$i]);
             $object->sortorder = $i+1;
 				$object->save();
 			}
