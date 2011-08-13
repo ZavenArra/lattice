@@ -6,7 +6,21 @@
   `contentType` varchar(20) CHARACTER SET latin1 DEFAULT NULL,
   `sort_order` smallint(2) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+CREATE TABLE `languages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL,
+  `fullname` varchar(100) NOT NULL,
+  `activity` char(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+
+insert into `languages` ( `code`, `fullname`, `activity`) values ('en', 'English', NULL);
+insert into `languages` ( `code`, `fullname`, `activity`) values ('es', 'Spanish', NULL);
+insert into `languages` ( `code`, `fullname`, `activity`) values ('pt', 'Portugese', NULL);
 
 CREATE TABLE `rosettas` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
@@ -28,7 +42,7 @@ CREATE TABLE `objects` (
 	`activity` char(1) CHARACTER SET latin1 DEFAULT NULL,
 	PRIMARY KEY (`id`),
 	UNIQUE KEY `identifier` (`slug`,`language_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objectmaps` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -37,7 +51,7 @@ CREATE TABLE `objectmaps` (
   `index` int(11) NOT NULL,
   `column` varchar(100) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `contents` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -352,14 +366,14 @@ CREATE TABLE `contents` (
   `activity` char(1) CHARACTER SET latin1 DEFAULT NULL,
   PRIMARY KEY (`object_id`),
   KEY `id` (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `files` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `filename` varchar(100) DEFAULT NULL,
   `mime` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=11517 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objectrelationships` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
@@ -368,12 +382,13 @@ CREATE TABLE `objectrelationships` (
 	`connectedobject_id` int(11) NOT NULL,
 	`sortorder` int(11) NOT NULL,
 	PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 CREATE TABLE `lattices` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
 	`name` varchar(200) NOT NULL,
 	PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
+INSERT into `lattices` (`id`, `name`) values (1, 'lattice');
 

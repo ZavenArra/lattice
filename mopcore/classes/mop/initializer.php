@@ -61,6 +61,7 @@ Class MOP_Initializer {
          $view->problems = $allProblems;
          $view->messages = self::$messages;
          echo $view->render();
+         die();
       }
    }
    

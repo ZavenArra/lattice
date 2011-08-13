@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS `roles` (
   UNIQUE KEY `uniq_name` (`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-INSERT INTO `roles` (`id`, `name`, `description`) VALUES(1, 'login', 'Login privileges, granted after account confirmation');
-INSERT INTO `roles` (`id`, `name`, `description`) VALUES(2, 'admin', 'Administrative user, has access to everything.');
-INSERT INTO `roles` (`id`, `name`, `description`) VALUES(3, 'superuser', 'Superuser Role.');
+INSERT INTO `roles` (`name`, `description`) VALUES('login', 'Login privileges, granted after account confirmation');
+INSERT INTO `roles` (`name`, `description`) VALUES('admin', 'Administrative user, has access to everything.');
+INSERT INTO `roles` (`name`, `description`) VALUES('superuser', 'Superuser Role.');
 
 CREATE TABLE IF NOT EXISTS `roles_users` (
   `user_id` int(10) UNSIGNED NOT NULL,
