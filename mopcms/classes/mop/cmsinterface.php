@@ -26,9 +26,9 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	 */
 	public function action_savefile($objectId){
 
-      $field = strtok($_POST['field'], '_');
+    $field = strtok($_POST['field'], '_');
 
-		$file = mopcms::saveHttpPostFile($objectId, $$field, $_FILES[$_POST['field']]);
+		$file = mopcms::saveHttpPostFile($objectId, $field, $_FILES[$_POST['field']]);
 		$result = array(
 			'id'=>$file->id,
 			'src'=>$file->original->fullpath,
