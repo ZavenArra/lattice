@@ -13,6 +13,9 @@
 class Graph {
 
 	public static $mediapath;	
+   
+   //cache vars
+   private static $_languages;
 
 	public static function instance(){
       return ORM::Factory('object');
@@ -63,8 +66,10 @@ class Graph {
 	}
    
    public static function languages(){
-      return ORM::Factory('language')->where('activity', 'is', NULL)->find_all();
-      
+      if(!self::$_languages){
+       self::$_languages =  ORM::Factory('language')->where('activity', 'is', NULL)->find_all();
+      }
+      return self::$_languages;
    }
    
    public static function newRosetta(){

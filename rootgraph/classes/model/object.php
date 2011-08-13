@@ -218,7 +218,12 @@ class Model_Object extends ORM {
                                     array(':objectId'=>$objectId)
                  );
       }
-      $languageId = ORM::Factory('language', $languageCode)->id;
+      if(is_numeric($languageCode)){
+         $languageId = intval($languageCode);
+      } else {
+         //this could just ask the graph, to avoid going to database again
+         $languageId = ORM::Factory('language', $languageCode)->id;
+      }
       if(!$languageId){
          throw new Kohana_Exception('Invalid language code :code', array(':code'=>$languageCode));
       }
@@ -277,6 +282,7 @@ class Model_Object extends ORM {
       if (!$tag->loaded()) {
          $tag = ORM::Factory('tag');
          $tag->tag = $tagName;
+         $tag->language_id = $this->language_id;
          $tag->save();
       }
       $this->add('tag', $tag);
@@ -496,6 +502,11 @@ class Model_Object extends ORM {
       if (!is_object($file = $this->contenttable->$field)) {
          $file = ORM::Factory('file', $this->contenttable->$field);
       }
+      
+      $replacingEmptyFile = false;
+      if(!$file->loaded()){
+         $replacingEmptyFile = true;
+      }
 
       $file->unlinkOldFile();
       $saveName = mopcms::makeFileSaveName($filename);
@@ -511,7 +522,24 @@ class Model_Object extends ORM {
 
       $this->contenttable->$field = $file->id;
       $this->contenttable->save();
+      
+      //Handle localized object linked via rosetta
+      if($replacingEmptyFile){
+         
+         $languages = Graph::languages();
+         foreach ($languages as $translationLanguage) {
+           
+            if ($translationLanguage->id == $this->language_id) {
+               continue;
+            }
 
+            $translatedObject = $this->translate($translationLanguage->id);
+            $translatedObject->contenttable->$field = $file->id;
+            $translatedObject->save();
+
+         }   
+      }
+      
       return $file;
    }
 
@@ -956,13 +984,11 @@ class Model_Object extends ORM {
                  ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
                  ->where('title', '=', $arguments['title'])
                  ->find();
-            echo $arguments['title'];
-            echo 'ar';
+        //    echo $arguments['title'];
             if($checkForPreexistingObject->loaded()){
               $componentAlreadyPresent = true;
               
             }
-            echo 'ok';
          }
                  
          if(!$componentAlreadyPresent){
