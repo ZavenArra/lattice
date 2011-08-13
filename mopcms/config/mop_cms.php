@@ -45,7 +45,7 @@ $config['navigationRequest'] = 'navigation';
 $config['stagingmediapath'] = 'staging/application/media/';
 $config['basemediapath'] = 'application/media/';
 
-$config['enableSlugEditing'] = true;
+$config['enableSlugEditing'] = false;
 
 $config['baseName'] = 'mop_cms';
 
