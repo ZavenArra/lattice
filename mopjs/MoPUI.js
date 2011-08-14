@@ -2324,7 +2324,7 @@ mop.ui.RadioGroup = new Class({
 	
 	setTabIndex: function( val ){
 		this.radios.each( function( aRadio, i ){
-			console.log( aRadio, aRadio.get('tabindex') );
+//			console.log( aRadio, aRadio.get('tabindex') );
 			aRadio.set( "tabindex", val + i );
 		});
 	},
