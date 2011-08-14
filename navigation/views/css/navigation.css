@@ -27,9 +27,6 @@
 }
 
 #navigation .pane{
-/*    position: absolute;
-
-*/
     height: 100%;
     width: 300px;
     margin: 0 0 0 0;
@@ -50,7 +47,8 @@
 
 #navigation .node,
 .tierMethodsDrawer .addableObjects li{
-    line-height: 24px;
+    line-height: 2;
+ 		height: 2em;
     padding:.25em 0;
     border-bottom:1px #cdf solid;    
     font-size: 1.125em;

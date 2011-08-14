@@ -15,12 +15,15 @@ mop.modules.navigation.Navigation = new Class({
 	},
 
 	getNodeIdFromElement: function( anElement ){ return anElement.get("id").split( "_" )[1]; },
-	setNodeElement: function( nodeElement ){ this.nodeData[ this.getNodeIdFromElement( nodeElement ) ].element = nodeElement; },
+	// setNodeElement: function( nodeElement ){
+	// 	console.log( 'setNodeElement', nodeElement );
+	// 	this.nodeData[ this.getNodeIdFromElement( nodeElement ) ].element = nodeElement; 
+	// },
 	getNodeTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].nodeType; },
 	getContentTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].contentType; },
 	getNodeTitleFromId: function( nodeId ){ if( this.nodeData[ nodeId ] ){ return this.nodeData[ nodeId ].title; }else{ return null; } },
 	getSlugFromId: function( nodeId ){ return this.nodeData[ nodeId ].slug; },
-	getNodeById: function( nodeId ){ return this.nodeData[ nodeId ].node; },
+	getNodeById: function( nodeId ){ return this.nodeData[ nodeId ]; },
 	getUserLevel: function(){ return this.userLevel; },
 	getPanes: function(){ return this.container.getElements('.pane'); },
 	getPaneTemplate: function(){ return this.navPaneTemplate.clone(); },
@@ -45,7 +48,7 @@ mop.modules.navigation.Navigation = new Class({
 		
 		paneIndex = ( this.getVisibleTiers().indexOf( tier ) > 0 )? this.getVisibleTiers().indexOf( tier ) : 0;
 		
-		console.log( "prepareTier ", tier, paneIndex, node );
+		console.log( "onNodeClicked ", nodeId, tier );
 
 		this.detachTiers( paneIndex + 1 );
 		this.removeCrumbs( paneIndex + 1 );
@@ -62,12 +65,12 @@ mop.modules.navigation.Navigation = new Class({
 		tier = crumbData.tier;
 		node = crumbData.nodeData;
 		paneIndex = ( this.getVisibleTiers().indexOf( tier ) > 0 )? this.getVisibleTiers().indexOf( crumbData.tier ) : 0;
-		console.log( "prepareTier ", tier, paneIndex, node );
+		// console.log( "prepareTier ", tier, paneIndex, node );
 		this.detachTiers( paneIndex + 1 );
 		this.removeCrumbs( paneIndex + 1 );
 		if( node ){
 			this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
-			console.log( "onCrumbClicked", node, node.id, tier );
+			// console.log( "onCrumbClicked", node, node.id, tier );
 			if( node.objectType == 'object' ) this.requestTier( node.id, tier );
 			if( this.getNodeTypeFromId( node.id ) == 'object' ){ 
 				this.marshal.onNodeSelected( node.id );
@@ -91,15 +94,17 @@ mop.modules.navigation.Navigation = new Class({
 	},
 	
 	requestTier: function( nodeId, parentTier, deepLink ){
-		console.log( 'requestTier', nodeId, parentTier, deepLink );
+		// console.log( 'requestTier', nodeId, parentTier, deepLink );
 		cached = ( this.tiers[ nodeId ] && !deepLink )? true : false;
 		if( cached ){
 			console.group();
-			console.log( "cached: ", cached );
+			// console.log( "cached: ", cached );
 			this.renderPane( this.tiers[ nodeId ] );
 		}else{
 			this.pendingPane = this.addPane();
-			this.dataSource.requestTier( nodeId, deepLink, function( json ){ this.requestTierResponse( json, nodeId, this.pendingPane ); }.bind( this ) );
+			this.dataSource.requestTier( nodeId, deepLink, function( json ){ 
+				this.requestTierResponse( json, nodeId, this.pendingPane );
+			}.bind( this ) );
 		}
 	},
 	
@@ -134,53 +139,53 @@ mop.modules.navigation.Navigation = new Class({
 		this.breadCrumbs.addCrumb( { label: '/' } );
 		
 		this.requestTier( this.rootId, null, deepLink );
+		this.marshal.onNodeSelected( deepLink );
 	},
 
 	addPane: function(){
-		var newPane = this.getPaneTemplate();
+		var newPane, elementDimensions;
+		newPane = this.getPaneTemplate().clone();
+		elementDimensions = this.container.getDimensions();
 		this.element.getElement( ".panes" ).adopt( newPane );
-		var elementDimensions = this.container.getDimensions();
 		this.container.setStyle( "width", elementDimensions.width + newPane.getDimensions().width );
 		newPane.get( "spinner" ).show( true );
 		return newPane;
 	},
 	
-	adoptPane: function( pane ){ return this.element.getElement( ".panes").adopt( pane ); },
 	saveTierSort: function( order ){ this.dataSource.saveTierSortRequest( order ); },
 
 	requestTierResponse: function( json, tierId, containerPane ){
 		this.pendingPane = null;
 		nodes = json.response.data.tier.nodes;
-		console.log( json.response.data )
-		this.processNodeData( nodes, json.response.data.tier, tierId );
+		console.group()
+		console.log( 'json:', json );
+		console.log( 'tierId:', tierId );
+		console.log( 'containerPane:', containerPane );
+		console.groupEnd();
+//		console.log( "::: ", nodes, { html: json.response.data.tier.html }, tierId, containerPane  )
+		this.processNodeData( nodes, json.response.data.tier.html, tierId, containerPane );
 	},
-	
-	processNodeData: function( nodes, tier, tierId ){   
-		var tier, nodes;
-		nodes.each( function( nodeObj ){ 
+
+	processNodeData: function( nodes, html, tierId, containerPane ){   
+		nodes.each( function( nodeObj ){
 			this.nodeData[ nodeObj.id ] = nodeObj;
 			if( nodeObj.tier ){
-				this.processNodeData( nodeObj.tier.nodes );
+				this.processNodeData( nodeObj.tier.nodes, nodeObj.tier.html, nodeObj.id, this.addPane() );
 			}
-			console.log( '-', nodeObj, nodeObj.title, nodeObj.tier )
 		}, this );
-		tier = new mop.modules.navigation.Tier( this, tier, tierId );
+		var tier = new mop.modules.navigation.Tier( this, html, tierId );
 		this.tiers[ tierId ] = tier;
+		console.log( 'processNodeData', tier, containerPane, tierId );
 		this.renderPane( tier, containerPane, tierId );
 	},
 
-	renderPane: function( aTier, newPane, nodeId ){
+	renderPane: function( aTier, newPane ){
 		var nodeId, navSlideFx, nodeTitle;
-//		console.log( "::::::", Array.from( arguments ) );
-		if( !newPane ){ // cached
-			aTier.render();
-			newPane = aTier.element;
-			nodeId = aTier.id;
-			aTier.attachToPane();
-		}else{
-			newPane.unspin();
-			aTier.attachToPane( newPane );			
-		}
+		console.log( "\trenderPane:", newPane );
+		if( !newPane ) newPane = this.addPane();
+		newPane.unspin();
+		aTier.attachToPane( newPane );			
+		aTier.render();
 		this.slideToCurrentTier( newPane );
 	},
 	
@@ -192,7 +197,6 @@ mop.modules.navigation.Navigation = new Class({
 		}		
 	},
 	
-
 	detachTiers: function( startIndex, endIndex ){
 		var visibleTiers, tiersToDetach;
 		visibleTiers = this.getVisibleTiers();
@@ -205,7 +209,7 @@ mop.modules.navigation.Navigation = new Class({
 	},
 	
 	removeCrumbs: function( startIndex, endIndex ){
-		console.log( startIndex, endIndex );
+		// console.log( startIndex, endIndex );
 		var crumbs, crumbsToRemove;
 		crumbs = this.breadCrumbs.getCrumbs();
 		if( startIndex < 0 ) startIndex = 0;
@@ -273,9 +277,9 @@ mop.modules.navigation.Tier = new Class({
 		return this.getNodeIdFromElement( this.activeNode );
 	},
 	
-	initialize: function( aMarshal, data, nodeId ){
+	initialize: function( aMarshal, html, nodeId ){
 		this.marshal = aMarshal;
-		this.html = data.html;
+		this.html = html;
 		this.id = nodeId;
 	},
 
@@ -284,16 +288,61 @@ mop.modules.navigation.Tier = new Class({
 	},
 
 	attachToPane: function( pane ){
-		if( pane ){
-			pane.store( "tier", this );
-			pane.set( 'id', 'pane-' + this.id );
-			this.options = Object.merge( this.options, pane.getOptionsFromClassName() );
-			this.element = pane;			
-			this.spinner = new Spinner( this.element );
-		}else{
-			this.marshal.adoptPane( this.element );
+		console.log( "::attachToPane", pane );
+		pane.store( "tier", this );
+		this.options = Object.merge( this.options, pane.getOptionsFromClassName() );
+		this.element = pane;		
+		this.spinner = new Spinner( this.element );
+	},
+
+	render: function( e ){
+		mop.util.stopEvent( e );
+		console.log( 'render', { html: this.html } );
+		if( this.element.get('html') != this.html ) this.element.set( 'html', this.html );
+		this.nodeElement = this.element.getElement( ".nodes" );
+		if( this.options.allowChildSort ) this.makeSortable( this.nodeElement );
+		this.nodes = this.element.getElements(".node");
+		this.nodes.each( function( aNodeElement ){ this.initNode( aNodeElement ); }, this );
+		this.drawer = this.element.getElement( '.tierMethodsDrawer' );
+ 		if( this.drawer ){
+			this.drawer.set( "morph", {
+				duration: 200, 
+				transition: Fx.Transitions.Quad.easeInOut
+			});
+			// make nodes element shorter by the height of the addableObjects title height
+			if( this.nodeElement.getSize().y > this.element.getSize().y ) this.nodeElement.setStyle( 'height', this.element.getSize().y - this.drawer.getElement( "div.titleBar" ).getDimensions().height );
+			this.drawer.getElement( '.close' ).addClass( 'hidden' );
+			this.drawer.setStyle( 'height', 'auto' );
+			this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', 'auto' );
+			this.drawer.getElement( '.close' ).addEvent( 'click', this.render.bindWithEvent( this ) );
+			if( !this.drawer.retrieve( 'initTop' ) ) this.drawer.store( "initTop", this.drawer.getStyle( "top" ) );	
+			this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
+			var addObjectLinks = this.drawer.getElements( "li" );
+			// wire addobject links
+			addObjectLinks.each( function( aLink ){
+				aLink.addEvent( "click", this.onAddObjectClicked.bindWithEvent( this, aLink ) );
+			}, this );
+			if( this.marshal.getUserLevel() == 'superuser' && addObjectLinks.length > 5  ){
+				// this.element.removeClass( "dark" );
+				this.drawer.getElement( ".close" ).addClass("hidden");
+			 	this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
+				this.drawer.addEvent( 'click', this.renderAddObjectSelection.bindWithEvent( this, addObjectLinks ) );
+			}else{
+				this.drawer.addEvent( 'mouseenter', this.onDrawerMouseEnter.bindWithEvent( this ) );
+				this.drawer.addEvent( 'mouseleave', this.onDrawerMouseLeave.bindWithEvent( this ) );
+			}
 		}
-		this.render();
+	},
+
+	renderAddObjectSelection: function( e, addObjectLinks ){
+		mop.util.stopEvent( e );
+		console.log( 'renderAddObjectSelection' );
+		this.nodeElement.addClass( 'hidden' );
+		this.drawer.setStyle( 'height', '100%' );
+		this.drawer.getElement( '.close' ).removeClass( 'hidden' );
+		var h = this.element.getSize().y - this.drawer.getElement( "div.titleBar" ).getSize().y;
+		this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', h );
+		this.drawer.morph( { 'top': 0 } );
 	},
 	
 	detach: function(){
@@ -316,62 +365,18 @@ mop.modules.navigation.Tier = new Class({
 		this.html = this.element.get( "html" );
 		this.initNode( newNode );
 	},
-   
-	render: function(){
-		if( this.element.get('html') != this.html ) this.element.set( 'html', this.html );
-		this.nodeElement = this.element.getElement( ".nodes" );
-		if( this.options.allowChildSort ) this.makeSortable( this.nodeElement );
-		this.nodes = this.element.getElements(".node");
-		this.nodes.each( function( aNodeElement ){ this.initNode( aNodeElement ); }, this );
-		this.drawer = this.element.getElement( '.tierMethodsDrawer' );
- 		if( this.drawer ){
-			this.drawer.set( "morph", {
-				duration: 200, 
-				transition: Fx.Transitions.Quad.easeInOut
-			});
-			// make nodes element shorter by the height of the addableObjects title height
-			this.nodeElement.setStyle( 'height', this.nodeElement.getSize().y - this.drawer.getElement( "div.titleBar" ).getDimensions().height );
-			this.drawer.getElement( '.close' ).addClass( 'hidden' );
-			this.drawer.setStyle( 'height', 'auto' );
-			this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', 'auto' );
-			this.drawer.getElement( '.close' ).addEvent( 'click', this.render.bindWithEvent( this ) );
-			if( !this.drawer.retrieve( 'initTop' ) ) this.drawer.store( "initTop", this.drawer.getStyle( "top" ) );	
-			this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
-			var addObjectLinks = this.drawer.getElements( "li" );
-			// wire addobject links
-			addObjectLinks.each( function( aLink ){
-				aLink.addEvent( "click", this.onAddObjectClicked.bindWithEvent( this, aLink ) );
-			}, this );
-			if( this.marshal.getUserLevel() == 'superuser' && addObjectLinks.length > 5  ){
-				this.element.removeClass( "dark" );
-				this.drawer.getElement( ".close" ).addClass("hidden");
-			 	this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
-				this.drawer.addEvent( 'click', this.renderAddObjectSelection.bindWithEvent( this, addObjectLinks ) );
-			}else{
-				this.drawer.addEvent( 'mouseenter', this.onDrawerMouseEnter.bindWithEvent( this ) );
-				this.drawer.addEvent( 'mouseleave', this.onDrawerMouseLeave.bindWithEvent( this ) );
-			}
-		}
-	},
-	
-	renderAddObjectSelection: function( e, addObjectLinks ){
-		mop.util.stopEvent( e );
-		this.nodeElement.addClass( 'hidden' );
-		this.drawer.setStyle( 'height', '100%' );
-		this.drawer.getElement( '.close' ).removeClass( 'hidden' );
-		var h = this.element.getSize().y - this.drawer.getElement( "div.titleBar" ).getSize().y;
-		this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', h );
-		this.drawer.morph( { 'top': 0 } );
-	},
 
 	initNode: function( aNodeElement ){
-		this.marshal.setNodeElement( aNodeElement );
+//		console.log( "{", aNodeElement, "}" );
+		this.nodeElement = aNodeElement;
 		aNodeElement.store( "options", aNodeElement.getOptionsFromClassName() );
 		aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
 		var togglePublishedStatusElement = aNodeElement.getElement(".togglePublishedStatus");
 		if( togglePublishedStatusElement ){
 			togglePublishedStatusElement.addEvent( "click", this.onTogglePublishedStatusClicked.bindWithEvent( this, aNodeElement ) );
 		}
+		var node = this.marshal.getNodeById( this.marshal.getNodeIdFromElement( aNodeElement ) );
+		if( node.tier ){ this.setActiveNode( aNodeElement ) }
 		var removeNodeElement = aNodeElement.getElement(".removeNode");
 		if( removeNodeElement ){
 			removeNodeElement.addEvent( "click", this.onRemoveNodeClicked.bindWithEvent( this, aNodeElement ) );
@@ -379,6 +384,7 @@ mop.modules.navigation.Tier = new Class({
 	},
 
 	indicateNode: function( nodeElement ){
+		console.log( "indicateNode: ", nodeElement );
 		nodeElement.addClass( "active");
 	},
 
