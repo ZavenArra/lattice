@@ -321,6 +321,15 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 		});
 	},
 	
+	removeCrumbByLabel: function( label ){
+		this.getCrumbs().each( function( aCrumb ){
+			if( label == aCrumb.retrieve( 'data' ).label ){
+				console.log('!', label, aCrumb.retrieve( 'data' ).label, aCrumb );
+				aCrumb.destroy();
+			}
+		});			
+	},
+	
 	destroy: function(){
 		this.element = null;
 		onBreadCrumbClickedCallback = null;

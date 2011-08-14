@@ -34,7 +34,6 @@ mop.modules.CMS = new Class({
 		var deepLinkAppend, url;
 		deepLinkAppend = ( deepLink )? "/" + deepLink : '';
 		url = mop.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId + deepLinkAppend;
-//		console.log( 'getRequestTierURL', url );
 		return url;
 	},
 
@@ -256,7 +255,10 @@ mop.modules.CMS = new Class({
     removeObjectRequest: function( parentId, callback ){
         return new Request.JSON({
             url: this.getRemoveObjectRequestURL( parentId ),
-            onSuccess: function( json ){this.removeObjectResponse( json );callback();}.bind( this )
+            onSuccess: function( json ){
+							this.removeObjectResponse( json );
+							if( callback ) callback();
+						}.bind( this )
         }).send();
     },
 

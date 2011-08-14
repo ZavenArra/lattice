@@ -581,7 +581,7 @@ mop.util.HistoryManager = new Class({
 
 	Implements: [ Events, mop.util.Broadcaster ],
 	locationMonitor: null,
-	appState: new Hash(),
+	appState: {},
 	_instance: null,
 
 	getStrippedHash: function(){
@@ -594,8 +594,8 @@ mop.util.HistoryManager = new Class({
 
 	setAppState: function(){
 		if( !this.currentHash ) return;
-		this.appState.empty();
-		this.appState.combine( this.getStrippedHash().parseQueryString() );
+		this.appState = {};
+		this.appState = Object.merge( this.appState, this.getStrippedHash().parseQueryString() );
 	},
 	
 	
@@ -629,13 +629,20 @@ mop.util.HistoryManager = new Class({
 	},
 
 	changeState: function( key, value ){
-		this.appState.set( key, value );
+		if( key && value ){
+			this.appState[ key ] = value;
+		}else if( key ){
+			this.appState[key] = null;
+			delete this.appState[key];
+		}else{
+			return false;
+		}
 		this.updateHash();
 	},
 
 	updateHash: function(){
 		var newHash = "";
-		this.appState.each( function( value, key ){
+		Object.each( this.appState, function( value, key ){
 			newHash += (newHash=="")? key + "=" +  value : "&" + key + "=" + value;
 		});
 		this.currentHash = newHash;
