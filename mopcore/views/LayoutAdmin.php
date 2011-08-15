@@ -8,7 +8,7 @@
 	<?=$stylesheet;?>
 	<?=$javascript;?>
 </head>
-<body class="loginTimeOut-<?=Kohana::config('mop.loginTimeOut');?>">
+<body>
 	<div id="container" class="container_12">
 <?=Request::Factory('header/admin')->execute()->body();?>
 <?=$body;?>

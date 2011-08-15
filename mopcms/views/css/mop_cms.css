@@ -215,16 +215,20 @@ legend {
 .notice a {color:#514721;}
 .success a {color:#264409;}
 
-.modal ul,
-ul.listing{
+.modal ul, ul.listing{
 	list-style:none;
 	margin:0;
 	padding:0 0 1em 0;
-	border-bottom: 1px #dedede solid;
 }
+ul.listing{ border-bottom: 1px #dedede solid; }
 
-.modal ul{
-	border-bottom: none;
+p.logoutMessage{
+	color: #666;
+	font-size: 2em;
+	font-weight: normal;
+	line-height: 1.5;
+	font-family: Georgia, Times, Serif;
+	margin-bottom: 0;
 }
 
 ul.listing li{

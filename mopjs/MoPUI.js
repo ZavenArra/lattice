@@ -453,10 +453,12 @@ mop.ui.Modal = new Class({
 			cancelText: 'Cancel'
 		},
 
+		setTitle: function( aString ){ this.title.set( "text", aString ); },
+
 		initialize: function( aMarshal, options ){
 			this.setOptions( options );
 			this.marshal = aMarshal;
-			this.element = this.build();
+			this.build();
 			this.modalAnchor.setStyles({ "useHandCursor":false });
 			this.modalAnchor.set( 'href', "#" );
 			this.modalAnchor.addEvent( "click", function( e ){ mop.util.stopEvent(e); } );
@@ -489,6 +491,7 @@ mop.ui.Modal = new Class({
 		},
 		
 		build: function(){
+			console.log(":::::::::::::::::::::::::::::::::::::::::::");
 			this.element = new Element( "div", { "class": "modalContainer hidden" });
 			this.modalAnchor = new Element( "a", {
 				'class': 'modalAnchor',
@@ -504,7 +507,6 @@ mop.ui.Modal = new Class({
 			this.footer = new Element( "div.footer" ).inject( this.modal );
 			this.initControls();
 			$(document).getElement("body").adopt( this.element );
-			return this.element;
 		},
 		
 		initControls: function(){
@@ -536,8 +538,7 @@ mop.ui.Modal = new Class({
 			this.showTransition.start( { "opacity": 1 } );
 		},
 
-		close: function( e, onComplete ){
-			mop.util.stopEvent( e );
+		close: function( onComplete ){
 			this.hideTransition.cancel();
 			this.hideTransition.start({
 				onComplete: function(){
@@ -552,11 +553,8 @@ mop.ui.Modal = new Class({
 			if( this.options.onCancel ) this.options.onCancel();
 			this.close();
 		},
-		
-		setTitle: function( aString ){ this.title.set( "text", aString ); },
-		
+				
 		loadTab: function( aTab ){
-			console.log( "loadTab", aTab );
 			this.container.empty();
 			this.container.spin();
 			this.setTitle( aTab.get( "title" ), "loading..." );
@@ -570,7 +568,7 @@ mop.ui.Modal = new Class({
 
 		setContent: function( someContent, aTitle ){
 			if( aTitle ) this.setTitle( aTitle );
-			this.modal.get('spinner').hide();
+			this.container.unspin();
 			if( typeof someContent == "string" ){
 				this.container.set( "html", someContent );
 			}else{
@@ -591,6 +589,7 @@ mop.ui.Modal = new Class({
 mop.ui.AddObjectDialogue = new Class({
 	
 	Extends: mop.ui.Modal,
+	Implements: Options,
 	
 	options: {
 		onConfirm: function(){},
@@ -639,7 +638,7 @@ mop.ui.AddObjectDialogue = new Class({
 	
 	submit: function( e ){		
 		mop.util.stopEvent( e );		
-		this.close( e, function(){
+		this.close( function(){
 			this.itemInstance.element.setStyle( "opacity", 0 );
 			this.marshal.insertItem( this.itemInstance );
 		}.bind( this ) );
@@ -648,7 +647,7 @@ mop.ui.AddObjectDialogue = new Class({
 
 	cancel: function( e ){
 		mop.util.stopEvent( e );
-		this.close( e, this.itemInstance.removeObject.bind( this.itemInstance ) );
+		this.close( this.itemInstance.removeObject.bind( this.itemInstance ) );
 	},
 	
 	destroy: function(){
@@ -661,14 +660,55 @@ mop.ui.AddObjectDialogue = new Class({
 mop.ui.InactivityDialogue = new Class({
 
 	Extends: mop.ui.Modal,
-
-	options: {
-		onCancel: function(){},
-		cancelText: "Cancel Logout"
-	},
+	Implements: Options,
+	message: null,
 	
 	initialize: function( aMarshal, options ){
+		this.setOptions( options );
 		this.parent( aMarshal, options );
+	},
+
+	build: function(){
+		this.parent();
+		this.message = new Element( 'p', { 'class': 'logoutMessage'  } );
+		this.container.adopt( this.message );
+		console.log( "::", this.container );
+	},
+	
+	setMessage: function( msg ){
+		console.log( 'setMessage', this.container, this.message, msg );
+		this.message.set( 'html', msg );
+	},
+	
+	initControls: function(){
+		var headerSubmit, footerSubmit, headerCancel, footerCancel;
+		this.headerControls = new Element( "div", { "class" : "controls clearFix" } );
+		this.footerControls = this.headerControls.clone();
+		footerSubmit = new Element( 'a', {
+			'class' : 'button submit',
+			'title': this.options.confirmText, 
+			'href' : 'submit',
+			'text' : this.options.confirmText,
+			'events': {
+				"click": this.submit.bindWithEvent( this )
+			} 
+		}).inject( this.footerControls );
+		footerCancel = new Element( 'a', {
+			'class' : 'button cancel',
+			'title': this.options.cancelText, 
+			'href' : 'cancel',
+			'text' : this.options.cancelText,
+			'events': {
+				"click": this.cancel.bindWithEvent( this )
+			} 
+		}).inject( this.footerControls );
+		this.footer.adopt( this.footerControls );
+	},
+	
+	submit: function( e ){		
+		mop.util.stopEvent( e );		
+		this.close();
+		if( this.options.onConfirm ) this.options.onConfirm();
 	}
 
 });
