@@ -681,7 +681,7 @@ mop.util.LoginMonitor = new Class({
 			onCancel: this.logout.bindWithEvent( this ),
 			confirmText: "Stay logged in",
 			cancelText: "Logout"
-		},
+		}
 		if( !this.dialogue ) this.dialogue = new mop.ui.InactivityDialogue( this, opts );
 		this.dialogue.setTitle( "Login Timeout" );
 		this.logoutTimeout = this.logoutCountDown.periodical( 1000, this );
