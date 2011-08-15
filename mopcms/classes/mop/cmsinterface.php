@@ -122,7 +122,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 
 			for($i=0; $i<count($order); $i++){
 				if(!is_numeric($order[$i])){
-					throw new Kohana_User_Exception('bad sortorder string', 'bad sortorder string');
+					throw new Kohana_Exception('bad sortorder string'. ' bad sortorder string');
 				}
 				$object = ORM::factory('object', $order[$i]);
 				$object->sortorder = $i+1;
