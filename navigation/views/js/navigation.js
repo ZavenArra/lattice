@@ -146,7 +146,7 @@ mop.modules.navigation.Navigation = new Class({
 		return newPane;
 	},
 	
-	saveTierSort: function( order ){ this.dataSource.saveTierSortRequest( order ); },
+	saveTierSort: function( order, nodeId ){ this.dataSource.saveTierSortRequest( order, nodeId ); },
 
 	requestTierResponse: function( json, tierId, containerPane ){
 		this.pendingPane = null;
@@ -471,7 +471,7 @@ mop.modules.navigation.Tier = new Class({
 		var newOrder = this.serialize();
 //		console.log( "onOrderChanged", newOrder);
 		clearInterval( this.submitDelay );
-		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder.join(",") );
+		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder.join(",").replace(/([a-zA-Z]+[,]?)/g,'') );
 		newOrder = null;
 	},
 
@@ -479,7 +479,7 @@ mop.modules.navigation.Tier = new Class({
 		if( this.options.allowChildSort && this.oldSort != newOrder ){
 			clearInterval( this.submitDelay );
 			this.submitDelay = null;
-			this.marshal.saveTierSort( newOrder );
+			this.marshal.saveTierSort( newOrder, this.id );
 			this.oldSort = newOrder;
 		}
 	},
@@ -496,7 +496,7 @@ mop.modules.navigation.Tier = new Class({
 				sortArray.push( listItemId );		        
 			}
 		});
-		return sortArray;
+		return sortArray;;
 	}	
 
 });

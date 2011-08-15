@@ -49,8 +49,8 @@ mop.modules.CMS = new Class({
 		return  mop.util.getBaseURL() + "ajax/data/cms/savefield/"+ this.getObjectId();
 	},	
 
-	getSubmitSortOrderURL: function(){
-	    return mop.util.getBaseURL() + "ajax/data/cms/saveSortOrder/" + this.getObjectId();
+	getSubmitSortOrderURL: function( objectId ){
+	    return mop.util.getBaseURL() + "ajax/data/cms/saveSortOrder/" + objectId;
 	},
 
 	getRootNodeId: function(){       
@@ -229,8 +229,8 @@ mop.modules.CMS = new Class({
 		if( !json.returnValue ) throw  this.toString() + " requestTier error: " + json.response.error;
 	},
 
-	saveTierSortRequest: function( newOrder ){
-		return new Request.JSON( { url: this.getSubmitSortOrderURL(), onComplete: this.saveSortResponse.bind( this ) } ).post( { sortOrder: newOrder } );	
+	saveTierSortRequest: function( newOrder, objectId ){
+		return new Request.JSON( { url: this.getSubmitSortOrderURL(objectId), onComplete: this.saveSortResponse.bind( this ) } ).post( { sortOrder: newOrder } );	
 	},
 
 	saveSortResponse: function( json ){
