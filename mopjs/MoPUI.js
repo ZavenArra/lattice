@@ -357,7 +357,6 @@ mop.ui.ModalManager = new Class({
 		this.activeModal = aModal;
 		this.modals.push( this.activeModal );
 		$( document ).getElement("body").setStyle( "overflow", "hidden" );
-//		console.log( "setActiveModal", aModal, aModal.element );modalmanager
 	},
 
 	getActiveModal: function(){
@@ -375,14 +374,10 @@ mop.ui.ModalManager = new Class({
 	},
 
 	removeModal: function( aModal ){
-
+		aModal.destroy();
 		this.modals.erase( aModal );
-
 		if( this.activeModal == aModal ) this.activeModal = this.getPreviousModal();
 		if( !this.activeModal ) $( document ).getElement("body").setStyle( "overflow", "auto" );
-
-		aModal.destroy();		
-		delete aModal;
 		aModal = null;
 	},
 	
@@ -440,7 +435,6 @@ mop.ui.Modal = new Class({
 		
 		Implements: [ Events, Options ],
 		
-		loadedModules: [],
 		element: null,
 		marshal: null,
 		modalAnchor: null,
@@ -448,101 +442,95 @@ mop.ui.Modal = new Class({
 		header: null,
 		headerControls: null,
 		title: null,
-		content: null,
+		container: null,
 		footer: null,
 		footerControls: null,
-		showTransition: null,
 		hideTransition: null,
-		loadedModules: null,
-		protectedModules: null,
-		
+
 		options: {
-			destroyOnClose: false,
-			fadeDuration: 300
+			fadeDuration: 300,
+			confirmText: 'Confirm',
+			cancelText: 'Cancel'
 		},
 
-		initialize: function( anElement, aMarshal, options ){
+		initialize: function( aMarshal, options ){
 			this.setOptions( options );
 			this.marshal = aMarshal;
-//			console.log( "::::: initialize", this.toString(), this.marshal );
 			this.element = this.build();
-			this.modalAnchor.setStyles({
-				 "useHandCursor":false
-			});
-			this.modalAnchor.setProperty( 'href', "#" );
-			this.modalAnchor.addEvent( "click", Event.stop );
-			this.initControls();
+			this.modalAnchor.setStyles({ "useHandCursor":false });
+			this.modalAnchor.set( 'href', "#" );
+			this.modalAnchor.addEvent( "click", function( e ){ mop.util.stopEvent(e); } );
 			this.showTransition = new Fx.Morph( this.element, { 
 				property: "opacity",
 				duration: this.options.fadeDuration,
 				transition: Fx.Transitions.Quad.easeInOut,
 				onStart: function(){
-					this.element.setStyle("display","block");
+					this.element.setStyles( {
+						'display': 'block',
+						'opacity': '0' 
+					});
 				}
 			});
 			this.hideTransition = new Fx.Morph( this.element, { 
 				property: "opacity",
-                transition: Fx.Transitions.Quad.easeInOut,
+				transition: Fx.Transitions.Quad.easeInOut,
 				duration: this.options.fadeDuration
 			});
-			mop.ModalManager.setActiveModal( this );
-//			console.log( "MODAL", this.element, this.modal, mop.ModalManager );
+
+		},
+		
+		spin: function(){
+			console.log( 'spin', this.container, this.container.get( 'spinner') );
+			this.modal.show();
+		},
+		
+		unSpin: function(){			
+			this.modal.unspin();
 		},
 		
 		build: function(){
-			this.element = new Element( "div", { "class": "enhancedModalContainer hidden" });
+			this.element = new Element( "div", { "class": "modalContainer hidden" });
 			this.modalAnchor = new Element( "a", {
-				"class": "modalAnchor",
-				"href": "#",
-				"events": { "click" : function( e ){ 
+				'class': 'modalAnchor',
+				'href': '#',
+				'events': { 'click' : function( e ){ 
 					mop.util.stopEvent( e );
 				}.bindWithEvent( this ) }
 			}).inject( this.element );
 			this.modal = new Element( "div", { "class": "modal container_12" }).inject( this.element );
-			this.header = new Element( "div", { "class" : "header" } ).inject( this.element );
-			this.title = new Element( "h3", { "text" : "title" } ).inject( this.header );			
-			this.headerControls = new Element( "div", { "class" : "controls" } ).inject( this.header );
-			var cancelButton = new Element( "a", { 
-				"class" : "icon cancel",
-				"href" : "cancel"
-			}).inject( this.headerControls );
-			this.content = new Element( "div", { "class": "content" } ).inject( this.modal );
-			this.footer = new Element( "div", { "class": "footer" } ).inject( this.modal );
-			this.footerControls = this.headerControls.clone().inject( this.footer );
+			this.header = new Element( "div", { 'class': 'header container_12' }).inject( this.element );
+			this.title = new Element( "h3.title" ).inject( this.header );
+			this.container = new Element( "div.content" ).inject( this.modal );
+			this.footer = new Element( "div.footer" ).inject( this.modal );
+			this.initControls();
 			$(document).getElement("body").adopt( this.element );
 			return this.element;
 		},
 		
 		initControls: function(){
-			this.headerControls.getElement( ".cancel" ).addEvent( "click", this.close.bindWithEvent( this ) );
-			this.footerControls.getElement( ".cancel" ).addEvent( "click", this.close.bindWithEvent( this ) );
-			if( this.element.getElement( ".tabNav" ) ) this.tabNav = new mop.ui.navigation.Tabs( this.element.getElement( ".tabNav" ), "a", this.loadTab.bind( this ) );
+			var headerCancel, footerCancel;
+			this.headerControls = new Element( "div", { "class" : "controls clearFix" } );
+			this.footerControls = this.headerControls.clone();
+			headerCancel = new Element( 'a', {
+				'class' : 'icon cancel',
+				'title': this.options.cancelText, 
+				'href' : 'cancel',
+				'events': {
+					"click": this.cancel.bindWithEvent( this )
+				} 
+			});
+			this.headerControls.adopt( headerCancel );
+			footerCancel = headerCancel.clone();
+			footerCancel.cloneEvents( headerCancel );
+			this.footerControls.adopt( footerCancel );
+			this.header.adopt( this.headerControls );
+			this.footer.adopt( this.footerControls );
 		},
 
-		toString: function(){ return "[ object, mop.ui.EnhancedModal ]"; },
-
-		showLoading: function(){
-//			console.log( ":::::", this.toString(), 'showLoading', this.modal, this.modal.spin );
-			this.content.empty();
-//            this.modal.spin();
-			this.hideControls();
-			this.show();
-		},
-		
-		hideControls: function(){
-			this.headerControls.addClass("hidden");
-			this.footerControls.addClass("hidden");	
-		},
-
-		showControls: function(){
-			this.headerControls.removeClass("hidden");
-			this.footerControls.removeClass("hidden");	
-		},
+		toString: function(){ return "[ object, mop.ui.Modal ]"; },
 		
 		show: function(){
-			console.log( "show", this.toString(), this );
-			this.showControls();
-			this.modal.unspin();
+			console.log( "show" );
 			this.element.setStyle( "opacity", 0 );
 			this.element.removeClass("hidden");
 			this.showTransition.start( { "opacity": 1 } );
@@ -550,121 +538,51 @@ mop.ui.Modal = new Class({
 
 		close: function( e, onComplete ){
 			mop.util.stopEvent( e );
-			this.element.setStyle( "opacity", 1 );
-			// this should be part of a mixin or something, 
-			// it should be written once
-			// it should do all ui elements not just Text
-			// since modals dont have a UIField array, it needs a way to find all ui elements...... hmmmm
-			var ipes = this.content.getElements( ".ui-Text" );
-			ipes.each( function( anIPE ){
-				anIPE.retrieve( "Class" ).destroyValidationSticky();
-			});
-			
+			this.hideTransition.cancel();
 			this.hideTransition.start({
 				onComplete: function(){
 					if( onComplete ) onComplete();
-					this.element.addClass("hidden");
-					mop.ModalManager.removeModal( this );
+					mop.modalManager.removeModal( this );
 				}.bind( this )
 			});
-			
 		},
 		
 		cancel: function( e ){
-			this.close( e );
+			mop.util.stopEvent( e );
+			if( this.options.onCancel ) this.options.onCancel();
+			this.close();
 		},
 		
-		setTitle: function( aString ){
-//			console.log( "setTitle\t", this.toString(), aString );
-			this.title.set( "text", aString );
-		},
+		setTitle: function( aString ){ this.title.set( "text", aString ); },
 		
 		loadTab: function( aTab ){
 			console.log( "loadTab", aTab );
-			this.content.empty();
-			this.content.spin();
+			this.container.empty();
+			this.container.spin();
 			this.setTitle( aTab.get( "title" ), "loading..." );
 			return new Request.JSON( { url: aTab.get( "href" ), onSuccess: this.onTabLoaded.bind( this ) } ).send();
 		},
 
 		onTabLoaded: function( json ){
-		    console.log( "onTabLoaded" );
-			this.content.unspin();
+			this.modal.get('spinner').hide();
 			this.setContent( json.html );
 		},
 
 		setContent: function( someContent, aTitle ){
-			console.log( this.toString(), "setContent", aTitle );
 			if( aTitle ) this.setTitle( aTitle );
-			this.destroyChildModules();
-			this.content.empty();
-            this.modal.unspin();
+			this.modal.get('spinner').hide();
 			if( typeof someContent == "string" ){
-				this.content.set( "html", someContent );
+				this.container.set( "html", someContent );
 			}else{
-				this.content.adopt( someContent );
+				this.container.adopt( someContent );
 			}
-//			this.initModules();
 		},
-
-        // initModules: function(){
-        //  var newlyInstantiatedModules = mop.ModuleManager.initModules( this.content, 'modal' );
-        //  this.loadedModules = newlyInstantiatedModules.loadedModules;
-        //  this.protectedModules = newlyInstantiatedModules.protectedModules;
-        // },
 		
-		destroyChildModules: function(){
-			if( !this.loadedModules || !this.loadedModules.length ) return;
-			var count = this.loadedModules.length - this.protectedModules.length;
-			while( this.loadedModules.length >= count ){
-				var moduleReference = this.loadedModules.pop();		
-				mop.ModuleManager.destroyModuleById( moduleReference.instanceName, this.instanceName + "destroyChildModules" );
-			}
-		},
-
-		getScrollOffset: function(){
-			return this.element.getScroll();
-		},
+		getScrollOffset: function(){ return this.element.getScroll(); },
 
 		destroy: function(){
-			
-			console.log( "destroy", this.marshal, this.marshal.instanceName, this.toString() );
-			
-			this.marshal.removeModal( this );
-			this.destroyChildModules();
-			
-			this.element.destroy();
-
-			delete this.element;
-			delete this.modalAnchor;
-			delete this.modal;
-			delete this.header;
-			delete this.headerControls;
-			delete this.title;
-			delete this.footer;
-			delete this.footerControls;
-			delete this.content;
-			delete this.hideTransition;
-			delete this.showTransision;
-			delete this.loadedModules;
-			delete this.protectedModules;
-
-			this.loadedModules = null;
-			this.protectedModules = null;
-			this.element = null;
-			this.modalAnchor = null;
-			this.modal = null;
-			this.header = null;
-			this.headerControls = null;
-			this.title = null;
-			this.content = null;
-			this.footer = null;
-			this.footerControls = null;
-			this.marshal = null;
-			this.hideTransition = null;
-			this.showTransision = null;
-			this.loadedModules = null;
-
+			if( this.element ) this.element.destroy();
+			this.element = this.modalAnchor = this.modal = this.header = this.headerControls = this.title = this.container = this.footer = this.footerControls = this.marshal = this.hideTransition = this.showTransision = null;
 		}		
 
 });
@@ -674,220 +592,85 @@ mop.ui.AddObjectDialogue = new Class({
 	
 	Extends: mop.ui.Modal,
 	
-	initialize: function( anElement, aMarshal, options ){
-		this.parent( anElement, aMarshal, options );
+	options: {
+		onConfirm: function(){},
+		onCancel: function(){},
+		confirmText: "Add Object",
+		cancelText: "Cancel"
 	},
 	
-	toString: function(){
-		return "[ object, mop.ui.Modal, mop.ui.AddObjectDialogue ]";
-	},
-	
-	build: function(){
-		this.element = new Element( "div", { "class": "modalContainer hidden" });
-		this.modalAnchor = new Element( "a", {
-			"class": "modalAnchor",
-			"href": "#",
-			"events": { "click" : function( e ){
-				mop.util.stopEvent( e );
-			}.bindWithEvent( this ) }
-		}).inject( this.element );
-		this.header = new Element( "div", { "class" : "header container_12 " } ).inject( this.element );
-		this.modal = new Element( "div", { "class": "modal container_12" }).inject( this.element );
-		this.title = new Element( "h3" ).inject( this.header );
-		this.headerControls = new Element( "div", { "class" : "controls clearFix" } ).inject( this.header );
-		var submitButton = new Element( "a", { 
-			"class" : "icon submit",
-			"href" : "submit"
-		}).inject( this.headerControls );
-		var cancelButton = new Element( "a", { 
-			'class' : 'icon cancel',
-			'href' : 'cancel',
-			'text' : 'cancel'
-		}).inject( this.headerControls );
-		this.content = new Element( "div", { "class": "content" } ).inject( this.modal );
-		this.footer = new Element( "div", { "class": "footer clearFix" } ).inject( this.modal );
-		this.footerControls = this.headerControls.clone().inject( this.footer );
-		$(document).getElement("body").adopt( this.element );
-		return this.element;
-	},
-
-	setContent: function( someContent, aTitle ){
-//		console.log( this.toString(), "setContent", someContent, typeof someContent );
-		this.content.empty();
-//		console.log( this.toString(), "setContent", aTitle );
-		if( aTitle ) this.title.set( "text", aTitle );
-		this.modal.unspin();
-		this.itemContainer = new Element( "ul" );
-		this.content.adopt( this.itemContainer );
-		if( typeof someContent == "string" ){
-			this.itemContainer.set( "html", someContent );
-		}else{
-			this.itemContainer.adopt( someContent );
-		}
-		console.log( "mop.ui.AddOnjectDialogue.setContent", this.itemContainer, someContent );
-		var controls = this.itemContainer.getElement(".itemControls");
-	 	controls.getElement(".delete").addClass("hidden");
-		
-//		console.log( "setContent\t", this.toString(), this.element.getScrollSize().y, this.element.getSize().y );
-
-		if( this.element.getScrollSize().y <= this.element.getSize().y ){
-//			console.log( "\t", this.header.getStyle( "margin-left" ) );
-//			this.header.setStyle( "margin-left", parseInt( this.header.getStyle( "margin-left" ) ) + 7 );
-//			console.log( "\t", this.header.getStyle( "margin-left" ) );
-		}
-
-		try{ 
-			controls = null;
-		}finally{
-//			console.log( "+++++ ", this.itemContainer.getFirst() );
-			return this.itemContainer.getFirst();
-		}
-	
-	},
-	
-	initControls: function(){
-		this.parent();
-		this.headerControls.getElement( ".submit" ).addEvent( "click", this.submit.bindWithEvent( this ) );
-		this.footerControls.getElement( ".submit" ).addEvent( "click", this.submit.bindWithEvent( this ) );
-	},
-
-	submit: function( e ){
-		
-		mop.util.stopEvent( e );		
-		
-		/* @TODO: Figure out how to submit all ui elements inside the modal before submit (that way they all validate and close)*/
-		var ipes = this.content.getElements( ".ui-Text" );
-
-		// var invalidIpes = [];
-
-		ipes.each( function( anIPE ){
-			// var validity = anIPE.retrieve( "Class" ).validate();
-			// if( !validity ){
-			// 	invalidIpes.push( anIPE );
-			// } else { 
-				if( anIPE.retrieve( "Class" ).mode == "editing" ) anIPE.retrieve( "Class" ).submit();
-			// }
-		});
-
-		// if( invalidIpes.length > 0 ) return;
-		
-		delete invalidIpes;
-		invalidIpes = null;
-		this.close( e, function(){
-			this.getItemClass().element.setStyle( "opacity", 0 );
-			this.marshal.insertItem( this.getItemClass().element );
-		}.bind( this ) );
-
-	},
-	
-	getItemClass: function(){
-//		console.log( "getItemClass : ", this.container.getElement("li").retrieve("Class") );
-		return this.content.getElement("li").retrieve("Class");
-	},
-
-	cancel: function( e ){
-//		console.log( "cancel,", e, e.target );
-		mop.util.stopEvent( e );
-		this.close( e, this.getItemClass().removeObject.bind( this.getItemClass() ) );
-	},
-
-	destroy: function(){
-		this.content.destroy();
-		this.parent();
-	}
-	
-});
-
-mop.ui.MessageDialogue = new Class({
-
-	Extends: mop.ui.Modal,
-	
-	initialize: function( aMarshal, options ){
-		this.parent( aMarshal );
-		this.container = new Element( "div", { "class": "container" } );
-		this.setupControls();
-		this.header.set( "text", options.title );
-		this.modal.adopt( this.container );
-		return this;
-	},
-	
-	setupControls: function(){
-		
-		var confirmText = this.options.confirmText;
-		var cancelText = this.options.cancelText;
-		var aMessage = this.options.aMessage;
-		var title = this.options.title;
-		var onCancel = this.options.onCancel; 
-		var onConfirm = this.options.onConfirm;
-			    
-		confirmText = (confirmText)? confirmText : "Confirm";
-		cancelText = (cancelText)? cancelText : "Cancel";
-		
-		var controls = new Element( "div", { "class": "controls" } ).inject( this.container );
-		this.confirmButton = new Element( "a", { "href": "#", "class": "button", "text": confirmText } ).inject( controls );
-		this.cancelButton = new Element( "a", { "href": "#", "class": "button", "text": cancelText } ).inject( controls );
-		
-		this.confirmButton.addEvent( "click", this.close.bindWithEvent( this, null ) );
-		this.cancelButton.addEvent( "click", this.close.bindWithEvent( this, null ) );
-		if( onConfirm ) this.confirmButton.addEvent( "click", function(e){ 
-			mop.util.stopEvent( e );
-			onConfirm();
-		}.bindWithEvent( this ) );
-		if( onCancel ) this.cancelButton.addEvent( "click", function(e){
-			mop.util.stopEvent( e );
-			onCancel();
-		}.bindWithEvent( this ) );
-		controls.inject( this.container );
-
-		controls = null;
-
-	},
-
-	setContent: function( content ){
-	    if( typeof content == "string" ){
-    		this.container.set( "html", content );	        
-	    }else{
-	        content.inject( this.container, 'top' );
-	    }
-	},
-	
-	destroy: function(){
-		this.confirmButton.destroy();
-		this.cancelButton.destroy();
-		this.container.destroy();
-		this.parent();
-	}
-
-});
-
-mop.ui.InactivityDialogue = new Class({
-
-	Extends: mop.ui.MessageDialogue,
-
 	initialize: function( aMarshal, options ){
 		this.parent( aMarshal, options );
 	},
 	
-	setupControls: function(onConfirm, onCancel, confirmText, cancelText){
-		confirmText = (confirmText)? confirmText : "Confirm";
-		cancelText = (cancelText)? cancelText : "Cancel";
-		var controls = new Element( "div", { "class": "controls" } ).inject( this.container );
-		this.confirmButton = new Element( "a", { "href": "#", "class": "button", "text": confirmText } ).inject( controls );
-		this.cancelButton = new Element( "a", { "href": "#", "class": "button", "text": cancelText } ).inject( controls );
+	toString: function(){ return "[ Object, mop.ui.Modal, mop.ui.AddObjectDialogue ]"; },
 		
-		this.confirmButton.addEvent( "click", this.close.bindWithEvent( this, null ) );
-//		this.cancelButton.addEvent( "click", this.close.bindWithEvent( this, null ) );
-		if( onConfirm ) this.confirmButton.addEvent( "click", function(e){
-			mop.util.stopEvent( e );
-			onConfirm();
-		}.bindWithEvent( this ) );
-		if( onCancel ) this.cancelButton.addEvent( "click", function(e){
-			mop.util.stopEvent( e );
-			onCancel();
-		}.bindWithEvent( this ) );
-		controls.inject( this.container );
-		controls = null;
+	initControls: function(){
+		var headerSubmit, footerSubmit;
+		this.parent();
+		headerSubmit = new Element( "a", { 
+			'class' : 'icon submit',
+			'href' : 'submit',
+			'title': this.options.confirmText,
+			'events':{
+				'click': this.submit.bindWithEvent( this )
+			}
+		});
+	  footerSubmit = headerSubmit.clone();
+		footerSubmit.cloneEvents( headerSubmit );
+		this.headerControls.grab( headerSubmit, 'top' );
+		this.footerControls.grab( footerSubmit, 'top' );
+	},
+	
+	setContent: function( itemToAdd, aTitle ){
+		console.log( itemToAdd, aTitle );
+		if( aTitle ) this.title.set( "text", aTitle );
+		this.modal.unspin();
+		this.itemContainer = new Element( "ul" );
+		this.container.empty();
+		this.container.adopt( this.itemContainer );
+		this.itemContainer.adopt( itemToAdd );
+		if( this.element.getScrollSize().y <= this.element.getSize().y ){
+//			this.header.setStyle( "margin-left", parseInt( this.header.getStyle( "margin-left" ) ) + 7 );
+		}
+		this.itemInstance = itemToAdd.retrieve("Class");
+		return itemToAdd;
+	},
+	
+	submit: function( e ){		
+		mop.util.stopEvent( e );		
+		this.close( e, function(){
+			this.itemInstance.element.setStyle( "opacity", 0 );
+			this.marshal.insertItem( this.itemInstance );
+		}.bind( this ) );
+		if( this.options.onConfirm ) this.options.onConfirm();
+	},
+
+	cancel: function( e ){
+		mop.util.stopEvent( e );
+		this.close( e, this.itemInstance.removeObject.bind( this.itemInstance ) );
+	},
+	
+	destroy: function(){
+		this.itemInstance = null;
+		this.parent();
 	}
+	
+});
+
+mop.ui.InactivityDialogue = new Class({
+
+	Extends: mop.ui.Modal,
+
+	options: {
+		onCancel: function(){},
+		cancelText: "Cancel Logout"
+	},
+	
+	initialize: function( aMarshal, options ){
+		this.parent( aMarshal, options );
+	}
+
 });
 
 mop.ui.MultiSelect = new Class({
@@ -2085,7 +1868,7 @@ mop.util.Uploader = new Class({
 		this.removeEvents();
 		this.box.destroy();
 
-		mop.ModalManager.removeListener( this );
+		mop.modalManager.removeListener( this );
 		mop.util.EventManager.removeListener( this );
 		
 		delete this.box;

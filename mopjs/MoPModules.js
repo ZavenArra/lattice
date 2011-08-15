@@ -181,11 +181,9 @@ mop.modules.Module = new Class({
 	destroy: function(){
 		this.destroyChildModules();
 		this.destroyUIFields();
-		
 		this.instanceName = null;
 		this.UIFields = null;
 		this.childModules = null;
-		
 		this.parent();
 	}
 
@@ -229,24 +227,17 @@ mop.modules.AjaxFormModule = new Class({
 	Extends: mop.modules.Module,
 	generatedData: {},
 
-	// getSubmitFormURL: function(){
-	//     return mop.util.getBaseURL() + "ajax/" + this.getSubmissionController() +  "/" + this.options.action + "/" + this.getObjectId();
-	// },
-
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.element.getElement("input[type='submit']").addEvent( "click", this.submitForm.bindWithEvent( this ) );
 		this.resultsContainer = this.element.getElement(".resultsContainer");
 	},
 
-	toString: function(){
-		return "[ object, mop.module.Module, mop.modules.AjaxFormModule ]";
-	},
+	toString: function(){ return "[ Object, mop.module.Module, mop.modules.AjaxFormModule ]"; },
 
 	submitForm: function( e ){
-        mop.util.stopEvent( e );
-        this.gene
-        ratedData = Object.merge( this.generatedData, this.serialize() );
+    mop.util.stopEvent( e );
+    this.generatedData = Object.merge( this.generatedData, this.serialize() );
 		if( this.options.validate && !this.validateFields() ) return false;	
 		return new Request.JSON({
             url:  this.getSubmitFormURL(),
@@ -341,10 +332,6 @@ mop.modules.MoPList = new Class({
 	    throw "Abstract function getSubmitSortOrderURL must be overriden in" + this.toString();
 	},
 
-	// getSubmissionController: function(){
-	//     throw "Abstract function getSubmissionController must be overriden in" + this.toString();		
-	// },
-	
 	getObjectId: function(){
 	    return this.objectId;
 	},
@@ -354,86 +341,69 @@ mop.modules.MoPList = new Class({
 	},
 	
 	initialize: function( anElement, aMarshal, options ){
-        this.parent( anElement, aMarshal, options );
-        delete this.items;
-        this.items = null;
-        this.items = [];
-        if( this.options.allowChildSort ) this.makeSortable( this.listing );
-        this.objectId = this.element.get("id").split("_")[1];
+		this.parent( anElement, aMarshal, options );
+		if( this.options.allowChildSort ) this.makeSortable( this.listing );
+		this.objectId = this.element.get("id").split("_")[1];
 	},
 	
 	build: function(){
 		this.parent();
-		this.initControls();
 		this.addObjectDialogue = null;
+		this.initControls();
 		this.initList();
 	},	
 	
 	initList: function(){
-		delete this.items;
-		this.items = null;
-		this.items = [];
 		this.listing = this.element.getElement( ".listing" );
 		var children = this.listing.getChildren("li");
 		children.each( function( element ){
-			this.items.push( new mop.modules.ListItem( element, this, this.addObjectDialogue ) ); 
+			new mop.modules.ListItem( element, this, this.addObjectDialogue );
 		}, this );
 	},
 
 	initControls: function(){
-		// console.log( this.element.getElement( "#" + this.instanceName+"AddObjectModal" ).retrieve("Class") );
 		this.controls = this.element.getChildren( ".controls" );
 		var addObjectButton = this.controls.getElement( ".addItem" ).addEvent("click", this.addObjectRequest.bindWithEvent( this ) );
-		if( this.allowChildSort ){
-			var saveSort = this.controls.getElement( ".saveSort" ).addEvent("click", this.saveSort.bindWithEvent( this ) );
-			saveSort = null;
-		}
 		addObjectButton = null;
 	},
 	
 	addObjectRequest: function( e ){
 		mop.util.stopEvent( e );
-		if( this.addObjectDialogue ) this.removeModal( this.addObjectDialogue );
-		this.addObjectDialogue = new mop.ui.AddObjectDialogue( null, this );
-		this.addObjectDialogue.showLoading( e.target.get("text") );
-        return new Request.JSON( { url: this.getAddObjectURL(), onSuccess: this.onAddObjectResponse.bind( this ) } ).send();
+		if( this.addObjectDialogue ) mop.modalManager.removeModal( this.addObjectDialogue );
+		this.addObjectDialogue = null;
+		this.addObjectDialogue = new mop.ui.AddObjectDialogue( this );
+		this.addObjectDialogue.spin();
+		this.addObjectDialogue.show();
+		return new Request.JSON( { url: this.getAddObjectURL(), onSuccess: this.onAddObjectResponse.bind( this ) } ).send();
 	},
     
 	onAddObjectResponse: function( json ){
-		var element = this.addObjectDialogue.setContent( json.response.html, this.controls.getElement( ".addItem" ).get( "text" ) );
-		var listItem = new mop.modules.ListItem( element, this, this.addObjectDialogue );
+		var element, listItem, addItemText;
+		element = json.response.html.toElement();
+		addItemText = this.controls.getElement( ".addItem" ).get( "text" );
+		listItem = new mop.modules.ListItem( element, this, this.addObjectDialogue ).hideControls();
+		this.addObjectDialogue.setContent( element , addItemText );
 		Object.each( listItem.UIFields, function( uiField ){
 			uiField.scrollContext = "modal";
 			if( uiField.reposition ) uiField.reposition('modal');
 		});
-		this.items.push( listItem );
 		mop.util.EventManager.broadcastMessage( "resize" );
 	},
 
 	removeObject: function( item ){
     this.removeObjectRequest( item.getObjectId() );
-  	this.items.erase( item );
 		item.destroy();
 		item = null;
 		mop.util.EventManager.broadcastMessage( "resize" );          
 	},
 	
 	removeObjectRequest: function( itemObjectId ){
-//		console.log( "removeObjectRequest", this.toString(), this.getRemoveObjectURL );
 		var jsonRequest = new Request.JSON( { url: this.getRemoveObjectURL( itemObjectId ) } ).send();
 		return jsonRequest;
 	},
 
-	removeObjectResponse: function( json ){
-//		console.log( "removeObjectResponse", json );
-	},
-
-	removeModal: function( aModal ){
-		if( !this.addObjectDialogue ) return;
-		this.addObjectDialogue = null;
-	},
-
-	insertItem: function( anElement ){
+	insertItem: function( anItem ){
+		var anElement = anItem.element;
 		var where = ( this.options.sortDirection == "DESC" )? "top" : "bottom";
 		this.listing.grab( anElement, where );
 		if( this.allowChildSort && this.sortableList ) this.sortableList.addItems( anElement );
@@ -443,7 +413,7 @@ mop.modules.MoPList = new Class({
 			if( aUIField.reposition ) aUIField.reposition()
 		});
 		anElement.tween( "opacity", 1 );
-	 	anElement.getElement(".itemControls" ).getElement(".delete").removeClass("hidden");
+		anItem.showControls();
 		if( this.allowChildSort != null ) this.onOrderChanged();
 	},
 
@@ -471,7 +441,6 @@ mop.modules.MoPList = new Class({
 	},
 	
 	onOrderChanged: function(){
-//	console.log( "onOrderChanged", this, this.toString() );
 		var newOrder = this.serialize();
 		clearInterval( this.submitDelay );
 		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder.join(",") );
@@ -500,23 +469,23 @@ mop.modules.MoPList = new Class({
 	        sortArray.push( listItemId );		        
 		    }
 		});
-//        console.log( this.toString(), "serialize", this.listing, sortArray );
 		return sortArray;
 	},
 
 	destroy: function(){
 		if(this.sortableList) this.removeSortable( this.sortableList );
-		clearInterval( this.submitDelay );		
-		this.removeModal();
-		this.addObjectDialogue = this.controls = this.instanceName = this.items = this.listing = this.oldSort = this.allowChildSort, this.sortDirection, this.submitDelay = null;
+		clearInterval( this.submitDelay );
+		if( this.addObjectDialogue ) mop.modalManager.removeModal( this.addObjectDialogue ) 
+		this.addObjectDialogue = this.controls = this.instanceName = this.listing = this.oldSort = this.allowChildSort, this.sortDirection, this.submitDelay = null;
     if( this.scroller ) this.scroller = null;
 		mop.util.EventManager.broadcastMessage( 'resize' );
 		this.parent();
 	}
+
 });
 
 mop.modules.ListItem = new Class({
-	
+
 	Extends: mop.modules.Module,
 	Implements: [ Events, Options ],
 	addObjectDialogue: null,
@@ -525,7 +494,6 @@ mop.modules.ListItem = new Class({
 	fadeOut: null,
 	
   /* Section: Getters & Setters */
-	
 	getObjectId: function(){ return this.objectId; },
 	getSaveFieldURL: function(){
 		var url =  this.marshal.getSaveFieldURL( this.getObjectId() );
@@ -533,21 +501,20 @@ mop.modules.ListItem = new Class({
 		return url;
 	},
 
-	initialize: function( anElement, aMarshal, addObjectDialogue, options ){
-		this.element = $( anElement);
+	initialize: function( anElement, aMarshal, options ){
+		this.element = anElement;
 		this.element.store( "Class", this );
 		this.marshal = aMarshal;
 		this.instanceName = this.element.get( "id" );
-		this.addObjectDialogue = addObjectDialogue;
 		this.objectId = this.element.get("id").split("_")[1];
 		this.build();
 	},
 
-	toString: function(){ return "[ object, mop.modules.Module, mop.modules.ListItem ]"; },
+	toString: function(){ return "[ Object, mop.modules.Module, mop.modules.ListItem ]"; },
 
-	build: function(){ 
-	    this.parent();
-	    this.initControls();
+	build: function(){
+		this.parent();
+		this.initControls();
 	},
 
 	initControls: function(){
@@ -558,25 +525,18 @@ mop.modules.ListItem = new Class({
 	removeObject: function( e ){
 		mop.util.stopEvent( e );
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
-		this.fadeOut = new Fx.Morph( this.element, { duration: 300, onComplete: function(){ this.marshal.removeObject( this ) }.bind( this ) } );
-		this.fadeOut.start( { opacity: 0 } );
+		this.fadeOut = new Fx.Morph( this.element, { duration: 350, onComplete: function(){ this.marshal.removeObject( this ) }.bind( this ) } );
+		this.fadeOut.start( { height: 0, opacity: 0 } );
 	},
 	
-	resumeSort: function(){
-		if( this.marshal.sortableList ) this.marshal.resumeSort();
-	},
-	
-	suspendSort: function(){
-		if( this.marshal.sortableList ) this.marshal.suspendSort();
-	},
+	hideControls: function(){ this.controls.addClass( 'hidden' ); },
+	showControls: function(){ this.controls.removeClass('hidden') },
+	resumeSort: function(){ if( this.marshal.sortableList ) this.marshal.resumeSort(); },
+	suspendSort: function(){ if( this.marshal.sortableList ) this.marshal.suspendSort(); },
 	
 	destroy: function(){
-		this.element.destroy();
-		this.parent();  //call the superclass's destroy method
-		this.addObjectDialogue = null;
-		this.controls = null;
-		this.fadeOut = null;
-		this.objectId = null;
+		this.parent();
+		this.controls = this.fadeOut = this.objectId = null;
 	}
 	
 });

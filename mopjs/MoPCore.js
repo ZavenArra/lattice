@@ -209,8 +209,13 @@ Function.implement({
  		s - {String} a string
 	Returns: {String} argumemt string as UTF-8 string
 */
-String.implement( "encodeUTF8", function(){
-  return unescape( encodeURIComponent( this ) );
+String.implement({
+	encodeUTF8: function(){
+		return unescape( encodeURIComponent( this ) );
+	},
+  toElement: function() { 
+    return new Element( 'div', { html:this } ).getFirst(); 
+  } 
 });
 
 
@@ -539,7 +544,6 @@ mop.MoPObject = new Class({
 	},
 	
 	destroy: function(){
-		console.log( '\t', this.toString() );
 		this.element.destroy();
 		this.element.eliminate( "Class" );
 		this.options = this.element = this.elementClass = this.marshal = null 
@@ -651,40 +655,34 @@ mop.util.LoginMonitor = new Class({
 	millisecondsUntilLogout: 300000,
 	millisecondsInAMinute: 60000,
 	secondsIdle: 0,
-	loginTimeout: null,
+	inactivityTimeout: null,
 	
 	initialize: function(){
-		
 		window.addEvent( "mousemove", this.onMouseMove.bind( this ) );
-		var loginTimeOutClassName = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
-		if( loginTimeOutClassName != undefined ){
-			this.millisecondsOfInactivityUntilPrompt = Number( loginTimeOutClassName ) * 1000;
-		}
-		
+		if( mop.loginTimeout ) this.millisecondsOfInactivityUntilPrompt = Number( mop.loginTimeout ) * 1000;
 		this.inactivityTimeout = this.onInactivity.periodical( this.millisecondsOfInactivityUntilPrompt, this );
-		this.status = "notshowing";
+		this.status = "pending";
 		this.inactivityMessage = "You have been inactive for {inactiveMins} minutes. If your dont respond to this message you will be automatically logged out in <b>{minutes} minutes and {seconds} seconds</b>. Would you like to stay logged in?";
 	},
 
 	onMouseMove: function(){
 		clearInterval( this.inactivityTimeout );
-		if( this.status == "notshowing" ) this.inactivityTimeout = this.onInactivity.periodical( this.millisecondsOfInactivityUntilPrompt, this );
+		if( this.status == "pending" ) this.inactivityTimeout = this.onInactivity.periodical( this.millisecondsOfInactivityUntilPrompt, this );
 	},
 
 	onInactivity: function(){
+		console.log( "INACTIVE!");
 		this.status = "showing";
 		clearInterval( this.inactivityTimeout );
 		this.date = new Date();
-		if( !this.dialogue ) this.dialogue = new mop.ui.InactivityDialogue( this, "Inactivity", "", this.keepAlive.bind( this ), this.logout.bind( this ), "Stay logged in?", "Logout" );
-		this.dialogue.setContent( this.inactivityMessage.substitute( { inactiveMins: this.millisecondsOfInactivityUntilPrompt/this.millisecondsInAMinute, minutes: Math.floor( this.millisecondsUntilLogout*.001 ), seconds: 00 } ) );
+		if( !this.dialogue ) this.dialogue = new mop.ui.InactivityDialogue( null, this );
+		this.dialogue.setContent( this.inactivityMessage.substitute( { inactiveMins: this.millisecondsOfInactivityUntilPrompt/this.millisecondsInAMinute, minutes: Math.floor( this.millisecondsUntilLogout*.001 ), seconds: 00  } ), "Login Timeout" );
 		this.secondsIdle = 0;
 		this.logoutTimeout = this.logoutCountDown.periodical( 1000, this );
 		this.dialogue.show();
 	},
 
 	logoutCountDown: function( message ){
-//		console.log( "Maximum period of inactivity received starting logout countdown ", message );
-		
 		this.secondsIdle ++;
 		var secondsLeft = this.millisecondsUntilLogout*.001 - this.secondsIdle;
 		if( secondsLeft == 0 ){ this.logout() }

@@ -219,13 +219,16 @@ legend {
 ul.listing{
 	list-style:none;
 	margin:0;
-	padding:0;
+	padding:0 0 1em 0;
+	border-bottom: 1px #dedede solid;
+}
+
+.modal ul{
+	border-bottom: none;
 }
 
 ul.listing li{
-/*    width: 270px;
-*/
-    margin: 0 0 .75em 0;
+	margin: 0 0 .75em 0;
 	padding: 0 0 0 6px;
 	border-left: 1px #dedede solid;
 	color:#444;
@@ -385,14 +388,21 @@ a.icon.cancel{ background: url( ../images/icon_cancel.png); }
 label{
 	font-weight: normal;
 	color:#aaa;
-	font-size: .9em;
+}
+
+.listLabel{
+	display: block;
+	float: left;
+	line-height: 2;
+	padding-right: 1em;
+	margin: 0 1em 1em 0;
+	border-right: 1px #dedede solid;
 }
 
 .ui-VisibilityToggler{
 	float:left;
 	clear:right;
 }
-
 
 #pageContent .module{
 	margin: 12px 0 0 0;
@@ -406,11 +416,21 @@ label{
 
 
 a.button{
-	padding: .25em;
+	float: left;
+	padding: .25em .5em;
 	margin: 0 .25em 0 0;
-	background-color:#0af;
+	background-color:#aaa;
 	color: #fff;
 	text-decoration:none;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-khtml-border-radius: 4px;
+	border-radius: 4px;
+}
+
+a.button:hover{
+	background: #0af;
+	color: #fff;
 }
 
 .modalContainer{
@@ -443,7 +463,6 @@ a.button{
 	top:0;
 	left:0;
 }
-
 
 .modalContainer .header{
 	position: fixed;
@@ -543,15 +562,6 @@ input[type='checkbox']{
 }
 
 .topBorder{	border-top: 1px #ccc solid !important }
-
-.sectionHead,
-.moduleLabel{
-	font-family: Georgia, Times, serif;
-	margin: 0 0 6px 0;
-	padding: 18px 0 6px 0;
-	color:#aaa;
-
-}
 
 .switchbox{
 	margin: 0 auto 10px;

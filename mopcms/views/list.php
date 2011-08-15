@@ -4,16 +4,15 @@
    instance idea needs to be changes -->
 	
 	<?if(isset($label) && $label):?>
-	<label><?=$label;?></label>
+	<label class='listLabel'><?=$label;?></label>
 	<?endif;?>
+
+	<div class="controls clearFix"><a href="#" class="addItem button">Add an Item</a></div>
 	
 	<ul class="listing">
 		<?=$items;?>
 	</ul>
 
-	<div class="controls">
-		<a href="#" class="addItem button grid_2">Add another?</a>
-	</div>
 
 	
 

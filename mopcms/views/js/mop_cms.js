@@ -294,9 +294,8 @@ if( !mop.util.hasDOMReadyFired() ){
 		mop.util.DOMReadyHasFired();
 		mop.historyManager = new mop.util.HistoryManager().instance();
 		mop.historyManager.init();
-		mop.ModalManager = new mop.ui.ModalManager();
-		var doAuthTimeout = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
-		if( window.location.href.indexOf( "auth" ) == -1 && doAuthTimeout && doAuthTimeout != "0" ) mop.loginMonitor = new mop.util.LoginMonitor();
+		mop.modalManager = new mop.ui.ModalManager();
+		if( mop.loginTimeout && mop.loginTimeout > 0 ) mop.loginMonitor = new mop.util.LoginMonitor();
 		mop.util.EventManager.broadcastMessage( "resize" );
 		mop.CMS = new mop.modules.CMS( "cms" );
 	});
