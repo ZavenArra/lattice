@@ -15,12 +15,11 @@ mop.modules.navigation.Navigation = new Class({
 	},
 
 	getNodeIdFromElement: function( anElement ){ return anElement.get("id").split( "_" )[1]; },
-	setNodeElement: function( nodeElement ){ this.nodeData[ this.getNodeIdFromElement( nodeElement ) ].element = nodeElement; },
 	getNodeTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].nodeType; },
 	getContentTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].contentType; },
 	getNodeTitleFromId: function( nodeId ){ if( this.nodeData[ nodeId ] ){ return this.nodeData[ nodeId ].title; }else{ return null; } },
 	getSlugFromId: function( nodeId ){ return this.nodeData[ nodeId ].slug; },
-	getNodeById: function( nodeId ){ return this.nodeData[ nodeId ].node; },
+	getNodeById: function( nodeId ){ return this.nodeData[ nodeId ]; },
 	getUserLevel: function(){ return this.userLevel; },
 	getPanes: function(){ return this.container.getElements('.pane'); },
 	getPaneTemplate: function(){ return this.navPaneTemplate.clone(); },
@@ -39,54 +38,67 @@ mop.modules.navigation.Navigation = new Class({
 	},
 
 	onNodeClicked: function( nodeId, tier ){ 
-		var paneIndex;
-		this.clearTierRequest();
-		paneIndex = ( this.getVisibleTiers().indexOf( tier ) > 0 )? this.getVisibleTiers().indexOf( tier ) : 0;
-//		console.log( 'onNodeClicked', nodeId, this.getVisibleTiers(), tier.element, this.getVisibleTiers().indexOf( tier.element ) > 0, paneIndex );
-		this.prepareTier( tier, paneIndex + 1, this.nodeData[ nodeId ] );
+		var paneIndex, node;
+		this.clearPendingTierRequest();
+		node = this.nodeData[ nodeId ];
+		paneIndex = ( this.getVisibleTiers().indexOf( tier ) > 0 )? this.getVisibleTiers().indexOf( tier ) : 0;		
+//		console.log( "onNodeClicked ", nodeId, tier );
+		this.detachTiers( paneIndex + 1 );
+		this.removeCrumbs( paneIndex + 1 );
+		this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
 		this.marshal.onNodeSelected( nodeId );
 		if( this.getNodeTypeFromId( nodeId ) == 'object' ) this.requestTier( nodeId, tier );
 	},
 	
-	clearTierRequest: function(){
-		if( this.pendingPane ) this.pendingPane.destroy();
-		this.marshal.clearTierRequest();
-	},
-	
 	onCrumbClicked: function( crumbData ){
-		var paneIndex, node, tier;
-		this.clearTierRequest();
-		paneIndex = ( crumbData.tier )? this.getVisibleTiers().indexOf( crumbData.tier ) : 0;
+		var paneIndex, node, tier, slug;
+		this.clearPendingTierRequest();
 		tier = crumbData.tier;
 		node = crumbData.nodeData;
-		this.prepareTier( tier, paneIndex + 1, node );
-		console.log( "onCrumbClicked", node.id, tier );
+		paneIndex = ( this.getVisibleTiers().indexOf( tier ) > 0 )? this.getVisibleTiers().indexOf( crumbData.tier ) : 0;
+		// console.log( "prepareTier ", tier, paneIndex, node );
+		this.detachTiers( paneIndex + 1 );
+		this.removeCrumbs( paneIndex + 1 );
 		if( node ){
+			this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
+			// console.log( "onCrumbClicked", node, node.id, tier );
 			if( node.objectType == 'object' ) this.requestTier( node.id, tier );
-			this.marshal.onNodeSelected( crumbData.nodeData );
+			if( this.getNodeTypeFromId( node.id ) == 'object' ){ 
+				this.marshal.onNodeSelected( node.id );
+			}else{
+				this.slideToCurrentTier( null );
+				this.marshal.clearPage();				
+			}
 			if( this.getNodeTypeFromId( node.id ) == 'object' ) this.requestTier( node.id, tier );
 		}else{
+			this.slideToCurrentTier( null );
+			this.getVisibleTiers().each( function( pane ){
+				pane.setActiveNode( null );
+			});
 			this.marshal.clearPage();
 		}
 	},
 	
-	prepareTier: function( tier, i, node ){
-		console.log( "prepareTier ", tier, i, node );
-		this.detachTiers( i );
-		this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
-		this.removeCrumbs( i );
+	clearPendingTierRequest: function(){
+		if( this.pendingPane ){
+			this.pendingPane.get('spinner').hide();
+			this.pendingPane.destroy();
+		}
+		this.marshal.clearPendingTierRequest();
 	},
 	
 	requestTier: function( nodeId, parentTier, deepLink ){
-		console.log( 'requestTier', nodeId, parentTier, deepLink );
+		// console.log( 'requestTier', nodeId, parentTier, deepLink );
 		cached = ( this.tiers[ nodeId ] && !deepLink )? true : false;
 		if( cached ){
 			console.group();
-			console.log( "cached: ", cached );
+			// console.log( "cached: ", cached );
 			this.renderPane( this.tiers[ nodeId ] );
 		}else{
 			this.pendingPane = this.addPane();
-			this.dataSource.requestTier( nodeId, deepLink, function( json ){ this.requestTierResponse( json, nodeId, this.pendingPane ); }.bind( this ) );
+			this.dataSource.requestTier( nodeId, deepLink, function( json ){ 
+				this.requestTierResponse( json, nodeId, this.pendingPane );
+			}.bind( this ) );
 		}
 	},
 	
@@ -117,51 +129,63 @@ mop.modules.navigation.Navigation = new Class({
 		console.log( "appState:", mop.historyManager.getAppState() );
 		console.log( "/////////////////////////////////" );
 		var deepLink = ( mop.historyManager.getAppState().slug )? mop.historyManager.getAppState().slug : null;
+		
+		this.breadCrumbs.addCrumb( { label: '/' } );
+		
 		this.requestTier( this.rootId, null, deepLink );
+		if( deepLink ) this.marshal.onNodeSelected( deepLink );
 	},
 
 	addPane: function(){
-		var newPane = this.getPaneTemplate();
+		var newPane, elementDimensions;
+		newPane = this.getPaneTemplate().clone();
+		elementDimensions = this.container.getDimensions();
 		this.element.getElement( ".panes" ).adopt( newPane );
-		var elementDimensions = this.container.getDimensions();
 		this.container.setStyle( "width", elementDimensions.width + newPane.getDimensions().width );
 		newPane.get( "spinner" ).show( true );
 		return newPane;
 	},
 	
-	adoptPane: function( pane ){ return this.element.getElement( ".panes").adopt( pane ); },
 	saveTierSort: function( order ){ this.dataSource.saveTierSortRequest( order ); },
 
 	requestTierResponse: function( json, tierId, containerPane ){
-		var tier;
 		this.pendingPane = null;
-		json.response.data.tier.nodes.each( function( nodeObj ){ this.nodeData[ nodeObj.id ] = nodeObj; }, this );
-		tier = new mop.modules.navigation.Tier( this, json.response.data.tier, tierId );
+		nodes = json.response.data.tier.nodes;
+		console.group()
+		console.groupEnd();
+		this.processNodeData( nodes, json.response.data.tier.html, tierId, containerPane );
+	},
+
+	processNodeData: function( nodes, html, tierId, containerPane ){   
+		nodes.each( function( node ){
+			this.nodeData[ node.id ] = node;
+			if( node.tier ){
+				this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
+				this.processNodeData( node.tier.nodes, node.tier.html, node.id, this.addPane() );
+			}
+		}, this );
+		var tier = new mop.modules.navigation.Tier( this, html, tierId );
 		this.tiers[ tierId ] = tier;
 		this.renderPane( tier, containerPane, tierId );
 	},
 
-	renderPane: function( aTier, newPane, nodeId ){
-		
+	renderPane: function( aTier, newPane ){
 		var nodeId, navSlideFx, nodeTitle;
-//		console.log( "::::::", Array.from( arguments ) );
-		if( !newPane ){ // cached
-			aTier.render();
-			newPane = aTier.element;
-			nodeId = aTier.id;
-			aTier.attachToPane();
-		}else{
-			newPane.unspin();
-			aTier.attachToPane( newPane );			
-		}
-		if( this.getPanes().indexOf( newPane ) < this.numberOfVisiblePanes ){
-			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toLeft();	        
-		}else{	        
-			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toElementEdge( newPane );
-		}
-		nodeTitle = ( this.getNodeTitleFromId( nodeId ) )? this.getNodeTitleFromId( nodeId ) : '/';  
+		if( !newPane ) newPane = this.addPane();
+		newPane.unspin();
+		aTier.attachToPane( newPane );			
+		aTier.render();
+		this.slideToCurrentTier( newPane );
 	},
-
+	
+	slideToCurrentTier: function( target ){
+		if( !target || this.getPanes().indexOf( target ) < this.numberOfVisiblePanes ){
+			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toLeft();
+		}else{
+			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toElementEdge( target );
+		}		
+	},
+	
 	detachTiers: function( startIndex, endIndex ){
 		var visibleTiers, tiersToDetach;
 		visibleTiers = this.getVisibleTiers();
@@ -190,17 +214,21 @@ mop.modules.navigation.Navigation = new Class({
 
 	onAddObjectResponse: function( json, parentId, tierInstance ){
 		this.nodeData[ json.response.data.id ] = json.response.data;
-//		console.log( "\t addObjectResponse", this.nodeData, "(", Object.getLength(this.nodeData), ")"  );
 		var newNode = json.response.html.toElement();
 		tierInstance.adoptNode( newNode );
 		tierInstance.onObjectAdded();
 	},
 
 	removeObject: function( nodeId ){
+		var title = this.getNodeTitleFromId(nodeId);
+		this.nodeData[ nodeId ] = null;
 		delete this.nodeData[ nodeId ];
 		this.dataSource.removeObjectRequest( nodeId );
-		if( nodeId == mop.util.getObjectId() ) this.marshal.clearPage();
-		// and rmove the breadcrumb....
+		if( nodeId == this.dataSource.getObjectId() ){			
+			mop.historyManager.changeState( "slug", null );
+			this.breadCrumbs.removeCrumbByLabel( title );
+			this.marshal.clearPage();
+		}
 	},
   	
 	togglePublishedStatus: function( nodeId ){
@@ -241,9 +269,9 @@ mop.modules.navigation.Tier = new Class({
 		return this.getNodeIdFromElement( this.activeNode );
 	},
 	
-	initialize: function( aMarshal, data, nodeId ){
+	initialize: function( aMarshal, html, nodeId ){
 		this.marshal = aMarshal;
-		this.html = data.html;
+		this.html = html;
 		this.id = nodeId;
 	},
 
@@ -252,16 +280,62 @@ mop.modules.navigation.Tier = new Class({
 	},
 
 	attachToPane: function( pane ){
-		if( pane ){
-			pane.store( "tier", this );
-			pane.set( 'id', 'pane-' + this.id );
-			this.options = Object.merge( this.options, pane.getOptionsFromClassName() );
-			this.element = pane;			
-			this.spinner = new Spinner( this.element );
-		}else{
-			this.marshal.adoptPane( this.element );
+		pane.store( "tier", this );
+		this.options = Object.merge( this.options, pane.getOptionsFromClassName() );
+		this.element = pane;		
+		this.spinner = new Spinner( this.element );
+	},
+
+	render: function( e ){
+		mop.util.stopEvent( e );
+		if( this.element.get('html') != this.html ) this.element.set( 'html', this.html );
+		this.nodeElement = this.element.getElement( ".nodes" );
+		if( this.options.allowChildSort ) this.makeSortable( this.nodeElement );
+		this.nodes = this.element.getElements(".node");
+		this.nodes.each( function( aNodeElement ){ 
+			this.initNode( aNodeElement );
+		}, this );
+		this.drawer = this.element.getElement( '.tierMethodsDrawer' );
+ 		if( this.drawer ){
+			this.drawer.set( "morph", {
+				duration: 200, 
+				transition: Fx.Transitions.Quad.easeInOut
+			});
+			this.drawer.getElement( '.close' ).addClass( 'hidden' );
+			this.drawer.setStyle( 'height', 'auto' );
+			this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', 'auto' );
+			this.drawer.getElement( '.close' ).addEvent( 'click', this.render.bindWithEvent( this ) );
+			if( !this.drawer.retrieve( 'initTop' ) ) this.drawer.store( "initTop", this.drawer.getStyle( "top" ) );	
+			this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
+			var addObjectLinks = this.drawer.getElements( "li" );
+			// wire addobject links
+			addObjectLinks.each( function( aLink ){
+				aLink.addEvent( "click", this.onAddObjectClicked.bindWithEvent( this, aLink ) );
+			}, this );
+			if( this.marshal.getUserLevel() == 'superuser' && addObjectLinks.length > 5  ){
+				// this.element.removeClass( "dark" );
+				this.drawer.getElement( ".close" ).addClass("hidden");
+			 	this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
+				this.drawer.addEvent( 'click', this.renderAddObjectSelection.bindWithEvent( this, addObjectLinks ) );
+			}else{
+				this.drawer.addEvent( 'mouseenter', this.onDrawerMouseEnter.bindWithEvent( this ) );
+				this.drawer.addEvent( 'mouseleave', this.onDrawerMouseLeave.bindWithEvent( this ) );
+			}
+			// make nodes element shorter by the height of the addableObjects title height
+			if( this.nodeElement.getDimensions().height >= this.element.getDimensions().height ){
+				this.nodeElement.setStyle( 'height', this.element.getSize().y - this.drawer.getElement( "div.titleBar" ).getDimensions().height );
+			}
 		}
-		this.render();
+	},
+
+	renderAddObjectSelection: function( e, addObjectLinks ){
+		mop.util.stopEvent( e );
+		this.nodeElement.addClass( 'hidden' );
+		this.drawer.setStyle( 'height', '100%' );
+		this.drawer.getElement( '.close' ).removeClass( 'hidden' );
+		var h = this.element.getSize().y - this.drawer.getElement( "div.titleBar" ).getSize().y;
+		this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', h );
+		this.drawer.morph( { 'top': 0 } );
 	},
 	
 	detach: function(){
@@ -284,66 +358,17 @@ mop.modules.navigation.Tier = new Class({
 		this.html = this.element.get( "html" );
 		this.initNode( newNode );
 	},
-   
-	render: function(){
-		if( this.element.get('html') != this.html ) this.element.set( 'html', this.html );
-		this.nodeElement = this.element.getElement( ".nodes" );
-		if( this.options.allowChildSort ) this.makeSortable( this.nodeElement );
-		this.nodes = this.element.getElements(".node");
-		this.nodes.each( function( aNodeElement ){ this.initNode( aNodeElement ); }, this );
-		this.drawer = this.element.getElement( '.tierMethodsDrawer' );
- 		if( this.drawer ){
-			this.drawer.set( "morph", {
-				duration: 200, 
-				transition: Fx.Transitions.Quad.easeInOut
-			});
-			// make nodes element shorter by the height of the addableObjects title height
-			this.nodeElement.setStyle( 'height', this.nodeElement.getSize().y - this.drawer.getElement( "div.titleBar" ).getDimensions().height );
-			this.drawer.getElement( '.close' ).addClass( 'hidden' );
-			this.drawer.setStyle( 'height', 'auto' );
-			this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', 'auto' );
-			this.drawer.getElement( '.close' ).addEvent( 'click', this.render.bindWithEvent( this ) );
-			if( !this.drawer.retrieve( 'initTop' ) ) this.drawer.store( "initTop", this.drawer.getStyle( "top" ) );	
-			this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
-			var addObjectLinks = this.drawer.getElements( "li" );
-			// wire addobject links
-			addObjectLinks.each( function( aLink ){
-				aLink.addEvent( "click", this.onAddObjectClicked.bindWithEvent( this, aLink ) );
-			}, this );
-			if( this.marshal.getUserLevel() == 'superuser' && addObjectLinks.length > 5  ){
-				this.element.removeClass( "dark" );
-				this.drawer.getElement( ".close" ).addClass("hidden");
-			 	this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
-				this.drawer.addEvent( 'click', this.renderAddObjectSelection.bindWithEvent( this, addObjectLinks ) );
-			}else{
-				this.drawer.addEvent( 'mouseenter', this.onDrawerMouseEnter.bindWithEvent( this ) );
-				this.drawer.addEvent( 'mouseleave', this.onDrawerMouseLeave.bindWithEvent( this ) );
-			}
-		}
-	},
-	
-	renderAddObjectSelection: function( e, addObjectLinks ){
-		mop.util.stopEvent( e );
-		this.nodeElement.addClass( 'hidden' );
-		this.drawer.setStyle( 'height', '100%' );
-		this.drawer.getElement( '.close' ).removeClass( 'hidden' );
-		var h = this.element.getSize().y - this.drawer.getElement( "div.titleBar" ).getSize().y;
-		this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', h );
-		this.drawer.morph( { 'top': 0 } );
-	},
 
 	initNode: function( aNodeElement ){
-		this.marshal.setNodeElement( aNodeElement );
+		var togglePublishedStatusElement, removeNodeElement;
+		togglePublishedStatusElement = aNodeElement.getElement(".togglePublishedStatus");
+		node = this.marshal.getNodeById( this.marshal.getNodeIdFromElement( aNodeElement ) );
+		removeNodeElement = aNodeElement.getElement(".removeNode");
 		aNodeElement.store( "options", aNodeElement.getOptionsFromClassName() );
 		aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
-		var togglePublishedStatusElement = aNodeElement.getElement(".togglePublishedStatus");
-		if( togglePublishedStatusElement ){
-			togglePublishedStatusElement.addEvent( "click", this.onTogglePublishedStatusClicked.bindWithEvent( this, aNodeElement ) );
-		}
-		var removeNodeElement = aNodeElement.getElement(".removeNode");
-		if( removeNodeElement ){
-			removeNodeElement.addEvent( "click", this.onRemoveNodeClicked.bindWithEvent( this, aNodeElement ) );
-		}
+		if( togglePublishedStatusElement ) togglePublishedStatusElement.addEvent( "click", this.onTogglePublishedStatusClicked.bindWithEvent( this, aNodeElement ) );
+		if( node.tier ){ this.setActiveNode( aNodeElement ) }
+		if( removeNodeElement ) removeNodeElement.addEvent( "click", this.onRemoveNodeClicked.bindWithEvent( this, aNodeElement ) );
 	},
 
 	indicateNode: function( nodeElement ){
@@ -377,7 +402,7 @@ mop.modules.navigation.Tier = new Class({
 	},
 		
 	onRemoveNodeClicked: function( e, nodeElement ){
-//		console.log( "\tonRemoveNodeClicked", this.marshal.nodeData, "(" , Object.getLength( this.marshal.nodeData ), ")" );
+		// alert( nodeElement.get( 'id' ) );
 		mop.util.stopEvent( e );
 		var confirmation = confirm( "Are you sure you want to remove " + nodeElement.getElement("h5").get("text") + " ?" );
 		if( !confirmation ) return; 
@@ -386,7 +411,7 @@ mop.modules.navigation.Tier = new Class({
 		this.removeObject( nodeId );
 	},
 
-	removeObject: function( nodeElement, nodeId ){
+	removeObject: function( nodeId ){
 		this.marshal.removeObject( nodeId );
 	},
 	
@@ -405,7 +430,6 @@ mop.modules.navigation.Tier = new Class({
 
 	onDrawerMouseEnter: function( e ){
 		var top = this.element.getSize().y - this.drawer.getSize().y;
-		//    console.log( ":::::: onDrawerMouseEnter ::", this.nodeElement, this.nodeElement.getSize() );
 		this.drawer.morph( { 'top': top } );
 	},
 
@@ -431,8 +455,6 @@ mop.modules.navigation.Tier = new Class({
 		this.sortableListElement = sortableListElement;
 		if( !this.sortableList ){
 			this.sortableList = new mop.ui.Sortable( this.sortableListElement, this, this.sortableListElement  );
-			// alert( sortableListElement.getElements( '.module' ).length );
-			// alert( this.sortableList.removeItems( sortableListElement.getElements( '.module' ) ) );
 		}else{
 			this.sortableList.attach();
 		}
@@ -478,5 +500,3 @@ mop.modules.navigation.Tier = new Class({
 	}	
 
 });
-
- 

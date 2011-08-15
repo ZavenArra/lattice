@@ -34,7 +34,6 @@ mop.modules.CMS = new Class({
 		var deepLinkAppend, url;
 		deepLinkAppend = ( deepLink )? "/" + deepLink : '';
 		url = mop.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId + deepLinkAppend;
-//		console.log( 'getRequestTierURL', url );
 		return url;
 	},
 
@@ -98,7 +97,6 @@ mop.modules.CMS = new Class({
 			var titleIPE = this.titleElement.getElement('.field-title');
 			this.titleText = titleIPE.retrieve('Class').getValue();
    		this.slugIPE = this.titleElement.getElement( ".field-slug" );
-			// var titleIPE = this.titleElement.getElement( ".field-title" ).retrieve("Class");
 			if( titleIPE ){
 				titleIPE.addListener( this );
 				this.addEvent( 'uifieldsaveresponse', this.onUIFieldSaved.bind( this ) );
@@ -210,7 +208,7 @@ mop.modules.CMS = new Class({
 		url = this.getRequestTierURL( parentId, deepLink );
 //		console.log( 'cms.requestTier.url:', url );
 		this.currentObjectId = parentId;
-		this.clearTierRequest()
+		this.clearPendingTierRequest()
 		this.currentTierRequest = new Request.JSON( {
 			url: url,
 			onSuccess: function( json ){
@@ -221,13 +219,13 @@ mop.modules.CMS = new Class({
 		return this.currentTierRequest;
 	},
 
-	clearTierRequest: function( json ){
+	clearPendingTierRequest: function( json ){
 		if( this.currentTierRequest ) this.currentTierRequest.cancel();
 		this.currentTierRequest = null;
 	},
 	
 	requestTierResponse: function( json ){
-		this.clearTierRequest();
+		this.clearPendingTierRequest();
 		if( !json.returnValue ) throw  this.toString() + " requestTier error: " + json.response.error;
 	},
 
@@ -258,7 +256,10 @@ mop.modules.CMS = new Class({
     removeObjectRequest: function( parentId, callback ){
         return new Request.JSON({
             url: this.getRemoveObjectRequestURL( parentId ),
-            onSuccess: function( json ){this.removeObjectResponse( json );callback();}.bind( this )
+            onSuccess: function( json ){
+							this.removeObjectResponse( json );
+							if( callback ) callback();
+						}.bind( this )
         }).send();
     },
 
