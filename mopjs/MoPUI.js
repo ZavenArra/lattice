@@ -454,6 +454,9 @@ mop.ui.Modal = new Class({
 		},
 
 		setTitle: function( aString ){ this.title.set( "text", aString ); },
+		spin: function(){ this.modal.show(); },
+		unSpin: function(){ this.modal.unspin(); },
+		getScrollOffset: function(){ return this.element.getScroll(); },
 
 		initialize: function( aMarshal, options ){
 			this.setOptions( options );
@@ -478,20 +481,9 @@ mop.ui.Modal = new Class({
 				transition: Fx.Transitions.Quad.easeInOut,
 				duration: this.options.fadeDuration
 			});
-
-		},
-		
-		spin: function(){
-			console.log( 'spin', this.container, this.container.get( 'spinner') );
-			this.modal.show();
-		},
-		
-		unSpin: function(){			
-			this.modal.unspin();
 		},
 		
 		build: function(){
-			console.log(":::::::::::::::::::::::::::::::::::::::::::");
 			this.element = new Element( "div", { "class": "modalContainer hidden" });
 			this.modalAnchor = new Element( "a", {
 				'class': 'modalAnchor',
@@ -575,8 +567,6 @@ mop.ui.Modal = new Class({
 				this.container.adopt( someContent );
 			}
 		},
-		
-		getScrollOffset: function(){ return this.element.getScroll(); },
 
 		destroy: function(){
 			if( this.element ) this.element.destroy();
@@ -672,11 +662,9 @@ mop.ui.InactivityDialogue = new Class({
 		this.parent();
 		this.message = new Element( 'p', { 'class': 'logoutMessage'  } );
 		this.container.adopt( this.message );
-		console.log( "::", this.container );
 	},
 	
 	setMessage: function( msg ){
-		console.log( 'setMessage', this.container, this.message, msg );
 		this.message.set( 'html', msg );
 	},
 	
