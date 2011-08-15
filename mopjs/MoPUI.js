@@ -2879,21 +2879,14 @@ mop.ui.PaginationControls = new Class({
 		this.previousPageControl.destroy();
 		this.element.destroy();
 		if( this.elementToClone ) this.elementToClone.destroy();
-		this.options = null;
-		this.element = null;
-		this.instanceName = null;
-		this.itemIdPrefix = null;
-		this.elementToClone	= null;
-		this.nextPageControl = null;
-		this.previousPageControl = null;
-		this.pageableElement = null;
-		this.method = null;
-		this.container = null;
-		this.spinner = null;
-		this.marshal = null;
-		this.pages = null;
-		this.container = null;
-		this.currentPage = null;
-		this.pageableElement = null;
+		this.options = this.element = this.instanceName = this.itemIdPrefix = this.elementToClone	= this.nextPageControl = this.previousPageControl = this.pageableElement = this.method = this.container = this.spinner = this.marshal = this.pages = this.container = this.currentPage = this.pageableElement = null;
 	}
+});
+
+mop.ui.AutoCompleter = new Class({
+	Extends: mop.ui.UIField
+});
+
+mop.ui.Tags = new Class({
+	Extends: mop.ui.AutoCompleter
 });

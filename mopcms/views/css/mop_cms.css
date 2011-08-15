@@ -126,6 +126,41 @@ input, textarea{
 	resize: none;
 }
 
+.ui-Text.rows-2 textarea,
+.ui-Text.rows-2 .ipe{
+	min-height: 3em;
+}
+
+.ui-Text.rows-3 textarea,
+.ui-Text.rows-3 .ipe{
+	min-height: 4.5em;
+}
+
+.ui-Text.rows-5 textarea,
+.ui-Text.rows-5 .ipe{
+	min-height: 8em;
+}
+
+.ui-Text.rows-4 textarea,
+.ui-Text.rows-4 .ipe{
+	min-height: 6em;
+}
+
+.ui-Text.rows-6 textarea,
+.ui-Text.rows-6 .ipe{
+	min-height: 9em;
+}
+
+.ui-Text.rows-8 textarea,
+.ui-Text.rows-8 .ipe{
+	min-height: 12em;
+}
+
+.ui-Text.rows-10 textarea,
+.ui-Text.rows-10 .ipe{
+	min-height: 15em;
+}
+
 .displayField{
 	color:#333;
 	background:#eee;
@@ -535,12 +570,16 @@ button:hover, a.button:hover{
 
 .loginStatus{
 	float: right;
-	color: #333;
+	color: #999;
 	font-size: .875em;
 	margin: .5em 0;
-	width: 180px;
+	width: 185px;
 	line-height: 1.5em;
 	white-space: nowrap !important;
+}
+
+.loginStatus .username{
+	color:#666;
 }
 
 .loginStatus .button{
@@ -563,6 +602,7 @@ input[type='radio']{
 	min-height: 1.5em;
 	height: auto !important;
 }
+
 
 .ui-RadioGroup{ margin-bottom:.5em; }
 
@@ -1150,12 +1190,19 @@ ul.listing li.menuItem:hover{
 }
 
 .breadCrumb ul li a{
-    display: block;
-    width: auto;
-	color:#aaa;
+	display: inline-block;
+	width: auto;
 	cursor: pointer;
 	text-decoration:none;
-	padding: .75em .5em 0 .1em;
+	padding: .25em .75em;
+	margin: .5em .25em .5em 0;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-khtml-border-radius: 4px;
+	border-radius: 4px;
+	background: #ededed;
+	color:#ccc;
+	letter-spacing: .1em;
 }
 
 .breadCrumb ul li a:hover{
