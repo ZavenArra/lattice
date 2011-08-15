@@ -168,13 +168,9 @@ blockquote {
 	font-style:italic;
 }
 
-#container {
-	height: 100%;
-	margin:0 auto;
-}
-
-.floatLeft{	float: left; }
-.floatRight{ float:right; }
+#container { height: 100%; margin:0 auto; }
+.floatLeft{	float: left !important; }
+.floatRight{ float:right !important; }
 
 .clearFix:after {
    content: ".";
@@ -423,6 +419,7 @@ label{
 
 
 a.button{
+	display: inline-block;
 	float: left;
 	padding: .25em .5em;
 	margin: 0 .25em 0 0;
@@ -535,10 +532,19 @@ a.button:hover{
 	color: #fff;
 }
 
-.loginstatus{
+.loginStatus{
 	float: right;
-	font-size: 10px;
-	margin: 0 0 1em 0;
+	color: #333;
+	font-size: .875em;
+	margin: .5em 0;
+	width: 180px;
+	line-height: 1.5em;
+	white-space: nowrap !important;
+}
+
+.loginStatus .button{
+	position: relative;
+	top: -0.25em;
 }
 
 th.spinner{
@@ -614,21 +620,6 @@ input[type='checkbox']{
 .switchbox div.right {
 	right:0;
 }
-
-
-a#bigRedButton{
-	font-size: 1em;
-	font-weight:bold;
-	color:#a00;
-	background:#f00 !important;
-}
-
-a#bigRedButton:hover{
-	font-weight:bold;
-	color:#f00;
-	background:#a00 !important;
-}
-
 
 .listClone{
 	background-color: #B9E5FB;

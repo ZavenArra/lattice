@@ -1,7 +1,1 @@
-<div class="loginstatus">
-	<div class="controls">
-	<?if(isset($username)):?>
-		You are logged in as: <?=$username;?> <a class="button" href="<?=url::site('auth/logout/');?>">logout</a>
-	<?endif;?>
-	</div>
-</div>
+<div class="loginStatus"><?if(isset($username)):?>You are logged in as: <?=$username;?> <a class='button floatRight' href="<?=url::site('auth/logout/');?>">logout</a><?endif;?></div>
