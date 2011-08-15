@@ -89,7 +89,6 @@ mop.modules.CMS = new Class({
 	},
 
 	populate: function( html ){
-		$("nodeContent").unspin();
 		this.pageContent.set( 'html', html );
 		this.UIFields = this.initUI( this.pageContent );
 //		console.log( "populate", this.toString(), this.pageContent );
@@ -105,6 +104,7 @@ mop.modules.CMS = new Class({
 				this.addEvent( 'uifieldsaveresponse', this.onUIFieldSaved.bind( this ) );
 			}
 		}
+		this.pageContent.unspin();
 	},
     	
 	clearPage: function(){
@@ -152,6 +152,7 @@ mop.modules.CMS = new Class({
     */
 	requestPage: function( nodeId ){
 			this.setObjectId( nodeId );
+			this.pageContent.spin();
 			return new Request.JSON( {url: this.getRequestPageURL( nodeId ), onSuccess: this.requestPageResponse.bind( this )} ).send();
 	},
     

@@ -2,6 +2,6 @@
 
 	<?=$navigation;?>
 
-	<div id="nodeContent"></div>
+	<div id="nodeContent" clas="clearFix"></div>
 
 </div>
