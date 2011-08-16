@@ -159,8 +159,8 @@ class Controller_Auth extends Controller_Layout {
 				$user->password = $password;
 				$user->save();
 				$body = I18n::get('forgotPasswordEmailBody');
-				$body = str_replace('___MOP___username___MOP___', $user->username, $body);
-				$body = str_replace('___MOP___password___MOP___', $password, $body);
+				$body = str_replace('___Lattice___username___Lattice___', $user->username, $body);
+				$body = str_replace('___Lattice___password___Lattice___', $password, $body);
 die($password . '-'.$user->password);
 
 				mail($user->email, I18n::get('forgotPasswordEmailSubject'), $body);

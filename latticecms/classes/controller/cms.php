@@ -1,6 +1,6 @@
 <?
 
-class Controller_CMS extends MOP_CMS {
+class Controller_CMS extends Lattice_CMS {
 
   
    public function cms_addObject($parentId, $objectTypeId, $data) {

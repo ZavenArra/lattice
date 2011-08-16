@@ -1,6 +1,6 @@
 <?php
 
-Class MOP_Initializer {
+Class Lattice_Initializer {
    
    protected static $messages = array();
    protected static $problems = array(); //not yet implemented

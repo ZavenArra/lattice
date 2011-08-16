@@ -1,6 +1,6 @@
 <?php
 
-Class Initializer_MOPCms {
+Class Initializer_LatticeCms {
 
 	public function initialize() {
 		$problems = array();

@@ -62,7 +62,7 @@ Class mopui{
 
 
 			$sitePath = '';
-			if(Kohana::config('mop.staging')){
+			if(Kohana::config('lattice.staging')){
 				$sitePath = 'staging/';
 			}
 			if(file_exists($sitePath.'application/media/'.$thumbSrc)){

@@ -5,7 +5,7 @@
 
 
 //check for setup
-MOP_Initializer::check(
+Lattice_Initializer::check(
 	array(
 		'rootgraph',
 	)

@@ -1,6 +1,6 @@
-mop.modules.Associator = new Class({
+lattice.modules.Associator = new Class({
     
-	Extends: mop.modules.List,
+	Extends: lattice.modules.List,
 	
     possibleAssociations: null,
     
@@ -11,7 +11,7 @@ mop.modules.Associator = new Class({
     },
     
     toString: function(){
-        return "[ mop.modules.Module, mop.modules.Associator ]";
+        return "[ lattice.modules.Module, lattice.modules.Associator ]";
     },
     
     associate: function(){
@@ -28,7 +28,7 @@ mop.modules.Associator = new Class({
     
 });
 
-mop.modules.AssociatorItem = new Class({
+lattice.modules.AssociatorItem = new Class({
 
     initialize: function(){
         

@@ -5,7 +5,7 @@
  * using slugs or ids to navigate between objects.  Works hand in
  * hand with the slugs hook
  */
-Class Controller_MopFrontend extends Controller_Layout{
+Class Controller_LatticeFrontend extends Controller_Layout{
 
   protected $_actionsThatGetLayout = array(
     'getView',
@@ -46,7 +46,7 @@ Class Controller_MopFrontend extends Controller_Layout{
 	public function action_getView($objectidorslug=null) {
 	
 		$access = Kohana::config('mopfrontend.access.'.$objectidorslug);
-		if(!moputil::checkAccess($access)){
+		if(!latticeutil::checkAccess($access)){
 			Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
 		}
 
@@ -78,7 +78,7 @@ Class Controller_MopFrontend extends Controller_Layout{
 
 		//call this->view load data
 		//get all the data for the object
-		$viewContent = mop::getViewContent($viewName, $objectidorslug);
+		$viewContent = lattice::getViewContent($viewName, $objectidorslug);
 		foreach ($viewContent as $key => $value) {
 			$this->view->$key = $value;
 		}

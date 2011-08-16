@@ -5,7 +5,7 @@
  * implemented in Controller_Layout subclasses. 
  */
 
-Class Controller_HTML extends Controller_MOP {
+Class Controller_HTML extends Controller_Lattice {
 
 		public function action_html($uri) {
 

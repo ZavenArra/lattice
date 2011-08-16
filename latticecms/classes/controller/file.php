@@ -4,10 +4,10 @@ class Controller_File extends Controller{
 	public function __construct($request, $response){
 		parent::__construct($request, $response);
 		/*
-		if(Kohana::config('mop.staging')){
-			$this->mediapath = Kohana::config('mop.stagingmediapath');
+		if(Kohana::config('lattice.staging')){
+			$this->mediapath = Kohana::config('lattice.stagingmediapath');
 		} else {
-			$this->mediapath = Kohana::config('mop.mediapath');
+			$this->mediapath = Kohana::config('lattice.mediapath');
 		}
 		 */
 	}

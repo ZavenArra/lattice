@@ -1,4 +1,4 @@
-<div id="golive" class="module classPath-mop_modules_GoLive grid_8">
+<div id="golive" class="module classPath-lattice_modules_GoLive grid_8">
 
 	<div class="SlideSwitch grid_2">
 		<label for="switch1">On</label><input id="switch1" type="radio" name="switch" value='1' />

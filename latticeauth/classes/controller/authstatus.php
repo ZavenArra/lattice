@@ -1,6 +1,6 @@
 <?
 /*
- * Class: MOP_Auth_Controller
+ * Class: Lattice_Auth_Controller
  * Reponsible for the 'logged in as' object on the MOP backend objects
  */
 class Controller_AuthStatus extends Controller {

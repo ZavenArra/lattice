@@ -5,7 +5,7 @@
 *
 */
 
-class Controller_Navigation extends Controller_MOP{
+class Controller_Navigation extends Controller_Lattice{
 
 	private $objectModel = 'object';
 
@@ -54,7 +54,7 @@ class Controller_Navigation extends Controller_MOP{
 					//we might be skipping this node
 
 					//echo sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]', $parent->objecttype->objecttypename, $child->objecttype->objecttypename);
-					$display = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]', 
+					$display = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]', 
 						$parent->objecttype->objecttypename,
 						$child->objecttype->objecttypename))
 						->item(0)
@@ -93,7 +93,7 @@ class Controller_Navigation extends Controller_MOP{
 
 			//add in any modules
 			if($parent->id == Graph::getRootNode(Kohana::config('cms.graphRootNode'))->id ){
-				$cmsModules = mop::config('cmsModules', '//module');
+				$cmsModules = lattice::config('cmsModules', '//module');
 				foreach($cmsModules as $m){
 
 					$entry = array();
@@ -156,7 +156,7 @@ class Controller_Navigation extends Controller_MOP{
       $tierMethodsDrawer = new View('tierMethodsDrawer');
 			$addableObjects = $parent->objecttype->addableObjects;
 
-			if(moputil::checkAccess('superuser')){
+			if(latticeutil::checkAccess('superuser')){
 				foreach($this->getObjectTypes() as $objectType){
 					$addableObject = array();
 					$addableObject['objectTypeId'] = $objectType['objectTypeName'];
@@ -175,7 +175,7 @@ class Controller_Navigation extends Controller_MOP{
 
 	public function getObjectTypes(){
 		$objectTypes = array();
-		foreach(mop::config('objects', '//objectType') as $objectType){
+		foreach(lattice::config('objects', '//objectType') as $objectType){
 			$entry = array();
 			$entry['objectTypeName'] = $objectType->getAttribute('name');	
 			$entry['label'] = $objectType->getAttribute('name').' label';	

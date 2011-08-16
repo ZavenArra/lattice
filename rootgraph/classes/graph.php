@@ -54,10 +54,10 @@ class Graph {
 		if(self::$mediapath){
 			return self::$mediapath;
 		}
-		if(Kohana::config('mop.staging')){
-			self::$mediapath = Kohana::config('mop_cms.stagingmediapath');
+		if(Kohana::config('lattice.staging')){
+			self::$mediapath = Kohana::config('lattice_cms.stagingmediapath');
 		} else {
-			self::$mediapath = Kohana::config('mop_cms.basemediapath');
+			self::$mediapath = Kohana::config('lattice_cms.basemediapath');
 		}
 		return self::$mediapath;
 	}
@@ -68,7 +68,7 @@ class Graph {
 	 */
 	public static function configureTemplate($objectTypeName){
 		//validation
-		foreach(mop::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
+		foreach(lattice::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
 			if($item->getAttribute('field')=='title'){
 				throw new Kohana_Exception('Title is a reserved field name');
 			}
@@ -83,7 +83,7 @@ class Graph {
 			$tRecord->save();
 		}
 
-		foreach( mop::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
+		foreach( lattice::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
 			$tRecord->configureField($item);
 		}
       Model_Content::reinitDbmap($tRecord->id); // Rethink this.

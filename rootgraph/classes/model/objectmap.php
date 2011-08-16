@@ -49,7 +49,7 @@ class Model_Objectmap extends ORM {
             $index = 'flag';
             break;
          default:
-            $tConfigs = mop::config('objects', '//objectType');
+            $tConfigs = lattice::config('objects', '//objectType');
             $objectTypes = array();
             foreach ($tConfigs as $objectType) {
                $objectTypes[] = $objectType->getAttribute('name');

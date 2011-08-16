@@ -24,14 +24,14 @@ $config['layout'] = 'LayoutAdmin';
  * Config: ['resources']['css']
  */
 $config['resources']['css'] = array( 
-   	'lattice/mopcms/views/css/mop_cms.css'
+   	'lattice/latticecms/views/css/lattice_cms.css'
 );
 
 /*
  * Config: ['resources']['js']
  */
 $config['resources']['js'] = array(
-	'lattice/mopcms/views/js/list.js'
+	'lattice/latticecms/views/js/list.js'
 );
 
 /*

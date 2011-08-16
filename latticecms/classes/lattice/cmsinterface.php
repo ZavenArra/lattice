@@ -7,7 +7,7 @@
  * @package Kororor
  */
 
-abstract class MOP_CMSInterface extends Controller_Layout {
+abstract class Lattice_CMSInterface extends Controller_Layout {
 
 	/*
 	 * Function:  saveFile($objectId)
@@ -27,7 +27,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	public function action_savefile($objectId){
 
 		Kohana::$log->add(Log::INFO, 'please ??');
-		$file = mopcms::saveHttpPostFile($objectId, $_POST['field'], $_FILES[$_POST['field']]);
+		$file = latticecms::saveHttpPostFile($objectId, $_POST['field'], $_FILES[$_POST['field']]);
 		$result = array(
 			'id'=>$file->id,
 			'src'=>$file->original->fullpath,
@@ -160,7 +160,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 		public function action_removeObject($id){
 			$this->cascade_delete($id);
 
-			$view = new View('mop_cms_undelete');
+			$view = new View('lattice_cms_undelete');
 			$view->id=$id;
          $this->response->body($view->render());
          $this->response->data(array('deleted'=>true));
@@ -216,7 +216,7 @@ abstract class MOP_CMSInterface extends Controller_Layout {
 	protected function cascade_undelete($object_id){
 		$object = ORM::Factory('object')->where('id', '=', $id)->find();
 		$object->activity = new Database_Expression(null);
-		$object->slug = mopcms::createSlug($object->contenttable->title, $object->id);
+		$object->slug = latticecms::createSlug($object->contenttable->title, $object->id);
 		$object->save();
 		$object->contenttable->activity = new Database_Expression(null);
 		$object->contenttable->save();

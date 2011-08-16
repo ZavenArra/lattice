@@ -1,15 +1,15 @@
 /*
-	Section: mop.module
+	Section: lattice.module
 	mop Modules
 */
-mop.modules = {};
+lattice.modules = {};
 /* 
-	Class: mop.modules.Module
+	Class: lattice.modules.Module
 	Base module
 */
-mop.modules.Module = new Class({
+lattice.modules.Module = new Class({
 
-	Extends: mop.MoPObject,	
+	Extends: lattice.MoPObject,	
 	/*
 		Variable: instanceName
 		unique id
@@ -43,10 +43,10 @@ mop.modules.Module = new Class({
 	},
 	
 	/*
-	Function build: Instantiates mop.ui elements by calling initUI, can be extended for other purposes...
+	Function build: Instantiates lattice.ui elements by calling initUI, can be extended for other purposes...
 	*/ 	
 	build: function(){
-//		console.log( "mop.modules.Module.build!", this.element );
+//		console.log( "lattice.modules.Module.build!", this.element );
 		this.UIFields = this.initUI();
 //		console.log( ">>> ", this.UIFields );
 		this.childModules = this.initModules( this.element );
@@ -58,7 +58,7 @@ mop.modules.Module = new Class({
 	},
 
 	toString: function(){
-		return "[ object, mop.modules.Module ]";
+		return "[ object, lattice.modules.Module ]";
 	},
 	
 	/*
@@ -101,7 +101,7 @@ mop.modules.Module = new Class({
 		// console.log( Array.from( arguments ) );
 		// console.log( "initModule", this.toString(),  "element", anElement );
 		var elementClass = anElement.get( 'class' );
-		var classPath = mop.util.getValueFromClassName( "classPath", elementClass ).split( "_" );
+		var classPath = lattice.util.getValueFromClassName( "classPath", elementClass ).split( "_" );
 		ref = null;
 //		console.log( "\t\tinitModule classPath",  classPath );
 		classPath.each( function( node ){
@@ -141,8 +141,8 @@ mop.modules.Module = new Class({
 			return this.UIFields;
 		}
 		moduleUIFields.each( function( anElement, index ){
-//			console.log( 'initUI >>>> ', anElement, mop.util.getValueFromClassName( "ui", anElement.get( "class" ) )  );
-			var UIField = new mop.ui[ mop.util.getValueFromClassName( "ui", anElement.get( "class" ) ) ]( anElement, this, this.options );
+//			console.log( 'initUI >>>> ', anElement, lattice.util.getValueFromClassName( "ui", anElement.get( "class" ) )  );
+			var UIField = new lattice.ui[ lattice.util.getValueFromClassName( "ui", anElement.get( "class" ) ) ]( anElement, this, this.options );
 			this.UIFields[ UIField.fieldName ] = UIField;
 			if( UIField ) UIField.setTabIndex( 'tabindex', index+1 );
 		}, this );
@@ -191,13 +191,13 @@ mop.modules.Module = new Class({
 
 
 /* 
-	Class: mop.modules.Module
+	Class: lattice.modules.Module
 	Base module
 */
 
-mop.modules.Cluster = new Class({
+lattice.modules.Cluster = new Class({
 
-Extends: mop.modules.Module,
+Extends: lattice.modules.Module,
 
 initialize: function( anElementOrId, aMarshal, options ){
 	this.parent( anElementOrId, aMarshal, options );
@@ -206,7 +206,7 @@ initialize: function( anElementOrId, aMarshal, options ){
 
 
 getSaveFieldURL: function(){
-	var url = mop.util.getBaseURL() +"ajax/data/cms/savefield/" + this.objectId;
+	var url = lattice.util.getBaseURL() +"ajax/data/cms/savefield/" + this.objectId;
 	return url;
 },
 
@@ -219,12 +219,12 @@ getObjectId: function(){
 
 
 /*
-	Class mop.module.AjaxFormModule
+	Class lattice.module.AjaxFormModule
 	Module that validates and submits inputs via ajax calls.
 */
-mop.modules.AjaxFormModule = new Class({
+lattice.modules.AjaxFormModule = new Class({
 
-	Extends: mop.modules.Module,
+	Extends: lattice.modules.Module,
 	generatedData: {},
 
 	initialize: function( anElement, aMarshal, options ){
@@ -233,10 +233,10 @@ mop.modules.AjaxFormModule = new Class({
 		this.resultsContainer = this.element.getElement(".resultsContainer");
 	},
 
-	toString: function(){ return "[ Object, mop.module.Module, mop.modules.AjaxFormModule ]"; },
+	toString: function(){ return "[ Object, lattice.module.Module, lattice.modules.AjaxFormModule ]"; },
 
 	submitForm: function( e ){
-    mop.util.stopEvent( e );
+    lattice.util.stopEvent( e );
     this.generatedData = Object.merge( this.generatedData, this.serialize() );
 		if( this.options.validate && !this.validateFields() ) return false;	
 		return new Request.JSON({
@@ -271,7 +271,7 @@ mop.modules.AjaxFormModule = new Class({
 	},
 	
 	clearFormFields: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		this.UIFields.each( function( aUIField ){
 			aUIField.setValue( null );
 		}, this );
@@ -298,10 +298,10 @@ mop.modules.AjaxFormModule = new Class({
 
 });
 
-mop.modules.MoPList = new Class({
+lattice.modules.MoPList = new Class({
 
 	/* TODO write unit tests for List*/
-	Extends: mop.modules.Module,
+	Extends: lattice.modules.Module,
 	// listing properties and members, helps with maintenance and destruction.... standard practice from now on
 	sortable: null,
 	sortDirection: null,
@@ -337,7 +337,7 @@ mop.modules.MoPList = new Class({
 	},
 
 	toString: function(){
-		return "[ Object, mop.MoPObject, mop.modules.Module, mop.modules.MoPList ]";
+		return "[ Object, lattice.MoPObject, lattice.modules.Module, lattice.modules.MoPList ]";
 	},
 	
 	initialize: function( anElement, aMarshal, options ){
@@ -357,7 +357,7 @@ mop.modules.MoPList = new Class({
 		this.listing = this.element.getElement( ".listing" );
 		var children = this.listing.getChildren("li");
 		children.each( function( element ){
-			new mop.modules.ListItem( element, this, this.addObjectDialogue );
+			new lattice.modules.ListItem( element, this, this.addObjectDialogue );
 		}, this );
 	},
 
@@ -368,10 +368,10 @@ mop.modules.MoPList = new Class({
 	},
 	
 	addObjectRequest: function( e ){
-		mop.util.stopEvent( e );
-		if( this.addObjectDialogue ) mop.modalManager.removeModal( this.addObjectDialogue );
+		lattice.util.stopEvent( e );
+		if( this.addObjectDialogue ) lattice.modalManager.removeModal( this.addObjectDialogue );
 		this.addObjectDialogue = null;
-		this.addObjectDialogue = new mop.ui.AddObjectDialogue( this );
+		this.addObjectDialogue = new lattice.ui.AddObjectDialogue( this );
 		this.addObjectDialogue.spin();
 		this.addObjectDialogue.show();
 		return new Request.JSON( { url: this.getAddObjectURL(), onSuccess: this.onAddObjectResponse.bind( this ) } ).send();
@@ -381,20 +381,20 @@ mop.modules.MoPList = new Class({
 		var element, listItem, addItemText;
 		element = json.response.html.toElement();
 		addItemText = this.controls.getElement( ".addItem" ).get( "text" );
-		listItem = new mop.modules.ListItem( element, this, this.addObjectDialogue ).hideControls();
+		listItem = new lattice.modules.ListItem( element, this, this.addObjectDialogue ).hideControls();
 		this.addObjectDialogue.setContent( element , addItemText );
 		Object.each( listItem.UIFields, function( uiField ){
 			uiField.scrollContext = "modal";
 			if( uiField.reposition ) uiField.reposition('modal');
 		});
-		mop.util.EventManager.broadcastMessage( "resize" );
+		lattice.util.EventManager.broadcastMessage( "resize" );
 	},
 
 	removeObject: function( item ){
     this.removeObjectRequest( item.getObjectId() );
 		item.destroy();
 		item = null;
-		mop.util.EventManager.broadcastMessage( "resize" );          
+		lattice.util.EventManager.broadcastMessage( "resize" );          
 	},
 	
 	removeObjectRequest: function( itemObjectId ){
@@ -419,7 +419,7 @@ mop.modules.MoPList = new Class({
 
 	makeSortable: function(){
 		if( this.allowChildSort && !this.sortableList ){
-			this.sortableList = new mop.ui.Sortable( this.listing, this, $( document.body ) );
+			this.sortableList = new lattice.ui.Sortable( this.listing, this, $( document.body ) );
 		}else if( this.allowChildSort ){
 			this.sortableList.attach();
 		}
@@ -475,18 +475,18 @@ mop.modules.MoPList = new Class({
 	destroy: function(){
 		if(this.sortableList) this.removeSortable( this.sortableList );
 		clearInterval( this.submitDelay );
-		if( this.addObjectDialogue ) mop.modalManager.removeModal( this.addObjectDialogue ) 
+		if( this.addObjectDialogue ) lattice.modalManager.removeModal( this.addObjectDialogue ) 
 		this.addObjectDialogue = this.controls = this.instanceName = this.listing = this.oldSort = this.allowChildSort, this.sortDirection, this.submitDelay = null;
     if( this.scroller ) this.scroller = null;
-		mop.util.EventManager.broadcastMessage( 'resize' );
+		lattice.util.EventManager.broadcastMessage( 'resize' );
 		this.parent();
 	}
 
 });
 
-mop.modules.ListItem = new Class({
+lattice.modules.ListItem = new Class({
 
-	Extends: mop.modules.Module,
+	Extends: lattice.modules.Module,
 	Implements: [ Events, Options ],
 	addObjectDialogue: null,
 	objectId: null,
@@ -510,7 +510,7 @@ mop.modules.ListItem = new Class({
 		this.build();
 	},
 
-	toString: function(){ return "[ Object, mop.modules.Module, mop.modules.ListItem ]"; },
+	toString: function(){ return "[ Object, lattice.modules.Module, lattice.modules.ListItem ]"; },
 
 	build: function(){
 		this.parent();
@@ -523,7 +523,7 @@ mop.modules.ListItem = new Class({
 	},
 	
 	removeObject: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
 		this.fadeOut = new Fx.Morph( this.element, { duration: 350, onComplete: function(){ this.marshal.removeObject( this ) }.bind( this ) } );
 		this.fadeOut.start( { height: 0, opacity: 0 } );

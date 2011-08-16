@@ -250,64 +250,64 @@ Request.JSON.implement({
 if( !mop ) var mop = {};
 
 /*
-	Pakcage: mop.util
+	Pakcage: lattice.util
 */
-mop.util = {};
+lattice.util = {};
 
-/* Variable: mop._domIsReady read only */
-mop._domIsReady = false;
+/* Variable: lattice._domIsReady read only */
+lattice._domIsReady = false;
 
 
 /*
- 	Function: mop.util.isDomReady 
+ 	Function: lattice.util.isDomReady 
 	Simple getter
-	Returns: mop._domIsReady
+	Returns: lattice._domIsReady
 */
-mop.util.hasDOMReadyFired = function(){
-	return mop._domIsReady;
+lattice.util.hasDOMReadyFired = function(){
+	return lattice._domIsReady;
 }
 
 /*
-	Function: mop.util.domIsReady
+	Function: lattice.util.domIsReady
 	So a module can know if an initial domready has been called
 	This is key to having modules not call domready if they are loaded from within another module, but still able to self-instantiate is loaded alone)
-	Set mop._domIsReady to true
+	Set lattice._domIsReady to true
 */
-mop.util.DOMReadyHasFired = function(){
-	mop._domIsReady = true;
+lattice.util.DOMReadyHasFired = function(){
+	lattice._domIsReady = true;
 }
 
 
 /*
-	Function: mop.util.loadStyleSheet
+	Function: lattice.util.loadStyleSheet
 	Attach a stylesheet element to head element via DOM
  	Parameters:
 		cssURL - path to the stylesheet to be attached default value is "screen"
 		media - media type to apply to stylesheet element
 */
-mop.util.loadStyleSheet = function( cssURL, mediaString, opts ){
+lattice.util.loadStyleSheet = function( cssURL, mediaString, opts ){
 	var options = ( opts )? opts : {};
 	options.media = ( mediaString )? mediaString : "screen";
 	new Asset.css( cssURL, options ); 
 }
 
 /*
-	Function: mop.util.loadJS
+	Function: lattice.util.loadJS
 	Attach a javascript element to head element via DOM
  	Arguments:
 		jsURL - {String} path to the script element to be attached
 */
-mop.util.loadJS = function( jsURL, options ){
+lattice.util.loadJS = function( jsURL, options ){
     console.log( "loadJS", jsURL)
 	return new Asset.javascript( jsURL, options );
 }
 
 /*
- 	Function: mop.util.stopEvent 
+ 	Function: lattice.util.stopEvent 
 	Stops event bubbling, normally this is handled in each instance
 	But this will serve as a nice shortcut given the verbosity needed to deal with some IE's ( the whole return value conditional )
 */
-mop.util.stopEvent = function( e ){
+lattice.util.stopEvent = function( e ){
 	if( e && e.stop ){
 		e.stop();
 	}else if( e ){
@@ -316,11 +316,11 @@ mop.util.stopEvent = function( e ){
 }
 
 /*
- 	Function: mop.util.preventDefault 
+ 	Function: lattice.util.preventDefault 
 	Prevents default actions on click events, similart to stopEvent... see mootools documentation for distinction
 	This will serve as a nice shortcut given the verbosity needed to deal with IE's ( the whole return value conditional )
 */
-mop.util.preventDefault = function( e ){
+lattice.util.preventDefault = function( e ){
 	if( e && e.preventDefault ){
 		e.preventDefault();
 	}else if( e ){
@@ -329,26 +329,26 @@ mop.util.preventDefault = function( e ){
 }
 
 /*
- 	Function: mop.util.setBaseURL 
-	Returns: sets mop.baseURL for later use
+ 	Function: lattice.util.setBaseURL 
+	Returns: sets lattice.baseURL for later use
 */
-mop.util.setBaseURL = function( base ){
-    mop.baseURL = base;
+lattice.util.setBaseURL = function( base ){
+    lattice.baseURL = base;
 }
 
 /*
- 	Function: mop.util.getBaseURL 
+ 	Function: lattice.util.getBaseURL 
 	Returns: href from html base tag
 */
-mop.util.getBaseURL = function(){
-	return ( mop.baseURL )? mop.baseURL : "/";
+lattice.util.getBaseURL = function(){
+	return ( lattice.baseURL )? lattice.baseURL : "/";
 }
 
-/* Function: mop.util.getValueFromClassName
+/* Function: lattice.util.getValueFromClassName
 	Arguments: key {String}, aClassName {String} (space delimeted)
 	Returns: {String} value
 */
-mop.util.getValueFromClassName = function( key, aClassName ){
+lattice.util.getValueFromClassName = function( key, aClassName ){
 	if(!aClassName) return false;
 	var classNames = aClassName.split( " " );
 	var result = null;
@@ -360,11 +360,11 @@ mop.util.getValueFromClassName = function( key, aClassName ){
 
 
 /*
-	Package: mop.util.validation
+	Package: lattice.util.validation
 	Static class to hold validation regex and functions
 	Note: (Capitalize)
 */
-mop.util.validation = {
+lattice.util.validation = {
 	regEx : {
 		required : /[^.+]/,
 		nonEmpty : /[^.+]/,
@@ -496,20 +496,20 @@ mop.util.validation = {
 	
 	checkValueForValidity: function( value, rule, auxData ){
 //		console.log( "checkValueForValidity", value, rule, ( value != "" || !value ) );
-		if( rule == "email" && !value.test( mop.util.validation.regEx.email ) ) return false;
-		if( !value || ( rule == "required" || rule == "nonEmpty" ) && ( !value.test( mop.util.validation.regEx.required ) ) ) return false;
-		if( ( rule == "numeric" || rule == "number" ) && !value.test( mop.util.validation.regEx.number ) && ( value != "" || value ) ) return false;
-		if( rule == "phone" && !value.test( mop.util.validation.regEx.phone ) ) return false;
-		if( rule == "url" && !value.test( mop.util.validation.regEx.url ) ) return false;
-		if( rule == "password" && value.test( mop.util.validation.regEx.password ) ) return false;
-		if( rule == "creditCard" && !mop.util.validation.checkCreditCardNumber( value, auxData.type ) ) return false;
-		if( rule == "ABARouting" && !mop.util.validation.checkABARoutingNumber( value ) ) return false;
+		if( rule == "email" && !value.test( lattice.util.validation.regEx.email ) ) return false;
+		if( !value || ( rule == "required" || rule == "nonEmpty" ) && ( !value.test( lattice.util.validation.regEx.required ) ) ) return false;
+		if( ( rule == "numeric" || rule == "number" ) && !value.test( lattice.util.validation.regEx.number ) && ( value != "" || value ) ) return false;
+		if( rule == "phone" && !value.test( lattice.util.validation.regEx.phone ) ) return false;
+		if( rule == "url" && !value.test( lattice.util.validation.regEx.url ) ) return false;
+		if( rule == "password" && value.test( lattice.util.validation.regEx.password ) ) return false;
+		if( rule == "creditCard" && !lattice.util.validation.checkCreditCardNumber( value, auxData.type ) ) return false;
+		if( rule == "ABARouting" && !lattice.util.validation.checkABARoutingNumber( value ) ) return false;
 		return true;
 	}
 
 }
 
-mop.MoPObject = new Class({
+lattice.MoPObject = new Class({
 	Implements: [ Events, Options ],
 	/*
 		Variable: element
@@ -552,7 +552,7 @@ mop.MoPObject = new Class({
 });
 
 
-mop.util.Broadcaster = new Class({
+lattice.util.Broadcaster = new Class({
 
 	listeners: [],
 
@@ -576,14 +576,14 @@ mop.util.Broadcaster = new Class({
 	
 });
 
-mop.util.EventManager = new new Class({
-	Implements: mop.util.Broadcaster,
+lattice.util.EventManager = new new Class({
+	Implements: lattice.util.Broadcaster,
 	initialize: function(){}
 });
 
-mop.util.HistoryManager = new Class({
+lattice.util.HistoryManager = new Class({
 
-	Implements: [ Events, mop.util.Broadcaster ],
+	Implements: [ Events, lattice.util.Broadcaster ],
 	locationMonitor: null,
 	appState: {},
 	_instance: null,
@@ -608,11 +608,11 @@ mop.util.HistoryManager = new Class({
 	},
 
 	toString: function(){
-		return "[ Object, mop.util.HistoryManager ]";
+		return "[ Object, lattice.util.HistoryManager ]";
 	},
 
 	instance: function(){
-		if( !this._instance ){ this._instance = new mop.util.HistoryManager(); }
+		if( !this._instance ){ this._instance = new lattice.util.HistoryManager(); }
 		return this._instance;
 	},
 
@@ -656,7 +656,7 @@ mop.util.HistoryManager = new Class({
 	
 });
 
-mop.util.LoginMonitor = new Class({
+lattice.util.LoginMonitor = new Class({
 
 	millisecondsOfInactivityUntilPrompt: 900000,
 	millisecondsUntilLogout: 300000,
@@ -667,7 +667,7 @@ mop.util.LoginMonitor = new Class({
 	
 	initialize: function(){
 		window.addEvent( "mousemove", this.onMouseMove.bind( this ) );
-		if( mop.loginTimeout ) this.millisecondsOfInactivityUntilPrompt = Number( mop.loginTimeout ) * 1000;
+		if( lattice.loginTimeout ) this.millisecondsOfInactivityUntilPrompt = Number( lattice.loginTimeout ) * 1000;
 		this.inactivityTimeout = this.onInactivity.periodical( this.millisecondsOfInactivityUntilPrompt, this );
 		this.status = "pending";
 		this.inactivityMessage = 'You have been inactive for {inactiveMins} minutes. If your dont respond to this message you will be automatically logged out in <b>{minutes} minutes and {seconds} seconds</b>. Would you like to stay logged in?';
@@ -689,7 +689,7 @@ mop.util.LoginMonitor = new Class({
 			confirmText: "Stay logged in",
 			cancelText: "Logout"
 		}
-		if( !this.dialogue ) this.dialogue = new mop.ui.InactivityDialogue( this, opts );
+		if( !this.dialogue ) this.dialogue = new lattice.ui.InactivityDialogue( this, opts );
 		this.dialogue.setTitle( "Login Timeout" );
 		this.logoutTimeout = this.logoutCountDown.periodical( 1000, this );
 		this.logoutCountDown();
@@ -708,17 +708,17 @@ mop.util.LoginMonitor = new Class({
 	},
 
 	keepAlive: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		this.status = "notshowing";
 		clearInterval( this.inactivityTimeout );
 		clearInterval( this.logoutTimeout );
 		this.inactivityTimeout = this.onInactivity.periodical( this.millisecondsOfInactivityUntilPrompt, this );
-		new Request.JSON( { url: mop.util.getBaseURL() + "keepalive" } ).send();
+		new Request.JSON( { url: lattice.util.getBaseURL() + "keepalive" } ).send();
 	},
 
 	logout: function( e ){
 //		console.log( "timeout exceeded performing logout" );
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		clearInterval( this.logoutTimeout );
 		clearInterval( this.inactivityTimeout );
 		delete this.status;
@@ -735,7 +735,7 @@ mop.util.LoginMonitor = new Class({
 *  http://www.webtoolkit.info/
 *
 **/ 
-mop.util.MD5 = function (string) {
+lattice.util.MD5 = function (string) {
  
 	function RotateLeft(lValue, iShiftBits) {
 		return (lValue<<iShiftBits) | (lValue>>>(32-iShiftBits));
@@ -937,9 +937,9 @@ mop.util.MD5 = function (string) {
 
 /* These should be configurable, also are they more App level stuff instead of mopcore? */
 window.addEvent( "resize", function(){
-	mop.util.EventManager.broadcastMessage( "resize" );
+	lattice.util.EventManager.broadcastMessage( "resize" );
 });
 
 window.addEvent( "scroll", function(){
-	mop.util.EventManager.broadcastMessage( "onWindowScroll");
+	lattice.util.EventManager.broadcastMessage( "onWindowScroll");
 });

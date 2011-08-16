@@ -50,9 +50,9 @@ class latticecms {
 	}
 
 	public static function convertNewlines($value){
-		$value = preg_replace('/(<.*>)[ ]*\n/', "$1------MOP_NEWLINE------", $value);
+		$value = preg_replace('/(<.*>)[ ]*\n/', "$1------Lattice_NEWLINE------", $value);
 		$value = preg_replace('/[ ]*\n/', '<br />', $value);
-		$value = preg_replace('/------MOP_NEWLINE------/', "\n", $value);
+		$value = preg_replace('/------Lattice_NEWLINE------/', "\n", $value);
 		return $value;
 	}
 
@@ -135,7 +135,7 @@ class latticecms {
 						foreach ($elements as $element) {
 
 								//check if this element type is in fact a objectType
-								$tConfig = mop::config('objects', sprintf('//objectType[@name="%s"]', $element['type']))->item(0);
+								$tConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $element['type']))->item(0);
 
 								if ($tConfig) {
                            
@@ -143,7 +143,7 @@ class latticecms {
 										$clusterObject = $object->$field;
 										//this should really happen within the models
 										
-										$clusterHtmlChunks = mopcms::buildUIHtmlChunksForObject($clusterObject);
+										$clusterHtmlChunks = latticecms::buildUIHtmlChunksForObject($clusterObject);
 
 										$customview = 'objectTypes/' . $clusterObject->objecttype->objecttypename; //check for custom view for this objectType
 										$usecustomview = false;
@@ -172,9 +172,9 @@ class latticecms {
 				switch ($element['type']) {
                case 'element': //this should not be called 'element' as element has a different meaning
                   if (isset($element['arguments'])) {
-                     $html = mop::buildModule($element, $element['elementname'], $element['arguments']);
+                     $html = lattice::buildModule($element, $element['elementname'], $element['arguments']);
                   } else {
-                     $html = mop::buildModule($element, $element['elementname']);
+                     $html = lattice::buildModule($element, $element['elementname']);
                   }
                   $htmlChunks[$element['modulename']] = $html;
                   break;
@@ -190,7 +190,7 @@ class latticecms {
                   $htmlChunks[$element['family']] = Request::factory($requestURI)->execute()->body();
 
 
-                  //$htmlChunks[$element['family']] = mop::buildModule($element, $arguments);
+                  //$htmlChunks[$element['family']] = lattice::buildModule($element, $arguments);
                   break;
                case 'associator':
                   $controller = new Associator_Controller($element['filters'], $object->id, $element['field']);
@@ -228,7 +228,7 @@ class latticecms {
    }
 
    public static function buildUIHtmlChunksForObject($object) {
-      $elements = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename));
+      $elements = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename));
       // should be Model_object->getElements();
       // this way a different driver could be created for non-xml config if desired
       $elementsConfig = array();
@@ -248,7 +248,7 @@ class latticecms {
             case 'image':
                $ext = array();
                //echo sprintf('/objectType[@name="%s"]/elements/image[@field="%s]"/ext', $object->objecttype->objecttypename, $element->getAttribute('field'));
-               $children = mop::config('objects', 'ext', $element);
+               $children = lattice::config('objects', 'ext', $element);
                foreach ($children as $child) {
                   if ($child->tagName == 'ext') {
                      $ext[] = $child->nodeValue;
@@ -257,7 +257,7 @@ class latticecms {
                $entry['extensions'] = implode(',', $ext);
                break;
             case 'radioGroup':
-               $children = mop::config('objects', 'radio', $element);
+               $children = lattice::config('objects', 'radio', $element);
                $radios = array();
                foreach ($children as $child) {
                   $label = $child->getAttribute('label');
@@ -269,7 +269,7 @@ class latticecms {
 
             case 'associator':
                //need to load filters here
-               $filters = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]/filter', 
+               $filters = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]/filter', 
 							$object->objecttype->objecttypename,
 							$element->getAttribute('field') ));
 				$filterSettings = array();
@@ -287,20 +287,20 @@ class latticecms {
       }
 			$elementsConfig[] = $entry;
 		}
-    return mopcms::buildUIHtmlChunks($elementsConfig, $object);
+    return latticecms::buildUIHtmlChunks($elementsConfig, $object);
   }
 
 	public static function regenerateImages(){
 		//find all images
 
-		foreach(mop::config('objects', '//objectType') as $objectType){
-			foreach(mop::config('objects', 'elements/*', $objectType) as $element){
+		foreach(lattice::config('objects', '//objectType') as $objectType){
+			foreach(lattice::config('objects', 'elements/*', $objectType) as $element){
 				if($element->tagName == 'image'){
 					$objects = ORM::Factory('objectType', $objectType->getAttribute('name'))->getActiveMembers();
 					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
 						if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
-							$uiresizes = Kohana::config('mop_cms.uiresizes');
+							$uiresizes = Kohana::config('lattice_cms.uiresizes');
 							$object->processImage($object->$fieldname->filename, $fieldname, $uiresizes);
 						}
 					}
@@ -312,11 +312,11 @@ class latticecms {
 	public static function generateNewImages($objectIds){
 		foreach($objectIds as $id){
 			$object = ORM::Factory('object', $id);
-			foreach(mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element){
+			foreach(lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element){
 				if($element->tagName == 'image'){
 					$fieldname = $element->getAttribute('field');
 					if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
-						$uiresizes = Kohana::config('mop_cms.uiresizes');
+						$uiresizes = Kohana::config('lattice_cms.uiresizes');
 						$object->processImage($object->$fieldname->filename, $fieldname, $uiresizes);
 					}
 				}
@@ -373,7 +373,7 @@ public static function makeFileSaveName($filename) {
          case 'TIF':
          case 'TIFF':
             Kohana::$log->add(Log::ERROR, 'save uploaded');
-						$uiresizes = Kohana::config('mop_cms.uiresizes');
+						$uiresizes = Kohana::config('lattice_cms.uiresizes');
             return $object->saveUploadedImage($field, $postFileVars['name'], $postFileVars['type'], $postFileVars['tmp_name'], $uiresizes);
             break;
 

@@ -8,10 +8,10 @@ class frontend {
 		switch($element->nodeName){
 		case 'list':
 			$family = $element->getAttribute('family');
-			$addables = mop::config('objects', 'addableObject', $element);		
+			$addables = lattice::config('objects', 'addableObject', $element);		
 			$addable = $addables->item(0);
 			$objectTypeName = $addable->getAttribute('objectTypeName');
-			$listItemElements = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $objectTypeName));		
+			$listItemElements = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $objectTypeName));		
 			echo $indent."<ul id=\"$family\" >\n";
 			echo $indent."<?foreach({$prefix}['$family'] as \$label => \${$family}ListItem):?>\n";
 			echo $indent." <li class=\"$objectTypeName\">\n";

@@ -1,6 +1,6 @@
 <?
 
-Class Controller_PublicMenu extends Controller_MOP {
+Class Controller_PublicMenu extends Controller_Lattice {
 
 
 	public function action_index(){

@@ -49,8 +49,8 @@ Class mop {
 			self::$config = array();
 		}
 
-		if($activeConfig = Kohana::config('mop.activeConfiguration')){
-			if($configurations = Kohana::config('mop.configurations')){
+		if($activeConfig = Kohana::config('lattice.activeConfiguration')){
+			if($configurations = Kohana::config('lattice.configurations')){
 				if($active = $configurations[$activeConfig]){
 					if(isset($active[$arena]) && $newName = $active[$arena]){
 						$arena = $newName;
@@ -68,7 +68,7 @@ Class mop {
 			$dom = new MyDOMDocument($dom);
 
 			//check for arena mappings
-			if($customName = Kohana::config('mop.filenames.'.$arena)){
+			if($customName = Kohana::config('lattice.filenames.'.$arena)){
 				$arena = $customName;
 			}
 
@@ -144,7 +144,7 @@ Class mop {
 				$view = new View($module['modulename']);
 				$object = ORM::Factory('object')->where('slug', '=', $module['modulename'])->find();
 				if($object->loaded()){ // in this case it's a slug for a specific object
-					foreach(mop::getViewContent($object->id, $object->objecttype->objecttypename) as $key=>$content){
+					foreach(lattice::getViewContent($object->id, $object->objecttype->objecttypename) as $key=>$content){
 						$view->$key = $content;
 					}
 				}
@@ -179,7 +179,7 @@ Class mop {
 
 		//render some html
 		//
-		//BELOW HERE NEEDS TO BE FIXED IN ALL CHILDREN OF MOP_CONTROLLER
+		//BELOW HERE NEEDS TO BE FIXED IN ALL CHILDREN OF Lattice_CONTROLLER
 		//CONTROLERS SHOULD JUST ASSIGN TEMPLATE VARS THEN AND THERE
 		if($objectTypevar==NULL){
 			$this->view->$module['modulename'] = $module->view->render();
@@ -195,44 +195,44 @@ Class mop {
 		if ($view == 'default') {
 			$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
 			if (!$object->loaded()) {
-				throw new Koahan_Exception('mop::getViewContent : Default view callled with no slug');
+				throw new Koahan_Exception('lattice::getViewContent : Default view callled with no slug');
 			}
 			$data['content']['main'] = $object->getPageContent();
 			return $data;
 		}
 
-		$viewConfig = mop::config('frontend', "//view[@name=\"$view\"]")->item(0);
+		$viewConfig = lattice::config('frontend', "//view[@name=\"$view\"]")->item(0);
 		if (!$viewConfig) {
          throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
 		}
 		if ($viewConfig->getAttribute('loadPage')) {
 			$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
 			if (!$object->loaded()) {
-				throw new Kohana_Exception('mop::getViewContent : View specifies loadPage but no object to load');
+				throw new Kohana_Exception('lattice::getViewContent : View specifies loadPage but no object to load');
 			}
 			$data['content']['main'] = $object->getPageContent();
 		}
 
-		$includeContent = mop::getIncludeContent($viewConfig, $object->id);
+		$includeContent = lattice::getIncludeContent($viewConfig, $object->id);
 		foreach ($includeContent as $key => $values) {
 			$data['content'][$key] = $values;
 		}
 
-		if ($subViews = mop::config('frontend', "subView", $viewConfig)) {
+		if ($subViews = lattice::config('frontend', "subView", $viewConfig)) {
 			foreach ($subViews as $subview) {
 				$view = $subview->getAttribute('view');
 				$slug = $subview->getAttribute('slug');
 				$label = $subview->getAttribute('label');
-				if (mop::config('frontend', "//view[@name=\"$view\"]")) {
+				if (lattice::config('frontend', "//view[@name=\"$view\"]")) {
 
 					if ($view && $slug) {
-						$subViewContent = mop::getViewContent($view, $slug);
+						$subViewContent = lattice::getViewContent($view, $slug);
 					} else if ($slug) {
 						$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
 						$view = $object->objecttype->objecttypename;
-						$subViewContent = mop::getViewContent($view, $slug);
+						$subViewContent = lattice::getViewContent($view, $slug);
 					} else if ($view) {
-						$subViewContent = mop::getViewContent($view);
+						$subViewContent = lattice::getViewContent($view);
 					} else {
 						die("subview $label must have either view or slug");
 					}
@@ -244,7 +244,7 @@ Class mop {
 					$data[$label] = $subView->render();
 				} else {
 					//assume it's a module
-					$data[$label] = mop::buildModule(array('modulename' => $view/* , 'controllertype'=>'object' */), $subview->getAttribute('label'));
+					$data[$label] = lattice::buildModule(array('modulename' => $view/* , 'controllertype'=>'object' */), $subview->getAttribute('label'));
 				}
 			}
 		}
@@ -254,14 +254,14 @@ Class mop {
 
 	public static function getIncludeContent($includeTier, $parentId){
     $content = array();
-    if($includeContentQueries = mop::config('frontend', 'includeData', $includeTier)) {
+    if($includeContentQueries = lattice::config('frontend', 'includeData', $includeTier)) {
          foreach ($includeContentQueries as $includeContentQueryParams) {
             $query = new Graph_ObjectQuery();
             $query->initWithXml($includeContentQueryParams);
             $includeContent = $query->run($parentId);
 
             for ($i = 0; $i < count($includeContent); $i++) {
-               $children = mop::getIncludeContent($includeContentQueryParams, $includeContent[$i]['id']);
+               $children = lattice::getIncludeContent($includeContentQueryParams, $includeContent[$i]['id']);
                $includeContent[$i] = array_merge($includeContent[$i], $children);
             }
             $content[$query->attributes['label']] = $includeContent;

@@ -14,7 +14,7 @@
 				<?endif;?>
 			</div>
 			<div class="status hidden">
-			<img src="<?=url::site('lattice/mopcms/views/images/bar.gif', null, false);?>" class="progress" />
+			<img src="<?=url::site('lattice/latticecms/views/images/bar.gif', null, false);?>" class="progress" />
 				<span class="message hidden"></span>
 			</div>
 			<div class="controls clearFix">

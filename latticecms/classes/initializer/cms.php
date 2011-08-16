@@ -7,7 +7,7 @@ Class Initializer_Cms {
       Graph::configureTemplate(Kohana::config('cms.graphRootNode'));
       Graph::addRootNode(Kohana::config('cms.graphRootNode'));
       
-      MOP_Initializer::addMessage('configured graph root node');
+      Lattice_Initializer::addMessage('configured graph root node');
 
 	}
 

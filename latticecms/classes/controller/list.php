@@ -12,7 +12,7 @@
 
  */
 
-class Controller_List extends MOP_CMSInterface {
+class Controller_List extends Lattice_CMSInterface {
    /*
     *  Variable: object_id
     *  static int the global object id when operating within the CMS submodules get the object id
@@ -125,7 +125,7 @@ class Controller_List extends MOP_CMSInterface {
       $html = '';
       foreach ($listMembers as $object) {
 
-         $htmlChunks = mopcms::buildUIHtmlChunksForObject($object);
+         $htmlChunks = latticecms::buildUIHtmlChunksForObject($object);
          $itemt = new View($this->itemView());
          $itemt->uiElements = $htmlChunks;
 
@@ -181,7 +181,7 @@ class Controller_List extends MOP_CMSInterface {
       //addable item should be specifid in the addItem call
       if($objectTypeId == null){
    
-        $addableObjectTypes = mop::config('objects', sprintf('//list[@family="%s"]/addableObject', $listObject->objecttype->objecttypename));
+        $addableObjectTypes = lattice::config('objects', sprintf('//list[@family="%s"]/addableObject', $listObject->objecttype->objecttypename));
         if (!$addableObjectTypes->length > 0) {
            throw new Kohana_Exception('No Addable Objects ' .' Count not locate configuration in objects.xml for ' . sprintf('//list[@family="%s"]/addableobject', $this->_family));
         }
@@ -191,7 +191,7 @@ class Controller_List extends MOP_CMSInterface {
       $newId = $listObject->addObject($objectTypeId);
       
       $item = ORM::Factory('object', $newId);
-      $htmlChunks = mopcms::buildUIHtmlChunksForObject($item);
+      $htmlChunks = latticecms::buildUIHtmlChunksForObject($item);
       $itemt = new View($this->itemView());
       $itemt->uiElements = $htmlChunks;
 

@@ -1,8 +1,8 @@
-if( !mop.modules.navigation ) mop.modules.navigation = {};
+if( !lattice.modules.navigation ) lattice.modules.navigation = {};
 
-mop.modules.navigation.Navigation = new Class({
+lattice.modules.navigation.Navigation = new Class({
 
-	Extends: mop.MoPObject,
+	Extends: lattice.MoPObject,
 	Implements: [ Events, Options ],
 	rootId: 0,
 	dataSource: null,
@@ -31,7 +31,7 @@ mop.modules.navigation.Navigation = new Class({
 		return visibleTiers;
 	},
 	
-	onAppStateChanged: function( appState ){ console.log( 'mop.modules.navigation.Navigation.appStateChanged', appState ); },	
+	onAppStateChanged: function( appState ){ console.log( 'lattice.modules.navigation.Navigation.appStateChanged', appState ); },	
 	onObjectNameChanged: function( objId, name ){
 		this.nodeData[ objId ].title = name;
 		$( 'node_' + objId ).getElement( "h5" ).set( 'text', name );
@@ -105,7 +105,7 @@ mop.modules.navigation.Navigation = new Class({
 	initialize: function( element, marshal, options ){
 		this.setOptions( options );
 		this.parent( element, marshal, options );
-		mop.historyManager.addListener( this );
+		lattice.historyManager.addListener( this );
 		
 		this.addEvent( 'appstatechanged', function( appState ){
 			this.onAppStateChanged( appState );
@@ -120,15 +120,15 @@ mop.modules.navigation.Navigation = new Class({
 		
 		this.container.empty();
 		this.instanceName = this.element.get("id");
-		this.breadCrumbs =  new mop.ui.navigation.BreadCrumbTrail( this.element.getElement( ".breadCrumb" ), this.onCrumbClicked.bind( this ) );
+		this.breadCrumbs =  new lattice.ui.navigation.BreadCrumbTrail( this.element.getElement( ".breadCrumb" ), this.onCrumbClicked.bind( this ) );
 		this.rootId = this.dataSource.getRootNodeId();
 		this.userLevel = ( Cookie.read( 'userLevel' ) )? Cookie.read( 'userLevel' ) : "superuser";
 		console.log( "/////////////////////////////////" );
 		console.log( "rootId:", this.rootId );	
 		console.log( "userLevel:", this.userLevel );
-		console.log( "appState:", mop.historyManager.getAppState() );
+		console.log( "appState:", lattice.historyManager.getAppState() );
 		console.log( "/////////////////////////////////" );
-		var deepLink = ( mop.historyManager.getAppState().slug )? mop.historyManager.getAppState().slug : null;
+		var deepLink = ( lattice.historyManager.getAppState().slug )? lattice.historyManager.getAppState().slug : null;
 		
 		this.breadCrumbs.addCrumb( { label: '/' } );
 		
@@ -164,7 +164,7 @@ mop.modules.navigation.Navigation = new Class({
 				this.processNodeData( node.tier.nodes, node.tier.html, node.id, this.addPane() );
 			}
 		}, this );
-		var tier = new mop.modules.navigation.Tier( this, html, tierId );
+		var tier = new lattice.modules.navigation.Tier( this, html, tierId );
 		this.tiers[ tierId ] = tier;
 		this.renderPane( tier, containerPane, tierId );
 	},
@@ -225,7 +225,7 @@ mop.modules.navigation.Navigation = new Class({
 		delete this.nodeData[ nodeId ];
 		this.dataSource.removeObjectRequest( nodeId );
 		if( nodeId == this.dataSource.getObjectId() ){			
-			mop.historyManager.changeState( "slug", null );
+			lattice.historyManager.changeState( "slug", null );
 			this.breadCrumbs.removeCrumbByLabel( title );
 			this.marshal.clearPage();
 		}
@@ -238,7 +238,7 @@ mop.modules.navigation.Navigation = new Class({
 	
 });
 
-mop.modules.navigation.Tier = new Class({
+lattice.modules.navigation.Tier = new Class({
 
 	Implements: [ Options, Events ],
 	nodes: null,
@@ -276,7 +276,7 @@ mop.modules.navigation.Tier = new Class({
 	},
 
 	toString: function(){
-		return "[ Object, mop.MoPObject, mop.modules.navigation.Tier ]"
+		return "[ Object, lattice.MoPObject, lattice.modules.navigation.Tier ]"
 	},
 
 	attachToPane: function( pane ){
@@ -287,7 +287,7 @@ mop.modules.navigation.Tier = new Class({
 	},
 
 	render: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		if( this.element.get('html') != this.html ) this.element.set( 'html', this.html );
 		this.nodeElement = this.element.getElement( ".nodes" );
 		if( this.options.allowChildSort ) this.makeSortable( this.nodeElement );
@@ -329,7 +329,7 @@ mop.modules.navigation.Tier = new Class({
 	},
 
 	renderAddObjectSelection: function( e, addObjectLinks ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		this.nodeElement.addClass( 'hidden' );
 		this.drawer.setStyle( 'height', '100%' );
 		this.drawer.getElement( '.close' ).removeClass( 'hidden' );
@@ -382,28 +382,28 @@ mop.modules.navigation.Tier = new Class({
 /*	Section: Event Handlers	*/
 
 	onMouseEnter: function( e, nodeElement ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		this.indicateNode( aNodeElement );
 	},
 
 	onMouseLeave: function( e, nodeElement ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		if( this.activeNode != nodeElement ) this.deindicateNode( nodeElement );
 	},
 
 	onNodeClicked: function( e, el ){
 		var nodeId, slug;
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		nodeId = this.marshal.getNodeIdFromElement( el );
 		slug = this.marshal.getSlugFromId( nodeId );
 		this.setActiveNode( el );
-		mop.historyManager.changeState( "slug", slug );
+		lattice.historyManager.changeState( "slug", slug );
 		this.marshal.onNodeClicked( nodeId, this );
 	},
 		
 	onRemoveNodeClicked: function( e, nodeElement ){
 		// alert( nodeElement.get( 'id' ) );
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		var confirmation = confirm( "Are you sure you want to remove " + nodeElement.getElement("h5").get("text") + " ?" );
 		if( !confirmation ) return; 
 		var nodeId = this.marshal.getNodeIdFromElement( nodeElement );
@@ -416,7 +416,7 @@ mop.modules.navigation.Tier = new Class({
 	},
 	
 	onTogglePublishedStatusClicked: function( e, nodeElement ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		var nodeId, togglePublishedStatusLink;
 		nodeId = this.marshal.getNodeIdFromElement( nodeElement );
 		togglePublishedStatusLink = nodeElement.getElement( ".togglePublishedStatus" );
@@ -439,8 +439,8 @@ mop.modules.navigation.Tier = new Class({
 	},
 
 	onAddObjectClicked: function( e, addObjectButton ){
-		mop.util.stopEvent( e );
-		var templateId = mop.util.getValueFromClassName( "objectTypeId", addObjectButton.get("class") );
+		lattice.util.stopEvent( e );
+		var templateId = lattice.util.getValueFromClassName( "objectTypeId", addObjectButton.get("class") );
 		var addText = addObjectButton.get( 'text' );
 		var nodeTitle = prompt( "What would you like to name this" + addText.substr( addText.lastIndexOf( " " ), addText.length ).toLowerCase() );
 		if( !nodeTitle ) return;
@@ -454,7 +454,7 @@ mop.modules.navigation.Tier = new Class({
 	makeSortable: function( sortableListElement ){	
 		this.sortableListElement = sortableListElement;
 		if( !this.sortableList ){
-			this.sortableList = new mop.ui.Sortable( this.sortableListElement, this, this.sortableListElement  );
+			this.sortableList = new lattice.ui.Sortable( this.sortableListElement, this, this.sortableListElement  );
 		}else{
 			this.sortableList.attach();
 		}

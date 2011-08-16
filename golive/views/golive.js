@@ -1,15 +1,15 @@
-mop.modules.GoLive = new Class({
+lattice.modules.GoLive = new Class({
 
-	Extends: mop.modules.Module,
+	Extends: lattice.modules.Module,
 	
 	getCopyToLiveURL: function(){
-	    return mop.util.getBaseURL() + "data/golive/copytolive";
+	    return lattice.util.getBaseURL() + "data/golive/copytolive";
 	},
 	
 	initialize: function( anElement, aMarshal ){
 		this.parent( anElement, aMarshal );
 		this.message = this.element.getElement(".message");
-		this.boolSwitch = new mop.ui.SlideSwitch( this.element.getElement(".SlideSwitch"), this, {
+		this.boolSwitch = new lattice.ui.SlideSwitch( this.element.getElement(".SlideSwitch"), this, {
 			label_position: "inside",
 			hide_labels: false,
 			hide_radios: true,

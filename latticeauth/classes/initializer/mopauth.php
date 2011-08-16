@@ -47,7 +47,7 @@ class Initializer_Mopauth {
          //$user->add(ORM::Factory('role', 'staging'));
          $user->save();
          
-         MOP_Initializer::addMessage('Created admin user with password '.$password);
+         Lattice_Initializer::addMessage('Created admin user with password '.$password);
       }
    }
 }

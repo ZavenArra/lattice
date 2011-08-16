@@ -270,7 +270,7 @@ ul.listing li{
 }
 
 ul.listing.allowChildSort-true li{ cursor: pointer; }
-.classPath-mop_modules_ListModule{ margin-bottom: 2em; }
+.classPath-lattice_modules_ListModule{ margin-bottom: 2em; }
 
 .listItem>.itemControls .delete{
 	background: url( ../images/icon_trash.gif );

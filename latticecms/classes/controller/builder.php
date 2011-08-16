@@ -53,7 +53,7 @@ class Controller_Builder extends Controller {
 		echo "\nInserting Data\n";
 		$this->insertData($xmlFile );
 
-		mopcms::regenerateImages();
+		latticecms::regenerateImages();
 
     //and run frontend
 		echo "\n Regenerating Fronted";
@@ -80,7 +80,7 @@ class Controller_Builder extends Controller {
 
 		$this->insertData($xmlFile, $parentObject->id);	
 
-		mopcms::generateNewImages($this->newObjectIds);
+		latticecms::generateNewImages($this->newObjectIds);
 	}
 
 
@@ -93,7 +93,7 @@ class Controller_Builder extends Controller {
 		}
  
 
-		foreach(mop::config($xmlFile, 'item', $context)  as $item){
+		foreach(lattice::config($xmlFile, 'item', $context)  as $item){
 			$lists = array();
 			if(!$item->getAttribute('objectTypeName')){
 				echo $item->tagName;
@@ -110,7 +110,7 @@ class Controller_Builder extends Controller {
 
       //echo ')))'.$item->getAttribute('objectTypeName');
 			$data = array();
-			foreach(mop::config($xmlFile, 'field', $item ) as $content){
+			foreach(lattice::config($xmlFile, 'field', $item ) as $content){
 				$field = $content->getAttribute('name');
 				//echo 'This Fielad '.$field."\n\n";
 				switch($field){
@@ -128,7 +128,7 @@ class Controller_Builder extends Controller {
 
 
 				//need to look up field and switch on field type	
-				$fieldInfo = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
+				$fieldInfo = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
 				if(!$fieldInfo){
 					die("Bad field in data/objects!\n". sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
 				}
@@ -138,7 +138,7 @@ class Controller_Builder extends Controller {
 				case 'file':
 				case 'image':
 						$path_parts = pathinfo($content->nodeValue);
-						$savename = mopcms::makeFileSaveName($path_parts['basename']);	
+						$savename = latticecms::makeFileSaveName($path_parts['basename']);	
 						if(file_exists($content->nodeValue)){
 							copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']).$content->nodeValue, Graph::mediapath($savename).$savename);
 							$data[$field] = $savename;
@@ -158,9 +158,9 @@ class Controller_Builder extends Controller {
 			$data['published'] = true;
 			
 
-			foreach(mop::config($xmlFile, 'object', $item) as $object){
+			foreach(lattice::config($xmlFile, 'object', $item) as $object){
 				$clusterData = array();
-				foreach(mop::config($xmlFile, 'field', $object) as $clusterField){
+				foreach(lattice::config($xmlFile, 'field', $object) as $clusterField){
 					$clusterData[$clusterField->getAttribute('name')] = $clusterField->nodeValue;
 				}
 				$data[$object->getAttribute('name')] = $clusterData;
@@ -193,11 +193,11 @@ class Controller_Builder extends Controller {
 			}
 
 			//do recursive if it has children
-			if(mop::config($xmlFile, 'item', $item)->length ){
+			if(lattice::config($xmlFile, 'item', $item)->length ){
 				$this->insertData($xmlFile, $objectId,  $item);
 			}
 
-			foreach(mop::config($xmlFile, 'list', $item) as $list){
+			foreach(lattice::config($xmlFile, 'list', $item) as $list){
 				//echo "FOUND A LIST\n\n";
 				//find the container
 				$listT = ORM::Factory('objectType', $list->getAttribute('family'));
@@ -216,7 +216,7 @@ class Controller_Builder extends Controller {
 
 	public function action_regenerateImages(){
 		try {
-			mopcms::regenerateImages();
+			latticecms::regenerateImages();
 		} catch(Exception $e){
 			print_r($e->getMessage() . $e->getTrace());
 		}

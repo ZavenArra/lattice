@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_Ajax extends Controller_MOP {
+class Controller_Ajax extends Controller_Lattice {
 
 	public function action_index()
 	{
@@ -17,7 +17,7 @@ class Controller_Ajax extends Controller_MOP {
 			$data = $subRequest->execute()->data();
 		} catch (Exception $e) {
 			//return HTML from exception
-			$message = mop::getOneLineErrorReport($e);
+			$message = lattice::getOneLineErrorReport($e);
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
 				'response' => $message,
@@ -49,7 +49,7 @@ class Controller_Ajax extends Controller_MOP {
 		} catch (Exception $e) {
 			//return HTML from exception
 
-			$message = mop::getOneLineErrorReport($e);
+			$message = lattice::getOneLineErrorReport($e);
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
 				'response' => $message,
@@ -100,7 +100,7 @@ class Controller_Ajax extends Controller_MOP {
 			$requestResponse = $subRequest->execute();
 		} catch (Exception $e) {
 			//return HTML from exception
-			$message = mop::getOneLineErrorReport($e);
+			$message = lattice::getOneLineErrorReport($e);
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
 				'response' => $message,

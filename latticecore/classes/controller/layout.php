@@ -3,13 +3,13 @@
 
 /*
  * Class: Controller_Layout
- * Extension of Controller_MOP which handles automatic wrapping of the main request in header and footer layout.
+ * Extension of Controller_Lattice which handles automatic wrapping of the main request in header and footer layout.
  * Extend this class and set $_aactionsThatGetLayout with actions that should always be wraped with the layout specified in their config.
  * In the future, config could have a mapping of actions to layouts, if necessary.
  * Auto wrapping can be manually bypassed by calling the html action as html/controller/action/etc.
  */
 
-class Controller_Layout extends Controller_MOP {
+class Controller_Layout extends Controller_Lattice {
 	
 	protected $_actionsThatGetLayout = array();
 	

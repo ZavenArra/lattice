@@ -1,11 +1,11 @@
-/* Class: mop.cms.CMS */
+/* Class: lattice.cms.CMS */
 
-mop.modules.CMS = new Class({
+lattice.modules.CMS = new Class({
 
 	/* Constructor: initialize */
-	Extends: mop.modules.Module,
-	Interfaces: mop.modules.navigation.NavigationDataSource,
-	Implements: mop.util.Broadcaster,
+	Extends: lattice.modules.Module,
+	Interfaces: lattice.modules.navigation.NavigationDataSource,
+	Implements: lattice.util.Broadcaster,
 
 	rootObjectId: null,
   currentObjectId: null,
@@ -17,40 +17,40 @@ mop.modules.CMS = new Class({
 	slugIPE: null,
 	loadedCSS: [],
 	loadedJS: [],
-	stringIdentifier: "[ object, mop.modules.CMS ]",
+	stringIdentifier: "[ object, lattice.modules.CMS ]",
 	options: {},
 
 	/* Section: Getters & Setters */    
     
 	getRemoveObjectRequestURL: function( parentId ){
-		return mop.util.getBaseURL() + "ajax/compound/cms/removeObject/" + parentId;
+		return lattice.util.getBaseURL() + "ajax/compound/cms/removeObject/" + parentId;
 	},
 
 	getRequestPageURL: function( nodeId ){
-		return mop.util.getBaseURL() + "ajax/html/cms/getPage/" + nodeId;
+		return lattice.util.getBaseURL() + "ajax/html/cms/getPage/" + nodeId;
 	},
 
 	getRequestTierURL: function( parentId, deepLink ){
 		var deepLinkAppend, url;
 		deepLinkAppend = ( deepLink )? "/" + deepLink : '';
-		url = mop.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId + deepLinkAppend;
+		url = lattice.util.getBaseURL() + "ajax/compound/navigation/getTier/" + parentId + deepLinkAppend;
 		return url;
 	},
 
 	getAddObjectRequestURL: function( parentId, templateId ){
-		return mop.util.getBaseURL() + "ajax/compound/cms/addObject/" + parentId + "/" + templateId;
+		return lattice.util.getBaseURL() + "ajax/compound/cms/addObject/" + parentId + "/" + templateId;
 	},
 
 	getTogglePublishedStatusRequestURL: function( nodeId ){            
-		return mop.util.getBaseURL() + "ajax/data/cms/togglePublish/"+ nodeId;
+		return lattice.util.getBaseURL() + "ajax/data/cms/togglePublish/"+ nodeId;
 	},
 
 	getSaveFieldURL: function(){
-		return  mop.util.getBaseURL() + "ajax/data/cms/savefield/"+ this.getObjectId();
+		return  lattice.util.getBaseURL() + "ajax/data/cms/savefield/"+ this.getObjectId();
 	},	
 
 	getSubmitSortOrderURL: function( objectId ){
-	    return mop.util.getBaseURL() + "ajax/data/cms/saveSortOrder/" + objectId;
+	    return lattice.util.getBaseURL() + "ajax/data/cms/saveSortOrder/" + objectId;
 	},
 
 	getRootNodeId: function(){       
@@ -163,21 +163,21 @@ mop.modules.CMS = new Class({
    requestPageResponse: function( json ){
       if( !json.returnValue ) throw json.response.error;
       json.response.css.each( function( styleSheetURL, index ){
-         styleSheetURL = mop.util.getBaseURL() + styleSheetURL;
-         if( !this.loadedCSS.contains( styleSheetURL ) ) mop.util.loadStyleSheet( styleSheetURL );
+         styleSheetURL = lattice.util.getBaseURL() + styleSheetURL;
+         if( !this.loadedCSS.contains( styleSheetURL ) ) lattice.util.loadStyleSheet( styleSheetURL );
          this.loadedCSS.push( styleSheetURL );
       }, this );
       this.scriptsLoaded = 0;
       var noneLoaded = true;
       if( json.response.js.length && json.response.js.length > 0){
          json.response.js.each( function( urlString, i ){
-            urlString = mop.util.getBaseURL() + urlString;
+            urlString = lattice.util.getBaseURL() + urlString;
             //                console.log( ":::: ", urlString, this.loadedJS.indexOf( urlString ) );
             if( this.loadedJS.indexOf( urlString ) == -1 ){
                noneLoaded = false;
                //                   console.log( "::::::", urlString, "not in loadedJSArray" );
                this.loadedJS.push( urlString );
-               mop.util.loadJS( urlString, {
+               lattice.util.loadJS( urlString, {
                   type: "text/javascript", 
                   onload: this.onJSLoaded.bind( this, [ json.response.html ] )
                } );                    
@@ -190,7 +190,7 @@ mop.modules.CMS = new Class({
    },
 
 /*
-	Section: mop.modules.navigation.NavigtionDelegate Interface Requests and Response
+	Section: lattice.modules.navigation.NavigtionDelegate Interface Requests and Response
 */
 
 	onNodeSelected: function( nodeId ){
@@ -201,7 +201,7 @@ mop.modules.CMS = new Class({
 	},
 
 /*
-	Section: mop.modules.navigation.NavigationDataSource Interface Requests and Response
+	Section: lattice.modules.navigation.NavigationDataSource Interface Requests and Response
 */
 	requestTier: function( parentId, deepLink, callback ){
 		var url;
@@ -291,14 +291,14 @@ mop.modules.CMS = new Class({
 
 });
 
-if( !mop.util.hasDOMReadyFired() ){
+if( !lattice.util.hasDOMReadyFired() ){
 	window.addEvent( "domready", function(){
-		mop.util.DOMReadyHasFired();
-		mop.historyManager = new mop.util.HistoryManager().instance();
-		mop.historyManager.init();
-		mop.modalManager = new mop.ui.ModalManager();
-		if( mop.loginTimeout && mop.loginTimeout > 0 ) mop.loginMonitor = new mop.util.LoginMonitor();
-		mop.util.EventManager.broadcastMessage( "resize" );
-		mop.CMS = new mop.modules.CMS( "cms" );
+		lattice.util.DOMReadyHasFired();
+		lattice.historyManager = new lattice.util.HistoryManager().instance();
+		lattice.historyManager.init();
+		lattice.modalManager = new lattice.ui.ModalManager();
+		if( lattice.loginTimeout && lattice.loginTimeout > 0 ) lattice.loginMonitor = new lattice.util.LoginMonitor();
+		lattice.util.EventManager.broadcastMessage( "resize" );
+		lattice.CMS = new lattice.modules.CMS( "cms" );
 	});
 }

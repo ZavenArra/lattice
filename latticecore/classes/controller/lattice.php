@@ -1,6 +1,6 @@
 <?
 
-class Controller_MOP extends Controller {
+class Controller_Lattice extends Controller {
 
 	public static $topController;
 
@@ -54,25 +54,25 @@ class Controller_MOP extends Controller {
 			$accessGranted = false;
 			foreach($roles as $aRole){
 				if($aRole=='admin'){
-					if(Kohana::config('mop.staging_enabled') && !Kohana::config('mop.staging')){
+					if(Kohana::config('lattice.staging_enabled') && !Kohana::config('lattice.staging')){
 						$redirect = 'staging/'. Router::$current_uri;
 						Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 					}
 				}
 
-				if(moputil::checkRoleAccess($aRole)){
+				if(latticeutil::checkRoleAccess($aRole)){
 					$accessGranted = true;
 				}
 			}
 		} else {
 			if($roles=='admin'){
-				if(Kohana::config('mop.staging_enabled') && !Kohana::config('mop.staging')){
+				if(Kohana::config('lattice.staging_enabled') && !Kohana::config('lattice.staging')){
 					$redirect = 'staging/'. Router::$current_uri;
 					Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 				}
 			}
 
-			$accessGranted = moputil::checkRoleAccess($roles);
+			$accessGranted = latticeutil::checkRoleAccess($roles);
 		}
 
 		if(!$accessGranted){
@@ -103,10 +103,10 @@ class Controller_MOP extends Controller {
 
 		//should add to self, then merge into topController
 		if($css = Kohana::find_file('views', 'css/'.$key, 'css')){
-			$this->resources['css'][$css] = helper_mop::convertFullPathToWebPath($css);
+			$this->resources['css'][$css] = helper_lattice::convertFullPathToWebPath($css);
 		}
 		if($js = Kohana::find_file('views', 'js/'.$key, 'js')){
-			$this->resources['js'][$js] = helper_mop::convertFullPathToWebPath($js);
+			$this->resources['js'][$js] = helper_lattice::convertFullPathToWebPath($js);
 		}
 
 		$config = Kohana::config($key);

@@ -22,7 +22,7 @@ Class moputil {
 	 * Returns: Microsecond timestamp
 	 */
 	public static function getMicroTimestamp(){
-		$timestamp = date('YmdHis') . substr(moputil::getMicroSeconds(), 1) ;
+		$timestamp = date('YmdHis') . substr(latticeutil::getMicroSeconds(), 1) ;
 		Kohana::log('info', 'TIMESTAMP: '.$timestamp);
 		return $timestamp;
 	}
@@ -95,7 +95,7 @@ Class moputil {
 			return html_entity_decode($value);
 		} else {
 			for($i=0, $keys=array_keys($value), $count=count($value); $i<$count; $i++){
-				$value[$keys[$i]] = moputil::decode_recurse($value[$keys[$i]]);
+				$value[$keys[$i]] = latticeutil::decode_recurse($value[$keys[$i]]);
 			}
 			return $value;
 		}

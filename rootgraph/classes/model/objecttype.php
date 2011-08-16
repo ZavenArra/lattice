@@ -52,19 +52,19 @@ class Model_ObjectType extends ORM {
 			$valuefromconfig=NULL;
 			if($column == 'addableObjects'){
 				$xQuery .= '/addableObject';
-				$nodes = mop::config('objects', $xQuery);
+				$nodes = lattice::config('objects', $xQuery);
 				$valuefromconfig = array();
 				foreach($nodes as $node){
 					$entry = array();
 					$entry['objectTypeId'] = $node->getAttribute('objectTypeName');
 					$entry['objectTypeAddText'] = $node->getAttribute('addText');
-					$tConfig = mop::config('objects', sprintf('//objectType[@name="%s"]', $entry['objectTypeId'] ))->item(0);
+					$tConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $entry['objectTypeId'] ))->item(0);
 					$entry['nodeType'] = $tConfig->getAttribute('nodeType');
 					$entry['contentType'] = $tConfig->getAttribute('contentType');
 					$valuefromconfig[] = $entry;
 				}
 			} else {
-				$node = mop::config('objects', $xQuery)->item(0);
+				$node = lattice::config('objects', $xQuery)->item(0);
 				if($node)
 					$valuefromconfig = $node->getAttribute($column);
 			}

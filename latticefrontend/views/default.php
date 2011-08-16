@@ -2,7 +2,7 @@
 <?
 //this also implies that name is a objecttypename
 ob_start();
-foreach(mop::config('objects', 
+foreach(lattice::config('objects', 
 	sprintf('//objectType[@name="%s"]/elements/*', ORM::Factory('object', $content['main']['id'])->objecttype->objecttypename )) as $element){
 		frontend::makeHtmlElement($element, "\$content['main']");
 }

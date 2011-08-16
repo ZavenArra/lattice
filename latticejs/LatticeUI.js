@@ -1,5 +1,5 @@
-mop.ui = {};
-mop.ui.navigation = {};
+lattice.ui = {};
+lattice.ui.navigation = {};
 
 Element.implement({
 	roundCorners: function( radius ){
@@ -20,10 +20,10 @@ Element.implement({
 	}
 });
 
-mop.ui.UIField = new Class({
+lattice.ui.UIField = new Class({
 
-  Extends: mop.MoPObject,
-	Implements: [ Options, Events, mop.util.Broadcaster ],
+  Extends: lattice.MoPObject,
+	Implements: [ Options, Events, lattice.util.Broadcaster ],
 
 	fieldName: null,
 	validationSticky: null,
@@ -65,7 +65,7 @@ mop.ui.UIField = new Class({
 	},
 	
 	toString: function(){
-		return "[ object, mop.ui.UIField ]";
+		return "[ object, lattice.ui.UIField ]";
 	},
 	
 	onResponse: function( json ){
@@ -85,7 +85,7 @@ mop.ui.UIField = new Class({
 	
 	showValidationError: function( errorMessage ){
 		this.destroyValidationSticky();
-		this.validationSticky = new mop.ui.Sticky( this.element, {
+		this.validationSticky = new lattice.ui.Sticky( this.element, {
 			content: "<p>Error: " + errorMessage + "</p>",
 			position: 'centerTop',
 			edge: 'centerBottom',
@@ -103,7 +103,7 @@ mop.ui.UIField = new Class({
 	},
 		
 	submit: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		var val = this.getValue();
 		this.submittedValue = val;
 		if( !this.options.autoSubmit ){
@@ -123,7 +123,7 @@ mop.ui.UIField = new Class({
 	
 });
 
-mop.ui.Sticky = new Class({
+lattice.ui.Sticky = new Class({
     
 	Implements: [ Options, Events ],
 
@@ -193,14 +193,14 @@ mop.ui.Sticky = new Class({
   populate: function( content ){ this.content.adopt( content ); },
 	
   startShow: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		clearTimeout( this.showInterval );
 		clearTimeout( this.hideInterval );
 		this.showInterval = this.show.delay( 350, this );	
 	},
 	
 	startHide: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		clearTimeout( this.showInterval );
 		clearTimeout( this.hideInterval );
 		this.hideInterval = this.hide.delay( 350, this );
@@ -231,15 +231,15 @@ mop.ui.Sticky = new Class({
 });
 
 /*
-	Class: mop.ui.navigation.Tabs
+	Class: lattice.ui.navigation.Tabs
 	Generic helper for handling tabbed navigation
 	Simply takes an collection of elements with the passed selector from the passed element, and returns a reference of the clicked element to the callback function.
 	More generic than tabs for sure, but what to call? Buton collection?
 */
-mop.ui.navigation.Tabs = new Class({
+lattice.ui.navigation.Tabs = new Class({
 	
 	toString: function(){
-		return "[ object, mop.ui.navigation.Tabs ]";
+		return "[ object, lattice.ui.navigation.Tabs ]";
 	},
 	
 	initialize: function( anElement, aSelector, callback ){
@@ -258,7 +258,7 @@ mop.ui.navigation.Tabs = new Class({
 	},
 	
 	onTabClicked: function( e, aTab ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		if( this.activeTab && this.activeTab == aTab ) return;
 		if( this.activeTab ) this.activeTab.removeClass( "active" );
 		aTab.addClass( "active" );
@@ -273,10 +273,10 @@ mop.ui.navigation.Tabs = new Class({
 });
 
 /*
-	Class: mop.ui.navigation.BreadCrumbTrail
+	Class: lattice.ui.navigation.BreadCrumbTrail
 	Generic class for handling breadcrumb trails
 */
-mop.ui.navigation.BreadCrumbTrail = new Class({
+lattice.ui.navigation.BreadCrumbTrail = new Class({
 	
 	className: "BreadCrumbTrail",
 	
@@ -287,7 +287,7 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 	},
 	
 	toString: function(){
-		return "[ object, mop.ui.BreadCrumbTrail ]";
+		return "[ object, lattice.ui.BreadCrumbTrail ]";
 	},
 
 	clearCrumbs: function( anIndex ){
@@ -310,7 +310,7 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 	},
 	
 	onCrumbClicked: function( e, obj ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 //		console.log( "::::: \t onBreadCrumbClicked", obj );
 		this.onCrumbClickedCallback( obj );
 	},
@@ -338,9 +338,9 @@ mop.ui.navigation.BreadCrumbTrail = new Class({
 });
 
 
-mop.ui.ModalManager = new Class({
+lattice.ui.ModalManager = new Class({
 	
-	Extends: mop.util.Broadcaster,
+	Extends: lattice.util.Broadcaster,
 	modals: [],
 	activeModal: null,
 	
@@ -352,7 +352,7 @@ mop.ui.ModalManager = new Class({
 	},
 	
 	toString: function(){
-		return '[ object, mop.util.EventManager, mop.ui.ModalManager ]';
+		return '[ object, lattice.util.EventManager, lattice.ui.ModalManager ]';
 	},
 	
 	removeListener: function( aListener ){
@@ -397,16 +397,16 @@ mop.ui.ModalManager = new Class({
 });
 
 
-/*	Class: mop.ui.Sortable
+/*	Class: lattice.ui.Sortable
 	Simply an extension of the mootools sortable adds a marshal reference, and a scroller instance as well as some callbacks
 */
-mop.ui.Sortable = new Class({
+lattice.ui.Sortable = new Class({
   
 	Implements: Options,
 	Extends: Sortables,	
 
 	initialize: function( anElement, marshal, scrollerTarget ){
-//	    console.log( ":: mop.ui.Sortable", anElement, marshal, scrollerTarget );
+//	    console.log( ":: lattice.ui.Sortable", anElement, marshal, scrollerTarget );
 		this.marshal = marshal;
 		this.element = $( anElement );
 		this.parent( anElement, {
@@ -437,10 +437,10 @@ mop.ui.Sortable = new Class({
 
 
 /*
-	Class: mop.ui.Modal
+	Class: lattice.ui.Modal
 	A lightweight modal class
 */
-mop.ui.Modal = new Class({
+lattice.ui.Modal = new Class({
 		
 		Implements: [ Events, Options ],
 		
@@ -473,7 +473,7 @@ mop.ui.Modal = new Class({
 			this.build();
 			this.modalAnchor.setStyles({ "useHandCursor":false });
 			this.modalAnchor.set( 'href', "#" );
-			this.modalAnchor.addEvent( "click", function( e ){ mop.util.stopEvent(e); } );
+			this.modalAnchor.addEvent( "click", function( e ){ lattice.util.stopEvent(e); } );
 			this.showTransition = new Fx.Morph( this.element, { 
 				property: "opacity",
 				duration: this.options.fadeDuration,
@@ -498,7 +498,7 @@ mop.ui.Modal = new Class({
 				'class': 'modalAnchor',
 				'href': '#',
 				'events': { 'click' : function( e ){ 
-					mop.util.stopEvent( e );
+					lattice.util.stopEvent( e );
 				}.bindWithEvent( this ) }
 			}).inject( this.element );
 			this.modal = new Element( "div", { "class": "modal container_12" }).inject( this.element );
@@ -530,7 +530,7 @@ mop.ui.Modal = new Class({
 			this.footer.adopt( this.footerControls );
 		},
 
-		toString: function(){ return "[ object, mop.ui.Modal ]"; },
+		toString: function(){ return "[ object, lattice.ui.Modal ]"; },
 		
 		show: function(){
 			console.log( "show" );
@@ -544,13 +544,13 @@ mop.ui.Modal = new Class({
 			this.hideTransition.start({
 				onComplete: function(){
 					if( onComplete ) onComplete();
-					mop.modalManager.removeModal( this );
+					lattice.modalManager.removeModal( this );
 				}.bind( this )
 			});
 		},
 		
 		cancel: function( e ){
-			mop.util.stopEvent( e );
+			lattice.util.stopEvent( e );
 			if( this.options.onCancel ) this.options.onCancel();
 			this.close();
 		},
@@ -585,9 +585,9 @@ mop.ui.Modal = new Class({
 });
 
 
-mop.ui.AddObjectDialogue = new Class({
+lattice.ui.AddObjectDialogue = new Class({
 	
-	Extends: mop.ui.Modal,
+	Extends: lattice.ui.Modal,
 	Implements: Options,
 	
 	options: {
@@ -601,7 +601,7 @@ mop.ui.AddObjectDialogue = new Class({
 		this.parent( aMarshal, options );
 	},
 	
-	toString: function(){ return "[ Object, mop.ui.Modal, mop.ui.AddObjectDialogue ]"; },
+	toString: function(){ return "[ Object, lattice.ui.Modal, lattice.ui.AddObjectDialogue ]"; },
 		
 	initControls: function(){
 		var headerSubmit, footerSubmit;
@@ -636,7 +636,7 @@ mop.ui.AddObjectDialogue = new Class({
 	},
 	
 	submit: function( e ){		
-		mop.util.stopEvent( e );		
+		lattice.util.stopEvent( e );		
 		this.close( function(){
 			this.itemInstance.element.setStyle( "opacity", 0 );
 			this.marshal.insertItem( this.itemInstance );
@@ -645,7 +645,7 @@ mop.ui.AddObjectDialogue = new Class({
 	},
 
 	cancel: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		this.close( this.itemInstance.removeObject.bind( this.itemInstance ) );
 	},
 	
@@ -656,9 +656,9 @@ mop.ui.AddObjectDialogue = new Class({
 	
 });
 
-mop.ui.InactivityDialogue = new Class({
+lattice.ui.InactivityDialogue = new Class({
 
-	Extends: mop.ui.Modal,
+	Extends: lattice.ui.Modal,
 	Implements: Options,
 	message: null,
 	
@@ -703,16 +703,16 @@ mop.ui.InactivityDialogue = new Class({
 	},
 	
 	submit: function( e ){		
-		mop.util.stopEvent( e );		
+		lattice.util.stopEvent( e );		
 		this.close();
 		if( this.options.onConfirm ) this.options.onConfirm();
 	}
 
 });
 
-mop.ui.MultiSelect = new Class({
+lattice.ui.MultiSelect = new Class({
 	
-	Extends: mop.ui.UIField,
+	Extends: lattice.ui.UIField,
 	
 	options: {
 	    firstIsNull: false
@@ -800,20 +800,20 @@ mop.ui.MultiSelect = new Class({
 	},
 	
 	onSaveClicked: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 //	    console.log( "onSaveClicked" );
         this.updateAndClose( e );
         this.submit();
 	},
 
 	onCancelClicked: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 //	    console.log( "onCancelClicked" );
 	    this.hideMultiSelect();
 	},
 
 	onDocumentClicked: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 	    if( e.target == this.saveButton || e.target == this.cancelButton ) return;
 	    if( e && ( e.target == this.multiBox || this.multiBox.contains( e.target ) ) ) return;
 //	    console.log( "onDocumentClicked" );
@@ -906,7 +906,7 @@ mop.ui.MultiSelect = new Class({
 	},
 	
 	showMultiSelect: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		this.documentBoundUpdateAndClose = this.onDocumentClicked.bindWithEvent( this );
 		document.addEvent( "mousedown", this.documentBoundUpdateAndClose );
 		this.updateMultiBoxList();
@@ -931,12 +931,12 @@ mop.ui.MultiSelect = new Class({
 
 });
 
-/*	Class: mop.ui.DatePicker
+/*	Class: lattice.ui.DatePicker
 */
 
-mop.ui.DatePicker = new Class({
+lattice.ui.DatePicker = new Class({
 
-	Extends: mop.ui.UIField,
+	Extends: lattice.ui.UIField,
 	
 	options: {
 	    allowEmpty: false,
@@ -952,7 +952,7 @@ mop.ui.DatePicker = new Class({
 	
     
 	toString: function(){
-		return '[ object, mop.ui.UIField, mop.ui.DatePicker ]';
+		return '[ object, lattice.ui.UIField, lattice.ui.DatePicker ]';
 	},
 	
 	buildPicker: function(){ 
@@ -967,12 +967,12 @@ mop.ui.DatePicker = new Class({
 	},
 	
 	onSelect: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		this.submit();
 	},
 	
 	onShow: function(){
-		var scrollData = ( this.scrollContext == "modal" )? mop.ModalManager.getActiveModal().getScrollOffset() : $( window ).getScroll();
+		var scrollData = ( this.scrollContext == "modal" )? lattice.ModalManager.getActiveModal().getScrollOffset() : $( window ).getScroll();
 //		console.log( this.toString(), 'onShow', this.scrollContext, scrollData );
 		this.reposition( scrollData );
 	},
@@ -1034,12 +1034,12 @@ mop.ui.DatePicker = new Class({
 	
 });
 
-mop.ui.TimePicker = new Class({
+lattice.ui.TimePicker = new Class({
 
-	Extends: mop.ui.DatePicker,
+	Extends: lattice.ui.DatePicker,
 	
 	toString: function(){
-		return '[ object, mop.ui.UIField, mop.ui.DatePicker, mop.ui.TimePicker ]';
+		return '[ object, lattice.ui.UIField, lattice.ui.DatePicker, lattice.ui.TimePicker ]';
 	},
 		
 	initialize: function( anElement, options ){
@@ -1059,12 +1059,12 @@ mop.ui.TimePicker = new Class({
 	}
 });
 
-/*	Class: mop.ui.DateRangePicker
+/*	Class: lattice.ui.DateRangePicker
 	Datepicker with two fields, and range validation 
 */
-mop.ui.DateRangePicker = new Class({
+lattice.ui.DateRangePicker = new Class({
 
-	Extends: mop.ui.UIField,
+	Extends: lattice.ui.UIField,
 		
 	options: {
 		alerts:{
@@ -1097,7 +1097,7 @@ mop.ui.DateRangePicker = new Class({
 	},
 	
 	onSelect: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
         this.submit();
 	},
 	
@@ -1126,7 +1126,7 @@ mop.ui.DateRangePicker = new Class({
 	},
 	
 	toString: function(){
-		return "[ object, mop.ui.UIField, mop.ui.DateRangePicker ]";
+		return "[ object, lattice.ui.UIField, lattice.ui.DateRangePicker ]";
 	},
 
 	onResponse: function(){
@@ -1269,13 +1269,13 @@ mop.ui.DateRangePicker = new Class({
 });
 
 
-/*	Class: mop.ui.File
+/*	Class: lattice.ui.File
 	File uploader with progress
 	Modified and simplified version of fancyupload2 by digitarald.
 */
-mop.ui.FileElement = new Class({
+lattice.ui.FileElement = new Class({
 
-	Extends: mop.ui.UIField,
+	Extends: lattice.ui.UIField,
 	
 	type: "file",
 	
@@ -1307,13 +1307,13 @@ mop.ui.FileElement = new Class({
 	scrollContext: 'window',
 
 	getSubmitURL: function(){
-		var url = mop.util.getBaseURL() + "ajax/data/cms/savefile/"+this.marshal.getObjectId()+"/"+this.fieldName;
-		console.log( "mop.ui.FileElement : ", this.toString(), "getSubmitURL: ", url );
+		var url = lattice.util.getBaseURL() + "ajax/data/cms/savefile/"+this.marshal.getObjectId()+"/"+this.fieldName;
+		console.log( "lattice.ui.FileElement : ", this.toString(), "getSubmitURL: ", url );
 		return 	url;
 	},
 
 	getClearFileURL: function(){
-		var url = mop.util.getBaseURL() + "ajax/data/" + this.marshal.instanceName + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
+		var url = lattice.util.getBaseURL() + "ajax/data/" + this.marshal.instanceName + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
 		return url;
 	},
 
@@ -1323,42 +1323,42 @@ mop.ui.FileElement = new Class({
 		this.ogInput.addClass('away');
 		this.uploadButton = this.element.getElement( ".uploadButton" );
 		this.uploadLink = this.element.getElement( ".uploadLink" );
-		this.uploadLink.addEvent( 'click', function( e ){ mop.util.stopEvent( e ) } );
+		this.uploadLink.addEvent( 'click', function( e ){ lattice.util.stopEvent( e ) } );
 		this.uploadLink.store( "Class", this );
 		this.downloadButton = this.element.getElement( ".downloadLink" );
 		this.downloadButton.store( "Class", this );
 		this.clearButton = this.element.getElement( ".clearImageLink" );
 		this.clearButton.store( "Class", this );
 		this.clearButton.addEvent( "click", this.clearFileRequest.bindWithEvent( this ) );
-		this.uploader = new mop.util.Uploader({
-			path: mop.util.getBaseURL() + "lattice/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf",
+		this.uploader = new lattice.util.Uploader({
+			path: lattice.util.getBaseURL() + "lattice/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf",
 			container: this.uploadLink,
 			target: this.uploadButton,
 			cookie: Cookie.read( 'session' )
 		});
 		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );
-		this.baseURL = mop.util.getBaseURL();
+		this.baseURL = lattice.util.getBaseURL();
 		this.statusElement = this.element.getElement( 'div.status' );
 		this.progressBar = this.statusElement.getElement( "img" );
 		this.statusMessage = this.statusElement.getElement( "span.message" );
 		this.statusShow = new Fx.Morph( this.statusElement, { 
 			'duration': 500,
 			'onComplete': function(){
-				mop.util.EventManager.broadcastMessage("resize");
+				lattice.util.EventManager.broadcastMessage("resize");
 			}.bind( this )
 		});
 		this.statusHide = new Fx.Morph( this.statusElement, { 
 			'duration': 500,
 			"onComplete": function(){
 				this.statusElement.addClass( "hidden" );
-				mop.util.EventManager.broadcastMessage("resize");
+				lattice.util.EventManager.broadcastMessage("resize");
 			}.bind( this )
 		});
 		this.previewElement = this.element.getElement(".preview");
 		if( this.previewElement ) this.imagePreview = this.previewElement.getElement( "img" );
 		this.filename = this.element.getElement( ".fileName" );
-		mop.util.EventManager.addListener( this );
-		if( mop.util.getValueFromClassName( 'extensions', this.element.get("class") ) ) this.options.extensions = this.buildExtensionsObject()
+		lattice.util.EventManager.addListener( this );
+		if( lattice.util.getValueFromClassName( 'extensions', this.element.get("class") ) ) this.options.extensions = this.buildExtensionsObject()
 		this.getSubmitURL();
 		this.uploader.setTarget( this, this.uploadLink, this.getOptions() );
 		this.reposition();
@@ -1370,7 +1370,7 @@ mop.ui.FileElement = new Class({
 	},
 
 	toString: function(){
-		return "[ object, mop.ui.UIElement, mop.ui.FileElement ]";
+		return "[ object, lattice.ui.UIElement, lattice.ui.FileElement ]";
 	},
 	
 	getOptions: function(){
@@ -1390,7 +1390,7 @@ mop.ui.FileElement = new Class({
 	
 	buildExtensionsObject: function(){
 		console.log( "buildExtensionsObject" );
-    var extensionsArray = mop.util.getValueFromClassName( 'extensions', this.elementClass ).split( "_" );
+    var extensionsArray = lattice.util.getValueFromClassName( 'extensions', this.elementClass ).split( "_" );
 		var desc = "";
 		var exts = "";
 		if( extensionsArray.length ){
@@ -1410,8 +1410,8 @@ mop.ui.FileElement = new Class({
 	},
 	
 	onFocus: function( e ){
-		console.log( "mop.ui.FileElement", "onFocus", e );
-		mop.util.stopEvent( e );
+		console.log( "lattice.ui.FileElement", "onFocus", e );
+		lattice.util.stopEvent( e );
 		this.uploader.setFocus( this, this.getPosition() );
 	},
 	
@@ -1419,7 +1419,7 @@ mop.ui.FileElement = new Class({
 		if( this.previewElement ){
 			this.imageFadeOut = new Fx.Morph( this.imagePreview, {
 				'duration': 300,
-				'onComplete': mop.util.EventManager.broadcastMessage.bind( mop.util.EventManager, "resize" )
+				'onComplete': lattice.util.EventManager.broadcastMessage.bind( lattice.util.EventManager, "resize" )
 			}).start( { 'opacity' : [ 1, 0 ], 'height': 0 } );
 		}
 		if( this.clearButton ) this.clearButton.fade("out");
@@ -1429,7 +1429,7 @@ mop.ui.FileElement = new Class({
 	
 	onClearFileResponse: function( json ){
 		if( !json.returnValue ){
-			throw "Error: mop.ui.FileElement clearFileRequest " + json.response.error;
+			throw "Error: lattice.ui.FileElement clearFileRequest " + json.response.error;
 		}else {
 			this.clearButton.addClass("hidden");
 			this.downloadButton.addClass("hidden");
@@ -1489,7 +1489,7 @@ mop.ui.FileElement = new Class({
 	
 	showStatus: function(){
 //		console.log( this.toString(), "showStatus", $A( arguments ) );
-		mop.util.EventManager.broadcastMessage("resize");
+		lattice.util.EventManager.broadcastMessage("resize");
  		this.statusShow.start( { "opacity": [0,1] } );
 		this.statusElement.removeClass("hidden");
 	},
@@ -1507,11 +1507,11 @@ mop.ui.FileElement = new Class({
 		this.clearButton.removeClass("hidden");
 		this.downloadButton.removeClass("hidden");
 		this.downloadButton.set( 'title', 'download ' + json.response.filename );
-		this.downloadButton.set( "href", mop.util.getBaseURL() + json.response.src );
-		console.log( this.toString(), "onFileComplete", mop.util.getBaseURL() + json.response.thumbSrc );
+		this.downloadButton.set( "href", lattice.util.getBaseURL() + json.response.src );
+		console.log( this.toString(), "onFileComplete", lattice.util.getBaseURL() + json.response.thumbSrc );
 		this.downloadButton.removeClass("hidden");
 		if( this.previewElement ){
-			this.imgAsset = new Asset.image( mop.util.getBaseURL() + json.response.thumbSrc, {  alt: json.response.filename, onload: this.updateThumb.bind( this, json ) } );
+			this.imgAsset = new Asset.image( lattice.util.getBaseURL() + json.response.thumbSrc, {  alt: json.response.filename, onload: this.updateThumb.bind( this, json ) } );
 		}else{
 			this.revertToReadyState();
 		}
@@ -1533,14 +1533,14 @@ mop.ui.FileElement = new Class({
 		this.revertToReadyState();
 		this.imageFadeIn = new Fx.Morph( this.imagePreview, {
 			'duration': 300,
-			'onComplete': mop.util.EventManager.broadcastMessage.bind( mop.util.EventManager, "resize" )
+			'onComplete': lattice.util.EventManager.broadcastMessage.bind( lattice.util.EventManager, "resize" )
 		}).start( { 'opacity' : [ 0, 1 ], 'width': imageData.width, 'height': imageData.height } );
 
 	},
 
 	destroy: function(){
 //		console.log( "destroy\t", this.toString() );
-		mop.util.EventManager.removeListener( this );
+		lattice.util.EventManager.removeListener( this );
 		this.uploader.destroy();
 		this.statusElement.destroy();
 		this.element.destroy();
@@ -1549,7 +1549,7 @@ mop.ui.FileElement = new Class({
 	}
 });
 
-mop.util.Uploader = new Class({
+lattice.util.Uploader = new Class({
 	
 	Extends: Swiff,
 	Implements: Events,
@@ -1605,7 +1605,7 @@ mop.util.Uploader = new Class({
 			.addEvent('fileRemove', function(file) {
 				this.fileList.erase(file);
 		}.bind(this), true);
-		mop.util.EventManager.addListener( this );
+		lattice.util.EventManager.addListener( this );
 		this.addEvent( "resize", this.reposition );
 		// callbacks are no longer in the options, every callback
 		// is fired as event, this is just compat
@@ -1719,8 +1719,8 @@ mop.util.Uploader = new Class({
 	setOptions: function( options ) {
 		if (options) {
 //			console.log( this.toString(), "setOptions", options );
-			if ( options.url) options.url = mop.util.Uploader.qualifyPath( options.url );
-			if ( options.buttonImage) options.buttonImage = mop.util.Uploader.qualifyPath( options.buttonImage );
+			if ( options.url) options.url = lattice.util.Uploader.qualifyPath( options.url );
+			if ( options.buttonImage) options.buttonImage = lattice.util.Uploader.qualifyPath( options.buttonImage );
 			this.parent( options );
 			if( this.loaded ) this.remote( 'setOptions', options );
 		}
@@ -1729,7 +1729,7 @@ mop.util.Uploader = new Class({
 
 	onTargetHovered: function( target, targetElement, coords, options ){
 		if( this.currentFileElementInstance == target ) return;
-		console.log( "mop.util.Uploader", target, targetElement, coords, options );
+		console.log( "lattice.util.Uploader", target, targetElement, coords, options );
 // 		this.setTarget( target, targetElement, coords, options );
 // //		targetElement.addClass('active');
 	},
@@ -1760,7 +1760,7 @@ mop.util.Uploader = new Class({
 
 	update: function( data ) {
 		// the data is saved right to the instance
-		console.log( "mop.util.Uploader", "update", data );
+		console.log( "lattice.util.Uploader", "update", data );
 		if( data ) this.currentFileElementInstance.showProgress( data );
 		Object.append( this,  data );
 		this.fireEvent('queue', [this], 10);
@@ -1872,7 +1872,7 @@ mop.util.Uploader = new Class({
 	},
 
 	setTarget: function( uiElement, targetElement, options ){
-//		console.log( "mop.util.Uploader.setTarget", uiElement, targetElement, coords, options );
+//		console.log( "lattice.util.Uploader.setTarget", uiElement, targetElement, coords, options );
 		this.currentFileElementInstance = uiElement;
 		this.target = targetElement;
 		this.setOptions( options );
@@ -1905,8 +1905,8 @@ mop.util.Uploader = new Class({
 		this.removeEvents();
 		this.box.destroy();
 
-		mop.modalManager.removeListener( this );
-		mop.util.EventManager.removeListener( this );
+		lattice.modalManager.removeListener( this );
+		lattice.util.EventManager.removeListener( this );
 		
 		delete this.box;
 		delete this.loaded;
@@ -1966,9 +1966,9 @@ mop.util.Uploader = new Class({
 });
 
 
-mop.util.Uploader.qualifyPath = ( function() {
+lattice.util.Uploader.qualifyPath = ( function() {
 	var anchor;
-	console.log("mop.util.Uploader.qualifyPath ")
+	console.log("lattice.util.Uploader.qualifyPath ")
 	return function( path ) {
 		console.log( "\t",path);
 		( anchor || ( anchor = new Element('a') ) ).href = path;
@@ -1977,9 +1977,9 @@ mop.util.Uploader.qualifyPath = ( function() {
 
 })();
 
-mop.ui.PulldownNav = new Class({
+lattice.ui.PulldownNav = new Class({
 	
-	Extends: mop.ui.UIField,
+	Extends: lattice.ui.UIField,
 	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
@@ -2008,9 +2008,9 @@ mop.ui.PulldownNav = new Class({
 
 });
 
-mop.ui.Pulldown = new Class({
+lattice.ui.Pulldown = new Class({
 
-	Extends: mop.ui.UIField,
+	Extends: lattice.ui.UIField,
 
 	pulldown: null,
 	
@@ -2053,9 +2053,9 @@ mop.ui.Pulldown = new Class({
 
 });
 
-mop.ui.CheckBox = new Class({
+lattice.ui.CheckBox = new Class({
 	
-	Extends: mop.ui.UIField,
+	Extends: lattice.ui.UIField,
 	checkBox: null,
 	
 	initialize: function( anElement, aMarshal, options ){
@@ -2103,9 +2103,9 @@ mop.ui.CheckBox = new Class({
 		
 });
 
-mop.ui.RadioGroup = new Class({
+lattice.ui.RadioGroup = new Class({
 	
-	Extends: mop.ui.UIField,
+	Extends: lattice.ui.UIField,
 
 	radios: null,
 
@@ -2148,7 +2148,7 @@ mop.ui.RadioGroup = new Class({
 	},
 	
 	enableElement: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		this.parent();
 
 		this.radios.each( function( aRadio ){
@@ -2169,7 +2169,7 @@ mop.ui.RadioGroup = new Class({
 	},
 	
 	toString: function(){
-		return "[ object, mop.ui.RadioGroup ]";
+		return "[ object, lattice.ui.RadioGroup ]";
 	},
 	
 	onResponse: function( json ){
@@ -2189,10 +2189,10 @@ mop.ui.RadioGroup = new Class({
 
 });
 
-mop.ui.Input = new Class({
+lattice.ui.Input = new Class({
 	
 
-	Extends: mop.ui.UIField,
+	Extends: lattice.ui.UIField,
 	
 	options: {
 		maxLength: 0,
@@ -2208,7 +2208,7 @@ mop.ui.Input = new Class({
 	},
 	
 	enableElement: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		this.parent();
 		this.inputElement.erase( "disabled" );
 		this.inputElement.removeEvents();
@@ -2223,13 +2223,13 @@ mop.ui.Input = new Class({
 	},
 
 	toString: function(){
-		return "[ object, mop.ui.Input ]";
+		return "[ object, lattice.ui.Input ]";
 	},
 
 	checkFormaxLength: function( e ){
 //		console.log(this.maxLength, e.target.get("value").length);
 		if( e.target.get("value").length >= this.options.maxLength && e.key != "shift" && e.key != "enter" && e.key != "return" && e.key != "tab" && e.keycode != 46 && e.keycode != 8 ){
-			mop.util.stopEvent( e );
+			lattice.util.stopEvent( e );
 			alert( "The maximum length this field allows is " + this.options.maxLength + " characters");
 		}
 	},
@@ -2254,10 +2254,10 @@ mop.ui.Input = new Class({
 
 });
 
-mop.ui.Text = new Class({
+lattice.ui.Text = new Class({
 
-	Extends: mop.ui.UIField,
-	// Implements: [ Options, Events, mop.util.Broadcaster ],
+	Extends: lattice.ui.UIField,
+	// Implements: [ Options, Events, lattice.util.Broadcaster ],
 
 	form: null,
 	options:{
@@ -2321,11 +2321,11 @@ mop.ui.Text = new Class({
 		if( this.mode != "editing" ) return;
 	  if( e.target == this.saveButton || e.target == this.cancelButton ) return;
 	  if( e.target == this.element || this.element.contains( e.target ) ) return;
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		console.log( this.fieldName, 'onDocumentClicked', this.mode, this.element, this.element.contains( e.target ) );
 	},
 
-	toString: function(){ return "[ object, mop.ui.Text ]"; },
+	toString: function(){ return "[ object, lattice.ui.Text ]"; },
 	
 	onKeyPress: function( e ){
 		var submitCondition = ( ( e.control || e.meta) && e.key == 'enter' );
@@ -2338,7 +2338,7 @@ mop.ui.Text = new Class({
 	},
 	
 	onFieldFocus: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		if( this.mode == "editing ") return false;
 		this.enterEditMode( e );
 	},
@@ -2380,7 +2380,7 @@ mop.ui.Text = new Class({
 			this.controls.destroy();
 			this.controls = null;
 		}
-		this.controls = new mop.ui.Sticky( this.field, {
+		this.controls = new lattice.ui.Sticky( this.field, {
 			content: this.getControls(),
 			borderRadius: 4,
 			offset: ( this.options.rows > 1 )? { x: -8, y: -12 } : { x: -8, y: 0 },
@@ -2442,7 +2442,7 @@ mop.ui.Text = new Class({
 		
 	checkFormaxLength: function(e){
 		if( e.target.get("value").length > this.options.maxLength && e.keycode != 46 && e.keycode != 8 ){
-			mop.util.stopEvent( e );
+			lattice.util.stopEvent( e );
 			alert( "The maximum length this field allows is " + this.options.maxLength + " characters");
 		}
 	},
@@ -2462,7 +2462,7 @@ mop.ui.Text = new Class({
 	},
 	
 	enterEditMode: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		if( this.mode == "editing ") return false;
 		this.mode = "editing";
 		// if we don't suspend parent sorting, then when we click the field we start a drag angle
@@ -2487,7 +2487,7 @@ mop.ui.Text = new Class({
 	},
 
 	cancelEditing: function( e ){
-		mop.util.preventDefault( e );
+		lattice.util.preventDefault( e );
 		if( this.oldValue ){
 			var val = this.oldValue.formatToHTML()
 			this.field.set( 'value', val );
@@ -2577,7 +2577,7 @@ mop.ui.Text = new Class({
  @dependencies		mootools 1.2b
 */
 
-mop.ui.MooSwitch = new Class({
+lattice.ui.MooSwitch = new Class({
 	
 	Extends: Drag.Move,
 	isVirgin: true,
@@ -2721,8 +2721,8 @@ mop.ui.MooSwitch = new Class({
 	}
 });
 
-mop.ui.SlideSwitch = new Class({
-	Extends: mop.ui.MooSwitch,
+lattice.ui.SlideSwitch = new Class({
+	Extends: lattice.ui.MooSwitch,
 	initialize: function( anElement, aMarshal, options ){
 		this.element = anElement;
 		this.marshal = aMarshal;
@@ -2731,7 +2731,7 @@ mop.ui.SlideSwitch = new Class({
 	}	
 });
 
-mop.ui.ScrollableTable = new Class({
+lattice.ui.ScrollableTable = new Class({
 
 	initialize: function( anElement, aMarshal ){
 		this.element = anElement;
@@ -2753,7 +2753,7 @@ mop.ui.ScrollableTable = new Class({
 	
 });
 
-mop.ui.PaginationControls = new Class({
+lattice.ui.PaginationControls = new Class({
 	
 	pages: [],
 	cachePages: false,
@@ -2761,7 +2761,7 @@ mop.ui.PaginationControls = new Class({
 	currentPage: 1,
 	
 	getPageURL: function( marshalId ){
-	    return mop.util.getBaseURL() + "ajax/data/" + marshalId + "/" + this.method + "/" + this.options.listId + "/" + this.currentPage;
+	    return lattice.util.getBaseURL() + "ajax/data/" + marshalId + "/" + this.method + "/" + this.options.listId + "/" + this.currentPage;
 	},
 	
 	initialize: function( anElement, aMarshal ){		
@@ -2794,11 +2794,11 @@ mop.ui.PaginationControls = new Class({
 	},
 	
 	toString: function(){
-		return "[ object, mop.ui.PaginationControls ]";
+		return "[ object, lattice.ui.PaginationControls ]";
 	},
 	
 	nextPage: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 //		console.log( this.toString(), "nextPage", e );
 		this.currentPage ++;
 		if( this.currentPage == this.options.totalPages ) this.nextPageControl.addClass( "hidden" );
@@ -2807,7 +2807,7 @@ mop.ui.PaginationControls = new Class({
 	},
 	
 	previousPage: function( e ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		this.currentPage --;
 		if( this.currentPage == 1 ){
 			this.previousPageControl.addClass( "hidden" );
@@ -2892,10 +2892,10 @@ mop.ui.PaginationControls = new Class({
 	}
 });
 
-mop.ui.AutoCompleter = new Class({
-	Extends: mop.ui.UIField
+lattice.ui.AutoCompleter = new Class({
+	Extends: lattice.ui.UIField
 });
 
-mop.ui.Tags = new Class({
-	Extends: mop.ui.AutoCompleter
+lattice.ui.Tags = new Class({
+	Extends: lattice.ui.AutoCompleter
 });

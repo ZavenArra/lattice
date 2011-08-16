@@ -2,8 +2,8 @@
 
 
 //check for setup
-MOP_Initializer::check(
-	Kohana::config('mop_cms.dependencies')
+Lattice_Initializer::check(
+	Kohana::config('lattice_cms.dependencies')
 );
 
 

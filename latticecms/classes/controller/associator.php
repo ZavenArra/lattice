@@ -43,7 +43,7 @@ Class Associator_Controller extends Controller {
 	}
 
 	public function createIndexView(){
-		$this->view = new View('mop_associator');		
+		$this->view = new View('lattice_associator');		
 		$this->view->pool = $this->pool;
 		$this->view->field = $this->field;
 	}

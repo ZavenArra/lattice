@@ -8,7 +8,7 @@
  */
 
 
-class MOP_CMS extends MOP_CMSInterface {
+class Lattice_CMS extends Lattice_CMSInterface {
 
 		
 	protected $_actionsThatGetLayout = array(
@@ -43,7 +43,7 @@ class MOP_CMS extends MOP_CMSInterface {
 	*
 	*/
 
-	protected $defaultobjectType='mop_cms';
+	protected $defaultobjectType='lattice_cms';
 
 	/*
 		Function: __constructor
@@ -54,14 +54,14 @@ class MOP_CMS extends MOP_CMSInterface {
      
 		$this->modules = Kohana::config('cms.subModules');
 
-		$this->loadResources('mop_cms');
+		$this->loadResources('lattice_cms');
 
-		mop::config('objects', 'objectTypes');
+		lattice::config('objects', 'objectTypes');
 
 	}
 
 	public function action_index(){
-		$this->view = new View('mop_cms');
+		$this->view = new View('lattice_cms');
 		if(Auth::instance()->logged_in('superuser')){
 			$this->view->userlevel = 'superuser';
 		} else {
@@ -149,7 +149,7 @@ class MOP_CMS extends MOP_CMSInterface {
 		
 		//new generation of object
 		//1 grap cms_nodetitle
-		$this->nodetitle = new View('mop_cms_nodetitle');
+		$this->nodetitle = new View('lattice_cms_nodetitle');
 		$this->nodetitle->title = $object->contenttable->title; //this should change to object table
 		$this->nodetitle->slug = $object->slug;
 		$this->nodetitle->allowDelete = $object->objecttype->allowDelete;
@@ -172,7 +172,7 @@ class MOP_CMS extends MOP_CMSInterface {
 		$nodetitlehtml = $this->nodetitle->render();
 
 		$customview = 'objectTypes/'.$object->objecttype->objecttypename; //check for custom view for this objectType
-		$htmlChunks = mopcms::buildUIHtmlChunksForObject($object);
+		$htmlChunks = latticecms::buildUIHtmlChunksForObject($object);
 
 		$usecustomview = false;
 		if(Kohana::find_file('views', $customview)){

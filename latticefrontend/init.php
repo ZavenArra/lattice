@@ -30,7 +30,7 @@ class FrontendRouting {
 
 Route::set('mopCmsSlugs', array('FrontendRouting', 'routeSlug'));
 
-Route::set('defaultMopFrontend', '(<controller>)',
+Route::set('defaultLatticeFrontend', '(<controller>)',
 	array(
 		'controller'=>'',
 	))

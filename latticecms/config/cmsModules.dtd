@@ -11,7 +11,7 @@
 <!ELEMENT module EMPTY >
 <!ATTLIST module
 	controller				CDATA #REQUIRED
-	parent			CDATA "MOP_NOTHING"
+	parent			CDATA "Lattice_NOTHING"
 	label				CDATA #REQUIRED
 >
 

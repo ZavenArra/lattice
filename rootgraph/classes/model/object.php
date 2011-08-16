@@ -58,7 +58,7 @@ class Model_Object extends ORM {
          $content->setTemplateName($this->objecttype->objecttypename); //set the objecttypename for dbmapping
          $this->_related[$column] = $content->where('object_id', '=', $this->id)->find();
          if (!$this->_related[$column]->_loaded) {
-            throw new Kohana_Exception('BAD_MOP_DB' . 'no content record for object ' . $this->id);
+            throw new Kohana_Exception('BAD_Lattice_DB' . 'no content record for object ' . $this->id);
          }
          return $this->_related[$column];
       } else if (in_array($column, array_keys($this->_table_columns))){
@@ -107,18 +107,18 @@ class Model_Object extends ORM {
          $this->object[$column] = $this->load_type($column, $value);
       } else {
          if (!is_object($value)) {
-            $value = mopcms::convertNewlines($value);
+            $value = latticecms::convertNewlines($value);
          }
 
          
          if ($column == 'slug') {
-            parent::__set('slug', mopcms::createSlug($value, $this->id));
+            parent::__set('slug', latticecms::createSlug($value, $this->id));
             parent::__set('decoupleSlugTitle', 1);
             $this->save();
             return;
          } else if ($column == 'title') {
             if (!$this->decoupleSlugTitle) {
-               $this->slug = mopcms::createSlug($value, $this->id);
+               $this->slug = latticecms::createSlug($value, $this->id);
             }
             $this->save();
             $this->contenttable->title = $value;
@@ -138,7 +138,7 @@ class Model_Object extends ORM {
             $objectType = ORM::Factory('objecttype',$objecttype_id);
             
             $xpath = sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $objectType->objecttypename, $column);
-            $fieldInfo = mop::config('objects', $xpath)->item(0);
+            $fieldInfo = lattice::config('objects', $xpath)->item(0);
             if (!$fieldInfo) {
                throw new Kohana_Exception('Invalid field for objectType, using XPath : :xpath', array(':xpath' => $xpath));
             }
@@ -184,7 +184,7 @@ class Model_Object extends ORM {
       parent::save();
       //if inserting, we add a record to the content table if one does not already exists
       if ($inserting) {
-         if (!Kohana::config('mop.legacy')) {
+         if (!Kohana::config('lattice.legacy')) {
             $content = ORM::Factory('content');
          } else {
             $content = ORM::Factory($this->objecttype->contenttable);
@@ -286,17 +286,17 @@ class Model_Object extends ORM {
       $content['dateadded'] = $this->dateadded;
       $content['objectTypeName'] = $this->objecttype->objecttypename;
 
-      $fields = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
+      $fields = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
 
       foreach ($fields as $fieldInfo) {
          $field = $fieldInfo->getAttribute('field');
-         if (mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $this->objecttype->objecttypename, $field))->length) {
+         if (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $this->objecttype->objecttypename, $field))->length) {
             $content[$field] = $this->contenttable->{$field};
          }
       }
 
       //find any lists
-      foreach (mop::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list) {
+      foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list) {
 
          $family = $list->getAttribute('family');
          $content[$family] = $this->getListContentAsArray($family);
@@ -441,7 +441,7 @@ class Model_Object extends ORM {
    }
 
    private function moveUploadedFileToTmpMedia($tmpName) {
-      $saveName = mopcms::makeFileSaveName('tmp') . microtime();
+      $saveName = latticecms::makeFileSaveName('tmp') . microtime();
 
       if (!move_uploaded_file($tmpName, Graph::mediapath() . $saveName)) {
          $result = array(
@@ -461,10 +461,10 @@ class Model_Object extends ORM {
       }
 
       $file->unlinkOldFile();
-      $saveName = mopcms::makeFileSaveName($filename);
+      $saveName = latticecms::makeFileSaveName($filename);
 
       if (!copy(Graph::mediapath() . $tmpName, Graph::mediapath() . $saveName)) {
-         throw new MOP_Exception('this is a MOP Exception');
+         throw new Lattice_Exception('this is a MOP Exception');
       }
       unlink(Graph::mediapath() . $tmpName);
 
@@ -536,7 +536,7 @@ class Model_Object extends ORM {
 
       //do the resizing
       $objecttypename = $this->objecttype->objecttypename;
-      $resizes = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]/resize', $objecttypename, $field
+      $resizes = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]/resize', $objecttypename, $field
                       )
       );
 			Kohana::$log->add(Log::INFO, 'printing out resizess');
@@ -551,9 +551,9 @@ class Model_Object extends ORM {
          $newfilename = $prefix . $imagefilename;
          $saveName = Graph::mediapath() . $newfilename;
 
-				 //This dependency should be moved out of mopcms
-				 //Rootgraph should never require mopcms
-         mopcms::resizeImage($imagefilename, $newfilename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('forceDimension'), $resize->getAttribute('crop')
+				 //This dependency should be moved out of latticecms
+				 //Rootgraph should never require latticecms
+         latticecms::resizeImage($imagefilename, $newfilename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('forceDimension'), $resize->getAttribute('crop')
          );
 
          if (isset($oldfilename) && $newfilename != $prefix . $oldfilename) {
@@ -565,7 +565,7 @@ class Model_Object extends ORM {
 
 			//And process resizes passed in from caller
       foreach($additionalResizes as $uiresize){
-        mopcms::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
+        latticecms::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
       }
 
 
@@ -669,7 +669,7 @@ class Model_Object extends ORM {
 
 
          //check objects.xml for configuration
-         if ($objectTypeConfig = mop::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName))->item(0)) {
+         if ($objectTypeConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName))->item(0)) {
             //there's a config for this objectType
             //go ahead and configure it
             Graph::configureTemplate($objectTypeName);
@@ -685,13 +685,13 @@ class Model_Object extends ORM {
 
       //create slug
       if (isset($data['title'])) {
-         $newObject->slug = mopcms::createSlug($data['title'], $newObject->id);
+         $newObject->slug = latticecms::createSlug($data['title'], $newObject->id);
       } else {
 				//$newObject->title = 'No Title';
 				//Don't want to do this yet because then all objects will have same title
 				//which is a problem for import, which assumes same title same tier objects
 				//are the same object
-				$newObject->slug = mopcms::createSlug();
+				$newObject->slug = latticecms::createSlug();
       }
       $newObject->parentid = $this->id;
 
@@ -707,7 +707,7 @@ class Model_Object extends ORM {
       //check for enabled publish/unpublish. 
       //if not enabled, insert as published
       $objectType = ORM::Factory('objectType', $objecttype_id);
-      $tSettings = mop::config('objects', sprintf('//objectType[@name="%s"]', $objectType->objecttypename));
+      $tSettings = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectType->objecttypename));
       $tSettings = $tSettings->item(0);
       $newObject->published = 1;
       if ($tSettings) { //entry won't exist for Container objects
@@ -726,7 +726,7 @@ class Model_Object extends ORM {
       $newobjectType = ORM::Factory('objectType', $newObject->objecttype_id);
 
 
-      $lookupTemplates = mop::config('objects', '//objectType');
+      $lookupTemplates = lattice::config('objects', '//objectType');
       $objectTypes = array();
       foreach ($lookupTemplates as $tConfig) {
          $objectTypes[] = $tConfig->getAttribute('name');
@@ -746,7 +746,7 @@ class Model_Object extends ORM {
          }
 
          $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $newobjectType->objecttypename, $field);
-         $fieldInfo = mop::config('objects', $fieldInfoXPath)->item(0);
+         $fieldInfo = lattice::config('objects', $fieldInfoXPath)->item(0);
          if (!$fieldInfo) {
             throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath' => $fieldInfoXPath));
          }
@@ -769,7 +769,7 @@ class Model_Object extends ORM {
 
                if (isset($_FILES[$field])) {
                   Kohana::$log->add(Log::ERROR, 'Adding via post file');
-                  $file = mopcms::saveHttpPostFile($newObject->id, $field, $_FILES[$field]);
+                  $file = latticecms::saveHttpPostFile($newObject->id, $field, $_FILES[$field]);
                } else {
                   $file = ORM::Factory('file');
                   $file->filename = $value;
@@ -787,7 +787,7 @@ class Model_Object extends ORM {
 
       //look up any components and add them as well
       //configured components
-      $components = mop::config('objects', sprintf('//objectType[@name="%s"]/components/component', $newobjectType->objecttypename));
+      $components = lattice::config('objects', sprintf('//objectType[@name="%s"]/components/component', $newobjectType->objecttypename));
       foreach ($components as $c) {
          $arguments = array();
          if ($label = $c->getAttribute('label')) {
@@ -802,7 +802,7 @@ class Model_Object extends ORM {
       }
 
       //containers (list)
-      $containers = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $newobjectType->objecttypename));
+      $containers = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $newobjectType->objecttypename));
       foreach ($containers as $c) {
          $arguments['title'] = $c->getAttribute('label');
          $newObject->addObject($c->getAttribute('family'), $arguments);
