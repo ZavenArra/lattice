@@ -114,6 +114,10 @@ String.implement({
 	
 	formatToHTML: function(){
 		return this.newLinesToHTMLBreaks().entityDecode();
+	},
+	
+	isNumeric: function(){
+		return ( parseInt( this ) == this );
 	}
 	
 	

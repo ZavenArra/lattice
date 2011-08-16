@@ -14,7 +14,15 @@ lattice.modules.navigation.Navigation = new Class({
 		addObjectPosition: 'bottom'
 	},
 
-	getNodeIdFromElement: function( anElement ){ return anElement.get("id").split( "_" )[1]; },
+	getNodeIdFromElement: function( anElement ){ 
+		var id;
+		if( anElement.get( 'id' ) && anElement.get( 'id' ).split( '_' ) ){
+			id = anElement.get("id").split( "_" )[ anElement.get("id").split( "_" ).length - 1 ];
+		}else{
+			id = null;
+		}
+		return id;
+	},
 	getNodeTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].nodeType; },
 	getContentTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].contentType; },
 	getNodeTitleFromId: function( nodeId ){ if( this.nodeData[ nodeId ] ){ return this.nodeData[ nodeId ].title; }else{ return null; } },
@@ -469,9 +477,9 @@ lattice.modules.navigation.Tier = new Class({
 
 	onOrderChanged: function(){
 		var newOrder = this.serialize();
-//		console.log( "onOrderChanged", newOrder);
+		console.log( "onOrderChanged", newOrder);
 		clearInterval( this.submitDelay );
-		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder.join(",").replace(/([a-zA-Z]+[,]?)/g,'') );
+		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder );
 		newOrder = null;
 	},
 
@@ -485,18 +493,18 @@ lattice.modules.navigation.Tier = new Class({
 	},
 
 	serialize:function(){
-		var sortArray = [];
-		var children = this.sortableListElement.getChildren("li");
-		children.each( function ( aListing ){
-			if( aListing.get( "id" ) ){
-	//    		    console.log( this.toString(), aListing, aListing.get( "id" ) ); 	
-				var listItemId = aListing.get("id");
-				var listItemIdSplit = listItemId.split( "_" );
-				listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
-				sortArray.push( listItemId );		        
-			}
-		});
-		return sortArray;;
+		var sortArray, children, nodeId;
+		sortArray = [];
+		children = this.sortableListElement.getChildren("li");
+		console.log( '\tserialize', children ); 	
+		children.each( function ( anItem ){
+				nodeId = this.marshal.getNodeIdFromElement( anItem );
+				if( nodeId && nodeId.isNumeric() ){
+					console.log( '\t\t', nodeId );
+					sortArray.push( nodeId );
+				}
+		}, this );
+		return sortArray.join( ',' );
 	}	
 
 });
