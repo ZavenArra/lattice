@@ -37,9 +37,9 @@ class Model_ListContainer extends Model_Object {
       return $this->_xml_config;
    }
    
-   public function addObject($objectTypeId, $data=array() ){
+   public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
       $data['published'] = 'true';
-      return parent::addObject($objectTypeId, $data);
+      return parent::addObject($objectTypeName, $data, $lattice, $rosettaId, $languageId);
    }
 
 }

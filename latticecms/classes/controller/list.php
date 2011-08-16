@@ -59,7 +59,7 @@ class Controller_List extends Lattice_CMSInterface {
          $lt = ORM::Factory('objectType')->where('objecttypename', '=', $family)->find();
 
          $listObject = ORM::Factory('listcontainer')
-                 ->latticeChildrenFilter($listOjectIdOrParentId)
+                 ->latticeChildrenFilter($listObjectIdOrParentId)
                  ->objectTypeFilter($lt->id)
                  ->activeFilter()
                  ->find();
@@ -71,7 +71,7 @@ class Controller_List extends Lattice_CMSInterface {
          $this->_listObject = $listObject;
       } else {
 
-         $this->_listObject = ORM::Factory('listcontainer', $listObjectIdOrparentId);
+         $this->_listObject = ORM::Factory('listcontainer', $listObjectIdOrParentId);
       }
       
       

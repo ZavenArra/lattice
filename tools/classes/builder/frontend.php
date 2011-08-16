@@ -18,11 +18,11 @@ Class Builder_Frontend {
 		
 		flush();
 		
-	//	foreach(mop::config('frontend', '//view') as $view ){
+	//	foreach(lattice::config('frontend', '//view') as $view ){
 		//	//this has removed the ability to build virtual views
 		foreach(ORM::Factory('objecttype')->find_all() as $objectType){
 
-			$view = mop::config('frontend', '//view[@name="'.$objectType->objecttypename.'"]');
+			$view = lattice::config('frontend', '//view[@name="'.$objectType->objecttypename.'"]');
 			if(count($view)){
 				$view = $view->item(0);
 			} else {

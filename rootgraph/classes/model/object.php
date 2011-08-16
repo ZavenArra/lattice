@@ -952,7 +952,7 @@ class Model_Object extends ORM {
     */
    private function addComponents(){
        //chain problem
-      $containers = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename));
+      $containers = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename));
       foreach ($containers as $c) {
          $arguments['title'] = $c->getAttribute('label');
          $childObject = $this->addObject($c->getAttribute('family'), $arguments);

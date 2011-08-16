@@ -10,7 +10,7 @@
  *
  * @author deepwinter
  */
-class Initializer_Mopauth {
+class Initializer_Latticeauth {
    
    public function initialize() {
 
