@@ -152,13 +152,12 @@ mop.modules.Module = new Class({
 
 /*  Function: destroyChildModules */
 	destroyChildModules: function( whereToLook ){
-//		console.log( "destroyChildModules", this.toString(), this.childModules );
-
+		//console.log( "destroyChildModules", this.toString(), this.childModules );
 		if( !this.childModules || Object.getLength( this.childModules ) == 0 ) return;
-        var possibleTargets = ( whereToLook )? whereToLook.getElements( ".module" ) : this.element.getElements( ".module" );
+		var possibleTargets = ( whereToLook )? whereToLook.getElements( ".module" ) : this.element.getElements( ".module" );
 		Object.each( this.childModules, function( aModule ){
-		    if( possibleTargets.contains( aModule.element ) ){
-		        var key = aModule.instanceName;
+			if( possibleTargets.contains( aModule.element ) ){
+				var key = aModule.instanceName;
 				aModule.destroy();
 				delete this.childModules[key];
 				delete aModule;
@@ -170,12 +169,13 @@ mop.modules.Module = new Class({
 	destroyUIFields: function(){
 //		console.log( "destroyUIFields before", this.instanceName, this.UIFields );
 		Object.each( this.UIFields, function( aUIField ){
+			var fieldName = aUIField.fieldName;
+			console.log( '\t\t', aUIField, aUIField.fieldName );
 			aUIField.destroy();
-			delete aUIField;
+			delete this.UIFields[ fieldName ];
 			aUIField = null;
 		}, this );
-		this.UIFields = {};
-//		console.log( "destroyUIFields after ", this.instanceName, this.UIFields );
+		console.log( "destroyUIFields after ", this.instanceName, this.UIFields );
 	},
 	
 	destroy: function(){
