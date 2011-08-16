@@ -4,7 +4,7 @@
  * Contains utility function for CMS
  */
 
-class MoPCMS {
+class latticecms {
 
 	/*
 	 * Variable: createSlug($title, $forPageId)
