@@ -21,7 +21,7 @@ class latticecms {
 			$slug = str_replace(' ', '-', $slug);
 			$slug = trim($slug);
 
-			$checkSlug = ORM::Factory('object')
+			$checkSlug = Graph::object()
 				->where('slug', 'REGEXP',  '^'.$slug.'[0-9]*$')
 				->order_by("slug");
       	
@@ -168,6 +168,15 @@ class latticecms {
 										$htmlChunks[$element['type'] . '_' . $element['field']] = $html;
 										continue;
 								}
+            
+            /*
+             * Set up UI arguments to support uniquely generated field names when
+             * multiple items being displayed have the same field names
+             */
+            $uiArguments = $element;
+            if(isset($element['fieldId'])){
+               $uiArguments['field'] = $element['fieldId'];
+            }
 
 				switch ($element['type']) {
                case 'element': //this should not be called 'element' as element has a different meaning
@@ -196,7 +205,7 @@ class latticecms {
                   $controller = new Associator_Controller($element['filters'], $object->id, $element['field']);
                   $controller->createIndexView();
                   $controller->view->loadResources();
-                  $key = $element['type'] . '_' . $element['field'];
+                  $key = $element['type'] . '_' . $uiArguments['field'];
                   $htmlChunks[$key] = $controller->view->render();
                   
                   break;
@@ -210,12 +219,12 @@ class latticecms {
                   break;
                default:
                   //deal with html objectType elements
-                  $key = $element['type'] . '_' . $element['field'];
+                  $key = $element['type'] . '_' . $uiArguments['field'];
                   $html = null;
                   if (!isset($element['field'])) {
                      $element['field'] = CMS_Controller::$unique++;
                      $html = latticeui::buildUIElement($element, null);
-                  } else if (!$html = latticeui::buildUIElement($element, $object->$element['field'])) {
+                  } else if (!$html = latticeui::buildUIElement($uiArguments, $object->$element['field'])) {
                      throw new Kohana_Exception('bad config in cms: bad ui element');
                   }
                   $htmlChunks[$key] = $html;
@@ -227,7 +236,7 @@ class latticecms {
       return $htmlChunks;
    }
 
-   public static function buildUIHtmlChunksForObject($object) {
+   public static function buildUIHtmlChunksForObject($object, $translatedLanguageCode = null) {
       $elements = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename));
       // should be Model_object->getElements();
       // this way a different driver could be created for non-xml config if desired
@@ -238,6 +247,9 @@ class latticecms {
          $entry['type'] = $element->tagName;
          for ($i = 0; $i < $element->attributes->length; $i++) {
             $entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
+         }
+         if($translatedLanguageCode != null){
+            $entry['fieldId'] = $entry['field'].'_'.$translatedLanguageCode;
          }
          //make sure defaults load
          $entry['tag'] = $element->getAttribute('tag');
@@ -299,7 +311,7 @@ class latticecms {
 					$objects = ORM::Factory('objectType', $objectType->getAttribute('name'))->getActiveMembers();
 					$fieldname = $element->getAttribute('field');
 					foreach($objects as $object){
-						if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
+           	if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
 							$uiresizes = Kohana::config('lattice_cms.uiresizes');
 							$object->processImage($object->$fieldname->filename, $fieldname, $uiresizes);
 						}
@@ -311,8 +323,8 @@ class latticecms {
 
 	public static function generateNewImages($objectIds){
 		foreach($objectIds as $id){
-			$object = ORM::Factory('object', $id);
-			foreach(lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element){
+			$object = Graph::object($id);
+      foreach(lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element){
 				if($element->tagName == 'image'){
 					$fieldname = $element->getAttribute('field');
 					if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
@@ -355,7 +367,7 @@ public static function makeFileSaveName($filename) {
 
    public static function saveHttpPostFile($objectid, $field, $postFileVars) {
       Kohana::$log->add(Log::ERROR, 'save uploaded');
-      $object = ORM::Factory('object', $objectid);
+      $object = Graph::object($objectid);
       //check the file extension
       $filename = $postFileVars['name'];
       $ext = substr(strrchr($filename, '.'), 1);

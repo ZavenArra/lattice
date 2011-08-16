@@ -8,8 +8,14 @@ class FrontendRouting {
 
       $slug = $segments[0];
       $object = null;
-      foreach($segments as $slug){
-         $object = ORM::Factory('object')->getPublishedObjectBySlug($slug);
+      foreach($segments as $segment){
+				$slug = strtok($segment, '_');
+				$languageCode = strtok('_');
+				$object = Graph::object()->getPublishedObjectBySlug($slug);
+				if($languageCode){
+					$object = $object->translate($languageCode);
+				}
+         
          if(!$object->loaded()){
             return;
          }

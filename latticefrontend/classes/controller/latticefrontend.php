@@ -26,13 +26,7 @@ Class Controller_LatticeFrontend extends Controller_Layout{
 	public function action_index(){
 		$this->action_object(substr(get_class($this), 0, -11));
 	}
-        
-        public function validSlug($uri){
-            
-            echo 'made it here!!!';
-        }
 
-	
 
 	/*
 	 * Function: object($objectidorslug)
@@ -52,7 +46,7 @@ Class Controller_LatticeFrontend extends Controller_Layout{
 
 		self::$slug = $objectidorslug;
 
-		$object = ORM::Factory('object')->where('slug', '=', $objectidorslug)->find();
+      $object = Graph::object($objectidorslug);
 		//some access control
 		$viewName = null;
 		if ($object->loaded()) {

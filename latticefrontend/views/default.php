@@ -3,7 +3,7 @@
 //this also implies that name is a objecttypename
 ob_start();
 foreach(lattice::config('objects', 
-	sprintf('//objectType[@name="%s"]/elements/*', ORM::Factory('object', $content['main']['id'])->objecttype->objecttypename )) as $element){
+	sprintf('//objectType[@name="%s"]/elements/*', Graph::object($content['main']['id'])->objecttype->objecttypename )) as $element){
 		frontend::makeHtmlElement($element, "\$content['main']");
 }
 $html = ob_get_contents();

@@ -96,9 +96,9 @@ class Controller_Ajax extends Controller_Lattice {
 		$arguments = explode('/', $uri);
 
 		try {
-			$subRequest = Request::Factory($uri);
+   		$subRequest = Request::Factory($uri);
 			$requestResponse = $subRequest->execute();
-		} catch (Exception $e) {
+   	} catch (Exception $e) {
 			//return HTML from exception
 			$message = lattice::getOneLineErrorReport($e);
 			$ajaxResponse = array(

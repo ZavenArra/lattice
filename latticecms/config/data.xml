@@ -28,6 +28,9 @@
 
 	<item objectTypeName="singleIPE">
 		<field name="title">Single IPE</field>
+      <item objectTypeName="multilineIPE">
+         <field name="title">Multiline as Component</field>
+      </item>
 	</item>
 
 	<item objectTypeName="multilineIPE">

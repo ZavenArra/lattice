@@ -53,15 +53,15 @@ class Controller_List extends Lattice_CMSInterface {
    }
    
    
-   protected function setListObject($listObjectIdOrparentId, $family=null) {
+   protected function setListObject($listObjectIdOrParentId, $family=null) {
 
       if ($family != null) {
          $lt = ORM::Factory('objectType')->where('objecttypename', '=', $family)->find();
 
          $listObject = ORM::Factory('listcontainer')
-                 ->where('parentId', '=', $listObjectIdOrparentId)
-                 ->where('objecttype_id', '=', $lt->id)
-                 ->where('activity', 'IS', NULL)
+                 ->latticeChildrenFilter($listOjectIdOrParentId)
+                 ->objectTypeFilter($lt->id)
+                 ->activeFilter()
                  ->find();
 
          if (!$listObject->loaded()) {
@@ -190,7 +190,7 @@ class Controller_List extends Lattice_CMSInterface {
  
       $newId = $listObject->addObject($objectTypeId);
       
-      $item = ORM::Factory('object', $newId);
+      $item = Graph::object($newId);
       $htmlChunks = latticecms::buildUIHtmlChunksForObject($item);
       $itemt = new View($this->itemView());
       $itemt->uiElements = $htmlChunks;

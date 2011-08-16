@@ -60,6 +60,10 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
 	}
 
+	public function getRootNode(){
+		throw new Kohana_Exception('Child class must implement getRootNode()');
+	}
+
 	public function action_index(){
 		$this->view = new View('lattice_cms');
 		if(Auth::instance()->logged_in('superuser')){
@@ -71,11 +75,8 @@ class Lattice_CMS extends Lattice_CMSInterface {
       
 	//get the default 
 
-      
-      $rootObjectType = ORM::factory('objectType')->where('objectTypeName', '=', Kohana::config('cms.graphRootNode'))->find();
-      $rootObject = ORM::Factory('object')->where('objecttype_id', '=', $rootObjectType->id)->find();
-
-      $this->view->objectId = $rootObject->id;
+		$rootObject = $this->getRootObject();
+      $this->view->rootObjectId = $rootObject->id;
       
 		
 		//basically this is an issue with wanting to have multiple things going on
@@ -118,10 +119,13 @@ class Lattice_CMS extends Lattice_CMSInterface {
 	id - the object id to be retrieved
 	Returns: array('html'=>html, 'js'=>js, 'css'=>css)
 	*/
-	public function action_getPage($id){
+	public function action_getPage($id, $languageCode = null){
 
-		$object = Graph::object($id);
-
+      if(!$languageCode){
+   		$object = Graph::object($id);
+      } else {
+         $object = Graph::object($id)->translate($languageCode);
+      }
 
 		self::$objectId = $id;
 
@@ -168,11 +172,16 @@ class Lattice_CMS extends Lattice_CMSInterface {
 				$this->nodetitle->$key = $value;
 			}
 		}
+      if($languageCode){
+         $this->nodetitle->translationModifier = '_'.$languageCode;
+      } else {
+         $this->nodetitle->translationModifier = '';
+      }
 		
 		$nodetitlehtml = $this->nodetitle->render();
 
 		$customview = 'objectTypes/'.$object->objecttype->objecttypename; //check for custom view for this objectType
-		$htmlChunks = latticecms::buildUIHtmlChunksForObject($object);
+		$htmlChunks = latticecms::buildUIHtmlChunksForObject($object, $languageCode);
 
 		$usecustomview = false;
 		if(Kohana::find_file('views', $customview)){
@@ -194,6 +203,11 @@ class Lattice_CMS extends Lattice_CMSInterface {
 		$this->response->body($html);
 
 	}
+   
+   
+   public function action_getTranslatedPage($objectId, $languageCode){
+      return $this->action_getPage($objectId, $languageCode);
+   }
 
 	public function action_addchild($id, $objecttype_id){
 		$data = $_POST;

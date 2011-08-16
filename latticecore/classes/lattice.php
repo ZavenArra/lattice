@@ -142,8 +142,8 @@ Class lattice {
 		if(!Kohana::find_file('controllers', $module['modulename'] ) ){
 			if(!isset($module['controllertype'])){
 				$view = new View($module['modulename']);
-				$object = ORM::Factory('object')->where('slug', '=', $module['modulename'])->find();
-				if($object->loaded()){ // in this case it's a slug for a specific object
+				$object = Graph::object($module['modulename']);
+        if($object->loaded()){ // in this case it's a slug for a specific object
 					foreach(lattice::getViewContent($object->id, $object->objecttype->objecttypename) as $key=>$content){
 						$view->$key = $content;
 					}
@@ -193,7 +193,7 @@ Class lattice {
 		$data = array();
 
 		if ($view == 'default') {
-			$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
+         $object = Graph::object($slug);
 			if (!$object->loaded()) {
 				throw new Koahan_Exception('lattice::getViewContent : Default view callled with no slug');
 			}
@@ -203,11 +203,11 @@ Class lattice {
 
 		$viewConfig = lattice::config('frontend', "//view[@name=\"$view\"]")->item(0);
 		if (!$viewConfig) {
-         throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
+        // throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
 		}
-		if ($viewConfig->getAttribute('loadPage')) {
-			$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
-			if (!$object->loaded()) {
+		if (!$viewConfig || ($viewConfig && $viewConfig->getAttribute('loadPage'))) {
+         $object = Graph::object($slug);
+         if (!$object->loaded()) {
 				throw new Kohana_Exception('lattice::getViewContent : View specifies loadPage but no object to load');
 			}
 			$data['content']['main'] = $object->getPageContent();
@@ -228,7 +228,7 @@ Class lattice {
 					if ($view && $slug) {
 						$subViewContent = lattice::getViewContent($view, $slug);
 					} else if ($slug) {
-						$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
+                  $object = Graph::object($slug);
 						$view = $object->objecttype->objecttypename;
 						$subViewContent = lattice::getViewContent($view, $slug);
 					} else if ($view) {
@@ -274,6 +274,8 @@ Class lattice {
 	public static function getOneLineErrorReport(Exception $e){
 		switch(get_class($e)){
 			case 'Lattice_ApiException':
+           // echo get_class($e);
+           // die();
 				return $e->getOneLineErrorReport();
 				break;
 			default:

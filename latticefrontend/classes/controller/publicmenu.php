@@ -6,13 +6,12 @@ Class Controller_PublicMenu extends Controller_Lattice {
 	public function action_index(){
 		$this->view = new View('publicnav');
 
-		$parentId = Graph::getRootNode('cmsRootNode')->id;
-		$topLevel = ORM::Factory('object')
-			->where('parentId', '=', $parentId)
-			->publishedFilter()
-			->noContainerObjects()
-			->find_all();
-		//need ignores
+      $topLevel = Graph::getRootNode('cmsRootNode')
+              ->latticeChildrenQuery('publicSite') 
+              ->publishedFilter()
+              ->noContainerObjects()
+              ->find_all();
+
 
 		$navi = array();
 		foreach($topLevel as $object){
@@ -27,10 +26,9 @@ Class Controller_PublicMenu extends Controller_Lattice {
 		//check for children
 		foreach($navi as $slug => $entry){
 
-			$object = ORM::Factory('object')->where('slug', '=', $slug)->find();
-			$children = ORM::Factory('object')
-				->where('parentId', '=', $object->id)
-				->publishedFilter()
+         $children = Graph::object($slug)
+            ->latticeChildrenQuery($object->id)
+ 				->publishedFilter()
 				->noContainerObjects()
 				->find_all();
 			if(count($children)){

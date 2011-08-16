@@ -13,9 +13,12 @@
 class Graph {
 
 	public static $mediapath;	
+   
+   //cache vars
+   private static $_languages;
 
 	public static function instance(){
-
+      return ORM::Factory('object');
 	}
 
 	public static function object($objectId =null) {
@@ -31,6 +34,18 @@ class Graph {
 			}
 		}
 	}
+   
+   
+   
+   public static function lattice($latticeId = 'lattice'){
+      if(is_numeric($latticeId)){
+         return ORM::Factory('lattice', $latticeId);
+      } else {
+         $lattice = ORM::Factory('lattice')->where('name', '=', $latticeId)->find();
+         return $lattice;
+      }
+   
+   }
 
 	public static function file($fileId = null){
 
@@ -49,6 +64,24 @@ class Graph {
 			return false;
 		}
 	}
+   
+   public static function languages(){
+      if(!self::$_languages){
+       self::$_languages =  ORM::Factory('language')->where('activity', 'is', NULL)->find_all();
+      }
+      return self::$_languages;
+   }
+   
+   public static function newRosetta(){
+      $rosetta = ORM::Factory('rosetta');
+      $rosetta->save();
+      return $rosetta->id;
+   
+   }
+   
+   public static function defaultLanguage(){
+      return 1;
+   }
 
 	public static function mediapath(){
 		if(self::$mediapath){
@@ -91,14 +124,16 @@ class Graph {
    
    public static function addRootNode($rootNodeObjectType){
       //$this->driver->getObjectTypeObject($rooNodeObjectType)
-      ORM::Factory('object')->addObject($rootNodeObjectType);
+      Graph::object()->addObject($rootNodeObjectType);
    }
 
    public static function getRootNode($rootNodeObjectType){
       //$this->driver->getObjectTypeObject($rooNodeObjectType)
 		$objectType = ORM::Factory('objectType')->where('objecttypename', '=', $rootNodeObjectType)->find();
-      $object =  ORM::Factory('object')->where('objecttype_id', '=', $objectType->id)->find();
+      $object =  Graph::object()->objectTypeFilter($objectType->objecttypename)->find();
       return $object;
    }
+   
+ 
 }
 
