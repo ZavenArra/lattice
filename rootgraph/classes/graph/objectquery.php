@@ -40,10 +40,10 @@ class Graph_ObjectQuery {
       //apply optional parent filter
       if ($from = $this->attributes['from']) { //
          if ($from == 'parent') {
-            $objects->where('parentId', '=', $parentId);
+            $objects->latticeChildrenFilter($parentId);
          } else {
             $from = Graph::object($from);
-            $objects->where('parentId', '=', $from->id);
+            $objects->latticeChildrenFilter($from->id);
          }
       }
 

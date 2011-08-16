@@ -1,12 +1,12 @@
-if( !mop.modules.navigation) mop.modules.navigation = {};
+if( !lattice.modules.navigation ) lattice.modules.navigation = {};
 
-mop.modules.navigation.Navigation = new Class({
+lattice.modules.navigation.Navigation = new Class({
 
-	Extends: mop.MoPObject,
+	Extends: lattice.LatticeObject,
 	Implements: [ Events, Options ],
+	rootId: 0,
 	dataSource: null,
 	nodeData: {},
-	navPanes: [],
 	breadCrumbs: null,
 	tiers: [],
 	numberOfVisiblePanes: 3,
@@ -14,253 +14,293 @@ mop.modules.navigation.Navigation = new Class({
 		addObjectPosition: 'bottom'
 	},
 
-	getNodeTypeFromId: function( nodeId ){
-		return this.nodeData[ nodeId ].nodeType;
+	getNodeIdFromElement: function( anElement ){ 
+		var id;
+		if( anElement.get( 'id' ) && anElement.get( 'id' ).split( '_' ) ){
+			id = anElement.get("id").split( "_" )[ anElement.get("id").split( "_" ).length - 1 ];
+		}else{
+			id = null;
+		}
+		return id;
 	},
-
-	getContentTypeFromId: function( nodeId ){
-		return this.nodeData[ nodeId ].contentType;
-	},
-
-	getSlugFromId: function( nodeId ){
-		console.log( ">>>>>>>>>>>>>>>>>>>>>", this.nodeData[ nodeId ].slug );
-		return this.nodeData[ nodeId ].slug;		
+	getNodeTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].nodeType; },
+	getContentTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].contentType; },
+	getNodeTitleFromId: function( nodeId ){ if( this.nodeData[ nodeId ] ){ return this.nodeData[ nodeId ].title; }else{ return null; } },
+	getSlugFromId: function( nodeId ){ return this.nodeData[ nodeId ].slug; },
+	getNodeById: function( nodeId ){ return this.nodeData[ nodeId ]; },
+	getUserLevel: function(){ return this.userLevel; },
+	getPanes: function(){ return this.container.getElements('.pane'); },
+	getPaneTemplate: function(){ return this.navPaneTemplate.clone(); },
+	getVisibleTiers: function(){
+		var visibleTiers = [];
+		this.getPanes().each( function( aPane ){
+			visibleTiers.push( aPane.retrieve('tier') );
+		});
+		return visibleTiers;
 	},
 	
-	getUserLevel: function(){
-		return this.userLevel;
+	onAppStateChanged: function( appState ){ console.log( 'lattice.modules.navigation.Navigation.appStateChanged', appState ); },	
+	onObjectNameChanged: function( objId, name ){
+		this.nodeData[ objId ].title = name;
+		$( 'node_' + objId ).getElement( "h5" ).set( 'text', name );
+	},
+
+	onNodeClicked: function( nodeId, tier ){ 
+		var paneIndex, node;
+		this.clearPendingTierRequest();
+		node = this.nodeData[ nodeId ];
+		paneIndex = ( this.getVisibleTiers().indexOf( tier ) > 0 )? this.getVisibleTiers().indexOf( tier ) : 0;		
+//		console.log( "onNodeClicked ", nodeId, tier );
+		this.detachTiers( paneIndex + 1 );
+		this.removeCrumbs( paneIndex + 1 );
+		this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
+		this.marshal.onNodeSelected( nodeId );
+		if( this.getNodeTypeFromId( nodeId ) == 'object' ) this.requestTier( nodeId, tier );
 	},
 	
-	onAppStateChanged: function( appState ){
-		console.log( 'mop.modules.navigation.Navigation.appStateChanged', appState );
+	onCrumbClicked: function( crumbData ){
+		var paneIndex, node, tier, slug;
+		this.clearPendingTierRequest();
+		tier = crumbData.tier;
+		node = crumbData.nodeData;
+		paneIndex = ( this.getVisibleTiers().indexOf( tier ) > 0 )? this.getVisibleTiers().indexOf( crumbData.tier ) : 0;
+		// console.log( "prepareTier ", tier, paneIndex, node );
+		this.detachTiers( paneIndex + 1 );
+		this.removeCrumbs( paneIndex + 1 );
+		if( node ){
+			this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
+			// console.log( "onCrumbClicked", node, node.id, tier );
+			if( node.objectType == 'object' ) this.requestTier( node.id, tier );
+			if( this.getNodeTypeFromId( node.id ) == 'object' ){ 
+				this.marshal.onNodeSelected( node.id );
+			}else{
+				this.slideToCurrentTier( null );
+				this.marshal.clearPage();				
+			}
+			if( this.getNodeTypeFromId( node.id ) == 'object' ) this.requestTier( node.id, tier );
+		}else{
+			this.slideToCurrentTier( null );
+			this.getVisibleTiers().each( function( pane ){
+				pane.setActiveNode( null );
+			});
+			this.marshal.clearPage();
+		}
+	},
+	
+	clearPendingTierRequest: function(){
+		if( this.pendingPane ){
+			this.pendingPane.get('spinner').hide();
+			this.pendingPane.destroy();
+		}
+		this.marshal.clearPendingTierRequest();
+	},
+	
+	requestTier: function( nodeId, parentTier, deepLink ){
+		// console.log( 'requestTier', nodeId, parentTier, deepLink );
+		cached = ( this.tiers[ nodeId ] && !deepLink )? true : false;
+		if( cached ){
+			console.group();
+			// console.log( "cached: ", cached );
+			this.renderPane( this.tiers[ nodeId ] );
+		}else{
+			this.pendingPane = this.addPane();
+			this.dataSource.requestTier( nodeId, deepLink, function( json ){ 
+				this.requestTierResponse( json, nodeId, this.pendingPane );
+			}.bind( this ) );
+		}
 	},
 	
 	initialize: function( element, marshal, options ){
 		this.setOptions( options );
 		this.parent( element, marshal, options );
-		mop.historyManager.addListener( this );
+		lattice.historyManager.addListener( this );
 		
 		this.addEvent( 'appstatechanged', function( appState ){
 			this.onAppStateChanged( appState );
 		}.bind( this ) );
 		
 		this.dataSource = ( !this.options.dataSource )? this.marshal : this.options.dataSource;
+		this.dataSource.addListener( this );
+		this.addEvent( 'objectnamechanged', this.onObjectNameChanged.bind( this ) );
+		
 		this.navPaneTemplate = this.element.getElement( ".pane" ).dispose();
-		this.paneContainer = this.element.getElement( ".panes" );
-		this.navPanes = this.element.getElements( ".pane" );
-		this.paneContainer.empty();
+		this.container = this.element.getElement( ".panes" );
+		
+		this.container.empty();
 		this.instanceName = this.element.get("id");
-		this.breadCrumbs =  new mop.ui.navigation.BreadCrumbTrail( this.element.getElement( ".breadCrumb" ), this.onCrumbClicked.bind( this ) );
-		var rootId = this.dataSource.getRootNodeId();
-//	console.log( "rootId", rootId );	
-		
+		this.breadCrumbs =  new lattice.ui.navigation.BreadCrumbTrail( this.element.getElement( ".breadCrumb" ), this.onCrumbClicked.bind( this ) );
+		this.rootId = this.dataSource.getRootNodeId();
 		this.userLevel = ( Cookie.read( 'userLevel' ) )? Cookie.read( 'userLevel' ) : "superuser";
+		console.log( "/////////////////////////////////" );
+		console.log( "rootId:", this.rootId );	
 		console.log( "userLevel:", this.userLevel );
+		console.log( "appState:", lattice.historyManager.getAppState() );
+		console.log( "/////////////////////////////////" );
+		var deepLink = ( lattice.historyManager.getAppState().slug )? lattice.historyManager.getAppState().slug : null;
 		
-		this.requestTier( rootId, null );
+		this.breadCrumbs.addCrumb( { label: '/' } );
 		
+		this.requestTier( this.rootId, null, deepLink );
+		if( deepLink ) this.marshal.onNodeSelected( deepLink );
 	},
 
-	addPane: function( parentId ){
-		var newPane = this.navPaneTemplate.clone();
-		this.navPanes.push( newPane );
+	addPane: function(){
+		var newPane, elementDimensions;
+		newPane = this.getPaneTemplate().clone();
+		elementDimensions = this.container.getDimensions();
 		this.element.getElement( ".panes" ).adopt( newPane );
-		var elementDimensions = this.paneContainer.getDimensions();
-		this.paneContainer.setStyle( "width", elementDimensions.width + newPane.getDimensions().width );
+		this.container.setStyle( "width", elementDimensions.width + newPane.getDimensions().width );
 		newPane.get( "spinner" ).show( true );
 		return newPane;
 	},
+	
+	saveTierSort: function( order, nodeId ){ this.dataSource.saveTierSortRequest( order, nodeId ); },
 
-	requestTier: function( parentId, parentTier ){
-		var title;
-		var paneIndex = 0;
-		if( parentTier ){
-			console.log( parentTier, parentTier.getActiveNode() );
-			title = parentTier.getActiveNode().getElement( "h5" ).get( 'text' );
-			parentId = parentTier.getActiveNodeId();
-			paneIndex = this.navPanes.indexOf( parentTier.element );
-			this.addCrumb( title, parentId, paneIndex );
-		}
-		if( this.navPanes.length > 0 ) this.clearPanes( paneIndex + 1 );	    
-		var newPane = this.addPane( parentId );
-		newPane.store( 'paneIndex', paneIndex );
-		if( this.tiers[ parentId ] ){
-			// if the tier has already been loaded and cached
-			console.log( "requestTier", "cached", parentId, this.tiers[parentId] );
-			this.renderPane( this.tiers[ parentId ], newPane );
-		}else{
-			// otherwise load send a tier request
-			console.log( "requestTier", "uncached", parentId, newPane );
-			this.dataSource.requestTier( parentId, function( json ){
-				this.requestTierResponse( json, parentId, newPane );
-			}.bind( this ) );
-		}
+	requestTierResponse: function( json, tierId, containerPane ){
+		this.pendingPane = null;
+		nodes = json.response.data.tier.nodes;
+		console.group()
+		console.groupEnd();
+		this.processNodeData( nodes, json.response.data.tier.html, tierId, containerPane );
 	},
 
-	requestTierResponse: function( json, parentId, containerPane ){
-		console.log( "requestTierResponse", json, parentId, containerPane );
-		json.response.data.nodes.each( function( nodeObj ){
-         console.log(nodeObj.id, nodeObj.slug);
-			this.nodeData[ nodeObj.id ] = nodeObj;
+	processNodeData: function( nodes, html, tierId, containerPane ){   
+		nodes.each( function( node ){
+			this.nodeData[ node.id ] = node;
+			if( node.tier ){
+				this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
+				this.processNodeData( node.tier.nodes, node.tier.html, node.id, this.addPane() );
+			}
 		}, this );
-		var tier = new mop.modules.navigation.Tier( this, json.response.html, parentId );
-		this.tiers[ parentId ] = tier;
-		this.renderPane( tier, containerPane, parentId );
+		var tier = new lattice.modules.navigation.Tier( this, html, tierId );
+		this.tiers[ tierId ] = tier;
+		this.renderPane( tier, containerPane, tierId );
 	},
 
-	renderPane: function( aTier, newPane, parentId ){
+	renderPane: function( aTier, newPane ){
+		var nodeId, navSlideFx, nodeTitle;
+		if( !newPane ) newPane = this.addPane();
 		newPane.unspin();
-		console.log( aTier, newPane, parentId );
-		newPane.set( 'id', 'pane-'+parentId );
-		aTier.attachToPane( newPane );
-		if( this.navPanes.indexOf( newPane ) < this.numberOfVisiblePanes ){
-			var myFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toLeft();	        
-		}else{	        
-			var myFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toElementEdge( newPane );
-		}
+		aTier.attachToPane( newPane );			
+		aTier.render();
+		this.slideToCurrentTier( newPane );
 	},
-    
-	clearPanes: function( startIndex, endIndex ){
-		if( startIndex == -1 ) startIndex = 0;
-		if( !endIndex ) endIndex = this.navPanes.length;
-		var panesToRemove = this.navPanes.filter( function( aPane, i ){
-			if( i >= startIndex && i < endIndex ) return aPane;
+	
+	slideToCurrentTier: function( target ){
+		if( !target || this.getPanes().indexOf( target ) < this.numberOfVisiblePanes ){
+			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toLeft();
+		}else{
+			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toElementEdge( target );
+		}		
+	},
+	
+	detachTiers: function( startIndex, endIndex ){
+		var visibleTiers, tiersToDetach;
+		visibleTiers = this.getVisibleTiers();
+		if( startIndex < 0 ) startIndex = 0;
+		if( !endIndex ) endIndex = visibleTiers.length;		
+		var tiersToDetach = visibleTiers.filter( function( aTier, i ){
+			if( i >= startIndex && i < endIndex ) return aTier;
 		});
-		console.log( ":: panesToRemove", "\n\t", startIndex, "\n\t", endIndex, "\n\t", panesToRemove );
-		panesToRemove.each( function( aPane, index ){
-			this.removeCrumb( this.navPanes.indexOf( aPane ) -1 ); // we want to remove the crumbs FOLLOWING the crumb that represents the current pane 
-			this.navPanes.erase( aPane );
-			aPane.unspin();
-			aPane.retrieve( 'tier' ).detach();
-			aPane.destroy();
-		}, this );
+		tiersToDetach.each( function( aTier ){ aTier.detach(); });
+	},
+	
+	removeCrumbs: function( startIndex, endIndex ){
+		var crumbs, crumbsToRemove;
+		crumbs = this.breadCrumbs.getCrumbs();
+		if( startIndex < 0 ) startIndex = 0;
+		if( !endIndex ) endIndex = crumbs.length;		
+		var crumbsToRemove = crumbs.filter( function( aCrumb, i ){
+			if( i >= startIndex && i < endIndex ) return aCrumb;
+		});
+		this.breadCrumbs.removeCrumbs( crumbsToRemove );		
 	},
     
-	onNodeSelected: function( nodeId ){
-		console.log( ">>>> onNodeSelected", this.nodeData );
-		this.marshal.onNodeSelected( nodeId );
-	},
-
 	addObject: function( parentId, templateId, nodeProperties, tierInstance ){
 		this.dataSource.addObjectRequest( parentId, templateId, nodeProperties, function( json ){ this.onAddObjectResponse( json, parentId, tierInstance ); }.bind( this ) );
 	},
 
 	onAddObjectResponse: function( json, parentId, tierInstance ){
 		this.nodeData[ json.response.data.id ] = json.response.data;
-		console.log( "\t addObjectResponse", this.nodeData, "(", Object.getLength(this.nodeData), ")"  );
 		var newNode = json.response.html.toElement();
 		tierInstance.adoptNode( newNode );
 		tierInstance.onObjectAdded();
 	},
 
 	removeObject: function( nodeId ){
-		this.dataSource.removeObjectRequest( nodeId, this.onRemoveObjectResponse.bind( this, nodeId ) );
+		var title = this.getNodeTitleFromId(nodeId);
+		this.nodeData[ nodeId ] = null;
+		delete this.nodeData[ nodeId ];
+		this.dataSource.removeObjectRequest( nodeId );
+		if( nodeId == this.dataSource.getObjectId() ){			
+			lattice.historyManager.changeState( "slug", null );
+			this.breadCrumbs.removeCrumbByLabel( title );
+			this.marshal.clearPage();
+		}
 	},
   	
-	onRemoveObjectResponse: function( nodeId ){
-		delete this.nodeData[ nodeId ];
-		console.log( "\tB removeObject", this.nodeData, "(", Object.getLength(this.nodeData), ")"  );
-	},
-
-   togglePublishedStatus: function( nodeId ){
-      this.dataSource.togglePublishedStatusRequest( nodeId );        
-   },
-    
-   onCrumbClicked: function( aNode ){
-      console.log( ":::::::::::: onBreadCrumbClicked ", aNode.id );
-      console.log( "\t", aNode.index );
-      console.log( "\t", this.navPanes[ aNode.index ].retrieve( "tier" )  );
-      this.requestTier( aNode.id, this.navPanes[ aNode.index ].retrieve( "tier" ) );
-      this.marshal.onNodeSelected( aNode.id );
-   },
-	
-   addCrumb: function( label, id, paneIndex ){
-      console.log( "addBreadCrumb", label, id, paneIndex );
-      this.breadCrumbs.addCrumb( {
-         label: label, 
-         id: id, 
-         index: paneIndex
-      } );
-   },
-	
-   removeCrumb: function( paneIndex ){
-      this.breadCrumbs.removeCrumb( paneIndex );
-   }
+	togglePublishedStatus: function( nodeId ){
+		this.nodeData[ nodeId ].published = !this.nodeData[ nodeId ].published;
+		this.dataSource.togglePublishedStatusRequest( nodeId );        
+	}
 	
 });
 
-mop.modules.navigation.Tier = new Class({
+lattice.modules.navigation.Tier = new Class({
 
 	Implements: [ Options, Events ],
 	nodes: null,
+	element: null,
 	nodeElement: null,
 	html: null,
 	parentId: null,
 	activeNode: null,
 	drawer: null,
+	sortableList: null,
+
 	options: { 
 		addPosition: 'bottom',
 		allowChildSort: true
 	},
 	
-	initialize: function( aMarshal, html, parentId ){
-		//    console.log( html );
-		this.marshal = aMarshal;
-		this.html = html;
-		this.parentId = parentId;
+	getActiveNode: function(){ return this.activeNode; },
+	
+	setActiveNode: function( el ){
+		if( this.activeNode )this.deindicateNode( this.activeNode );
+		if( el ){
+			this.activeNode = el;
+			this.indicateNode( el );
+		}
 	},
 	
-   toString: function(){
-      return "[ Object, mop.MoPObject, mop.modules.navigation.Tier ]"
-   },
+	getActiveNodeId: function(){
+		return this.getNodeIdFromElement( this.activeNode );
+	},
 	
-   getNodeIdFromElement: function( anElement ){
-      //	    console.log( "getNodeIdFromElement", anElement );
-      return anElement.get("id").split( "_" )[1];
-   },
-    
+	initialize: function( aMarshal, html, nodeId ){
+		this.marshal = aMarshal;
+		this.html = html;
+		this.id = nodeId;
+	},
 
-	attachToPane: function( navPane ){
-		//    console.log( "attachToPane", this, navPane );
-		navPane.store( "tier", this );
-		
-		this.options = Object.merge( this.options, navPane.getOptionsFromClassName() );
-		console.log( ":::::::::::::::::", this.options );
-		this.element = navPane;
-		this.render();
+	toString: function(){
+		return "[ Object, lattice.LatticeObject, lattice.modules.navigation.Tier ]"
+	},
+
+	attachToPane: function( pane ){
+		pane.store( "tier", this );
+		this.options = Object.merge( this.options, pane.getOptionsFromClassName() );
+		this.element = pane;		
 		this.spinner = new Spinner( this.element );
 	},
 
-   detach: function(){
-      this.element.eliminate( "tier" );
-      this.element = this.activeNode = null;
-   },
-	
-   getActiveNode: function(){
-      return this.activeNode;
-   },
-
-   getActiveNodeId: function(){
-      return this.getNodeIdFromElement( this.activeNode );
-   },
-	
-	adoptNode: function( newNode ){
-		if( this.options.addPosition == "top" ){
-			this.nodeElement.grab( newNode, 'top' );			
-		}else{
-			this.nodeElement.grab( newNode, 'bottom' );			
-		}
-		this.html = this.element.get( "html" );
-		this.initNode( newNode );
-	},
-   
 	render: function( e ){
-		console.log( 'render' );
-		mop.util.stopEvent( e );
-		this.element.set( 'html', this.html );
+		lattice.util.stopEvent( e );
+		if( this.element.get('html') != this.html ) this.element.set( 'html', this.html );
 		this.nodeElement = this.element.getElement( ".nodes" );
+		if( this.options.allowChildSort ) this.makeSortable( this.nodeElement );
 		this.nodes = this.element.getElements(".node");
-		this.nodes.each( function( aNodeElement ){
+		this.nodes.each( function( aNodeElement ){ 
 			this.initNode( aNodeElement );
 		}, this );
 		this.drawer = this.element.getElement( '.tierMethodsDrawer' );
@@ -269,40 +309,35 @@ mop.modules.navigation.Tier = new Class({
 				duration: 200, 
 				transition: Fx.Transitions.Quad.easeInOut
 			});
-			
 			this.drawer.getElement( '.close' ).addClass( 'hidden' );
 			this.drawer.setStyle( 'height', 'auto' );
 			this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', 'auto' );
 			this.drawer.getElement( '.close' ).addEvent( 'click', this.render.bindWithEvent( this ) );
 			if( !this.drawer.retrieve( 'initTop' ) ) this.drawer.store( "initTop", this.drawer.getStyle( "top" ) );	
 			this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
-			
 			var addObjectLinks = this.drawer.getElements( "li" );
 			// wire addobject links
 			addObjectLinks.each( function( aLink ){
-				console.log( aLink );
 				aLink.addEvent( "click", this.onAddObjectClicked.bindWithEvent( this, aLink ) );
 			}, this );
-			
 			if( this.marshal.getUserLevel() == 'superuser' && addObjectLinks.length > 5  ){
-				this.element.removeClass( "dark" );
+				// this.element.removeClass( "dark" );
 				this.drawer.getElement( ".close" ).addClass("hidden");
 			 	this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
 				this.drawer.addEvent( 'click', this.renderAddObjectSelection.bindWithEvent( this, addObjectLinks ) );
-				// this.superUserContextualMenu = new mop.ui.ContextualMenu( this.drawer, {
-				// 	offset: { x: 0, y: 18 },
-				// 	cols: 3,
-				// 	content: this.drawer.getElements( "li" )
-				// });
 			}else{
 				this.drawer.addEvent( 'mouseenter', this.onDrawerMouseEnter.bindWithEvent( this ) );
 				this.drawer.addEvent( 'mouseleave', this.onDrawerMouseLeave.bindWithEvent( this ) );
 			}
+			// make nodes element shorter by the height of the addableObjects title height
+			if( this.nodeElement.getDimensions().height >= this.element.getDimensions().height ){
+				this.nodeElement.setStyle( 'height', this.element.getSize().y - this.drawer.getElement( "div.titleBar" ).getDimensions().height );
+			}
 		}
 	},
-	
+
 	renderAddObjectSelection: function( e, addObjectLinks ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		this.nodeElement.addClass( 'hidden' );
 		this.drawer.setStyle( 'height', '100%' );
 		this.drawer.getElement( '.close' ).removeClass( 'hidden' );
@@ -310,99 +345,99 @@ mop.modules.navigation.Tier = new Class({
 		this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', h );
 		this.drawer.morph( { 'top': 0 } );
 	},
-
-	initNode: function( aNodeElement ){
-//          aNodeElement.addEvent( "focus", this.indicateNode.bindWithEvent( this, aNodeElement ) );
-//          aNodeElement.addEvent( "blur", this.deindicateNode.bindWithEvent( this, aNodeElement ) );
-		aNodeElement.store( "options", aNodeElement.getOptionsFromClassName() );
-		aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
-		var togglePublishedStatusElement = aNodeElement.getElement(".togglePublishedStatus");
-		//        console.log( "togglePublishedStatusElement", togglePublishedStatusElement );
-		if( togglePublishedStatusElement ){
-			togglePublishedStatusElement.addEvent( "click", this.onTogglePublishedStatusClicked.bindWithEvent( this, aNodeElement ) );
+	
+	detach: function(){
+		this.element.unspin();
+		this.setActiveNode( null );
+		this.html = this.element.get('html') // might as well for parity;
+		this.element = this.element.dispose();
+	},
+		
+	adoptNode: function( newNode ){
+		if( this.options.addPosition == "top" ){
+			this.nodeElement.grab( newNode, 'top' );			
+		}else{
+			if( this.nodeElement.getElement( ".module" ) ){
+				this.nodeElement.getElement( ".module" ).grab( newNode, 'before' );
+			}else{
+				this.nodeElement.grab( newNode, 'bottom' );				
+			}
 		}
-		var removeNodeElement = aNodeElement.getElement(".removeNode");
-		if( removeNodeElement ){
-			removeNodeElement.addEvent( "click", this.onRemoveNodeClicked.bindWithEvent( this, aNodeElement ) );
-		}
+		this.html = this.element.get( "html" );
+		this.initNode( newNode );
 	},
 
-   indicateNode: function( nodeElement ){
-      nodeElement.addClass( "active");
-   },
+	initNode: function( aNodeElement ){
+		var togglePublishedStatusElement, removeNodeElement;
+		togglePublishedStatusElement = aNodeElement.getElement(".togglePublishedStatus");
+		node = this.marshal.getNodeById( this.marshal.getNodeIdFromElement( aNodeElement ) );
+		removeNodeElement = aNodeElement.getElement(".removeNode");
+		aNodeElement.store( "options", aNodeElement.getOptionsFromClassName() );
+		aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
+		if( togglePublishedStatusElement ) togglePublishedStatusElement.addEvent( "click", this.onTogglePublishedStatusClicked.bindWithEvent( this, aNodeElement ) );
+		if( node.tier ){ this.setActiveNode( aNodeElement ) }
+		if( removeNodeElement ) removeNodeElement.addEvent( "click", this.onRemoveNodeClicked.bindWithEvent( this, aNodeElement ) );
+	},
 
-   deindicateNode: function( nodeElement ){
-      nodeElement.removeClass("active");
-   },
+	indicateNode: function( nodeElement ){
+		nodeElement.addClass( "active");
+	},
 
-   /**
-    * Section: Event Handlers
-	*/
+	deindicateNode: function( nodeElement ){
+		nodeElement.removeClass("active");
+	},
+
+/*	Section: Event Handlers	*/
+
 	onMouseEnter: function( e, nodeElement ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		this.indicateNode( aNodeElement );
 	},
 
 	onMouseLeave: function( e, nodeElement ){
-		mop.util.stopEvent( e );
+		lattice.util.stopEvent( e );
 		if( this.activeNode != nodeElement ) this.deindicateNode( nodeElement );
 	},
 
-	onNodeClicked: function( e, nodeElement ){
-		mop.util.stopEvent( e );
-		var nodeId = this.getNodeIdFromElement( nodeElement );
-		var slug = this.marshal.getSlugFromId( nodeId );
-	 	console.log( "onNodeClicked", this.element, slug, nodeId );
-		mop.historyManager.changeState( "slug", slug );
-		if( this.activeNode )this.deindicateNode( this.activeNode );
-		this.activeNode = nodeElement;
-		this.indicateNode( nodeElement );
-		this.onNodeSelected( nodeId );
-		
-		// if this specific tier has a pending request, we cancel it so the callback doesn't fire
-		if( this.currentTierRequest ) this.currentTierRequest.cancel();
-		
-		if( this.marshal.getNodeTypeFromId( nodeId ) != "module" ){
-			this.currentTierRequest = this.marshal.requestTier( nodeId, this );
-		}else{
-			this.marshal.clearPanes( this.element.retrieve( 'paneIndex' ) + 1 );
-		}
+	onNodeClicked: function( e, el ){
+		var nodeId, slug;
+		lattice.util.stopEvent( e );
+		nodeId = this.marshal.getNodeIdFromElement( el );
+		slug = this.marshal.getSlugFromId( nodeId );
+		this.setActiveNode( el );
+		lattice.historyManager.changeState( "slug", slug );
+		this.marshal.onNodeClicked( nodeId, this );
 	},
 		
 	onRemoveNodeClicked: function( e, nodeElement ){
-		console.log( "\tonRemoveNodeClicked", this.marshal.nodeData, "(" , Object.getLength( this.marshal.nodeData ), ")" );
-		mop.util.stopEvent( e );
+		// alert( nodeElement.get( 'id' ) );
+		lattice.util.stopEvent( e );
 		var confirmation = confirm( "Are you sure you want to remove " + nodeElement.getElement("h5").get("text") + " ?" );
 		if( !confirmation ) return; 
-		var nodeId = this.getNodeIdFromElement( nodeElement );
+		var nodeId = this.marshal.getNodeIdFromElement( nodeElement );
 		nodeElement.destroy();
 		this.removeObject( nodeId );
 	},
 
-   removeObject: function( nodeId ){
-      this.marshal.removeObject( nodeId );
-   },
+	removeObject: function( nodeId ){
+		this.marshal.removeObject( nodeId );
+	},
 	
-   onTogglePublishedStatusClicked: function( e, nodeElement ){
-      mop.util.stopEvent( e );
-      console.log( "onTogglePublishedStatusClicked", e, nodeElement );
-      var nodeId = this.getNodeIdFromElement( nodeElement );
-      var togglePublishedStatusLink = nodeElement.getElement( ".togglePublishedStatus" );
-      if( togglePublishedStatusLink.hasClass( "published" ) ){
-         togglePublishedStatusLink.removeClass( "published" );
-      }else{
-         togglePublishedStatusLink.addClass( "published" );            
-      }
-      this.marshal.togglePublishedStatus( nodeId );
-   },
-    
-   onNodeSelected: function( nodeId ){
-      this.marshal.onNodeSelected( nodeId );
-   },
-	
+	onTogglePublishedStatusClicked: function( e, nodeElement ){
+		lattice.util.stopEvent( e );
+		var nodeId, togglePublishedStatusLink;
+		nodeId = this.marshal.getNodeIdFromElement( nodeElement );
+		togglePublishedStatusLink = nodeElement.getElement( ".togglePublishedStatus" );
+		if( togglePublishedStatusLink.hasClass( "published" ) ){
+			togglePublishedStatusLink.removeClass( "published" );
+		}else{
+			togglePublishedStatusLink.addClass( "published" );            
+		}
+		this.marshal.togglePublishedStatus( nodeId );
+	},
+
 	onDrawerMouseEnter: function( e ){
 		var top = this.element.getSize().y - this.drawer.getSize().y;
-		//    console.log( ":::::: onDrawerMouseEnter ::", this.nodeElement, this.nodeElement.getSize() );
 		this.drawer.morph( { 'top': top } );
 	},
 
@@ -412,55 +447,64 @@ mop.modules.navigation.Tier = new Class({
 	},
 
 	onAddObjectClicked: function( e, addObjectButton ){
-		mop.util.stopEvent( e );
-		var templateId = mop.util.getValueFromClassName( "objectTypeId", addObjectButton.get("class") );
+		lattice.util.stopEvent( e );
+		var templateId = lattice.util.getValueFromClassName( "objectTypeId", addObjectButton.get("class") );
 		var addText = addObjectButton.get( 'text' );
-		//this.element.setStyle( "border", "1px #f00 solid" );
-		console.log( this, this.element, this.spinner );
 		var nodeTitle = prompt( "What would you like to name this" + addText.substr( addText.lastIndexOf( " " ), addText.length ).toLowerCase() );
 		if( !nodeTitle ) return;
 		this.spinner.show( true );
 		this.render();
-		this.marshal.addObject( this.parentId, templateId, { title: nodeTitle }, this );
+		this.marshal.addObject( this.id, templateId, { title: nodeTitle }, this );
 	},
 
-   onAddObjectResponse: function (json, placeHolder){
-       placeHolder.destroy();
-//       var newElement = 
-       if( this.marshal.options.addPosition ){
-           
-       }else{
-           
-       }
-   },
-	
-	onObjectAdded: function(){
-		this.spinner.hide();
+	onObjectAdded: function(){ this.spinner.hide(); },
+
+	makeSortable: function( sortableListElement ){	
+		this.sortableListElement = sortableListElement;
+		if( !this.sortableList ){
+			this.sortableList = new lattice.ui.Sortable( this.sortableListElement, this, this.sortableListElement  );
+		}else{
+			this.sortableList.attach();
+		}
+		this.oldSort = this.serialize();
 	},
 	
-   makeSortable: function(){
-      if( this.isSortable ){
-	        
-      }
-   },
-	
-   onNodeRenamed: function(){
-	    
-   },
-	
-   onSort: function(){
-	    
-   },
-	
-   clearTier: function(){
-	    
-   },
+	removeSortable: function( aSortable ){
+		aSortable.detach();
+		delete aSortable;
+		aSortable = null;
+	},
 
-   dispose: function(){
-	    
-   }
-	
+	onOrderChanged: function(){
+		var newOrder = this.serialize();
+		console.log( "onOrderChanged", newOrder);
+		clearInterval( this.submitDelay );
+		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder );
+		newOrder = null;
+	},
+
+	submitSortOrder: function( newOrder ){
+		if( this.options.allowChildSort && this.oldSort != newOrder ){
+			clearInterval( this.submitDelay );
+			this.submitDelay = null;
+			this.marshal.saveTierSort( newOrder, this.id );
+			this.oldSort = newOrder;
+		}
+	},
+
+	serialize:function(){
+		var sortArray, children, nodeId;
+		sortArray = [];
+		children = this.sortableListElement.getChildren("li");
+		console.log( '\tserialize', children ); 	
+		children.each( function ( anItem ){
+				nodeId = this.marshal.getNodeIdFromElement( anItem );
+				if( nodeId && nodeId.isNumeric() ){
+					console.log( '\t\t', nodeId );
+					sortArray.push( nodeId );
+				}
+		}, this );
+		return sortArray.join( ',' );
+	}	
 
 });
-
- 

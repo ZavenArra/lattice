@@ -1,13 +1,13 @@
-<div id="<?=$instance;?>" class="module <?=$class;?> classPath-mop_modules_UserManagement sortable-true">
-<?if(isset($label) && $label):?>
+<div id="<?=$instance;?>" class="module <?=$class;?> classPath-lattice_modules_UserManagement sortable-true">
+	<?if(isset($label) && $label):?>
 		<label><?=$label;?></label>
 	<?endif;?>
 	<ul class="listing">
 		<?=$items;?>
 	</ul>
- <div class="controls">
-    <a href="#" class="addItem button grid_2">Add User</a>
-  </div>
+	<div class="controls">
+		<a href="#" class="addItem button grid_2">Add User</a>
+	</div>
 </div>
 
 

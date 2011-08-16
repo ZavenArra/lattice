@@ -1,4 +1,4 @@
-	<ul class="nodes">
+	<ul class="nodes clearFix">
 	<?foreach($nodes as $node):?>
 		<?=$node;?>
 	<?endforeach;?>

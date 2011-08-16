@@ -13,9 +13,12 @@
 class Graph {
 
 	public static $mediapath;	
+   
+   //cache vars
+   private static $_languages;
 
 	public static function instance(){
-
+      return ORM::Factory('object');
 	}
 
 	public static function object($objectId =null) {
@@ -23,9 +26,26 @@ class Graph {
 		if ($objectId == null) {
 			return ORM::Factory('object');
 		} else {
-			return ORM::Factory('object', $objectId);
+			if(is_numeric($objectId)){
+				return ORM::Factory('object', $objectId);
+			} else {
+				$object = ORM::Factory('object')->where('slug', '=', $objectId)->find();
+				return $object;
+			}
 		}
 	}
+   
+   
+   
+   public static function lattice($latticeId = 'lattice'){
+      if(is_numeric($latticeId)){
+         return ORM::Factory('lattice', $latticeId);
+      } else {
+         $lattice = ORM::Factory('lattice')->where('name', '=', $latticeId)->find();
+         return $lattice;
+      }
+   
+   }
 
 	public static function file($fileId = null){
 
@@ -44,15 +64,33 @@ class Graph {
 			return false;
 		}
 	}
+   
+   public static function languages(){
+      if(!self::$_languages){
+       self::$_languages =  ORM::Factory('language')->where('activity', 'is', NULL)->find_all();
+      }
+      return self::$_languages;
+   }
+   
+   public static function newRosetta(){
+      $rosetta = ORM::Factory('rosetta');
+      $rosetta->save();
+      return $rosetta->id;
+   
+   }
+   
+   public static function defaultLanguage(){
+      return 1;
+   }
 
 	public static function mediapath(){
 		if(self::$mediapath){
 			return self::$mediapath;
 		}
-		if(Kohana::config('mop.staging')){
-			self::$mediapath = Kohana::config('mop_cms.stagingmediapath');
+		if(Kohana::config('lattice.staging')){
+			self::$mediapath = Kohana::config('lattice_cms.stagingmediapath');
 		} else {
-			self::$mediapath = Kohana::config('mop_cms.basemediapath');
+			self::$mediapath = Kohana::config('lattice_cms.basemediapath');
 		}
 		return self::$mediapath;
 	}
@@ -63,7 +101,7 @@ class Graph {
 	 */
 	public static function configureTemplate($objectTypeName){
 		//validation
-		foreach(mop::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
+		foreach(lattice::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
 			if($item->getAttribute('field')=='title'){
 				throw new Kohana_Exception('Title is a reserved field name');
 			}
@@ -78,7 +116,7 @@ class Graph {
 			$tRecord->save();
 		}
 
-		foreach( mop::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
+		foreach( lattice::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
 			$tRecord->configureField($item);
 		}
       Model_Content::reinitDbmap($tRecord->id); // Rethink this.
@@ -86,14 +124,16 @@ class Graph {
    
    public static function addRootNode($rootNodeObjectType){
       //$this->driver->getObjectTypeObject($rooNodeObjectType)
-      ORM::Factory('object')->addObject($rootNodeObjectType);
+      Graph::object()->addObject($rootNodeObjectType);
    }
 
    public static function getRootNode($rootNodeObjectType){
       //$this->driver->getObjectTypeObject($rooNodeObjectType)
 		$objectType = ORM::Factory('objectType')->where('objecttypename', '=', $rootNodeObjectType)->find();
-      $object =  ORM::Factory('object')->where('objecttype_id', '=', $objectType->id)->find();
+      $object =  Graph::object()->objectTypeFilter($objectType->objecttypename)->find();
       return $object;
    }
+   
+ 
 }
 

@@ -1,6 +1,6 @@
-mop.modules.UserManagement = new Class({
+lattice.modules.UserManagement = new Class({
 	
-	Extends: mop.modules.MoPList,	
+	Extends: lattice.modules.LatticeList,	
 	
 	/* Section: Constructor */
 
@@ -10,40 +10,39 @@ mop.modules.UserManagement = new Class({
 	
 	/* Section: Getters & Setters */
 	
-	getSaveFieldURL: function( itemId  ){
-	  var url = mop.util.getBaseURL() +"ajax/data/usermanagement/savefield/" + itemId;
+	getSaveFieldURL: function( itemObjectId  ){
+	  var url = lattice.util.getBaseURL() +"ajax/data/usermanagement/savefield/" + itemObjectId;
 		return url;
 	},
 	
 	getAddObjectURL: function(){
-	    return mop.util.getBaseURL() + "ajax/html/usermanagement/addObject/";
+	    return lattice.util.getBaseURL() + "ajax/html/usermanagement/addObject/";
 	},
 	
 	getRemoveObjectURL: function( itemId ){
-	    return mop.util.getBaseURL()  + "ajax/data/usermanagement/removeObject/" + itemId;
+	    return lattice.util.getBaseURL()  + "ajax/data/usermanagement/removeObject/" + itemId;
 	},
 	
 	getSubmitSortOrderURL: function(){
-	    return mop.util.getBaseURL() + "ajax/data/usermanagement/saveSortOrder/";
+	    return lattice.util.getBaseURL() + "ajax/data/usermanagement/saveSortOrder/";
 	},
 	
 	/* Section: Methods */
 
 	toString: function(){ 
-		return "[ Object, mop.MoPObject, mop.modules.List, mop.modules.MoPList, mop.modules.Usermanagement ]";
+		return "[ Object, lattice.LatticeObject, lattice.modules.List, lattice.modules.LatticeList, lattice.modules.Usermanagement ]";
 	}
 
 });
 
-if( !mop.util.hasDOMReadyFired() ){
+if( !lattice.util.hasDOMReadyFired() ){
 	window.addEvent( 'domready', function(){
-		mop.util.DOMReadyHasFired();
+		lattice.util.DOMReadyHasFired();
 		//self instantiates only first instance
-		mop.UserManagement = new mop.modules.UserManagement( $$( ".classPath-mop_modules_UserManagement" )[0] );
-		mop.ModalManager = new mop.ui.ModalManager();
-		mop.DepthManager = new mop.util.DepthManager(); 
-		var doAuthTimeout = mop.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
-		if( doAuthTimeout && doAuthTimeout != "0" ) mop.loginMonitor = new mop.util.LoginMonitor();
+		lattice.UserManagement = new lattice.modules.UserManagement( $$( ".classPath-lattice_modules_UserManagement" )[0] );
+		lattice.modalManager = new lattice.ui.ModalManager();
+		var doAuthTimeout = lattice.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
+		if( doAuthTimeout && doAuthTimeout != "0" ) lattice.loginMonitor = new lattice.util.LoginMonitor();
 	})
 }
 	

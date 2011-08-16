@@ -4,8 +4,7 @@
     height: 27em;
     width: 100%;
     clear: both;
-    border-bottom: 1px #0af solid;
-}
+	}
 
 #navigation .container{
 	height:24em;    
@@ -27,9 +26,6 @@
 }
 
 #navigation .pane{
-/*    position: absolute;
-
-*/
     height: 100%;
     width: 300px;
     margin: 0 0 0 0;
@@ -48,12 +44,11 @@
     height: 100%;
 }
 
-
-
 #navigation .node,
 .tierMethodsDrawer .addableObjects li{
-    line-height: 24px;
-    padding:.25em 0;
+    line-height: 2;
+ 		height: 2em;
+    padding: .25em 0;
     border-bottom:1px #cdf solid;    
     font-size: 1.125em;
 }
@@ -155,8 +150,6 @@
 	background-image: url(../images/icon_published_hover.png);	
 }
 
-
-
 .tierMethodsDrawer{
     position: absolute;
 		width: 300px;
@@ -167,13 +160,16 @@
 		color: #fff;
 }
 
+.tierMethodsDrawer .titleBar{
+  padding: .25em 0 .25em 1em;
+}
+
 .tierMethodsDrawer h5.title{
-    padding: .25em 0 .5em 1em;
-    font-size: 14px;
+    font-size: 12px;
 		line-height: 2;
     cursor: pointer;
-		color: #fff;
-		width: 254px;
+		color: #ccc;
+		width: 265px;
 		float: left;
 		font-family: Georgia;
 		font-style: italic;
@@ -186,7 +182,6 @@
 	display: block;
 	text-indent: -1000px;
 	position: relative;
-	top: .65em;
 	background-image: url(../images/icon_delete_hover.png	);
 }
 
@@ -208,11 +203,10 @@
 .tierMethodsDrawer .addableObjects h5{
 	font-size: 12px;
 	line-height: 2;
-	color: #ddd;
+	color: #6c6c6c;
 	padding-left: 1em;
 }
 
 .tierMethodsDrawer .addableObjects li:hover h5{
     color: #eee;
 }
-

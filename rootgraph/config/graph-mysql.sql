@@ -1,19 +1,3 @@
-CREATE TABLE `objects` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `objecttype_id` int(11) NOT NULL DEFAULT '0',
-  `parentid` int(11) DEFAULT NULL,
-  `collection_id` int(11) DEFAULT NULL,
-  `slug` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
-  `decoupleSlugTitle` tinyint(4) DEFAULT '0',
-  `dateadded` timestamp NULL DEFAULT NULL,
-  `lastmodified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `published` tinyint(1) NOT NULL DEFAULT '0',
-  `sortorder` smallint(6) NOT NULL DEFAULT '0',
-  `activity` char(1) CHARACTER SET latin1 DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `identifier` (`slug`)
-) ENGINE=INNODB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
  CREATE TABLE `objecttypes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `objecttypename` varchar(50) CHARACTER SET latin1 NOT NULL DEFAULT '',
@@ -22,7 +6,43 @@ CREATE TABLE `objects` (
   `contentType` varchar(20) CHARACTER SET latin1 DEFAULT NULL,
   `sort_order` smallint(2) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+CREATE TABLE `languages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL,
+  `fullname` varchar(100) NOT NULL,
+  `activity` char(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+
+insert into `languages` ( `code`, `fullname`, `activity`) values ('en', 'English', NULL);
+insert into `languages` ( `code`, `fullname`, `activity`) values ('es', 'Spanish', NULL);
+insert into `languages` ( `code`, `fullname`, `activity`) values ('pt', 'Portugese', NULL);
+
+CREATE TABLE `rosettas` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `objects` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`objecttype_id` int(11) NOT NULL DEFAULT '0',
+	`parentid` int(11) DEFAULT NULL,
+	`language_id` int(11) DEFAULT NULL,
+	`rosetta_id` int(11) DEFAULT NULL,
+	`slug` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
+	`decoupleSlugTitle` tinyint(4) DEFAULT '0',
+	`dateadded` timestamp NULL DEFAULT NULL,
+	`lastmodified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	`published` tinyint(1) NOT NULL DEFAULT '0',
+	`sortorder` smallint(6) NOT NULL DEFAULT '0',
+	`activity` char(1) CHARACTER SET latin1 DEFAULT NULL,
+	PRIMARY KEY (`id`),
+	UNIQUE KEY `identifier` (`slug`,`language_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objectmaps` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -31,7 +51,7 @@ CREATE TABLE `objectmaps` (
   `index` int(11) NOT NULL,
   `column` varchar(100) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `contents` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -346,13 +366,29 @@ CREATE TABLE `contents` (
   `activity` char(1) CHARACTER SET latin1 DEFAULT NULL,
   PRIMARY KEY (`object_id`),
   KEY `id` (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `files` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `filename` varchar(100) DEFAULT NULL,
   `mime` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=11517 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE `objectrelationships` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`lattice_id` int(11) NOT NULL,
+	`object_id` int(11) NOT NULL,
+	`connectedobject_id` int(11) NOT NULL,
+	`sortorder` int(11) NOT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `lattices` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`name` varchar(200) NOT NULL,
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+INSERT into `lattices` (`id`, `name`) values (1, 'lattice');
 

@@ -2,6 +2,8 @@
 
 class Controller_ExportXML extends Controller {
 
+	public $outputDir;
+
    public function __construct() {
       if (!is_writable('application/views/xmldumps/')) {
 //	die('application/views/xmldumps/ must be writable');
@@ -25,8 +27,9 @@ class Controller_ExportXML extends Controller {
             switch (get_class($value)) {
                case 'Model_File':
                   //or copy to directory and just use filename
-                  if ($value->fullpath) {
-                     $node->appendChild($this->doc->createTextNode($value->fullpath));
+                  if ($value->filename) {
+										$targetPath = $this->outputDir . $value->filename;
+										$node->appendChild($this->doc->createTextNode($targetPath));
                   }
                   break;
                case 'Model_Page':
@@ -50,9 +53,12 @@ class Controller_ExportXML extends Controller {
          if ($key == 'objectTypeName' || $key == 'dateadded') {
             continue;
          }
-         if ($key == "slug" && $value = "") {
+         if ($key == "slug" && $value == "") {
             continue;
          }
+				 if($key == "title" && $value == ""){
+					 $value = microtime();
+				 }
          if ($key == "id") {
             continue;
          }
@@ -70,17 +76,20 @@ class Controller_ExportXML extends Controller {
  
 				 
 				 if (is_object($value)) {
+
             switch (get_class($value)) {
-               case 'File_Model':
+               case 'Model_File':
 //or copy to directory and just use filename
-                  if ($value->fullpath) {
-                     $node->appendChild($this->doc->createTextNode($value->fullpath));
-                  }
+                  if ($value->filename) {
+										$targetPath = $this->outputDir . $value->filename;
+										$node->appendChild($this->doc->createTextNode($targetPath));
+									}
                   break;
-               case 'Page_Model':
+               case 'Model_Object':
                   foreach ($this->getObjectFields($value) as $subField) {
 //$field->appendChild($subField);
                      echo "sub objects not yet supported for mop export\n";
+										 echo $key;
                   }
                   break;
             }
@@ -141,7 +150,7 @@ class Controller_ExportXML extends Controller {
    }
 
    //this should call action_export and then convert with xslt
-   public function action_exportMOPFormat($xslt='') {
+   public function action_exportMOPFormat($outputfilename='export', $xslt='') {
 
  //     $this->action_export();
       
@@ -182,14 +191,21 @@ return;
       $object = Graph::getRootNode('cmsRootNode');
       $objects = $object->getChildren();
 
+			$this->outputDir = 'application/export/'.$outputfilename.'/';
 
       foreach ($this->exportTierMOPFormat($objects) as $item) {
          $data->appendChild($item);
       }
       $this->doc->appendChild($data);
 
+			try {
+				mkdir($this->outputDir, 777);
+			} catch (Exception $e){
 
-      $this->doc->save('application/media/export.xml');
+			}
+			chmod(getcwd().'/'.$this->outputDir, 0777);
+      $this->doc->save($this->outputDir.'/'.$outputfilename.'.xml');
+			system('cp -Rp application/media/* '.$this->outputDir);
    }
 
    public function action_export($xslt='') {

@@ -70,8 +70,8 @@ class Model_Content extends ORM {
 	
 		//check for dbmap
 		$object =  ORM::Factory('object', parent::__get('object_id'));
-		//echo 'FROM '.$object->id.'<br>';
-               
+      //contenttable should not back reference object.
+      
 		$column = self::dbmap( $object->objecttype_id, $columnName);
 
 		if(!$column){
@@ -83,7 +83,7 @@ class Model_Content extends ORM {
 				//everything else is a normal lookup
 				$xPath =  sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
 			}
-			$fieldConfig = mop::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $columnName));
+			$fieldConfig = lattice::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $columnName));
 			if($fieldConfig->item(0)){
 				//field is configured but not initialized in database
 				$object->objecttype->configureField($fieldConfig->item(0));
@@ -104,11 +104,19 @@ class Model_Content extends ORM {
 
 		if(strstr($column, 'object')){
 			//echo 'iTS AN OBJECT<br>';
-			$sub = ORM::Factory('object', parent::__get($column));
-			if(!$sub->_loaded){
-				return null;
-			}
-			return $sub;
+			$relatedObject = ORM::Factory('object', parent::__get($column));
+			if(!$relatedObject->loaded()){
+            return null;
+            
+            //build the object
+            
+            /*
+            $id = Graph::object()->addObject($element['type']);
+            parent::__set($column, $id);
+            $relatedObject == Graph::object($id);
+			 */
+         }
+			return $relatedObject;
 
 		}
 
@@ -149,7 +157,7 @@ class Model_Content extends ORM {
 			//everything else is a normal lookup
 			$xPath =  sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
 		}
-		$fieldConfig = mop::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $column));
+		$fieldConfig = lattice::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $column));
 		if($fieldConfig->item(0)){
 			//field is configured but not initialized in database
 			$object->objecttype->configureField($fieldConfig->item(0));	

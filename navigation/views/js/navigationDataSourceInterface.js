@@ -1,14 +1,13 @@
-if( !mop.modules.navigation ) mop.modules.navigation = {};
+if( !lattice.modules.navigation ) lattice.modules.navigation = {};
 /*
     Interface NavDataSource
     See MopCore Class.Mutators.Interface... 
     Interface for objects holding a nav, throws errors if interface not implemented.
 */
-mop.modules.navigation.NavigationDataSource = new Interface( "NavigationDataSource", { 
+lattice.modules.navigation.NavigationDataSource = new Interface( "NavigationDataSource", { 
     requestTier: function( parentId, callback ){},
     onNodeSelected: function( nodeId, callback ){},
-    // saveSort serializedIds should be an array right?
-    saveSortRequest: function( parentId, serializedIds, callback ){},
+    saveTierSortRequest: function( parentId, serializedIds, callback ){},
     removeObjectRequest: function( nodeId, callback ){},
     togglePublishedStatusRequest: function( nodeId, callback ){},
     getRootNodeId: function(){},

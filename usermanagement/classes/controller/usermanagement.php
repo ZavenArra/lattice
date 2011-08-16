@@ -1,7 +1,7 @@
 <?
 /*
  * Class: UserManagement_Controllers
- * Controller for usermangement module within MoPCMS, allows for settings up users
+ * Controller for usermangement module within LatticeCMS, allows for settings up users
  * and passwords.  Can be configured deal with roles using the managedroles variables.
  */
 
@@ -174,7 +174,11 @@ Class Controller_UserManagement extends Controller_Layout {
 					$user->remove('roles', $roleObj);
 				}
 			}
-			$user->add('roles', ORM::Factory('role')->where('name','=',$value)->find());	
+			$role = ORM::Factory('role')->where('name','=',$value)->find();
+			if(!$role->loaded()){
+				throw new Kohana_Exception('Role :role not found in database.  Update aborted', array(':role'=>$value));
+			}
+			$user->add('roles', $role);	
 			$user->save();
 			$return = $this->response->data( array('value'=>$value) );
 			break;
@@ -209,7 +213,9 @@ Class Controller_UserManagement extends Controller_Layout {
                   }
                } catch (Exception $e) {
                   $modelErrors = $e->errors('validation');
-                  $modelErrors = array_values($modelErrors['_external']);
+									if(isset($modelErrors['_external'])){
+										$modelErrors = array_values($modelErrors['_external']);
+									} 
                   $errors = array_merge($errors, $modelErrors);
                }
          }

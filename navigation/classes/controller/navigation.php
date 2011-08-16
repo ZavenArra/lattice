@@ -5,10 +5,8 @@
 *
 */
 
-class Controller_Navigation extends Controller_MOP{
-
-	private $objectModel = 'object';
-
+class Controller_Navigation extends Controller_Lattice{
+   
 	private $defaultAddCategoryText = '';
 	private $defaultAddLeafText = '';
 
@@ -29,24 +27,32 @@ class Controller_Navigation extends Controller_MOP{
 
 	}
 
+	/*
+	 *
+	 * Override this function to use nav on other data sources
+	 *
+	 */
    public function getTier($parentId, $deeplinkPath=array(), &$follow=false){
-      $parent = ORM::Factory($this->objectModel, $parentId); 
+		 $parent = Graph::object($parentId);
+		 if(!$parent->loaded()){
+				throw new Kohana_Exception('Invalid object id sent to getTier');
+		 }
 			
-
-		$items = ORM::factory($this->objectModel);
-		$items->where('parentId', '=',  $parentId);
-		$items->where('activity', 'IS', NULL);
-		$items->order_by('sortorder');
-		$iitems = $items->find_all();
-		if($iitems){
+		$items = Graph::object($parent->id)
+              ->latticeChildrenQuery()
+              ->activeFilter()
+              ->order_by('sortorder')
+              ->find_all();
+      
+		if($items){
 			$sendItemContainers = array(); //these will go first
 			$sendItemObjects = array();
-			foreach($iitems as $child){
+			foreach($items as $child){
 				if(strtolower($child->objecttype->nodeType) == 'container'){
 					//we might be skipping this node
 
 					//echo sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]', $parent->objecttype->objecttypename, $child->objecttype->objecttypename);
-					$display = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]', 
+					$display = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]', 
 						$parent->objecttype->objecttypename,
 						$child->objecttype->objecttypename))
 						->item(0)
@@ -65,12 +71,12 @@ class Controller_Navigation extends Controller_MOP{
 
                //and deeplinking for categories
                $follow_tier = false;
-               $children = $this->getTier($child->id, $deeplinkPath, $follow_tier);
+               $childTier = $this->getTier($child->id, $deeplinkPath, $follow_tier);
                if ($follow_tier == true) {
                   $sendItem['follow'] = true;
                   $follow = 'true';
                }
-               $sendItem['children'] = $children;
+               $sendItem['tier'] = $childTier;
             }
 
 				if(strtolower($child->objecttype->nodeType)=='container'){
@@ -84,9 +90,8 @@ class Controller_Navigation extends Controller_MOP{
          
 
 			//add in any modules
-			//if(!$parent->loaded()){
 			if($parent->id == Graph::getRootNode(Kohana::config('cms.graphRootNode'))->id ){
-				$cmsModules = mop::config('cmsModules', '//module');
+				$cmsModules = lattice::config('cmsModules', '//module');
 				foreach($cmsModules as $m){
 
 					$entry = array();
@@ -95,16 +100,20 @@ class Controller_Navigation extends Controller_MOP{
 					$entry['nodeType'] = 'module';
 					$entry['contentType'] = 'module';
 					$entry['title'] = $m->getAttribute('label');
-					$entry['children'] = array();
 					$sendItemObjects[] = $entry;
 				}
 			}
-         return $sendItemObjects;
-      }
-      
-      return null;
-      
-   }
+			$html = $this->renderTierView($parent, $sendItemObjects);
+			$tier = array(
+					'nodes' => $sendItemObjects,
+					'html' => $html
+			);
+			return $tier;
+		}
+
+		return null;
+
+	 }
 	
 	public function action_getTier($parentId, $deeplink=NULL){
       
@@ -114,7 +123,7 @@ class Controller_Navigation extends Controller_MOP{
       if($deeplink){
          $objectId = $deeplink;
          while($objectId){
-            $object = ORM::Factory('object', $objectId);
+            $object = Graph::object($objectId);
             $deeplinkPath[] = $object->id;
             $objectId = $object->parentid;
          }
@@ -123,28 +132,31 @@ class Controller_Navigation extends Controller_MOP{
       }
   
       //this database call happens twice, should be a class variable?
-      $parent = ORM::Factory($this->objectModel, $parentId); 
-
+      $parent = Graph::object($parentId);
       
-      $sendItemObjects = $this->getTier($parentId, $deeplinkPath);
+      
+      $tier = $this->getTier($parentId, $deeplinkPath);
 
-      $this->response->data(array('nodes' => $sendItemObjects));
 
-      $nodes = array();
-      foreach ($sendItemObjects as $item) {
+      $this->response->data(array('tier' => $tier));
 
-         $nodeView = new View('navigationNode');
-         $nodeView->content = $item;
-         $nodes[] = $nodeView->render();
-      }
+   }
+
+	private function renderTierView($parent, $nodes){
 
       $tierView = new View('navigationTier');
-      $tierView->nodes = $nodes;
+			$nodesHtml = array();
+			foreach($nodes as $node){
+				$nodeView = new View('navigationNode');
+				$nodeView->content = $node;	
+				$nodesHtml[] = $nodeView->render();
+			}
+      $tierView->nodes = $nodesHtml;
 
       $tierMethodsDrawer = new View('tierMethodsDrawer');
 			$addableObjects = $parent->objecttype->addableObjects;
 
-			if(moputil::checkAccess('superuser')){
+			if(latticeutil::checkAccess('superuser')){
 				foreach($this->getObjectTypes() as $objectType){
 					$addableObject = array();
 					$addableObject['objectTypeId'] = $objectType['objectTypeName'];
@@ -157,12 +169,13 @@ class Controller_Navigation extends Controller_MOP{
       $tierMethodsDrawer->addableObjects = $addableObjects;
 
       $tierView->tierMethodsDrawer = $tierMethodsDrawer->render();
-      $this->response->body($tierView->render());
-   }
+			return $tierView->render();
+
+	}
 
 	public function getObjectTypes(){
 		$objectTypes = array();
-		foreach(mop::config('objects', '//objectType') as $objectType){
+		foreach(lattice::config('objects', '//objectType') as $objectType){
 			$entry = array();
 			$entry['objectTypeName'] = $objectType->getAttribute('name');	
 			$entry['label'] = $objectType->getAttribute('name').' label';	
