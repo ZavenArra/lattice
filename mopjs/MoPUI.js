@@ -408,7 +408,7 @@ mop.ui.Sortable = new Class({
 	initialize: function( anElement, marshal, scrollerTarget ){
 //	    console.log( ":: mop.ui.Sortable", anElement, marshal, scrollerTarget );
 		this.marshal = marshal;
-		this.element = $( anElement );
+		this.element = anElement;
 		this.parent( anElement, {
 			clone: true,
 			snap: 12,
@@ -416,7 +416,8 @@ mop.ui.Sortable = new Class({
 			velocity: .9,
 			area: 24,
 			constrain: false,
-			onComplete: function( droppedItem ){
+			onComplete: function( droppedItem, ghostItem ){
+				console.log( 'onComplete', arguments );
 				this.isSorting = false; 
 				this.scroller.stop();
 				this.marshal.onOrderChanged( droppedItem );
