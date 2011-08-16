@@ -40,6 +40,23 @@ Class Controller_PublicMenu extends Controller_MOP {
 					$childEntry['title'] = $child->contenttable->title;
 					$childEntry['slug'] = $child->slug;
 					$childEntry['path'] = $object->slug.'/'.$child->slug;
+
+					$children2 = ORM::Factory('object')
+						->where('parentId', '=', $child->id)
+						->publishedFilter()
+						->noContainerObjects()
+						->find_all();
+					foreach($children2 as $child2){
+						$childEntry2 = array();
+						$childEntry2['title'] = $child2->contenttable->title;
+						$childEntry2['slug'] = $child2->slug;
+						$childEntry2['path'] = $object->slug.'/'.$child->slug.'/'.$child2->slug;
+						$childEntry['children'][] = $childEntry2;
+					}
+
+
+
+
 					$navi[$slug]['children'][] = $childEntry;
 				}
 			}
