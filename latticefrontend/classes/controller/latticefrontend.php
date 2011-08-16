@@ -45,7 +45,7 @@ Class Controller_LatticeFrontend extends Controller_Layout{
 
 	public function action_getView($objectidorslug=null) {
 	
-		$access = Kohana::config('mopfrontend.access.'.$objectidorslug);
+		$access = Kohana::config('latticefrontend.access.'.$objectidorslug);
 		if(!latticeutil::checkAccess($access)){
 			Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
 		}

@@ -1,6 +1,6 @@
 /*
 	Section: lattice.module
-	mop Modules
+	Lattice Modules
 */
 lattice.modules = {};
 /* 
@@ -9,7 +9,7 @@ lattice.modules = {};
 */
 lattice.modules.Module = new Class({
 
-	Extends: lattice.MoPObject,	
+	Extends: lattice.LatticeObject,	
 	/*
 		Variable: instanceName
 		unique id
@@ -298,7 +298,7 @@ lattice.modules.AjaxFormModule = new Class({
 
 });
 
-lattice.modules.MoPList = new Class({
+lattice.modules.LatticeList = new Class({
 
 	/* TODO write unit tests for List*/
 	Extends: lattice.modules.Module,
@@ -317,7 +317,7 @@ lattice.modules.MoPList = new Class({
 	/* Section: Getters & Setters */
 	
 	getSaveFieldURL: function(){
-    throw "MoPList Abstract function getSaveFieldURL must be overriden in" + this.toString();
+    throw "LatticeList Abstract function getSaveFieldURL must be overriden in" + this.toString();
 	},
 
 	getAddObjectURL: function(){
@@ -337,7 +337,7 @@ lattice.modules.MoPList = new Class({
 	},
 
 	toString: function(){
-		return "[ Object, lattice.MoPObject, lattice.modules.Module, lattice.modules.MoPList ]";
+		return "[ Object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.LatticeList ]";
 	},
 	
 	initialize: function( anElement, aMarshal, options ){

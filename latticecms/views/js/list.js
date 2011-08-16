@@ -1,6 +1,6 @@
 lattice.modules.List = new Class({
 	
-	Extends: lattice.modules.MoPList,
+	Extends: lattice.modules.LatticeList,
 	
 	/* Section: Getters & Setters */	
 
@@ -24,7 +24,7 @@ lattice.modules.List = new Class({
 	},
 	
 	toString: function(){
-	    return "[ object, lattice.MoPObject, lattice.modules.Module, lattice.modules.MoPList, lattice.modules.List ]";
+	    return "[ object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.LatticeList, lattice.modules.List ]";
 	},
 	
 	initialize: function( anElement, aMarshal, options ){

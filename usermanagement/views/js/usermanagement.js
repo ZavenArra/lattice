@@ -1,6 +1,6 @@
 lattice.modules.UserManagement = new Class({
 	
-	Extends: lattice.modules.MoPList,	
+	Extends: lattice.modules.LatticeList,	
 	
 	/* Section: Constructor */
 
@@ -30,7 +30,7 @@ lattice.modules.UserManagement = new Class({
 	/* Section: Methods */
 
 	toString: function(){ 
-		return "[ Object, lattice.MoPObject, lattice.modules.List, lattice.modules.MoPList, lattice.modules.Usermanagement ]";
+		return "[ Object, lattice.LatticeObject, lattice.modules.List, lattice.modules.LatticeList, lattice.modules.Usermanagement ]";
 	}
 
 });

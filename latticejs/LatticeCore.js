@@ -1,4 +1,4 @@
-// Section: Setting up environment for MoPCore.
+// Section: Setting up environment for LatticeCore.
 
 //	Redirects ie 6 to a landing page for that browser
 if( Browser.ie && Browser.version < 8 ) window.location.href = $(document).getElement("head").getElement("base").get("href") + "msielanding";
@@ -244,10 +244,10 @@ Request.JSON.implement({
 
     
 /*
-	Section: MoP Package
+	Section: Lattice Package
 	Mop is a namespace, quick definition of namespace, more useful for documentation than anything else.
 */
-if( !mop ) var mop = {};
+if( !lattice ) var lattice = {};
 
 /*
 	Pakcage: lattice.util
@@ -509,7 +509,7 @@ lattice.util.validation = {
 
 }
 
-lattice.MoPObject = new Class({
+lattice.LatticeObject = new Class({
 	Implements: [ Events, Options ],
 	/*
 		Variable: element
@@ -935,7 +935,7 @@ lattice.util.MD5 = function (string) {
 	return temp.toLowerCase();
 }
 
-/* These should be configurable, also are they more App level stuff instead of mopcore? */
+/* These should be configurable, also are they more App level stuff instead of latticecore? */
 window.addEvent( "resize", function(){
 	lattice.util.EventManager.broadcastMessage( "resize" );
 });

@@ -203,7 +203,7 @@ class latticecms {
 
                case 'tags':
                   $tags = implode(',', $object->getTags());
-                  $elementHtml = mopui::tags($tags);
+                  $elementHtml = latticeui::tags($tags);
                   $key = $element['type'] . '_tags';
                   $htmlChunks[$key] = $elementHtml;
 
@@ -214,8 +214,8 @@ class latticecms {
                   $html = null;
                   if (!isset($element['field'])) {
                      $element['field'] = CMS_Controller::$unique++;
-                     $html = mopui::buildUIElement($element, null);
-                  } else if (!$html = mopui::buildUIElement($element, $object->$element['field'])) {
+                     $html = latticeui::buildUIElement($element, null);
+                  } else if (!$html = latticeui::buildUIElement($element, $object->$element['field'])) {
                      throw new Kohana_Exception('bad config in cms: bad ui element');
                   }
                   $htmlChunks[$key] = $html;

@@ -1,10 +1,10 @@
 <?
 
 /*
- * Class: moputil
+ * Class: latticeutil
  * Utility helper class
  */
-Class moputil {
+Class latticeutil {
 
 	/*
 	 * Function: getMicroSeconds()

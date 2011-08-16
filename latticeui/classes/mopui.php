@@ -1,18 +1,18 @@
 <?
 
 /*
- * Class: mopui
- * Helper class which generates all the mopui form elements
+ * Class: latticeui
+ * Helper class which generates all the latticeui form elements
  * Functions in this class need to be stardardized and have their parameters cleaned up
  */
 
-Class mopui{
+Class latticeui{
 
 	private static $unique = 1;
 
 	/*
 	 * Function: buildUIElement
-	 * Builds a UI element from the mopui views directory
+	 * Builds a UI element from the latticeui views directory
 	 * $element -  array of key value pairs passed to the objectType, including 'type' key which indicates the objectType to use
 	 * $fieldvalue - the value to display
 	 * Example: buildTextElement(array('type'=>'text', 'field'=>'fieldname', 'class'=>'className'), {Value})
@@ -38,9 +38,9 @@ Class mopui{
 		$microtime = str_replace(array(' ', '.'), '', microtime());
 		if(isset($element['field'])){
 			//	$objectType->id =$element['field'].str_replace(array(' ', '.'), '', microtime());
-			$id =$element['field'].mopui::$unique++.$microtime;
+			$id =$element['field'].latticeui::$unique++.$microtime;
 		} else {
-			$id ='field'.mopui::$unique++.$microtime;
+			$id ='field'.latticeui::$unique++.$microtime;
 		}
 
 
@@ -154,31 +154,31 @@ Class mopui{
 
 	public static function Input( $field, $class, $tag, $fieldValue, $label=null, $size=32 ){
 		$elementArray = array( 'type'=>'input', 'field'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "size"=>$size );
-		return mopui::buildUIElement( $elementArray, $fieldValue);
+		return latticeui::buildUIElement( $elementArray, $fieldValue);
 	}
 
 	public static function text( $field, $class, $tag, $fieldValue, $label=null, $labelClass=null ){
 		$elementArray = array( 'type'=>'text', 'field'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "labelClass"=>$labelClass );
-		return mopui::buildUIElement( $elementArray, $fieldValue);
+		return latticeui::buildUIElement( $elementArray, $fieldValue);
 	}
 
 	public static function radioGroup( $field, $class, $radios, $fieldValue, $groupLabel=null, $labelClass=null ){
 		$microtime = str_replace(array(' ', '.'), '', microtime());
-		$name =$field.mopui::$unique++.$microtime;
+		$name =$field.latticeui::$unique++.$microtime;
 		$elementArray = array( 'type'=>'radioGroup', 'radioname'=>$name, 'class'=>$class, 'grouplabel'=>$groupLabel, 'field'=>$field, 'radios'=> $radios, "labelClass"=>$labelClass );
-		return mopui::buildUIElement( $elementArray, $fieldValue );
+		return latticeui::buildUIElement( $elementArray, $fieldValue );
 	}
 
 	public static function checkbox( $field, $checkboxvalue, $value, $label){
-		return mopui::buildUIElement( array('type'=>'checkbox', 'field'=>$field, 'checkboxvalue'=>$checkboxvalue, 'label'=>$label, 'class'=>'checkbox'), $value);
+		return latticeui::buildUIElement( array('type'=>'checkbox', 'field'=>$field, 'checkboxvalue'=>$checkboxvalue, 'label'=>$label, 'class'=>'checkbox'), $value);
 	}
 
 	public static function file($field, $extensions, $maxlength, $currentFile=null ){
-		return mopui::buildUIElement( array('type'=>'file', 'field'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $currentFile );
+		return latticeui::buildUIElement( array('type'=>'file', 'field'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $currentFile );
 	}
 
 	public static function fieldmap($values, $options){
-		return mopui::buildUIElement(array('type'=>'fieldmap', 'values'=>$values, 'options'=>$options) );
+		return latticeui::buildUIElement(array('type'=>'fieldmap', 'values'=>$values, 'options'=>$options) );
 	}
    
    public static function tags($currentTags){

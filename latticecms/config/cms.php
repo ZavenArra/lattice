@@ -1,6 +1,6 @@
 <?
 $config['resources']['libraryjs'] = array(
-	'views/js/mopsettings',
+	'views/js/latticesettings',
 );
 
 $config['navigationRequest'] = 'navigation';

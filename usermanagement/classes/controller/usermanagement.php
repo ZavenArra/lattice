@@ -1,7 +1,7 @@
 <?
 /*
  * Class: UserManagement_Controllers
- * Controller for usermangement module within MoPCMS, allows for settings up users
+ * Controller for usermangement module within LatticeCMS, allows for settings up users
  * and passwords.  Can be configured deal with roles using the managedroles variables.
  */
 

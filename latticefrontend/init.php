@@ -17,7 +17,7 @@ class FrontendRouting {
       }
       if ($object) {
            return array(
-               'controller'=>'mopfrontend',
+               'controller'=>'latticefrontend',
                'action'=>'getView',
                'objectidorslug'=>$object->slug
             );
@@ -28,14 +28,14 @@ class FrontendRouting {
  
 
 
-Route::set('mopCmsSlugs', array('FrontendRouting', 'routeSlug'));
+Route::set('latticeCmsSlugs', array('FrontendRouting', 'routeSlug'));
 
 Route::set('defaultLatticeFrontend', '(<controller>)',
 	array(
 		'controller'=>'',
 	))
 	->defaults(array(
-		'controller' => 'mopfrontend',
+		'controller' => 'latticefrontend',
 		'action' => 'getView',
 		'id'     => 'home',
 	));

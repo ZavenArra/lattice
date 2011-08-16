@@ -6,7 +6,7 @@
  */
 
 /**
- * Description of mopauth
+ * Description of latticeauth
  *
  * @author deepwinter
  */

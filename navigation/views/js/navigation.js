@@ -2,7 +2,7 @@ if( !lattice.modules.navigation ) lattice.modules.navigation = {};
 
 lattice.modules.navigation.Navigation = new Class({
 
-	Extends: lattice.MoPObject,
+	Extends: lattice.LatticeObject,
 	Implements: [ Events, Options ],
 	rootId: 0,
 	dataSource: null,
@@ -276,7 +276,7 @@ lattice.modules.navigation.Tier = new Class({
 	},
 
 	toString: function(){
-		return "[ Object, lattice.MoPObject, lattice.modules.navigation.Tier ]"
+		return "[ Object, lattice.LatticeObject, lattice.modules.navigation.Tier ]"
 	},
 
 	attachToPane: function( pane ){

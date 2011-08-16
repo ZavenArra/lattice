@@ -8,7 +8,7 @@
 	<div class="grid_10 push_2">
 		<p>Here is where one can make push changes from the <a href="<?=Kohana::config('config.site_domain');?>" target="_blank">Staging Build</a><br/>to the <a href="<?=str_replace('staging/','',Kohana::config('config.site_domain'));?>" target="_blank">Live Build</a>.<br/>Simply slide the switch to the active position.</p>
 		<a id="bigRedButton" href="golive/copytolive/" class="button hidden">Update Live Site</a>
-		<img src="modules/mopui/views/images/spinner.gif" width="16" height="16" alt="processing..." class="spinner hidden"/>
+		<img src="modules/latticeui/views/images/spinner.gif" width="16" height="16" alt="processing..." class="spinner hidden"/>
 		<p class="message"></p>
 	</div>
 

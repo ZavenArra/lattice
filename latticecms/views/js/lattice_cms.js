@@ -146,7 +146,7 @@ lattice.modules.CMS = new Class({
     /*
     	Function: requestPage
     	Requests pageData and calls requestPageResponse on callback
-    	Arguments: nodeId MoPObject Id of a page object.
+    	Arguments: nodeId LatticeObject Id of a page object.
     */
 	requestPage: function( nodeId ){
 			this.setObjectId( nodeId );

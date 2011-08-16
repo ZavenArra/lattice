@@ -22,7 +22,7 @@ Element.implement({
 
 lattice.ui.UIField = new Class({
 
-  Extends: lattice.MoPObject,
+  Extends: lattice.LatticeObject,
 	Implements: [ Options, Events, lattice.util.Broadcaster ],
 
 	fieldName: null,
@@ -1433,7 +1433,7 @@ lattice.ui.FileElement = new Class({
 		}else {
 			this.clearButton.addClass("hidden");
 			this.downloadButton.addClass("hidden");
-			var msg = ( this.previewElement )? "No image uploaded yet…" : "No file uploaded yet…";
+			var msg = ( this.previewElement )? "No image uploaded yet‚Ä¶" : "No file uploaded yet‚Ä¶";
 			this.filename.set( "text", msg );
 		}
 	},

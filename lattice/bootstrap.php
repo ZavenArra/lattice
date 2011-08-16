@@ -101,7 +101,7 @@ Kohana::$config->attach(new Config_File);
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
 Kohana::modules(array(
-	//Enable MoPLib Modules, and allow them to override standard modules
+	//Enable LatticeLib Modules, and allow them to override standard modules
 	'lattice' => 'lattice/lattice',
 	'latticeauth' => 'lattice/latticeauth',
 	'latticecore' => 'lattice/latticecore',
