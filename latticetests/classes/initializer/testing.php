@@ -6,7 +6,7 @@
  */
 
 /**
- * Description of mopauth
+ * Description of latticeauth
  *
  * @author deepwinter
  */
@@ -20,7 +20,7 @@ class Initializer_Testing {
 				 $sql = file_get_contents( $sqlFile[0]);
          $rval = mysql_multiquery($sql);
 
-         MOP_Initializer::addMessage('Initialized testing data');
+         Lattice_Initializer::addMessage('Initialized testing data');
       }
    }
 }

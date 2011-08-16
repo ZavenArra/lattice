@@ -1,5 +1,5 @@
 <?
 
-MOP_Initializer::check(
+Lattice_Initializer::check(
   Kohana::config('usermanagement.dependencies')
 );

@@ -83,7 +83,7 @@ class Model_Content extends ORM {
 				//everything else is a normal lookup
 				$xPath =  sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
 			}
-			$fieldConfig = mop::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $columnName));
+			$fieldConfig = lattice::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $columnName));
 			if($fieldConfig->item(0)){
 				//field is configured but not initialized in database
 				$object->objecttype->configureField($fieldConfig->item(0));
@@ -157,7 +157,7 @@ class Model_Content extends ORM {
 			//everything else is a normal lookup
 			$xPath =  sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
 		}
-		$fieldConfig = mop::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $column));
+		$fieldConfig = lattice::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $column));
 		if($fieldConfig->item(0)){
 			//field is configured but not initialized in database
 			$object->objecttype->configureField($fieldConfig->item(0));	

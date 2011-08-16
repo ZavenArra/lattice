@@ -28,20 +28,29 @@ class Model_Object extends ORM {
    private $object_fields = array('loaded', 'objecttype', 'primary_key', 'primary_val');
 
    public function __construct($id=NULL) {
+      
+      
+		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id)) {
+         
+         //check for translation reference
+         if(strpos('_', $id)){
+            $slug = strtok($id, '_');
+            $languageCode = strtok($id);
+            $object = Graph::object($slug);
+            $translatedObject = $object->translated($languageCode);
+            return $translatedObject;
+        
+         } else {
+         
+            $result = DB::select('id')->from('objects')->where('slug', '=', $id)->execute()->current();
+            $id = $result['id'];
+         }
+		}
+
+      
       parent::__construct($id);
-      //	$this->object_fields = array_merge($this->object_fields, array_keys($this->_column_cache) );
    }
 
-   /**
-    *    * Allows a model to be loaded by username or email address.
-    *       */
-   public function unique_key($id) {
-      if (!empty($id) AND is_string($id) AND !ctype_digit($id)) {
-         return 'slug';
-      }
-
-      return parent::unique_key($id);
-   }
 
    /*
     *   Function: __get
@@ -58,7 +67,7 @@ class Model_Object extends ORM {
          $content->setTemplateName($this->objecttype->objecttypename); //set the objecttypename for dbmapping
          $this->_related[$column] = $content->where('object_id', '=', $this->id)->find();
          if (!$this->_related[$column]->_loaded) {
-            throw new Kohana_Exception('BAD_MOP_DB' . 'no content record for object ' . $this->id);
+            throw new Kohana_Exception('BAD_Lattice_DB' . 'no content record for object ' . $this->id);
          }
          return $this->_related[$column];
       } else if (in_array($column, array_keys($this->_table_columns))){
@@ -107,18 +116,18 @@ class Model_Object extends ORM {
          $this->object[$column] = $this->load_type($column, $value);
       } else {
          if (!is_object($value)) {
-            $value = mopcms::convertNewlines($value);
+            $value = latticecms::convertNewlines($value);
          }
 
          
          if ($column == 'slug') {
-            parent::__set('slug', mopcms::createSlug($value, $this->id));
+            parent::__set('slug', latticecms::createSlug($value, $this->id));
             parent::__set('decoupleSlugTitle', 1);
             $this->save();
             return;
          } else if ($column == 'title') {
             if (!$this->decoupleSlugTitle) {
-               $this->slug = mopcms::createSlug($value, $this->id);
+               $this->slug = latticecms::createSlug($value, $this->id);
             }
             $this->save();
             $this->contenttable->title = $value;
@@ -138,7 +147,7 @@ class Model_Object extends ORM {
             $objectType = ORM::Factory('objecttype',$objecttype_id);
             
             $xpath = sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $objectType->objecttypename, $column);
-            $fieldInfo = mop::config('objects', $xpath)->item(0);
+            $fieldInfo = lattice::config('objects', $xpath)->item(0);
             if (!$fieldInfo) {
                throw new Kohana_Exception('Invalid field for objectType, using XPath : :xpath', array(':xpath' => $xpath));
             }
@@ -184,7 +193,7 @@ class Model_Object extends ORM {
       parent::save();
       //if inserting, we add a record to the content table if one does not already exists
       if ($inserting) {
-         if (!Kohana::config('mop.legacy')) {
+         if (!Kohana::config('lattice.legacy')) {
             $content = ORM::Factory('content');
          } else {
             $content = ORM::Factory($this->objecttype->contenttable);
@@ -200,6 +209,39 @@ class Model_Object extends ORM {
       }
    }
 
+   
+   
+   public function translate($languageCode){
+      $rosettaId = $this->rosetta_id;
+      if(!$rosettaId){
+         throw new Kohana_Exception('No Rosetta ID found for object during translation with objectId :objectId',
+                                    array(':objectId'=>$objectId)
+                 );
+      }
+      if(is_numeric($languageCode)){
+         $languageId = intval($languageCode);
+      } else {
+         //this could just ask the graph, to avoid going to database again
+         $languageId = ORM::Factory('language', $languageCode)->id;
+      }
+      if(!$languageId){
+         throw new Kohana_Exception('Invalid language code :code', array(':code'=>$languageCode));
+      }
+         
+      $translatedObject = ORM::Factory('object')
+              ->where('rosetta_id', '=', $rosettaId)
+              ->where('language_id', '=', $languageId)
+              ->find();
+      if(!$translatedObject->loaded()){
+         throw new Kohana_Exception('No translated object available for objectId :id with language :language',
+                 array(':id'=>$objectId,
+                        ':language'=>$languageCode));
+         
+      }
+      return $translatedObject;
+      
+   }
+   
    public function updateWithArray($data) {
       foreach ($data as $field => $value) {
          switch ($field) {
@@ -240,6 +282,7 @@ class Model_Object extends ORM {
       if (!$tag->loaded()) {
          $tag = ORM::Factory('tag');
          $tag->tag = $tagName;
+         $tag->language_id = $this->language_id;
          $tag->save();
       }
       $this->add('tag', $tag);
@@ -286,17 +329,17 @@ class Model_Object extends ORM {
       $content['dateadded'] = $this->dateadded;
       $content['objectTypeName'] = $this->objecttype->objecttypename;
 
-      $fields = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
+      $fields = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
 
       foreach ($fields as $fieldInfo) {
          $field = $fieldInfo->getAttribute('field');
-         if (mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $this->objecttype->objecttypename, $field))->length) {
+         if (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $this->objecttype->objecttypename, $field))->length) {
             $content[$field] = $this->contenttable->{$field};
          }
       }
 
       //find any lists
-      foreach (mop::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list) {
+      foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list) {
 
          $family = $list->getAttribute('family');
          $content[$family] = $this->getListContentAsArray($family);
@@ -316,7 +359,7 @@ class Model_Object extends ORM {
 
    public function getListContent($family) {
       //get container
-      $cTemplate = ORM::Factory('objectType', $family);
+      $cTemplate = ORM::Factory('objecttype', $family);
       $container = ORM::Factory('object')
               ->where('objecttype_id', '=', $cTemplate->id)
               ->where('parentid', '=', $this->id)
@@ -441,7 +484,7 @@ class Model_Object extends ORM {
    }
 
    private function moveUploadedFileToTmpMedia($tmpName) {
-      $saveName = mopcms::makeFileSaveName('tmp') . microtime();
+      $saveName = latticecms::makeFileSaveName('tmp') . microtime();
 
       if (!move_uploaded_file($tmpName, Graph::mediapath() . $saveName)) {
          $result = array(
@@ -459,12 +502,17 @@ class Model_Object extends ORM {
       if (!is_object($file = $this->contenttable->$field)) {
          $file = ORM::Factory('file', $this->contenttable->$field);
       }
+      
+      $replacingEmptyFile = false;
+      if(!$file->filename){
+         $replacingEmptyFile = true;
+      }
 
       $file->unlinkOldFile();
-      $saveName = mopcms::makeFileSaveName($filename);
+      $saveName = latticecms::makeFileSaveName($filename);
 
       if (!copy(Graph::mediapath() . $tmpName, Graph::mediapath() . $saveName)) {
-         throw new MOP_Exception('this is a MOP Exception');
+         throw new Lattice_Exception('this is a MOP Exception');
       }
       unlink(Graph::mediapath() . $tmpName);
 
@@ -474,7 +522,24 @@ class Model_Object extends ORM {
 
       $this->contenttable->$field = $file->id;
       $this->contenttable->save();
+      
+      //Handle localized object linked via rosetta
+      if($replacingEmptyFile){
+         
+         $languages = Graph::languages();
+         foreach ($languages as $translationLanguage) {
+           
+            if ($translationLanguage->id == $this->language_id) {
+               continue;
+            }
 
+            $translatedObject = $this->translate($translationLanguage->id);
+            $translatedObject->contenttable->$field = $file->id;
+            $translatedObject->contenttable->save();
+
+         }   
+      }
+      
       return $file;
    }
 
@@ -536,7 +601,7 @@ class Model_Object extends ORM {
 
       //do the resizing
       $objecttypename = $this->objecttype->objecttypename;
-      $resizes = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]/resize', $objecttypename, $field
+      $resizes = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]/resize', $objecttypename, $field
                       )
       );
 			Kohana::$log->add(Log::INFO, 'printing out resizess');
@@ -551,9 +616,9 @@ class Model_Object extends ORM {
          $newfilename = $prefix . $imagefilename;
          $saveName = Graph::mediapath() . $newfilename;
 
-				 //This dependency should be moved out of mopcms
-				 //Rootgraph should never require mopcms
-         mopcms::resizeImage($imagefilename, $newfilename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('forceDimension'), $resize->getAttribute('crop')
+				 //This dependency should be moved out of latticecms
+				 //Rootgraph should never require latticecms
+         latticecms::resizeImage($imagefilename, $newfilename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('forceDimension'), $resize->getAttribute('crop')
          );
 
          if (isset($oldfilename) && $newfilename != $prefix . $oldfilename) {
@@ -565,7 +630,7 @@ class Model_Object extends ORM {
 
 			//And process resizes passed in from caller
       foreach($additionalResizes as $uiresize){
-        mopcms::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
+        latticecms::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
       }
 
 
@@ -603,18 +668,21 @@ class Model_Object extends ORM {
       if (!$objectTypes) {
          return $this;
       }
-      if (strpos(',', $objectTypes)) {
+      
+      if(is_numeric($objectTypes)){
+         $this->where('objecttype_id', '=', $objectTypes);
+      } else if (strpos(',', $objectTypes)) {
          $tNames = explode(',', $objectTypes);
          $tIds = array();
          foreach ($tNames as $tname) {
-            $result = DB::query("Select id from objectTypes where objecttypename = '$objectTypes'")->execute();
+            $result = DB::query("Select id from objecttypes where objecttypename = '$objectTypes'")->execute();
             $tIds[] = $result->current()->id;
          }
          $this->in('objecttype_id', $tIds);
       } else if ($objectTypes == 'all') {
          //set no filter
       } else {
-         $result = DB::query(Database::SELECT, "Select id from objectTypes where objecttypename = '$objectTypes'")->execute()->current();
+         $result = DB::query(Database::SELECT, "Select id from objecttypes where objecttypename = '$objectTypes'")->execute()->current();
          $this->where('objecttype_id', '=', $result['id']);
       }
       return $this;
@@ -625,7 +693,7 @@ class Model_Object extends ORM {
    }
 
    public function noContainerObjects() {
-      $res = ORM::Factory('objectType')
+      $res = ORM::Factory('objecttype')
               ->where('nodeType', '=', 'container')
               ->find_all();
       $tIds = array();
@@ -639,15 +707,35 @@ class Model_Object extends ORM {
    }
 
    public function publishedFilter() {
-      $this->where('published', '=', 1)
-              ->where('activity', 'IS', NULL);
+      $this->where('published', '=', 1);
+      $this->activeFilter();
       return $this;
+   }
+   
+   public function activeFilter(){
+    $this->where('activity', 'IS', NULL);
+    return $this;   
    }
 
    public function taggedFilter() {
       
    }
 
+   public function latticeChildrenFilter($parentid, $lattice="lattice"){
+      $lattice = Graph::lattice($lattice);
+       
+      $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
+      $this->where('objectrelationships.lattice_id', '=', $lattice->id);
+      $this->where('objectrelationships.object_id', '=', $parentid);
+      return $this;
+
+   }
+   
+   public function latticeChildrenQuery($lattice='lattice'){
+      return Graph::object()->latticeChildrenFilter($this->id, $lattice);
+   
+   }
+   
    /*
      Function: addObject($id)
      Private function for adding an object to the cms data
@@ -663,17 +751,35 @@ class Model_Object extends ORM {
     * This makes sense for separating the CMS from the graph, and containing all addObject code within the model.
     * */
 
-   public function addObject($objectTypeName, $data = array()) {
-      $objecttype_id = ORM::Factory('objecttype', $objectTypeName)->id;
-      if (!$objecttype_id) {
+   
+   private function addNewObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null){
+      
+      if(!$rosettaId){
+         $translationRosettaId = Graph::newRosetta();
+      } else {
+         $translationRosettaId = $rosettaId;
+      }
+      
+      
+      if ($languageId == NULL) {
+         if ($this->language_id == NULL) {
+            $languageId = Graph::defaultLanguage();
+         } else {
+            $languageId = $this->language_id;
+         }
+      }
+      
+      $newObjectType = ORM::Factory('objecttype', $objectTypeName);
+
+      if (!$newObjectType->id) {
 
 
          //check objects.xml for configuration
-         if ($objectTypeConfig = mop::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName))->item(0)) {
+         if ($objectTypeConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName))->item(0)) {
             //there's a config for this objectType
             //go ahead and configure it
             Graph::configureTemplate($objectTypeName);
-            $objecttype_id = ORM::Factory('objectType', $objectTypeName)->id;
+            $newObjectType = ORM::Factory('objecttype', $objectTypeName);
          } else {
             throw new Kohana_Exception('No config for objectType ' . $objectTypeName);
          }
@@ -681,33 +787,28 @@ class Model_Object extends ORM {
 
 
       $newObject = Graph::object();
-      $newObject->objecttype_id = $objecttype_id;
+      $newObject->objecttype_id = $newObjectType->id;
 
       //create slug
       if (isset($data['title'])) {
-         $newObject->slug = mopcms::createSlug($data['title'], $newObject->id);
+         $newObject->slug = latticecms::createSlug($data['title'], $newObject->id);
       } else {
 				//$newObject->title = 'No Title';
 				//Don't want to do this yet because then all objects will have same title
 				//which is a problem for import, which assumes same title same tier objects
 				//are the same object
-				$newObject->slug = mopcms::createSlug();
+				$newObject->slug = latticecms::createSlug();
       }
-      $newObject->parentid = $this->id;
-
-      //calculate sort order
-      $sort = DB::select(array('sortorder', 'maxsort'))->from('objects')->where('parentid', '=', $this->id)
-                      ->order_by('sortorder')->limit(1)
-                      ->execute()->current();
-      $newObject->sortorder = $sort['maxsort'] + 1;
-
+     
+      $newObject->language_id = $languageId;
+      $newObject->rosetta_id = $translationRosettaId;
+      
       $newObject->save();
 
 
       //check for enabled publish/unpublish. 
       //if not enabled, insert as published
-      $objectType = ORM::Factory('objectType', $objecttype_id);
-      $tSettings = mop::config('objects', sprintf('//objectType[@name="%s"]', $objectType->objecttypename));
+      $tSettings = lattice::config('objects', sprintf('//objectType[@name="%s"]', $newObjectType->objecttypename));
       $tSettings = $tSettings->item(0);
       $newObject->published = 1;
       if ($tSettings) { //entry won't exist for Container objects
@@ -723,10 +824,9 @@ class Model_Object extends ORM {
       $newObject->save();
 
       //Add defaults to content table
-      $newobjectType = ORM::Factory('objectType', $newObject->objecttype_id);
 
 
-      $lookupTemplates = mop::config('objects', '//objectType');
+      $lookupTemplates = lattice::config('objects', '//objectType');
       $objectTypes = array();
       foreach ($lookupTemplates as $tConfig) {
          $objectTypes[] = $tConfig->getAttribute('name');
@@ -745,8 +845,8 @@ class Model_Object extends ORM {
                continue(2);
          }
 
-         $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $newobjectType->objecttypename, $field);
-         $fieldInfo = mop::config('objects', $fieldInfoXPath)->item(0);
+         $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $newObjectType->objecttypename, $field);
+         $fieldInfo = lattice::config('objects', $fieldInfoXPath)->item(0);
          if (!$fieldInfo) {
             throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath' => $fieldInfoXPath));
          }
@@ -769,7 +869,7 @@ class Model_Object extends ORM {
 
                if (isset($_FILES[$field])) {
                   Kohana::$log->add(Log::ERROR, 'Adding via post file');
-                  $file = mopcms::saveHttpPostFile($newObject->id, $field, $_FILES[$field]);
+                  $file = latticecms::saveHttpPostFile($newObject->id, $field, $_FILES[$field]);
                } else {
                   $file = ORM::Factory('file');
                   $file->filename = $value;
@@ -785,9 +885,82 @@ class Model_Object extends ORM {
       $newObject->contenttable->save();
       $newObject->save();
 
+      //The objet has been built, now set it's lattice point
+      $lattice = Graph::lattice();
+      $objectRelationship = ORM::Factory('objectrelationship');
+      $objectRelationship->lattice_id = $lattice->id;
+      $objectRelationship->object_id = $this->id;
+      $objectRelationship->connectedobject_id = $newObject->id;
+      
+      //calculate sort order
+      $sort = DB::select(array('sortorder', 'maxsort'))->from('objectrelationships')
+                        ->where('lattice_id', '=', $lattice->id)
+                        ->where('object_id', '=', $this->id)
+                      ->order_by('sortorder')->limit(1)
+                      ->execute()->current();
+      $objectRelationship->sortorder = $sort['maxsort'] + 1;
+    
+      $objectRelationship->save();
+      return $newObject;
+   
+   }
+   
+   
+   public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
+      
+      $newObjectType = ORM::Factory('objecttype', $objectTypeName);
+
+      $newObject = $this->addNewObject($objectTypeName, $data, $lattice, $rosettaId, $languageId);
+     
+      
+      /*
+       * Set up any translated peer objects
+       */
+      if (!$rosettaId) {
+        
+         $languages = Graph::languages();
+         foreach ($languages as $translationLanguage) {
+           
+            if ($translationLanguage->id == $newObject->language_id) {
+               continue;
+            }
+
+            if ($this->loaded()) {
+               $translatedParent = $this->getTranslatedObject($translationLanguage->id);
+          
+               $translatedParent->addNewObject($objectTypeName, $data, $lattice, $newObject->rosetta_id);
+            } else {
+               Graph::object()->addNewObject($objectTypeName, $data, $lattice, $newObject->rosetta_id, $translationLanguage->id);
+            }
+         }
+
+      }
+
+      /*
+       * adding of components is delayed, because data trees need to be built before components go looking
+       * for rosetta ids
+       */
+      $newObject->addComponents();
+
+      return $newObject->id;
+
+   }
+   
+   /*
+    * Called only at object creation time, this function add automatic components to an object as children and also recurses
+    * this functionality down the tree.
+    */
+   private function addComponents(){
+       //chain problem
+      $containers = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename));
+      foreach ($containers as $c) {
+         $arguments['title'] = $c->getAttribute('label');
+         $childObject = $this->addObject($c->getAttribute('family'), $arguments);
+      }
+      
       //look up any components and add them as well
       //configured components
-      $components = mop::config('objects', sprintf('//objectType[@name="%s"]/components/component', $newobjectType->objecttypename));
+      $components = lattice::config('objects', sprintf('//objectType[@name="%s"]/components/component', $this->objecttype->objecttypename));
       foreach ($components as $c) {
          $arguments = array();
          if ($label = $c->getAttribute('label')) {
@@ -798,17 +971,46 @@ class Model_Object extends ORM {
                $arguments[$data->tagName] = $data->value;
             }
          }
-         $newObject->addObject($c->getAttribute('objectTypeName'), $arguments);
+         //We have a problem here
+         //with data.xml populated components
+         //the item has already been added by the addObject recursion, but gets added again here
+         //what to do about this??/on
+         
+         $componentAlreadyPresent = false;
+         if(isset($arguments['title'])){
+            $checkForPreexistingObject = Graph::object()
+                 ->latticeChildrenFilter($this->id)
+                 ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
+                 ->where('title', '=', $arguments['title'])
+                 ->find();
+        //    echo $arguments['title'];
+            if($checkForPreexistingObject->loaded()){
+              $componentAlreadyPresent = true;
+              
+            }
+         }
+                 
+         if(!$componentAlreadyPresent){
+         //   $this->addObject($c->getAttribute('objectTypeName'), $arguments);
+         }
       }
+    
 
-      //containers (list)
-      $containers = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $newobjectType->objecttypename));
-      foreach ($containers as $c) {
-         $arguments['title'] = $c->getAttribute('label');
-         $newObject->addObject($c->getAttribute('family'), $arguments);
-      }
-
-      return $newObject->id;
+   }
+   
+   public function getTranslatedObject($languageId){
+       $parentRosettaId = $this->rosetta_id;
+       $translatedObject = Graph::object()
+               ->where('rosetta_id', '=', $this->rosetta_id)
+               ->where('language_id', '=', $languageId)
+               ->find();
+       if(!$translatedObject->loaded()){
+          throw new Kohana_Exception('No matching translated object for rosetta :rosetta and language :language',
+                  array(':rosetta'=>$this->rosetta_id,
+                        ':language'=>$languageId)
+                  );
+       }
+       return $translatedObject;
    }
 
 }

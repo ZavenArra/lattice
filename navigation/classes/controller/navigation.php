@@ -5,10 +5,8 @@
 *
 */
 
-class Controller_Navigation extends Controller_MOP{
-
-	private $objectModel = 'object';
-
+class Controller_Navigation extends Controller_Lattice{
+   
 	private $defaultAddCategoryText = '';
 	private $defaultAddLeafText = '';
 
@@ -40,21 +38,21 @@ class Controller_Navigation extends Controller_MOP{
 				throw new Kohana_Exception('Invalid object id sent to getTier');
 		 }
 			
-		Kohana::$log->add(Log::INFO, 'here we are');
-		$items = ORM::factory($this->objectModel);
-		$items->where('parentId', '=',  $parent->id);
-		$items->where('activity', 'IS', NULL);
-		$items->order_by('sortorder');
-		$iitems = $items->find_all();
-		if($iitems){
+		$items = Graph::object($parent->id)
+              ->latticeChildrenQuery()
+              ->activeFilter()
+              ->order_by('sortorder')
+              ->find_all();
+      
+		if($items){
 			$sendItemContainers = array(); //these will go first
 			$sendItemObjects = array();
-			foreach($iitems as $child){
+			foreach($items as $child){
 				if(strtolower($child->objecttype->nodeType) == 'container'){
 					//we might be skipping this node
 
 					//echo sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]', $parent->objecttype->objecttypename, $child->objecttype->objecttypename);
-					$display = mop::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]', 
+					$display = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]', 
 						$parent->objecttype->objecttypename,
 						$child->objecttype->objecttypename))
 						->item(0)
@@ -93,7 +91,7 @@ class Controller_Navigation extends Controller_MOP{
 
 			//add in any modules
 			if($parent->id == Graph::getRootNode(Kohana::config('cms.graphRootNode'))->id ){
-				$cmsModules = mop::config('cmsModules', '//module');
+				$cmsModules = lattice::config('cmsModules', '//module');
 				foreach($cmsModules as $m){
 
 					$entry = array();
@@ -134,9 +132,11 @@ class Controller_Navigation extends Controller_MOP{
       }
   
       //this database call happens twice, should be a class variable?
-      $parent = ORM::Factory($this->objectModel, $parentId); 
-
+      $parent = Graph::object($parentId);
+      
+      
       $tier = $this->getTier($parentId, $deeplinkPath);
+
 
       $this->response->data(array('tier' => $tier));
 
@@ -156,7 +156,7 @@ class Controller_Navigation extends Controller_MOP{
       $tierMethodsDrawer = new View('tierMethodsDrawer');
 			$addableObjects = $parent->objecttype->addableObjects;
 
-			if(moputil::checkAccess('superuser')){
+			if(latticeutil::checkAccess('superuser')){
 				foreach($this->getObjectTypes() as $objectType){
 					$addableObject = array();
 					$addableObject['objectTypeId'] = $objectType['objectTypeName'];
@@ -175,7 +175,7 @@ class Controller_Navigation extends Controller_MOP{
 
 	public function getObjectTypes(){
 		$objectTypes = array();
-		foreach(mop::config('objects', '//objectType') as $objectType){
+		foreach(lattice::config('objects', '//objectType') as $objectType){
 			$entry = array();
 			$entry['objectTypeName'] = $objectType->getAttribute('name');	
 			$entry['label'] = $objectType->getAttribute('name').' label';	

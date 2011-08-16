@@ -73,7 +73,7 @@ class Model_FileImage {
 
 			$this->urlfilename = rawurlencode($this->filename);
 			$dirprefix = '';
-			if(Kohana::config('mop.staging')){
+			if(Kohana::config('lattice.staging')){
 				$dirprefix = 'staging/';
 			}
 			if(file_exists($dirprefix.'application/media/'.$this->filename)){

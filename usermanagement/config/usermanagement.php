@@ -7,14 +7,14 @@ $config['resources']['librarycss'] = array(
 $config['resources']['libraryjs'] = array(
 	'lattice/thirdparty/mootools/mootools.js',
 	'lattice/thirdparty/mootools/mootools-more.js',
-	//these are required by MoPUI
+	//these are required by LatticeUI
 	'lattice/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
 	'lattice/thirdparty/arian/datepicker/Picker.js',
 	'lattice/thirdparty/arian/datepicker/Picker.Attach.js',
 	'lattice/thirdparty/arian/datepicker/Picker.Date.js',
-	'lattice/mopjs/MoPCore.js',
-	'lattice/mopjs/MoPUI.js',
-	'lattice/mopjs/MoPModules.js'
+	'lattice/latticejs/LatticeCore.js',
+	'lattice/latticejs/LatticeUI.js',
+	'lattice/latticejs/LatticeModules.js'
 );
 
 $config['layout'] = 'LayoutAdmin';
@@ -24,21 +24,21 @@ $config['layout'] = 'LayoutAdmin';
  * Config: ['resources']['css']
  */
 $config['resources']['css'] = array( 
-   	'lattice/mopcms/views/css/mop_cms.css'
+   	'lattice/latticecms/views/css/lattice_cms.css'
 );
 
 /*
  * Config: ['resources']['js']
  */
 $config['resources']['js'] = array(
-	'lattice/mopcms/views/js/list.js'
+	'lattice/latticecms/views/js/list.js'
 );
 
 /*
  * Config: ['passwordchangeemail']['subject']
  * The subject of the password reset email
  */
-$config['passwordchangeemail']['subject'] = 'MoPCMS Password Changed';
+$config['passwordchangeemail']['subject'] = 'LatticeCMS Password Changed';
 
 /*
  * Config: ['managedRoles']

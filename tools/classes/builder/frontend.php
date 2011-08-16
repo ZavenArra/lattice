@@ -14,43 +14,60 @@ Class Builder_Frontend {
 		echo "Configuring Frontend\n";
 		echo "Reading application/config/frontend.xml\n";
 
-		mop::config('objects', '//objectTypes');
+		lattice::config('objects', '//objectTypes');
 		
 		flush();
 		
-		foreach(mop::config('frontend', '//view') as $view ){
-			ob_start();
-			touch($this->basePath.$view->getAttribute('name').'.php');
+	//	foreach(lattice::config('frontend', '//view') as $view ){
+		//	//this has removed the ability to build virtual views
+		foreach(ORM::Factory('objecttype')->find_all() as $objectType){
 
-			if($view->getAttribute('loadPage')=='true'){
+			$view = lattice::config('frontend', '//view[@name="'.$objectType->objecttypename.'"]');
+			if(count($view)){
+				$view = $view->item(0);
+			} else {
+				$vuew = null;
+			}
+			ob_start();
+			if($view){
+				$viewName = $view->getAttribute('name');
+			} else {
+				$viewName = $objectType->objecttypename;
+			}
+			touch($this->basePath.$viewName.'.php');
+
+			if(!$view ||  ($view && $view->getAttribute('loadPage')=='true')){
 				echo "<h1><?=\$content['main']['title'];?></h1>\n\n";
 				//this also implies that name is a objecttypename
-				foreach(mop::config('objects', 
-					sprintf('//objectType[@name="%s"]/elements/*', $view->getAttribute('name') )) as $element){
+				foreach(lattice::config('objects', 
+					sprintf('//objectType[@name="%s"]/elements/*', $viewName )) as $element){
 						frontend::makeHtmlElement($element, "\$content['main']");
 					}
 			}
 
+			if($view && $view->getAttribute('loadPage')=='true'){
 
-			//Now the includeData
-			if($iDataNodes = mop::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/includeData")){
-				foreach($iDataNodes as $iDataConfig){
-					$prefix = "\$content";
-					$this->makeIncludeDataHtml($iDataConfig, $prefix, null);
+				//Now the includeData
+				if($iDataNodes = lattice::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/includeData")){
+					foreach($iDataNodes as $iDataConfig){
+						$prefix = "\$content";
+						$this->makeIncludeDataHtml($iDataConfig, $prefix, null);
+					}
 				}
-			}
 
-			if($subviews = mop::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/subview")){
-				foreach($subviews as $subviewConfig){
-					echo "\n<?=\$".$subviewConfig->getAttribute('label').";?>\n";
+				if($subviews = lattice::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/subview")){
+					foreach($subviews as $subviewConfig){
+						echo "\n<?=\$".$subviewConfig->getAttribute('label').";?>\n";
+					}
 				}
+
 			}
 
 
 
 			$html = ob_get_contents();
 			ob_end_clean();
-			$file = fopen($this->basePath.$view->getAttribute('name').'.php', 'w');
+			$file = fopen($this->basePath.$viewName.'.php', 'w');
 			fwrite($file, $html);
 			fclose($file);
 		}
@@ -66,7 +83,7 @@ Class Builder_Frontend {
 		$objectTypes = array();
 		//if slug defined, get objectType from slug
 		if($slug = $iDataConfig->getAttribute('slug')){
-			$object = ORM::Factory('object', $slug);
+			$object = Graph::object($slug);
 			if(!$object->loaded){
 				//error out,
 				//object must be loaded from data.xml for this type of include conf
@@ -88,13 +105,13 @@ Class Builder_Frontend {
 			if($from=="parent"){
 
 				//get the info from addableObjects of the current
-				foreach(mop::config('objects', sprintf('//objectType[@name="%s"]/addableObject', $parentTemplate)) as $addable){
+				foreach(lattice::config('objects', sprintf('//objectType[@name="%s"]/addableObject', $parentTemplate)) as $addable){
 					$objectTypeName = $addable->getAttribute('objectTypeName');
 					$objectTypes[$objectTypeName] = $objectTypeName;
 				}
 
 				//and we can also check all the existing data to see if it has any other objectTypes
-				$parentObjects = ORM::Factory('object')->objecttypeFilter($parentTemplate)->publishedFilter()->find_all();
+				$parentObjects = Graph::object()->objecttypeFilter($parentTemplate)->publishedFilter()->find_all();
 				foreach($parentObjects as $parent){
 					$children = $parent->getPublishedChildren();
 					foreach($children as $child){
@@ -104,10 +121,10 @@ Class Builder_Frontend {
 				}
 			} else {
 				//see if from is a slug
-				$object = ORM::Factory('object', $from);
-				if($object->loaded){
+				$object = Graph::object($from);
+            if($object->loaded){
 					//find its addable objects
-					foreach(mop::config('objects', sprintf('//objectType[@name="%s"]/addableObject', $object->objecttype->objecttypename)) as $addable){
+					foreach(lattice::config('objects', sprintf('//objectType[@name="%s"]/addableObject', $object->objecttype->objecttypename)) as $addable){
 						$objectTypeName = $addable->getAttribute('objectTypeName');
 						$objectTypes[$objectTypeName] = $objectTypeName;
 					}
@@ -141,13 +158,13 @@ Class Builder_Frontend {
 			}
 			echo $indent."  <li class=\"$objectTypeName\">\n";
       echo $indent."   "."<h2><?=\${$label}Item['title'];?></h2>\n\n";
-			foreach(mop::config('objects', 
+			foreach(lattice::config('objects', 
 				sprintf('//objectType[@name="%s"]/elements/*', $objectTypeName )) as $element){
 					frontend::makeHtmlElement($element, "\${$label}Item", $indent."   ");
 				}
 
 			//handle lower levels
-			foreach(mop::config('frontend', 'includeData', $iDataConfig) as $nextLevel){
+			foreach(lattice::config('frontend', 'includeData', $iDataConfig) as $nextLevel){
 				$this->makeIncludeDataHtml($nextLevel, "\${$label}Item", $objectTypeName, $indent."   ");
 			}
 
