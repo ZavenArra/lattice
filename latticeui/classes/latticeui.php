@@ -42,6 +42,7 @@ Class latticeui{
 		} else {
 			$id ='field'.latticeui::$unique++.$microtime;
 		}
+		$element['id'] = $id;
 
 
 		switch($element['type']){

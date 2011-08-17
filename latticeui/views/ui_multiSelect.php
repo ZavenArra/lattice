@@ -1,4 +1,4 @@
-<div class="ui-MultiSelect field-<?=$field;?> firstIsNull-true <?=$class;?>">
+<div id="<?=$id;?>"  class="ui-MultiSelect field-<?=$field;?> firstIsNull-true <?=$class;?>">
 <label><?=$label;?></label>
 <?
 $preparedOptions = array();

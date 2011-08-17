@@ -1,4 +1,4 @@
-<div class="ui-FileElement field-<?=$field;?> extensions-<?=str_replace(',','_',$extensions);?> maxLength-<?=$maxlength;?> <?=$class;?> ">
+<div id="<?=$id;?>"  class="ui-FileElement field-<?=$field;?> extensions-<?=str_replace(',','_',$extensions);?> maxLength-<?=$maxlength;?> <?=$class;?> ">
 	<label><?=isset($label)?$label:'File';?></label>
 	<div class="wrapper">
 		<input type="file" class="hidden" />
