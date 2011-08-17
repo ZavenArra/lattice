@@ -21,6 +21,11 @@
 		<objectType name="article" contentType="document" allowDelete="true" >
 			<elements>
 				<text field="multilineIPE" label="MultiLine IPE" rows="10"/>
+				<text field="multilineIPE2" label="MultiLine IPE" rows="10"/>
+				<text field="multilineIPE3" label="MultiLine IPE" rows="10"/>
+				<text field="multilineIPE4" label="MultiLine IPE" rows="10"/>
+				<text field="multilineIPE5" label="MultiLine IPE" rows="10"/>
+				<text field="multilineIPE6" label="MultiLine IPE" rows="10"/>
 			</elements>
 		</objectType>
 
@@ -56,6 +61,11 @@
 		<objectType name="multilineIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="true">
 			<elements>
 				<text field="multilineIPE" label="MultiLine IPE" rows="10"/>
+				<text field="multilineIPE2" label="MultiLine IPE" rows="10"/>
+				<text field="multilineIPE3" label="MultiLine IPE" rows="10"/>
+				<text field="multilineIPE4" label="MultiLine IPE" rows="10"/>
+				<text field="multilineIPE5" label="MultiLine IPE" rows="10"/>
+				<text field="multilineIPE6" label="MultiLine IPE" rows="10"/>
 			</elements>
 		</objectType>
 		
