@@ -150,7 +150,6 @@ lattice.modules.CMS = new Class({
     */
 	requestPage: function( nodeId ){
 			this.setObjectId( nodeId );
-			this.pageContent.spin();
 			return new Request.JSON( {url: this.getRequestPageURL( nodeId ), onSuccess: this.requestPageResponse.bind( this )} ).send();
 	},
     
@@ -196,6 +195,8 @@ lattice.modules.CMS = new Class({
 	onNodeSelected: function( nodeId ){
 		// console.log( this.toString(), "onNodeSelected", nodeId );
 		this.clearPage();
+		this.pageContent.get( 'spinner' ).show();
+		// this.pageContent.spin();
 		if( this.pageRequest ) this.pageRequest.cancel();
 		this.pageRequest = this.requestPage( nodeId );
 	},
