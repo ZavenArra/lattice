@@ -80,9 +80,9 @@ h6,
 
 .away{
 	position: absolute;
-	width: inherit;
-	top: -9999px;
-	left: -9999px;
+/*	width: inherit;
+*/	top: -5000px;
+	left: -5000px;
 }
 
 .ipe:hover{
@@ -124,41 +124,6 @@ input, textarea{
 .ui-Text textarea{
 	display: block;
 	resize: none;
-}
-
-.ui-Text.rows-2 textarea,
-.ui-Text.rows-2 .ipe{
-	min-height: 3em;
-}
-
-.ui-Text.rows-3 textarea,
-.ui-Text.rows-3 .ipe{
-	min-height: 4.5em;
-}
-
-.ui-Text.rows-5 textarea,
-.ui-Text.rows-5 .ipe{
-	min-height: 8em;
-}
-
-.ui-Text.rows-4 textarea,
-.ui-Text.rows-4 .ipe{
-	min-height: 6em;
-}
-
-.ui-Text.rows-6 textarea,
-.ui-Text.rows-6 .ipe{
-	min-height: 9em;
-}
-
-.ui-Text.rows-8 textarea,
-.ui-Text.rows-8 .ipe{
-	min-height: 12em;
-}
-
-.ui-Text.rows-10 textarea,
-.ui-Text.rows-10 .ipe{
-	min-height: 15em;
 }
 
 .displayField{
@@ -272,6 +237,7 @@ ul.listing li{
 ul.listing.allowChildSort-true li{ cursor: pointer; }
 .classPath-lattice_modules_ListModule{ margin-bottom: 2em; }
 
+.controls{ margin-bottom: 1em; }
 .listItem>.itemControls .delete{
 	background: url( ../images/icon_trash.gif );
 }
@@ -279,7 +245,7 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 /* /////////////////////////////////////////////////////////// */
 
 .spinner {
-    display: none;
+	display: none;
 	opacity: .8;
 	background: url( ../images/bg_white80.png );
 }
@@ -354,7 +320,6 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 
 #nodeContent{
 	margin: 2em 0 0 0;
-	min-height: 12em;
 }
 
 .objectTitle{ margin: 0 0 2em 0 !important; }
@@ -427,6 +392,7 @@ label{
 	font-weight: normal;
 	color:#aaa;
 }
+
 
 .listLabel{
 	display: block;

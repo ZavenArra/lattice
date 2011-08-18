@@ -2355,19 +2355,19 @@ lattice.ui.Text = new Class({
 		this.field.set( 'value', val );
 		w = this.ipeElement.getSize().x - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width' ) ) + 2 * parseInt( this.ipeElement.getStyle('padding-left' ) ) );
 		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') )  ); 
+		this.ipeElement.setStyle( 'width', w );
 		console.log( this.fieldName, '{', w,',',h,'}', '-',  this.ipeElement.getSize().y,  this.ipeElement.getCoordinates().height, this.ipeElement.getComputedSize().height, ",", parseInt( this.field.getComputedStyle( 'border-bottom-width') ) );
-		if( this.options.rows > 1 ){
-			this.field.addEvent( 'keyup', this.fitToContent.bind( this ) );
-			this.fitToContent();
-		}else{
-			inputType = ( this.element.getValueFromClassName( 'type' ) == 'password' )? 'password' : 'text';
-			this.field.set( 'type', inputType );
-		};
 		this.field.setStyles({
 			'overflow': 'hidden',
 			'width': w, 
 			'height': h
 		});
+		if( this.options.rows > 1 ){
+			this.field.addEvent( 'keyup', this.fitToContent.bind( this ) );
+		}else{
+			inputType = ( this.element.getValueFromClassName( 'type' ) == 'password' )? 'password' : 'text';
+			this.field.set( 'type', inputType );
+		};
 		if( this.options.maxLength ) this.field.addEvent( 'keydown', this.checkFormaxLength.bindWithEvent( this ) );
 		document.addEvent( "mousedown", this.documentBoundUpdateAndClose );
 		if( this.options.submitOnBlur ){
@@ -2390,9 +2390,10 @@ lattice.ui.Text = new Class({
 			mouseEnter: this.setAllowSubmitOnBlur.bind( this, false ),
 			mouseLeave: this.setAllowSubmitOnBlur.bind( this, true )
 		});
-		if( this.options.rows == 1 ){
+		if( this.options.rows == 1 || !this.options.rows ){
 			this.field.select();
 		}else{
+			this.fitToContent()
 			this.field.select();
 		}
 		this.field.addEvent( 'focus' , this.onFieldFocus.bindWithEvent( this ) );
@@ -2499,7 +2500,7 @@ lattice.ui.Text = new Class({
 		this.ipeElement.morph( '.atRest' );
 		this.leaveEditMode();
 		this.destroyValidationSticky();
-		console.log( 'validationSticky', this.validationSticky );
+		// console.log( 'validationSticky', this.validationSticky );
 	},
 
 	showSaving: function(){
@@ -2518,19 +2519,30 @@ lattice.ui.Text = new Class({
 	},
 	
 	fitToContent: function(){
-		var val = this.getValue().formatToHTML();
-		this.field.setStyle( "height", this.measureIPEElementWithValue( val ).y + 12 );
+		var val, size;
+		val = this.getValue().formatToHTML()
+		size = this.measureIPEElementWithValue( val );
+		this.field.setStyle( "height", size.y );
 		if( this.controls ) this.controls.position();
 	},
 	
 	measureIPEElementWithValue: function( aValue ){
-		var ogVal = this.getValue();
-		var ogSize = this.ipeElement.getSize();
+		var ogVal, ogSize, w, h, newSize;
+		ogVal = this.getValue();
+		ogSize = this.ipeElement.getSize();
 		this.ipeElement.setStyle( 'height', 'auto' );
 		this.ipeElement.set( 'html', aValue.formatToHTML() );
-		var newSize = this.ipeElement.getSize();
+
+		w = this.ipeElement.getSize().x - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width' ) ) + 2 * parseInt( this.ipeElement.getStyle('padding-left' ) ) );
+		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') )  ); 
+		// newSize = this.ipeElement.getSize();
+		// newSize.y = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') ) );
+		// 
+		// 
+		// 
+//		console.log( 'measureIPEElementWithValue', '{', ogSize.x, ',',  ogSize.y, '}', '{', w, ',',  h, '}' );
 		this.setValue( ogVal );
-		return newSize;
+		return { x: w, y: h };
 	},
 
 	onResponse: function( json ){

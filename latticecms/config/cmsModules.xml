@@ -3,6 +3,6 @@
 
 <configuration>
 
-	<module controller="usermanagement" label="User Management" />
+	<module controller="usermanagement" label="Add &amp; modify users" />
 	
 </configuration>
