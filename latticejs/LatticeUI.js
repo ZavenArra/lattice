@@ -2532,15 +2532,8 @@ lattice.ui.Text = new Class({
 		ogSize = this.ipeElement.getSize();
 		this.ipeElement.setStyle( 'height', 'auto' );
 		this.ipeElement.set( 'html', aValue.formatToHTML() );
-
 		w = this.ipeElement.getSize().x - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width' ) ) + 2 * parseInt( this.ipeElement.getStyle('padding-left' ) ) );
 		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') )  ); 
-		// newSize = this.ipeElement.getSize();
-		// newSize.y = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') ) );
-		// 
-		// 
-		// 
-//		console.log( 'measureIPEElementWithValue', '{', ogSize.x, ',',  ogSize.y, '}', '{', w, ',',  h, '}' );
 		this.setValue( ogVal );
 		return { x: w, y: h };
 	},

@@ -90,14 +90,15 @@ h6,
 	color:#fff !important;
 }
 
-.ui-Text .ipe.discrete{
-	background: #fcfcfc;
+.ui-Text.discrete .ipe{
+/*	display: inline-block;
+*/	background: #fcfcfc;
 	color: #ccc;
 	font-size: .8em;
 	font-family: helvetica, arial, sans-serif;
 }
 
-.ui-Text .ipe.discrete:hover{
+.ui-Text.discrete .ipe:hover{
 	background-color: #dedede;
 	color: #aaa;
 }
@@ -328,7 +329,7 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 .objectTitle input.h2{ margin-bottom: .25em !important; }
 
 .objectTitle .deleteLink{ margin: 2em 0 0 .5em; }
-.objectTitle .field-slug{ margin: 0 0 .5em 0; }
+.objectTitle .field-slug{ clear: both; margin: 0 0 .5em 0; }
 
 .icon, a.command, .uploadButton, .icon, a.command{
 	display:block;

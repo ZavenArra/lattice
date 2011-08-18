@@ -6,7 +6,7 @@ $config['resources']['libraryjs'] = array(
 $config['navigationRequest'] = 'navigation';
 $config['layout'] = 'LayoutAdmin';
 
-$config['enableSlugEditing'] = false;
+$config['enableSlugEditing'] = true;
 
 $config['graphRootNode'] = 'cmsRootNode';
 
