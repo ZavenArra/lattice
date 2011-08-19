@@ -199,7 +199,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
 			$html .= $view->render();
 		}
 
-	
+		$this->response->data($object->getPageContent());	
 		$this->response->body($html);
 
 	}
