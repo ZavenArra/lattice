@@ -182,7 +182,7 @@ class Controller_Builder extends Controller {
 			$component = null;
 			foreach($existing as $aComponent){
 				//echo "\n\n".$aComponent->contenttable->title;
-        if(isset($data['title'])){
+        if(isset($data['title']) && $data['title']){
           if($aComponent->contenttable->title == $data['title']){
             $component = $aComponent;	
             break;
