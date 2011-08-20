@@ -951,6 +951,8 @@ class Model_Object extends ORM {
     * this functionality down the tree.
     */
    private function addComponents(){
+
+
        //chain problem
       $containers = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename));
       foreach ($containers as $c) {
@@ -991,7 +993,7 @@ class Model_Object extends ORM {
          }
                  
          if(!$componentAlreadyPresent){
-         //   $this->addObject($c->getAttribute('objectTypeName'), $arguments);
+            $this->addObject($c->getAttribute('objectTypeName'), $arguments);
          }
       }
     
