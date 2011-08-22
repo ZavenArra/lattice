@@ -5,6 +5,12 @@
 
 	<objectTypes>
 
+		<objectType name="tagsObjectType" >
+      <elements>
+				<tags label="Tags"/>
+      </elements>
+		</objectType>
+		
 <!-- HOME -->
 		<objectType name="basicCategory" contentType="category" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<addableObject objectTypeName="article" addText="Add an Article" />
@@ -20,32 +26,32 @@
 		
 		<objectType name="article" contentType="document" allowDelete="true" >
 			<elements>
-				<text field="multilineIPE" label="MultiLine IPE" rows="10"/>
-				<text field="multilineIPE2" label="MultiLine IPE" rows="10"/>
-				<text field="multilineIPE3" label="MultiLine IPE" rows="10"/>
-				<text field="multilineIPE4" label="MultiLine IPE" rows="10"/>
-				<text field="multilineIPE5" label="MultiLine IPE" rows="10"/>
-				<text field="multilineIPE6" label="MultiLine IPE" rows="10"/>
+				<text field="multilineIPE" label="MultiLine IPE" isMultiline="true"/>
+				<text field="multilineIPE2" label="MultiLine IPE" isMultiline="true"/>
+				<text field="multilineIPE3" label="MultiLine IPE" isMultiline="true"/>
+				<text field="multilineIPE4" label="MultiLine IPE" isMultiline="true"/>
+				<text field="multilineIPE5" label="MultiLine IPE" isMultiline="true"/>
+				<text field="multilineIPE6" label="MultiLine IPE" isMultiline="true"/>
 			</elements>
 		</objectType>
 
 		<objectType name="singleIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 
 			<elements>
-				<text field="singleIPE" label="Single Single Single" rows="1" />
-				<text field="singleIPE2" label="Single Single Single" rows="1" />
-				<text field="ssdfasdfingleIPE2" label="Single Single Single" rows="1" />
-				<text field="ssdfasdfasdfasdfingleIPE2" label="Single Single Single" rows="1" />
-				<text field="maritnagus" label="NEW!" rows="1" />
-				<text field="lagunea" label="Test Entry" rows="10" />
-				<text field="lagunea1" label="Test Entry" rows="5" />
-				<text field="lagunea2" label="Test Entry" rows="1" />
-				<text field="lagunea3" label="Test Entry" rows="7" />
-				<text field="lagunea4" label="Test Entry" rows="1" />
-				<text field="lagunea5" label="Test Entry" rows="1" />
-				<text field="lagunea6" label="Test Entry" rows="1" />
-				<text field="lagunea7" label="Test Entry" rows="1" />
-				<text field="lagunea8" label="Test Entry" rows="10" />
+				<text field="singleIPE" label="Single Single Single" isMultiline="false" />
+				<text field="singleIPE2" label="Single Single Single" isMultiline="false" />
+				<text field="ssdfasdfingleIPE2" label="Single Single Single" isMultiline="false" />
+				<text field="ssdfasdfasdfasdfingleIPE2" label="Single Single Single" isMultiline="false" />
+				<text field="maritnagus" label="NEW!" isMultiline="false" />
+				<text field="lagunea" label="Test Entry" isMultiline="true" />
+				<text field="lagunea1" label="Test Entry" isMultiline="true" />
+				<text field="lagunea2" label="Test Entry" isMultiline="false" />
+				<text field="lagunea3" label="Test Entry" isMultiline="true" />
+				<text field="lagunea4" label="Test Entry" isMultiline="false" />
+				<text field="lagunea5" label="Test Entry" isMultiline="false" />
+				<text field="lagunea6" label="Test Entry" isMultiline="false" />
+				<text field="lagunea7" label="Test Entry" isMultiline="false" />
+				<text field="lagunea8" label="Test Entry" isMultiline="true" />
 			</elements>
 			
 			<components>
@@ -60,12 +66,12 @@
 
 		<objectType name="multilineIPE" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="true">
 			<elements>
-				<text field="multilineIPE" label="MultiLine IPE" rows="10"/>
-				<text field="multilineIPE2" label="MultiLine IPE" rows="10"/>
-				<text field="multilineIPE3" label="MultiLine IPE" rows="10"/>
-				<text field="multilineIPE4" label="MultiLine IPE" rows="10"/>
-				<text field="multilineIPE5" label="MultiLine IPE" rows="10"/>
-				<text field="multilineIPE6" label="MultiLine IPE" rows="10"/>
+				<text field="multilineIPE" label="MultiLine IPE" isMultiline="true"/>
+				<text field="multilineIPE2" label="MultiLine IPE" isMultiline="true"/>
+				<text field="multilineIPE3" label="MultiLine IPE" isMultiline="true"/>
+				<text field="multilineIPE4" label="MultiLine IPE" isMultiline="true"/>
+				<text field="multilineIPE5" label="MultiLine IPE" isMultiline="true"/>
+				<text field="multilineIPE6" label="MultiLine IPE" isMultiline="true"/>
 			</elements>
 		</objectType>
 		
@@ -111,10 +117,10 @@
          				 <ext>tiff</ext>
          				 <ext>tif</ext>
 				</image>
-				<text field="singleIPE2" label="Single Single Single" rows="1" />
-				<text field="singleIPE3" label="Single Single Single" rows="1" />
-				<text field="singleIPE4" label="Single Single Single" rows="1" />
-				<text field="singleIPE5" label="Single Single Single" rows="1" />
+				<text field="singleIPE2" label="Single Single Single" isMultiline="false" />
+				<text field="singleIPE3" label="Single Single Single" isMultiline="false" />
+				<text field="singleIPE4" label="Single Single Single" isMultiline="false" />
+				<text field="singleIPE5" label="Single Single Single" isMultiline="false" />
 			</elements>
 		</objectType>
 
@@ -164,13 +170,13 @@
 
 		<objectType name="fileListItem" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-                                <text field="description" label="Description"/>
-                                <file field="file" label="File">
-                                        <ext>html</ext>
-                                        <ext>csv</ext>
-                                        <ext>txt</ext>
-                                        <ext>pdf</ext>
-                                </file>
+	     <text field="description" label="Description"/>
+	     <file field="file" label="File">
+	             <ext>html</ext>
+	             <ext>csv</ext>
+	             <ext>txt</ext>
+	             <ext>pdf</ext>
+	     </file>
 			</elements>
 		</objectType>
 	
@@ -194,8 +200,8 @@
 				<file field="file" label="File">
 					<ext>html</ext>
 					<ext>csv</ext>
-                                        <ext>txt</ext>
-                                        <ext>pdf</ext>
+          <ext>txt</ext>
+          <ext>pdf</ext>
 				</file>
 			</elements>
 		</objectType>			
@@ -214,11 +220,7 @@
 			<addableObject objectTypeName="linkTest" addText="Add Link Test"/>
 		</objectType>
 
-		<objectType name="tagsObjectType" >
-      <elements>
-				<tags label="Tags"/>
-      </elements>
-		</objectType>
+
 
 
 		<objectType name="wildflowerTestObject" >

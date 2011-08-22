@@ -76,7 +76,7 @@
 <!ATTLIST text
 	%uiattrs;
 	tag					CDATA "p"
-	rows				CDATA "2"
+	isMultiline	(true|false) "false"
 >
 
 <!ELEMENT image (resize|ext)* >
