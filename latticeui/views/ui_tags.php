@@ -5,7 +5,9 @@
 	<?endif;?>
 
 	<ul class='tokens clearFix'>
-		<li class="token template hidden"><span>Blank Token</span><a href="#" title="remove token" class='icon close'>remove token</a></li>
+		<?foreach($tags as $tag):?>
+		<li class="token template hidden"><span><?=$tag;?></span><a href="#" title="remove token" class='icon close'>remove token</a></li>
+		<?endforeach;?>
 		<li><input class='autoCompleterInput' type="text" value="" /></li>
 	</ul>
 	

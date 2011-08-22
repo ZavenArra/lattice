@@ -211,7 +211,7 @@ class latticecms {
                   break;
 
                case 'tags':
-                  $tags = implode(',', $object->getTags());
+                  $tags = $object->getTagStrings();
                   $elementHtml = latticeui::tags($tags);
                   $key = $element['type'] . '_tags';
                   $htmlChunks[$key] = $elementHtml;

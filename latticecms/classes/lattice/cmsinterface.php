@@ -137,15 +137,15 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 		}
 
       
-      public function action_addTag($id, $tag){
+      public function action_addTag($id){
          $object = Graph::object($id);
-         $object->addTag($tag);
+         $object->addTag($_POST['tag']);
          
       }
 
-      public function action_removeTag($id, $tag){
+      public function action_removeTag($id){
           $object = Graph::object($id);
-          $object->removeTag($tag);
+          $object->removeTag($_POST['tag']);
       }
       
       public function action_getTags($id){

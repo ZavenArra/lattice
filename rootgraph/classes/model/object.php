@@ -298,16 +298,22 @@ class Model_Object extends ORM {
       return $this;
    }
 
-   public function getTags() {
-      $tagObjects = ORM::Factory('objects_tag')
-              ->where('object_id', '=', $this->id)
-              ->find_all();
-      $tags = array();
+	 public function getTagObjects() {
+		 $tagObjects = ORM::Factory('objects_tag')
+			 ->where('object_id', '=', $this->id)
+			 ->find_all();
+		 return $tagObjects;
+	 }
+
+	 public function getTagStrings() {
+		 $tagObjects = $this->getTagObjects();
+		 $tags = array();
       foreach ($tagObjects as $tagObject) {
-         $tags[] = $tagObject->as_array();
+         $tags[] = $tagObject->tag;
       }
       return $tags;
-   }
+
+	 }
 
    public function getPublishedObjectBySlug($slug) {
 
