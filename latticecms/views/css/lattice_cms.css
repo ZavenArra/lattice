@@ -1183,9 +1183,22 @@ ul.listing li.menuItem:hover{
 /***************************
 *   TAGS
 ****************************/
+.ui-Tags{
+	background:#f3f3f3;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-khtml-border-radius: 4px;
+	border-radius: 4px;	
+	padding: .5em;
+}
+
+.ui-Tags .tagInput{
+	width: 98%;
+	margin-bottom: 1em;
+}
+
 ul.tokens{
 	float: left;
-	inner-shadow: ;
 }
 
 ul.tokens .icon{

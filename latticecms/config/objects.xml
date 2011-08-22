@@ -7,7 +7,7 @@
 
 		<objectType name="tagsObjectType" >
       <elements>
-				<tags label="Tags"/>
+				<tags label="Tagses"/>
       </elements>
 		</objectType>
 		

@@ -2927,10 +2927,10 @@ lattice.ui.Tags = new Class({
 	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
-		this.field = this.element.getElement('.autoCompleterInput');
+		this.field = this.element.getElement('.tagInput');
 		this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
 		this.tokenList = this.element.getElement( 'ul.tokens' ); 
-		this.tokenTemplate = this.tokenList.getElement( '.token.template' );
+		this.tokenTemplate = this.tokenList.getElement( '.token.template' ).dispose();
 	},
 	
 	onKeyPress: function( e ){
@@ -2938,23 +2938,50 @@ lattice.ui.Tags = new Class({
 		val = this.field.get('value');
 		lastChar = val.substring( val.length-1, val.length );
 		if( e.key == 'space' && lastChar == this.options.delimeter ){
-			tokenString = val.substring( 0, val.length-1 );
-			this.field.set('value',null);
-			this.addToken( tokenString.trim() );
+			tokenString = val.substring( 0, val.length-1 ).trim();
 		}else if( e.key == 'enter' ){
-			tokenString = val;
-			this.field.set('value',null);
-			this.addToken( tokenString.replace( ',', '' ).trim() );
+			tokenString = val.replace( ',', '' ).trim();
 		}
+		if( tokenString ){
+			this.field.set('value',null);
+			if( !this.doesTokenExist( tokenString ) ){				
+				if( tokenString != '' ) this.addToken( tokenString );
+			}else{
+				this.highlightToken( tokenString );
+			}
+		}
+	},
+
+	highlightToken: function( tokenString ){
+		var index, token, bg;
+		index = this.getTokens().indexOf( tokenString )
+		token = this.tokenList.getElements( 'li' )[index];
+		bg = token.getStyle( 'background-color' );
+		console.log( "++++", bg );
+		token.set( 'morph', { link: 'chain', transition: Fx.Transitions.Quad.easeOut, duration: 250 } );
+		token.morph( { 'background-color' : "#fcf3a0" } );
+		token.morph( { 'background-color' : bg } );
+	},
+	
+	getTokens: function(){
+		var ret = [];
+		this.tokenList.getElements( 'li' ).each( function( token ){
+			ret.push( token.getElement( 'span' ).get('html') );
+		});
+		return ret;
+	},
+	
+	doesTokenExist: function( aTag ){
+		return this.getTokens().contains( aTag );
 	},
 	
 	addToken: function( aString ){
-		this.marshal.addTag( aString );
 		var token = this.tokenTemplate.clone();
+		this.marshal.addTag( aString );
 		token.getElement( '.icon.close' ).addEvent( 'click', this.removeToken.bindWithEvent( this, [ token, aString ] ) )
 		token.removeClass('hidden').removeClass('template');
 		token.getElement( 'span' ).set( 'html', aString );
-		this.field.grab( token, 'before' );
+		this.tokenList.grab( token, 'top' );
 	},
 	
 	removeToken: function( e, token, tagLabel ){
