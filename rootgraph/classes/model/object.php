@@ -300,7 +300,10 @@ class Model_Object extends ORM {
 
 	 public function getTagObjects() {
 		 $tagObjects = ORM::Factory('objects_tag')
+			 ->select('*')
+			 ->select('tag')
 			 ->where('object_id', '=', $this->id)
+			 ->join('tags')->on('tag_id', '=', 'tags.id')
 			 ->find_all();
 		 return $tagObjects;
 	 }
