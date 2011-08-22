@@ -26,11 +26,6 @@ h2,
     left: -3000px;
 }
 
-.objectTitle .field-title{
-	position: relative;
-	margin: 0 !important;
-}
-
 h3,
 .h3 {
 	font-size: 2.25em;	/* 27px */
@@ -80,8 +75,7 @@ h6,
 
 .away{
 	position: absolute;
-/*	width: inherit;
-*/	top: -5000px;
+	top: -5000px;
 	left: -5000px;
 }
 
@@ -91,8 +85,7 @@ h6,
 }
 
 .ui-Text.discrete .ipe{
-/*	display: inline-block;
-*/	background: #fcfcfc;
+	background: #fcfcfc;
 	color: #ccc;
 	font-size: .8em;
 	font-family: helvetica, arial, sans-serif;
@@ -125,6 +118,11 @@ input, textarea{
 .ui-Text textarea{
 	display: block;
 	resize: none;
+}
+
+.ui-Text[data-isMultiline=true] .ipe,
+.ui-Text[data-isMultiline=true] textarea{
+	min-height: 7.5em;
 }
 
 .displayField{
@@ -324,6 +322,11 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 }
 
 .objectTitle{ margin: 0 0 2em 0 !important; }
+
+.objectTitle div[data-field=title]{
+	position: relative;
+	margin: 0 !important;
+}
 
 .objectTitle .ipe.h2,
 .objectTitle input.h2{ margin-bottom: .25em !important; }
@@ -1174,4 +1177,20 @@ ul.listing li.menuItem:hover{
 
 .breadCrumb ul li a:hover{
 	color:#0af;
+}
+
+
+/***************************
+*   TAGS
+****************************/
+ul.tokens{
+	
+}
+
+ul.tokens li{
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-khtml-border-radius: 4px;
+	border-radius: 4px;	
+	background-color: #dedede;
 }

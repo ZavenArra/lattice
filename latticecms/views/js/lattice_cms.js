@@ -12,7 +12,6 @@ lattice.modules.CMS = new Class({
 	pageContent: null,
 	pageIdToLoad: null,
 	scriptsLoaded: null,
-	titleText: "",
 	titleElement: null,
 	slugIPE: null,
 	loadedCSS: [],
@@ -27,7 +26,7 @@ lattice.modules.CMS = new Class({
 	},
 
 	getRequestPageURL: function( nodeId ){
-		return lattice.util.getBaseURL() + "ajax/html/cms/getPage/" + nodeId;
+		return lattice.util.getBaseURL() + "ajax/compound/cms/getPage/" + nodeId;
 	},
 
 	getRequestTierURL: function( parentId, deepLink ){
@@ -37,6 +36,10 @@ lattice.modules.CMS = new Class({
 		return url;
 	},
 
+	getSaveFileSubmitURL: function(){
+			return lattice.util.getBaseURL() + 'ajax/data/cms/savefile/' + this.getObjectId()+"/";
+	},
+	
 	getAddObjectRequestURL: function( parentId, templateId ){
 		return lattice.util.getBaseURL() + "ajax/compound/cms/addObject/" + parentId + "/" + templateId;
 	},
@@ -50,20 +53,15 @@ lattice.modules.CMS = new Class({
 	},	
 
 	getSubmitSortOrderURL: function( objectId ){
-	    return lattice.util.getBaseURL() + "ajax/data/cms/saveSortOrder/" + objectId;
+	    return lattice.util.getBaseURL() + "ajax/data/cms/saveSortOrder/" + this.getObjectId();
 	},
 
 	getRootNodeId: function(){       
 		return this.options.rootObjectId;
 	},
 
-	getObjectId: function(){
-		return this.currentObjectId;
-	},
-	
-	setObjectId: function( objectId ){
-		this.currentObjectId = objectId;	
-	},
+	getObjectId: function(){ return this.currentObjectId; },
+	setObjectId: function( objectId ){ this.currentObjectId = objectId;	},
 
 	/* Section: Constructor */
 	initialize: function( anElement, options ){
@@ -88,19 +86,20 @@ lattice.modules.CMS = new Class({
 	},
 
 	populate: function( html ){
+		var titleIPE;
 		this.pageContent.set( 'html', html );
+		
 		this.UIFields = this.initUI( this.pageContent );
 //		console.log( "populate", this.toString(), this.pageContent );
 		this.initModules( this.pageContent );		
 		this.titleElement = this.element.getElement( ".objectTitle" );
 		if( this.titleElement ){
-			var titleIPE = this.titleElement.getElement('.field-title');
-			this.titleText = titleIPE.retrieve('Class').getValue();
-   		this.slugIPE = this.titleElement.getElement( ".field-slug" );
+			titleIPE = this.titleElement.getElement('.ui-Text[data-field=title]').retrieve( "Class" );
 			if( titleIPE ){
 				titleIPE.addListener( this );
 				this.addEvent( 'uifieldsaveresponse', this.onUIFieldSaved.bind( this ) );
 			}
+   		this.slugIPE = this.titleElement.getElement( ".field-slug" );
 		}
 		this.pageContent.unspin();
 	},
@@ -116,7 +115,7 @@ lattice.modules.CMS = new Class({
 		console.log( "onUIFieldSaved", fieldName, response );
 		switch( fieldName ){
 			case 'title':
-				this.onTitleEdited( response );
+				this.onTitleEdited(  response );
 			break;
 		}
 	},
@@ -150,7 +149,7 @@ lattice.modules.CMS = new Class({
     */
 	requestPage: function( nodeId ){
 			this.setObjectId( nodeId );
-			return new Request.JSON( {url: this.getRequestPageURL( nodeId ), onSuccess: this.requestPageResponse.bind( this )} ).send();
+			return new Request.JSON( { url: this.getRequestPageURL( nodeId ), onSuccess: this.requestPageResponse.bind( this ) } ).send();
 	},
     
 	/*
@@ -161,6 +160,7 @@ lattice.modules.CMS = new Class({
 	*/
    requestPageResponse: function( json ){
       if( !json.returnValue ) throw json.response.error;
+			this.setObjectId( json.response.data.id );
       json.response.css.each( function( styleSheetURL, index ){
          styleSheetURL = lattice.util.getBaseURL() + styleSheetURL;
          if( !this.loadedCSS.contains( styleSheetURL ) ) lattice.util.loadStyleSheet( styleSheetURL );
@@ -193,10 +193,8 @@ lattice.modules.CMS = new Class({
 */
 
 	onNodeSelected: function( nodeId ){
-		// console.log( this.toString(), "onNodeSelected", nodeId );
 		this.clearPage();
 		this.pageContent.get( 'spinner' ).show();
-		// this.pageContent.spin();
 		if( this.pageRequest ) this.pageRequest.cancel();
 		this.pageRequest = this.requestPage( nodeId );
 	},
@@ -238,59 +236,59 @@ lattice.modules.CMS = new Class({
 		if( !json.returnValue ) console.log( this.toString(), "saveSortRequest error:", json.response.error );
 	},
 	
-   addObjectRequest: function( parentId, templateId, nodeProperties, callback ){
-      console.log( "addObjectRequest", parentId, templateId, nodeProperties, callback );
-      return new Request.JSON({
-         url: this.getAddObjectRequestURL( parentId, templateId ),
-         onSuccess: function( json  ){
-            this.addObjectResponse( json );
-            callback( json );
-         }.bind( this )
-      }).post( nodeProperties );
-   },
+	addObjectRequest: function( parentId, templateId, nodeProperties, callback ){
+		console.log( "addObjectRequest", parentId, templateId, nodeProperties, callback );
+		return new Request.JSON({
+			url: this.getAddObjectRequestURL( parentId, templateId ),
+			onSuccess: function( json  ){
+				this.addObjectResponse( json );
+				callback( json );
+			}.bind( this )
+		}).post( nodeProperties );
+	},
 
-    addObjectResponse: function( json ){
-        console.log( "addObjectResponse", json );
-        if( !json.returnValue ) console.log( this.toString(), "addObjectRequest error:", json.response.error );
-    },
+	addObjectResponse: function( json ){
+		console.log( "addObjectResponse", json );
+		if( !json.returnValue ) console.log( this.toString(), "addObjectRequest error:", json.response.error );
+	},
 
-    removeObjectRequest: function( parentId, callback ){
-        return new Request.JSON({
-            url: this.getRemoveObjectRequestURL( parentId ),
-            onSuccess: function( json ){
-							this.removeObjectResponse( json );
-							if( callback ) callback();
-						}.bind( this )
-        }).send();
-    },
+	removeObjectRequest: function( parentId, callback ){
+		return new Request.JSON({
+			url: this.getRemoveObjectRequestURL( parentId ),
+			onSuccess: function( json ){
+				this.removeObjectResponse( json );
+				if( callback ) callback();
+			}.bind( this )
+		}).send();
+	},
 
-    removeObjectResponse: function( json ){
-        console.log( this.toString(), "removeObjectResponse", json, Array.from( arguments ) );
-        if( !json.returnValue ) console.log( this.toString(), "removeObjectRequest error:", json.response.error );
-    },
+	removeObjectResponse: function( json ){
+		console.log( this.toString(), "removeObjectResponse", json, Array.from( arguments ) );
+		if( !json.returnValue ) console.log( this.toString(), "removeObjectRequest error:", json.response.error );
+	},
 
-    /*
-    Function: togglePublishedStatus
-    Sends page publish toggle ajax call 
-    Argument: pageId {Number}
-    Callback: onTogglePublish
-    */
-    togglePublishedStatusRequest: function( nodeId, callback ){
-        console.log( "::::", this.getTogglePublishedStatusRequestURL( nodeId ) );
-        return new Request.JSON({
-            url: this.getTogglePublishedStatusRequestURL( nodeId ),
-            onSuccess: function( json ){
-                this.togglePublishedStatusResponse( json );
-                if( callback ) callback( json );
-            }.bind( this )
-        }).send();
-    },
-	
-    togglePublishedStatusResponse: function( json ){
-        if( !json.returnValue ) console.log( this.toString(), "togglePublishedStatusRequest error:", json.response.error );        
-    }
+/*
+	Function: togglePublishedStatus
+	Sends page publish toggle ajax call 
+	Argument: pageId {Number}
+	Callback: onTogglePublish
+*/
+	togglePublishedStatusRequest: function( nodeId, callback ){
+		console.log( "::::", this.getTogglePublishedStatusRequestURL( nodeId ) );
+		return new Request.JSON({
+			url: this.getTogglePublishedStatusRequestURL( nodeId ),
+			onSuccess: function( json ){
+				this.togglePublishedStatusResponse( json );
+				if( callback ) callback( json );
+			}.bind( this )
+		}).send();
+	},
 
-});
+	togglePublishedStatusResponse: function( json ){
+	if( !json.returnValue ) console.log( this.toString(), "togglePublishedStatusRequest error:", json.response.error );        
+	}
+
+	});
 
 if( !lattice.util.hasDOMReadyFired() ){
 	window.addEvent( "domready", function(){

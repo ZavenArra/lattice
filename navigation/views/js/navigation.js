@@ -23,6 +23,11 @@ lattice.modules.navigation.Navigation = new Class({
 		}
 		return id;
 	},
+	getNodFromSlug: function(slug){
+		// this.nodeData.each( function( aNode ){
+		// 	if( aNode.slug == slug )
+		// });
+	},
 	getNodeTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].nodeType; },
 	getContentTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].contentType; },
 	getNodeTitleFromId: function( nodeId ){ if( this.nodeData[ nodeId ] ){ return this.nodeData[ nodeId ].title; }else{ return null; } },
@@ -40,7 +45,9 @@ lattice.modules.navigation.Navigation = new Class({
 	},
 	
 	onAppStateChanged: function( appState ){ console.log( 'lattice.modules.navigation.Navigation.appStateChanged', appState ); },	
-	onObjectNameChanged: function( objId, name ){
+	onObjectNameChanged: function( response ){
+		console.log( "::::::", response );
+		var newName = response.value;
 		this.nodeData[ objId ].title = name;
 		$( 'node_' + objId ).getElement( "h5" ).set( 'text', name );
 	},
@@ -159,8 +166,6 @@ lattice.modules.navigation.Navigation = new Class({
 	requestTierResponse: function( json, tierId, containerPane ){
 		this.pendingPane = null;
 		nodes = json.response.data.tier.nodes;
-		console.group()
-		console.groupEnd();
 		this.processNodeData( nodes, json.response.data.tier.html, tierId, containerPane );
 	},
 
@@ -410,7 +415,6 @@ lattice.modules.navigation.Tier = new Class({
 	},
 		
 	onRemoveNodeClicked: function( e, nodeElement ){
-		// alert( nodeElement.get( 'id' ) );
 		lattice.util.stopEvent( e );
 		var confirmation = confirm( "Are you sure you want to remove " + nodeElement.getElement("h5").get("text") + " ?" );
 		if( !confirmation ) return; 
@@ -496,11 +500,9 @@ lattice.modules.navigation.Tier = new Class({
 		var sortArray, children, nodeId;
 		sortArray = [];
 		children = this.sortableListElement.getChildren("li");
-		console.log( '\tserialize', children ); 	
 		children.each( function ( anItem ){
 				nodeId = this.marshal.getNodeIdFromElement( anItem );
 				if( nodeId && nodeId.isNumeric() ){
-					console.log( '\t\t', nodeId );
 					sortArray.push( nodeId );
 				}
 		}, this );

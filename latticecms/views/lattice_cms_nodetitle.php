@@ -1,5 +1,5 @@
 <div class="objectTitle">	
-	<div class="<?if($allowTitleEdit):?>ui-Text field-title<?endif;?> grid_7 rows-1">
+	<div class="<?if($allowTitleEdit):?>ui-Text<?endif;?> grid_7" data-isMultiline='false' data-field='title'>
 		<input type='text' class='og title<?=$translationModifier;?> h2' value="<?=$title;?>" />
 	</div>
 	<?if(Kohana::config('cms.enableSlugEditing')):?>

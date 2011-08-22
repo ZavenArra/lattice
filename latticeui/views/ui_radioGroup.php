@@ -1,4 +1,4 @@
-<div id="<?=$id;?>" class="ui-RadioGroup field-<?=$field;?> <?=isset($class)?$class:'';?>">
+<div class="ui-RadioGroup <?=$class;?>" data-field="<?=$field;?>">
 	<?if(isset($grouplabel)):?>
 		<label class="groupLabel"><?=$grouplabel;?></label>
 	<?endif;?>

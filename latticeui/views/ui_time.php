@@ -1,4 +1,4 @@
-<div id="<?=$id;?>"  class="ui-TimePicker field-<?=$field;?><?=$class;?> ">
+<div class="ui-TimePicker <?=$class;?>" data-field="<?=$field;?>">
 	<?if(isset($label)):?>
 		<label><?=$label;?></label>
 	<?endif;?>

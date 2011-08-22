@@ -1,4 +1,4 @@
-<div id="<?=$id;?>"  class="ui-DateRangePicker field-<?=$field;?> <?=$class;?>">
+<div class="ui-DateRangePicker <?=$class;?>" data-field='<?=$field;?>'>
 	<?if(isset($label)):?>
 		<label><?=$label;?></label>
 	<?endif;?>

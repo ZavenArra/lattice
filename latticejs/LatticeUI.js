@@ -26,6 +26,7 @@ lattice.ui.UIField = new Class({
 	Implements: [ Options, Events, lattice.util.Broadcaster ],
 
 	fieldName: null,
+	objectId: null,
 	validationSticky: null,
 	
 	options: {
@@ -59,9 +60,8 @@ lattice.ui.UIField = new Class({
 	/*Constructor*/
 	initialize: function( anElement, aMarshal, options ) {
 		this.parent( anElement, aMarshal, options );
-//	console.log( ":::::::", this.options, anElement.get( 'class' ) );
-		this.fieldName = this.options.field;
-		if( !this.fieldName ) throw ( "ERROR", this.toString(), "has no fieldName, check html class for field-{fieldName}" );	
+		this.fieldName = this.element.getData( 'field' );
+		this.autoSubmit = ( this.element.getData('autosubmit') )? this.element.getData('autosubmit') : this.options.autoSubmit;
 	},
 	
 	toString: function(){
@@ -80,6 +80,7 @@ lattice.ui.UIField = new Class({
 	},
 
 	onSaveFieldSuccess: function( response ){
+		console.log('yay', this.listeners );
 		this.broadcastMessage( 'uifieldsaveresponse', [ this.fieldName, response ] );
 	},
 	
@@ -106,7 +107,7 @@ lattice.ui.UIField = new Class({
 		lattice.util.stopEvent( e );
 		var val = this.getValue();
 		this.submittedValue = val;
-		if( !this.options.autoSubmit ){
+		if( !this.autoSubmit ){
 			this.setValue( val );
 			return true;
 		}		
@@ -721,6 +722,7 @@ lattice.ui.MultiSelect = new Class({
 	
 	initialize: function( anElement, aMarshal, options ){		
 		this.parent( anElement, aMarshal, options );
+		this.firstIsNull = ( this.element.getData('firstisnull') )? this.element.getData('firstisnull') : this.options.firstIsNull;
 		this.ogSelect = this.element.getElement("select").setStyles( {
 			"position": "absolute",
 			"top": "-3000px",
@@ -840,7 +842,7 @@ lattice.ui.MultiSelect = new Class({
 			var opt = new Element( "li" );
 			var checkBox = new Element( "input", { "type" : "checkbox", "value": anOption.get( "value" ) } );
 
-			if( this.options.firstIsNull ){
+			if( this.firstIsNull ){
 
 				if( anIndex == 0 ){
 
@@ -947,6 +949,8 @@ lattice.ui.DatePicker = new Class({
 	initialize: function( anElement, options ){
 //		console.log( this.toString(), "initialize", anElement, options );
 		this.parent( anElement, options );
+		this.format = ( this.element.getData('format') )? this.element.getData('format') : this.options.format;
+		this.allowEmpty = ( this.element.getData('allowempty') )? this.element.getData('allowempty') : this.options.allowEmpty;
 		this.dateField = this.element.getElement("input");
 	    this.buildPicker();
 	},
@@ -961,9 +965,9 @@ lattice.ui.DatePicker = new Class({
 		this.picker = new Picker.Date( this.dateField, {
 			elementId: "datePickerFor_" + this.fieldName,
 			startView: "month",
-			format: this.options.format,
-			allowEmpty: this.options.allowEmpty,
-            onSelect: this.onSelect.bindWithEvent( this  ),
+			format: this.format,
+			allowEmpty: this.allowEmpty,
+			onSelect: this.onSelect.bindWithEvent( this  ),
 		});
 	},
 	
@@ -1011,7 +1015,7 @@ lattice.ui.DatePicker = new Class({
 	},
 	
 	getDateFormat: function(){
-	    return this.options.format;
+	    return this.format;
 	},
 	
 	getCurrentDateString: function(){
@@ -1071,28 +1075,29 @@ lattice.ui.DateRangePicker = new Class({
 		alerts:{
 			endDateLessThanStartDateError : "The end date cannot be earlier than the start date."
 		},
-		ellowEmpty: false,
+		allowEmpty: false,
 		startView: 'month'
 	},
 	
 	initialize: function( anElement, aMarshal ){
-
+		var opts, picker;
 		this.parent( anElement, aMarshal );
-		
 		this.dateFields = this.element.getElements("input");
-			
+		this.allowEmpty = ( this.element.getData('allowempty') )? this.element.getData('allowempty') : this.options.allowEmpty;
+		this.startView = ( this.element.getData('startview') )? this.element.getData('startview') : this.options.startView;
+
 		this.dateFields.each( function( aDateField, index ){
-			var opts = {
+			opts = {
 				elementId: "datePickerFor_" + this.fieldName,
-				startView: this.options.startView,
-				allowEmpty: this.options.allowEmpty,
+				startView: this.startView,
+				allowEmpty: this.allowEmpty,
 				format: "%Y/%m/%d",
 				onShow: this.onShow.bind( this ),
 				onSelect: this.onSelect.bindWithEvent( this ),
 				onClose: function(){},
 				index: index
 			};
-			var picker = new Picker.Date( aDateField, this, opts );
+			picker = new Picker.Date( aDateField, this, opts );
 			aDateField.store( "Class", picker );
 		}, this );
 	},
@@ -1122,7 +1127,6 @@ lattice.ui.DateRangePicker = new Class({
 
 	validate: function(){
 		if( !this.isEndDateAfterStartDate() ) this.validationErrors.push( this.options.alerts.endDateLessThanStartDateError );
-//		.get('validator', {serial: true, evaluateFieldsOnBlur: false}).reset();
 		this.parent();
 	},
 	
@@ -1279,8 +1283,8 @@ lattice.ui.FileElement = new Class({
 	Extends: lattice.ui.UIField,
 	
 	type: "file",
-	
 	options:{
+		controller: 'cms',
 		extensions: [ 'jpg', 'png', 'gif', 'pdf', 'doc', 'txt', 'zip' ]
 	},
 	
@@ -1307,19 +1311,19 @@ lattice.ui.FileElement = new Class({
 	imageFadeIn: null,
 	scrollContext: 'window',
 
-	getSubmitURL: function(){
-		var url = lattice.util.getBaseURL() + "ajax/data/cms/savefile/"+this.marshal.getObjectId()+"/"+this.fieldName;
-		console.log( "lattice.ui.FileElement : ", this.toString(), "getSubmitURL: ", url );
-		return 	url;
-	},
-
 	getClearFileURL: function(){
 		var url = lattice.util.getBaseURL() + "ajax/data/" + this.marshal.instanceName + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
 		return url;
 	},
-
+		
+	getCoordinates: function(){
+		return this.uploadLink.getCoordinates( this.scrollContext );
+	},
+	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
+		this.extensions = ( this.element.getData('extensions') )? this.element.getData('extensions') : this.options.extensions;		
+		this.maxLength = ( this.element.getData('maxlength') )? this.element.getData('maxlength') : this.options.maxLength;		
 		this.ogInput = this.element.getElement( "input[type='file']" );
 		this.ogInput.addClass('away');
 		this.uploadButton = this.element.getElement( ".uploadButton" );
@@ -1359,11 +1363,11 @@ lattice.ui.FileElement = new Class({
 		if( this.previewElement ) this.imagePreview = this.previewElement.getElement( "img" );
 		this.filename = this.element.getElement( ".fileName" );
 		lattice.util.EventManager.addListener( this );
-		if( lattice.util.getValueFromClassName( 'extensions', this.element.get("class") ) ) this.options.extensions = this.buildExtensionsObject()
-		this.getSubmitURL();
+		if( lattice.util.getValueFromClassName( 'extensions', this.element.get("class") ) ) this.extensions = this.buildExtensionsObject()
+		this.marshal.getSaveFileSubmitURL();
 		this.uploader.setTarget( this, this.uploadLink, this.getOptions() );
 		this.reposition();
-	},
+	},	
 	
 	simulateClick: function(){
 	    console.log( "simulateClick", this.uploader.box.getElement( "object" ), $( this.uploader.box.getElement( "object" ).get( "id" ) ) );
@@ -1375,23 +1379,24 @@ lattice.ui.FileElement = new Class({
 	},
 	
 	getOptions: function(){
-		console.log( "getOptions", "{", this.options.extensions, Cookie.read( 'session' ), "}");
+		console.log( "getOptions", "{", this.extensions, Cookie.read( 'session' ), "}");
+		var url = this.marshal.getSaveFileSubmitURL();
 		return {
 			target: this.element,
 			cookie: Cookie.read( 'session'),
 			container: this.element.getElement( '.controls' ),
 			fieldName: this.fieldName,
-			url: this.getSubmitURL(),
-			data: { field: this.fieldName, url: this.getSubmitURL(), cookie: Cookie.read( 'session') },
+			url: url,
+			data: { field: this.fieldName, url: url, cookie: Cookie.read( 'session') },
 			typeFilter: this.buildExtensionsObject(),
 			sizeLimitMin: 0,
-			sizeLimitMax: this.options.maxLength
+			sizeLimitMax: this.maxLength
 		}
 	},
 	
 	buildExtensionsObject: function(){
-		console.log( "buildExtensionsObject" );
-    var extensionsArray = lattice.util.getValueFromClassName( 'extensions', this.elementClass ).split( "_" );
+		console.log( "buildExtensionsObject", this.extensions );
+    var extensionsArray = ( typeof this.extensions == 'string' )? this.extensions.split(",") : this.extensions;
 		var desc = "";
 		var exts = "";
 		if( extensionsArray.length ){
@@ -1441,10 +1446,6 @@ lattice.ui.FileElement = new Class({
 	
 	reposition: function(){
 		this.uploader.reposition( this.scrollContext );
-	},
-	
-	getCoordinates: function(){
-		return this.uploadLink.getCoordinates( this.scrollContext );
 	},
 
 	validate: function() {
@@ -1631,7 +1632,6 @@ lattice.util.Uploader = new Class({
 	},
 
 	buttonEnter: function( eventName ){
-		console.log( "??", this.target.getParent() );
 		if( this.target.getParent().hasClass("command" ) ) this.target.getParent().addClass( "active" );
 		this.targetRelay( eventName );
 	},
@@ -1647,7 +1647,6 @@ lattice.util.Uploader = new Class({
 	},
 	
 	verifyLoad: function() {
-		console.log( this.toString(), "verifyLoad", this.object );
 		this.object.set( 'title', "Upload a file." );
 		if (this.loaded) return;
 		if (!this.object.parentNode) {
@@ -1686,8 +1685,6 @@ lattice.util.Uploader = new Class({
 	},
 
 	initializeSwiff: function() {
-		console.log( "initializeSwiff A" );
-//		console.log( this.toString(), "initializeSwiff" );
 		// extracted options for the swf 
 		this.remote('initialize', {
 			width: this.options.width,
@@ -1699,7 +1696,7 @@ lattice.util.Uploader = new Class({
 			method: this.options.method,
 			data: this.options.data,
 			mergeData: this.options.mergeData,
-			fieldName: this.options.fieldName,
+			fieldName: this.fieldName,
 			verbose: this.options.verbose,
 			fileSizeMin: this.options.fileSizeMin,
 			fileSizeMax: this.options.fileSizeMax,
@@ -1815,25 +1812,17 @@ lattice.util.Uploader = new Class({
 	
 	appendCookieData: function() {
 		var append = this.options.appendCookieData;
-	console.log( "appendCookieData A", this.options.appendCookieData, document.cookie );//, document.cookie.split(/;\s*/) );
 		if (!append) return;
-
 		var hash = {};
-		
 		document.cookie.split(/;\s*/).each(function(cookie) {
 			cookie = cookie.split('=');
 			if (cookie.length == 2) {
 				hash[decodeURIComponent(cookie[0])] = decodeURIComponent(cookie[1]);
 			}
 		});
-		console.log( "appendCookieData B" );
-
 		var data = this.options.data || {};
 		if ($type(append) == 'string') data[append] = hash;
 		else data.append( hash );
-
-		console.log( this.toString(), "appendCookieData", data );
-
 		this.setOptions( { data: data } );
 	},
 
@@ -2072,7 +2061,7 @@ lattice.ui.CheckBox = new Class({
 	submit: function( e ){
 		var val = this.getValue();
 		this.submittedValue = val;
-		if( !this.options.autoSubmit ){
+		if( !this.autoSubmit ){
 			this.setValue( val );
 			if( this.leaveEditMode ) this.leaveEditMode();
 			return;
@@ -2205,7 +2194,8 @@ lattice.ui.Input = new Class({
 	initialize: function( anElement, aMarshal, options ) {
 		this.parent( anElement, aMarshal, options );
 		this.inputElement = this.element.getElement( "input" );
-		if( this.options.maxLength ) this.element.addEvent("keydown", this.checkFormaxLength.bindWithEvent( this ) );
+		this.maxLength = ( this.element.getData( 'maxlength' ) )? this.element.getData( 'maxlength' ) : this.options.maxLength;
+		if( this.maxLength ) this.element.addEvent("keydown", this.checkFormaxLength.bindWithEvent( this ) );
 	},
 	
 	enableElement: function( e ){
@@ -2213,7 +2203,7 @@ lattice.ui.Input = new Class({
 		this.parent();
 		this.inputElement.erase( "disabled" );
 		this.inputElement.removeEvents();
-		if( this.options.maxLength ) this.element.addEvent("keydown", this.checkFormaxLength.bindWithEvent( this ) );
+		if( this.maxLength ) this.element.addEvent("keydown", this.checkFormaxLength.bindWithEvent( this ) );
 	},
 	
 	disableElement: function( e ){
@@ -2229,9 +2219,9 @@ lattice.ui.Input = new Class({
 
 	checkFormaxLength: function( e ){
 //		console.log(this.maxLength, e.target.get("value").length);
-		if( e.target.get("value").length >= this.options.maxLength && e.key != "shift" && e.key != "enter" && e.key != "return" && e.key != "tab" && e.keycode != 46 && e.keycode != 8 ){
+		if( e.target.get("value").length >= this.maxLength && e.key != "shift" && e.key != "enter" && e.key != "return" && e.key != "tab" && e.keycode != 46 && e.keycode != 8 ){
 			lattice.util.stopEvent( e );
-			alert( "The maximum length this field allows is " + this.options.maxLength + " characters");
+			alert( "The maximum length this field allows is " + this.maxLength + " characters");
 		}
 	},
 
@@ -2265,7 +2255,7 @@ lattice.ui.Text = new Class({
 		autoSubmit: true,
 		submitOnBlur: true,
 		enabled: true,
-		rows: 1,
+		isMultiline: false,
 		maxLength: 0,
 		messages: {
 			hover: "Click to edit, ctr+enter to save, esc to cancel.",
@@ -2290,31 +2280,28 @@ lattice.ui.Text = new Class({
 
 	initialize: function( anElement, aMarshal, options ) {
 		this.parent( anElement, aMarshal, options );
+		this.isMultiline = ( this.element.getData( 'ismultiline' ) )? this.element.getData( 'ismultiline' ) : this.options.isMultiline;
+		this.submitOnBlur = ( this.element.getData( 'submitonblur' ) )? this.element.getData( 'submitonblur' ) : this.options.submitOnBlur;
+		this.maxLength = ( this.element.getData( 'maxlength' ) )? this.element.getData( 'maxlength' ) : this.options.maxLength;
+		this.validate = ( this.element.getData( 'validate' ) )? this.element.getData( 'validate' ) : this.options.validate;
 		this.mode = "atRest";
-		if( this.options.submitOnBlur ) this.allowSubmitOnBlur = true;
+		if( this.submitOnBlur ) this.allowSubmitOnBlur = true;
 		this.field = anElement.getElement( ".og" );
-		if( this.options.validation ){
-			this.validators = [];
-			Object.each( this.options.validation, function( aValidationString ){
-				// this.validators = new InputValidator( 'this', options);
-			});
-		}
-
+		// if( this.validate ){
+		// 	//do validation (refactor to use mootools validation )
+		// }
 		this.ipeElement = new Element( "div", { 
 			"class": "ipe " + this.field.get( 'class' ).split( " " ).splice( 1 ).join(' '),
 			"html": this.field.get( 'value' )
 		}).inject( anElement );
-
 		this.documentBoundUpdateAndClose = this.onDocumentClicked.bindWithEvent( this );
 		document.addEvent( "mousedown", this.documentBoundUpdateAndClose );
-
 		this.ipeElement.removeClass('og');
 		this.field.store( "Class", this );
 		this.ipeElement.store( "Class", this );
 		this.field.addEvent( 'focus' , this.onFieldFocus.bindWithEvent( this ) );
 		this.field.addClass( 'away' );
 		this.enableElement();
-		// this.ipeElement.set( 'morph' );
 		this.oldValue = this.ipeElement.get( "html" );
 	},
 
@@ -2356,21 +2343,20 @@ lattice.ui.Text = new Class({
 		w = this.ipeElement.getSize().x - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width' ) ) + 2 * parseInt( this.ipeElement.getStyle('padding-left' ) ) );
 		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') )  ); 
 		this.ipeElement.setStyle( 'width', w );
-		console.log( this.fieldName, '{', w,',',h,'}', '-',  this.ipeElement.getSize().y,  this.ipeElement.getCoordinates().height, this.ipeElement.getComputedSize().height, ",", parseInt( this.field.getComputedStyle( 'border-bottom-width') ) );
 		this.field.setStyles({
 			'overflow': 'hidden',
 			'width': w, 
 			'height': h
 		});
-		if( this.options.rows > 1 ){
+		if( this.isMultiline ){
 			this.field.addEvent( 'keyup', this.fitToContent.bind( this ) );
 		}else{
 			inputType = ( this.element.getValueFromClassName( 'type' ) == 'password' )? 'password' : 'text';
 			this.field.set( 'type', inputType );
 		};
-		if( this.options.maxLength ) this.field.addEvent( 'keydown', this.checkFormaxLength.bindWithEvent( this ) );
+		if( this.maxLength ) this.field.addEvent( 'keydown', this.checkFormaxLength.bindWithEvent( this ) );
 		document.addEvent( "mousedown", this.documentBoundUpdateAndClose );
-		if( this.options.submitOnBlur ){
+		if( this.submitOnBlur ){
 			this.submitOnBlurEnabled = true;
 			this.field.addEvent( 'blur', this.onBlur.bindWithEvent( this ) );
 		}else{
@@ -2384,16 +2370,16 @@ lattice.ui.Text = new Class({
 		this.controls = new lattice.ui.Sticky( this.field, {
 			content: this.getControls(),
 			borderRadius: 4,
-			offset: ( this.options.rows > 1 )? { x: -8, y: -12 } : { x: -8, y: 0 },
-			position: ( this.options.rows > 1 )? { x: 'right', y: 'bottom' } : { x: 'right', y: 'center' },
+			offset: ( this.isMultiline )? { x: -8, y: -12 } : { x: -8, y: 0 },
+			position: ( this.isMultiline > 1 )? { x: 'right', y: 'bottom' } : { x: 'right', y: 'center' },
 			stayOnBlur: true,
 			mouseEnter: this.setAllowSubmitOnBlur.bind( this, false ),
 			mouseLeave: this.setAllowSubmitOnBlur.bind( this, true )
 		});
-		if( this.options.rows == 1 || !this.options.rows ){
+		if( this.isMultiline ){
+			this.fitToContent()
 			this.field.select();
 		}else{
-			this.fitToContent()
 			this.field.select();
 		}
 		this.field.addEvent( 'focus' , this.onFieldFocus.bindWithEvent( this ) );
@@ -2406,7 +2392,7 @@ lattice.ui.Text = new Class({
 	},
 	
 	setAllowSubmitOnBlur: function( bool ){
-		this.allowSubmitOnBlur = ( this.options.submitOnBlur )? bool : false;
+		this.allowSubmitOnBlur = ( this.submitOnBlur )? bool : false;
 	},
 	
 	getAllowSubmitOnBlur: function(){
@@ -2443,9 +2429,9 @@ lattice.ui.Text = new Class({
 	},
 		
 	checkFormaxLength: function(e){
-		if( e.target.get("value").length > this.options.maxLength && e.keycode != 46 && e.keycode != 8 ){
+		if( e.target.get("value").length > this.maxLength && e.keycode != 46 && e.keycode != 8 ){
 			lattice.util.stopEvent( e );
-			alert( "The maximum length this field allows is " + this.options.maxLength + " characters");
+			alert( "The maximum length this field allows is " + this.maxLength + " characters");
 		}
 	},
 
@@ -2481,7 +2467,7 @@ lattice.ui.Text = new Class({
 			this.controls.destroy();
 			this.controls = null;
 		}
-		if( this.options.submitOnBlur ) this.allowSubmitOnBlur = true;
+		if( this.submitOnBlur ) this.allowSubmitOnBlur = true;
 		this.field.addClass('away');
 		this.ipeElement.removeClass( 'away' );
 		this.ipeElement.addClass('atRest');
@@ -2522,7 +2508,7 @@ lattice.ui.Text = new Class({
 		var val, size;
 		val = this.getValue().formatToHTML()
 		size = this.measureIPEElementWithValue( val );
-		this.field.setStyle( "height", size.y );
+		this.field.setStyle( "height", size.y + 12 );
 		if( this.controls ) this.controls.position();
 	},
 	
@@ -2565,7 +2551,7 @@ lattice.ui.Text = new Class({
 
 	destroy: function(){
 		if( this.mode == 'editing' ) this.leaveEditMode();
-		this.ipeElement.eliminate( 'Class' );
+		if( this.ipeElement ) this.ipeElement.eliminate( 'Class' );
 		this.ipeElement.destroy();
 		this.ipeElement = this.mode = this.value = this.oldValue = null;
 		this.parent();

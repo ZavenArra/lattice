@@ -143,11 +143,23 @@ lattice.modules.Module = new Class({
 		moduleUIFields.each( function( anElement, index ){
 //			console.log( 'initUI >>>> ', anElement, lattice.util.getValueFromClassName( "ui", anElement.get( "class" ) )  );
 			var UIField = new lattice.ui[ lattice.util.getValueFromClassName( "ui", anElement.get( "class" ) ) ]( anElement, this, this.options );
-			this.UIFields[ UIField.fieldName ] = UIField;
+			this.UIFields[ UIField.fieldName  ] = UIField;
 			if( UIField ) UIField.setTabIndex( 'tabindex', index+1 );
 		}, this );
 		if( this.postInitUIHook ) this.postInitUIHook();
 		return this.UIFields;
+	},
+	
+	destroyUIFields: function(){
+//		console.log( "destroyUIFields before", this.instanceName, this.UIFields );
+		Object.each( this.UIFields, function( aUIField ){
+			console.log( '\t\t', aUIField, aUIField.fieldName );
+			var fieldName = aUIField.fieldName;
+			aUIField.destroy();
+			aUIField = null;
+			delete this.UIFields[ fieldName ];
+		}, this );
+		console.log( "destroyUIFields after ", this.instanceName, this.UIFields );
 	},
 
 /*  Function: destroyChildModules */
@@ -164,18 +176,6 @@ lattice.modules.Module = new Class({
 				aModule = null;
 			}
 		}, this );
-	},
-	
-	destroyUIFields: function(){
-//		console.log( "destroyUIFields before", this.instanceName, this.UIFields );
-		Object.each( this.UIFields, function( aUIField ){
-			var fieldName = aUIField.fieldName;
-			console.log( '\t\t', aUIField, aUIField.fieldName );
-			aUIField.destroy();
-			delete this.UIFields[ fieldName ];
-			aUIField = null;
-		}, this );
-		console.log( "destroyUIFields after ", this.instanceName, this.UIFields );
 	},
 	
 	destroy: function(){
@@ -206,13 +206,9 @@ initialize: function( anElementOrId, aMarshal, options ){
 
 
 getSaveFieldURL: function(){
-	var url = lattice.util.getBaseURL() +"ajax/data/cms/savefield/" + this.objectId;
+	var url = lattice.util.getBaseURL() +"ajax/data/cms/savefield/" + this.getObjectId();
 	return url;
 },
-
-getObjectId: function(){
-	return this.objectId;
-}
 
 });
 
@@ -458,16 +454,16 @@ lattice.modules.LatticeList = new Class({
 	},
 	
 	serialize:function(){
-		var sortArray = [];
-		var children = this.listing.getChildren("li");
+		var sortArray, children, listItemId, listItemIdSplit;
+		sortArray = [];
+		children = this.listing.getChildren("li");
 		children.each( function ( aListing ){
-		    if( aListing.get( "id" ) ){
-					// console.log( this.toString(), aListing, aListing.get( "id" ) ); 	
-	        var listItemId = aListing.get("id");
-	        var listItemIdSplit = listItemId.split( "_" );
-	        listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
-	        sortArray.push( listItemId );		        
-		    }
+	    if( aListing.get( "id" ) ){
+        listItemId = aListing.get("id");
+        listItemIdSplit = listItemId.split( "_" );
+        listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
+        sortArray.push( listItemId );		        
+	    }
 		});
 		return sortArray;
 	},

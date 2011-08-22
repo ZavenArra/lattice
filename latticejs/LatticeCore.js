@@ -184,8 +184,17 @@ Element.implement({
 			}
 		});
 		return opts;
-	}
+	},
 	
+	getData : function(key){
+		var returnVal = false;
+	 return ( this.get( 'data-' + key ) )? this.get('data-'+key) : false;
+	},
+	   
+	setData : function( key, value ){
+			this.set( 'data-'+key , value );   
+	}
+
 });
 
 /*
@@ -530,26 +539,31 @@ lattice.LatticeObject = new Class({
 		This instance's delegate, ie. the object the next level up between this instance and the root controller.
 	*/
 	marshal: null,
+	objectId: null,
+
+	/* Section: getters & setters */
+	getElement: function(){ return this.element; },
+	// getObjectId: function(){ return this.objectId; },
+	// setObjectId: function(id){ this.objectId = id },
+
 	/*
 		Function: initialize
 		Constructor
 	*/
-	initialize: function( anElementOrId, aMarshal, options ){
-		this.element = $( anElementOrId );
+	initialize: function( anElement, aMarshal, options ){
+		this.element = $( anElement );
 		this.elementClass = this.element.get("class");
 		this.setOptions( options );
 		this.options = Object.merge( this.options, this.element.getOptionsFromClassName() );
+		console.log( ":::::::::::::", this.element, this.element.getOptionsFromClassName() );
 		this.marshal = aMarshal;
 		this.element.store( 'Class', this );
 	},	
 	
-	getElement: function(){
-	    return this.element;
-	},
-	
 	destroy: function(){
-		this.element.destroy();
-		this.element.eliminate( "Class" );
+		console.log( "A" );
+		if( this.element ) this.element.destroy();
+		console.log( "B" );
 		this.options = this.element = this.elementClass = this.marshal = null 
 	}
 
@@ -728,7 +742,7 @@ lattice.util.LoginMonitor = new Class({
 		delete this.status;
 		window.removeEvents();
 		this.dialogue.destroy();
-		window.location = "auth/logout".toURI().toAbsolute();
+		window.location = lattice.util.getBaseURL() + "auth/logout".toURI().toAbsolute();
 	}
 
 });
