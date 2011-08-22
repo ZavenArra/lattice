@@ -44,104 +44,89 @@ Class latticeui{
 		}
 		$element['id'] = $id;
 
-
 		switch($element['type']){
 
-		case 'image':
-			$ext = substr(strrchr($fieldvalue['filename'], '.'), 1);
-			switch($ext){
-			case 'tif':
-			case 'tiff':
-			case 'TIF':
-			case 'TIFF':
-				$thumbSrc = 'uithumb_'.$fieldvalue['filename'].'_converted.jpg';
-				break;
-			default:
-				$thumbSrc = 'uithumb_'.$fieldvalue['filename'];
-				break;
-			}
-
-
-			$sitePath = '';
-			if(Kohana::config('lattice.staging')){
-				$sitePath = 'staging/';
-			}
-			if(file_exists($sitePath.'application/media/'.$thumbSrc)){
-				$size = getimagesize($sitePath.'application/media/'.$thumbSrc);	
-				$fieldvalue['width'] = $size[0];
-				$fieldvalue['height'] = $size[1];
-			} else {
-				$fieldvalue['width'] = 0;
-				$fieldvalue['height'] = 0;
-			}
-			$fieldvalue['thumbSrc']=$thumbSrc;
-		case 'file':
-			if(!isset($element['maxlength']) || !$element['maxlength']){
-				$element['maxlength'] = 1523712; //12 MegaBytes 
-			}
-			break;
-
-		case 'dateRange':
-			if(!isset($element['empty'])){
-				if(!isset($element['startDate']) || strlen($element['startDate'])==0){
-					$element['startDate'] = date('Y/m/d');
+			case 'image':
+				$ext = substr(strrchr($fieldvalue['filename'], '.'), 1);
+				switch($ext){
+					case 'tif':
+					case 'tiff':
+					case 'TIF':
+					case 'TIFF':
+						$thumbSrc = 'uithumb_'.$fieldvalue['filename'].'_converted.jpg';
+					break;
+					default:
+						$thumbSrc = 'uithumb_'.$fieldvalue['filename'];
+					break;
 				}
-				if(!isset($element['endDate']) || strlen($element['endDate'])==0){
-					$element['endDate'] = date('Y/m/d');
+
+				$sitePath = '';
+				
+				if(Kohana::config('lattice.staging')){
+					$sitePath = 'staging/';
 				}
-			} else {
-				$element['startDate'] = '';
-				$element['endDate'] = '';
-			}
-			break;
-	 
-		case 'radioGroup':
-			$element['radioname'] = $id; 
+				if(file_exists($sitePath.'application/media/'.$thumbSrc)){
+					$size = getimagesize($sitePath.'application/media/'.$thumbSrc);	
+					$fieldvalue['width'] = $size[0];
+					$fieldvalue['height'] = $size[1];
+				} else {
+					$fieldvalue['width'] = 0;
+					$fieldvalue['height'] = 0;
+				}
+				$fieldvalue['thumbSrc']=$thumbSrc;
+			
+			case 'file':
+				if(!isset($element['maxlength']) || !$element['maxlength']){
+					$element['maxlength'] = 1523712; //12 MegaBytes 
+				}
 			break;
 
-		case 'multiSelect':
-			if(isset($element['object'])){
-				$object = Kohana::config('cms.objectTypes.'.$element['object']);
-				$element['options'] = array();
-				foreach($object as $field){
-					if($field['type'] == 'checkbox'){
-						$element['options'][$field['field']] = $field['label'];
+			case 'dateRange':
+				if(!isset($element['empty'])){
+					if(!isset($element['startDate']) || strlen($element['startDate'])==0){
+						$element['startDate'] = date('Y/m/d');
 					}
-				}
-			}	
-			if($fieldvalue){
-				$prepFieldValue = array();
-				foreach($fieldvalue as $name => $selected){
-					if($selected){
-						$prepFieldValue[] = $name;
+					if(!isset($element['endDate']) || strlen($element['endDate'])==0){
+						$element['endDate'] = date('Y/m/d');
 					}
+				} else {
+					$element['startDate'] = '';
+					$element['endDate'] = '';
 				}
-				$fieldvalue = $prepFieldValue;
-			}
 			break;
 
-		case 'text':
-			if(!isset($element['class'])){
-				$element['class'] = '';
-			}
-			if(isset($element['rows'])){
-				$element['class'] .= ' rows-'.$element['rows'];
-			}
+			case 'radioGroup':
+				$element['radioname'] = $id; 
+			break;
+
+			case 'multiSelect':
+				if(isset($element['object'])){
+					$object = Kohana::config('cms.objectTypes.'.$element['object']);
+					$element['options'] = array();
+					foreach($object as $field){
+						if($field['type'] == 'checkbox'){
+							$element['options'][$field['field']] = $field['label'];
+						}
+					}
+				}	
+				if($fieldvalue){
+					$prepFieldValue = array();
+					foreach($fieldvalue as $name => $selected){
+						if($selected){
+							$prepFieldValue[] = $name;
+						}
+					}
+					$fieldvalue = $prepFieldValue;
+				}
 			break;
 		}
 
-		if(!isset($element['class'])){
-			$element['class'] = null;
-		}
-
+		if(!isset($element['class'])){ $element['class'] = null; }
 
 		if($paths = Kohana::find_file('views', $view)){
 			$objectType = new View($view);
-
 			$objectType->id = $id;
-		
 			$objectType->class = null;
-
 			foreach($element as $key=>$value){
 				$objectType->$key = $value;
 			}

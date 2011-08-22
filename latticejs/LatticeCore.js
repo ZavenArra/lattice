@@ -543,8 +543,6 @@ lattice.LatticeObject = new Class({
 
 	/* Section: getters & setters */
 	getElement: function(){ return this.element; },
-	// getObjectId: function(){ return this.objectId; },
-	// setObjectId: function(id){ this.objectId = id },
 
 	/*
 		Function: initialize
@@ -555,15 +553,12 @@ lattice.LatticeObject = new Class({
 		this.elementClass = this.element.get("class");
 		this.setOptions( options );
 		this.options = Object.merge( this.options, this.element.getOptionsFromClassName() );
-		console.log( ":::::::::::::", this.element, this.element.getOptionsFromClassName() );
 		this.marshal = aMarshal;
 		this.element.store( 'Class', this );
 	},	
 	
 	destroy: function(){
-		console.log( "A" );
 		if( this.element ) this.element.destroy();
-		console.log( "B" );
 		this.options = this.element = this.elementClass = this.marshal = null 
 	}
 

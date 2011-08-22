@@ -2281,6 +2281,7 @@ lattice.ui.Text = new Class({
 	initialize: function( anElement, aMarshal, options ) {
 		this.parent( anElement, aMarshal, options );
 		this.isMultiline = ( this.element.getData( 'ismultiline' ) )? this.element.getData( 'ismultiline' ) : this.options.isMultiline;
+		console.log( this.fieldName, this.element.getData( 'ismultiline' ), this.isMultiline )
 		this.submitOnBlur = ( this.element.getData( 'submitonblur' ) )? this.element.getData( 'submitonblur' ) : this.options.submitOnBlur;
 		this.maxLength = ( this.element.getData( 'maxlength' ) )? this.element.getData( 'maxlength' ) : this.options.maxLength;
 		this.validate = ( this.element.getData( 'validate' ) )? this.element.getData( 'validate' ) : this.options.validate;
@@ -2371,7 +2372,7 @@ lattice.ui.Text = new Class({
 			content: this.getControls(),
 			borderRadius: 4,
 			offset: ( this.isMultiline )? { x: -8, y: -12 } : { x: -8, y: 0 },
-			position: ( this.isMultiline > 1 )? { x: 'right', y: 'bottom' } : { x: 'right', y: 'center' },
+			position: ( this.isMultiline )? { x: 'right', y: 'bottom' } : { x: 'right', y: 'center' },
 			stayOnBlur: true,
 			mouseEnter: this.setAllowSubmitOnBlur.bind( this, false ),
 			mouseLeave: this.setAllowSubmitOnBlur.bind( this, true )

@@ -1,4 +1,4 @@
-<div data-field="<?=$field;?>" data-isMultiline="<?=$isMultiline;?>" class="ui-Text <?=$class;?>">
+<div data-field="<?=$field;?>" <?if(isset( $isMultiline )):?>data-isMultiline="<?=$isMultiline;?>"<?endif;?> class="ui-Text <?=$class;?>">
 	<?if(isset($label)):?>
 		<label><?=$label;?></label>
 	<?endif;?>

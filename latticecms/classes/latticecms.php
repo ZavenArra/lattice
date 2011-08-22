@@ -253,7 +253,7 @@ class latticecms {
          }
          //make sure defaults load
          $entry['tag'] = $element->getAttribute('tag');
-         $entry['rows'] = $element->getAttribute('rows');
+         $entry['isMultiline'] = ( $element->getAttribute('isMultiline') == 'true' )? true : false;
          //any special xml reading that is necessary
          switch ($entry['type']) {
             case 'file':
@@ -304,7 +304,6 @@ class latticecms {
 
 	public static function regenerateImages(){
 		//find all images
-
 		foreach(lattice::config('objects', '//objectType') as $objectType){
 			foreach(lattice::config('objects', 'elements/*', $objectType) as $element){
 				if($element->tagName == 'image'){
@@ -341,7 +340,6 @@ public static function makeFileSaveName($filename) {
 				return null;
 			}
       $filename = str_replace('&', '_', $filename);
-
       $xarray = explode('.', $filename);
       $nr = count($xarray);
       $ext = $xarray[$nr - 1];
@@ -351,17 +349,14 @@ public static function makeFileSaveName($filename) {
       if (!file_exists(Graph::mediapath() . "$name" . '.' . $ext)) {
          $i = '';
       } else {
-         for (; file_exists(Graph::mediapath() . "$name" . $i . '.' . $ext); $i++) {
-            
+         for (; file_exists(Graph::mediapath() . "$name" . $i . '.' . $ext); $i++) {     
          }
       }
-
       //clean up extension
       $ext = strtolower($ext);
       if ($ext == 'jpeg') {
          $ext = 'jpg';
       }
-
       return $name . $i . '.' . $ext;
    }
 
@@ -393,10 +388,6 @@ public static function makeFileSaveName($filename) {
             return $object->saveUploadedFile($field, $postFileVars['name'], $postFileVars['type'], $postFileVars['tmp_name']);
       }
    }
-
-	
-
-	
 
 }
 
