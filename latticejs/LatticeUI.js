@@ -2884,11 +2884,84 @@ lattice.ui.PaginationControls = new Class({
 		this.options = this.element = this.instanceName = this.itemIdPrefix = this.elementToClone	= this.nextPageControl = this.previousPageControl = this.pageableElement = this.method = this.container = this.spinner = this.marshal = this.pages = this.container = this.currentPage = this.pageableElement = null;
 	}
 });
-
-lattice.ui.AutoCompleter = new Class({
-	Extends: lattice.ui.UIField
-});
+// 
+// lattice.ui.AutoCompleter = new Class({
+// 
+// 	Extends: lattice.ui.UIField,
+// 
+// 	initialize: function( anElement, aMarshal, options ){
+// 		this.parent( anElement, aMarshal, options );
+// 		this.field = this.element.getElement('.autoCompleterInput');
+// 	},
+// 	
+// 	onKeyPress: function( e ){
+// 		var submitCondition = ( ( e.control || e.meta) && e.key == 'enter' );
+// 		if( submitCondition == true ){
+// 			this.submit(e);
+// 		}else if( e.key == "esc" ){
+// 			this.cancelEditing( e );
+// 		}
+// 	},
+// 	
+// });
 
 lattice.ui.Tags = new Class({
-	Extends: lattice.ui.AutoCompleter
+	
+	
+	Extends: lattice.ui.UIField,
+
+	options: {
+		delimeter: ','
+	},
+
+	field: null,
+	tokens: null,
+	
+	getAddTokenURL: function(){
+		
+	},
+	
+	getRemoveTokenURL: function(){
+		
+	},
+	
+	initialize: function( anElement, aMarshal, options ){
+		this.parent( anElement, aMarshal, options );
+		this.field = this.element.getElement('.autoCompleterInput');
+		this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
+		this.tokenList = this.element.getElement( 'ul.tokens' ); 
+		this.tokenTemplate = this.tokenList.getElement( '.token.template' );
+	},
+	
+	onKeyPress: function( e ){
+		var val, endChar, tokenString;
+		val = this.field.get('value');
+		lastChar = val.substring( val.length-1, val.length );
+		if( e.key == 'space' && lastChar == this.options.delimeter ){
+			tokenString = val.substring( 0, val.length-1 );
+			this.field.set('value',null);
+			this.addToken( tokenString.trim() );
+		}else if( e.key == 'enter' ){
+			tokenString = val;
+			this.field.set('value',null);
+			this.addToken( tokenString.replace( ',', '' ).trim() );
+		}
+	},
+	
+	addToken: function( aString ){
+		this.marshal.addTag( aString );
+		var token = this.tokenTemplate.clone();
+		token.getElement( '.icon.close' ).addEvent( 'click', this.removeToken.bindWithEvent( this, [ token, aString ] ) )
+		token.removeClass('hidden').removeClass('template');
+		token.getElement( 'span' ).set( 'html', aString );
+		this.field.grab( token, 'before' );
+	},
+	
+	removeToken: function( e, token, tagLabel ){
+		lattice.util.stopEvent( e );
+		this.marshal.removeTag( tagLabel );
+		token.destroy();
+	}
+	
+	
 });

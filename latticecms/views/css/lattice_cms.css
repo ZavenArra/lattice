@@ -334,7 +334,7 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 .objectTitle .deleteLink{ margin: 2em 0 0 .5em; }
 .objectTitle .field-slug{ clear: both; margin: 0 0 .5em 0; }
 
-.icon, a.command, .uploadButton, .icon, a.command{
+.icon, a.command, .uploadButton{
 	display:block;
 	float:left;
 	height: 16px;
@@ -1184,13 +1184,41 @@ ul.listing li.menuItem:hover{
 *   TAGS
 ****************************/
 ul.tokens{
-	
+	float: left;
+	inner-shadow: ;
 }
 
-ul.tokens li{
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	-khtml-border-radius: 4px;
-	border-radius: 4px;	
+ul.tokens .icon{
+	width: 12px;
+	height: 12px;
+	margin: 0 0 0 0;
+	float: right;
+	display: block;
+	margin-left: .125em;
+}
+
+.icon.close{
+	background: url( '../images/icon-12x12-close.png' ) center no-repeat;
+}
+
+ul.tokens input{
+	display: block;
+	width: auto;
+	float: left;
+}
+
+ul.tokens li.token{
+	min-width: 4em;
+	float: left;
+	width: auto;
+	margin: 0 .5em .5em 0;
+	padding: .25em .5em;
+	text-align: center;
+	line-height: 1;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	-khtml-border-radius: 6px;
+	border-radius: 6px;	
 	background-color: #dedede;
+	color: #999;
 }

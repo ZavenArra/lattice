@@ -52,8 +52,16 @@ lattice.modules.CMS = new Class({
 		return  lattice.util.getBaseURL() + "ajax/data/cms/savefield/"+ this.getObjectId();
 	},	
 
-	getSubmitSortOrderURL: function( objectId ){
+	getSubmitSortOrderURL: function(){
 	    return lattice.util.getBaseURL() + "ajax/data/cms/saveSortOrder/" + this.getObjectId();
+	},
+	
+	getAddTagURL: function(){
+    return lattice.util.getBaseURL() + "ajax/data/cms/addTag/" + this.getObjectId();		
+	},
+	
+	getRemoveTagURL: function(){
+    return lattice.util.getBaseURL() + "ajax/data/cms/addTag/" + this.getObjectId();		
 	},
 
 	getRootNodeId: function(){       
@@ -252,6 +260,24 @@ lattice.modules.CMS = new Class({
 		if( !json.returnValue ) console.log( this.toString(), "addObjectRequest error:", json.response.error );
 	},
 
+	addTag: function( tag, callback ){
+		return new Request.JSON({
+			url: this.getAddTagURL(),
+			onSuccess: function( json  ){
+				if( callback ) callback( json );
+			}.bind( this )
+		}).post( { tag: tag } );		
+	},
+	
+	removeTag: function( tag, callback ){
+		return new Request.JSON({
+			url: this.getRemoveTagURL(),
+			onSuccess: function( json  ){
+				if( callback ) callback( json );
+			}.bind( this )
+		}).post( { tag: tag } );
+	},
+	
 	removeObjectRequest: function( parentId, callback ){
 		return new Request.JSON({
 			url: this.getRemoveObjectRequestURL( parentId ),

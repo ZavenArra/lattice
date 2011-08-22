@@ -4,7 +4,7 @@
 	</div>
 	<?if(Kohana::config('cms.enableSlugEditing')):?>
 	<?/*<?=$translationModifier;?> //may not actually need this, since modules only look within themselves... still its good to have*/?>
-	<div class="ui-Text field-slug discrete grid_2">
+	<div class="ui-Text discrete grid_2" data-field='slug'>
 				<input type="text" class="og p" value="<?=$slug;?>" />
 	</div>
  	<?endif;?>
