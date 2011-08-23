@@ -9,6 +9,10 @@
 	</div>
  	<?endif;?>
 
+  <?foreach($languages as $language):?>
+		<a href="<?=latticeurl::site('cms/getTranslatedPage/'.$id.'/'.$language->code);?>"><?=$language->fullname;?></a>
+  <?endforeach;?>
+
 	<div class="clear"></div>
 
 </div>

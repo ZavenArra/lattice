@@ -156,8 +156,12 @@ class Lattice_CMS extends Lattice_CMSInterface {
 		$this->nodetitle = new View('lattice_cms_nodetitle');
 		$this->nodetitle->title = $object->contenttable->title; //this should change to object table
 		$this->nodetitle->slug = $object->slug;
+		$this->nodetitle->id = $object->id;
 		$this->nodetitle->allowDelete = $object->objecttype->allowDelete;
 		$this->nodetitle->allowTitleEdit = ($object->objecttype->allowTitleEdit == "true" ? true : false);
+
+		$languages = ORM::Factory('language')->find_all();
+		$this->nodetitle->languages = $languages;
 
 		$settings = Kohana::config('cms.defaultsettings');
 		if(is_array($settings)){
