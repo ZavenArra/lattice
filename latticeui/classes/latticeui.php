@@ -133,7 +133,7 @@ Class latticeui{
 			$objectType->value = $fieldvalue;
 			return $objectType->render();
 		} else {
-			throw new Kohana_User_Exception('bad ui element request', 'view: '.$view.' not found');
+			throw new Kohana_Exception('bad ui element request'. ' view: '.$view.' not found');
 			return false;
 		}
 	}
