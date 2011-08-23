@@ -56,17 +56,19 @@ lattice.modules.CMS = new Class({
 	    return lattice.util.getBaseURL() + "ajax/data/cms/saveSortOrder/" + this.getObjectId();
 	},
 	
+	getGetTagsURL: function(){
+    return lattice.util.getBaseURL() + "ajax/data/cms/getTags/" + this.getObjectId();		
+	},
+	
 	getAddTagURL: function(){
     return lattice.util.getBaseURL() + "ajax/data/cms/addTag/" + this.getObjectId();		
 	},
 	
 	getRemoveTagURL: function(){
-    return lattice.util.getBaseURL() + "ajax/data/cms/addTag/" + this.getObjectId();		
+    return lattice.util.getBaseURL() + "ajax/data/cms/removeTag/" + this.getObjectId();		
 	},
 
-	getRootNodeId: function(){       
-		return this.options.rootObjectId;
-	},
+	getRootNodeId: function(){ return this.options.rootObjectId; },
 
 	getObjectId: function(){ return this.currentObjectId; },
 	setObjectId: function( objectId ){ this.currentObjectId = objectId;	},
@@ -168,7 +170,7 @@ lattice.modules.CMS = new Class({
 	*/
    requestPageResponse: function( json ){
       if( !json.returnValue ) throw json.response.error;
-			this.setObjectId( json.response.data.id );
+			if( json.response.data ) this.setObjectId( json.response.data.id );
       json.response.css.each( function( styleSheetURL, index ){
          styleSheetURL = lattice.util.getBaseURL() + styleSheetURL;
          if( !this.loadedCSS.contains( styleSheetURL ) ) lattice.util.loadStyleSheet( styleSheetURL );
@@ -214,7 +216,7 @@ lattice.modules.CMS = new Class({
 		var url;
 		url = this.getRequestTierURL( parentId, deepLink );
 //		console.log( 'cms.requestTier.url:', url );
-		this.currentObjectId = parentId;
+		this.setObjectId( parentId );
 		this.clearPendingTierRequest()
 		this.currentTierRequest = new Request.JSON( {
 			url: url,
@@ -260,6 +262,15 @@ lattice.modules.CMS = new Class({
 		if( !json.returnValue ) console.log( this.toString(), "addObjectRequest error:", json.response.error );
 	},
 
+	getTags: function( callback ){
+		return new Request.JSON({
+			url: this.getGetTagsURL(),
+			onSuccess: function( json  ){
+				if( callback ) callback( json );
+			}.bind( this )
+		}).send();				
+	},
+	
 	addTag: function( tag, callback ){
 		return new Request.JSON({
 			url: this.getAddTagURL(),

@@ -730,7 +730,6 @@ lattice.util.LoginMonitor = new Class({
 	},
 
 	logout: function( e ){
-//		console.log( "timeout exceeded performing logout" );
 		lattice.util.stopEvent( e );
 		clearInterval( this.logoutTimeout );
 		clearInterval( this.inactivityTimeout );

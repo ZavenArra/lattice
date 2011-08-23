@@ -2928,15 +2928,48 @@ lattice.ui.Tags = new Class({
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.field = this.element.getElement('.tagInput');
-		this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
 		this.tokenList = this.element.getElement( 'ul.tokens' ); 
 		this.tokenTemplate = this.tokenList.getElement( '.token.template' ).dispose();
+		this.ogBg = this.tokenTemplate.getStyle( 'background-color' );
+		this.container = this.element.getElement( '.container' )
+		this.editToggle = this.element.getElement( '.icon.edit' );
+		this.keyDownEvent = this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
+		this.tokenTemplate.removeClass('template');
+		this.initTokens();
+		this.editToggle.addEvent('click', this.toggleEditing.bindWithEvent( this, this.editToggle ) );
+		this.marshal.getTags();
+	},
+
+	toggleEditing: function( e ){
+		lattice.util.stopEvent( e );
+		if( this.container.hasClass( 'atRest' ) ){
+			if( !this.keyDownEvent ) this.keyDownEvent = this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
+			this.editToggle.removeClass( 'edit' ).addClass( 'cancel' );
+			this.field.removeClass( 'hidden' );
+			this.field.focus();
+			this.container.removeClass( 'atRest' );
+		}else{
+			this.editToggle.addClass( 'edit' ).removeClass( 'cancel' );
+			this.field.addClass( 'hidden' );
+			this.container.addClass( 'atRest' );			
+		}
+	},
+	
+	initTokens: function(){
+		this.tokenList.getElements('li').each( function(token){
+			if( token.getElement( '.icon.close' ) ) token.getElement( '.icon.close' ).addEvent( 'click', this.removeToken.bindWithEvent( this, [ token, token.getElement('span').get('html') ] ) )			
+		}, this );		
 	},
 	
 	onKeyPress: function( e ){
 		var val, endChar, tokenString;
 		val = this.field.get('value');
 		lastChar = val.substring( val.length-1, val.length );
+		if( e.key == 'esc'){
+			this.field.set( 'value', '' );
+			this.field.removeEvent( 'keydown', this.keyDownEvent );
+			this.toggleEditing();
+		}
 		if( e.key == 'space' && lastChar == this.options.delimeter ){
 			tokenString = val.substring( 0, val.length-1 ).trim();
 		}else if( e.key == 'enter' ){
@@ -2956,11 +2989,10 @@ lattice.ui.Tags = new Class({
 		var index, token, bg;
 		index = this.getTokens().indexOf( tokenString )
 		token = this.tokenList.getElements( 'li' )[index];
-		bg = token.getStyle( 'background-color' );
-		console.log( "++++", bg );
 		token.set( 'morph', { link: 'chain', transition: Fx.Transitions.Quad.easeOut, duration: 250 } );
 		token.morph( { 'background-color' : "#fcf3a0" } );
-		token.morph( { 'background-color' : bg } );
+		console.log( this.ogbg );
+		token.morph( { 'background-color' : this.ogbg } );
 	},
 	
 	getTokens: function(){
@@ -2978,13 +3010,14 @@ lattice.ui.Tags = new Class({
 	addToken: function( aString ){
 		var token = this.tokenTemplate.clone();
 		this.marshal.addTag( aString );
+		console.log(">>>> ", token.getElement( '.icon.close' ) );
 		token.getElement( '.icon.close' ).addEvent( 'click', this.removeToken.bindWithEvent( this, [ token, aString ] ) )
-		token.removeClass('hidden').removeClass('template');
 		token.getElement( 'span' ).set( 'html', aString );
 		this.tokenList.grab( token, 'top' );
 	},
 	
 	removeToken: function( e, token, tagLabel ){
+		console.log('removeToken', e, token, tagLabel );
 		lattice.util.stopEvent( e );
 		this.marshal.removeTag( tagLabel );
 		token.destroy();
