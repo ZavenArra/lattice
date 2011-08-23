@@ -332,7 +332,7 @@ ul.listing.allowChildSort-true li{ cursor: pointer; }
 .objectTitle input.h2{ margin-bottom: .25em !important; }
 
 .objectTitle .deleteLink{ margin: 2em 0 0 .5em; }
-.objectTitle .field-slug{ clear: both; margin: 0 0 .5em 0; }
+.objectTitle .ui-Text[data-field=slug]{ clear: both; margin: 0 0 .5em 0; }
 
 .icon, a.command, .uploadButton{
 	display:block;
@@ -1184,47 +1184,55 @@ ul.listing li.menuItem:hover{
 *   TAGS
 ****************************/
 .ui-Tags{
-	background:#f3f3f3;
+	background:transparent;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	-khtml-border-radius: 4px;
 	border-radius: 4px;	
-	padding: .5em;
+	padding: .75em .5em .5em .5em;
+	background:#f9f9f9;
+}
+
+.ui-Tags input{
+	display: block;
+	height: auto;
+	opacity: 1;
+}
+
+.ui-Tags .atRest{
+	opacity: .5;
+}
+.ui-Tags .atRest input{
+	display: none;
 }
 
 .ui-Tags .tagInput{
-	width: 98%;
 	margin-bottom: 1em;
+	display: block;
+	width: auto !important;
+	float: left;
+	margin: 0 .5em;
 }
 
-ul.tokens{
+.ui-Tags .container{ 
+	float: left; 
+}
+
+ul.tokens{ 
+	float: left;
+	margin: .25em 0 0 0;
+}
+
+.ui-Tags .head{
+	margin: 0 1em .5em 0;
 	float: left;
 }
 
-ul.tokens .icon{
-	width: 12px;
-	height: 12px;
-	margin: 0 0 0 0;
-	float: right;
-	display: block;
-	margin-left: .125em;
-}
-
-.icon.close{
-	background: url( '../images/icon-12x12-close.png' ) center no-repeat;
-}
-
-ul.tokens input{
-	display: block;
-	width: auto;
-	float: left;
-}
-
-ul.tokens li.token{
-	min-width: 4em;
+.ui-Tags ul.tokens li.token{
+	min-width: 2em;
 	float: left;
 	width: auto;
-	margin: 0 .5em .5em 0;
+	margin: 0em .25em .25em 0;
 	padding: .25em .5em;
 	text-align: center;
 	line-height: 1;
@@ -1234,4 +1242,36 @@ ul.tokens li.token{
 	border-radius: 6px;	
 	background-color: #dedede;
 	color: #999;
+}
+
+.ui-Tags label{
+	display: block;
+	float: left;
+	padding-top: .25em;
+}
+
+.ui-Tags .atRest ul.tokens li.token{
+	background-color: #fff;
+}
+
+.ui-Tags li.token .icon{
+	display: block;
+	float: right;
+	width: 12px;
+	height: 12px;
+	margin: 0 0 0 0;
+	margin-left: .25em;
+}
+
+.ui-Tags .atRest li.token .icon{
+	display: none !important;
+}
+
+.ui-Tags .token .icon.close{
+	background: url( '../images/icon-12x12-close.png' ) center no-repeat;
+}
+
+.ui-Tags .head .icon.edit{
+	margin-left: .5em;
+	background: url( '../images/icon_edit.png' ) center no-repeat !important;	
 }
