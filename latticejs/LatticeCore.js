@@ -737,7 +737,7 @@ lattice.util.LoginMonitor = new Class({
 		delete this.status;
 		window.removeEvents();
 		this.dialogue.destroy();
-		window.location = lattice.util.getBaseURL() + "auth/logout".toURI().toAbsolute();
+		window.location = lattice.util.getBaseURL() + "auth/logout";
 	}
 
 });
