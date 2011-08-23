@@ -59,6 +59,9 @@ class Model_ObjectType extends ORM {
 					$entry['objectTypeId'] = $node->getAttribute('objectTypeName');
 					$entry['objectTypeAddText'] = $node->getAttribute('addText');
 					$tConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $entry['objectTypeId'] ))->item(0);
+          if(!count($tConfig)){
+            throw new Kohana_Exception('No object type definition by name: '.$entry['objectTypeId']);
+          }
 					$entry['nodeType'] = $tConfig->getAttribute('nodeType');
 					$entry['contentType'] = $tConfig->getAttribute('contentType');
 					$valuefromconfig[] = $entry;
