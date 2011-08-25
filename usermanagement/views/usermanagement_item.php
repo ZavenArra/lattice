@@ -5,18 +5,12 @@
 		<?=latticeui::Text( 'email', "rows-1 validation-email grid_4", "p", $data['email'], 'Email' );?>
 		<?=latticeui::Text( 'password', "rows-1 validation-nonEmpty type-password grid_3 omega", "p", $data['password'], 'Reset and Mail Password' );?>
 	
-		<?/*
-		<div class="options">
-			
-				add value for third and fourth parameters
-				=latticeui::checkBox( 'userlevel', '', '', 'Superuser');
-			
-		</div>
-		*/?>
-
 	</div>
 
 	<?=latticeui::radioGroup( 'role', '', $managedRoles, $data['role'], 'User Role');?>
+	<?if($data['role'] == 'superuser'):?>
+		Superuser
+	<?endif;?>
 	
 	<div class="itemControls clearFix">
 		<a href="#" title="delete this list item" class="icon delete"><span>delete</span></a>

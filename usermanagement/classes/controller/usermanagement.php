@@ -37,6 +37,11 @@ Class Controller_UserManagement extends Controller_Layout {
 		parent::__construct($request, $response);
 
 		$this->managedRoles = Kohana::config(strtolower($this->controllerName).'.managedRoles');
+		/*
+		if(latticeutil::checkRoleAccess('superuser')){
+			$this->managedRoles['Superuser'] = 'superuser';
+		}
+		 */
 		
 	}
 
@@ -160,13 +165,25 @@ Class Controller_UserManagement extends Controller_Layout {
 	 * Returns: array('value'=>{value})
 	 */ 
 	public function action_saveField($id){
+
+		if(!latticeutil::checkRoleAccess('admin')){
+			throw new Kohana_Exception('Only Admin has access to User Management');
+		}
+
 		$user = ORM::factory($this->table, $id);
-      
-      $field = $_POST['field'];
-      $value = $_POST['value'];
-      
+
+		$field = $_POST['field'];
+		$value = $_POST['value'];
+
 		switch($field){
 		case 'role':
+
+			if($user->has('roles', ORM::Factory('role')->where('name', '=' ,'superuser')->find() )){
+				if(!latticeutil::checkRoleAccess('superuser')){
+					throw new Kohana_Exception('Only superuser can change superuser');
+				}
+			}
+
 			//first remove other managedRoles
 			foreach($this->managedRoles as $label => $role){
 				$roleObj = ORM::Factory('role')->where('name','=',$role)->find();
@@ -180,6 +197,22 @@ Class Controller_UserManagement extends Controller_Layout {
 			}
 			$user->add('roles', $role);	
 			$user->save();
+
+			if($value=='superuser'){
+
+				if(!latticeutil::checkRoleAccess('superuser')){
+					throw new Kohana_Exception('Updating to superuser not allowed for non-superuser');
+				}
+
+				$role = ORM::Factory('role')->where('name','=','admin')->find();
+				if(!$role->loaded()){
+					throw new Kohana_Exception('Role :role not found in database.  Update aborted', array(':role'=>'admin'));
+				}
+				$user->add('roles', $role);	
+				$user->save();
+
+			}
+
 			$return = $this->response->data( array('value'=>$value) );
 			break;
 
