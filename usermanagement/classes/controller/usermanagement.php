@@ -37,11 +37,9 @@ Class Controller_UserManagement extends Controller_Layout {
 		parent::__construct($request, $response);
 
 		$this->managedRoles = Kohana::config(strtolower($this->controllerName).'.managedRoles');
-		/*
 		if(latticeutil::checkRoleAccess('superuser')){
 			$this->managedRoles['Superuser'] = 'superuser';
 		}
-		 */
 		
 	}
 
@@ -81,6 +79,11 @@ Class Controller_UserManagement extends Controller_Layout {
 				if($user->has('roles', ORM::Factory('role')->where('name','=',$role)->find()) ){
 					$data['role'] = $role;
 				}
+			}
+			if($user->has('roles', ORM::Factory('role')->where('name','=','superuser')->find()) ){
+				$data['superuser'] = true;
+			} else {
+				$data['superuser'] = false;
 			}
 
 			$userobjectType->data = $data;
