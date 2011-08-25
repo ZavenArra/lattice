@@ -9,4 +9,6 @@ $config['loginTimeOut'] = 1800; //in seconds
 
 $config['siteTitle'] = "LatticeCMS - It's Made of People";
 
+$config['live'] = false;
+
 return $config;

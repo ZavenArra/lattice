@@ -5,7 +5,13 @@ class Controller_Builder extends Controller {
 	private $newObjectIds = array();
 
   public function __construct(){
+		
+		if(!latticeutil::checkRoleAccess('superuser')){
+			die('Only superuser can access builder tool');
+		}
+		
 		$this->rootNodeObjectType = Kohana::config('cms.graphRootNode');
+
 	}
 
 	public function destroy($dir) {
@@ -26,6 +32,10 @@ class Controller_Builder extends Controller {
 	}
 
 	public function action_initializeSite($xmlFile='data'){
+
+		if(Kohana::config('lattice.live')){
+			die('builder/initializeSite is disabled on sites marked live');
+		}
 
 		$db = Database::instance();
 		$db->query(Database::DELETE, 'delete from objects');
