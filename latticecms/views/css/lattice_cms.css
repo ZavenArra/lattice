@@ -1207,7 +1207,7 @@ ul.listing li.menuItem:hover{
 }
 
 .ui-Tags .tagInput{
-	margin-bottom: 1em;
+	margin-bottom: .5em;
 	display: block;
 	width: auto !important;
 	float: left;
@@ -1224,7 +1224,7 @@ ul.tokens{
 }
 
 .ui-Tags .head{
-	margin: 0 1em .5em 0;
+	margin: 0 1em 0 0;
 	float: left;
 }
 
@@ -1232,7 +1232,7 @@ ul.tokens{
 	min-width: 2em;
 	float: left;
 	width: auto;
-	margin: 0em .25em .25em 0;
+	margin: .35em .25em .35em 0;
 	padding: .25em .5em;
 	text-align: center;
 	line-height: 1;
@@ -1259,7 +1259,7 @@ ul.tokens{
 	float: right;
 	width: 12px;
 	height: 12px;
-	margin: 0 0 0 0;
+	margin: 0;
 	margin-left: .25em;
 }
 

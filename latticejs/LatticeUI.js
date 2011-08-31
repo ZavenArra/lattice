@@ -2937,7 +2937,7 @@ lattice.ui.Tags = new Class({
 		this.tokenTemplate.removeClass('template');
 		this.initTokens();
 		this.editToggle.addEvent('click', this.toggleEditing.bindWithEvent( this, this.editToggle ) );
-		this.marshal.getTags();
+//		this.marshal.getTags();
 	},
 
 	toggleEditing: function( e ){
@@ -2956,7 +2956,7 @@ lattice.ui.Tags = new Class({
 	},
 	
 	initTokens: function(){
-		this.tokenList.getElements('li').each( function(token){
+		this.tokenList.getElements('li.token').each( function(token){
 			if( token.getElement( '.icon.close' ) ) token.getElement( '.icon.close' ).addEvent( 'click', this.removeToken.bindWithEvent( this, [ token, token.getElement('span').get('html') ] ) )			
 		}, this );		
 	},
@@ -2988,7 +2988,7 @@ lattice.ui.Tags = new Class({
 	highlightToken: function( tokenString ){
 		var index, token, bg;
 		index = this.getTokens().indexOf( tokenString )
-		token = this.tokenList.getElements( 'li' )[index];
+		token = this.tokenList.getElements( 'li.token' )[index];
 		token.set( 'morph', { link: 'chain', transition: Fx.Transitions.Quad.easeOut, duration: 250 } );
 		token.morph( { 'background-color' : "#fcf3a0" } );
 		console.log( this.ogbg );
@@ -2997,7 +2997,7 @@ lattice.ui.Tags = new Class({
 	
 	getTokens: function(){
 		var ret = [];
-		this.tokenList.getElements( 'li' ).each( function( token ){
+		this.tokenList.getElements( 'li.token' ).each( function( token ){
 			ret.push( token.getElement( 'span' ).get('html') );
 		});
 		return ret;
@@ -3013,7 +3013,8 @@ lattice.ui.Tags = new Class({
 		console.log(">>>> ", token.getElement( '.icon.close' ) );
 		token.getElement( '.icon.close' ).addEvent( 'click', this.removeToken.bindWithEvent( this, [ token, aString ] ) )
 		token.getElement( 'span' ).set( 'html', aString );
-		this.tokenList.grab( token, 'top' );
+		this.element.getElement( '.entryField' ).grab( token, 'after' );
+//		this.tokenList.grab( token, 'top' );
 	},
 	
 	removeToken: function( e, token, tagLabel ){
