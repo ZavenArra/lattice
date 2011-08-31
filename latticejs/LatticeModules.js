@@ -135,19 +135,24 @@ lattice.modules.Module = new Class({
 	*/
 	initUI: function( anElement ){
 		anElement = ( anElement )? anElement : this.element;
-		var moduleUIFields = this.getModuleUIFields( anElement );
+		var moduleUIFields, uiClass; 
+		moduleUIFields = this.getModuleUIFields( anElement );
 		if( !moduleUIFields || moduleUIFields.length == 0  ) {
 			this.UIFields = new Array();
 			return this.UIFields;
 		}
-		moduleUIFields.each( function( anElement, index ){
-//			console.log( 'initUI >>>> ', anElement, lattice.util.getValueFromClassName( "ui", anElement.get( "class" ) )  );
-			var UIField = new lattice.ui[ lattice.util.getValueFromClassName( "ui", anElement.get( "class" ) ) ]( anElement, this, this.options );
-			this.UIFields[ UIField.fieldName  ] = UIField;
-			if( UIField ) UIField.setTabIndex( 'tabindex', index+1 );
+		moduleUIFields.each( function( anElement, i ){
+			uiClass = lattice.ui[ lattice.util.getValueFromClassName( "ui", anElement.get( "class" ) ) ]
+			this.initUIField( uiClass, anElement, i );
 		}, this );
 		if( this.postInitUIHook ) this.postInitUIHook();
 		return this.UIFields;
+	},
+
+	initUIField: function( uiClass, anElement, index ){
+		var UIField = new uiClass( anElement, this, this.options );
+		this.UIFields[ UIField.fieldName  ] = UIField;
+		if( UIField ) UIField.setTabIndex( 'tabindex', index+1 );
 	},
 	
 	destroyUIFields: function(){
@@ -159,7 +164,7 @@ lattice.modules.Module = new Class({
 			aUIField = null;
 			delete this.UIFields[ fieldName ];
 		}, this );
-		console.log( "destroyUIFields after ", this.instanceName, this.UIFields );
+//		console.log( "destroyUIFields after ", this.instanceName, this.UIFields );
 	},
 
 /*  Function: destroyChildModules */

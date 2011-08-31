@@ -20,6 +20,26 @@ Element.implement({
 	}
 });
 
+lattice.ui.Menu = new Class({
+	initialize: function( element, marshal, options ){
+		this.element = element;
+		this.marshal = marshal;
+		this.options = options;
+		var self = this;
+		this.element.getElements( "a" ).each( function( item ){
+			console.log( 'menu', item );
+			if( typeof self.options.onItemClicked ){
+				item.addEvent( 'click', function( e ){
+					e.preventDefault();
+					self.options.onItemClicked( item );
+				});
+			}else{
+				throw "lattice.ui.Menu requires you pass it an onItemClicked callback in the options object";
+			}
+		});
+	}
+});
+
 lattice.ui.UIField = new Class({
 
   Extends: lattice.LatticeObject,
@@ -2526,7 +2546,6 @@ lattice.ui.Text = new Class({
 	},
 
 	onResponse: function( json ){
-		// this.ipeElement.addEvent( 'click', this.enterEditMode.bindWithEvent( this ) );
 		this.ipeElement.setStyle( 'height', 'auto' );
 		this.parent( json );
 	},
@@ -2906,8 +2925,7 @@ lattice.ui.PaginationControls = new Class({
 // });
 
 lattice.ui.Tags = new Class({
-	
-	
+
 	Extends: lattice.ui.UIField,
 
 	options: {
@@ -2916,43 +2934,64 @@ lattice.ui.Tags = new Class({
 
 	field: null,
 	tokens: null,
-	
-	getAddTokenURL: function(){
+	boundEnterEditMode: null,
+	boundLeaveEditMode: null,
+	boundOnKeyPress: null,
 		
-	},
-	
-	getRemoveTokenURL: function(){
-		
-	},
-	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.field = this.element.getElement('.tagInput');
 		this.tokenList = this.element.getElement( 'ul.tokens' ); 
 		this.tokenTemplate = this.tokenList.getElement( '.token.template' ).dispose();
+		this.tokenTemplate.removeClass('template');
 		this.ogBg = this.tokenTemplate.getStyle( 'background-color' );
 		this.container = this.element.getElement( '.container' )
 		this.editToggle = this.element.getElement( '.icon.edit' );
-		this.keyDownEvent = this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
-		this.tokenTemplate.removeClass('template');
-		this.initTokens();
-		this.editToggle.addEvent('click', this.toggleEditing.bindWithEvent( this, this.editToggle ) );
-//		this.marshal.getTags();
-	},
+		this.boundEnterEditMode = this.enterEditMode.bindWithEvent( this );
+		this.boundLeaveEditMode = this.leaveEditMode.bindWithEvent( this );
+		this.boundOnKeyPress = this.onKeyPress.bind( this );
+		this.keyDownEvent = this.field.addEvent( 'keydown', this.boundOnKeyPress );
 
-	toggleEditing: function( e ){
+		this.initTokens();
+
+		this.element.addEvent( 'click', this.boundEnterEditMode );
+
+	},
+	
+	enterEditMode: function( e ){
+
+		if( e && e.target ) console.log( 'enterEditMode', e.target );
+
+		lattice.util.preventDefault( e );
+
+		this.editToggle.removeEvents( 'click' );
+		this.element.removeEvents( 'click' );
+		this.editToggle.addEvent( 'click', this.boundLeaveEditMode );
+		this.field.addEvent( 'keydown', this.boundOnKeyPress );
+
+		this.element.setStyle( 'cursor', 'inherit' );
+		this.editToggle.removeClass( 'edit' ).addClass( 'cancel' );
+		this.container.removeClass( 'atRest' );
+		this.field.removeClass( 'hidden' );
+
+		this.field.focus();
+
+	},
+	
+	leaveEditMode: function( e ){
+		
 		lattice.util.stopEvent( e );
-		if( this.container.hasClass( 'atRest' ) ){
-			if( !this.keyDownEvent ) this.keyDownEvent = this.field.addEvent( 'keydown', this.onKeyPress.bind( this ) );
-			this.editToggle.removeClass( 'edit' ).addClass( 'cancel' );
-			this.field.removeClass( 'hidden' );
-			this.field.focus();
-			this.container.removeClass( 'atRest' );
-		}else{
-			this.editToggle.addClass( 'edit' ).removeClass( 'cancel' );
-			this.field.addClass( 'hidden' );
-			this.container.addClass( 'atRest' );			
-		}
+		this.editToggle.removeEvents( 'click' );
+		this.element.removeEvents( 'click' );
+		this.element.addEvent( 'click', this.boundEnterEditMode );
+
+		this.element.setStyle( 'cursor', 'pointer' );
+		this.editToggle.addClass( 'edit' ).removeClass( 'cancel' );
+		this.field.addClass( 'hidden' );
+		this.container.addClass( 'atRest' );
+		
+		this.field.blur();
+
 	},
 	
 	initTokens: function(){
@@ -2967,8 +3006,8 @@ lattice.ui.Tags = new Class({
 		lastChar = val.substring( val.length-1, val.length );
 		if( e.key == 'esc'){
 			this.field.set( 'value', '' );
-			this.field.removeEvent( 'keydown', this.keyDownEvent );
-			this.toggleEditing();
+			this.field.removeEvent( 'keydown', this.boundOnKeyPress );
+			this.leaveEditMode();
 		}
 		if( e.key == 'space' && lastChar == this.options.delimeter ){
 			tokenString = val.substring( 0, val.length-1 ).trim();
@@ -2991,7 +3030,6 @@ lattice.ui.Tags = new Class({
 		token = this.tokenList.getElements( 'li.token' )[index];
 		token.set( 'morph', { link: 'chain', transition: Fx.Transitions.Quad.easeOut, duration: 250 } );
 		token.morph( { 'background-color' : "#fcf3a0" } );
-		console.log( this.ogbg );
 		token.morph( { 'background-color' : this.ogbg } );
 	},
 	
@@ -3010,18 +3048,21 @@ lattice.ui.Tags = new Class({
 	addToken: function( aString ){
 		var token = this.tokenTemplate.clone();
 		this.marshal.addTag( aString );
-		console.log(">>>> ", token.getElement( '.icon.close' ) );
 		token.getElement( '.icon.close' ).addEvent( 'click', this.removeToken.bindWithEvent( this, [ token, aString ] ) )
 		token.getElement( 'span' ).set( 'html', aString );
-		this.element.getElement( '.entryField' ).grab( token, 'after' );
-//		this.tokenList.grab( token, 'top' );
+		this.element.getElement( '.head' ).grab( token, 'after' );
 	},
 	
 	removeToken: function( e, token, tagLabel ){
-		console.log('removeToken', e, token, tagLabel );
 		lattice.util.stopEvent( e );
 		this.marshal.removeTag( tagLabel );
 		token.destroy();
+	},
+	
+	destroy: function(){
+		this.tokenTemplate.destroy();
+		this.boundEdit = this.field = this.contains = this.tokenTemplate = null;
+		this.parent();
 	}
 	
 	

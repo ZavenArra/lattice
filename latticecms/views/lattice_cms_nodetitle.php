@@ -8,11 +8,16 @@
 				<input type="text" class="og p" value="<?=$slug;?>" />
 	</div>
  	<?endif;?>
-
-  <?foreach($languages as $language):?>
-		<a href="<?=latticeurl::site('cms/getTranslatedPage/'.$id.'/'.$language->code);?>"><?=$language->fullname;?></a>
-  <?endforeach;?>
-
+	
 	<div class="clear"></div>
 
 </div>
+<?/*
+<div class="localizationControls">
+	<ul class="clearFix">
+	<?foreach($languages as $language):?>
+		<li><a href="<?=latticeurl::site('cms/getTranslatedPage/'.$id.'/'.$language->code);?>"><?=$language->fullname;?></a><li>
+	<?endforeach;?>
+	</ul>
+</div>
+*/?>

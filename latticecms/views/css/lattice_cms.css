@@ -1214,12 +1214,10 @@ ul.listing li.menuItem:hover{
 	margin: 0 .5em;
 }
 
-.ui-Tags .container{ 
-	float: left; 
-}
 
 ul.tokens{ 
 	float: left;
+	cursor: pointer;
 	margin: .25em 0 0 0;
 }
 
@@ -1228,6 +1226,7 @@ ul.tokens{
 	float: left;
 }
 
+.ui-Tags ul.tokens li.head,
 .ui-Tags ul.tokens li.token{
 	min-width: 2em;
 	float: left;
@@ -1244,6 +1243,11 @@ ul.tokens{
 	color: #999;
 }
 
+.ui-Tags ul.tokens li.head{
+	background: none;
+	margin: 0;
+	padding: .125em .5em;
+}
 .ui-Tags label{
 	display: block;
 	float: left;
@@ -1274,4 +1278,14 @@ ul.tokens{
 .ui-Tags .head .icon.edit{
 	margin-left: .5em;
 	background: url( '../images/icon_edit.png' ) center no-repeat !important;	
+}
+
+.pagesPane{
+	width: 960px;
+	overflow: hidden;
+}
+
+.page{
+	width: 960px;
+	display: inline-block;
 }
