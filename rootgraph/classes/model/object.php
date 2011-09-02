@@ -24,8 +24,12 @@ class Model_Object extends ORM {
            'through' => 'objects_tags'
        )
    );
-   public $content = null;
+
+	
+	 private $latticeParents = array();
+
    private $object_fields = array('loaded', 'objecttype', 'primary_key', 'primary_val');
+
 
    public function __construct($id=NULL) {
       
@@ -75,7 +79,7 @@ class Model_Object extends ORM {
          Kohana::$log->add(Log::INFO, $column);
          return parent::__get($column);
       } else if ($column == 'parent') {
-         return Graph::object($this->parentid);
+				return $getLatticeParent(); 
       } else if ($column == 'contenttable'){
          return parent::__get($column);
       } else if ($column == 'title'){
@@ -173,31 +177,10 @@ class Model_Object extends ORM {
          $inserting = true;
       }
 
-      if ($inserting) {
-         //and we need to update the sort, this should be the last
-         //
-			if ($this->parentid != NULL) {
-            if (Kohana::config('cms.newObjectPlacement') == 'top') {
-
-               $sort = DB::query(Database::SELECT, 'select min(sortorder) as minsort from objects where parentid = ' . $this->parentid)->execute()->current();
-               $this->sortorder = $sort['minsort'] - 1;
-            } else {
-               $query = 'select max(sortorder) as maxsort from objects where parentid = ' . $this->parentid;
-               $sort = DB::query(Database::SELECT, $query)->execute()->current();
-               $this->sortorder = $sort['maxsort'] + 1;
-            }
-            $this->dateadded = 'now()';
-         }
-      }
-
       parent::save();
       //if inserting, we add a record to the content table if one does not already exists
       if ($inserting) {
-         if (!Kohana::config('lattice.legacy')) {
-            $content = ORM::Factory('content');
-         } else {
-            $content = ORM::Factory($this->objecttype->contenttable);
-         }
+				$content = ORM::Factory('content');
          if (!$content->where('object_id', '=', $this->id)->find()->loaded()) {
             $content = ORM::Factory('content');
             $content->object_id = $this->id;
@@ -370,8 +353,8 @@ class Model_Object extends ORM {
       //get container
       $cTemplate = ORM::Factory('objecttype', $family);
       $container = ORM::Factory('object')
+							->latticeChildrenFilter($this->id)
               ->where('objecttype_id', '=', $cTemplate->id)
-              ->where('parentid', '=', $this->id)
               ->where('activity', 'IS', NULL)
               ->find();
 
@@ -381,7 +364,7 @@ class Model_Object extends ORM {
    public function getPublishedChildren() {
 
       $children = ORM::Factory('object')
-              ->where('parentid', '=', $this->id)
+							->latticeChildrenFilter($this->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder')
@@ -394,7 +377,7 @@ class Model_Object extends ORM {
    public function getChildren() {
 
       $children = ORM::Factory('object')
-              ->where('parentid', '=', $this->id)
+							->latticeChildrenFilter($this->id)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder')
               ->find_all();
@@ -403,7 +386,7 @@ class Model_Object extends ORM {
 
    public function getNextPublishedPeer() {
       $next = ORM::Factory('object')
-              ->where('parentid', '=', $this->parentid)
+							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder', 'ASC')
@@ -419,7 +402,7 @@ class Model_Object extends ORM {
 
    public function getPrevPublishedPeer() {
       $next = ORM::Factory('object')
-              ->where('parentid', '=', $this->parentid)
+							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder', 'DESC')
@@ -435,7 +418,7 @@ class Model_Object extends ORM {
 
    public function getFirstPublishedPeer() {
       $first = ORM::Factory('object')
-              ->where('parentid', '=', $this->parentid)
+							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder', 'ASC')
@@ -450,7 +433,7 @@ class Model_Object extends ORM {
 
    public function getLastPublishedPeer() {
       $last = ORM::Factory('object')
-              ->where('parentid', '=', $this->parentid)
+							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder', 'DESC')
@@ -463,10 +446,6 @@ class Model_Object extends ORM {
       }
    }
 
-   public function getParent() {
-      $parent = ORM::Factory('object', $this->parentid);
-      return $parent;
-   }
 
    public function saveField($field, $value) {
       $this->contenttable->$field = $value;
@@ -730,12 +709,12 @@ class Model_Object extends ORM {
       
    }
 
-   public function latticeChildrenFilter($parentid, $lattice="lattice"){
+   public function latticeChildrenFilter($parentId, $lattice="lattice"){
       $lattice = Graph::lattice($lattice);
        
       $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
       $this->where('objectrelationships.lattice_id', '=', $lattice->id);
-      $this->where('objectrelationships.object_id', '=', $parentid);
+      $this->where('objectrelationships.object_id', '=', $parentId);
       return $this;
 
    }
@@ -744,6 +723,22 @@ class Model_Object extends ORM {
       return Graph::object()->latticeChildrenFilter($this->id, $lattice);
    
    }
+
+	 public function getLatticeParent($lattice='lattice'){
+		 if(!isset($getLatticeParents[$lattice])){
+			 $lattice = Graph::lattice($lattice);
+			 $relationship = ORM::Factory('objectrelationship')
+											->where('lattice_id', '=', $lattice->id)
+											->where('connectedobject_id', '=', $this->id)
+											->find();
+			 if($relationship->loaded()){
+				 $this->latticeParents[$lattice] = Graph::object($relationship->object_id);
+			 } else {
+				 $this->latticeParents[$lattice] = null;
+			 }
+		 }
+		 return $this->latticeParents[$lattice];
+	 }
    
    /*
      Function: addObject($id)
