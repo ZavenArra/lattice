@@ -150,7 +150,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       
       public function action_getTags($id){
  
-        $tags = Graph::object($id)->getTags();
+        $tags = Graph::object($id)->getTagStrings();
         $this->response->data(array('tags'=>$tags));
       }
 
