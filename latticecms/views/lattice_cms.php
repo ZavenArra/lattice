@@ -2,8 +2,8 @@
 	
 	<?=$navigation;?>
 	
-	<div class="localizationControls">
-		<ul class="clearFix">
+	<div class="localizationControls container_12">
+		<ul class='clearFix'>
 			<li><a href="/mopcms/MoPDevelopment/cms/getTranslatedPage/4/en">English</a></li>
 			<li><a href="/mopcms/MoPDevelopment/cms/getTranslatedPage/4/es">Spanish</a></li>
 			<li><a href="/mopcms/MoPDevelopment/cms/getTranslatedPage/4/pt">Portugese</a></li>

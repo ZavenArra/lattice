@@ -4,12 +4,10 @@
 	<?endif;*/?>
 	<div class="container atRest">
 		<ul class='tokens clearFix'>
-			<li class="entryField">
-				<div class='head'>
-					<label>Tags</label>
-					<input class='tagInput hidden' type="text" value="" />
-					<a href="#" class="icon edit">edit</a>
-				</div>
+			<li class='head'>
+				<label>Tags</label>
+				<input class='tagInput hidden' type="text" value="" />
+				<a href="#" class="icon edit">edit</a>
 			</li>
 			<li class="token template"><span>Blank Token</span><a href="#" title="remove token" class='icon close'>remove token</a></li>
 			<?foreach($tags as $tag):?>

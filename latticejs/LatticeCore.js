@@ -39,6 +39,7 @@ Class.Mutators.initialize = function( initialize ) {
 		return initialize.apply( this, arguments );
 	}
 }
+
 var Interface = function( name, members ) {
 	members.Interface = {
 		Name: name,
@@ -237,21 +238,26 @@ String.implement({
 	Better error reporting for MOPCMS specific error reporting
 */
 Request.JSON.implement({
-    success: function(text){
+	success: function(text){
 		var json;
 		try {
 			json = this.response.json = JSON.decode( text, this.options.secure );
 		} catch ( error ){
-			this.fireEvent('error', [text, error]);
+			throw error + " : " + text;
+			this.fireEvent('error', [ text, error ] );
 			return;
 		}
-		if ( json == null ){ 
-		    this.onFailure();
-	    }else if( !json.returnValue ){
-	        throw json.response;
-	    } else {
-            this.onSuccess( json, text );
-	    }
+		if ( json == null ){
+			this.onFailure();
+		} else if( !json.returnValue ){
+			if( json.response && json.response.error ){
+				throw json.response.error;						
+			}else{
+				throw 'response to JSON request has eiter no returnValue, or no response.'
+			}
+		} else {
+			this.onSuccess( json, text );
+		}
 	}
 });
 

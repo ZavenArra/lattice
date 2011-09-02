@@ -119,14 +119,12 @@ lattice.modules.Module = new Class({
 		var elements = [];
 		anElement.getChildren().each( function( aChild, anIndex ){
 			if( aChild.get( "class" ).indexOf( "ui-" ) > -1 ){
-//			    console.log( "\t\tgetModuleUIFields ", aChild );
+//	    console.log( "\t\tfound ui field", aChild.get('class'), ':', aChild.get('data-field'), 'in', anElement.get('class') );
 				elements.combine( [ aChild ] );
 			} else if( !aChild.hasClass( "modal" ) && !aChild.hasClass( "module" ) && !aChild.hasClass( "listItem" ) ){
-//			    console.log( "\t\tgetModuleUIFields ", aChild );
 				elements.combine( this.getModuleUIFields( aChild ) );
 			}
 		}, this );
-//		console.log( "getModuleUIFields", this.toString(), anElement, elements );
 		return elements;
 	},
 	/*
@@ -135,24 +133,21 @@ lattice.modules.Module = new Class({
 	*/
 	initUI: function( anElement ){
 		anElement = ( anElement )? anElement : this.element;
-		var moduleUIFields, uiClass; 
+		var moduleUIFields, field; 
 		moduleUIFields = this.getModuleUIFields( anElement );
-		if( !moduleUIFields || moduleUIFields.length == 0  ) {
-			this.UIFields = new Array();
-			return this.UIFields;
-		}
 		moduleUIFields.each( function( anElement, i ){
-			uiClass = lattice.ui[ lattice.util.getValueFromClassName( "ui", anElement.get( "class" ) ) ]
-			this.initUIField( uiClass, anElement, i );
+			field = this.initUIField( anElement );
+			console.log( anElement.getValueFromClassName('ui'), anElement.get('data-field'), field, typeof this.UIFields );
+			this.UIFields[ anElement.get('data-field') ] = field; 
+			field.setTabIndex( i+1 );
 		}, this );
-		if( this.postInitUIHook ) this.postInitUIHook();
 		return this.UIFields;
 	},
 
-	initUIField: function( uiClass, anElement, index ){
-		var UIField = new uiClass( anElement, this, this.options );
-		this.UIFields[ UIField.fieldName  ] = UIField;
-		if( UIField ) UIField.setTabIndex( 'tabindex', index+1 );
+	initUIField: function( anElement ){
+//		console.log( "\t\tinitUIField", anElement )
+		var field = new lattice.ui[anElement.getValueFromClassName( "ui" )]( anElement, this );
+		return field;
 	},
 	
 	destroyUIFields: function(){

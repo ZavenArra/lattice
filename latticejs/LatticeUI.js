@@ -20,26 +20,6 @@ Element.implement({
 	}
 });
 
-lattice.ui.Menu = new Class({
-	initialize: function( element, marshal, options ){
-		this.element = element;
-		this.marshal = marshal;
-		this.options = options;
-		var self = this;
-		this.element.getElements( "a" ).each( function( item ){
-			console.log( 'menu', item );
-			if( typeof self.options.onItemClicked ){
-				item.addEvent( 'click', function( e ){
-					e.preventDefault();
-					self.options.onItemClicked( item );
-				});
-			}else{
-				throw "lattice.ui.Menu requires you pass it an onItemClicked callback in the options object";
-			}
-		});
-	}
-});
-
 lattice.ui.UIField = new Class({
 
   Extends: lattice.LatticeObject,
@@ -142,6 +122,37 @@ lattice.ui.UIField = new Class({
 		this.parent();
 	}
 	
+});
+
+lattice.ui.Menu = new Class({
+	Extends: lattice.LatticeObject,
+	Implements: [ Options, Events ],
+	activeItem:null,
+	options: {
+		'activeClassName': 'active',
+		'clickCallback': function(){ throw 'lattice.ui.Menu click called with no passed onItemClickedCallback in the options object.'}
+	},
+	initialize: function( element, marshal, options ){
+		this.parent( element, marshal, options );
+		this.element.getElements( "a" ).each( function( item ){
+			if( typeof this.options.onItemClicked ){
+				item.addEvent( 'click', this.onItemClicked.bindWithEvent( this, item ) );
+			}else{
+				throw "lattice.ui.Menu requires you pass it an onItemClicked callback in the options object";
+			}
+		}, this );
+	},
+	onItemClicked: function( e, item ){
+		e.preventDefault( e );
+		if( this.activeItem ) this.activeItem.removeClass( this.options.activeClassName );
+		item.addClass( this.options.activeClassName );
+		this.activeItem = item;
+		this.options.clickCallback( item );
+	},
+	destroy: function(){
+		this.activeItem = null;
+		this.parent();
+	}	
 });
 
 lattice.ui.Sticky = new Class({
@@ -2301,7 +2312,7 @@ lattice.ui.Text = new Class({
 	initialize: function( anElement, aMarshal, options ) {
 		this.parent( anElement, aMarshal, options );
 		this.isMultiline = ( this.element.getData( 'ismultiline' ) )? this.element.getData( 'ismultiline' ) : this.options.isMultiline;
-		console.log( this.fieldName, this.element.getData( 'ismultiline' ), this.isMultiline )
+		console.log( '\tisMultiline: ', this.fieldName, this.element.getData( 'ismultiline' ), this.isMultiline );
 		this.submitOnBlur = ( this.element.getData( 'submitonblur' ) )? this.element.getData( 'submitonblur' ) : this.options.submitOnBlur;
 		this.maxLength = ( this.element.getData( 'maxlength' ) )? this.element.getData( 'maxlength' ) : this.options.maxLength;
 		this.validate = ( this.element.getData( 'validate' ) )? this.element.getData( 'validate' ) : this.options.validate;

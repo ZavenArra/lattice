@@ -233,7 +233,6 @@ ul.listing li{
 	color:#444;
 }
 
-ul.listing.allowChildSort-true li{ cursor: pointer; }
 .classPath-lattice_modules_ListModule{ margin-bottom: 2em; }
 
 .controls{ margin-bottom: 1em; }
@@ -1271,8 +1270,51 @@ ul.tokens{
 	display: none !important;
 }
 
-.ui-Tags .token .icon.close{
+.ui-Tags li.token .icon.close{
 	background: url( '../images/icon-12x12-close.png' ) center no-repeat;
+	opacity: .5;
+}
+
+.ui-Tags li.token:hover .icon.close,
+.ui-Tags li.token .icon.close:hover{
+	opacity: 1 !important;	
+}
+
+.localizationControls{
+	clear: both;
+	margin: 1em 0 2em 0;
+}
+.localizationControls ul{
+/*	border-top: 1px #d3d3d3 solid;
+	border-bottom: 1px #d3d3d3 solid;
+*/}
+
+.localizationControls li{
+	float: left;
+	width: 320px;
+	margin: 0 0 0 0;
+}
+
+/*.localizationControls li:first-child{
+	margin-left: 0px  !important;
+}
+*/
+.localizationControls li a{
+	padding: .5em 1em;
+	display: block;
+	background : #f9f9f9;
+	color: #666;
+	text-decoration: none;
+}
+
+.localizationControls ul:hover{
+	border-bottom: 1px #ddd solid;
+}
+.localizationControls li a.active,
+.localizationControls li a:hover{
+/*	color: #666;
+*/
+	background: #dedede;
 }
 
 .ui-Tags .head .icon.edit{
@@ -1287,5 +1329,5 @@ ul.tokens{
 
 .page{
 	width: 960px;
-	display: inline-block;
+	float: left;
 }
