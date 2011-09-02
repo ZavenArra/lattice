@@ -654,7 +654,6 @@ lattice.ui.AddObjectDialogue = new Class({
 	},
 	
 	setContent: function( itemToAdd, aTitle ){
-		console.log( itemToAdd, aTitle );
 		if( aTitle ) this.title.set( "text", aTitle );
 		this.modal.unspin();
 		this.itemContainer = new Element( "ul" );
