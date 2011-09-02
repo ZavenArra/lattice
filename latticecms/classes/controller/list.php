@@ -108,9 +108,9 @@ class Controller_List extends Lattice_CMSInterface {
     * for looking in database and config
     */
    
-   public function action_getList($listObjectIdOrparentId, $family = null) {
+   public function action_getList($listObjectIdOrParentId, $family = null) {
       
-      $this->setListObject($listObjectIdOrparentId, $family);
+      $this->setListObject($listObjectIdOrParentId, $family);
       
 
       $view = null;

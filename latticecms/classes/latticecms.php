@@ -197,10 +197,8 @@ class latticecms {
 
                   $requestURI = 'list/getList/' . $object->id . '/' . $element['family'];
                   $htmlChunks[$element['family']] = Request::factory($requestURI)->execute()->body();
-
-
-                  //$htmlChunks[$element['family']] = lattice::buildModule($element, $arguments);
                   break;
+
                case 'associator':
                   $controller = new Associator_Controller($element['filters'], $object->id, $element['field']);
                   $controller->createIndexView();
@@ -242,7 +240,7 @@ class latticecms {
       // this way a different driver could be created for non-xml config if desired
       $elementsConfig = array();
       foreach ($elements as $element) {
-         //echo 'FOUND AN ELEMENT '.$element->tagName.'<br>';
+
          $entry = array();
          $entry['type'] = $element->tagName;
          for ($i = 0; $i < $element->attributes->length; $i++) {
@@ -251,15 +249,16 @@ class latticecms {
          if($translatedLanguageCode != null){
             $entry['fieldId'] = $entry['field'].'_'.$translatedLanguageCode;
          }
-         //make sure defaults load
+
+         //load defaults
          $entry['tag'] = $element->getAttribute('tag');
          $entry['isMultiline'] = ( $element->getAttribute('isMultiline') == 'true' )? true : false;
+
          //any special xml reading that is necessary
          switch ($entry['type']) {
             case 'file':
             case 'image':
                $ext = array();
-               //echo sprintf('/objectType[@name="%s"]/elements/image[@field="%s]"/ext', $object->objecttype->objecttypename, $element->getAttribute('field'));
                $children = lattice::config('objects', 'ext', $element);
                foreach ($children as $child) {
                   if ($child->tagName == 'ext') {
@@ -282,25 +281,26 @@ class latticecms {
             case 'associator':
                //need to load filters here
                $filters = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]/filter', 
-							$object->objecttype->objecttypename,
-							$element->getAttribute('field') ));
-				$filterSettings = array();
-				foreach($filters as $filter){
-					$setting = array();
-					$setting['from'] = $filter->getAttribute('from');
-					$setting['objectTypeName'] = $filter->getAttribute('objectTypeName');
-					$setting['tagged'] = $filter->getAttribute('tagged');
-					$filterSettings[] = $setting;
-				}
-				$entry['filters'] = $filterSettings;
+								 $object->objecttype->objecttypename,
+								 $element->getAttribute('field') ));
+							 $filterSettings = array();
+							 foreach($filters as $filter){
+								 $setting = array();
+								 $setting['from'] = $filter->getAttribute('from');
+								 $setting['objectTypeName'] = $filter->getAttribute('objectTypeName');
+								 $setting['tagged'] = $filter->getAttribute('tagged');
+								 $filterSettings[] = $setting;
+							 }
+							 $entry['filters'] = $filterSettings;
+							 break;
 
-      default:
-        break;
-      }
-			$elementsConfig[] = $entry;
-		}
-    return latticecms::buildUIHtmlChunks($elementsConfig, $object);
-  }
+							 default:
+								 break;
+				 }
+				 $elementsConfig[] = $entry;
+			}
+			return latticecms::buildUIHtmlChunks($elementsConfig, $object);
+	 }
 
 	public static function regenerateImages(){
 		//find all images

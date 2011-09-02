@@ -131,7 +131,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
 
       /*
-       * If the reqeuest is actually for a module, instead of a object, build
+       * If the request is actually for a module, instead of a object, build
        * the subrequest and set the response body to the request.
        * This should probably be re-engineered to be handled by the navi
        * module only, and cmsModules.xml should also be a navi thing

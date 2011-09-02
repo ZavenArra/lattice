@@ -203,6 +203,9 @@ return;
 			} catch (Exception $e){
 
 			}
+			echo getcwd().'/'.$this->outputDir;
+			flush();
+			ob_flush();
 			chmod(getcwd().'/'.$this->outputDir, 0777);
       $this->doc->save($this->outputDir.'/'.$outputfilename.'.xml');
 			system('cp -Rp application/media/* '.$this->outputDir);
