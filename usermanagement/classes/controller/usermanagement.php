@@ -110,9 +110,10 @@ Class Controller_UserManagement extends Controller_Layout {
 	
 		//set no managedRole
 		$data['role'] = null;
-      $data['username'] = null;
-      $data['password'] = null;
-      $data['email'] = null;
+		$data['username'] = null;
+		$data['password'] = null;
+		$data['email'] = null;
+		$data['superuser'] = false;
 
 		$view = new View($this->viewName.'_item');
 		$view->data = $data;
