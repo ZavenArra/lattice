@@ -242,15 +242,15 @@ class latticecms {
       foreach ($elements as $element) {
 
          $entry = array();
+				//$entry should become an object, that contains configuration logic for each  view
+				 //or better yet, each mopui view should have it's own view object
+				 //which translates the configuration into the view display
+
          $entry['type'] = $element->tagName;
          for ($i = 0; $i < $element->attributes->length; $i++) {
             $entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
          }
-         if($translatedLanguageCode != null){
-            $entry['fieldId'] = $entry['field'].'_'.$translatedLanguageCode;
-         }
-
-         //load defaults
+               //load defaults
          $entry['tag'] = $element->getAttribute('tag');
          $entry['isMultiline'] = ( $element->getAttribute('isMultiline') == 'true' )? true : false;
 
@@ -293,10 +293,18 @@ class latticecms {
 							 }
 							 $entry['filters'] = $filterSettings;
 							 break;
+						case 'tags':
+							$entry['field'] = 'tags'; //this is a cludge
+							break;
 
-							 default:
-								 break;
+						default:
+							break;
 				 }
+
+				 if($translatedLanguageCode != null){
+					 $entry['fieldId'] = $entry['field'].'_'.$translatedLanguageCode;
+				 }
+
 				 $elementsConfig[] = $entry;
 			}
 			return latticecms::buildUIHtmlChunks($elementsConfig, $object);
