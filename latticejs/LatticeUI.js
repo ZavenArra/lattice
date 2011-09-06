@@ -2455,8 +2455,8 @@ lattice.ui.Text = new Class({
 	
 	submit: function( e ){
 		this.parent( e );
-		var val = this.submittedValue.formatToHTML();
-		this.ipeElement.set( 'html', val );
+		var val = ( this.field.get( 'type' ) == 'password' )?  this.submittedValue.replace( /./g, '*' ) : this.submittedValue.formatToHTML();
+		this.ipeElement.set( 'text', val );
 	},
 		
 	checkFormaxLength: function(e){
@@ -2563,8 +2563,8 @@ lattice.ui.Text = new Class({
 	onSaveFieldSuccess: function( response ){
 		this.enableElement();
 		val = response.value;
-		if( this.field && this.field.get( 'type' ) == 'password' ){
-			this.ipeElement.set( 'html', '******' );
+		if( this.field.get( 'type' ) == 'password' ){
+			this.ipeElement.set( 'text', val.replace( /./g, '*' ) );
 		}else{
 			this.ipeElement.set( 'html', val );
 		}
@@ -2913,26 +2913,6 @@ lattice.ui.PaginationControls = new Class({
 		this.options = this.element = this.instanceName = this.itemIdPrefix = this.elementToClone	= this.nextPageControl = this.previousPageControl = this.pageableElement = this.method = this.container = this.spinner = this.marshal = this.pages = this.container = this.currentPage = this.pageableElement = null;
 	}
 });
-// 
-// lattice.ui.AutoCompleter = new Class({
-// 
-// 	Extends: lattice.ui.UIField,
-// 
-// 	initialize: function( anElement, aMarshal, options ){
-// 		this.parent( anElement, aMarshal, options );
-// 		this.field = this.element.getElement('.autoCompleterInput');
-// 	},
-// 	
-// 	onKeyPress: function( e ){
-// 		var submitCondition = ( ( e.control || e.meta) && e.key == 'enter' );
-// 		if( submitCondition == true ){
-// 			this.submit(e);
-// 		}else if( e.key == "esc" ){
-// 			this.cancelEditing( e );
-// 		}
-// 	},
-// 	
-// });
 
 lattice.ui.Tags = new Class({
 
