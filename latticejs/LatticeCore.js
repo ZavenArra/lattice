@@ -317,7 +317,6 @@ lattice.util.loadStyleSheet = function( cssURL, mediaString, opts ){
 		jsURL - {String} path to the script element to be attached
 */
 lattice.util.loadJS = function( jsURL, options ){
-    console.log( "loadJS", jsURL)
 	return new Asset.javascript( jsURL, options );
 }
 

@@ -120,7 +120,8 @@ input, textarea{
 	resize: none;
 }
 
-.ui-Text[data-ismultiline=true] .ipe,
+/*.ui-Text[data-ismultiline=true] .ipe,
+*/
 .ui-Text[data-ismultiline=true] textarea{
 	min-height: 7.5em;
 }

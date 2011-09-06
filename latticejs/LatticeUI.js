@@ -11,7 +11,7 @@ Element.implement({
 		/*
 			reffer to http://www.css3.info/preview/box-shadow/
 		*/
-		var styles = ( shadow )? shadow: '1px 1px 3px #999';
+		var styles = ( shadow )? shadow : '1px 1px 3px #444';
 		var styleName;
 		if( Browser.safari && Browser.version <= 5 ){ styleName = "-webkit-box-shadow"; }else if( Browser.firefox && Browser.version < 4 ){ styleName = "-moz-box-shadow"; }else{ styleName = "box-shadow"; }
 		if( (Browser.ie && Browser.version >= 9) || !Browser.ie ){
@@ -80,19 +80,25 @@ lattice.ui.UIField = new Class({
 	},
 
 	onSaveFieldSuccess: function( response ){
-		console.log('yay', this.listeners );
 		this.broadcastMessage( 'uifieldsaveresponse', [ this.fieldName, response ] );
 	},
 	
 	showValidationError: function( errorMessage ){
 		this.destroyValidationSticky();
-		this.validationSticky = new lattice.ui.Sticky( this.element, {
-			content: "<p>Error: " + errorMessage + "</p>",
-			position: 'centerTop',
-			edge: 'centerBottom',
-			tick: 'tickBottom',
-			stayOnBlur: true
-		});
+//		this.field.focus();
+//		this.field.fireEvent( 'focus' );
+		
+		if( !this.validationSticky ){
+			this.validationSticky = new lattice.ui.Sticky( this.element, {
+				content: "<p>Error: " + errorMessage + "</p>",
+				position: 'centerTop',
+				edge: 'centerBottom',
+				tick: 'tickBottom',
+				stayOnBlur: true
+			});
+		}else{
+			this.validationSticky.setMessage( "<p>Error: " + errorMessage + "</p>" );
+		}
 		this.validationSticky.show();
 		console.log('showValidationError', this.validationSticky );
 	},
@@ -1153,7 +1159,6 @@ lattice.ui.DateRangePicker = new Class({
 			aDateField.reposition( scrollData );
 		});
 	},
-	
 
 	validate: function(){
 		if( !this.isEndDateAfterStartDate() ) this.validationErrors.push( this.options.alerts.endDateLessThanStartDateError );
@@ -2363,7 +2368,7 @@ lattice.ui.Text = new Class({
 	},
 	
 	onBlur: function( e ){
-		if( this.allowSubmitOnBlur ) this.submit();
+		if( this.allowSubmitOnBlur && !this.validationSticky ) this.submit();
 	},
 	
 	prepareField: function(){
@@ -2372,12 +2377,12 @@ lattice.ui.Text = new Class({
 		val = this.ipeElement.get( 'html' ).toPlain();
 		this.field.set( 'value', val );
 		w = this.ipeElement.getSize().x - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width' ) ) + 2 * parseInt( this.ipeElement.getStyle('padding-left' ) ) );
-		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') )  ); 
+		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') ) +  2 * parseInt( this.field.getComputedStyle('padding-bottom' ) ) ); 
 		this.ipeElement.setStyle( 'width', w );
 		this.field.setStyles({
 			'overflow': 'hidden',
 			'width': w, 
-			'height': h
+			// 'height': h
 		});
 		if( this.isMultiline ){
 			this.field.addEvent( 'keyup', this.fitToContent.bind( this ) );
@@ -2550,7 +2555,8 @@ lattice.ui.Text = new Class({
 		this.ipeElement.setStyle( 'height', 'auto' );
 		this.ipeElement.set( 'html', aValue.formatToHTML() );
 		w = this.ipeElement.getSize().x - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width' ) ) + 2 * parseInt( this.ipeElement.getStyle('padding-left' ) ) );
-		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') )  ); 
+		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') ) +  2 * parseInt( this.field.getComputedStyle( 'padding-bottom' ) ) ); 
+		console.log( "{", w, ",", h , "}" );
 		this.setValue( ogVal );
 		return { x: w, y: h };
 	},

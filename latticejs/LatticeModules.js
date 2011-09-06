@@ -139,7 +139,7 @@ lattice.modules.Module = new Class({
 			field = this.initUIField( anElement );
 			console.log( anElement.getValueFromClassName('ui'), anElement.get('data-field'), field, typeof this.UIFields );
 			this.UIFields[ anElement.get('data-field') ] = field; 
-			field.setTabIndex( i+1 );
+			// field.setTabIndex( i+1 );
 		}, this );
 		return this.UIFields;
 	},
