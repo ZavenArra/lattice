@@ -442,6 +442,7 @@ if( !lattice.util.hasDOMReadyFired() ){
 		lattice.util.DOMReadyHasFired();
 		lattice.historyManager = new lattice.util.HistoryManager().instance();
 		lattice.historyManager.init();
+		lattice.eventManager = new lattice.util.Broadcaster();
 		lattice.modalManager = new lattice.ui.ModalManager();
 		if( lattice.loginTimeout && lattice.loginTimeout > 0 ) lattice.loginMonitor = new lattice.util.LoginMonitor();
 		lattice.util.EventManager.broadcastMessage( "resize" );

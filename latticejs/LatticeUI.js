@@ -53,10 +53,6 @@ lattice.ui.UIField = new Class({
 		this.element.removeClass( "disabled" );
 	},
 
-	setTabIndex: function( val ){
-		if( this.field ) this.field.set( 'tabindex', val );
-	},
-	
 	/*Constructor*/
 	initialize: function( anElement, aMarshal, options ) {
 		this.parent( anElement, aMarshal, options );
@@ -64,9 +60,7 @@ lattice.ui.UIField = new Class({
 		this.autoSubmit = ( this.element.getData('autosubmit') )? this.element.getData('autosubmit') : this.options.autoSubmit;
 	},
 	
-	toString: function(){
-		return "[ object, lattice.ui.UIField ]";
-	},
+	toString: function(){ return "[ object, lattice.ui.UIField ]"; },
 	
 	onResponse: function( json ){
 //		console.log( "RESPONSE", json );
@@ -89,7 +83,7 @@ lattice.ui.UIField = new Class({
 //		this.field.fireEvent( 'focus' );
 		
 		if( !this.validationSticky ){
-			this.validationSticky = new lattice.ui.Sticky( this.element, {
+			this.validationSticky = new lattice.ui.FieldSticky( this.element, {
 				content: "<p>Error: " + errorMessage + "</p>",
 				position: 'centerTop',
 				edge: 'centerBottom',
@@ -179,6 +173,7 @@ lattice.ui.Sticky = new Class({
 		edge: 'lowerLeft',
 		tick: 'tickLeft',
 		stayOnBlur: false,
+		ignoreScroll: false,
 		boxShadow: '1px 1px 2px #888888'
 	},
 
@@ -219,13 +214,15 @@ lattice.ui.Sticky = new Class({
 	},
 
 	position: function(){
-		this.element.position({
+		var ahoy = this.element.position({
 			relativeTo: this.target,
 			offset: this.options.offset,
 			position: this.options.position,
 			edge: this.options.edge,
+			ignoreScroll: this.options.ignoreScroll,
 			relFixedPosition: this.options.relFixedPosition
 		});
+		console.log( "::::::::::: pos :: ", ahoy, this.target.getOffsetParent() )
 	},
 	
   populate: function( content ){ this.content.adopt( content ); },
@@ -268,6 +265,18 @@ lattice.ui.Sticky = new Class({
     
 });
 
+lattice.ui.FieldSticky = new Class({
+		Extends: lattice.ui.Sticky,
+		initialize: function( el, marshal, options ){
+			this.parent( el, marshal, options );
+			lattice.eventManager.addListener( this );
+			this.addEvent( 'resize', this.position.bind( this ) );
+		},
+		destroy: function(){
+			lattice.eventManager.removeListener( this );
+			this.parent();
+		}
+});
 /*
 	Class: lattice.ui.navigation.Tabs
 	Generic helper for handling tabbed navigation
@@ -1384,20 +1393,19 @@ lattice.ui.FileElement = new Class({
 		this.statusShow = new Fx.Morph( this.statusElement, { 
 			'duration': 500,
 			'onComplete': function(){
-				lattice.util.EventManager.broadcastMessage("resize");
+				lattice.eventManager.broadcastMessage("resize");
 			}.bind( this )
 		});
 		this.statusHide = new Fx.Morph( this.statusElement, { 
 			'duration': 500,
 			"onComplete": function(){
 				this.statusElement.addClass( "hidden" );
-				lattice.util.EventManager.broadcastMessage("resize");
+				lattice.eventManager.broadcastMessage("resize");
 			}.bind( this )
 		});
 		this.previewElement = this.element.getElement(".preview");
 		if( this.previewElement ) this.imagePreview = this.previewElement.getElement( "img" );
 		this.filename = this.element.getElement( ".fileName" );
-		lattice.util.EventManager.addListener( this );
 		if( lattice.util.getValueFromClassName( 'extensions', this.element.get("class") ) ) this.extensions = this.buildExtensionsObject()
 		this.marshal.getSaveFileSubmitURL();
 		this.uploader.setTarget( this, this.uploadLink, this.getOptions() );
@@ -1460,7 +1468,7 @@ lattice.ui.FileElement = new Class({
 		if( this.previewElement ){
 			this.imageFadeOut = new Fx.Morph( this.imagePreview, {
 				'duration': 300,
-				'onComplete': lattice.util.EventManager.broadcastMessage.bind( lattice.util.EventManager, "resize" )
+				'onComplete': lattice.eventManager.broadcastMessage.bind( lattice.eventManager, "resize" )
 			}).start( { 'opacity' : [ 1, 0 ], 'height': 0 } );
 		}
 		if( this.clearButton ) this.clearButton.fade("out");
@@ -1526,7 +1534,7 @@ lattice.ui.FileElement = new Class({
 	
 	showStatus: function(){
 //		console.log( this.toString(), "showStatus", $A( arguments ) );
-		lattice.util.EventManager.broadcastMessage("resize");
+		lattice.eventManager.broadcastMessage("resize");
  		this.statusShow.start( { "opacity": [0,1] } );
 		this.statusElement.removeClass("hidden");
 	},
@@ -1570,14 +1578,14 @@ lattice.ui.FileElement = new Class({
 		this.revertToReadyState();
 		this.imageFadeIn = new Fx.Morph( this.imagePreview, {
 			'duration': 300,
-			'onComplete': lattice.util.EventManager.broadcastMessage.bind( lattice.util.EventManager, "resize" )
+			'onComplete': lattice.eventManager.broadcastMessage.bind( lattice.eventManager, "resize" )
 		}).start( { 'opacity' : [ 0, 1 ], 'width': imageData.width, 'height': imageData.height } );
 
 	},
 
 	destroy: function(){
 //		console.log( "destroy\t", this.toString() );
-		lattice.util.EventManager.removeListener( this );
+		lattice.eventManager.removeListener( this );
 		this.uploader.destroy();
 		this.statusElement.destroy();
 		this.element.destroy();
@@ -1642,7 +1650,7 @@ lattice.util.Uploader = new Class({
 			.addEvent('fileRemove', function(file) {
 				this.fileList.erase(file);
 		}.bind(this), true);
-		lattice.util.EventManager.addListener( this );
+		lattice.eventManager.addListener( this );
 		this.addEvent( "resize", this.reposition );
 		// callbacks are no longer in the options, every callback
 		// is fired as event, this is just compat
@@ -1931,7 +1939,7 @@ lattice.util.Uploader = new Class({
 		this.box.destroy();
 
 		lattice.modalManager.removeListener( this );
-		lattice.util.EventManager.removeListener( this );
+		lattice.eventManager.removeListener( this );
 		
 		delete this.box;
 		delete this.loaded;
@@ -2158,13 +2166,6 @@ lattice.ui.RadioGroup = new Class({
 		return returnVal;
 	},
 	
-	setTabIndex: function( val ){
-		this.radios.each( function( aRadio, i ){
-//			console.log( aRadio, aRadio.get('tabindex') );
-			aRadio.set( "tabindex", val + i );
-		});
-	},
-
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.radios = this.element.getElements("input[type='radio']");
@@ -2403,7 +2404,7 @@ lattice.ui.Text = new Class({
 			this.controls.destroy();
 			this.controls = null;
 		}
-		this.controls = new lattice.ui.Sticky( this.field, {
+		this.controls = new lattice.ui.FieldSticky( this.field, {
 			content: this.getControls(),
 			borderRadius: 4,
 			offset: ( this.isMultiline )? { x: -8, y: -12 } : { x: -8, y: 0 },
