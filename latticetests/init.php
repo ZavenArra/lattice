@@ -4,7 +4,8 @@
 Lattice_Initializer::check(
 	array(
 		'latticeauth',
-		'testing'
+    'testing',
+    'defaultusers',
 	)
 );
 
