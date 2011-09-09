@@ -103,19 +103,14 @@ class Model_Content extends ORM {
 		}
 
 		if(strstr($column, 'object')){
-			//echo 'iTS AN OBJECT<br>';
 			$relatedObject = ORM::Factory('object', parent::__get($column));
-			if(!$relatedObject->loaded()){
-            return null;
-            
-            //build the object
-            
-            /*
-            $id = Graph::object()->addObject($element['type']);
-            parent::__set($column, $id);
-            $relatedObject == Graph::object($id);
-			 */
-         }
+      if(!$relatedObject->loaded()){
+        //build the object
+        //andhere we ask if this should be a lattice implementation
+        $id = Graph::object()->addObject($element['type']);
+        parent::__set($column, $id);
+        $relatedObject == Graph::object($id);
+      }
 			return $relatedObject;
 
 		}

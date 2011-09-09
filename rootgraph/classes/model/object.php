@@ -65,7 +65,6 @@ class Model_Object extends ORM {
    public function __get($column) {
 
       
-      
       if ($column == 'contenttable' && !isset($this->_related[$column])) {
          $content = ORM::factory(inflector::singular('contents'));
          $content->setTemplateName($this->objecttype->objecttypename); //set the objecttypename for dbmapping
@@ -92,7 +91,9 @@ class Model_Object extends ORM {
 
       } else {
      
-         return $this->contenttable->$column;
+         $rval =  $this->contenttable->$column;
+         return $rval;
+         echo 'reval'.$rval;
  
       }
    }
