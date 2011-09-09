@@ -84,7 +84,7 @@ Class Builder_Frontend {
 		//if slug defined, get objectType from slug
 		if($slug = $iDataConfig->getAttribute('slug')){
 			$object = Graph::object($slug);
-			if(!$object->loaded){
+			if(!$object->loaded()){
 				//error out,
 				//object must be loaded from data.xml for this type of include conf
 			}
