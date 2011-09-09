@@ -8,7 +8,7 @@ lattice.modules.List = new Class({
 	  var url = lattice.util.getBaseURL() +"ajax/data/list/savefield/" + itemObjectId;
 		return url;
 	},
-		
+	
 	getAddObjectURL: function(){
 	    return lattice.util.getBaseURL() + "ajax/html/list/addObject/" + this.getObjectId();
 	},

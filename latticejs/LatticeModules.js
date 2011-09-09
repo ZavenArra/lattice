@@ -139,7 +139,6 @@ lattice.modules.Module = new Class({
 			field = this.initUIField( anElement );
 			console.log( anElement.getValueFromClassName('ui'), anElement.get('data-field'), field, typeof this.UIFields );
 			this.UIFields[ anElement.get('data-field') ] = field; 
-			field.setTabIndex( i+1 );
 		}, this );
 		return this.UIFields;
 	},
@@ -370,14 +369,17 @@ lattice.modules.LatticeList = new Class({
 		this.addObjectDialogue = new lattice.ui.AddObjectDialogue( this );
 		this.addObjectDialogue.spin();
 		this.addObjectDialogue.show();
+		console.log( "addObjectRequest:", this.getAddObjectURL() );
 		return new Request.JSON( { url: this.getAddObjectURL(), onSuccess: this.onAddObjectResponse.bind( this ) } ).send();
 	},
     
 	onAddObjectResponse: function( json ){
+		console.log( "onAddObjectResponse", json );
 		var element, listItem, addItemText;
 		element = json.response.html.toElement();
 		addItemText = this.controls.getElement( ".addItem" ).get( "text" );
-		listItem = new lattice.modules.ListItem( element, this, this.addObjectDialogue ).hideControls();
+		listItem = new lattice.modules.ListItem( element, this, this.addObjectDialogue );
+		listItem.hideControls();
 		this.addObjectDialogue.setContent( element , addItemText );
 		Object.each( listItem.UIFields, function( uiField ){
 			uiField.scrollContext = "modal";
@@ -495,6 +497,10 @@ lattice.modules.ListItem = new Class({
 		var url =  this.marshal.getSaveFieldURL( this.getObjectId() );
 //		console.log( "listItem.getSaveFieldURL", url );
 		return url;
+	},
+
+	getSaveFileSubmitURL: function(){
+			return lattice.util.getBaseURL() + 'ajax/data/cms/savefile/' + this.getObjectId()+"/";
 	},
 
 	initialize: function( anElement, aMarshal, options ){

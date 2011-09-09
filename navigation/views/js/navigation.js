@@ -23,10 +23,10 @@ lattice.modules.navigation.Navigation = new Class({
 		}
 		return id;
 	},
-	getNodFromSlug: function(slug){
-		// this.nodeData.each( function( aNode ){
-		// 	if( aNode.slug == slug )
-		// });
+	getNodeFromSlug: function(slug){
+		this.nodeData.each( function( aNode ){
+			return ( aNode.slug == slug )? aNode.id : false;
+		});
 	},
 	getNodeTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].nodeType; },
 	getContentTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].contentType; },
@@ -45,11 +45,9 @@ lattice.modules.navigation.Navigation = new Class({
 	},
 	
 	onAppStateChanged: function( appState ){ console.log( 'lattice.modules.navigation.Navigation.appStateChanged', appState ); },	
-	onObjectNameChanged: function( response ){
-		console.log( "::::::", response );
-		var newName = response.value;
+	onObjectNameChanged: function( objId, response ){
 		this.nodeData[ objId ].title = name;
-		$( 'node_' + objId ).getElement( "h5" ).set( 'text', name );
+		$( 'node_' + objId ).getElement( "h5" ).set( 'text', response.value );
 	},
 
 	onNodeClicked: function( nodeId, tier ){ 

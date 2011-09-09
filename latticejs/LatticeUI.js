@@ -11,7 +11,7 @@ Element.implement({
 		/*
 			reffer to http://www.css3.info/preview/box-shadow/
 		*/
-		var styles = ( shadow )? shadow: '1px 1px 3px #999';
+		var styles = ( shadow )? shadow : '1px 1px 3px #444';
 		var styleName;
 		if( Browser.safari && Browser.version <= 5 ){ styleName = "-webkit-box-shadow"; }else if( Browser.firefox && Browser.version < 4 ){ styleName = "-moz-box-shadow"; }else{ styleName = "box-shadow"; }
 		if( (Browser.ie && Browser.version >= 9) || !Browser.ie ){
@@ -53,10 +53,6 @@ lattice.ui.UIField = new Class({
 		this.element.removeClass( "disabled" );
 	},
 
-	setTabIndex: function( val ){
-		if( this.field ) this.field.set( 'tabindex', val );
-	},
-	
 	/*Constructor*/
 	initialize: function( anElement, aMarshal, options ) {
 		this.parent( anElement, aMarshal, options );
@@ -64,9 +60,7 @@ lattice.ui.UIField = new Class({
 		this.autoSubmit = ( this.element.getData('autosubmit') )? this.element.getData('autosubmit') : this.options.autoSubmit;
 	},
 	
-	toString: function(){
-		return "[ object, lattice.ui.UIField ]";
-	},
+	toString: function(){ return "[ object, lattice.ui.UIField ]"; },
 	
 	onResponse: function( json ){
 //		console.log( "RESPONSE", json );
@@ -80,19 +74,25 @@ lattice.ui.UIField = new Class({
 	},
 
 	onSaveFieldSuccess: function( response ){
-		console.log('yay', this.listeners );
 		this.broadcastMessage( 'uifieldsaveresponse', [ this.fieldName, response ] );
 	},
 	
 	showValidationError: function( errorMessage ){
 		this.destroyValidationSticky();
-		this.validationSticky = new lattice.ui.Sticky( this.element, {
-			content: "<p>Error: " + errorMessage + "</p>",
-			position: 'centerTop',
-			edge: 'centerBottom',
-			tick: 'tickBottom',
-			stayOnBlur: true
-		});
+//		this.field.focus();
+//		this.field.fireEvent( 'focus' );
+		
+		if( !this.validationSticky ){
+			this.validationSticky = new lattice.ui.FieldSticky( this.element, {
+				content: "<p>Error: " + errorMessage + "</p>",
+				position: 'centerTop',
+				edge: 'centerBottom',
+				tick: 'tickBottom',
+				stayOnBlur: true
+			});
+		}else{
+			this.validationSticky.setMessage( "<p>Error: " + errorMessage + "</p>" );
+		}
 		this.validationSticky.show();
 		console.log('showValidationError', this.validationSticky );
 	},
@@ -173,6 +173,7 @@ lattice.ui.Sticky = new Class({
 		edge: 'lowerLeft',
 		tick: 'tickLeft',
 		stayOnBlur: false,
+		ignoreScroll: false,
 		boxShadow: '1px 1px 2px #888888'
 	},
 
@@ -213,13 +214,15 @@ lattice.ui.Sticky = new Class({
 	},
 
 	position: function(){
-		this.element.position({
+		var ahoy = this.element.position({
 			relativeTo: this.target,
 			offset: this.options.offset,
 			position: this.options.position,
 			edge: this.options.edge,
+			ignoreScroll: this.options.ignoreScroll,
 			relFixedPosition: this.options.relFixedPosition
 		});
+		console.log( "::::::::::: pos :: ", ahoy, this.target.getOffsetParent() )
 	},
 	
   populate: function( content ){ this.content.adopt( content ); },
@@ -262,6 +265,18 @@ lattice.ui.Sticky = new Class({
     
 });
 
+lattice.ui.FieldSticky = new Class({
+		Extends: lattice.ui.Sticky,
+		initialize: function( el, marshal, options ){
+			this.parent( el, marshal, options );
+			lattice.eventManager.addListener( this );
+			this.addEvent( 'resize', this.position.bind( this ) );
+		},
+		destroy: function(){
+			lattice.eventManager.removeListener( this );
+			this.parent();
+		}
+});
 /*
 	Class: lattice.ui.navigation.Tabs
 	Generic helper for handling tabbed navigation
@@ -654,7 +669,6 @@ lattice.ui.AddObjectDialogue = new Class({
 	},
 	
 	setContent: function( itemToAdd, aTitle ){
-		console.log( itemToAdd, aTitle );
 		if( aTitle ) this.title.set( "text", aTitle );
 		this.modal.unspin();
 		this.itemContainer = new Element( "ul" );
@@ -1154,7 +1168,6 @@ lattice.ui.DateRangePicker = new Class({
 			aDateField.reposition( scrollData );
 		});
 	},
-	
 
 	validate: function(){
 		if( !this.isEndDateAfterStartDate() ) this.validationErrors.push( this.options.alerts.endDateLessThanStartDateError );
@@ -1380,20 +1393,19 @@ lattice.ui.FileElement = new Class({
 		this.statusShow = new Fx.Morph( this.statusElement, { 
 			'duration': 500,
 			'onComplete': function(){
-				lattice.util.EventManager.broadcastMessage("resize");
+				lattice.eventManager.broadcastMessage("resize");
 			}.bind( this )
 		});
 		this.statusHide = new Fx.Morph( this.statusElement, { 
 			'duration': 500,
 			"onComplete": function(){
 				this.statusElement.addClass( "hidden" );
-				lattice.util.EventManager.broadcastMessage("resize");
+				lattice.eventManager.broadcastMessage("resize");
 			}.bind( this )
 		});
 		this.previewElement = this.element.getElement(".preview");
 		if( this.previewElement ) this.imagePreview = this.previewElement.getElement( "img" );
 		this.filename = this.element.getElement( ".fileName" );
-		lattice.util.EventManager.addListener( this );
 		if( lattice.util.getValueFromClassName( 'extensions', this.element.get("class") ) ) this.extensions = this.buildExtensionsObject()
 		this.marshal.getSaveFileSubmitURL();
 		this.uploader.setTarget( this, this.uploadLink, this.getOptions() );
@@ -1456,7 +1468,7 @@ lattice.ui.FileElement = new Class({
 		if( this.previewElement ){
 			this.imageFadeOut = new Fx.Morph( this.imagePreview, {
 				'duration': 300,
-				'onComplete': lattice.util.EventManager.broadcastMessage.bind( lattice.util.EventManager, "resize" )
+				'onComplete': lattice.eventManager.broadcastMessage.bind( lattice.eventManager, "resize" )
 			}).start( { 'opacity' : [ 1, 0 ], 'height': 0 } );
 		}
 		if( this.clearButton ) this.clearButton.fade("out");
@@ -1522,7 +1534,7 @@ lattice.ui.FileElement = new Class({
 	
 	showStatus: function(){
 //		console.log( this.toString(), "showStatus", $A( arguments ) );
-		lattice.util.EventManager.broadcastMessage("resize");
+		lattice.eventManager.broadcastMessage("resize");
  		this.statusShow.start( { "opacity": [0,1] } );
 		this.statusElement.removeClass("hidden");
 	},
@@ -1566,14 +1578,14 @@ lattice.ui.FileElement = new Class({
 		this.revertToReadyState();
 		this.imageFadeIn = new Fx.Morph( this.imagePreview, {
 			'duration': 300,
-			'onComplete': lattice.util.EventManager.broadcastMessage.bind( lattice.util.EventManager, "resize" )
+			'onComplete': lattice.eventManager.broadcastMessage.bind( lattice.eventManager, "resize" )
 		}).start( { 'opacity' : [ 0, 1 ], 'width': imageData.width, 'height': imageData.height } );
 
 	},
 
 	destroy: function(){
 //		console.log( "destroy\t", this.toString() );
-		lattice.util.EventManager.removeListener( this );
+		lattice.eventManager.removeListener( this );
 		this.uploader.destroy();
 		this.statusElement.destroy();
 		this.element.destroy();
@@ -1638,7 +1650,7 @@ lattice.util.Uploader = new Class({
 			.addEvent('fileRemove', function(file) {
 				this.fileList.erase(file);
 		}.bind(this), true);
-		lattice.util.EventManager.addListener( this );
+		lattice.eventManager.addListener( this );
 		this.addEvent( "resize", this.reposition );
 		// callbacks are no longer in the options, every callback
 		// is fired as event, this is just compat
@@ -1927,7 +1939,7 @@ lattice.util.Uploader = new Class({
 		this.box.destroy();
 
 		lattice.modalManager.removeListener( this );
-		lattice.util.EventManager.removeListener( this );
+		lattice.eventManager.removeListener( this );
 		
 		delete this.box;
 		delete this.loaded;
@@ -2154,13 +2166,6 @@ lattice.ui.RadioGroup = new Class({
 		return returnVal;
 	},
 	
-	setTabIndex: function( val ){
-		this.radios.each( function( aRadio, i ){
-//			console.log( aRadio, aRadio.get('tabindex') );
-			aRadio.set( "tabindex", val + i );
-		});
-	},
-
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.radios = this.element.getElements("input[type='radio']");
@@ -2364,7 +2369,7 @@ lattice.ui.Text = new Class({
 	},
 	
 	onBlur: function( e ){
-		if( this.allowSubmitOnBlur ) this.submit();
+		if( this.allowSubmitOnBlur && !this.validationSticky ) this.submit();
 	},
 	
 	prepareField: function(){
@@ -2373,12 +2378,12 @@ lattice.ui.Text = new Class({
 		val = this.ipeElement.get( 'html' ).toPlain();
 		this.field.set( 'value', val );
 		w = this.ipeElement.getSize().x - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width' ) ) + 2 * parseInt( this.ipeElement.getStyle('padding-left' ) ) );
-		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') )  ); 
+		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') ) +  2 * parseInt( this.field.getComputedStyle('padding-bottom' ) ) ); 
 		this.ipeElement.setStyle( 'width', w );
 		this.field.setStyles({
 			'overflow': 'hidden',
 			'width': w, 
-			'height': h
+			// 'height': h
 		});
 		if( this.isMultiline ){
 			this.field.addEvent( 'keyup', this.fitToContent.bind( this ) );
@@ -2399,7 +2404,7 @@ lattice.ui.Text = new Class({
 			this.controls.destroy();
 			this.controls = null;
 		}
-		this.controls = new lattice.ui.Sticky( this.field, {
+		this.controls = new lattice.ui.FieldSticky( this.field, {
 			content: this.getControls(),
 			borderRadius: 4,
 			offset: ( this.isMultiline )? { x: -8, y: -12 } : { x: -8, y: 0 },
@@ -2456,8 +2461,8 @@ lattice.ui.Text = new Class({
 	
 	submit: function( e ){
 		this.parent( e );
-		var val = this.submittedValue.formatToHTML();
-		this.ipeElement.set( 'html', val );
+		var val = ( this.field.get( 'type' ) == 'password' )?  this.submittedValue.replace( /./g, '*' ) : this.submittedValue.formatToHTML();
+		this.ipeElement.set( 'text', val );
 	},
 		
 	checkFormaxLength: function(e){
@@ -2551,7 +2556,8 @@ lattice.ui.Text = new Class({
 		this.ipeElement.setStyle( 'height', 'auto' );
 		this.ipeElement.set( 'html', aValue.formatToHTML() );
 		w = this.ipeElement.getSize().x - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width' ) ) + 2 * parseInt( this.ipeElement.getStyle('padding-left' ) ) );
-		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') )  ); 
+		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') ) +  2 * parseInt( this.field.getComputedStyle( 'padding-bottom' ) ) ); 
+		console.log( "{", w, ",", h , "}" );
 		this.setValue( ogVal );
 		return { x: w, y: h };
 	},
@@ -2564,8 +2570,8 @@ lattice.ui.Text = new Class({
 	onSaveFieldSuccess: function( response ){
 		this.enableElement();
 		val = response.value;
-		if( this.field && this.field.get( 'type' ) == 'password' ){
-			this.ipeElement.set( 'html', '******' );
+		if( this.field.get( 'type' ) == 'password' ){
+			this.ipeElement.set( 'text', val.replace( /./g, '*' ) );
 		}else{
 			this.ipeElement.set( 'html', val );
 		}
@@ -2914,26 +2920,6 @@ lattice.ui.PaginationControls = new Class({
 		this.options = this.element = this.instanceName = this.itemIdPrefix = this.elementToClone	= this.nextPageControl = this.previousPageControl = this.pageableElement = this.method = this.container = this.spinner = this.marshal = this.pages = this.container = this.currentPage = this.pageableElement = null;
 	}
 });
-// 
-// lattice.ui.AutoCompleter = new Class({
-// 
-// 	Extends: lattice.ui.UIField,
-// 
-// 	initialize: function( anElement, aMarshal, options ){
-// 		this.parent( anElement, aMarshal, options );
-// 		this.field = this.element.getElement('.autoCompleterInput');
-// 	},
-// 	
-// 	onKeyPress: function( e ){
-// 		var submitCondition = ( ( e.control || e.meta) && e.key == 'enter' );
-// 		if( submitCondition == true ){
-// 			this.submit(e);
-// 		}else if( e.key == "esc" ){
-// 			this.cancelEditing( e );
-// 		}
-// 	},
-// 	
-// });
 
 lattice.ui.Tags = new Class({
 

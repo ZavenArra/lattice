@@ -23,7 +23,7 @@ Swiff.Uploader = new Class({
 		url: null,
 		method: 'post',
 		data: null,
-		fieldName: 'Filedata',
+		fieldName: 'file',
 		target: null,
 		height: '100%',
 		width: '100%',

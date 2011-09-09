@@ -156,10 +156,10 @@ lattice.modules.CMS = new Class({
 	},
 	
 	onUIFieldSaved: function( fieldName, response ){
-		console.log( "onUIFieldSaved", fieldName, response );
+//		console.log( "onUIFieldSaved", fieldName, response );
 		switch( fieldName ){
 			case 'title':
-				this.onTitleEdited(  response );
+				this.onTitleEdited( response );
 			break;
 		}
 	},
@@ -168,7 +168,7 @@ lattice.modules.CMS = new Class({
     Section: Event Handlers
 */
 	onTitleEdited: function( response ){
-		this.broadcastMessage( 'objectnamechanged', [ this.getObjectId(), response.value ] );
+		this.broadcastMessage( 'objectnamechanged', [ this.getObjectId(), response ] );
     if( this.slugIPE ) this.slugIPE.retrieve( "Class" ).setValue( response.slug );
 	},
 
@@ -393,7 +393,7 @@ lattice.modules.CMSPage = new Class({
 			titleIPE = titleEl.retrieve( "Class" );
 			if( titleIPE ){
 				titleIPE.addListener( this );
-				this.addEvent( 'uifieldsaveresponse', this.marshal.onUIFieldSaved.bind( this ) );
+				this.addEvent( 'uifieldsaveresponse', this.marshal.onUIFieldSaved.bind( this.marshal ) );
 			}
 			this.slugIPE = this.pageHeader.getElement( ".field-slug" );
 		}
@@ -442,6 +442,7 @@ if( !lattice.util.hasDOMReadyFired() ){
 		lattice.util.DOMReadyHasFired();
 		lattice.historyManager = new lattice.util.HistoryManager().instance();
 		lattice.historyManager.init();
+		lattice.eventManager = new lattice.util.Broadcaster();
 		lattice.modalManager = new lattice.ui.ModalManager();
 		if( lattice.loginTimeout && lattice.loginTimeout > 0 ) lattice.loginMonitor = new lattice.util.LoginMonitor();
 		lattice.util.EventManager.broadcastMessage( "resize" );
