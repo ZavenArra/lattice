@@ -181,24 +181,23 @@ class Controller_Builder extends Controller {
 			}
 
 
-			//now we check for a title collision
+         //now we check for a title collision
 			//if there is a title collision, we assume that this is a component
 			//already added at the next level up, in this case we just
 			//update the objects data
-			$existing = Graph::instance()
-                 ->latticeChildrenQuery()
-                 ->find_all();
-         
-			$component = null;
-			foreach($existing as $aComponent){
-				//echo "\n\n".$aComponent->contenttable->title;
-        if(isset($data['title']) && $data['title']){
-          if($aComponent->contenttable->title == $data['title']){
-            $component = $aComponent;	
-            break;
-          }
-        }
-			}
+         $component = false;
+         if(isset($data['title'])){
+            $checkForPreexistingObject = Graph::object()
+                 ->latticeChildrenFilter($parentObject->id)
+                 ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
+                 ->where('title', '=', $data['title'])
+                 ->find();
+            if($checkForPreexistingObject->loaded()){
+                $component = $checkForPreexistingObject;
+            }
+         }
+		
+		
 			if($component){
 				$component->updateWithArray($data);
 				$objectId = $component->id;

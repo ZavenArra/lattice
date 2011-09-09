@@ -941,7 +941,7 @@ class Model_Object extends ORM {
    public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
       
       $newObjectType = ORM::Factory('objecttype', $objectTypeName);
-
+      
       $newObject = $this->addNewObject($objectTypeName, $data, $lattice, $rosettaId, $languageId);
      
       
@@ -969,8 +969,8 @@ class Model_Object extends ORM {
       }
 
       /*
-       * adding of components is delayed, because data trees need to be built before components go looking
-       * for rosetta ids
+       * adding of components is delayed until after alternate language objects creates,
+       * because data trees need to be built before components go looking for rosetta ids
        */
       $newObject->addComponents();
 
@@ -1018,8 +1018,8 @@ class Model_Object extends ORM {
                  ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
                  ->where('title', '=', $arguments['title'])
                  ->find();
-        //    echo $arguments['title'];
             if($checkForPreexistingObject->loaded()){
+               die('componet prenset!');
               $componentAlreadyPresent = true;
               
             }
