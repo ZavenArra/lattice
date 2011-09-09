@@ -278,6 +278,32 @@ class latticecms {
                $entry['radios'] = $radios;
                break;
 
+             // Begin pulldown change
+             case 'pulldown':
+               $children = lattice::config('objects', 'option', $element);
+               $options  = array();
+               foreach ($children as $child) {
+                  $label = $child->getAttribute('label');
+                  $value = $child->getAttribute('value');
+                  $options[$label] = $value;
+               }
+               $entry['options'] = $options;  
+               break;
+               break;
+
+/*
+             case 'select':
+               $children = lattice::config('objects', 'select', $element);
+               $options  = array();
+               foreach ($children as $child) {
+                  $label = $child->getAttribute('label');  // Use same syntax, even though is not added as 'value' attribute in html?
+                  $value = $child->getAttribute('value');
+                  $options[$label] = $value;
+               }
+               $entry['options'] = $options;  // Best index string to use? Plural?
+               break;
+*/
+
             case 'associator':
                //need to load filters here
                $filters = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]/filter', 
