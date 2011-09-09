@@ -56,19 +56,16 @@ class Controller_List extends Lattice_CMSInterface {
    protected function setListObject($listObjectIdOrParentId, $family=null) {
 
       if ($family != null) {
-         $lt = ORM::Factory('objectType')->where('objecttypename', '=', $family)->find();
+				$parentId = $listObjectIdOrParentId;
 
-         $listObject = ORM::Factory('listcontainer')
-                 ->latticeChildrenFilter($listObjectIdOrParentId)
-                 ->objectTypeFilter($lt->id)
-                 ->activeFilter()
-                 ->find();
+				$listContainerObject = Graph::object($parentId)->$family;
 
-         if (!$listObject->loaded()) {
+
+         if (!$listContainerObject->loaded()) {
             throw new Kohana_Exception('Did not find list container List object is missing container: :id', array(':id' => $lt->id));
          }
 
-         $this->_listObject = $listObject;
+         $this->_listObject = $listContainerObject;
       } else {
 
          $this->_listObject = ORM::Factory('listcontainer', $listObjectIdOrParentId);

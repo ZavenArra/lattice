@@ -20,6 +20,7 @@ class Graph_ObjectQuery {
       $this->attributes['objectTypeFilter'] = null;
       $this->attributes['where'] = null;
       $this->attributes['from'] = null;
+      $this->attributes['slug'] = null;
 
       foreach($attributes as $key=>$value){
          $this->attributes[$key] = $value;
@@ -28,34 +29,42 @@ class Graph_ObjectQuery {
    
    public function initWithXml($xml) {
       $this->attributes['label'] = $xml->getAttribute('label');
-      $this->attributes['objectTypeFilter'] = $xml->getAttribute('filter');
+      $this->attributes['objectTypeFilter'] = $xml->getAttribute('objectTypeFilter');
       $this->attributes['where'] = $xml->getAttribute('where');
       $this->attributes['from'] = $xml->getAttribute('from');
+      $this->attributes['slug'] = $xml->getAttribute('slug');
    }
    
    public function run($parentId = null){
           
      $objects = Graph::object();
 
+			//apply slug filter
+			if($this->attributes['slug']){
+				$objects->where('slug', '=', $this->attributes['slug']);
+			}
+
       //apply optional parent filter
-      if ($from = $this->attributes['from']) { //
-         if ($from == 'parent') {
-            $objects->latticeChildrenFilter($parentId);
-         } else {
-            $from = Graph::object($from);
-            $objects->latticeChildrenFilter($from->id);
-         }
+      if ($from = $this->attributes['from'] ) { //
+				if($from != 'all'){
+					if ($from == 'parent') {
+						$objects->latticeChildrenFilter($parentId);
+					} else {
+						$from = Graph::object($from);
+						$objects->latticeChildrenFilter($from->id);
+					}
+				}
       }
 
       //apply optional objectType filter
-      $objects = $objects->objecttypeFilter($this->attributes['objectTypeFilter']); 
+      $objects = $objects->objectTypeFilter($this->attributes['objectTypeFilter']); 
 
       //apply optional SQL where filter
       if ($where = $this->attributes['where']) { //
          $objects->where($where);
       }
 
-
+	
       $objects->publishedFilter();
       $objects->order_by('sortorder');
       $objects = $objects->find_all();

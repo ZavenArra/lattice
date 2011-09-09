@@ -91,8 +91,33 @@ class Model_Object extends ORM {
          return parent::__get($column);
 
       } else {
-     
-         return $this->contenttable->$column;
+				//check if this is a list container
+				$listConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]',
+					$this->objecttype->objecttypename,
+					$column));
+				if($listConfig->length){
+               //look up the object type
+               $family = $column;
+               $listObjectType = ORM::Factory('objecttype', $family);
+
+               if (!$listObjectType->id) {
+                   $this->objecttype->configureField($listConfig->item(0));
+                   $listObjectType = ORM::Factory('objecttype', $family);
+               }
+               
+               $listContainerObject = ORM::Factory('listcontainer')
+                 ->latticeChildrenFilter($this->id)
+                 ->objectTypeFilter($listObjectType->id)
+                 ->activeFilter()
+                 ->find();	
+               
+               if(!$listContainerObject->id){
+                  $listContainerObjectId = $this->addObject($family);
+                  $listContainerObject = ORM::Factory('listcontainer', $listContainerObjectId);
+               }
+               return $listContainerObject;
+				}
+				return $this->contenttable->$column;
  
       }
    }
@@ -676,9 +701,12 @@ class Model_Object extends ORM {
       return $this;
    }
 
+	 /*
+		* Recode as latticeParentFilter
    public function parentFilter($parentid) {
       $this->where('parentid', '=', $parentid);
-   }
+	 }
+		*/
 
    public function noContainerObjects() {
       $res = ORM::Factory('objecttype')
@@ -741,7 +769,7 @@ class Model_Object extends ORM {
 	 }
    
    /*
-     Function: addObject($id)
+     Function: addNewObject($id)
      Private function for adding an object to the cms data
      Parameters:
      id - the id of the parent category
@@ -961,7 +989,8 @@ class Model_Object extends ORM {
       $containers = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename));
       foreach ($containers as $c) {
          $arguments['title'] = $c->getAttribute('label');
-         $childObject = $this->addObject($c->getAttribute('family'), $arguments);
+         $this->objecttype->configureField($c);
+         //$childObject = $this->addObject($c->getAttribute('family'), $arguments);
       }
       
       //look up any components and add them as well
