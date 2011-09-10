@@ -356,13 +356,6 @@ CREATE TABLE `contents` (
   `flag98` text CHARACTER SET latin1,
   `flag99` text CHARACTER SET latin1,
   `flag100` text CHARACTER SET latin1,
-  `object1` int(11) NOT NULL,
-  `object2` int(11) NOT NULL,
-  `object3` int(11) NOT NULL,
-  `object4` int(11) NOT NULL,
-  `object5` int(11) NOT NULL,
-  `object6` int(11) NOT NULL,
-  `object7` int(11) NOT NULL,
   `activity` char(1) CHARACTER SET latin1 DEFAULT NULL,
   PRIMARY KEY (`object_id`),
   KEY `id` (`id`)
@@ -383,6 +376,14 @@ CREATE TABLE `objectrelationships` (
 	`sortorder` int(11) NOT NULL,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `objectelementrelationships` (
+	  `id` int(11) NOT NULL AUTO_INCREMENT,
+		  `object_id` int(11) NOT NULL,
+			  `elementobject_id` int(11) NOT NULL,
+				  `name` varchar(255) NOT NULL,
+					  PRIMARY KEY (`id`)
+					) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `lattices` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
