@@ -86,7 +86,7 @@ class Model_Content extends ORM {
 			$fieldConfig = lattice::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $columnName));
 			if($fieldConfig->item(0)){
 				//field is configured but not initialized in database
-				$object->objecttype->configureField($fieldConfig->item(0));
+				$object->objecttype->configureElement($fieldConfig->item(0));
 
 				self::reinitDbmap($object->objecttype_id);
 
@@ -103,15 +103,32 @@ class Model_Content extends ORM {
 		}
 
 		if(strstr($column, 'object')){
-			$relatedObject = ORM::Factory('object', parent::__get($column));
-      if(!$relatedObject->loaded()){
-        //build the object
-        //andhere we ask if this should be a lattice implementation
-        $id = Graph::object()->addObject($element['type']);
-        parent::__set($column, $id);
-        $relatedObject == Graph::object($id);
-      }
-			return $relatedObject;
+			//echo 'iTS AN OBJECT<br>';
+			$objectElement = ORM::Factory('objectelement')
+                 ->where('object_id', '=', $this->id)
+                 ->where('name', '=', $columnName)
+                 ->find();
+
+         if (!$objectElement->loaded()) {
+            //
+            // it may make sense for the objecttype model to return the config info for itself
+            // or something similar
+            //
+            if ($object->objecttype->nodeType == 'container') {
+               //For lists, values will be on the 2nd level 
+               $xPath = sprintf('//list[@family="%s"]', $object->objecttype->objecttypename);
+            } else {
+               //everything else is a normal lookup
+               $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
+            }
+
+            $elementConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@field="%s"]', $columnName));
+
+            //build the object
+            $objectElement = $object->addElementObject($elementConfig->item(0)->tagname, $columnName);
+            
+         }
+			return $objectElement;
 
 		}
 
@@ -155,7 +172,7 @@ class Model_Content extends ORM {
 		$fieldConfig = lattice::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $column));
 		if($fieldConfig->item(0)){
 			//field is configured but not initialized in database
-			$object->objecttype->configureField($fieldConfig->item(0));	
+			$object->objecttype->configureElement($fieldConfig->item(0));	
 			self::reinitDbmap($object->objecttype_id);
 
 			//now go aheand and save on the mapped column
