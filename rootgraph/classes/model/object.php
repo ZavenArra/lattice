@@ -101,7 +101,7 @@ class Model_Object extends ORM {
                $listObjectType = ORM::Factory('objecttype', $family);
 
                if (!$listObjectType->id) {
-                   $this->objecttype->configureField($listConfig->item(0));
+                   $this->objecttype->configureElement($listConfig->item(0));
                    $listObjectType = ORM::Factory('objecttype', $family);
                }
                
@@ -769,7 +769,7 @@ class Model_Object extends ORM {
 	 }
    
    /*
-     Function: addNewObject($id)
+     Function: addLatticeObject($id)
      Private function for adding an object to the cms data
      Parameters:
      id - the id of the parent category
@@ -784,8 +784,110 @@ class Model_Object extends ORM {
     * */
 
    
-   private function addNewObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null){
+  
+   
+   //'addTranslatableObject'
+   public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
       
+      $newObjectType = ORM::Factory('objecttype', $objectTypeName);
+      
+      $newObject = $this->addLatticeObject($objectTypeName, $data, $lattice, $rosettaId, $languageId);
+     
+      
+      /*
+       * Set up any translated peer objects
+       */
+      if (!$rosettaId) {
+         $this->addTranslatedPeerObjects($newObject);
+      }
+
+      /*
+       * adding of components is delayed until after alternate language objects creates,
+       * because data trees need to be built before components go looking for rosetta ids
+       */
+      $newObject->addComponents();
+
+      return $newObject->id;
+
+   }
+   
+   private function addTranslatedPeerObjects($newObject){
+      $languages = Graph::languages();
+         foreach ($languages as $translationLanguage) {
+           
+            if ($translationLanguage->id == $newObject->language_id) {
+               continue;
+            }
+
+            if ($this->loaded()) {
+               $translatedParent = $this->getTranslatedObject($translationLanguage->id);
+          
+               $translatedParent->addLatticeObject($objectTypeName, $data, $lattice, $newObject->rosetta_id);
+            } else {
+               Graph::object()->addLatticeObject($objectTypeName, $data, $lattice, $newObject->rosetta_id, $translationLanguage->id);
+            }
+         }
+
+   }
+   
+   /*
+    * Called only at object creation time, this function add automatic components to an object as children and also recurses
+    * this functionality down the tree.
+    */
+   private function addComponents(){
+
+
+       //chain problem
+      $containers = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename));
+      foreach ($containers as $c) {
+         $arguments['title'] = $c->getAttribute('label');
+         $this->objecttype->configureElement($c);
+         //$childObject = $this->addObject($c->getAttribute('family'), $arguments);
+      }
+      
+      //look up any components and add them as well
+      //configured components
+      $components = lattice::config('objects', sprintf('//objectType[@name="%s"]/components/component', $this->objecttype->objecttypename));
+      foreach ($components as $c) {
+         $arguments = array();
+         if ($label = $c->getAttribute('label')) {
+            $arguments['title'] = $label;
+         }
+         if ($c->hasChildNodes()) {
+            foreach ($c->childNodes as $data) {
+               $arguments[$data->tagName] = $data->value;
+            }
+         }
+         //We have a problem here
+         //with data.xml populated components
+         //the item has already been added by the addObject recursion, but gets added again here
+         //what to do about this??/on
+         
+         $componentAlreadyPresent = false;
+         if(isset($arguments['title'])){
+            $checkForPreexistingObject = Graph::object()
+                 ->latticeChildrenFilter($this->id)
+                 ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
+                 ->where('title', '=', $arguments['title'])
+                 ->find();
+            if($checkForPreexistingObject->loaded()){
+               die('componet prenset!');
+              $componentAlreadyPresent = true;
+              
+            }
+         }
+                 
+         if(!$componentAlreadyPresent){
+            $this->addObject($c->getAttribute('objectTypeName'), $arguments);
+         }
+      }
+    
+
+   }
+   
+   
+    private function createObject($objectTypeName, $data, $rosettaId, $languageId){
+       
       if(!$rosettaId){
          $translationRosettaId = Graph::newRosetta();
       } else {
@@ -916,6 +1018,51 @@ class Model_Object extends ORM {
       }
       $newObject->contenttable->save();
       $newObject->save();
+   
+   }
+   
+   /*
+    * function addElementObject
+    * An element object is an object that is part of another object's content. Examples
+    * include links, files or images (in the coming full implementation) or other
+    * user defined complex objects.
+    * 
+    */
+   
+   public function addElementObject($objectTypeName, $elementName, $data=array(), $rosettaID = null, $languageId = null){
+      $newObjectType = ORM::Factory('objecttype', $objectTypeName);
+      
+      $newObject = $this->createObject($objectTypeName, $data, $lattice, $rosettaId, $languageId);
+     
+      //and set up the element relationship
+      $elementRelationship = ORM::Factory('objectelementrelationship');
+      $elementRelationship->object_id = $this->id;
+      $elementRelationship->elementObjectId = $newObject->id;
+      $elementRelationship->name = $elementName;
+      $elementRelationship->save();
+      
+      /*
+       * Set up any translated peer objects
+       */
+      if (!$rosettaId) {
+         $this->addTranslatedPeerObjects($newObject);
+      }
+
+      /*
+       * adding of components is delayed until after alternate language objects creates,
+       * because data trees need to be built before components go looking for rosetta ids
+       * elementObjects will almost never have components, but we support it anyway
+       */
+      $newObject->addComponents();
+
+      return $newObject->id;
+  
+   }
+    
+   private function addLatticeObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null){
+      
+      $this->createObject($objectTypeName, $data, $rosettaId, $languageId);
+     
 
       //The objet has been built, now set it's lattice point
       $lattice = Graph::lattice();
@@ -935,102 +1082,6 @@ class Model_Object extends ORM {
       $objectRelationship->save();
       return $newObject;
    
-   }
-   
-   
-   public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
-      
-      $newObjectType = ORM::Factory('objecttype', $objectTypeName);
-      
-      $newObject = $this->addNewObject($objectTypeName, $data, $lattice, $rosettaId, $languageId);
-     
-      
-      /*
-       * Set up any translated peer objects
-       */
-      if (!$rosettaId) {
-        
-         $languages = Graph::languages();
-         foreach ($languages as $translationLanguage) {
-           
-            if ($translationLanguage->id == $newObject->language_id) {
-               continue;
-            }
-
-            if ($this->loaded()) {
-               $translatedParent = $this->getTranslatedObject($translationLanguage->id);
-          
-               $translatedParent->addNewObject($objectTypeName, $data, $lattice, $newObject->rosetta_id);
-            } else {
-               Graph::object()->addNewObject($objectTypeName, $data, $lattice, $newObject->rosetta_id, $translationLanguage->id);
-            }
-         }
-
-      }
-
-      /*
-       * adding of components is delayed until after alternate language objects creates,
-       * because data trees need to be built before components go looking for rosetta ids
-       */
-      $newObject->addComponents();
-
-      return $newObject->id;
-
-   }
-   
-   /*
-    * Called only at object creation time, this function add automatic components to an object as children and also recurses
-    * this functionality down the tree.
-    */
-   private function addComponents(){
-
-
-       //chain problem
-      $containers = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename));
-      foreach ($containers as $c) {
-         $arguments['title'] = $c->getAttribute('label');
-         $this->objecttype->configureField($c);
-         //$childObject = $this->addObject($c->getAttribute('family'), $arguments);
-      }
-      
-      //look up any components and add them as well
-      //configured components
-      $components = lattice::config('objects', sprintf('//objectType[@name="%s"]/components/component', $this->objecttype->objecttypename));
-      foreach ($components as $c) {
-         $arguments = array();
-         if ($label = $c->getAttribute('label')) {
-            $arguments['title'] = $label;
-         }
-         if ($c->hasChildNodes()) {
-            foreach ($c->childNodes as $data) {
-               $arguments[$data->tagName] = $data->value;
-            }
-         }
-         //We have a problem here
-         //with data.xml populated components
-         //the item has already been added by the addObject recursion, but gets added again here
-         //what to do about this??/on
-         
-         $componentAlreadyPresent = false;
-         if(isset($arguments['title'])){
-            $checkForPreexistingObject = Graph::object()
-                 ->latticeChildrenFilter($this->id)
-                 ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
-                 ->where('title', '=', $arguments['title'])
-                 ->find();
-            if($checkForPreexistingObject->loaded()){
-               die('componet prenset!');
-              $componentAlreadyPresent = true;
-              
-            }
-         }
-                 
-         if(!$componentAlreadyPresent){
-            $this->addObject($c->getAttribute('objectTypeName'), $arguments);
-         }
-      }
-    
-
    }
    
    public function getTranslatedObject($languageId){

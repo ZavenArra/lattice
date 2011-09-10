@@ -143,7 +143,7 @@ class Model_ObjectType extends ORM {
    
    
     
-	public function configureField($item){
+	public function configureElement($item){
 
 		switch($item->tagName){
 

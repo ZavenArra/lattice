@@ -117,7 +117,7 @@ class Graph {
 		}
 
 		foreach( lattice::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
-			$tRecord->configureField($item);
+			$tRecord->configureElement($item);
 		}
       Model_Content::reinitDbmap($tRecord->id); // Rethink this.
 	}
