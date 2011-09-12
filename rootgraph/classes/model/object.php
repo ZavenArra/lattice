@@ -64,19 +64,21 @@ class Model_Object extends ORM {
 
    public function __get($column) {
 
-      
       if ($column == 'contenttable' && !isset($this->_related[$column])) {
          $content = ORM::factory(inflector::singular('contents'));
          $content->setTemplateName($this->objecttype->objecttypename); //set the objecttypename for dbmapping
          $this->_related[$column] = $content->where('object_id', '=', $this->id)->find();
          if (!$this->_related[$column]->_loaded) {
-            throw new Kohana_Exception('BAD_Lattice_DB' . 'no content record for object ' . $this->id);
+            //we are going to allow no content object
+            //in order to support having empty objects
+            //throw new Kohana_Exception('BAD_Lattice_DB' . 'no content record for object ' . $this->id);
          }
          return $this->_related[$column];
       } else if (in_array($column, array_keys($this->_table_columns))){
          //this catchs the configured columsn for this table
          Kohana::$log->add(Log::INFO, $column);
          return parent::__get($column);
+     
       } else if ($column == 'parent') {
 				return $getLatticeParent(); 
       } else if ($column == 'contenttable'){
@@ -84,14 +86,17 @@ class Model_Object extends ORM {
       } else if ($column == 'title'){
          return $this->contenttable->title;
       } else if ($column == 'objecttype'){
+        
          //this condition should actually check against associations
          //OR just call parent::__get($column) with an exception
          //though that seems pretty messy
          return parent::__get($column);
-
+      } else if (in_array($column, array_keys($this->__get('objecttype')->_table_columns))){
+  
+        return $this->__get('objecttype')->$column; 
       } else {
 				//check if this is a list container
-				$listConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]',
+				$listConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]',
 					$this->objecttype->objecttypename,
 					$column));
 				if($listConfig->length){
@@ -174,7 +179,7 @@ class Model_Object extends ORM {
             
             $objectType = ORM::Factory('objecttype',$objecttype_id);
             
-            $xpath = sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $objectType->objecttypename, $column);
+            $xpath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $objectType->objecttypename, $column);
             $fieldInfo = lattice::config('objects', $xpath)->item(0);
             if (!$fieldInfo) {
                throw new Kohana_Exception('Invalid field for objectType, using XPath : :xpath', array(':xpath' => $xpath));
@@ -348,8 +353,8 @@ class Model_Object extends ORM {
       $fields = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
 
       foreach ($fields as $fieldInfo) {
-         $field = $fieldInfo->getAttribute('field');
-         if (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $this->objecttype->objecttypename, $field))->length) {
+         $field = $fieldInfo->getAttribute('name');
+         if (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field))->length) {
             $content[$field] = $this->contenttable->{$field};
          }
       }
@@ -357,11 +362,28 @@ class Model_Object extends ORM {
       //find any lists
       foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list) {
 
-         $family = $list->getAttribute('family');
+         $family = $list->getAttribute('name');
          $content[$family] = $this->getListContentAsArray($family);
       }
 
       return $content;
+   }
+   
+   public function getFields() {
+      $fields = array('id', 'title', 'slug', 'dateadded', 'objecttypename');
+      
+      $objectFields = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
+      foreach ($objectFields as $fieldInfo) {
+         $fields[] = $fieldInfo->getAttribute('name');   
+      }
+
+      foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list) {
+         $family = $list->getAttribute('name');
+         $fields[] = $family;
+      }
+   
+      return $fields;
+   
    }
 
    public function getListContentAsArray($family) {
@@ -618,7 +640,7 @@ class Model_Object extends ORM {
 
       //do the resizing
       $objecttypename = $this->objecttype->objecttypename;
-      $resizes = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]/resize', $objecttypename, $field
+      $resizes = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]/resize', $objecttypename, $field
                       )
       );
 			Kohana::$log->add(Log::INFO, 'printing out resizess');
@@ -983,7 +1005,7 @@ class Model_Object extends ORM {
                continue(2);
          }
 
-         $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $newObjectType->objecttypename, $field);
+         $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $newObjectType->objecttypename, $field);
          $fieldInfo = lattice::config('objects', $fieldInfoXPath)->item(0);
          if (!$fieldInfo) {
             throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath' => $fieldInfoXPath));

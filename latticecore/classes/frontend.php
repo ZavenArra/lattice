@@ -3,11 +3,11 @@
 class frontend {
 	public static function makeHtmlElement($element, $prefix, $indent=''){
 
-		$field = $element->getAttribute('field');
+		$field = $element->getAttribute('name');
 
 		switch($element->nodeName){
 		case 'list':
-			$family = $element->getAttribute('family');
+			$family = $element->getAttribute('name');
 			$addables = lattice::config('objects', 'addableObject', $element);		
 			$addable = $addables->item(0);
 			$objectTypeName = $addable->getAttribute('objectTypeName');

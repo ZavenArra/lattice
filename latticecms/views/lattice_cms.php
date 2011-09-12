@@ -11,7 +11,7 @@
 	</div>
 	
 	<div class="pagesPane clearFix">
-		<div id="pageContainer" clas="clearFix"></div>
+		<div id="pageContainer" class="clearFix"></div>
 	</div>
 
 </div>

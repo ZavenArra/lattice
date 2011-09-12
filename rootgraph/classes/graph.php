@@ -145,7 +145,11 @@ class Graph {
               ->join('objects')->on('objects.id', '=', 'objectrelationships.connectedobject_id' )
               ->where('language_id', '=', $language->id)
               ->find();
-      return ORM::Factory('object', $objectRelationship->id);
+      $root = ORM::Factory('object', $objectRelationship->id);
+      if(!$root->loaded()){
+         throw new Kohana_Exception('Root object not found');
+      }
+      return $root;
   
    }
    

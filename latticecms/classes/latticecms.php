@@ -280,7 +280,7 @@ class latticecms {
 
             case 'associator':
                //need to load filters here
-               $filters = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]/filter', 
+               $filters = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]/filter', 
 								 $object->objecttype->objecttypename,
 								 $element->getAttribute('field') ));
 							 $filterSettings = array();
@@ -316,7 +316,7 @@ class latticecms {
 			foreach(lattice::config('objects', 'elements/*', $objectType) as $element){
 				if($element->tagName == 'image'){
 					$objects = ORM::Factory('objectType', $objectType->getAttribute('name'))->getActiveMembers();
-					$fieldname = $element->getAttribute('field');
+					$fieldname = $element->getAttribute('name');
 					foreach($objects as $object){
            	if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
 							$uiresizes = Kohana::config('lattice_cms.uiresizes');
@@ -333,7 +333,7 @@ class latticecms {
 			$object = Graph::object($id);
       foreach(lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element){
 				if($element->tagName == 'image'){
-					$fieldname = $element->getAttribute('field');
+					$fieldname = $element->getAttribute('name');
 					if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
 						$uiresizes = Kohana::config('lattice_cms.uiresizes');
 						$object->processImage($object->$fieldname->filename, $fieldname, $uiresizes);
