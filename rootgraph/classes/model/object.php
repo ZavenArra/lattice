@@ -1066,7 +1066,7 @@ class Model_Object extends ORM {
     
    private function addLatticeObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null){
       
-      $this->createObject($objectTypeName, $data, $rosettaId, $languageId);
+      $newObject = $this->createObject($objectTypeName, $data, $rosettaId, $languageId);
      
 
       //The objet has been built, now set it's lattice point
