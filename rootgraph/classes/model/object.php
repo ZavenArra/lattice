@@ -65,7 +65,6 @@ class Model_Object extends ORM {
    public function __get($column) {
 
       
-      
       if ($column == 'contenttable' && !isset($this->_related[$column])) {
          $content = ORM::factory(inflector::singular('contents'));
          $content->setTemplateName($this->objecttype->objecttypename); //set the objecttypename for dbmapping
@@ -827,9 +826,9 @@ class Model_Object extends ORM {
             if ($this->loaded()) {
                $translatedParent = $this->getTranslatedObject($translationLanguage->id);
           
-               $translatedParent->addLatticeObject($objectTypeName, $data, $lattice, $newObject->rosetta_id);
+               $translatedParent->addLatticeObject($newObject->objecttype->objecttypename, $data, $lattice, $newObject->rosetta_id);
             } else {
-               Graph::object()->addLatticeObject($objectTypeName, $data, $lattice, $newObject->rosetta_id, $translationLanguage->id);
+               Graph::object()->addLatticeObject($newObject->objectttype->objecttypename, $data, $lattice, $newObject->rosetta_id, $translationLanguage->id);
             }
          }
 
@@ -1023,6 +1022,7 @@ class Model_Object extends ORM {
       }
       $newObject->contenttable->save();
       $newObject->save();
+      return $newObject;
    
    }
    
@@ -1034,15 +1034,15 @@ class Model_Object extends ORM {
     * 
     */
    
-   public function addElementObject($objectTypeName, $elementName, $data=array(), $rosettaID = null, $languageId = null){
+   public function addElementObject($objectTypeName, $elementName, $data=array(), $rosettaId = null, $languageId = null){
       $newObjectType = ORM::Factory('objecttype', $objectTypeName);
       
-      $newObject = $this->createObject($objectTypeName, $data, $lattice, $rosettaId, $languageId);
+      $newObject = $this->createObject($objectTypeName, $data, $rosettaId, $languageId);
      
       //and set up the element relationship
       $elementRelationship = ORM::Factory('objectelementrelationship');
       $elementRelationship->object_id = $this->id;
-      $elementRelationship->elementObjectId = $newObject->id;
+      $elementRelationship->elementobject_id = $newObject->id;
       $elementRelationship->name = $elementName;
       $elementRelationship->save();
       

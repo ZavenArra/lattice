@@ -104,10 +104,11 @@ class Model_Content extends ORM {
 
 		if(strstr($column, 'object')){
 			//echo 'iTS AN OBJECT<br>';
-			$objectElement = ORM::Factory('objectelement')
+			$objectElementRelationship = ORM::Factory('objectelementrelationship')
                  ->where('object_id', '=', $this->id)
                  ->where('name', '=', $columnName)
                  ->find();
+      $objectElement = Graph::object($objectElementRelationship->elementobject_id);
 
          if (!$objectElement->loaded()) {
             //
@@ -125,7 +126,7 @@ class Model_Content extends ORM {
             $elementConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@field="%s"]', $columnName));
 
             //build the object
-            $objectElement = $object->addElementObject($elementConfig->item(0)->tagname, $columnName);
+            $objectElement = $object->addElementObject($elementConfig->item(0)->tagName, $columnName);
             
          }
 			return $objectElement;
