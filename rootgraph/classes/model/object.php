@@ -803,6 +803,8 @@ class Model_Object extends ORM {
        */
       if (!$rosettaId) {
          $this->addTranslatedPeerObjects($newObject);
+
+				 //and need to set up their object relationships
       }
 
       /*
@@ -815,7 +817,7 @@ class Model_Object extends ORM {
 
    }
    
-   private function addTranslatedPeerObjects($newObject){
+   private function addTranslatedPeerObjects($newObject, $data=array()){
       $languages = Graph::languages();
          foreach ($languages as $translationLanguage) {
            
@@ -826,10 +828,12 @@ class Model_Object extends ORM {
             if ($this->loaded()) {
                $translatedParent = $this->getTranslatedObject($translationLanguage->id);
           
-               $translatedParent->addLatticeObject($newObject->objecttype->objecttypename, $data, $lattice, $newObject->rosetta_id);
+               $translatedParent->createObject($newObject->objecttype->objecttypename, $data,  $newObject->rosetta_id, $translationLanguage->id);
             } else {
-               Graph::object()->addLatticeObject($newObject->objectttype->objecttypename, $data, $lattice, $newObject->rosetta_id, $translationLanguage->id);
+               Graph::object()->createObject($newObject->objecttype->objecttypename, $data,  $newObject->rosetta_id, $translationLanguage->id);
             }
+
+						//lattice point setup closure goes here
          }
 
    }
@@ -875,9 +879,7 @@ class Model_Object extends ORM {
                  ->where('title', '=', $arguments['title'])
                  ->find();
             if($checkForPreexistingObject->loaded()){
-               die('componet prenset!');
               $componentAlreadyPresent = true;
-              
             }
          }
                  
@@ -1051,6 +1053,8 @@ class Model_Object extends ORM {
        */
       if (!$rosettaId) {
          $this->addTranslatedPeerObjects($newObject);
+
+				 // and need to set up their element relationships
       }
 
       /*
@@ -1066,7 +1070,7 @@ class Model_Object extends ORM {
     
    private function addLatticeObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null){
       
-      $this->createObject($objectTypeName, $data, $rosettaId, $languageId);
+      $newObject = $this->createObject($objectTypeName, $data, $rosettaId, $languageId);
      
 
       //The objet has been built, now set it's lattice point
@@ -1077,12 +1081,12 @@ class Model_Object extends ORM {
       $objectRelationship->connectedobject_id = $newObject->id;
       
       //calculate sort order
-      $sort = DB::select(array('sortorder', 'maxsort'))->from('objectrelationships')
+      $sort = DB::select('sortorder')->from('objectrelationships')
                         ->where('lattice_id', '=', $lattice->id)
                         ->where('object_id', '=', $this->id)
-                      ->order_by('sortorder')->limit(1)
+                      ->order_by('sortorder','DESC')->limit(1)
                       ->execute()->current();
-      $objectRelationship->sortorder = $sort['maxsort'] + 1;
+      $objectRelationship->sortorder = $sort['sortorder'] + 1;
     
       $objectRelationship->save();
       return $newObject;
