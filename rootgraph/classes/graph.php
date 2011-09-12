@@ -134,6 +134,21 @@ class Graph {
       return $object;
    }
    
+   public static function getLatticeRoot($latticeId = 'lattice', $languageCode = 'en'){
+      $language = ORM::Factory('language')
+              ->where('code', '=', $languageCode)
+              ->find();
+      
+      $objectRelationship = ORM::Factory('objectrelationship')
+              ->where('lattice_id', '=', Graph::lattice($latticeId))
+              ->where('object_id', '=', 0)
+              ->join('objects')->on('objects.id', '=', 'objectrelationships.connectedobject_id' )
+              ->where('language_id', '=', $language->id)
+              ->find();
+      return ORM::Factory('object', $objectRelationship->id);
+  
+   }
+   
  
 }
 

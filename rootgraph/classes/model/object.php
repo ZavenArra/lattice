@@ -401,12 +401,17 @@ class Model_Object extends ORM {
 
    public function getChildren() {
 
+      return $this->getLatticeChildren();
+   }
+   
+   public function getLatticeChildren($lattice = 'lattice'){
       $children = ORM::Factory('object')
-							->latticeChildrenFilter($this->id)
+							->latticeChildrenFilter($this->id, $lattice)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder')
               ->find_all();
       return $children;
+   
    }
 
    public function getNextPublishedPeer() {

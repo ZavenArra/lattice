@@ -2,9 +2,36 @@
 
 Class Controller_CSV extends Controller {
 
+   private $csvOutput = '';
+   
    public function action_index(){
          $view = new View('csv/index');
         $this->response->body($view->render());
+   }
+   
+   public function action_export($exportFileIdentifier){
+      $this->csvOutput = '';
+      
+      $rootObject = Graph::getLatticeRoot();
+      
+      $level = 0;
+      
+      $this->csvWalkTree($rootObject);
+     
+      echo $this->csvOutput;
+   }
+   
+   private function csvWalkTree($parent){
+      $objects = $rootObject->getLatticeChildren();
+      foreach($objects as $object){
+         $data = $object->getPageContent();
+         $csvView = new View_CSV($level, $data);
+         $this->csvOutput .= $csvView->render();
+         $this->level++;
+         $this->csvWalkTree($object);
+         $this->level--;
+      }
+   
    }
    
 	/*
