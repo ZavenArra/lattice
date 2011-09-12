@@ -7,7 +7,7 @@
 -->
 
 <!ENTITY % uiattrs
-	"field				CDATA	#REQUIRED
+	"name				CDATA	#REQUIRED
 	 label				CDATA	#IMPLIED
 	 className			CDATA	#IMPLIED"
 >
@@ -46,7 +46,7 @@
 
 <!ELEMENT list (addableObject*) >
 <!ATTLIST list
-	family				CDATA #REQUIRED
+	name				CDATA #REQUIRED
 	label				CDATA #REQUIRED
 	display				(inline|component)	"inline"
 	allowChildSort   	(true|false)		"true"
@@ -59,7 +59,7 @@
 
 <!ELEMENT associator (filter*)>
 <!ATTLIST associator  
-	field         CDATA #REQUIRED
+	name         CDATA #REQUIRED
 	label         CDATA #IMPLIED
 	parent        CDATA  #IMPLIED
 	objectTypeName  CDATA  #IMPLIED 
@@ -142,7 +142,7 @@
 
 <!ELEMENT tags EMPTY >
 <!ATTLIST tags 
-	label				CDATA	#IMPLIED
+	%uiattrs;
 >
 
 <!ELEMENT resize EMPTY >

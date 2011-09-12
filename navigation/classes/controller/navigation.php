@@ -51,8 +51,8 @@ class Controller_Navigation extends Controller_Lattice{
 				if(strtolower($child->objecttype->nodeType) == 'container'){
 					//we might be skipping this node
 
-					//echo sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]', $parent->objecttype->objecttypename, $child->objecttype->objecttypename);
-					$display = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@family="%s"]', 
+					//echo sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]', $parent->objecttype->objecttypename, $child->objecttype->objecttypename);
+					$display = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]', 
 						$parent->objecttype->objecttypename,
 						$child->objecttype->objecttypename))
 						->item(0)

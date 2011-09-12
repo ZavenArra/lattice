@@ -73,18 +73,30 @@ class Model_Content extends ORM {
       //contenttable should not back reference object.
       
 		$column = self::dbmap( $object->objecttype_id, $columnName);
+    
 
 		if(!$column){
 			//this column isn't mapped, check to see if it's in the xml
 			if($object->objecttype->nodeType=='container'){
 				//For lists, values will be on the 2nd level 
-				$xPath =  sprintf('//list[@family="%s"]', $object->objecttype->objecttypename);
+				$xPath =  sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
 			} else {
 				//everything else is a normal lookup
 				$xPath =  sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
 			}
-			$fieldConfig = lattice::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $columnName));
+			$fieldConfig = lattice::config('objects', $xPath.sprintf('/elements/*[@name="%s"]', $columnName));
+         
+      
+         
 			if($fieldConfig->item(0)){
+            
+             //This is a temporary stopgap until we have a cleaner handle on what to do when tags is
+            //requested via the object.
+           
+            if($fieldConfig->item(0)->tagName == 'tags'){
+             return Null;
+            }  
+            
 				//field is configured but not initialized in database
 				$object->objecttype->configureElement($fieldConfig->item(0));
 
@@ -117,13 +129,13 @@ class Model_Content extends ORM {
             //
             if ($object->objecttype->nodeType == 'container') {
                //For lists, values will be on the 2nd level 
-               $xPath = sprintf('//list[@family="%s"]', $object->objecttype->objecttypename);
+               $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
             } else {
                //everything else is a normal lookup
                $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
             }
 
-            $elementConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@field="%s"]', $columnName));
+            $elementConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $columnName));
 
             //build the object
             $objectElement = $object->addElementObject($elementConfig->item(0)->tagName, $columnName);
@@ -165,12 +177,12 @@ class Model_Content extends ORM {
 		//this column isn't mapped, check to see if it's in the xml
 		if($object->objecttype->nodeType=='container'){
 			//For lists, values will be on the 2nd level 
-			$xPath =  sprintf('//list[@family="%s"]', $object->objecttype->objecttypename);
+			$xPath =  sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
 		} else {
 			//everything else is a normal lookup
 			$xPath =  sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
 		}
-		$fieldConfig = lattice::config('objects', $xPath.sprintf('/elements/*[@field="%s"]', $column));
+		$fieldConfig = lattice::config('objects', $xPath.sprintf('/elements/*[@name="%s"]', $column));
 		if($fieldConfig->item(0)){
 			//field is configured but not initialized in database
 			$object->objecttype->configureElement($fieldConfig->item(0));	

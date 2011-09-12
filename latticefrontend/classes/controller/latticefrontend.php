@@ -46,8 +46,7 @@ Class Controller_LatticeFrontend extends Controller_Layout{
 
 		self::$slug = $objectidorslug;
 
-      
-      $this->view = latticefrontend::createView($objectidorslug);
+		$this->view = latticefrontend::createView($objectidorslug);
 
 		//possible hook for processing content	
 
