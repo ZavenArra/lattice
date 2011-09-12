@@ -77,12 +77,11 @@ Class lattice {
 				$path = getcwd().'/'.$arena;
 			} else {
 				$path = Kohana::find_file('config', $arena, 'xml', true); 
+				if(!count($path)){
+					throw new Kohana_Exception('Could not locate xml :file', array(':file'=>$arena));
+				}
 				$path = $path[count($path)-1];
 			}
-			if(!count($path)){
-				throw new Kohana_Exception('Could not locate xml :file', array(':file'=>$arena));
-			}
-
 			$dom->load( $path );
 			if(!$dom->validate()){
 				echo('Validation failed on '.$path[0]);
