@@ -1,4 +1,4 @@
-<div class="ui-PulldownNav <?=$class;?>" data-field="<?=$field;?>">
+<div class="ui-PulldownNav <?=$class;?>" data-field="<?=$name;?>">
 	<label><?=$label;?></label>
-	<?=form::dropdown( $field, $options, $value, 'class="pulldown"');?>
+	<?=form::dropdown( $name, $options, $value, 'class="pulldown"');?>
 </div>

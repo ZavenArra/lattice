@@ -1,4 +1,4 @@
-<div class="ui-FileElement <?=$class;?>" data-field="<?=$field;?>" data-extensions="<?=$extensions;?>" data-maxlength="<?=$maxlength;?>">
+<div class="ui-FileElement <?=$class;?>" data-field="<?=$name;?>" data-extensions="<?=$extensions;?>" data-maxlength="<?=$maxlength;?>">
 	<label><?=(isset($label))?$label:"Image File";?></label>
 	<div class="wrapper">
 		<input type="file" class="hidden" />

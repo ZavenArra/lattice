@@ -280,7 +280,7 @@ class Model_Object extends ORM {
               ->where('objecttype_id', '=', $this->objecttype->id)
               ->find_all();
       foreach ($fields as $map) {
-         $content[$map->column] = $this->contenttable->{$map->column};
+         $content[$map->column] = $this->__get($map->column);
       }
       return $content;
    }
@@ -355,7 +355,7 @@ class Model_Object extends ORM {
       foreach ($fields as $fieldInfo) {
          $field = $fieldInfo->getAttribute('name');
          if (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field))->length) {
-            $content[$field] = $this->contenttable->{$field};
+            $content[$field] = $this->__get($field);
          }
       }
 
@@ -538,8 +538,8 @@ class Model_Object extends ORM {
    }
 
    public function saveFile($field, $filename, $type, $tmpName) {
-      if (!is_object($file = $this->contenttable->$field)) {
-         $file = ORM::Factory('file', $this->contenttable->$field);
+      if (!is_object($file = $this->__get($field))) {
+         $file = ORM::Factory('file', $this->__get($field));
       }
       
       $replacingEmptyFile = false;
