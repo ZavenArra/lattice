@@ -837,7 +837,7 @@ class Model_Object extends ORM {
 
    }
    
-   private function addTranslatedPeerObjects($newObject){
+   private function addTranslatedPeerObjects($newObject, $data=null){
       $languages = Graph::languages();
          foreach ($languages as $translationLanguage) {
            
@@ -850,7 +850,7 @@ class Model_Object extends ORM {
           
                $translatedParent->addLatticeObject($newObject->objecttype->objecttypename, $data, $lattice, $newObject->rosetta_id);
             } else {
-               Graph::object()->addLatticeObject($newObject->objectttype->objecttypename, $data, $lattice, $newObject->rosetta_id, $translationLanguage->id);
+               Graph::object()->addLatticeObject($newObject->objecttype->objecttypename, $data, $lattice, $newObject->rosetta_id, $translationLanguage->id);
             }
          }
 
