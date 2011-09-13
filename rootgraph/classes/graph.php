@@ -56,6 +56,22 @@ class Graph {
 		}
 
 	}
+   
+   public static function getActiveTags(){
+      $tags = ORM::Factory('tag')
+              ->select('tag')
+              ->distinct(TRUE)
+              ->join('objects_tags')->on('objects_tags.tag_id', '=', 'tags.id')
+              ->join('objects')->on('objects_tags.object_id', '=', 'objects.id')
+              ->where('objects.published', '=', 1)
+              ->where('objects.activity', 'IS', NULL)
+              ->find_all();
+      $tagsText = array();
+      foreach($tags as $tag){
+        $tagsText[]= $tag->tag;
+      }
+      return $tagsText;
+   }
 
 	public static function isFileModel($model){
 		if(get_class($model) == 'Model_File'){
@@ -96,9 +112,6 @@ class Graph {
 	}
 
 
-	/*
-	 * This needs to be moved to rootgraph
-	 */
 	public static function configureObjectType($objectTypeName){
 		//validation
 		foreach(lattice::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
@@ -145,7 +158,11 @@ class Graph {
               ->join('objects')->on('objects.id', '=', 'objectrelationships.connectedobject_id' )
               ->where('language_id', '=', $language->id)
               ->find();
-      return ORM::Factory('object', $objectRelationship->id);
+      $root = ORM::Factory('object', $objectRelationship->id);
+      if(!$root->loaded()){
+         throw new Kohana_Exception('Root object not found');
+      }
+      return $root;
   
    }
    

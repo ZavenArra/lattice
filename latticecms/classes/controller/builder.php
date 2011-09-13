@@ -142,9 +142,9 @@ class Controller_Builder extends Controller {
 
 
 				//need to look up field and switch on field type	
-				$fieldInfo = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
+				$fieldInfo = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
 				if(!$fieldInfo){
-					die("Bad field in data/objects!\n". sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
+					throw new Kohana_Exception("Bad field in data/objects!\n". sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
 				}
 
 				//special setup based on field type
@@ -214,7 +214,7 @@ class Controller_Builder extends Controller {
 			foreach(lattice::config($xmlFile, 'list', $item) as $list){
 				//echo "FOUND A LIST\n\n";
 				//find the container
-				$listT = ORM::Factory('objectType', $list->getAttribute('family'));
+				$listT = ORM::Factory('objectType', $list->getAttribute('name'));
 				$container = Graph::object()
                     ->latticeChildrenFilter($objectId)
                     ->objectTypeFilter($listT->id)

@@ -1,4 +1,4 @@
-<div class="ui-MultiSelect <?=$class;?>" data-field="field-<?=$field;?>" data-firstisnull="true">
+<div class="ui-MultiSelect <?=$class;?>" data-field="field-<?=$name;?>" data-firstisnull="true">
 	<label><?=$label;?></label>
 	<?
 	$preparedOptions = array();
@@ -7,6 +7,6 @@
 		$preparedOptions["$key"] = $ovalue;
 	}
 	?>
-	<?=form::dropdown( $field, $preparedOptions, $value, "multiple" );?>
+	<?=form::dropdown( $name, $preparedOptions, $value, "multiple" );?>
 </div>
 	

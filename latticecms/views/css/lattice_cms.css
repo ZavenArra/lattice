@@ -9,14 +9,12 @@ body {
 
 h1, h2, h3, h4, h5{ font-weight:normal;color:#121212; }
 
-h1,
-.h1{
+h1, .h1{
 	font-size: 4em;		/* 42px */
 	line-height: 4.5em;
 }
 
-h2,
-.h2{
+h2, .h2{
 	font-size: 3em;		/* 36px */
 	line-height: 1;
 }
@@ -26,26 +24,22 @@ h2,
     left: -3000px;
 }
 
-h3,
-.h3 {
+h3, .h3 {
 	font-size: 2.25em;	/* 27px */
 	line-height: 1;
 }
 
-h4,
-.h4 { 
+h4, .h4 { 
 	font-size: 1.75em;	/* 21px */
 	font-size: 1.75em;
 }
 
-h5,
-.h5 {
+h5, .h5 {
 	font-size: 1.5em;	/* 18px */ 
 	font-size: 1.5em;
 }
 
-h6,
-.h6 {
+h6, .h6 {
 	font-size: 1.25em;	/* 18px */ 
 	font-size: 1.25em;	
 }
@@ -60,12 +54,8 @@ h6,
 	cursor: default;
 }
 
-.atRest{
-	opacity: 1;
-}
-.saving{
-	opacity: .2;
-}
+.atRest{ opacity: 1; }
+.saving{ opacity: .2; }
 
 .displayField, .ipe{
 	border: none;
@@ -343,10 +333,15 @@ ul.listing li{
 	vertical-align: middle;
 }
 
-a.icon{
+.uploadButton{ padding: .125em .25em .125em .25em  !important; }
+
+.icon{
 	text-indent: -3000px;
 	margin: .25em;
 	width: 16px;
+	padding: 0;
+	background-repeat: no-repeat;
+	background-position: center;
 }
 
 a.command, .uploadButton{
@@ -374,17 +369,12 @@ a.command.clearImageLink:hover{
 	background: #f00;
 }
 
-a.icon.deleteLink{ background: url( ../images/icon_delete.png); }
-
-a.delete:hover{ background: url( ../images/icon_delete_hover.png); }
-
-a.icon.submit{ background: url( ../images/icon_confirm.png); }
-
-a.icon.cancel{ background: url( ../images/icon_cancel.png); }
-
-.active a.icon.submit, a.icon.submit:hover{ background: url( ../images/icon_confirm_hover.png); }
-
-.active a.icon.cancel, a.icon.cancel:hover{ background: url( ../images/icon_cancel_hover.png); }
+a.delete{ background-image: url( ../images/icon_delete.png); }
+a.delete:hover{ background-image: url( ../images/icon_delete_hover.png); }
+a.icon.submit{ background-image: url( ../images/icon_confirm.png); }
+a.icon.cancel{ background-image: url( ../images/icon_cancel.png); }
+.active a.icon.submit, a.icon.submit:hover{ background-image: url( ../images/icon_confirm_hover.png ); }
+.active a.icon.cancel, a.icon.cancel:hover{ background-image: url( ../images/icon_cancel_hover.png); }
 
 .invisible{ visibility: hidden; }
 
@@ -449,7 +439,7 @@ button:hover, a.button:hover{
 	height: 100%;
 	top:0;
 	left:0;
-	background: url( ../images/bgk90.png );	
+	background-image: url( ../images/bgk90.png );	
 	overflow: auto;
 	z-index: 5000;
 }
@@ -481,7 +471,7 @@ button:hover, a.button:hover{
 	top: 0;
 	padding-top: 1em;
 	margin: 0 0 0 -480px;
-	background: url( ../images/bgk94.png );
+	background-image: url( ../images/bgk94.png );
 	color:#fff;
 }
 
@@ -1183,6 +1173,7 @@ ul.listing li.menuItem:hover{
 /***************************
 *   TAGS
 ****************************/
+
 .ui-Tags{
 	background:transparent;
 	-moz-border-radius: 4px;
@@ -1202,6 +1193,7 @@ ul.listing li.menuItem:hover{
 .ui-Tags .atRest{
 	opacity: .5;
 }
+
 .ui-Tags .atRest input{
 	display: none;
 }
@@ -1214,9 +1206,7 @@ ul.listing li.menuItem:hover{
 	margin: 0 .5em;
 }
 
-
 ul.tokens{ 
-	float: left;
 	cursor: pointer;
 	margin: .25em 0 0 0;
 }
@@ -1248,6 +1238,7 @@ ul.tokens{
 	margin: 0;
 	padding: .125em .5em;
 }
+
 .ui-Tags label{
 	display: block;
 	float: left;
@@ -1268,12 +1259,15 @@ ul.tokens{
 }
 
 .ui-Tags .atRest li.token .icon{
-	display: none !important;
+	visibility: hidden;
+}
+
+.ui-Tags .atRest li.token:hover .icon{
+	visibility: visible;
 }
 
 .ui-Tags li.token .icon.close{
-	background: url( '../images/icon-12x12-close.png' ) center no-repeat;
-	opacity: .5;
+	background-image: url( '../images/icon-12x12-close.png' );
 }
 
 .ui-Tags li.token:hover .icon.close,
@@ -1281,14 +1275,19 @@ ul.tokens{
 	opacity: 1 !important;	
 }
 
-.localizationControls{
-	clear: both;
-	margin: 1em 0 2em 0;
+.ui-Tags .head .icon.edit{
+	margin-left: .5em;
+	background-image: url( '../images/icon_edit.png' );
 }
-.localizationControls ul{
-/*	border-top: 1px #d3d3d3 solid;
-	border-bottom: 1px #d3d3d3 solid;
-*/}
+
+.ui-Tags .head .icon.cancel{
+	margin-left: .5em;
+	background-image: url( '../images/icon_cancel.png' );
+}
+
+.localizationControls{ clear: both; margin: 1em 0 2em 0; }
+.localizationControls ul{ border-bottom: 1px transparent solid; }
+.localizationControls ul:hover{ border-bottom: 1px #ddd solid; }
 
 .localizationControls li{
 	float: left;
@@ -1296,10 +1295,6 @@ ul.tokens{
 	margin: 0 0 0 0;
 }
 
-/*.localizationControls li:first-child{
-	margin-left: 0px  !important;
-}
-*/
 .localizationControls li a{
 	padding: .5em 1em;
 	display: block;
@@ -1308,19 +1303,9 @@ ul.tokens{
 	text-decoration: none;
 }
 
-.localizationControls ul:hover{
-	border-bottom: 1px #ddd solid;
-}
 .localizationControls li a.active,
 .localizationControls li a:hover{
-/*	color: #666;
-*/
 	background: #dedede;
-}
-
-.ui-Tags .head .icon.edit{
-	margin-left: .5em;
-	background: url( '../images/icon_edit.png' ) center no-repeat !important;	
 }
 
 .pagesPane{
