@@ -99,10 +99,10 @@ class Graph {
 	/*
 	 * This needs to be moved to rootgraph
 	 */
-	public static function configureTemplate($objectTypeName){
+	public static function configureObjectType($objectTypeName){
 		//validation
 		foreach(lattice::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
-			if($item->getAttribute('field')=='title'){
+			if($item->getAttribute('name')=='title'){
 				throw new Kohana_Exception('Title is a reserved field name');
 			}
 		}

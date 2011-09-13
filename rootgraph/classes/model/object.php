@@ -348,7 +348,7 @@ class Model_Object extends ORM {
       $fields = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
 
       foreach ($fields as $fieldInfo) {
-         $field = $fieldInfo->getAttribute('field');
+         $field = $fieldInfo->getAttribute('name');
          if (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]', $this->objecttype->objecttypename, $field))->length) {
             $content[$field] = $this->contenttable->{$field};
          }
@@ -916,7 +916,7 @@ class Model_Object extends ORM {
          if ($objectTypeConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName))->item(0)) {
             //there's a config for this objectType
             //go ahead and configure it
-            Graph::configureTemplate($objectTypeName);
+            Graph::configureObjectType($objectTypeName);
             $newObjectType = ORM::Factory('objecttype', $objectTypeName);
          } else {
             throw new Kohana_Exception('No config for objectType ' . $objectTypeName);
