@@ -866,7 +866,6 @@ class Model_Object extends ORM {
       foreach ($containers as $c) {
          $arguments['title'] = $c->getAttribute('label');
          $this->objecttype->configureElement($c);
-         //$childObject = $this->addObject($c->getAttribute('family'), $arguments);
       }
       
       //look up any components and add them as well
