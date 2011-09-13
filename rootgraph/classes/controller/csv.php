@@ -21,7 +21,7 @@ Class Controller_CSV extends Controller {
       $this->csvWalkTree($rootObject);
      
    //   echo 'done';
-      $file = fopen('lattice/content/export/'.$exportFileIdentifier.'.csv', 'w');
+      $file = fopen('application/export/'.$exportFileIdentifier.'.csv', 'w');
       fwrite($file, $this->csvOutput);
       fclose($file);
    }

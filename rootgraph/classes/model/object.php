@@ -934,7 +934,7 @@ class Model_Object extends ORM {
          if ($objectTypeConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName))->item(0)) {
             //there's a config for this objectType
             //go ahead and configure it
-            Graph::configureTemplate($objectTypeName);
+            Graph::configureObjectType($objectTypeName);
             $newObjectType = ORM::Factory('objecttype', $objectTypeName);
          } else {
             throw new Kohana_Exception('No config for objectType ' . $objectTypeName);

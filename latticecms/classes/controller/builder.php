@@ -57,7 +57,7 @@ class Controller_Builder extends Controller {
 		$this->destroy('application/media/');
 		
 		//reinitialize the graph
-		Graph::configureTemplate($this->rootNodeObjectType);
+		Graph::configureObjectType($this->rootNodeObjectType);
 		Graph::addRootNode($this->rootNodeObjectType);
 
 		if($xmlFile != 'data'){
@@ -84,7 +84,7 @@ class Controller_Builder extends Controller {
   public function action_addData($xmlFile, $secondaryRootNodeObjectType=null){
 
 		if($secondaryRootNodeObjectType && !$parentId = Graph::getRootNode($secondaryRootNodeObjectType)){
-			Graph::configureTemplate($secondaryRootNodeObjectType);
+			Graph::configureObjectType($secondaryRootNodeObjectType);
 			Graph::addRootNode($secondaryRootNodeObjectType);
 			$parentObject = Graph::getRootNode($secondaryRootNodeObjectType);
 		} else {

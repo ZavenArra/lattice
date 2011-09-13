@@ -70,6 +70,7 @@ class View_Csv  {
                        ->where('objecttypename','=',$addableObjectType['objectTypeId'])
                        ->find();
                if(!$object->objecttype->loaded()){
+                  
                   echo $addableObjectType['objectTypeId'];
                   echo 'objecttypes must get forced to self configure if we are going to allow empty objects';
                }
