@@ -200,12 +200,12 @@ Extends: lattice.modules.Module,
 
 initialize: function( anElementOrId, aMarshal, options ){
 	this.parent( anElementOrId, aMarshal, options );
-	this.objectId = this.element.get("id").split("_")[1];
+	this.objectId = this.element.get("data-objectId");
 },
-
 
 getSaveFieldURL: function(){
 	var url = lattice.util.getBaseURL() +"ajax/data/cms/savefield/" + this.getObjectId();
+	console.log( 'cluster.getSaveFieldURL', url );
 	return url;
 },
 
