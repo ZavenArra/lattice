@@ -354,9 +354,9 @@ class Model_Object extends ORM {
 
       foreach ($fields as $fieldInfo) {
          $field = $fieldInfo->getAttribute('name');
-         if (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field))->length) {
+     //    if (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field))->length) {
             $content[$field] = $this->__get($field);
-         }
+      //   }
       }
 
       //find any lists

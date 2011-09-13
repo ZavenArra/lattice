@@ -13,7 +13,13 @@
 class latticefrontend {
 
    public static function createView($objectidorslug){
-      $object = Graph::object($objectidorslug);
+      
+      
+      if(!is_object($objectidorslug)){
+         $object = Graph::object($objectidorslug);
+      } else {
+         $object = $objectidorslug;
+      }
 		//some access control
 		$viewName = null;
       $view = null;
@@ -40,7 +46,7 @@ class latticefrontend {
 
 		//call this->view load data
 		//get all the data for the object
-		$viewContent = lattice::getViewContent($viewName, $objectidorslug);
+		$viewContent = lattice::getViewContent($viewName, $object);
 		foreach ($viewContent as $key => $value) {
 			$view->$key = $value;
 		}

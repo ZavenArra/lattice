@@ -91,9 +91,8 @@ class Model_Content extends ORM {
             
              //This is a temporary stopgap until we have a cleaner handle on what to do when tags is
             //requested via the object.
-           
             if($fieldConfig->item(0)->tagName == 'tags'){
-             return Null;
+             return $object->getTagStrings();
             }  
             
 				//field is configured but not initialized in database

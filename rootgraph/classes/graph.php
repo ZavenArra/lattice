@@ -56,6 +56,22 @@ class Graph {
 		}
 
 	}
+   
+   public static function getActiveTags(){
+      $tags = ORM::Factory('tag')
+              ->select('tag')
+              ->distinct(TRUE)
+              ->join('objects_tags')->on('objects_tags.tag_id', '=', 'tags.id')
+              ->join('objects')->on('objects_tags.object_id', '=', 'objects.id')
+              ->where('objects.published', '=', 1)
+              ->where('objects.activity', 'IS', NULL)
+              ->find_all();
+      $tagsText = array();
+      foreach($tags as $tag){
+        $tagsText[]= $tag->tag;
+      }
+      return $tagsText;
+   }
 
 	public static function isFileModel($model){
 		if(get_class($model) == 'Model_File'){

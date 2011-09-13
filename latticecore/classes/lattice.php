@@ -190,9 +190,18 @@ Class lattice {
 	public static function getViewContent($view, $slug=null) {
 
 		$data = array();
+      
+      $object = null;
+      if  ($slug) {
+
+         if (!is_object($slug)) {
+            $object = Graph::object($slug);
+         } else {
+            $object = $slug;
+         }
+      }
 
 		if ($view == 'default') {
-         $object = Graph::object($slug);
 			if (!$object->loaded()) {
 				throw new Koahan_Exception('lattice::getViewContent : Default view callled with no slug');
 			}
@@ -205,7 +214,6 @@ Class lattice {
         // throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
 		}
 		if (!$viewConfig || ($viewConfig && $viewConfig->getAttribute('loadPage'))) {
-         $object = Graph::object($slug);
          if (!$object->loaded()) {
 				throw new Kohana_Exception('lattice::getViewContent : View specifies loadPage but no object to load');
 			}
