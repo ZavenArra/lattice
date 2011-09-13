@@ -15,7 +15,7 @@ Class latticeui{
 	 * Builds a UI element from the latticeui views directory
 	 * $element -  array of key value pairs passed to the objectType, including 'type' key which indicates the objectType to use
 	 * $fieldvalue - the value to display
-	 * Example: buildTextElement(array('type'=>'text', 'field'=>'fieldname', 'class'=>'className'), {Value})
+	 * Example: buildTextElement(array('type'=>'text', 'name'=>'fieldname', 'class'=>'className'), {Value})
 	 */
 	public static function buildUIElement($element, $fieldvalue=null){
 		$view = 'ui_'.$element['type'];
@@ -36,11 +36,11 @@ Class latticeui{
 
 		//provide a unique id always
 		$microtime = str_replace(array(' ', '.'), '', microtime());
-		if(isset($element['field'])){
-			//	$objectType->id =$element['field'].str_replace(array(' ', '.'), '', microtime());
-			$id =$element['field'].latticeui::$unique++.$microtime;
+		if(isset($element['name'])){
+			//	$objectType->id =$element['name'].str_replace(array(' ', '.'), '', microtime());
+			$id =$element['name'].latticeui::$unique++.$microtime;
 		} else {
-			$id ='field'.latticeui::$unique++.$microtime;
+			$id ='name'.latticeui::$unique++.$microtime;
 		}
 		$element['id'] = $id;
 
@@ -105,7 +105,7 @@ Class latticeui{
 					$element['options'] = array();
 					foreach($object as $field){
 						if($field['type'] == 'checkbox'){
-							$element['options'][$field['field']] = $field['label'];
+							$element['options'][$field['name']] = $field['label'];
 						}
 					}
 				}	
@@ -139,28 +139,28 @@ Class latticeui{
 	}
 
 	public static function Input( $field, $class, $tag, $fieldValue, $label=null, $size=32 ){
-		$elementArray = array( 'type'=>'input', 'field'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "size"=>$size );
+		$elementArray = array( 'type'=>'input', 'name'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "size"=>$size );
 		return latticeui::buildUIElement( $elementArray, $fieldValue);
 	}
 
 	public static function text( $field, $class, $tag, $fieldValue, $label=null, $labelClass=null ){
-		$elementArray = array( 'type'=>'text', 'field'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "labelClass"=>$labelClass );
+		$elementArray = array( 'type'=>'text', 'name'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "labelClass"=>$labelClass );
 		return latticeui::buildUIElement( $elementArray, $fieldValue);
 	}
 
 	public static function radioGroup( $field, $class, $radios, $fieldValue, $groupLabel=null, $labelClass=null ){
 		$microtime = str_replace(array(' ', '.'), '', microtime());
 		$name =$field.latticeui::$unique++.$microtime;
-		$elementArray = array( 'type'=>'radioGroup', 'radioname'=>$name, 'class'=>$class, 'grouplabel'=>$groupLabel, 'field'=>$field, 'radios'=> $radios, "labelClass"=>$labelClass );
+		$elementArray = array( 'type'=>'radioGroup', 'radioname'=>$name, 'class'=>$class, 'grouplabel'=>$groupLabel, 'name'=>$field, 'radios'=> $radios, "labelClass"=>$labelClass );
 		return latticeui::buildUIElement( $elementArray, $fieldValue );
 	}
 
 	public static function checkbox( $field, $checkboxvalue, $value, $label){
-		return latticeui::buildUIElement( array('type'=>'checkbox', 'field'=>$field, 'checkboxvalue'=>$checkboxvalue, 'label'=>$label, 'class'=>'checkbox'), $value);
+		return latticeui::buildUIElement( array('type'=>'checkbox', 'name'=>$field, 'checkboxvalue'=>$checkboxvalue, 'label'=>$label, 'class'=>'checkbox'), $value);
 	}
 
 	public static function file($field, $extensions, $maxlength, $currentFile=null ){
-		return latticeui::buildUIElement( array('type'=>'file', 'field'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $currentFile );
+		return latticeui::buildUIElement( array('type'=>'file', 'name'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $currentFile );
 	}
 
 	public static function fieldmap($values, $options){
