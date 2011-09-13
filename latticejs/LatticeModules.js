@@ -35,10 +35,15 @@ lattice.modules.Module = new Class({
 	    return new Request.JSON( { url: this.getSaveFieldURL(), onSuccess: callback } ).post( postData );
 	},
 	
+	getObjectId: function(){
+		return this.objectId;
+	},
+	
 	initialize: function( anElementOrId, aMarshal, options ){
 //		console.log( "Constructing", this.toString(), this.childModules );
 		this.parent( anElementOrId, aMarshal, options );  
 		this.instanceName = this.element.get("id");
+		this.objectId = this.element.get( 'data-objectid');
 		this.build();
 	},
 	
@@ -200,7 +205,6 @@ Extends: lattice.modules.Module,
 
 	initialize: function( anElementOrId, aMarshal, options ){
 		this.parent( anElementOrId, aMarshal, options );
-		this.objectId = this.element.get("data-objectId");
 	},
 
 	toString: function(){
@@ -208,6 +212,7 @@ Extends: lattice.modules.Module,
 	},
 
 	getSaveFieldURL: function(){
+		console.log( this.toString(), this.element );
 		var url = lattice.util.getBaseURL() +"ajax/data/cms/savefield/" + this.getObjectId();
 		console.log( 'cluster.getSaveFieldURL', url );
 		return url;
@@ -331,10 +336,6 @@ lattice.modules.LatticeList = new Class({
 	    throw "Abstract function getSubmitSortOrderURL must be overriden in" + this.toString();
 	},
 
-	getObjectId: function(){
-	    return this.objectId;
-	},
-
 	toString: function(){
 		return "[ Object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.LatticeList ]";
 	},
@@ -342,7 +343,6 @@ lattice.modules.LatticeList = new Class({
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		if( this.options.allowChildSort ) this.makeSortable( this.listing );
-		this.objectId = this.element.get("id").split("_")[1];
 	},
 	
 	build: function(){
@@ -496,7 +496,6 @@ lattice.modules.ListItem = new Class({
 	fadeOut: null,
 	
   /* Section: Getters & Setters */
-	getObjectId: function(){ return this.objectId; },
 	getSaveFieldURL: function(){
 		var url =  this.marshal.getSaveFieldURL( this.getObjectId() );
 //		console.log( "listItem.getSaveFieldURL", url );
@@ -512,7 +511,7 @@ lattice.modules.ListItem = new Class({
 		this.element.store( "Class", this );
 		this.marshal = aMarshal;
 		this.instanceName = this.element.get( "id" );
-		this.objectId = this.element.get("id").split("_")[1];
+		this.objectId = this.element.get("data-objectId");
 		this.build();
 	},
 
