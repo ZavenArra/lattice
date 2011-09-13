@@ -1,5 +1,5 @@
 <?$instance=$data['instance'];?>
-<li id="item_<?=$data['id'];?>" class="listItem"> 
+<li data-objectid="<?=$data['id'];?>" id="item_<?=$data['id'];?>" class="listItem"> 
 
 	<?foreach($uiElements as $htmlChunk):?>
 		<?=$htmlChunk;?>

@@ -30,9 +30,9 @@ lattice.modules.CMS = new Class({
 	},
 	
 	getRequestTranslatedPageURL: function( nodeId, loc ){
-		//return 'http://localhost./mopcms/MoPDevelopment/lattice/latticecms/views/js/translation_'+loc+".json" + "?"+ new Date().getTime();
-		//lattice.util.getBaseURL() + "ajax/compound/cms/getTranslatedPage/" + nodeId + '/' + loc
-		return lattice.util.getBaseURL() + "ajax/compound/cms/getTranslatedPage/" + nodeId + '/' + loc;
+		var url =  lattice.util.getBaseURL() + "ajax/compound/cms/getTranslatedPage/" + nodeId + '/' + loc;
+		console.log( 'getRequestTranslatedPageURL', url );
+		return url;
 	},
 
 	getRequestTierURL: function( parentId, deepLink ){
@@ -147,7 +147,8 @@ lattice.modules.CMS = new Class({
 	},
     	
 	clearPages: function(){
-		this.pages.each( function( aPage ){
+		console.log( ":::::", this.pages )
+		Object.each( this.pages, function( aPage ){
 			aPage.clearContent();
 			aPage.destroy();
 			delete this.pages[ aPage.loc ]
