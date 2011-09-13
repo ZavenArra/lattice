@@ -21,19 +21,51 @@ Class Controller_CSV extends Controller {
       $this->csvWalkTree($rootObject);
      
    //   echo 'done';
-      $file = fopen('application/export/'.$exportFileIdentifier.'.csv', 'w');
+      $filename = 'application/export/'.$exportFileIdentifier.'.csv';
+      $file = fopen($filename, 'w');
       fwrite($file, $this->csvOutput);
       fclose($file);
+      
+      exit;
+      header("Pragma: public");
+		header("Expires: 0");
+		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+		header("Cache-Control: private",false);
+		header("Content-Type: csv");
+		header("Content-Disposition: attachment; filename=\"".$filename."\";");
+		header("Content-Transfer-Encoding: binary");
+		header("Content-Length: ".@filesize($filename));
+		set_time_limit(0);
+		@readfile("$filename") or die("File not found.");	
+		exit;
    }
    
    private function csvWalkTree($parent){
       $objects = $parent->getLatticeChildren();
+      
+      if ($this->level > 0 && count($objects)) {
+         $childrenLine = array_pad(array('Children'), -1 - $this->level, '');
+         $this->csvOutput .= latticeutil::arrayToCsv($childrenLine, ',');
+         $this->csvOutput .= "\n";
+      }
+
       foreach($objects as $object){
          $csvView = new View_CSV($this->level, $object);
 
          $this->csvOutput .= $csvView->render();
          $this->level++;
          $this->csvWalkTree($object);
+         
+        //And now append one example object of each addable object
+         foreach ($object->objecttype->addableObjects as $addableObjectType) {
+           $object = Graph::object()->setObjectType($addableObjectType['objectTypeId']);
+
+
+            $csvView = new View_Csv($this->level, $object);
+            $this->csvOutput .= $csvView->render();
+
+         
+         }
          $this->level--;
       }
    
