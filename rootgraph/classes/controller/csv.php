@@ -19,25 +19,21 @@ Class Controller_CSV extends Controller {
       $this->level = 0;
       
       $this->csvWalkTree($rootObject);
+
+			$filename = $exportFileIdentifier .'.csv';
+			$filepath = 'application/export/'.$filename;
      
-   //   echo 'done';
-      $filename = 'application/export/'.$exportFileIdentifier.'.csv';
-      $file = fopen($filename, 'w');
-      fwrite($file, $this->csvOutput);
-      fclose($file);
-      
-      exit;
-      header("Pragma: public");
-		header("Expires: 0");
-		header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-		header("Cache-Control: private",false);
-		header("Content-Type: csv");
-		header("Content-Disposition: attachment; filename=\"".$filename."\";");
-		header("Content-Transfer-Encoding: binary");
-		header("Content-Length: ".@filesize($filename));
-		set_time_limit(0);
-		@readfile("$filename") or die("File not found.");	
-		exit;
+			header("Pragma: public");
+			header("Expires: 0");
+			header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+			header("Cache-Control: private",false);
+			header("Content-Type: csv");
+			header("Content-Disposition: attachment; filename=\"".$filename."\";");
+			header("Content-Transfer-Encoding: binary");
+			header("Content-Length: ".@filesize($filepath));
+			set_time_limit(0);
+			@readfile("$filename") or die("File not found.");	
+			exit;
    }
    
    private function csvWalkTree($parent){
@@ -50,6 +46,7 @@ Class Controller_CSV extends Controller {
       }
 
       foreach($objects as $object){
+         
          $csvView = new View_CSV($this->level, $object);
 
          $this->csvOutput .= $csvView->render();
