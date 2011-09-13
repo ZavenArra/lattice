@@ -73,16 +73,19 @@ class Lattice_CMS extends Lattice_CMSInterface {
 		}	
       
       
-	//get the default 
+		//get the root noode
 
 		$rootObject = $this->getRootObject();
-      $this->view->rootObjectId = $rootObject->id;
+		$this->view->rootObjectId = $rootObject->id;
       
 		
 		//basically this is an issue with wanting to have multiple things going on
 		//with the same controller as a parent at runtime
 		$this->view->navigation = Request::factory(Kohana::config($this->controllerName.'.navigationRequest'))->execute()->body();
 
+		//get all the languages
+		$languages = ORM::Factory('language')->find_all();
+		$this->view->languages = $languages;
 		
 		$this->response->body($this->view->render());
 		//$this->outputLayout();  //consider using AFTER for this, but need to know whats up with ajax, etc
@@ -160,8 +163,6 @@ class Lattice_CMS extends Lattice_CMSInterface {
 		$this->nodetitle->allowDelete = $object->objecttype->allowDelete;
 		$this->nodetitle->allowTitleEdit = ($object->objecttype->allowTitleEdit == "true" ? true : false);
 
-		$languages = ORM::Factory('language')->find_all();
-		$this->nodetitle->languages = $languages;
 
 		$settings = Kohana::config('cms.defaultsettings');
 		if(is_array($settings)){

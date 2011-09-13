@@ -824,9 +824,22 @@ class Model_Object extends ORM {
        * Set up any translated peer objects
        */
       if (!$rosettaId) {
-         $this->addTranslatedPeerObjects($newObject);
+         $languages = Graph::languages();
+         foreach ($languages as $translationLanguage) {
+           
+            if ($translationLanguage->id == $newObject->language_id) {
+               continue;
+            }
 
-				 //and need to set up their object relationships
+            if ($this->loaded()) {
+               $translatedParent = $this->getTranslatedObject($translationLanguage->id);
+          
+               $translatedParent->addLatticeObject($newObject->objecttype->objecttypename, $data, $lattice, $newObject->rosetta_id, $translationLanguage->id);
+            } else {
+               Graph::object()->addLatticeObject($newObject->objecttype->objecttypename, $data, $lattice,  $newObject->rosetta_id, $translationLanguage->id);
+            }
+
+         }
       }
 
       /*
@@ -839,26 +852,7 @@ class Model_Object extends ORM {
 
    }
    
-   private function addTranslatedPeerObjects($newObject, $data=array()){
-      $languages = Graph::languages();
-         foreach ($languages as $translationLanguage) {
-           
-            if ($translationLanguage->id == $newObject->language_id) {
-               continue;
-            }
-
-            if ($this->loaded()) {
-               $translatedParent = $this->getTranslatedObject($translationLanguage->id);
-          
-               $translatedParent->createObject($newObject->objecttype->objecttypename, $data,  $newObject->rosetta_id, $translationLanguage->id);
-            } else {
-               Graph::object()->createObject($newObject->objecttype->objecttypename, $data,  $newObject->rosetta_id, $translationLanguage->id);
-            }
-
-						//lattice point setup closure goes here
-         }
-
-   }
+  
    
    /*
     * Called only at object creation time, this function add automatic components to an object as children and also recurses
@@ -995,7 +989,7 @@ class Model_Object extends ORM {
       }
       //add submitted data to content table
       foreach ($data as $field => $value) {
-
+    
          //need to switch here on type of field
          switch ($field) {
             case 'slug':
@@ -1003,7 +997,7 @@ class Model_Object extends ORM {
                $newObject->$field = $data[$field];
                continue(2);
             case 'title':
-               $newObject->contenttable->$field = $data[$field];
+               $newObject->$field = $data[$field];
                continue(2);
          }
 
@@ -1016,7 +1010,7 @@ class Model_Object extends ORM {
          if (in_array($fieldInfo->tagName, $objectTypes) && is_array($value)) {
             $clusterTemplateName = $fieldInfo->tagName;
             $clusterObjectId = ORM::Factory('object')->addObject($clusterTemplateName, $value); //adding object to null parent
-            $newObject->contenttable->$field = $clusterObjectId;
+            $newObject->$field = $clusterObjectId;
             continue;
          }
 
@@ -1036,11 +1030,11 @@ class Model_Object extends ORM {
                   $file = ORM::Factory('file');
                   $file->filename = $value;
                   $file->save();
-                  $newObject->contenttable->$field = $file->id;
+                  $newObject->$field = $file->id;
                }
                break;
             default:
-               $newObject->contenttable->$field = $data[$field];
+               $newObject->$field = $data[$field];
                break;
          }
       }
@@ -1074,9 +1068,22 @@ class Model_Object extends ORM {
        * Set up any translated peer objects
        */
       if (!$rosettaId) {
-         $this->addTranslatedPeerObjects($newObject);
+         $languages = Graph::languages();
+         foreach ($languages as $translationLanguage) {
+           
+            if ($translationLanguage->id == $newObject->language_id) {
+               continue;
+            }
 
-				 // and need to set up their element relationships
+            if ($this->loaded()) {
+               $translatedParent = $this->getTranslatedObject($translationLanguage->id);
+          
+               $translatedParent->addElementObject($newObject->objecttype->objecttypename, $elementName, $data, $newObject->rosetta_id, $translationLanguage->id);
+            } else {
+               Graph::object()->addElementObject($newObject->objecttype->objecttypename, $elementName, $data, $newObject->rosetta_id, $translationLanguage->id);
+            }
+
+         }
       }
 
       /*

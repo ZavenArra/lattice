@@ -156,7 +156,7 @@ class Model_ObjectType extends ORM {
 
 		default:
 
-			Model_Objectmap::configureNewField($this->id, $item->getAttribute('field'), $item->tagName );
+			Model_Objectmap::configureNewField($this->id, $item->getAttribute('name'), $item->tagName );
 			break;
 
 		}

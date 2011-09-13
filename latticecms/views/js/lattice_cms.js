@@ -30,9 +30,9 @@ lattice.modules.CMS = new Class({
 	},
 	
 	getRequestTranslatedPageURL: function( nodeId, loc ){
-		return 'http://localhost./mopcms/MoPDevelopment/lattice/latticecms/views/js/translation_'+loc+".json" + "?"+ new Date().getTime();
+		//return 'http://localhost./mopcms/MoPDevelopment/lattice/latticecms/views/js/translation_'+loc+".json" + "?"+ new Date().getTime();
 		//lattice.util.getBaseURL() + "ajax/compound/cms/getTranslatedPage/" + nodeId + '/' + loc
-//		return lattice.util.getBaseURL() + "ajax/compound/cms/getTranslatedPage/" + nodeId + '/' + loc;
+		return lattice.util.getBaseURL() + "ajax/compound/cms/getTranslatedPage/" + nodeId + '/' + loc;
 	},
 
 	getRequestTierURL: function( parentId, deepLink ){

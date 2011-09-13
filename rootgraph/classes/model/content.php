@@ -86,7 +86,6 @@ class Model_Content extends ORM {
 			}
 			$fieldConfig = lattice::config('objects', $xPath.sprintf('/elements/*[@name="%s"]', $columnName));
          
-      
          
 			if($fieldConfig->item(0)){
             
@@ -104,6 +103,7 @@ class Model_Content extends ORM {
 
 				//now go aheand and get the mapped column
 				$column = self::dbmap( $object->objecttype_id, $columnName);
+      
 				//$column = $object->objecttype->mappedColumn($column);
 				return parent::__get($column);
 			}
@@ -187,7 +187,7 @@ class Model_Content extends ORM {
 			//field is configured but not initialized in database
 			$object->objecttype->configureElement($fieldConfig->item(0));	
 			self::reinitDbmap($object->objecttype_id);
-
+        
 			//now go aheand and save on the mapped column
 
 			$mappedcolumn = self::dbmap( $object->objecttype_id, $column);
