@@ -230,15 +230,19 @@ lattice.modules.navigation.Navigation = new Class({
 		tierInstance.onObjectAdded();
 	},
 
-	removeObject: function( nodeId ){
-		var title = this.getNodeTitleFromId(nodeId);
+	removeObject: function( nodeId, tier ){
+		var title, paneIndex;
+		title = this.getNodeTitleFromId(nodeId);
 		this.nodeData[ nodeId ] = null;
 		delete this.nodeData[ nodeId ];
 		this.dataSource.removeObjectRequest( nodeId );
 		if( nodeId == this.dataSource.getObjectId() ){			
 			lattice.historyManager.changeState( "slug", null );
-			this.breadCrumbs.removeCrumbByLabel( title );
-			this.marshal.clearPage();
+			// this.breadCrumbs.removeCrumbByLabel( title );			
+			paneIndex = this.getVisibleTiers().indexOf( tier );		
+			this.detachTiers( paneIndex + 1 );
+			this.removeCrumbs( paneIndex + 1 );
+			this.marshal.clearPages();
 		}
 	},
   	
@@ -422,7 +426,7 @@ lattice.modules.navigation.Tier = new Class({
 	},
 
 	removeObject: function( nodeId ){
-		this.marshal.removeObject( nodeId );
+		this.marshal.removeObject( nodeId, this );
 	},
 	
 	onTogglePublishedStatusClicked: function( e, nodeElement ){

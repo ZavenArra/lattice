@@ -147,7 +147,8 @@ lattice.modules.CMS = new Class({
 	},
     	
 	clearPages: function(){
-		this.pages.each( function( aPage ){
+		console.log( ":::::", this.pages )
+		Object.each( this.pages, function( aPage ){
 			aPage.clearContent();
 			aPage.destroy();
 			delete this.pages[ aPage.loc ]
