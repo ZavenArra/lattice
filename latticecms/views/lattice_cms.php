@@ -2,14 +2,15 @@
 	
 	<?=$navigation;?>
 	
+<div class="localizationControls">
 	<div class="localizationControls container_12">
-		<ul class='clearFix'>
-			<li><a href="/mopcms/MoPDevelopment/cms/getTranslatedPage/4/en">English</a></li>
-			<li><a href="/mopcms/MoPDevelopment/cms/getTranslatedPage/4/es">Spanish</a></li>
-			<li><a href="/mopcms/MoPDevelopment/cms/getTranslatedPage/4/pt">Portugese</a></li>
-		</ul>
-	</div>
-	
+	<ul class="clearFix">
+	<?foreach($languages as $language):?>
+		<li><a href="<?=latticeurl::site('cms/getTranslatedPage/ID/'.$language->code);?>"><?=$language->fullname;?></a><li>
+	<?endforeach;?>
+	</ul>
+</div>
+
 	<div class="pagesPane clearFix">
 		<div id="pageContainer" class="clearFix"></div>
 	</div>

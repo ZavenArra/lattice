@@ -354,9 +354,9 @@ class Model_Object extends ORM {
 
       foreach ($fields as $fieldInfo) {
          $field = $fieldInfo->getAttribute('name');
-         if (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field))->length) {
+     //    if (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field))->length) {
             $content[$field] = $this->__get($field);
-         }
+      //   }
       }
 
       //find any lists
@@ -824,7 +824,22 @@ class Model_Object extends ORM {
        * Set up any translated peer objects
        */
       if (!$rosettaId) {
-         $this->addTranslatedPeerObjects($newObject);
+         $languages = Graph::languages();
+         foreach ($languages as $translationLanguage) {
+           
+            if ($translationLanguage->id == $newObject->language_id) {
+               continue;
+            }
+
+            if ($this->loaded()) {
+               $translatedParent = $this->getTranslatedObject($translationLanguage->id);
+          
+               $translatedParent->addLatticeObject($newObject->objecttype->objecttypename, $data, $lattice, $newObject->rosetta_id, $translationLanguage->id);
+            } else {
+               Graph::object()->addLatticeObject($newObject->objecttype->objecttypename, $data, $lattice,  $newObject->rosetta_id, $translationLanguage->id);
+            }
+
+         }
       }
 
       /*
@@ -837,24 +852,7 @@ class Model_Object extends ORM {
 
    }
    
-   private function addTranslatedPeerObjects($newObject, $data=null){
-      $languages = Graph::languages();
-         foreach ($languages as $translationLanguage) {
-           
-            if ($translationLanguage->id == $newObject->language_id) {
-               continue;
-            }
-
-            if ($this->loaded()) {
-               $translatedParent = $this->getTranslatedObject($translationLanguage->id);
-          
-               $translatedParent->addLatticeObject($newObject->objecttype->objecttypename, $data, $lattice, $newObject->rosetta_id);
-            } else {
-               Graph::object()->addLatticeObject($newObject->objecttype->objecttypename, $data, $lattice, $newObject->rosetta_id, $translationLanguage->id);
-            }
-         }
-
-   }
+  
    
    /*
     * Called only at object creation time, this function add automatic components to an object as children and also recurses
@@ -897,9 +895,7 @@ class Model_Object extends ORM {
                  ->where('title', '=', $arguments['title'])
                  ->find();
             if($checkForPreexistingObject->loaded()){
-               die('componet prenset!');
               $componentAlreadyPresent = true;
-              
             }
          }
                  
@@ -938,7 +934,7 @@ class Model_Object extends ORM {
          if ($objectTypeConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName))->item(0)) {
             //there's a config for this objectType
             //go ahead and configure it
-            Graph::configureTemplate($objectTypeName);
+            Graph::configureObjectType($objectTypeName);
             $newObjectType = ORM::Factory('objecttype', $objectTypeName);
          } else {
             throw new Kohana_Exception('No config for objectType ' . $objectTypeName);
@@ -993,7 +989,7 @@ class Model_Object extends ORM {
       }
       //add submitted data to content table
       foreach ($data as $field => $value) {
-
+    
          //need to switch here on type of field
          switch ($field) {
             case 'slug':
@@ -1001,7 +997,7 @@ class Model_Object extends ORM {
                $newObject->$field = $data[$field];
                continue(2);
             case 'title':
-               $newObject->contenttable->$field = $data[$field];
+               $newObject->$field = $data[$field];
                continue(2);
          }
 
@@ -1014,7 +1010,7 @@ class Model_Object extends ORM {
          if (in_array($fieldInfo->tagName, $objectTypes) && is_array($value)) {
             $clusterTemplateName = $fieldInfo->tagName;
             $clusterObjectId = ORM::Factory('object')->addObject($clusterTemplateName, $value); //adding object to null parent
-            $newObject->contenttable->$field = $clusterObjectId;
+            $newObject->$field = $clusterObjectId;
             continue;
          }
 
@@ -1034,11 +1030,11 @@ class Model_Object extends ORM {
                   $file = ORM::Factory('file');
                   $file->filename = $value;
                   $file->save();
-                  $newObject->contenttable->$field = $file->id;
+                  $newObject->$field = $file->id;
                }
                break;
             default:
-               $newObject->contenttable->$field = $data[$field];
+               $newObject->$field = $data[$field];
                break;
          }
       }
@@ -1072,7 +1068,22 @@ class Model_Object extends ORM {
        * Set up any translated peer objects
        */
       if (!$rosettaId) {
-         $this->addTranslatedPeerObjects($newObject);
+         $languages = Graph::languages();
+         foreach ($languages as $translationLanguage) {
+           
+            if ($translationLanguage->id == $newObject->language_id) {
+               continue;
+            }
+
+            if ($this->loaded()) {
+               $translatedParent = $this->getTranslatedObject($translationLanguage->id);
+          
+               $translatedParent->addElementObject($newObject->objecttype->objecttypename, $elementName, $data, $newObject->rosetta_id, $translationLanguage->id);
+            } else {
+               Graph::object()->addElementObject($newObject->objecttype->objecttypename, $elementName, $data, $newObject->rosetta_id, $translationLanguage->id);
+            }
+
+         }
       }
 
       /*
@@ -1099,12 +1110,12 @@ class Model_Object extends ORM {
       $objectRelationship->connectedobject_id = $newObject->id;
       
       //calculate sort order
-      $sort = DB::select(array('sortorder', 'maxsort'))->from('objectrelationships')
+      $sort = DB::select('sortorder')->from('objectrelationships')
                         ->where('lattice_id', '=', $lattice->id)
                         ->where('object_id', '=', $this->id)
-                      ->order_by('sortorder')->limit(1)
+                      ->order_by('sortorder','DESC')->limit(1)
                       ->execute()->current();
-      $objectRelationship->sortorder = $sort['maxsort'] + 1;
+      $objectRelationship->sortorder = $sort['sortorder'] + 1;
     
       $objectRelationship->save();
       return $newObject;

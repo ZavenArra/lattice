@@ -142,7 +142,9 @@
 
 <!ELEMENT tags EMPTY >
 <!ATTLIST tags 
-	%uiattrs;
+	name CDATA "tags"
+	label				CDATA	#IMPLIED
+	className			CDATA	#IMPLIED
 >
 
 <!ELEMENT resize EMPTY >
