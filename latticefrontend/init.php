@@ -17,7 +17,11 @@ class FrontendRouting {
          
          $slug = strtok($segment, '_');
          $languageCode = strtok('_');
-         $object = Graph::object()->getPublishedObjectBySlug($slug);
+				 if(latticeutil::checkAccess('admin')){
+					 $object = Graph::object($slug);
+				 } else {
+					 $object = Graph::object()->getPublishedObjectBySlug($slug);
+				 }
          if ($languageCode) {
             $object = $object->translate($languageCode);
          }

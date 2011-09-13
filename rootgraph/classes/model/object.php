@@ -954,8 +954,6 @@ class Model_Object extends ORM {
          }
       }
       
-
-
       $newObject = Graph::object();
       $newObject->setObjectType($objectTypeName);
       
