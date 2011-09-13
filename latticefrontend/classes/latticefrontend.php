@@ -24,7 +24,7 @@ class latticefrontend {
 		$viewName = null;
       $view = null;
 		if ($object->loaded()) {
-			if ($object->published == false || $object->activity != null) {
+			if ($object->activity != null) {
 				throw new Kohana_User_Exception('Page not availabled', 'The object with identifier ' . $id . ' is does not exist or is not available');
 			}
 			//look for the objectType, if it's not there just print out all the data raw
