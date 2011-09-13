@@ -2967,7 +2967,8 @@ lattice.ui.Tags = new Class({
 		this.field.addEvent( 'keydown', this.boundOnKeyPress );
 
 		this.element.setStyle( 'cursor', 'inherit' );
-		this.editToggle.removeClass( 'edit' ).addClass( 'cancel' );
+		this.editToggle.removeClass( 'edit' );
+		this.editToggle.addClass( 'cancel' );
 		this.container.removeClass( 'atRest' );
 		this.field.removeClass( 'hidden' );
 

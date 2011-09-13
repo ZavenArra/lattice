@@ -198,16 +198,20 @@ lattice.modules.Cluster = new Class({
 
 Extends: lattice.modules.Module,
 
-initialize: function( anElementOrId, aMarshal, options ){
-	this.parent( anElementOrId, aMarshal, options );
-	this.objectId = this.element.get("data-objectId");
-},
+	initialize: function( anElementOrId, aMarshal, options ){
+		this.parent( anElementOrId, aMarshal, options );
+		this.objectId = this.element.get("data-objectId");
+	},
 
-getSaveFieldURL: function(){
-	var url = lattice.util.getBaseURL() +"ajax/data/cms/savefield/" + this.getObjectId();
-	console.log( 'cluster.getSaveFieldURL', url );
-	return url;
-},
+	toString: function(){
+		return "[Object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.Cluster ]";
+	},
+
+	getSaveFieldURL: function(){
+		var url = lattice.util.getBaseURL() +"ajax/data/cms/savefield/" + this.getObjectId();
+		console.log( 'cluster.getSaveFieldURL', url );
+		return url;
+	}
 
 });
 

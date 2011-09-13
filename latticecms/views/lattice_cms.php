@@ -4,11 +4,12 @@
 	
 <div class="localizationControls">
 	<div class="localizationControls container_12">
-	<ul class="clearFix">
-	<?foreach($languages as $language):?>
-		<li><a href="<?=latticeurl::site('cms/getTranslatedPage/ID/'.$language->code);?>"><?=$language->fullname;?></a><li>
-	<?endforeach;?>
-	</ul>
+		<ul class="clearFix">
+		<?foreach($languages as $language):?>
+			<li><a href="<?=latticeurl::site('cms/getTranslatedPage/ID/'.$language->code);?>"><?=$language->fullname;?></a><li>
+		<?endforeach;?>
+		</ul>
+	</div>
 </div>
 
 	<div class="pagesPane clearFix">
