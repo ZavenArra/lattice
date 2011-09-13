@@ -45,6 +45,7 @@ class frontend {
 			break;
       case 'tags':
          echo $indent."<p class=\"$field\"> <?=implode({$prefix}['$field'], ', ');?></p>\n\n";
+         break;
 		default:
 			echo $indent."<p class=\"$field\"> <?={$prefix}['$field'];?></p>\n\n";
 			break;
