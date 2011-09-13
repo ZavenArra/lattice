@@ -63,7 +63,6 @@ lattice.ui.UIField = new Class({
 	toString: function(){ return "[ object, lattice.ui.UIField ]"; },
 	
 	onResponse: function( json ){
-//		console.log( "RESPONSE", json );
 		if( !json.returnValue || !json.response ){
 			throw json;
 		}else if( json.response.error ){
@@ -581,7 +580,6 @@ lattice.ui.Modal = new Class({
 		toString: function(){ return "[ object, lattice.ui.Modal ]"; },
 		
 		show: function(){
-			console.log( "show" );
 			this.element.setStyle( "opacity", 0 );
 			this.element.removeClass("hidden");
 			this.showTransition.start( { "opacity": 1 } );
@@ -786,7 +784,6 @@ lattice.ui.MultiSelect = new Class({
 	},
 
 	getKeyValuePair: function(){
-//		console.log( "getKeyValuePair", this.fieldName, this.getValue() );
 		var returnVal = {};
 		returnVal[ this.fieldName ] = this.getValue();
 		return returnVal;
@@ -797,7 +794,6 @@ lattice.ui.MultiSelect = new Class({
 		this.ogSelect.getSelected().each( function( aSelectedOption ){
 			val.push( aSelectedOption.getProperty( "value" ) );
 		});
-//		console.log( "getValue", val );
 		return val;
 	},
 	
@@ -808,7 +804,6 @@ lattice.ui.MultiSelect = new Class({
 	
 	getValuesAsQueryString: function(){
 		var returnVal = new Hash( this.getKeyValuePair() ).toQueryString();
-//		console.log( this.toString(), "getValuesAsQueryString()", getKeyValuePair(), returnVal );
 		return returnVal;
 	},
 	
@@ -849,14 +844,12 @@ lattice.ui.MultiSelect = new Class({
 	
 	onSaveClicked: function( e ){
 		lattice.util.stopEvent( e );
-//	    console.log( "onSaveClicked" );
         this.updateAndClose( e );
         this.submit();
 	},
 
 	onCancelClicked: function( e ){
 		lattice.util.stopEvent( e );
-//	    console.log( "onCancelClicked" );
 	    this.hideMultiSelect();
 	},
 
@@ -864,7 +857,6 @@ lattice.ui.MultiSelect = new Class({
 		lattice.util.stopEvent( e );
 	    if( e.target == this.saveButton || e.target == this.cancelButton ) return;
 	    if( e && ( e.target == this.multiBox || this.multiBox.contains( e.target ) ) ) return;
-//	    console.log( "onDocumentClicked" );
 	    this.updateAndClose( e );
 	},
 	
@@ -881,7 +873,6 @@ lattice.ui.MultiSelect = new Class({
 			this.ogSelect.setProperty( "value", 0 );
 		}
 
-//		console.log( "B", this.ogSelect.getSelected() );
 		options.each( function( anOption, anIndex ){
 
 			var opt = new Element( "li" );
@@ -905,7 +896,6 @@ lattice.ui.MultiSelect = new Class({
 
 			var label = new Element( "label" );
 			var span = new Element( "span", { "text" : anOption.get("text") } );
-			//console.log( this.toString(), "updateMultiBoxList", anOption, anOption.getProperty( "selected" ) );
 			if( anOption.getProperty( "selected" ) ) checkBox.setProperty( "checked", "checked" );
 			label.adopt( checkBox );
 			label.adopt( span );
@@ -933,17 +923,13 @@ lattice.ui.MultiSelect = new Class({
 		var selectedOptions = this.ogSelect.getSelected();
 		this.multiBox.getElements( "input[type='checkbox']" ).each( function( aCheckBox, anIndex ){
 			if( selectedOptions.contains( selectedOptions[ anIndex ] ) ) selectedOptions[ anIndex ].removeProperty( "selected" );
-//		console.log( "updateOgSelect",  aCheckBox.getProperty( "checked" ) );
 			if( aCheckBox.getProperty( "checked" ) ) selectOptions[ anIndex ].setProperty( "selected", true );
 		});
-//	console.log( "A", this.ogSelect.get("html"), this.ogSelect.getSelected() );
 	},
 	
 	updateAndClose: function(){
-//		console.log( 'updateAndClose', e, e.target, this.multiBox, this.multiBox.contains( e.target ) );
 		this.ogSelect.removeEvents();
 		this.updateOgSelect();
-//		console.log( "updateAndClose", this.ogSelect.getSelected().length );
 		this.valueElement.set( "text", ( this.ogSelect.getSelected().length > 1 )? "Multiple" : this.ogSelect.getSelected()[0].get( "text" ) );
 		this.hideMultiSelect();
 	
@@ -992,7 +978,6 @@ lattice.ui.DatePicker = new Class({
 	},
 		
 	initialize: function( anElement, options ){
-//		console.log( this.toString(), "initialize", anElement, options );
 		this.parent( anElement, options );
 		this.format = ( this.element.getData('format') )? this.element.getData('format') : this.options.format;
 		this.allowEmpty = ( this.element.getData('allowempty') )? this.element.getData('allowempty') : this.options.allowEmpty;
@@ -1006,7 +991,6 @@ lattice.ui.DatePicker = new Class({
 	},
 	
 	buildPicker: function(){ 
-	    console.log( "a", this.dateField );
 		this.picker = new Picker.Date( this.dateField, {
 			elementId: "datePickerFor_" + this.fieldName,
 			startView: "month",
@@ -1023,17 +1007,14 @@ lattice.ui.DatePicker = new Class({
 	
 	onShow: function(){
 		var scrollData = ( this.scrollContext == "modal" )? lattice.ModalManager.getActiveModal().getScrollOffset() : $( window ).getScroll();
-//		console.log( this.toString(), 'onShow', this.scrollContext, scrollData );
 		this.reposition( scrollData );
 	},
 
 	reposition: function( scrollData ){
-//		console.log( this.toString(), "reposition", $A( arguments ) );
 		this.picker.reposition( scrollData );
 	},
 	
 	onResponse: function( json ){
-//		console.log( this.toString(), "onResponse", $A( arguments ) );
 		this.parent( json );
 	},
 	
@@ -1044,7 +1025,6 @@ lattice.ui.DatePicker = new Class({
 	},
 
 	setValue: function( aValue ){
-//		console.log( "Setvalue", aValue );
 		this.dateField.set( aValue );
 	},
 	
@@ -1066,7 +1046,6 @@ lattice.ui.DatePicker = new Class({
 	getCurrentDateString: function(){
 		var currentDate = new Date();
 		var dateString = "";
-//		console.log( ">>>>>>>> ", this.getDateFormat() );
 		if( this.getDateFormat() == "dmy" ){
 			dateString = currentDate.getDate() + "/"+ currentDate.getMonth() + "/" + currentDate.getYear();
 		}else{
@@ -1154,7 +1133,6 @@ lattice.ui.DateRangePicker = new Class({
 	
 	onShow: function( scrollData ){
 		this.dateFields.each( function( aDateField, index ){
-//			console.log( this.toString(), "reposition", $A( arguments ) );
 			aDateField.retrieve( "Class" ).reposition( scrollData );
 		});
 	},
@@ -1163,7 +1141,6 @@ lattice.ui.DateRangePicker = new Class({
 	
 	
 	reposition: function( scrollData ){
-//		console.log( this.toString(), "reposition", $A( arguments ) );
 		this.dateFields.each( function( aDateField ){
 			aDateField.reposition( scrollData );
 		});
@@ -1179,7 +1156,6 @@ lattice.ui.DateRangePicker = new Class({
 	},
 
 	onResponse: function(){
-//		console.log( this.toString(), " onreponse", $A( arguments ) );
 		this.element.getElement(".spinner").addClass("hidden");
 	},
 	
@@ -1190,8 +1166,6 @@ lattice.ui.DateRangePicker = new Class({
 	},
 	
 	setValue: function( date ){
-
-//		console.log( "setValue", this.toString(), $A( arguments ) );
 
 		var range = { startDate: null, endDate: null };
 		
@@ -1235,20 +1209,14 @@ lattice.ui.DateRangePicker = new Class({
 		var returnVal = {};
 		returnVal[ this.fieldName + "_startDate" ] = vals.startDate;
 		returnVal[ this.fieldName + "_endDate" ] = vals.endDate;
-//		console.log( "DateRange .... getKeyValuePair : ", returnVal );
 		return returnVal;
 	},
 	
 	isEndDateAfterStartDate: function(){
-
-//		console.log( "startDate less than or equal to endDate? ", this.getDates().startDate, this.getDates().endDate );
-
-		var dates = this.getDates();
-		
-		var returnVal = ( ( ( dates.startDate ) && ( dates.endDate ) ) && ( this.getDates().startDate < this.getDates().endDate ) );
-		
+		var dates, returnVal;
+		dates = this.getDates();
+		returnVal = ( ( ( dates.startDate ) && ( dates.endDate ) ) && ( this.getDates().startDate < this.getDates().endDate ) );
 		return returnVal;
-
 	},
 	
 	setConstraint: function( constraint ){
@@ -1256,7 +1224,6 @@ lattice.ui.DateRangePicker = new Class({
 	},
 	
 	constrainDates: function( constraint ){
-//		console.log( e.target.get("value") );
 		this.setConstraint( constraint );
 		switch( this.constraint ){
 			case "TOTALS":
@@ -1287,22 +1254,14 @@ lattice.ui.DateRangePicker = new Class({
 	},
 
 	constrainToWeekly: function( dates ){
-
-		var difference = dates.endDate.getTime() - dates.startDate.getTime();
-
-//		console.log(difference);
-
-		var msInDay = 86400000;
-
-		var days = Math.round( difference / ( msInDay ) );
-//		console.log( days );
-
-//		console.log( dates.endDate.getTime() );
-
+		var difference, msInDay, val, oldTime;
+		difference = dates.endDate.getTime() - dates.startDate.getTime();
+		msInDay = 86400000;
+		days = Math.round( difference / ( msInDay ) );
 		if( days%7 != 6 ){
 			//then update the end date to the most lesser end date
-			var val = 7 - days%7 - 1;
-			var oldTime = dates.endDate.getTime();
+			val = 7 - days%7 - 1;
+			oldTime = dates.endDate.getTime();
 			dates.endDate = new Date();
 			dates.endDate.setTime( oldTime + (7 - days%7 -1) * msInDay );
 		}
@@ -1412,17 +1371,11 @@ lattice.ui.FileElement = new Class({
 		this.reposition();
 	},	
 	
-	simulateClick: function(){
-	    console.log( "simulateClick", this.uploader.box.getElement( "object" ), $( this.uploader.box.getElement( "object" ).get( "id" ) ) );
-        // Swiff.remote.delay( 500, Swiff, this.uploader.box.getElement( "object" ), 'stageClick' );
-	},
-
 	toString: function(){
 		return "[ object, lattice.ui.UIElement, lattice.ui.FileElement ]";
 	},
 	
 	getOptions: function(){
-		console.log( "getOptions", "{", this.extensions, Cookie.read( 'session' ), "}");
 		var url = this.marshal.getSaveFileSubmitURL();
 		return {
 			target: this.element,
@@ -1438,7 +1391,6 @@ lattice.ui.FileElement = new Class({
 	},
 	
 	buildExtensionsObject: function(){
-		console.log( "buildExtensionsObject", this.extensions );
     var extensionsArray = ( typeof this.extensions == 'string' )? this.extensions.split(",") : this.extensions;
 		var desc = "";
 		var exts = "";
@@ -1459,7 +1411,6 @@ lattice.ui.FileElement = new Class({
 	},
 	
 	onFocus: function( e ){
-		console.log( "lattice.ui.FileElement", "onFocus", e );
 		lattice.util.stopEvent( e );
 		this.uploader.setFocus( this, this.getPosition() );
 	},
