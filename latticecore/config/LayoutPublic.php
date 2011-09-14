@@ -1,8 +1,5 @@
 <?
-	$config['resources']['css'] = array(
-		'application/views/css/publicStyles.css',
-	);
-	$config['resources']['js'] = array(
-	);
+	$config['resources']['css'] = array();
+	$config['resources']['js'] = array();
 	return $config;
 ?>
