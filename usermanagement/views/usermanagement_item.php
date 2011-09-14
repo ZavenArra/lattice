@@ -1,4 +1,4 @@
-<li id="item_<?=$data['id'];?>" class="listItem">
+<li data-objectid="<?=$data['id'];?>" id="item_<?=$data['id'];?>" class="listItem">
 
 	<div div class="clearFix">
 	<?if(!$data['superuser'] || latticeutil::checkRoleAccess('superuser')):?>
