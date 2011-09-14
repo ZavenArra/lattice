@@ -866,7 +866,6 @@ class Model_Object extends ORM {
       foreach ($containers as $c) {
          $arguments['title'] = $c->getAttribute('label');
          $this->objecttype->configureElement($c);
-         //$childObject = $this->addObject($c->getAttribute('family'), $arguments);
       }
       
       //look up any components and add them as well
@@ -908,6 +907,36 @@ class Model_Object extends ORM {
    }
    
    
+   public function setObjectType($objectTypeClassOrName) {
+      $objectType = null;
+      if (!is_object($objectTypeClassOrName)) {
+         
+         $objectTypeName = $objectTypeClassOrName;
+         
+         $objectType = ORM::Factory('objecttype', $objectTypeName);
+
+         if (!$objectType->id) {
+
+
+            //check objects.xml for configuration
+            if ($objectTypeConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName))->item(0)) {
+               //there's a config for this objectType
+               //go ahead and configure it
+               Graph::configureObjectType($objectTypeName);
+               $objectType = ORM::Factory('objecttype', $objectTypeName);
+            } else {
+               throw new Kohana_Exception('No config for objectType ' . $objectTypeName);
+            }
+         }
+      } else {
+         $objectType = $objectTypeClassOrName;
+      }
+      $this->objecttype_id = $objectType->id;
+      $this->__set('objecttype', $objectType);
+      
+      return $this; //chainable
+   }
+   
     private function createObject($objectTypeName, $data, $rosettaId, $languageId){
        
       if(!$rosettaId){
@@ -925,25 +954,10 @@ class Model_Object extends ORM {
          }
       }
       
-      $newObjectType = ORM::Factory('objecttype', $objectTypeName);
-
-      if (!$newObjectType->id) {
-
-
-         //check objects.xml for configuration
-         if ($objectTypeConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName))->item(0)) {
-            //there's a config for this objectType
-            //go ahead and configure it
-            Graph::configureObjectType($objectTypeName);
-            $newObjectType = ORM::Factory('objecttype', $objectTypeName);
-         } else {
-            throw new Kohana_Exception('No config for objectType ' . $objectTypeName);
-         }
-      }
-
-
       $newObject = Graph::object();
-      $newObject->objecttype_id = $newObjectType->id;
+      $newObject->setObjectType($objectTypeName);
+      
+      
 
       //create slug
       if (isset($data['title'])) {
@@ -964,7 +978,7 @@ class Model_Object extends ORM {
 
       //check for enabled publish/unpublish. 
       //if not enabled, insert as published
-      $tSettings = lattice::config('objects', sprintf('//objectType[@name="%s"]', $newObjectType->objecttypename));
+      $tSettings = lattice::config('objects', sprintf('//objectType[@name="%s"]', $newObject->objecttype->objecttypename));
       $tSettings = $tSettings->item(0);
       $newObject->published = 1;
       if ($tSettings) { //entry won't exist for Container objects
@@ -1001,7 +1015,7 @@ class Model_Object extends ORM {
                continue(2);
          }
 
-         $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $newObjectType->objecttypename, $field);
+         $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $newObject->objecttype->objecttypename, $field);
          $fieldInfo = lattice::config('objects', $fieldInfoXPath)->item(0);
          if (!$fieldInfo) {
             throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath' => $fieldInfoXPath));

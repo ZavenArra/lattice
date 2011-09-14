@@ -1,5 +1,34 @@
 /* Class: lattice.cms.CMS */
 
+Request.JSON.implement({
+	success: function(text){
+		var json;
+		try {
+			json = this.response.json = JSON.decode( text, this.options.secure );
+		} catch ( error ){
+			throw error + " : " + text;
+			this.fireEvent('error', [ text, error ] );
+			return;
+		}
+		if ( json == null ){
+			this.onFailure();
+		} else if( !json.returnValue ){
+			if( json.response ){
+				if( !lattice.warningModal ){
+					lattice.warningModal = new lattice.ui.Modal();
+				}
+				lattice.warningModal.setContent( json.response, 'Error' );
+				lattice.warningModal.show();
+				throw json.response;
+			}else{
+				throw 'response to JSON request has eiter no returnValue, or no response.'
+			}
+		} else {
+			this.onSuccess( json, text );
+		}
+	}
+});
+
 lattice.modules.CMS = new Class({
 
 	/* Constructor: initialize */
@@ -384,7 +413,6 @@ lattice.modules.CMSPage = new Class({
 		var titleEl, titleIPE;
 		this.clearContent();
 		this.loc = this.element.getValueFromClassName('loc');
-		console.log( 'content', content );
 		this.element.set( 'html', content );
 		this.UIFields = this.initUI( this.element );
 		this.initModules( this.element );		

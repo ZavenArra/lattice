@@ -28,15 +28,30 @@ class View_Csv  {
       $objectTypeLine = array_pad(array($this->_objectTypeName), -1 - $this->_indent, '');
       $csv = latticeutil::arrayToCsv($objectTypeLine, ',');
       $csv .= "\n";
+      $elementsLine = array_pad(array('Elements'), -1 - ($this->_indent + 1), '');
+      $csv .= latticeutil::arrayToCsv($elementsLine, ',');
+      $csv .= "\n";
       
       foreach ($this->_object->getFields() as $columnName) {
          if(in_array($columnName, $this->skipFields)){
             continue;
          }         
-        // echo 'c'.$columnName;
-         $dataItem = $this->_object->$columnName;
+         
+         if($this->_object->loaded()){
+            $dataItem = $this->_object->$columnName;
+         } else {
+            $dataItem = null;  //this allow for objects to be used as empty templates 
+                               //without being tied to database
+                               //potential refactor here, separating ideas of objecttype and object
+                               //a bit more
+         }
+   
 
          if (is_object($dataItem)) {
+            
+                  
+       
+         
 
             //        if (is_subclass_of($dataItem, 'Model_File')) {
             // This is a special case, once Files are compound objects only
@@ -44,47 +59,35 @@ class View_Csv  {
             // a text field, with file linked to object via  objectelementsrelationships.
             if (get_class($dataItem) == 'Model_File') {
                $dataItem = $dataItem->filename;
-            } else {
-
-               $objectTypeLine = array_pad(array($dataItem->objecttypename), -1 - $this->_indent, '');
-               
-               $csv .= latticeutil::arrayToCsv($objectTypeLine, ',');
+               $dataItemLine = array_pad(array($columnName, $dataItem), - 2 - $this->_indent - 1, '' );
+               $csv .= latticeutil::arrayToCsv($dataItemLine, ',');
                $csv .= "\n";
-
+               
+            } else {
+ 
+               //skip if it's a container
+               if ($dataItem->objecttype->nodeType == 'container') {
+                  continue;
+               }
+               
                $csvView = new View_Csv($this->_indent+1, $dataItem);
                $csv .= $csvView->render();
-               continue;
+               $csv .= "\n";
             }
 
-         } //else {
+         } else { 
+            
+            if(is_array($dataItem)){
+             $dataItem = implode($dataItem, ',');  
+            }
 
+            
             $dataItemLine = array_pad(array($columnName, $dataItem), - 2 - $this->_indent - 1, '' );
             $csv .= latticeutil::arrayToCsv($dataItemLine, ',');
             $csv .= "\n";
+         }
             
-            
-            //And now append one example object of each addable object
-            foreach($this->_object->objecttype->addableObjects as $addableObjectType){
-               $object = Graph::object();
-               $object->objecttype = ORM::Factory('objecttype')
-                       ->where('objecttypename','=',$addableObjectType['objectTypeId'])
-                       ->find();
-               if(!$object->objecttype->loaded()){
-                  
-                  echo $addableObjectType['objectTypeId'];
-                  echo 'objecttypes must get forced to self configure if we are going to allow empty objects';
-               }
-           
-               $objectTypeLine = array_pad(array($addableObjectType['objectTypeId'].'HEY!'), -1 - $this->_indent -1, '');
-               
-               $csv .= latticeutil::arrayToCsv($objectTypeLine, ',');
-               $csv .= "\n";
-/*
-               $csvView = new View_Csv($this->_indent+1, $object);
-               $csv .= $csvView->render();
-               */
-            }
-         //}
+      
       }
 
       return $csv;
