@@ -139,7 +139,7 @@ class latticecms {
 
 								if ($tConfig) {
                            
-										$field = $element['field'];
+										$field = $element['name'];
 										$clusterObject = $object->$field;
 										//this should really happen within the models
 										
@@ -165,7 +165,7 @@ class latticecms {
 												}
 												$html = $view->render();
 										}
-										$htmlChunks[$element['type'] . '_' . $element['field']] = $html;
+										$htmlChunks[$element['type'] . '_' . $element['name']] = $html;
 										continue;
 								}
             
@@ -175,7 +175,7 @@ class latticecms {
              */
             $uiArguments = $element;
             if(isset($element['fieldId'])){
-               $uiArguments['field'] = $element['fieldId'];
+               $uiArguments['name'] = $element['fieldId'];
             }
 
 				switch ($element['type']) {
@@ -191,19 +191,19 @@ class latticecms {
                   if (isset($element['display']) && $element['display'] != 'inline') {
                      break; //element is being displayed via navi, skip
                   }
-                  $element['elementname'] = $element['family'];
+                  $element['elementname'] = $element['name'];
                   $element['controllertype'] = 'list';
 
 
-                  $requestURI = 'list/getList/' . $object->id . '/' . $element['family'];
-                  $htmlChunks[$element['family']] = Request::factory($requestURI)->execute()->body();
+                  $requestURI = 'list/getList/' . $object->id . '/' . $element['name'];
+                  $htmlChunks[$element['name']] = Request::factory($requestURI)->execute()->body();
                   break;
 
                case 'associator':
-                  $controller = new Associator_Controller($element['filters'], $object->id, $element['field']);
+                  $controller = new Associator_Controller($element['filters'], $object->id, $element['name']);
                   $controller->createIndexView();
                   $controller->view->loadResources();
-                  $key = $element['type'] . '_' . $uiArguments['field'];
+                  $key = $element['type'] . '_' . $uiArguments['name'];
                   $htmlChunks[$key] = $controller->view->render();
                   
                   break;
@@ -217,12 +217,12 @@ class latticecms {
                   break;
                default:
                   //deal with html objectType elements
-                  $key = $element['type'] . '_' . $uiArguments['field'];
+                  $key = $element['type'] . '_' . $uiArguments['name'];
                   $html = null;
-                  if (!isset($element['field'])) {
-                     $element['field'] = CMS_Controller::$unique++;
+                  if (!isset($element['name'])) {
+                     $element['name'] = CMS_Controller::$unique++;
                      $html = latticeui::buildUIElement($element, null);
-                  } else if (!$html = latticeui::buildUIElement($uiArguments, $object->$element['field'])) {
+                  } else if (!$html = latticeui::buildUIElement($uiArguments, $object->$element['name'])) {
                      throw new Kohana_Exception('bad config in cms: bad ui element');
                   }
                   $htmlChunks[$key] = $html;
@@ -306,9 +306,9 @@ class latticecms {
 
             case 'associator':
                //need to load filters here
-               $filters = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@field="%s"]/filter', 
+               $filters = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]/filter', 
 								 $object->objecttype->objecttypename,
-								 $element->getAttribute('field') ));
+								 $element->getAttribute('name') ));
 							 $filterSettings = array();
 							 foreach($filters as $filter){
 								 $setting = array();
@@ -320,7 +320,7 @@ class latticecms {
 							 $entry['filters'] = $filterSettings;
 							 break;
 						case 'tags':
-							$entry['field'] = 'tags'; //this is a cludge
+							$entry['name'] = 'tags'; //this is a cludge
 							break;
 
 						default:
@@ -328,7 +328,7 @@ class latticecms {
 				 }
 
 				 if($translatedLanguageCode != null){
-					 $entry['fieldId'] = $entry['field'].'_'.$translatedLanguageCode;
+					 $entry['fieldId'] = $entry['name'].'_'.$translatedLanguageCode;
 				 }
 
 				 $elementsConfig[] = $entry;
@@ -342,7 +342,7 @@ class latticecms {
 			foreach(lattice::config('objects', 'elements/*', $objectType) as $element){
 				if($element->tagName == 'image'){
 					$objects = ORM::Factory('objectType', $objectType->getAttribute('name'))->getActiveMembers();
-					$fieldname = $element->getAttribute('field');
+					$fieldname = $element->getAttribute('name');
 					foreach($objects as $object){
            	if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
 							$uiresizes = Kohana::config('lattice_cms.uiresizes');
@@ -359,7 +359,7 @@ class latticecms {
 			$object = Graph::object($id);
       foreach(lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element){
 				if($element->tagName == 'image'){
-					$fieldname = $element->getAttribute('field');
+					$fieldname = $element->getAttribute('name');
 					if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
 						$uiresizes = Kohana::config('lattice_cms.uiresizes');
 						$object->processImage($object->$fieldname->filename, $fieldname, $uiresizes);

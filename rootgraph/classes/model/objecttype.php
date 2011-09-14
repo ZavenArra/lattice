@@ -43,7 +43,7 @@ class Model_ObjectType extends ORM {
 
 		if(parent::__get('nodeType')=='container'){
 			//For lists, values will be on the 2nd level 
-				$xQuery =  sprintf('//list[@family="%s"]', parent::__get('objecttypename'));
+				$xQuery =  sprintf('//list[@name="%s"]', parent::__get('objecttypename'));
 			} else {
 				//everything else is a normal lookup
 				$xQuery =  sprintf('//objectType[@name="%s"]', parent::__get('objecttypename'));
@@ -149,14 +149,14 @@ class Model_ObjectType extends ORM {
 
 		case 'list':
 			$ltRecord = ORM::Factory('objectType');
-			$ltRecord->objecttypename = $item->getAttribute('family');
+			$ltRecord->objecttypename = $item->getAttribute('name');
 			$ltRecord->nodeType = 'container';
 			$ltRecord->save();
 			break;
 
 		default:
 
-			Model_Objectmap::configureNewField($this->id, $item->getAttribute('field'), $item->tagName );
+			Model_Objectmap::configureNewField($this->id, $item->getAttribute('name'), $item->tagName );
 			break;
 
 		}

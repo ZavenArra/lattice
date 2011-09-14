@@ -3,11 +3,11 @@
 class frontend {
 	public static function makeHtmlElement($element, $prefix, $indent=''){
 
-		$field = $element->getAttribute('field');
+		$field = $element->getAttribute('name');
 
 		switch($element->nodeName){
 		case 'list':
-			$family = $element->getAttribute('family');
+			$family = $element->getAttribute('name');
 			$addables = lattice::config('objects', 'addableObject', $element);		
 			$addable = $addables->item(0);
 			$objectTypeName = $addable->getAttribute('objectTypeName');
@@ -43,6 +43,9 @@ class frontend {
 				"<?echo ({$prefix}['$field'])?'checked=\"true\" ':'';?> disabled=\"disabled\" >\n";
 			echo $indent."</div>\n\n";
 			break;
+      case 'tags':
+         echo $indent."<p class=\"$field\"> <?=implode({$prefix}['$field'], ', ');?></p>\n\n";
+         break;
 		default:
 			echo $indent."<p class=\"$field\"> <?={$prefix}['$field'];?></p>\n\n";
 			break;

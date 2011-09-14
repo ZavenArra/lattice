@@ -12,12 +12,4 @@
 	<div class="clear"></div>
 
 </div>
-<?/*
-<div class="localizationControls">
-	<ul class="clearFix">
-	<?foreach($languages as $language):?>
-		<li><a href="<?=latticeurl::site('cms/getTranslatedPage/'.$id.'/'.$language->code);?>"><?=$language->fullname;?></a><li>
-	<?endforeach;?>
-	</ul>
-</div>
-*/?>
+

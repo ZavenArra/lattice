@@ -1,4 +1,4 @@
-<div id="list_<?=$listObjectId;?>" class="module <?=$class;?> classPath-lattice_modules_List">
+<div id="list_<?=$listObjectId;?>" data-objectid="<?=$listObjectId;?>" class="module <?=$class;?> classPath-lattice_modules_List">
    <!-- changed id to list, since this is what controls submission
    but of course this can't be the id, since there can be multiple lists in the object
    instance idea needs to be changes -->

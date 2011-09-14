@@ -178,9 +178,9 @@ class Controller_List extends Lattice_CMSInterface {
       //addable item should be specifid in the addItem call
       if($objectTypeId == null){
    
-        $addableObjectTypes = lattice::config('objects', sprintf('//list[@family="%s"]/addableObject', $listObject->objecttype->objecttypename));
+        $addableObjectTypes = lattice::config('objects', sprintf('//list[@name="%s"]/addableObject', $listObject->objecttype->objecttypename));
         if (!$addableObjectTypes->length > 0) {
-           throw new Kohana_Exception('No Addable Objects ' .' Count not locate configuration in objects.xml for ' . sprintf('//list[@family="%s"]/addableobject', $this->_family));
+           throw new Kohana_Exception('No Addable Objects ' .' Count not locate configuration in objects.xml for ' . sprintf('//list[@name="%s"]/addableobject', $this->_family));
         }
         $objectTypeId = $addableObjectTypes->item(0)->getAttribute('objectTypeName');
       } 

@@ -3,29 +3,34 @@
 Class Controller_CSV extends Controller {
 
    private $csvOutput = '';
+   private $level = 0;
    
    public function action_index(){
          $view = new View('csv/index');
         $this->response->body($view->render());
    }
    
-   public function action_export($exportFileIdentifier){
+   public function action_export($exportFileIdentifier='latticeCsvExport'){
       $this->csvOutput = '';
       
       $rootObject = Graph::getLatticeRoot();
       
-      $level = 0;
+      
+      $this->level = 0;
       
       $this->csvWalkTree($rootObject);
      
-      echo $this->csvOutput;
+   //   echo 'done';
+      $file = fopen('application/export/'.$exportFileIdentifier.'.csv', 'w');
+      fwrite($file, $this->csvOutput);
+      fclose($file);
    }
    
    private function csvWalkTree($parent){
-      $objects = $rootObject->getLatticeChildren();
+      $objects = $parent->getLatticeChildren();
       foreach($objects as $object){
-         $data = $object->getPageContent();
-         $csvView = new View_CSV($level, $data);
+         $csvView = new View_CSV($this->level, $object);
+
          $this->csvOutput .= $csvView->render();
          $this->level++;
          $this->csvWalkTree($object);
