@@ -342,7 +342,9 @@ lattice.modules.LatticeList = new Class({
 	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
-		if( this.options.allowChildSort ) this.makeSortable( this.listing );
+		this.objectId = this.element.get( 'data-objectid' );
+		this.allowChildSort = ( this.options.allowChildSort == 'true' )? true : false;
+		this.makeSortable( this.listing );
 	},
 	
 	build: function(){
@@ -453,7 +455,7 @@ lattice.modules.LatticeList = new Class({
 		if( this.allowChildSort && this.oldSort != newOrder ){
 			clearInterval( this.submitDelay );
 			this.submitDelay = null;
-            var request = new Request.JSON( { url: this.getSubmitSortOrderURL } ).post( { sortorder: newOrder } );
+     	var request = new Request.JSON( { url: this.getSubmitSortOrderURL() } ).post( { sortorder: newOrder } );
 			this.oldSort = newOrder;
 			return request;
 		}

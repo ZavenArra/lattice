@@ -10,19 +10,19 @@ lattice.modules.List = new Class({
 	},
 	
 	getAddObjectURL: function(){
-	    return lattice.util.getBaseURL() + "ajax/html/list/addObject/" + this.getObjectId();
+		return lattice.util.getBaseURL() + "ajax/html/list/addObject/" + this.getObjectId();
 	},
 	
 	getRemoveObjectURL: function( itemObjectId ){
-	    return lattice.util.getBaseURL() + "ajax/data/list/removeObject/" + itemObjectId;
+		return lattice.util.getBaseURL() + "ajax/data/list/removeObject/" + itemObjectId;
 	},
 	
 	getSubmitSortOrderURL: function(){
-	    return lattice.util.getBaseURL() + "ajax/data/list/saveSortOrder/" + this.getObjectId();
+		return lattice.util.getBaseURL() + "ajax/data/list/saveSortOrder/" + this.getObjectId();
 	},
 	
 	toString: function(){
-	    return "[ object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.LatticeList, lattice.modules.List ]";
+		return "[ object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.LatticeList, lattice.modules.List ]";
 	},
 	
 	initialize: function( anElement, aMarshal, options ){
