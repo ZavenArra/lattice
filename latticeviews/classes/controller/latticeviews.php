@@ -5,7 +5,7 @@
  * using slugs or ids to navigate between objects.  Works hand in
  * hand with the slugs hook
  */
-Class Controller_LatticeFrontend extends Controller_Layout{
+Class Controller_LatticeViews extends Controller_Layout{
 
   protected $_actionsThatGetLayout = array(
     'getView',
@@ -39,14 +39,14 @@ Class Controller_LatticeFrontend extends Controller_Layout{
 
 	public function action_getView($objectidorslug=null) {
 	
-		$access = Kohana::config('latticefrontend.access.'.$objectidorslug);
+		$access = Kohana::config('latticeviews.access.'.$objectidorslug);
 		if(!latticeutil::checkAccess($access)){
 			Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
 		}
 
 		self::$slug = $objectidorslug;
 
-		$this->view = latticefrontend::createView($objectidorslug);
+		$this->view = latticeviews::createView($objectidorslug);
 
 		//possible hook for processing content	
 

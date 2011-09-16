@@ -73,7 +73,6 @@ Class Controller_CSV extends Controller {
 	 * This function creates a csv import objectType which has data pre-filled from the table
 	 */
 	public function action_createImportTemplateFilled($exportParamterKey){
-			//$data = lattice::getViewContent($view);
          
          $query = new Graph_ObjectQuery();
          $query->initWithArray(Kohana::config('csv.parameters.'.$exportParamterKey));

@@ -66,7 +66,8 @@ class Graph_ObjectQuery {
 
 	
       $objects->publishedFilter();
-      $objects->order_by('sortorder');
+      //order_by can be configurable later on
+      $objects->order_by('objectrelationships.sortorder');
       $objects = $objects->find_all();
   
       $items = array();

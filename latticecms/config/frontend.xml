@@ -2,5 +2,8 @@
 <!DOCTYPE configuration SYSTEM "frontend.dtd">
 
 <configuration>
+	<view name="singleIPE">
+		<includeData from="parent" label="something"/>
+	</view>
 </configuration>
 
