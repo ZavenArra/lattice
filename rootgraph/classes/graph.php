@@ -88,6 +88,18 @@ class Graph {
       return self::$_languages;
    }
    
+   public static function language($id){
+      $languages = self::languages();
+      foreach($languages as $language){
+      
+         if($language->id == $id){
+           return $language;
+         }
+      }
+      throw new Kohana_Exception('Language not found :language', array(':language'=>$id));
+   }
+    
+   
    public static function newRosetta(){
       $rosetta = ORM::Factory('rosetta');
       $rosetta->save();

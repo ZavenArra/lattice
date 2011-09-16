@@ -208,7 +208,7 @@ class Model_Object extends ORM {
             //echo 'iTS AN OBJECT<br>';
             $objectElementRelationship = ORM::Factory('objectelementrelationship')
                     ->where('object_id', '=', $this->id)
-                    ->where('name', '=', $columnName)
+                    ->where('name', '=', $column)
                     ->find();
             $objectElement = Graph::object($objectElementRelationship->elementobject_id);
 
@@ -217,18 +217,18 @@ class Model_Object extends ORM {
                // it may make sense for the objecttype model to return the config info for itself
                // or something similar
                //
-            if ($object->objecttype->nodeType == 'container') {
+            if ($this->objecttype->nodeType == 'container') {
                   //For lists, values will be on the 2nd level 
-                  $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
+                  $xPath = sprintf('//list[@name="%s"]', $this->objecttype->objecttypename);
                } else {
                   //everything else is a normal lookup
-                  $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
+                  $xPath = sprintf('//objectType[@name="%s"]', $this->objecttype->objecttypename);
                }
 
                $elementConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
 
                //build the object
-               $objectElement = $object->addElementObject($elementConfig->item(0)->tagName, $columnName);
+               $objectElement = $this->addElementObject($elementConfig->item(0)->tagName, $column);
             }
             return $objectElement;
          }
