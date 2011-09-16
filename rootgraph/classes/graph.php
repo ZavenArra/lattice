@@ -132,7 +132,7 @@ class Graph {
 		foreach( lattice::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
 			$tRecord->configureElement($item);
 		}
-      Model_Content::reinitDbmap($tRecord->id); // Rethink this.
+      Model_Object::reinitDbmap($tRecord->id); // Rethink this.
 	}
    
    public static function addRootNode($rootNodeObjectType){
