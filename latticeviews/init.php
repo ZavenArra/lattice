@@ -32,7 +32,7 @@ class FrontendRouting {
       }
       if ($object) {
          return array(
-             'controller' => 'latticefrontend',
+             'controller' => 'latticeviews',
              'action' => 'getView',
              'objectidorslug' => $object->slug
          );
@@ -48,10 +48,21 @@ Route::set('defaultLatticeFrontend', '(<controller>)',
 		'controller'=>'',
 	))
 	->defaults(array(
-		'controller' => 'latticefrontend',
+		'controller' => 'latticeviews',
 		'action' => 'getView',
 		'id'     => 'home',
 	));
+
+
+Route::set('preview', 'preview/<id>',
+	array(
+		 'id' => '[A-z\-]+',
+	 ))
+	->defaults(array(
+		'controller' => 'preview',
+		'action' => 'preview',
+	));
+
 
 
  

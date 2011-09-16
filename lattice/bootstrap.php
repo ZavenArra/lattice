@@ -111,10 +111,10 @@ Kohana::modules(array(
 	'latticecms' => 'lattice/latticecms',
 	'latticeextras'  => 'lattice/latticeextras',
 	'tools' => 'lattice/tools',
-	'latticefrontend' => 'lattice/latticefrontend',
+	'latticeviews' => 'lattice/latticeviews',
 	'navigation' => 'lattice/navigation',
 	'usermanagement' => 'lattice/usermanagement',
-	'latticefrontend' => 'lattice/latticefrontend',
+	'latticeviews' => 'lattice/latticeviews',
 	'testing' => 'lattice/latticetests',
 
 

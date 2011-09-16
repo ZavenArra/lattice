@@ -143,7 +143,7 @@ Class lattice {
 				$view = new View($module['modulename']);
 				$object = Graph::object($module['modulename']);
         if($object->loaded()){ // in this case it's a slug for a specific object
-					foreach(lattice::getViewContent($object->id, $object->objecttype->objecttypename) as $key=>$content){
+					foreach(latticeviews::getViewContent($object->id, $object->objecttype->objecttypename) as $key=>$content){
 						$view->$key = $content;
 					}
 				}
@@ -186,96 +186,6 @@ Class lattice {
 			$this->view->$objectTypevar = $module->view->render();
 		}
 	}
-
-	public static function getViewContent($view, $slug=null) {
-
-		$data = array();
-      
-      $object = null;
-      if  ($slug) {
-
-         if (!is_object($slug)) {
-            $object = Graph::object($slug);
-         } else {
-            $object = $slug;
-         }
-      }
-
-		if ($view == 'default') {
-			if (!$object->loaded()) {
-				throw new Koahan_Exception('lattice::getViewContent : Default view callled with no slug');
-			}
-			$data['content']['main'] = $object->getPageContent();
-			return $data;
-		}
-
-		$viewConfig = lattice::config('frontend', "//view[@name=\"$view\"]")->item(0);
-		if (!$viewConfig) {
-        // throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
-		}
-		if (!$viewConfig || ($viewConfig && $viewConfig->getAttribute('loadPage'))) {
-         if (!$object->loaded()) {
-				throw new Kohana_Exception('lattice::getViewContent : View specifies loadPage but no object to load');
-			}
-			$data['content']['main'] = $object->getPageContent();
-		}
-
-		$includeContent = lattice::getIncludeContent($viewConfig, $object->id);
-		foreach ($includeContent as $key => $values) {
-			$data['content'][$key] = $values;
-		}
-
-		if ($subViews = lattice::config('frontend', "subView", $viewConfig)) {
-			foreach ($subViews as $subview) {
-				$view = $subview->getAttribute('view');
-				$slug = $subview->getAttribute('slug');
-				$label = $subview->getAttribute('label');
-				if (lattice::config('frontend', "//view[@name=\"$view\"]")) {
-
-					if ($view && $slug) {
-						$subViewContent = lattice::getViewContent($view, $slug);
-					} else if ($slug) {
-                  $object = Graph::object($slug);
-						$view = $object->objecttype->objecttypename;
-						$subViewContent = lattice::getViewContent($view, $slug);
-					} else if ($view) {
-						$subViewContent = lattice::getViewContent($view);
-					} else {
-						die("subview $label must have either view or slug");
-					}
-					$subView = new View($view);
-
-					foreach ($subViewContent as $key => $content) {
-						$subView->$key = $content;
-					}
-					$data[$label] = $subView->render();
-				} else {
-					//assume it's a module
-					$data[$label] = lattice::buildModule(array('modulename' => $view/* , 'controllertype'=>'object' */), $subview->getAttribute('label'));
-				}
-			}
-		}
-
-		return $data;
-	}
-
-	public static function getIncludeContent($includeTier, $parentId){
-    $content = array();
-    if($includeContentQueries = lattice::config('frontend', 'includeData', $includeTier)) {
-         foreach ($includeContentQueries as $includeContentQueryParams) {
-            $query = new Graph_ObjectQuery();
-            $query->initWithXml($includeContentQueryParams);
-            $includeContent = $query->run($parentId);
-
-            for ($i = 0; $i < count($includeContent); $i++) {
-               $children = lattice::getIncludeContent($includeContentQueryParams, $includeContent[$i]['id']);
-               $includeContent[$i] = array_merge($includeContent[$i], $children);
-            }
-            $content[$query->attributes['label']] = $includeContent;
-         }
-    }
-    return $content;
-  }
 
 	//takes Exception as argument
 	public static function getOneLineErrorReport(Exception $e){
