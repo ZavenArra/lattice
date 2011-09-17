@@ -1,5 +1,7 @@
 <?
 
+$config['authrole'] = 'admin'; //access controlled by default for safety
+
 $config['resources']['librarycss'] = array(
 	'lattice/thirdparty/960Grid/reset.css',
 	'lattice/thirdparty/960Grid/960.css'
