@@ -245,7 +245,8 @@ Class Controller_UserManagement extends Controller_Layout {
 													     'X-Mailer: PHP/' . phpversion();
 										 mail($user->email, 
 											 Kohana::config('usermanagement.passwordChangeEmail.subject'),
-											 $body->render());
+                       $body->render(),
+                       $headers);
                      $this->response->data(array('value' => '**********'));
                      $this->response->data(array('value' => $body->password));
                   } else {
