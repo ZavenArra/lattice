@@ -40,7 +40,8 @@ $config['resources']['js'] = array(
  * Config: ['passwordchangeemail']['subject']
  * The subject of the password reset email
  */
-$config['passwordchangeemail']['subject'] = 'LatticeCMS Password Changed';
+$config['passwordChangeEmail']['subject'] = 'LatticeCMS Password Changed';
+$config['passwordChangeEmail']['from'] = 'usermanagement@madeofpeople.org';
 
 /*
  * Config: ['managedRoles']
