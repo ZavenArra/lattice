@@ -38,7 +38,7 @@ Class Controller_LatticeViews extends Controller_Layout{
 	 */
 
 	public function action_getView($objectidorslug=null) {
-	
+
 		$access = Kohana::config('latticeviews.access.'.$objectidorslug);
 		if(!latticeutil::checkAccess($access)){
 			Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
@@ -52,9 +52,19 @@ Class Controller_LatticeViews extends Controller_Layout{
 
 		$this->response->body($this->view->render());
 
-	
-    }
 
+	}
+
+
+	public function action_getVirtualView($viewName){
+
+		$this->view = latticeviews::createVirtualView($viewName);
+
+		//possible hook for processing content	
+
+		$this->response->body($this->view->render());
+
+	}
 
 
 

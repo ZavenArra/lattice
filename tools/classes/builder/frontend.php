@@ -18,6 +18,7 @@ Class Builder_Frontend {
 		
 		flush();
 		
+		$createdViews = array();
 	//	foreach(lattice::config('frontend', '//view') as $view ){
 		//	//this has removed the ability to build virtual views
 		foreach(ORM::Factory('objecttype')->find_all() as $objectType){
@@ -25,8 +26,6 @@ Class Builder_Frontend {
 			$view = lattice::config('frontend', '//view[@name="'.$objectType->objecttypename.'"]');
 			if(count($view)){
 				$view = $view->item(0);
-			} else {
-				$vuew = null;
 			}
 			ob_start();
 			if($view){
@@ -63,6 +62,42 @@ Class Builder_Frontend {
 
 			}
 
+
+
+			$html = ob_get_contents();
+			ob_end_clean();
+			$file = fopen($this->basePath.$viewName.'.php', 'w');
+			fwrite($file, $html);
+			fclose($file);
+
+			$createdViews[] = $viewName;
+		}
+
+
+		//and any virtual views
+		foreach(lattice::config('frontend', '//view') as $viewConfig){
+			$viewName = $viewConfig->getAttribute('name');
+
+			if( in_array($viewName, $createdViews)){
+				continue;
+			}
+			touch($this->basePath.$viewName.'.php');
+
+			ob_start();
+			//Now the includeData
+			
+			if($iDataNodes = lattice::config('frontend',"//view[@name=\"".$viewName."\"]/includeData")){
+				foreach($iDataNodes as $iDataConfig){
+					$prefix = "\$content";
+					$this->makeIncludeDataHtml($iDataConfig, $prefix, null);
+				}
+			}
+
+			if($subviews = lattice::config('frontend',"//view[@name=\"".$viewName."\"]/subview")){
+				foreach($subviews as $subviewConfig){
+					echo "\n<?=\$".$subviewConfig->getAttribute('label').";?>\n";
+				}
+			}
 
 
 			$html = ob_get_contents();
@@ -122,7 +157,7 @@ Class Builder_Frontend {
 			} else {
 				//see if from is a slug
 				$object = Graph::object($from);
-            if($object->loaded){
+				if($object->loaded()){
 					//find its addable objects
 					foreach(lattice::config('objects', sprintf('//objectType[@name="%s"]/addableObject', $object->objecttype->objecttypename)) as $addable){
 						$objectTypeName = $addable->getAttribute('objectTypeName');
