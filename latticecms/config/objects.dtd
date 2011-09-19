@@ -28,7 +28,7 @@
 	allowTitleEdit  CDATA "true"
 >
 
-<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator|link|extendedImage|extendedFile|tags)* >
+<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator|link|extendedImage|extendedFile|tags|pulldown)* >
 
 <!ELEMENT components (component*) >
 
@@ -56,6 +56,19 @@
 >
 <!-- last two attributes currently not supported -->
 
+<!ELEMENT pulldown (option)* >
+<!ATTLIST pulldown
+	%uiattrs;
+	groupLabel                      CDATA #REQUIRED
+>
+
+ 
+ <!ELEMENT option EMPTY >
+ <!ATTLIST option
+       label                           CDATA #REQUIRED
+       value                           CDATA #REQUIRED
+ >
+ 
 
 <!ELEMENT associator (filter*)>
 <!ATTLIST associator  
