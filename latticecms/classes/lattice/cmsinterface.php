@@ -79,9 +79,11 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 	 */
 	public function action_savefield($id){
       
-      $field = strtok($_POST['field'], '_');
+      //$field = strtok($_POST['field'], '_');
+      $field = $_POST['field'];
       
       $object = Graph::object($id);
+//      print $_POST['value'];  // 0ak remove
       $object->$field = $_POST['value'];
 			$object->save();
       $object = Graph::object($id);
