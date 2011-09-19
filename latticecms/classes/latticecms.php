@@ -208,11 +208,6 @@ class latticecms {
                   
                   break;
 
-
-               case 'pulldown':  // May not be necessary, if needed, prep htmlChunks  - 0ak 
-               case 'select':   
-                  break;   
-
                case 'tags':
                   $tags = $object->getTagStrings();
                   $elementHtml = latticeui::tags($tags);
@@ -290,7 +285,7 @@ class latticecms {
 
              // Begin pulldown change
              case 'pulldown':
-               $children = lattice::config('objects', 'option', $element);
+               $children = lattice::config('objects', 'option', $element); //$element['type']);
                $options  = array();
                foreach ($children as $child) {
                   $label = $child->getAttribute('label');
@@ -299,20 +294,7 @@ class latticecms {
                }
                $entry['options'] = $options;  
                break;
-               break;
 
-/*
-             case 'select':
-               $children = lattice::config('objects', 'select', $element);
-               $options  = array();
-               foreach ($children as $child) {
-                  $label = $child->getAttribute('label');  // Use same syntax, even though is not added as 'value' attribute in html?
-                  $value = $child->getAttribute('value');
-                  $options[$label] = $value;
-               }
-               $entry['options'] = $options;  // Best index string to use? Plural?
-               break;
-*/
 
             case 'associator':
                //need to load filters here
