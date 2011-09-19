@@ -208,6 +208,11 @@ class latticecms {
                   
                   break;
 
+
+               case 'pulldown':  // May not be necessary, if needed, prep htmlChunks  - 0ak 
+               case 'select':   
+                  break;   
+
                case 'tags':
                   $tags = $object->getTagStrings();
                   $elementHtml = latticeui::tags($tags);
@@ -217,6 +222,11 @@ class latticecms {
                   break;
                default:
                   //deal with html objectType elements
+
+                  if (!isset($uiArguments['name'])) {   // Added by 0ak during debug. Remove?
+                     throw new Kohana_Exception("uiArguments['name'] not set ");
+                  }
+
                   $key = $element['type'] . '_' . $uiArguments['name'];
                   $html = null;
                   if (!isset($element['name'])) {
