@@ -39,9 +39,31 @@ class FrontendRouting {
       }
    }
 
+	 public static function routeVirtual($uri){
+		
+      $segments = explode('/', $uri);
+      if(Kohana::find_file('classes/controller', $segments[0])){
+         return;
+      }
+
+			$config = lattice::config('frontend', '//view[@name="'.$uri.'"]');
+			if($config->length){
+         return array(
+             'controller' => 'latticeviews',
+             'action' => 'getVirtualView',
+             'objectidorslug' => $uri
+         );
+			} 
+
+			return;
+      
+	 }
+
 }
 
-Route::set('latticeCmsSlugs', array('FrontendRouting', 'routeSlug'));
+Route::set('latticeViewsSlug', array('FrontendRouting', 'routeSlug'));
+
+Route::set('latticeViewsVirtual', array('FrontendRouting', 'routeVirtual'));
 
 Route::set('defaultLatticeFrontend', '(<controller>)',
 	array(

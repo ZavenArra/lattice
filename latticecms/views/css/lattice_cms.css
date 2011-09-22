@@ -206,7 +206,6 @@ legend {
 	margin:0;
 	padding:0 0 1em 0;
 }
-ul.listing{ border-bottom: 1px #dedede solid; }
 
 p.logoutMessage{
 	color: #666;
@@ -224,7 +223,10 @@ ul.listing li{
 	color:#444;
 }
 
-.classPath-lattice_modules_ListModule{ margin-bottom: 2em; }
+.classPath-lattice_modules_ListModule{
+	margin-bottom: 2em;
+	border-bottom: 1px #dedede solid;
+}
 
 .controls{ margin-bottom: 1em; }
 .listItem>.itemControls .delete{

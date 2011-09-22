@@ -103,11 +103,20 @@ lattice.modules.CMS = new Class({
     return lattice.util.getBaseURL() + "ajax/data/cms/removeTag/" + this.getObjectId();		
 	},
 
+	getClearFieldURL: function( fieldName ){
+		var url = lattice.util.getBaseURL() + "ajax/data/cms/clearField/" + this.getObjectId() + "/" + fieldName;
+		return url;
+	},
+
 	getRootNodeId: function(){ return this.options.rootObjectId; },
 
 	getObjectId: function(){ return this.currentObjectId; },
 	setObjectId: function( objectId ){ this.currentObjectId = objectId;	},
 
+	clearField: function( fieldName ){
+		return new Request.JSON( { url: this.getClearFieldURL( fieldName ), onSuccess: function( hxr ){ console.log( xhr ) } } ).send();
+	},
+	
 	/* Section: Constructor */
 	initialize: function( anElement, options ){
     this.parent( anElement, null, options );

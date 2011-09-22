@@ -1,5 +1,7 @@
 <?
 
+$config['authrole'] = 'admin'; //access controlled by default for safety
+
 $config['resources']['librarycss'] = array(
 	'lattice/thirdparty/960Grid/reset.css',
 	'lattice/thirdparty/960Grid/960.css'
@@ -38,7 +40,8 @@ $config['resources']['js'] = array(
  * Config: ['passwordchangeemail']['subject']
  * The subject of the password reset email
  */
-$config['passwordchangeemail']['subject'] = 'LatticeCMS Password Changed';
+$config['passwordChangeEmail']['subject'] = 'LatticeCMS Password Changed';
+$config['passwordChangeEmail']['from'] = "Lattice Usermanagement <usermanagement@madeofpeople.org>";
 
 /*
  * Config: ['managedRoles']

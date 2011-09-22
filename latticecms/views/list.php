@@ -7,4 +7,5 @@
 	<?endif;?>
 	<div class="controls clearFix"><a href="#" class="addItem button">Add an Item</a></div>	
 	<ul class="listing"><?=$items;?></ul>
+	<div class="controls clearFix"><a href="#" class="addItem button">Add an Item</a></div>	
 </div>

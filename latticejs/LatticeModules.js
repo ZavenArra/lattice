@@ -30,6 +30,10 @@ lattice.modules.Module = new Class({
 		throw "Abstract function getSaveFieldURL must be overriden in" + this.toString();
 	},
 	
+	getClearFieldURL: function(){
+		throw "Abstract function getClearFieldURL must be overriden in" + this.toString();		
+	},
+	
 	saveField: function( postData, callback ){
 //			console.log( "saveField.postData:", postData );
 	    return new Request.JSON( { url: this.getSaveFieldURL(), onSuccess: callback } ).post( postData );
@@ -340,9 +344,17 @@ lattice.modules.LatticeList = new Class({
 		return "[ Object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.LatticeList ]";
 	},
 	
+	clearField: function( fieldName ){
+		this.marshal.clearField( fieldName );
+	},
+	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.objectId = this.element.get( 'data-objectid' );
+		console.log( "============================================" );
+		console.log( "element", anElement );
+		console.log( "options", this.options );
+		console.log( "============================================" );
 		this.allowChildSort = ( this.options.allowChildSort == 'true' )? true : false;
 		this.makeSortable( this.listing );
 	},
@@ -358,7 +370,7 @@ lattice.modules.LatticeList = new Class({
 		this.listing = this.element.getElement( ".listing" );
 		var children = this.listing.getChildren("li");
 		children.each( function( element ){
-			new lattice.modules.ListItem( element, this, this.addObjectDialogue );
+			new lattice.modules.ListItem( element, this );//, this.addObjectDialogue );
 		}, this );
 	},
 
@@ -370,28 +382,31 @@ lattice.modules.LatticeList = new Class({
 	
 	addObjectRequest: function( e ){
 		lattice.util.stopEvent( e );
-		if( this.addObjectDialogue ) lattice.modalManager.removeModal( this.addObjectDialogue );
-		this.addObjectDialogue = null;
-		this.addObjectDialogue = new lattice.ui.AddObjectDialogue( this );
-		this.addObjectDialogue.spin();
-		this.addObjectDialogue.show();
-		console.log( "addObjectRequest:", this.getAddObjectURL() );
+		// if( this.addObjectDialogue ) lattice.modalManager.removeModal( this.addObjectDialogue );
+		// this.addObjectDialogue = null;
+		// this.addObjectDialogue = new lattice.ui.AddObjectDialogue( this );
+		// this.addObjectDialogue.spin();
+		// this.addObjectDialogue.show();
+//		console.log( "addObjectRequest:", this.getAddObjectURL() );
+		this.listing.spin();
 		return new Request.JSON( { url: this.getAddObjectURL(), onSuccess: this.onAddObjectResponse.bind( this ) } ).send();
 	},
     
 	onAddObjectResponse: function( json ){
 		console.log( "onAddObjectResponse", json );
+		this.listing.unspin();
 		var element, listItem, addItemText;
 		element = json.response.html.toElement();
 		addItemText = this.controls.getElement( ".addItem" ).get( "text" );
 		listItem = new lattice.modules.ListItem( element, this, this.addObjectDialogue );
-		listItem.hideControls();
-		this.addObjectDialogue.setContent( element , addItemText );
+//		listItem.hideControls();
+//		this.addObjectDialogue.setContent( element , addItemText );
 		Object.each( listItem.UIFields, function( uiField ){
 			uiField.scrollContext = "modal";
 			if( uiField.reposition ) uiField.reposition('modal');
 		});
 		lattice.util.EventManager.broadcastMessage( "resize" );
+		this.insertItem( listItem );
 	},
 
 	removeObject: function( item ){
@@ -407,17 +422,18 @@ lattice.modules.LatticeList = new Class({
 	},
 
 	insertItem: function( anItem ){
-		var anElement = anItem.element;
-		var where = ( this.options.sortDirection == "DESC" )? "top" : "bottom";
-		this.listing.grab( anElement, where );
-		if( this.allowChildSort && this.sortableList ) this.sortableList.addItems( anElement );
-		var listItemInstance = anElement.retrieve("Class");
-		Object.each( listItemInstance.UIFields, function( aUIField ){
+		var where, listItemInstance;
+		where = ( this.options.sortDirection == "DESC" )? "top" : "bottom";
+		console.log( "\t", this.options.sortDirection, where );
+		this.listing.grab( anItem.element, where );
+		if( this.allowChildSort && this.sortableList ) this.sortableList.addItems( anItem.element );
+		Object.each( anItem.UIFields, function( aUIField ){
 			aUIField.scrollContext = "window";
 			if( aUIField.reposition ) aUIField.reposition()
 		});
-		anElement.tween( "opacity", 1 );
-		anItem.showControls();
+		anItem.element.tween( "opacity", 1 );
+		console.log( "insertItem", this.element.getOffsetParent() );
+		this.element.getOffsetParent().scrollTo( 0, anItem.element.getCoordinates().top )
 		if( this.allowChildSort != null ) this.onOrderChanged();
 	},
 
@@ -455,7 +471,7 @@ lattice.modules.LatticeList = new Class({
 		if( this.allowChildSort && this.oldSort != newOrder ){
 			clearInterval( this.submitDelay );
 			this.submitDelay = null;
-     	var request = new Request.JSON( { url: this.getSubmitSortOrderURL() } ).post( { sortorder: newOrder } );
+     	var request = new Request.JSON( { url: this.getSubmitSortOrderURL() } ).post( { sortOrder: newOrder } );
 			this.oldSort = newOrder;
 			return request;
 		}
@@ -479,7 +495,7 @@ lattice.modules.LatticeList = new Class({
 	destroy: function(){
 		if(this.sortableList) this.removeSortable( this.sortableList );
 		clearInterval( this.submitDelay );
-		if( this.addObjectDialogue ) lattice.modalManager.removeModal( this.addObjectDialogue ) 
+//		if( this.addObjectDialogue ) lattice.modalManager.removeModal( this.addObjectDialogue ) 
 		this.addObjectDialogue = this.controls = this.instanceName = this.listing = this.oldSort = this.allowChildSort, this.sortDirection, this.submitDelay = null;
     if( this.scroller ) this.scroller = null;
 		lattice.util.EventManager.broadcastMessage( 'resize' );
@@ -492,7 +508,6 @@ lattice.modules.ListItem = new Class({
 
 	Extends: lattice.modules.Module,
 	Implements: [ Events, Options ],
-	addObjectDialogue: null,
 	objectId: null,
 	controls: null,
 	fadeOut: null,
@@ -534,6 +549,10 @@ lattice.modules.ListItem = new Class({
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
 		this.fadeOut = new Fx.Morph( this.element, { duration: 350, onComplete: function(){ this.marshal.removeObject( this ) }.bind( this ) } );
 		this.fadeOut.start( { height: 0, opacity: 0 } );
+	},
+	
+	clearField: function( fieldName ){
+		this.marshal.clearField( fieldName );
 	},
 	
 	hideControls: function(){ this.controls.addClass( 'hidden' ); },

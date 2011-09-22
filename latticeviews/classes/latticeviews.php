@@ -37,13 +37,8 @@ class latticeviews {
 				$viewPath = 'default';
 			}
 			$view = new View($viewPath);
-		} else {
-			//check for a virtual object specified in frontend.xml
-			//a virtual object will be one that does not match a objectType
-			$viewName = $objectidorslug;
-			$view = new View('frontend/'.$viewName);
 		}
-
+	 
 		//call this->view load data
 		//get all the data for the object
 		$viewContent = latticeviews::getViewContent($viewName, $object);
@@ -53,20 +48,50 @@ class latticeviews {
       
       return $view;
    }
+
+
+	 public static function createVirtualView($viewName){
+
+			//check for a virtual object specified in frontend.xml
+			//a virtual object will be one that does not match a objectType
+
+			if (file_exists('application/views/frontend/' . $viewName . '.php')) {
+				$viewPath = 'frontend/'.$viewName;
+			} else if(file_exists('application/views/generated/' . $viewName . '.php')) {
+				$viewPath = 'generated/'.$viewName;
+			} else {
+				$viewPath = 'default';
+			}
+			$view = new View($viewPath);
+
+		//call this->view load data
+		//get all the data for the object
+		$viewContent = latticeviews::getViewContent($viewName);
+		foreach ($viewContent as $key => $value) {
+			$view->$key = $value;
+		}
+      
+      return $view;
+
+	 }
  
 	public static function getViewContent($view, $slug=null) {
 
 		$data = array();
-      
-      $object = null;
-      if  ($slug) {
 
-         if (!is_object($slug)) {
-            $object = Graph::object($slug);
-         } else {
-            $object = $slug;
-         }
-      }
+		$object = null;
+		$object_id = null;
+		if  ($slug) {
+
+			if (!is_object($slug)) {
+				$object = Graph::object($slug);
+			} else {
+				$object = $slug;
+			}
+		}
+		if($object){
+			$object_id = $object->id;
+		}
 
 		if ($view == 'default') {
 			if (!$object->loaded()) {
@@ -79,15 +104,16 @@ class latticeviews {
 		$viewConfig = lattice::config('frontend', "//view[@name=\"$view\"]")->item(0);
 		if (!$viewConfig) {
         // throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
+			// we are allowing this so that objects automatically can have basic views
 		}
-		if (!$viewConfig || ($viewConfig && $viewConfig->getAttribute('loadPage'))) {
-         if (!$object->loaded()) {
-				throw new Kohana_Exception('latticeviews::getViewContent : View specifies loadPage but no object to load');
-			}
+		if ($slug && !$object->loaded()) {
+			throw new Kohana_Exception('latticeviews::getViewContent : view called with slug, but no object to load');
+		}
+		if($object && $viewConfig && $viewConfig->getAttribute('loadPage')){
 			$data['content']['main'] = $object->getPageContent();
 		}
 
-		$includeContent = latticeviews::getIncludeContent($viewConfig, $object->id);
+		$includeContent = latticeviews::getIncludeContent($viewConfig, $object_id);
 		foreach ($includeContent as $key => $values) {
 			$data['content'][$key] = $values;
 		}
@@ -102,7 +128,7 @@ class latticeviews {
 					if ($view && $slug) {
 						$subViewContent = latticeviews::getViewContent($view, $slug);
 					} else if ($slug) {
-                  $object = Graph::object($slug);
+						$object = Graph::object($slug);
 						$view = $object->objecttype->objecttypename;
 						$subViewContent = latticeviews::getViewContent($view, $slug);
 					} else if ($view) {

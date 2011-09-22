@@ -253,7 +253,7 @@ Request.JSON.implement({
 			if( json.response && json.response.error ){
 				throw json.response.error;						
 			}else{
-				throw 'response to JSON request has eiter no returnValue, or no response.'
+				throw 'response to JSON request has eiter no returnValue, or no response. '
 			}
 		} else {
 			this.onSuccess( json, text );
