@@ -12,7 +12,7 @@ $config['resources']['libraryjs'] = array(
 	'lattice/thirdparty/arian/datepicker/Picker.js',
 	'lattice/thirdparty/arian/datepicker/Picker.Attach.js',
 	'lattice/thirdparty/arian/datepicker/Picker.Date.js',
-	//include textboxlist here
+	'lattice/thirdparty/arian/datepicker/Picker.js',
 	'lattice/latticejs/LatticeCore.js',
 	'lattice/latticejs/LatticeUI.js',
 	'lattice/latticejs/LatticeModules.js',

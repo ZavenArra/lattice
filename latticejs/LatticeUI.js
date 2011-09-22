@@ -101,6 +101,11 @@ lattice.ui.UIField = new Class({
 		this.validationSticky.destroy();
 		this.validationSticky = null;
 	},
+	
+	clearField: function( e ){
+		e.preventDefault();
+		this.marshal.clearField( this.fieldName );
+	},
 		
 	submit: function( e ){
 		lattice.util.stopEvent( e );
@@ -221,7 +226,6 @@ lattice.ui.Sticky = new Class({
 			ignoreScroll: this.options.ignoreScroll,
 			relFixedPosition: this.options.relFixedPosition
 		});
-		console.log( "::::::::::: pos :: ", ahoy, this.target.getOffsetParent() )
 	},
 	
   populate: function( content ){ this.content.adopt( content ); },
@@ -463,12 +467,11 @@ lattice.ui.Sortable = new Class({
 			area: 24,
 			constrain: false,
 			onComplete: function( droppedItem, ghostItem ){
-				console.log( 'onComplete', arguments );
 				this.isSorting = false; 
 				this.scroller.stop();
 				this.marshal.onOrderChanged( droppedItem );
 			},
-			onStart: function(){
+			onStart: function( ){
 				this.isSorting = true; 
 				this.scroller.start();
 			},
@@ -1313,11 +1316,6 @@ lattice.ui.FileElement = new Class({
 	imgAsset: null,
 	imageFadeIn: null,
 	scrollContext: 'window',
-
-	getClearFileURL: function(){
-		var url = lattice.util.getBaseURL() + "ajax/data/" + this.marshal.instanceName + "/clearField/" + this.marshal.getObjectId() + "/" + this.fieldName;
-		return url;
-	},
 		
 	getCoordinates: function(){
 		return this.uploadLink.getCoordinates( this.scrollContext );
@@ -1330,6 +1328,8 @@ lattice.ui.FileElement = new Class({
 		this.ogInput = this.element.getElement( "input[type='file']" );
 		this.ogInput.addClass('away');
 		this.uploadButton = this.element.getElement( ".uploadButton" );
+		this.uploadButton.addEvent('mouseover',this.onMouseOver.bindWithEvent(this));
+		this.uploadButton.addEvent('mouseout',this.onMouseOut.bindWithEvent(this));
 		this.uploadLink = this.element.getElement( ".uploadLink" );
 		this.uploadLink.addEvent( 'click', function( e ){ lattice.util.stopEvent( e ) } );
 		this.uploadLink.store( "Class", this );
@@ -1337,7 +1337,7 @@ lattice.ui.FileElement = new Class({
 		this.downloadButton.store( "Class", this );
 		this.clearButton = this.element.getElement( ".clearImageLink" );
 		this.clearButton.store( "Class", this );
-		this.clearButton.addEvent( "click", this.clearFileRequest.bindWithEvent( this ) );
+		this.clearButton.addEvent( "click", this.clearField.bindWithEvent( this ) );
 		this.uploader = new lattice.util.Uploader({
 			path: lattice.util.getBaseURL() + "lattice/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf",
 			container: this.uploadLink,
@@ -1370,6 +1370,16 @@ lattice.ui.FileElement = new Class({
 		this.uploader.setTarget( this, this.uploadLink, this.getOptions() );
 		this.reposition();
 	},	
+
+	onMouseOut: function( e ){
+		e.preventDefault();
+		if( this.marshal.resumeSort ) this.marshal.resumeSort();
+	},
+	
+	onMouseOver: function( e ){
+		e.preventDefault();
+		if( this.marshal.suspendSort ) this.marshal.suspendSort();		
+	},
 	
 	toString: function(){
 		return "[ object, lattice.ui.UIElement, lattice.ui.FileElement ]";
@@ -1954,7 +1964,6 @@ lattice.util.Uploader.qualifyPath = ( function() {
 	var anchor;
 	console.log("lattice.util.Uploader.qualifyPath ")
 	return function( path ) {
-		console.log( "\t",path);
 		( anchor || ( anchor = new Element('a') ) ).href = path;
 		return anchor.href;
 	};
@@ -2232,6 +2241,7 @@ lattice.ui.Input = new Class({
 
 });
 
+
 lattice.ui.Text = new Class({
 
 	Extends: lattice.ui.UIField,
@@ -2268,7 +2278,6 @@ lattice.ui.Text = new Class({
 	initialize: function( anElement, aMarshal, options ) {
 		this.parent( anElement, aMarshal, options );
 		this.isMultiline = ( this.element.getData( 'ismultiline' ) )? this.element.getData( 'ismultiline' ) : this.options.isMultiline;
-		console.log( '\tisMultiline: ', this.fieldName, this.element.getData( 'ismultiline' ), this.isMultiline );
 		this.submitOnBlur = ( this.element.getData( 'submitonblur' ) )? this.element.getData( 'submitonblur' ) : this.options.submitOnBlur;
 		this.maxLength = ( this.element.getData( 'maxlength' ) )? this.element.getData( 'maxlength' ) : this.options.maxLength;
 		this.validate = ( this.element.getData( 'validate' ) )? this.element.getData( 'validate' ) : this.options.validate;
@@ -2282,23 +2291,31 @@ lattice.ui.Text = new Class({
 			"class": "ipe " + this.field.get( 'class' ).split( " " ).splice( 1 ).join(' '),
 			"html": this.field.get( 'value' )
 		}).inject( anElement );
+
+		//set up reusable events by creating variables containing bound functions
 		this.documentBoundUpdateAndClose = this.onDocumentClicked.bindWithEvent( this );
-		document.addEvent( "mousedown", this.documentBoundUpdateAndClose );
+		this.boundOnFieldFocus = this.onFieldFocus.bindWithEvent( this );
+		this.boundOnFieldBlur = this.onFieldBlur.bindWithEvent( this );
+		this.boundEnterEditMode = this.enterEditMode.bindWithEvent( this );
+		//set up focus event for input field
+		this.field.addEvent( 'focus' , this.boundOnFieldFocus );
+		
 		this.ipeElement.removeClass('og');
 		this.field.store( "Class", this );
 		this.ipeElement.store( "Class", this );
-		this.field.addEvent( 'focus' , this.onFieldFocus.bindWithEvent( this ) );
 		this.field.addClass( 'away' );
-		this.enableElement();
 		this.oldValue = this.ipeElement.get( "html" );
+		//make it clickable and whatnot
+		this.enableElement();
 	},
 
 	onDocumentClicked: function( e ){
+		console.log('onDocumentClicked', e.target );
 		if( this.mode != "editing" ) return;
 	  if( e.target == this.saveButton || e.target == this.cancelButton ) return;
 	  if( e.target == this.element || this.element.contains( e.target ) ) return;
 		lattice.util.stopEvent( e );
-		console.log( this.fieldName, 'onDocumentClicked', this.mode, this.element, this.element.contains( e.target ) );
+		console.log( this.fieldName, 'onDocumentClicked', e.target );//this.mode, this.element, this.element.contains( e.target ) );
 	},
 
 	toString: function(){ return "[ object, lattice.ui.Text ]"; },
@@ -2314,16 +2331,19 @@ lattice.ui.Text = new Class({
 	},
 	
 	onFieldFocus: function( e ){
+		console.log('onFieldFocus');
 		lattice.util.stopEvent( e );
 		if( this.mode == "editing ") return false;
 		this.enterEditMode( e );
 	},
 	
-	onBlur: function( e ){
+	onFieldBlur: function( e ){
+		console.log('onBlur');
 		if( this.allowSubmitOnBlur && !this.validationSticky ) this.submit();
 	},
 	
 	prepareField: function(){
+		console.log( 'prepareField' );
 		var val, size, h, w, inputType;
 		this.field.removeEvents();
 		val = this.ipeElement.get( 'html' ).toPlain();
@@ -2333,8 +2353,7 @@ lattice.ui.Text = new Class({
 		this.ipeElement.setStyle( 'width', w );
 		this.field.setStyles({
 			'overflow': 'hidden',
-			'width': w, 
-			// 'height': h
+			'width': w
 		});
 		if( this.isMultiline ){
 			this.field.addEvent( 'keyup', this.fitToContent.bind( this ) );
@@ -2343,10 +2362,10 @@ lattice.ui.Text = new Class({
 			this.field.set( 'type', inputType );
 		};
 		if( this.maxLength ) this.field.addEvent( 'keydown', this.checkFormaxLength.bindWithEvent( this ) );
-		document.addEvent( "mousedown", this.documentBoundUpdateAndClose );
+		window.addEvent( "mousedown", this.documentBoundUpdateAndClose );
 		if( this.submitOnBlur ){
 			this.submitOnBlurEnabled = true;
-			this.field.addEvent( 'blur', this.onBlur.bindWithEvent( this ) );
+			this.field.addEvent( 'blur', this.boundOnFieldBlur );
 		}else{
 			this.submitOnBlurEnabled = false;
 			this.field.addEvent( 'blur', this.cancelEditing.bind( this ) );
@@ -2411,6 +2430,7 @@ lattice.ui.Text = new Class({
 	},
 	
 	submit: function( e ){
+		console.log( 'submit' );
 		this.parent( e );
 		var val = ( this.field.get( 'type' ) == 'password' )?  this.submittedValue.replace( /./g, '*' ) : this.submittedValue.formatToHTML();
 		this.ipeElement.set( 'text', val );
@@ -2424,20 +2444,22 @@ lattice.ui.Text = new Class({
 	},
 
 	enableElement: function( e ){
+		console.log( 'enableElement' );
 		this.parent( e );
 		this.ipeElement.removeEvents();
-		this.ipeElement.addEvent( "click", this.enterEditMode.bindWithEvent( this ) );
+		this.field.addEvent( 'focus' , this.boundOnFieldFocus );
+		this.ipeElement.addEvent( "click", this.boundEnterEditMode );
 		this.ipeElement.set( "title", this.options.messages.hover );
 	},
 	
 	disableElement: function( e ){
+		console.log( 'disableElement' );
 		this.parent( e );
 		this.ipeElement.removeEvents();
-		this.ipeElement.addEvent( "mouseover", Event.stop );
-		this.ipeElement.addEvent( "focus", Event.stop );
 	},
 	
 	enterEditMode: function( e ){
+		console.log("enterEditMode");
 		lattice.util.stopEvent( e );
 		if( this.mode == "editing ") return false;
 		this.mode = "editing";
@@ -2447,8 +2469,13 @@ lattice.ui.Text = new Class({
 	},
 	
 	leaveEditMode: function(){
+		console.log('leaveEditMode');
+
+		document.removeEvent( "mousedown", this.documentBoundUpdateAndClose );
+
+		this.field.removeEvents('blur', this.boundOnFieldBlur );
+
 		this.mode = 'atRest';
-		this.field.removeEvents('blur');
 		// see enterEditMode and sorting
 		if( this.marshal.resumeSort ) this.marshal.resumeSort();
 		if( this.controls ){
@@ -2459,11 +2486,13 @@ lattice.ui.Text = new Class({
 		this.field.addClass('away');
 		this.ipeElement.removeClass( 'away' );
 		this.ipeElement.addClass('atRest');
+		console.log( "--->" );
 		this.enableElement();
 	},
 
 	cancelEditing: function( e ){
-		lattice.util.preventDefault( e );
+		console.log('cancelEditing');
+		e.preventDefault();
 		if( this.oldValue ){
 			var val = this.oldValue.formatToHTML()
 			this.field.set( 'value', val );
@@ -2478,6 +2507,7 @@ lattice.ui.Text = new Class({
 	},
 
 	showSaving: function(){
+		console.log('showSaving');
 		this.mode = 'saving';
 		this.ipeElement.addClass( 'saving' );
 		this.ipeElement.setStyle( 'opacity', .2 );
@@ -2508,7 +2538,6 @@ lattice.ui.Text = new Class({
 		this.ipeElement.set( 'html', aValue.formatToHTML() );
 		w = this.ipeElement.getSize().x - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width' ) ) + 2 * parseInt( this.ipeElement.getStyle('padding-left' ) ) );
 		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') ) +  2 * parseInt( this.field.getComputedStyle( 'padding-bottom' ) ) ); 
-		console.log( "{", w, ",", h , "}" );
 		this.setValue( ogVal );
 		return { x: w, y: h };
 	},
@@ -2538,7 +2567,9 @@ lattice.ui.Text = new Class({
 	},	
 
 	destroy: function(){
-		if( this.mode == 'editing' ) this.leaveEditMode();
+		if( this.mode == 'editing' ){
+			this.leaveEditMode();
+		}
 		if( this.ipeElement ) this.ipeElement.eliminate( 'Class' );
 		this.ipeElement.destroy();
 		this.ipeElement = this.mode = this.value = this.oldValue = null;
@@ -3013,6 +3044,5 @@ lattice.ui.Tags = new Class({
 		this.boundEdit = this.field = this.contains = this.tokenTemplate = null;
 		this.parent();
 	}
-	
-	
+		
 });
