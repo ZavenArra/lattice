@@ -33,9 +33,15 @@ class View_Csv  {
       $csv .= "\n";
       
       foreach ($this->_object->getFields() as $columnName) {
+                  
          if(in_array($columnName, $this->skipFields)){
             continue;
          }         
+         
+         //cycle through all languages for each field
+
+         //$languages = Graph::languages();
+         //foreach ($languages as $translationLanguage) {
          
          if($this->_object->loaded()){
             $dataItem = $this->_object->$columnName;
