@@ -22,14 +22,11 @@ Class Lattice_Initializer {
          }
       }
 
-      $allProblems =  array();
-       
       foreach ($dependencies as $dependency) {
          $check = ORM::factory('initializedmodule')
                  ->where('module', '=', $dependency)
                  ->find();
          if (!$check->loaded() || $check->status != 'INITIALIZED') {
-            // echo "weird\n";
 
             if (Kohana::find_file('classes/initializer', $dependency)) {
                $initializerClass = 'initializer_' . $dependency;
@@ -42,9 +39,7 @@ Class Lattice_Initializer {
                   $check->module = $dependency;
                   $check->status = 'INITIALIZED';
                   $check->save();
-               } else {
-                 $allProblems = array_merge($allProblems, $problems);
-               }
+							 }
             } else {
                  if (!$check->loaded()) {
                   $check = ORM::Factory('initializedmodule');
@@ -56,9 +51,9 @@ Class Lattice_Initializer {
          }
       }
       
-      if(count($allProblems) || count(self::$messages)){
+      if(count(self::$problems) || count(self::$messages)){
          $view = new View('initializationproblems');
-         $view->problems = $allProblems;
+         $view->problems = self::$problems;
          $view->messages = self::$messages;
          echo $view->render();
          die();
@@ -83,6 +78,11 @@ Class Lattice_Initializer {
    }
    
   
+   public static function addProblem($message){
+      self::$problems[] = $message;
+      
+   }
+
    
    public static function addMessage($message){
       self::$messages[] = $message;

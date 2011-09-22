@@ -22,7 +22,9 @@ Class Controller_CSV extends Controller {
 
 			$filename = $exportFileIdentifier .'.csv';
 			$filepath = 'application/export/'.$filename;
-     
+         $file = fopen($filepath, 'w');
+         fwrite($file, $this->csvOutput);
+    // exit;
 			header("Pragma: public");
 			header("Expires: 0");
 			header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
@@ -32,7 +34,7 @@ Class Controller_CSV extends Controller {
 			header("Content-Transfer-Encoding: binary");
 			header("Content-Length: ".@filesize($filepath));
 			set_time_limit(0);
-			@readfile("$filename") or die("File not found.");	
+			@readfile($filepath) or die("File not found.");	
 			exit;
    }
    
@@ -73,7 +75,6 @@ Class Controller_CSV extends Controller {
 	 * This function creates a csv import objectType which has data pre-filled from the table
 	 */
 	public function action_createImportTemplateFilled($exportParamterKey){
-			//$data = lattice::getViewContent($view);
          
          $query = new Graph_ObjectQuery();
          $query->initWithArray(Kohana::config('csv.parameters.'.$exportParamterKey));

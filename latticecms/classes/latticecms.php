@@ -217,6 +217,11 @@ class latticecms {
                   break;
                default:
                   //deal with html objectType elements
+
+                  if (!isset($uiArguments['name'])) {   // Added by 0ak during debug. Remove?
+                     throw new Kohana_Exception("uiArguments['name'] not set ");
+                  }
+
                   $key = $element['type'] . '_' . $uiArguments['name'];
                   $html = null;
                   if (!isset($element['name'])) {
@@ -277,6 +282,19 @@ class latticecms {
                }
                $entry['radios'] = $radios;
                break;
+
+             // Begin pulldown change
+             case 'pulldown':
+               $children = lattice::config('objects', 'option', $element); //$element['type']);
+               $options  = array();
+               foreach ($children as $child) {
+                  $label = $child->getAttribute('label');
+                  $value = $child->getAttribute('value');
+                  $options[$label] = $value;
+               }
+               $entry['options'] = $options;  
+               break;
+
 
             case 'associator':
                //need to load filters here

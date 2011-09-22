@@ -32,26 +32,59 @@ class FrontendRouting {
       }
       if ($object) {
          return array(
-             'controller' => 'latticefrontend',
+             'controller' => 'latticeviews',
              'action' => 'getView',
              'objectidorslug' => $object->slug
          );
       }
    }
 
+	 public static function routeVirtual($uri){
+		
+      $segments = explode('/', $uri);
+      if(Kohana::find_file('classes/controller', $segments[0])){
+         return;
+      }
+
+			$config = lattice::config('frontend', '//view[@name="'.$uri.'"]');
+			if($config->length){
+         return array(
+             'controller' => 'latticeviews',
+             'action' => 'getVirtualView',
+             'objectidorslug' => $uri
+         );
+			} 
+
+			return;
+      
+	 }
+
 }
 
-Route::set('latticeCmsSlugs', array('FrontendRouting', 'routeSlug'));
+Route::set('latticeViewsSlug', array('FrontendRouting', 'routeSlug'));
+
+Route::set('latticeViewsVirtual', array('FrontendRouting', 'routeVirtual'));
 
 Route::set('defaultLatticeFrontend', '(<controller>)',
 	array(
 		'controller'=>'',
 	))
 	->defaults(array(
-		'controller' => 'latticefrontend',
+		'controller' => 'latticeviews',
 		'action' => 'getView',
 		'id'     => 'home',
 	));
+
+
+Route::set('preview', 'preview/<id>',
+	array(
+		 'id' => '[A-z\-]+',
+	 ))
+	->defaults(array(
+		'controller' => 'preview',
+		'action' => 'preview',
+	));
+
 
 
  

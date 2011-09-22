@@ -95,6 +95,10 @@ Class latticeui{
 				}
 			break;
 
+			case 'pulldown':
+				$element['name'] = $id;   // Need to fix - oak
+			break;
+
 			case 'radioGroup':
 				$element['radioname'] = $id; 
 			break;
@@ -166,6 +170,13 @@ Class latticeui{
 	public static function fieldmap($values, $options){
 		return latticeui::buildUIElement(array('type'=>'fieldmap', 'values'=>$values, 'options'=>$options) );
 	}
+
+   // 0ak - revisit this function.  Needed?
+        public static function pulldown ( $field, $class, $options, $fieldValue, $groupLabel=null, $labelClass=null ){
+                $elementArray = array( 'type'=>'pulldown',  'class'=>$class, 'grouplabel'=>$groupLabel, 'name'=>$field, 'options'=> $options, "labelClass"=>$labelClass );
+                return latticeui::buildUIElement( $elementArray, $fieldValue );
+        }
+
    
    public static function tags($currentTags){
       $view = new View('ui_tags');

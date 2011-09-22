@@ -1,6 +1,6 @@
 <div class="ui-RadioGroup <?=$class;?>" data-field="<?=$name;?>">
-	<?if(isset($grouplabel)):?>
-		<label class="groupLabel"><?=$grouplabel;?></label>
+	<?if(isset($groupLabel)):?>
+		<label class="groupLabel"><?=$groupLabel;  $name; $label;?></label>
 	<?endif;?>
 	<fieldset>
 	<? foreach ($radios as $radioLabel => $radioValue):?>
