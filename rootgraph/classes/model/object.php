@@ -169,6 +169,7 @@ class Model_Object extends ORM {
 
          //No column mapping set up, attempt to run setup if it's configured.
          if (!$contentColumn) {
+                        
             //this column isn't mapped, check to see if it's in the xml
             if ($this->__get('objecttype')->nodeType == 'container') {
                //For lists, values will be on the 2nd level 
@@ -191,10 +192,10 @@ class Model_Object extends ORM {
                //field is configured but not initialized in database
                $this->objecttype->configureElement($fieldConfig->item(0));
 
-               self::reinitDbmap($this->__get('objecttype')->objecttype_id);
+               self::reinitDbmap($this->objecttype_id);
 
                //now go aheand and get the mapped column
-               $contentColumn = self::dbmap($this->__get('objecttype')->objecttype_id, $column);
+               $contentColumn = self::dbmap($this->objecttype_id, $column);
             }
          }
 
@@ -312,10 +313,11 @@ class Model_Object extends ORM {
 
 
             //check for dbmap
-            if ($mappedcolumn = self::dbmap($this->objecttype->objecttype_id, $column)) {
-               return parent::__set($mappedcolumn, $value);
+            if ($mappedcolumn = self::dbmap($this->objecttype_id, $column)) {
+               return $this->contenttable->__set($mappedcolumn, $value);
             }
-
+            
+           
             //this column isn't mapped, check to see if it's in the xml
             if ($this->objecttype->nodeType == 'container') {
                //For lists, values will be on the 2nd level 
@@ -324,6 +326,8 @@ class Model_Object extends ORM {
                //everything else is a normal lookup
                $xPath = sprintf('//objectType[@name="%s"]', $this->objecttype->objecttypename);
             }
+            
+            
             $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
             if ($fieldConfig->item(0)) {
                //field is configured but not initialized in database
