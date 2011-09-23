@@ -373,6 +373,7 @@ class Model_Object extends ORM {
             $this->_related['contenttable'] = $content;
          }
       }
+      $this->contenttable->save();
    }
 
    
@@ -653,9 +654,9 @@ class Model_Object extends ORM {
 
 
    public function saveField($field, $value) {
-      $this->contenttable->$field = $value;
-      $this->contenttable->save();
-      return $this->contenttable->$field;
+      $this->__set($field, $value);
+      $this->save();
+      return $this->$field;
    }
 
    public function saveUploadedFile($field, $filename, $type, $tmpName) {
@@ -1206,11 +1207,12 @@ class Model_Object extends ORM {
                break;
          }
       }
-      $newObject->contenttable->save();
       $newObject->save();
       return $newObject;
    
    }
+   
+  
    
    /*
     * function addElementObject
