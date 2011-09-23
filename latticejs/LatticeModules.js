@@ -127,6 +127,7 @@ lattice.modules.Module = new Class({
 	getModuleUIFields: function( anElement ){
 		var elements = [];
 		anElement.getChildren().each( function( aChild, anIndex ){
+			console.log( 'getModuleUIFields', aChild, aChild.get('class') );
 			if( aChild.get( "class" ).indexOf( "ui-" ) > -1 ){
 //	    console.log( "\t\tfound ui field", aChild.get('class'), ':', aChild.get('data-field'), 'in', anElement.get('class') );
 				elements.combine( [ aChild ] );
@@ -382,12 +383,6 @@ lattice.modules.LatticeList = new Class({
 	
 	addObjectRequest: function( e ){
 		lattice.util.stopEvent( e );
-		// if( this.addObjectDialogue ) lattice.modalManager.removeModal( this.addObjectDialogue );
-		// this.addObjectDialogue = null;
-		// this.addObjectDialogue = new lattice.ui.AddObjectDialogue( this );
-		// this.addObjectDialogue.spin();
-		// this.addObjectDialogue.show();
-//		console.log( "addObjectRequest:", this.getAddObjectURL() );
 		this.listing.spin();
 		return new Request.JSON( { url: this.getAddObjectURL(), onSuccess: this.onAddObjectResponse.bind( this ) } ).send();
 	},
@@ -399,8 +394,6 @@ lattice.modules.LatticeList = new Class({
 		element = json.response.html.toElement();
 		addItemText = this.controls.getElement( ".addItem" ).get( "text" );
 		listItem = new lattice.modules.ListItem( element, this, this.addObjectDialogue );
-//		listItem.hideControls();
-//		this.addObjectDialogue.setContent( element , addItemText );
 		Object.each( listItem.UIFields, function( uiField ){
 			uiField.scrollContext = "modal";
 			if( uiField.reposition ) uiField.reposition('modal');
