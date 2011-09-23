@@ -5,12 +5,16 @@
  * and open the template in the editor.
  */
 
+
 /**
  * Description of latticeviews
  *
  * @author deepwinter1
  */
 class latticeviews {
+   
+   private static $initialObject = NULL;
+
 
    public static function createView($objectidorslug){
       
@@ -20,6 +24,12 @@ class latticeviews {
       } else {
          $object = $objectidorslug;
       }
+      if(!self::$initialObject){
+         self::$initialObject = $object;
+      }
+      
+      
+      
 		//some access control
 		$viewName = null;
       $view = null;
@@ -47,6 +57,13 @@ class latticeviews {
 		}
       
       return $view;
+   }
+   
+   /*
+    * Returns the first object that was sent to createView
+    */
+   public static function initialObject() {
+      return self::$initialObject;
    }
 
 
