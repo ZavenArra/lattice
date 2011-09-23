@@ -1,5 +1,6 @@
 <div id="cms" class="module classPath-lattice_modules_CMS rootObjectId-<? echo Graph::getRootNode(Kohana::config('cms.graphRootNode'))->id; ?> navigation-navigation userLevel-<?=$userlevel;?>">
 	<?=$navigation;?>
+
 	<div class="localizationControls">
 		<div class="localizationControls container_12">
 			<ul class="clearFix">
