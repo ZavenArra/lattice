@@ -122,18 +122,14 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 		Parameters:
 		$_POST['sortOrder'] - array of object ids in their new sort order
 		*/
-		public function action_saveSortOrder(){
+		public function action_saveSortOrder($parentId, $lattice='lattice'){
+         
 			$order = explode(',', $_POST['sortOrder']);
+         $object = ORM::Factory('object', $parentId);
+         $object->setSortOrder($order, $lattice);
 
-			for($i=0; $i<count($order); $i++){
-				if(!is_numeric($order[$i])){
-					throw new Kohana_Exception('bad sortorder string: >'.$order[$i].'<');
-				}
-				$object = Graph::object($order[$i]);
-            $object->sortorder = $i+1;
-				$object->save();
-			}
-
+         
+		
 			$this->response->data( array('saved'=>true));
 		}
 

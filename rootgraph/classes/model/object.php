@@ -640,6 +640,32 @@ class Model_Object extends ORM {
          return null;
       }
    }
+   
+   public function setSortOrder($order, $lattice='lattice') {
+      $lattice = Graph::lattice($lattice);
+
+      for ($i = 0; $i < count($order); $i++) {
+         if (!is_numeric($order[$i])) {
+            throw new Kohana_Exception('bad sortorder string: >' . $order[$i] . '<');
+         }
+
+         $objectRelationship = ORM::Factory('objectrelationship')
+                 ->where('object_id', '=', $this->id)
+                 ->where('lattice_id', '=', $lattice->id)
+                 ->where('connectedobject_id', '=', $order[$i])
+                 ->find();
+         if(!$objectRelationship->loaded()){
+            throw new Kohana_Exception('No object relationship found matching sort order object_id :object_id, lattice_id :lattice_id, connectedobject_id :connectedobject_id',
+                    array(':object_id' => $this->id,
+                        ':lattice_id' => $lattice->id,
+                        ':connectedobject_id' => $order[$i]
+                    )
+            );
+         }
+         $objectRelationship->sortorder = $i;
+         $objectRelationship->save();
+      }
+   }
 
 
    public function saveField($field, $value) {
