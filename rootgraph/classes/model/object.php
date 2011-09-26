@@ -239,7 +239,7 @@ class Model_Object extends ORM {
          if (strstr($contentColumn, 'file') && !is_object($this->contenttable->$contentColumn)) {
             $file = ORM::Factory('file', $this->contenttable->$contentColumn);
             //file needs to know what module it's from if its going to check against valid resizes
-            $this->contenttable->__set($contentColumn, $file);
+            $this->contenttable->$contentColumn = $file;
          }
   
          return $this->contenttable->$contentColumn;
@@ -411,20 +411,9 @@ class Model_Object extends ORM {
    
    public function updateWithArray($data) {
       foreach ($data as $field => $value) {
-         switch ($field) {
-            case 'slug':
-            case 'decoupleSlugTitle':
-            case 'dateAdded':
-            case 'published':
-            case 'activity':
-               $this->__set($field, $value);
-               break;
-            default:
-               $this->contenttable->$field = $value;
-               break;
-         }
+          $this->__set($field, $value);
+          break;  
       }
-      $this->contenttable->save();
       $this->save();
       return $this->id;
    }
@@ -846,11 +835,11 @@ class Model_Object extends ORM {
          }
       }
       foreach ($options as $field) {
-         $object->contenttable->$field = 0;
+         $object->$field = 0;
       }
 
       foreach ($_POST['values'] as $value) {
-         $object->contenttable->$value = 1;
+         $object->$value = 1;
       }
       $object->save();
       return true;
