@@ -485,9 +485,8 @@ lattice.modules.navigation.Tier = new Class({
 
 	onOrderChanged: function(){
 		var newOrder = this.serialize();
-		console.log( "onOrderChanged", newOrder);
 		clearInterval( this.submitDelay );
-		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder );
+		this.submitDelay = this.submitSortOrder.periodical( 1000, this, newOrder );
 		newOrder = null;
 	},
 
@@ -495,7 +494,6 @@ lattice.modules.navigation.Tier = new Class({
 		if( this.options.allowChildSort && this.oldSort != newOrder ){
 			clearInterval( this.submitDelay );
 			this.submitDelay = null;
-			console.log("Tier.submitSortOrder", newOrder, this.id );
 			this.marshal.saveTierSort( newOrder, this.id );
 			this.oldSort = newOrder;
 		}
