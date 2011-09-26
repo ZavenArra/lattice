@@ -58,11 +58,11 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
 	public function action_clearField($objectId, $field){
 		$object = Graph::object($objectId);
-		if(Graph::isFileModel($object->contenttable->$field) && $object->contenttable->$field->loaded()){
-			$file = $object->contenttable->$field;
+		if(Graph::isFileModel($object->$field) && $object->$field->loaded()){
+			$file = $object->$field;
 			$file->delete(); //may or may not want to do this
 		}
-		$object->contenttable->$field = null;
+		$object->$field = null;
       $return = array('cleared'=>'true');
       $this->response->data($return);
 	}
