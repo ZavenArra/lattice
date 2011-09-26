@@ -175,6 +175,7 @@ lattice.modules.navigation.Navigation = new Class({
 				this.processNodeData( node.tier.nodes, node.tier.html, node.id, this.addPane() );
 			}
 		}, this );
+		console.log( 'processNodeData creating new tier with id', tierId );
 		var tier = new lattice.modules.navigation.Tier( this, html, tierId );
 		this.tiers[ tierId ] = tier;
 		this.renderPane( tier, containerPane, tierId );
@@ -287,6 +288,7 @@ lattice.modules.navigation.Tier = new Class({
 	initialize: function( aMarshal, html, nodeId ){
 		this.marshal = aMarshal;
 		this.html = html;
+		console.log( 'Tier.initialize.id', nodeId );
 		this.id = nodeId;
 	},
 
@@ -493,6 +495,7 @@ lattice.modules.navigation.Tier = new Class({
 		if( this.options.allowChildSort && this.oldSort != newOrder ){
 			clearInterval( this.submitDelay );
 			this.submitDelay = null;
+			console.log("Tier.submitSortOrder", newOrder, this.id );
 			this.marshal.saveTierSort( newOrder, this.id );
 			this.oldSort = newOrder;
 		}
