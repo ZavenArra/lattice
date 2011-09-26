@@ -714,8 +714,8 @@ class Model_Object extends ORM {
       $file->mime = $type;
       $file->save(); //inserts or updates depending on if it got loaded above
 
-      $this->contenttable->$field = $file->id;
-      $this->contenttable->save();
+      $this->$field = $file->id;
+      $this->save();
       
       //Handle localized object linked via rosetta
       if($replacingEmptyFile){
@@ -728,8 +728,8 @@ class Model_Object extends ORM {
             }
 
             $translatedObject = $this->translate($translationLanguage->id);
-            $translatedObject->contenttable->$field = $file->id;
-            $translatedObject->contenttable->save();
+            $translatedObject->$field = $file->id;
+            $translatedObject->save();
 
          }   
       }
