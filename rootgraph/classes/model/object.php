@@ -655,7 +655,12 @@ class Model_Object extends ORM {
                  ->where('connectedobject_id', '=', $order[$i])
                  ->find();
          if(!$objectRelationship->loaded()){
-            throw new Kohana_Exception('No object relationship found matching sort order');
+            throw new Kohana_Exception('No object relationship found matching sort order object_id :object_id, lattice_id :lattice_id, connectedobject_id :connectedobject_id',
+                    array(':object_id' => $this->id,
+                        ':lattice_id' => $lattice->id,
+                        ':connectedobject_id' => $order[$i]
+                    )
+            );
          }
          $objectRelationship->sortorder = $i;
          $objectRelationship->save();
