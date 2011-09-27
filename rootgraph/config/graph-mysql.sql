@@ -38,7 +38,6 @@ CREATE TABLE `objects` (
 	`dateadded` timestamp NULL DEFAULT NULL,
 	`lastmodified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`published` tinyint(1) NOT NULL DEFAULT '0',
-	`sortorder` smallint(6) NOT NULL DEFAULT '0',
 	`activity` char(1) CHARACTER SET latin1 DEFAULT NULL,
 	PRIMARY KEY (`id`),
 	UNIQUE KEY `identifier` (`slug`,`language_id`)
