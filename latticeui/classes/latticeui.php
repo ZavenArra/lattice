@@ -95,10 +95,6 @@ Class latticeui{
 				}
 			break;
 
-			case 'pulldown':
-				$element['name'] = $id;   // Need to fix - oak
-			break;
-
 			case 'radioGroup':
 				$element['radioname'] = $id; 
 			break;

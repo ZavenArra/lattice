@@ -38,12 +38,10 @@
 		<objectType name="singleIPE" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 
 			<elements>
-				<!--
 				<pulldown name="state"  label="State"  groupLabel="State">
 					<option value="AL" label="Alabama" />
 					<option value="AK" label="Alaska" />
 				</pulldown>
-				-->
 				<text name="singleIPE" label="Single Single Single" isMultiline="false" />
 				<text name="singleIPE2" label="Single Single Single" isMultiline="false" />
 				<text name="ssdfasdfingleIPE2" label="Single Single Single" isMultiline="false" />
