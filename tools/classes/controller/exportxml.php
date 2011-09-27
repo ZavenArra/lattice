@@ -180,9 +180,22 @@ class Controller_ExportXML extends Controller {
 
         return;
        */
-
+/*
       $this->doc = new DOMDocument('1.0', 'UTF-8');
       $this->doc->formatOutput = true;
+      $data = $this->doc->createElement('data');
+  */    
+      //
+      $implementation = new DOMImplementation();
+      $dtd = $implementation->createDocumentType('data',
+        '-//WINTERROOT//DTD Data//EN',
+        '../../../lattice/latticecms/config/data.dtd');
+      $this->doc = $implementation->createDocument('', '', $dtd);
+   
+      $this->doc->xmlVersion="1.0";
+      $this->doc->encoding="UTF-8";
+      $this->doc->formatOutput = true;
+    
       $data = $this->doc->createElement('data');
 
       $object = Graph::getRootNode('cmsRootNode');
@@ -206,6 +219,7 @@ class Controller_ExportXML extends Controller {
       chmod(getcwd() . '/' . $this->outputDir, 0777);
       $this->doc->save($this->outputDir . '/' . $outputfilename . '.xml');
       system('cp -Rp application/media/* ' . $this->outputDir);
+      echo 'done';
    }
 
    public function action_export($xslt='') {
