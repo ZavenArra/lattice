@@ -557,7 +557,7 @@ class Model_Object extends ORM {
 							->latticeChildrenFilter($this->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
-              ->order_by('sortorder')
+              ->order_by('objectrelationships.sortorder')
 							->join('objecttypes')->on('objects.objecttype_id', '=', 'objecttypes.id')
 							->where('nodeType', '!=', 'container')
               ->find_all();
@@ -573,7 +573,7 @@ class Model_Object extends ORM {
       $children = ORM::Factory('object')
 							->latticeChildrenFilter($this->id, $lattice)
               ->where('activity', 'IS', NULL)
-              ->order_by('sortorder')
+              ->order_by('objectrelationships.sortorder')
               ->find_all();
       return $children;
    
@@ -584,7 +584,7 @@ class Model_Object extends ORM {
 							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
-              ->order_by('sortorder', 'ASC')
+              ->order_by('objectrelationships.sortorder', 'ASC')
               ->where('sortorder', '>', $this->sortorder)
               ->limit(1)
               ->find();
@@ -600,7 +600,7 @@ class Model_Object extends ORM {
 							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
-              ->order_by('sortorder', 'DESC')
+              ->order_by('objectrelationships.sortorder',  'DESC')
               ->where('sortorder', '<', $this->sortorder)
               ->limit(1)
               ->find();
@@ -616,7 +616,7 @@ class Model_Object extends ORM {
 							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
-              ->order_by('sortorder', 'ASC')
+              ->order_by('objectrelationships.sortorder', 'ASC')
               ->limit(1)
               ->find();
       if ($first->loaded()) {
@@ -631,7 +631,7 @@ class Model_Object extends ORM {
 							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
-              ->order_by('sortorder', 'DESC')
+              ->order_by('objectrelationships.sortorder', 'DESC')
               ->limit(1)
               ->find();
       if ($last->loaded()) {

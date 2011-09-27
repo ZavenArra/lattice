@@ -2,7 +2,7 @@
 
 class Controller_ExportXML extends Controller {
 
-	public $outputDir;
+   public $outputDir;
 
    public function __construct() {
       if (!is_writable('application/views/xmldumps/')) {
@@ -28,8 +28,8 @@ class Controller_ExportXML extends Controller {
                case 'Model_File':
                   //or copy to directory and just use filename
                   if ($value->filename) {
-										$targetPath = $this->outputDir . $value->filename;
-										$node->appendChild($this->doc->createTextNode($targetPath));
+                     $targetPath = $this->outputDir . $value->filename;
+                     $node->appendChild($this->doc->createTextNode($targetPath));
                   }
                   break;
                case 'Model_Page':
@@ -56,40 +56,40 @@ class Controller_ExportXML extends Controller {
          if ($key == "slug" && $value == "") {
             continue;
          }
-				 if($key == "title" && $value == ""){
-					 $value = microtime();
-				 }
+         if ($key == "title" && $value == "") {
+            $value = microtime();
+         }
          if ($key == "id") {
             continue;
          }
          if (is_array($value)) {
-						//skipping container objects.
-						continue;    
-				 } 
+            //skipping container objects.
+            continue;
+         }
 
 
-				 $node = $this->doc->createElement('field');
+         $node = $this->doc->createElement('field');
          $nodeAttr = $this->doc->createAttribute('name');
          $nodeValue = $this->doc->createTextNode($key);
          $nodeAttr->appendChild($nodeValue);
          $node->appendChild($nodeAttr);
- 
-				 
-				 if (is_object($value)) {
+
+
+         if (is_object($value)) {
 
             switch (get_class($value)) {
                case 'Model_File':
 //or copy to directory and just use filename
                   if ($value->filename) {
-										$targetPath = $this->outputDir . $value->filename;
-										$node->appendChild($this->doc->createTextNode($targetPath));
-									}
+                     $targetPath = $this->outputDir . $value->filename;
+                     $node->appendChild($this->doc->createTextNode($targetPath));
+                  }
                   break;
                case 'Model_Object':
                   foreach ($this->getObjectFields($value) as $subField) {
 //$field->appendChild($subField);
                      echo "sub objects not yet supported for mop export\n";
-										 echo $key;
+                     echo $key;
                   }
                   break;
             }
@@ -141,7 +141,7 @@ class Controller_ExportXML extends Controller {
          //and get the children
          $childObjects = $object->getChildren();
          foreach ($this->exportTierMOPFormat($childObjects) as $childItem) {
-					 $item->appendChild($childItem);
+            $item->appendChild($childItem);
          }
          $nodes[] = $item;
       }
@@ -152,37 +152,34 @@ class Controller_ExportXML extends Controller {
    //this should call action_export and then convert with xslt
    public function action_exportMOPFormat($outputfilename='export', $xslt='') {
 
- //     $this->action_export();
-      
-      
+      //     $this->action_export();
       //do the export
       //and then call xslt to transform
       //export should build, but not write to file
       //enabling xslt to transform in memory xml, not load again from disk
-      
       # LOAD XML FILE
-$XML = new DOMDocument();
+      $XML = new DOMDocument();
 //$XML->load( 'application/media/export.xml' );
 
-/*
-# START XSLT
-$xslt = new XSLTProcessor();
+      /*
+        # START XSLT
+        $xslt = new XSLTProcessor();
 
-# IMPORT STYLESHEET 1
-$XSL = new DOMDocument();
-$XSL->load( 'template1.xsl' );
-$xslt->importStylesheet( $XSL );
+        # IMPORT STYLESHEET 1
+        $XSL = new DOMDocument();
+        $XSL->load( 'template1.xsl' );
+        $xslt->importStylesheet( $XSL );
 
-#IMPORT STYLESHEET 2
-$XSL = new DOMDocument();
-$XSL->load( 'template2.xsl' );
-$xslt->importStylesheet( $XSL );
+        #IMPORT STYLESHEET 2
+        $XSL = new DOMDocument();
+        $XSL->load( 'template2.xsl' );
+        $xslt->importStylesheet( $XSL );
 
-#PRINT
-print $xslt->transformToXML( $XML ); 
+        #PRINT
+        print $xslt->transformToXML( $XML );
 
-return;      
- */
+        return;
+       */
 
       $this->doc = new DOMDocument('1.0', 'UTF-8');
       $this->doc->formatOutput = true;
@@ -191,30 +188,30 @@ return;
       $object = Graph::getRootNode('cmsRootNode');
       $objects = $object->getChildren();
 
-			$this->outputDir = 'application/export/'.$outputfilename.'/';
+      $this->outputDir = 'application/export/' . $outputfilename . '/';
 
       foreach ($this->exportTierMOPFormat($objects) as $item) {
          $data->appendChild($item);
       }
       $this->doc->appendChild($data);
 
-			try {
-				mkdir($this->outputDir, 777);
-			} catch (Exception $e){
-
-			}
-			echo getcwd().'/'.$this->outputDir;
-			flush();
-			ob_flush();
-			chmod(getcwd().'/'.$this->outputDir, 0777);
-      $this->doc->save($this->outputDir.'/'.$outputfilename.'.xml');
-			system('cp -Rp application/media/* '.$this->outputDir);
+      try {
+         mkdir($this->outputDir, 777);
+      } catch (Exception $e) {
+         
+      }
+      echo getcwd() . '/' . $this->outputDir;
+      flush();
+      ob_flush();
+      chmod(getcwd() . '/' . $this->outputDir, 0777);
+      $this->doc->save($this->outputDir . '/' . $outputfilename . '.xml');
+      system('cp -Rp application/media/* ' . $this->outputDir);
    }
 
    public function action_export($xslt='') {
 
-    //  $this->buildExportXml();
-      
+      //  $this->buildExportXml();
+
       $this->doc = new DOMDocument('1.0', 'UTF-8');
       $this->doc->formatOutput = true;
       $data = $this->doc->createElement('data');
