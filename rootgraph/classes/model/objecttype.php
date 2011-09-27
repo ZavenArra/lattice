@@ -104,9 +104,8 @@ class Model_ObjectType extends ORM {
 	public function getPublishedMembers($limit=null){
 
 		$o = Graph::object()
-              ->publishedFilter()
-              ->objectTypeFilter($this->objectTypeName)
-       		  ->order_by('sortorder');
+			->publishedFilter()
+			->objectTypeFilter($this->objectTypeName);
 		if($limit){
 			$o->limit($limit);
 		}
@@ -130,8 +129,7 @@ class Model_ObjectType extends ORM {
       
 		$o = Graph::object()
               ->activeFilter()
-              ->objectTypeFilter($this->objecttypename)
-       		  ->order_by('sortorder');
+              ->objectTypeFilter($this->objecttypename);
 		if($limit){
 			$o->limit($limit);
 		}
