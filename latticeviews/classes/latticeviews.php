@@ -25,7 +25,7 @@ class latticeviews {
          $object = $objectidorslug;
       }
 			if(!$object->loaded()){
-				throw new Kohana_Exception('Trying to create view, but object is not loaded: $objectidorslug '.$object->slug);
+				throw new Kohana_Exception("Trying to create view, but object is not loaded: $objectidorslug ".$object->slug);
 			}
       if(!self::$initialObject){
          self::$initialObject = $object;
@@ -34,9 +34,9 @@ class latticeviews {
       
       
 		//some access control
-		$viewName = null;
-      $view = null;
-		if ($object->loaded()) {
+			$viewName = null;
+			$view = null;
+			if ($object->loaded()) {
 			if ($object->activity != null) {
 				throw new Kohana_User_Exception('Page not availabled', 'The object with identifier ' . $id . ' is does not exist or is not available');
 			}
