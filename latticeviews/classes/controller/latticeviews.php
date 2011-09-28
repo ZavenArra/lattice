@@ -46,7 +46,7 @@ Class Controller_LatticeViews extends Controller_Layout{
 
 		self::$slug = $objectidorslug;
 
-		$this->viewModel = new latticeview($objectidorslug);
+		$this->viewModel = latticeview::Factory($objectidorslug);
 
 		//possible hook for processing content	
 

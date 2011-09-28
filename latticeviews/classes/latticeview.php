@@ -18,17 +18,26 @@ class latticeview {
 
 	 private $data;
 	 private $view;
+	 protected $object;
 
 	 public static function Factory($objectIdOrSlug){
-			$viewModel = new latticeview($objectIdOrSlug);
+
+			$object = self::getGraphObject($objectIdOrSlug);
+			$objectTypeName = $object->objecttype->objecttypename;
+			if(Kohana::find_file('classes', 'viewmodel/'.$objectTypeName)){
+				$className = 'ViewModel_'.$objectTypeName;
+				$viewModel = new $className($objectIdOrSlug);
+			} else {
+				$viewModel = new latticeview($objectIdOrSlug);
+			}
 			return $viewModel;
 	 }
 
 	 public function __construct($objectIdOrSlug = null){
-		 //parent::__construct();
 		 if($objectIdOrSlug != NULL){
-			$this->createView($objectIdOrSlug);
+			 $this->object = self::getGraphObject($objectIdOrSlug);
 		 }
+		 $this->createView($objectIdOrSlug);
 	 }
 
 	 public function data(){
@@ -39,44 +48,66 @@ class latticeview {
 			return $this->view;
 	 }
 
-   public function createView($objectIdOrSlug){
-      
-      
-      if(!is_object($objectIdOrSlug)){
-         $object = Graph::object($objectIdOrSlug);
-      } else {
-         $object = $objectIdOrSlug;
-      }
-			if(!$object->loaded()){
-				throw new Kohana_Exception("Trying to create view, but object is not loaded: $objectIdOrSlug ".$object->slug);
-			}
-      if(!self::$initialObject){
-         self::$initialObject = $object;
-      }
+	 private static function getGraphObject($objectIdOrSlug){
+		 if(!is_object($objectIdOrSlug)){
+			 $object = Graph::object($objectIdOrSlug);
+		 } else {
+			 $object = $objectIdOrSlug;
+		 }
+		 if(!$object->loaded()){
+			 throw new Kohana_Exception("Trying to create view, but object is not loaded: $objectIdOrSlug ".$object->slug);
+		 }
+		 return $object;
 
+	 }
 
-			//some access control
-			$viewName = null;
-			$view = null;
-			if ($object->loaded()) {
-			if ($object->activity != null) {
-				throw new Kohana_User_Exception('Page not availabled', 'The object with identifier ' . $id . ' is does not exist or is not available');
-			}
-			//look for the objectType, if it's not there just print out all the data raw
-			$viewName = $object->objecttype->objecttypename;
-			if (file_exists('application/views/frontend/' . $viewName . '.php')) {
-				$viewPath = 'frontend/'.$viewName;
-			} else if(file_exists('application/views/generated/' . $viewName . '.php')) {
-				$viewPath = 'generated/'.$viewName;
-			} else {
-				$viewPath = 'default';
-			}
-			$view = new View($viewPath);
+	 public function setVar($name, $value){
+		if(!$this->view){
+			throw new Kohana_Exception('setVar called but no local variable view has not been set');
 		}
+
+		$this->view->$name = $value;
+		$this->data[$name] = $value;
+	 }
+
+   public function createView($objectIdOrSlug = null){
+
+		 if($objectIdOrSlug){
+			$this->object = $this->getGraphObject($objectIdOrSlug);
+		 }
+
+		 if(!self::$initialObject){
+			 self::$initialObject = $this->object;
+		 }
+
+		 //some access control
+		 $viewName = null;
+		 $view = null;
+
+		 /*
+			* This logic needs to be cleaned up.  Does it really make sense to be calling
+			* lattice view model for views that have no object?  Virtual views - these items can also
+			* have view content, and could have view models, but no object
+			*/
+		 if ($this->object->loaded()) {
+			 if ($this->object->activity != null) {
+				 throw new Kohana_User_Exception('Page not availabled', 'The object with identifier ' . $id . ' is does not exist or is not available');
+			 }
+			 //look for the objectType, if it's not there just print out all the data raw
+			 $viewName = $this->object->objecttype->objecttypename;
+			 if (file_exists('application/views/frontend/' . $viewName . '.php')) {
+				 $viewPath = 'frontend/'.$viewName;
+			 } else if(file_exists('application/views/generated/' . $viewName . '.php')) {
+				 $viewPath = 'generated/'.$viewName;
+			 } else {
+				 $viewPath = 'default';
+			 }
+			 $view = new View($viewPath);
+		 }
 	 
 		//call this->view load data
 		//get all the data for the object
-		$viewContent = $this->getViewContent($viewName, $object);
+		$viewContent = $this->getViewContent($viewName, $this->object);
 
 		$this->data = $viewContent;
 
