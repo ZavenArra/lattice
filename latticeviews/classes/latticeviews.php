@@ -24,6 +24,9 @@ class latticeviews {
       } else {
          $object = $objectidorslug;
       }
+			if(!$object->loaded()){
+				throw new Kohana_Exception('Trying to create view, but object is not loaded: $objectidorslug '.$object->slug);
+			}
       if(!self::$initialObject){
          self::$initialObject = $object;
       }
