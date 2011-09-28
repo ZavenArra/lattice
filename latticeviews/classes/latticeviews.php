@@ -94,6 +94,10 @@ class latticeviews {
  
 	public static function getViewContent($view, $slug=null) {
 
+		if((!$view || $view=='') && (!$slug || $slug=='')){
+			throw new Kohana_Exception('getViewContent called with null parameters');
+		}
+
 		$data = array();
 
 		$object = null;
@@ -123,8 +127,15 @@ class latticeviews {
         // throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
 			// we are allowing this so that objects automatically can have basic views
 		}
-		if ($slug && !$object->loaded()) {
-			throw new Kohana_Exception('latticeviews::getViewContent : view called with slug, but no object to load');
+		$loaded =  $object->loaded();
+		if ($slug) {
+			if($object->loaded() != 1) {
+				throw new Kohana_Exception('latticeviews::getViewContent : view called with slug: :slug, but no object to load',
+					array(
+						':slug'=>$slug,
+					)
+				);
+			}
 		}
 		if($object && $viewConfig && $viewConfig->getAttribute('loadPage')){
 			$data['content']['main'] = $object->getPageContent();
