@@ -11,29 +11,45 @@
  *
  * @author deepwinter1
  */
-class latticeviews {
+class latticeview {
    
    private static $initialObject = NULL;
 
+	 private $data;
+	 private $view;
 
-   public static function createView($objectidorslug){
+	 public function __construct($objectIdOrSlug = null){
+		 //parent::__construct();
+		 if($objectIdOrSlug != NULL){
+			$this->createView($objectIdOrSlug);
+		 }
+	 }
+
+	 public function data(){
+			return $this->data;
+	 }
+
+	 public function view(){
+			return $this->view;
+	 }
+
+   public function createView($objectIdOrSlug){
       
       
-      if(!is_object($objectidorslug)){
-         $object = Graph::object($objectidorslug);
+      if(!is_object($objectIdOrSlug)){
+         $object = Graph::object($objectIdOrSlug);
       } else {
-         $object = $objectidorslug;
+         $object = $objectIdOrSlug;
       }
 			if(!$object->loaded()){
-				throw new Kohana_Exception("Trying to create view, but object is not loaded: $objectidorslug ".$object->slug);
+				throw new Kohana_Exception("Trying to create view, but object is not loaded: $objectIdOrSlug ".$object->slug);
 			}
       if(!self::$initialObject){
          self::$initialObject = $object;
       }
-      
-      
-      
-		//some access control
+
+
+			//some access control
 			$viewName = null;
 			$view = null;
 			if ($object->loaded()) {
@@ -54,12 +70,16 @@ class latticeviews {
 	 
 		//call this->view load data
 		//get all the data for the object
-		$viewContent = latticeviews::getViewContent($viewName, $object);
+		$viewContent = $this->getViewContent($viewName, $object);
+
+		$this->data = $viewContent;
+
 		foreach ($viewContent as $key => $value) {
 			$view->$key = $value;
 		}
       
-      return $view;
+		$this->view = $view;
+
    }
    
    /*
@@ -70,7 +90,7 @@ class latticeviews {
    }
 
 
-	 public static function createVirtualView($viewName){
+	 public function createVirtualView($viewName){
 
 			//check for a virtual object specified in frontend.xml
 			//a virtual object will be one that does not match a objectType
@@ -86,7 +106,7 @@ class latticeviews {
 
 		//call this->view load data
 		//get all the data for the object
-		$viewContent = latticeviews::getViewContent($viewName);
+		$viewContent = $this->getViewContent($viewName);
 		foreach ($viewContent as $key => $value) {
 			$view->$key = $value;
 		}
@@ -95,7 +115,7 @@ class latticeviews {
 
 	 }
  
-	public static function getViewContent($view, $slug=null) {
+	public function getViewContent($view, $slug=null) {
 
 		if((!$view || $view=='') && (!$slug || $slug=='')){
 			throw new Kohana_Exception('getViewContent called with null parameters');
@@ -144,7 +164,7 @@ class latticeviews {
 			$data['content']['main'] = $object->getPageContent();
 		}
 
-		$includeContent = latticeviews::getIncludeContent($viewConfig, $object_id);
+		$includeContent = $this->getIncludeContent($viewConfig, $object_id);
 		foreach ($includeContent as $key => $values) {
 			$data['content'][$key] = $values;
 		}
@@ -157,13 +177,13 @@ class latticeviews {
 				if (lattice::config('frontend', "//view[@name=\"$view\"]")) {
 
 					if ($view && $slug) {
-						$subViewContent = latticeviews::getViewContent($view, $slug);
+						$subViewContent = $this->getViewContent($view, $slug);
 					} else if ($slug) {
 						$object = Graph::object($slug);
 						$view = $object->objecttype->objecttypename;
-						$subViewContent = latticeviews::getViewContent($view, $slug);
+						$subViewContent = $this->getViewContent($view, $slug);
 					} else if ($view) {
-						$subViewContent = latticeviews::getViewContent($view);
+						$subViewContent = $this->getViewContent($view);
 					} else {
 						die("subview $label must have either view or slug");
 					}
@@ -183,7 +203,7 @@ class latticeviews {
 		return $data;
 	}
 
-	public static function getIncludeContent($includeTier, $parentId){
+	public function getIncludeContent($includeTier, $parentId){
     $content = array();
     if($includeContentQueries = lattice::config('frontend', 'includeData', $includeTier)) {
          foreach ($includeContentQueries as $includeContentQueryParams) {
@@ -192,7 +212,7 @@ class latticeviews {
             $includeContent = $query->run($parentId);
 
             for ($i = 0; $i < count($includeContent); $i++) {
-               $children = latticeviews::getIncludeContent($includeContentQueryParams, $includeContent[$i]['id']);
+               $children = $this->getIncludeContent($includeContentQueryParams, $includeContent[$i]['id']);
                $includeContent[$i] = array_merge($includeContent[$i], $children);
             }
             $content[$query->attributes['label']] = $includeContent;
