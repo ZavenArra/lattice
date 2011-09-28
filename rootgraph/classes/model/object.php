@@ -167,30 +167,25 @@ class Model_Object extends ORM {
          //This is a mapped field in the contents table
          $contentColumn = self::dbmap($this->objecttype_id, $column);       
 
+
+				$elementConfig = $this->getElementConfig($column);
+				 if ($elementConfig->item(0)) {
+
+					 //This is a temporary stopgap until we have a cleaner handle on what to do when tags is
+					 //requested via the object.
+					 if ($elementConfig->item(0)->tagName == 'tags') {
+						 return $this->getTagStrings();
+					 }
+				 }
+
+
          //No column mapping set up, attempt to run setup if it's configured.
          if (!$contentColumn) {
                         
-            //this column isn't mapped, check to see if it's in the xml
-            if ($this->__get('objecttype')->nodeType == 'container') {
-               //For lists, values will be on the 2nd level 
-               $xPath = sprintf('//list[@name="%s"]', $this->__get('objecttype')->objecttypename);
-            } else {
-               //everything else is a normal lookup
-               $xPath = sprintf('//objectType[@name="%s"]', $this->__get('objecttype')->objecttypename);
-            }
-            $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
-
-
-            if ($fieldConfig->item(0)) {
-
-               //This is a temporary stopgap until we have a cleaner handle on what to do when tags is
-               //requested via the object.
-               if ($fieldConfig->item(0)->tagName == 'tags') {
-                  return $this->getTagStrings();
-               }
+            if ($elementConfig->item(0)) {
 
                //field is configured but not initialized in database
-               $this->objecttype->configureElement($fieldConfig->item(0));
+               $this->objecttype->configureElement($elementConfig->item(0));
 
                self::reinitDbmap($this->objecttype_id);
 
@@ -214,21 +209,10 @@ class Model_Object extends ORM {
             $objectElement = Graph::object($objectElementRelationship->elementobject_id);
 
             if (!$objectElement->loaded()) {
-               //
-               // it may make sense for the objecttype model to return the config info for itself
-               // or something similar
-               //
-            if ($this->objecttype->nodeType == 'container') {
-                  //For lists, values will be on the 2nd level 
-                  $xPath = sprintf('//list[@name="%s"]', $this->objecttype->objecttypename);
-               } else {
-                  //everything else is a normal lookup
-                  $xPath = sprintf('//objectType[@name="%s"]', $this->objecttype->objecttypename);
-               }
 
-               $elementConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
+							$elementConfig = $this->getElementConfig($column);
 
-               //build the object
+							//build the object
                $objectElement = $this->addElementObject($elementConfig->item(0)->tagName, $column);
             }
             return $objectElement;
@@ -246,6 +230,21 @@ class Model_Object extends ORM {
  
       }
    }
+
+
+	 public function getElementConfig($elementName){
+
+		 if ($this->__get('objecttype')->nodeType == 'container') {
+			 //For lists, values will be on the 2nd level 
+			 $xPath = sprintf('//list[@name="%s"]', $this->__get('objecttype')->objecttypename);
+		 } else {
+			 //everything else is a normal lookup
+			 $xPath = sprintf('//objectType[@name="%s"]', $this->__get('objecttype')->objecttypename);
+		 }
+		 $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $elementName));
+		 return $fieldConfig;
+
+	 }
 
    /*
      Function: __set
@@ -467,10 +466,10 @@ class Model_Object extends ORM {
 	 public function getTagStrings() {
 		 $tagObjects = $this->getTagObjects();
 		 $tags = array();
-      foreach ($tagObjects as $tagObject) {
-         $tags[] = $tagObject->tag;
-      }
-      return $tags;
+		 foreach ($tagObjects as $tagObject) {
+			 $tags[] = $tagObject->tag;
+		 }
+		 return $tags;
 
 	 }
 

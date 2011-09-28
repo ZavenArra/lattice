@@ -11,12 +11,18 @@
  *
  * @author deepwinter1
  */
+
 class latticeview {
    
    private static $initialObject = NULL;
 
 	 private $data;
 	 private $view;
+
+	 public static function Factory($objectIdOrSlug){
+			$viewModel = new latticeview($objectIdOrSlug);
+			return $viewModel;
+	 }
 
 	 public function __construct($objectIdOrSlug = null){
 		 //parent::__construct();

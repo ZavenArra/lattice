@@ -59,7 +59,7 @@ Class Controller_LatticeViews extends Controller_Layout{
 
 	public function action_getVirtualView($viewName){
 
-		$this->view = latticeviews::createVirtualView($viewName);
+		$this->view = new latticeview($viewName);
 
 		//possible hook for processing content	
 
