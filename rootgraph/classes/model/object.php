@@ -118,7 +118,6 @@ class Model_Object extends ORM {
          return $this->_related[$column];
       } else if (in_array($column, array_keys($this->_table_columns))){
          //this catchs the configured columsn for this table
-         Kohana::$log->add(Log::INFO, $column);
          return parent::__get($column);
      
       } else if ($column == 'parent') {

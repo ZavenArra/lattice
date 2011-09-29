@@ -111,7 +111,7 @@ class Controller_List extends Lattice_CMSInterface {
       
 
       $view = null;
-      if (Kohana::find_file('views', $this->_listObject->objecttype->objecttypename)) {
+      if (Kohana::find_file('views', 'objectTypes/'.$this->_listObject->objecttype->objecttypename)) {
          $view = new View($this->_listObject->objecttype->objecttypename);
       } else {
          $view = new View('list');
