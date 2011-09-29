@@ -77,14 +77,14 @@ class View_Csv {
             // a text field, with file linked to object via  objectelementsrelationships.
             if (get_class($dataItem) == 'Model_File') {
 
-               $dataItemLine = array_pad(array($columnName, $dataItem), - 2 - $this->_indent - 1, '');
+               $dataItemLine = array_pad(array($columnName, $dataItem->filename), - 2 - $this->_indent - 1, '');
                $csv .= latticeutil::arrayToCsv($dataItemLine, ',');
                $csv .= "\n";
                //and do the other languages
                foreach ($languages as $language) {
                   $dataItem = $il8nObjects[$language->code]->$columnName;
                   $columnNameOut = $columnName . '_' . $language->code;
-                  $dataItemLine = array_pad(array($columnNameOut, $dataItem), - 2 - $this->_indent - 1, '');
+                  $dataItemLine = array_pad(array($columnNameOut, $dataItem->filename), - 2 - $this->_indent - 1, '');
                   $csv .= latticeutil::arrayToCsv($dataItemLine, ',');
                   $csv .= "\n";
                }

@@ -92,7 +92,7 @@ class Graph {
       $languages = self::languages();
       foreach($languages as $language){
       
-         if($language->id == $id){
+         if($language->id == $id || $language->code == $id){
            return $language;
          }
       }
