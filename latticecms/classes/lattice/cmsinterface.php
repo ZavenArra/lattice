@@ -193,7 +193,6 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 	protected function cascade_delete($id){
 		$object = Graph::object($id);
 		$object->activity = 'D';
-		$object->sortorder = 0;
 		$object->slug = DB::expr('null');
 		$object->save();
 		$object->contenttable->activity = 'D';
