@@ -128,7 +128,7 @@ lattice.modules.Module = new Class({
 		var elements = [];
 		anElement.getChildren().each( function( aChild, anIndex ){
 			console.log( 'getModuleUIFields', aChild, aChild.get('class') );
-			if( aChild.get( "class" ).indexOf( "ui-" ) > -1 ){
+			if( aChild.get('class') && aChild.get( "class" ).indexOf( "ui-" ) > -1 ){
 //	    console.log( "\t\tfound ui field", aChild.get('class'), ':', aChild.get('data-field'), 'in', anElement.get('class') );
 				elements.combine( [ aChild ] );
 			} else if( !aChild.hasClass( "modal" ) && !aChild.hasClass( "module" ) && !aChild.hasClass( "listItem" ) ){
