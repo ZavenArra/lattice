@@ -29,7 +29,23 @@ class Graph {
 			if(is_numeric($objectId)){
 				return ORM::Factory('object', $objectId);
 			} else {
-				$object = ORM::Factory('object')->where('slug', '=', $objectId)->find();
+            
+            $objectTypeName = $object->objecttype->objecttypename;
+            if(Kohana::find_file('classes/model', $objectTypeName)){
+               $object = //the wrapper
+            } else {
+               $object = 
+            
+            }
+            
+            $object = RootGraphLinkedTable::Factory()
+            
+				$object = ORM::Factory('object', $objectId);
+				$graphObjectModelName = 'graph'.ucfirst($object->objecttype->objecttypename);
+				if(Kohana::find_file('classes/model', $graphObjectModelName)){
+					$object = ORM::Factory($graphObjectModelName)->initializeLatticeObject($objectId);
+				}
+
 				return $object;
 			}
 		}
