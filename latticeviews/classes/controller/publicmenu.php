@@ -39,7 +39,7 @@ Class Controller_PublicMenu extends Controller_Lattice {
 					$childEntry['slug'] = $child->slug;
 					$childEntry['path'] = $object->slug.'/'.$child->slug;
 
-					$children2 = ORM::Factory('object')
+					$children2 = Graph::object()
 						->where('parentId', '=', $child->id)
 						->publishedFilter()
 						->noContainerObjects()

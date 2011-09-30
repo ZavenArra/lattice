@@ -49,13 +49,13 @@ class Model_Lattice_Object extends Model_Object {
    protected function loadContentTable(){
 
       $content = ORM::factory(inflector::singular('contents'));
-      $this->_related[$column] = $content->where('object_id', '=', $this->id)->find();
-      if (!$this->_related[$column]->_loaded) {
+      $this->_related['contenttable'] = $content->where('object_id', '=', $this->id)->find();
+      if (!$this->_related['contenttable']->_loaded) {
          //we are going to allow no content object
          //in order to support having empty objects
          //throw new Kohana_Exception('BAD_Lattice_DB' . 'no content record for object ' . $this->id);
       }
-      return $this->_related[$column];
+      return $this->_related['contenttable'];
    }
 
    protected function getTitle(){
@@ -182,6 +182,23 @@ class Model_Lattice_Object extends Model_Object {
 
             $this->contenttable->$mappedcolumn = $value;
             $this->contenttable->save();
+   }
+
+   //this could potentially go into the base class 100%
+   public function saveContentTable($inserting){
+      //if inserting, we add a record to the content table if one does not already exists
+      if ($inserting) {
+				$content = ORM::Factory('content');
+         if (!$content->where('object_id', '=', $this->id)->find()->loaded()) {
+            $content = ORM::Factory('content');
+            $content->object_id = $this->id;
+            $content->save();
+
+            $this->_related['contenttable'] = $content;
+         }
+      }
+      $this->contenttable->save();
+   
    }
 
    

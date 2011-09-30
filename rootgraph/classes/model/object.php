@@ -31,8 +31,10 @@ abstract class Model_Object extends ORM {
 
    
     public function __construct($id=NULL) {
-      
-      
+
+
+			$this->_table_name = 'objects';
+
 		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id)) {
          
          //check for translation reference
@@ -62,6 +64,9 @@ abstract class Model_Object extends ORM {
 
    abstract protected function setContentColumn($column, $value);
    
+   abstract protected function saveContentTable($inserting);
+
+
      /*
     *   Function: __get
     *     Custom getter for this model, links in appropriate content table
@@ -140,7 +145,7 @@ abstract class Model_Object extends ORM {
 
       parent::save();
       
-      $this->saveContentTable();
+      $this->saveContentTable($inserting);
       
    }
    
@@ -212,23 +217,6 @@ abstract class Model_Object extends ORM {
          }
       }
    }
-
-   //this could potentially go into the base class 100%
-   public function saveContentTable(){
-      //if inserting, we add a record to the content table if one does not already exists
-      if ($inserting) {
-				$content = ORM::Factory('content');
-         if (!$content->where('object_id', '=', $this->id)->find()->loaded()) {
-            $content = ORM::Factory('content');
-            $content->object_id = $this->id;
-            $content->save();
-
-            $this->_related['contenttable'] = $content;
-         }
-      }
-      $this->contenttable->save();
-   
-   }
    
   
 
@@ -251,7 +239,7 @@ abstract class Model_Object extends ORM {
          throw new Kohana_Exception('Invalid language code :code', array(':code'=>$languageCode));
       }
          
-      $translatedObject = ORM::Factory('object')
+      $translatedObject = Graph::object()
               ->where('rosetta_id', '=', $rosettaId)
               ->where('language_id', '=', $languageId)
               ->find();
@@ -408,7 +396,7 @@ abstract class Model_Object extends ORM {
    public function getListContent($family) {
       //get container
       $cTemplate = ORM::Factory('objecttype', $family);
-      $container = ORM::Factory('object')
+      $container = Graph::object()
 							->latticeChildrenFilter($this->id)
               ->where('objecttype_id', '=', $cTemplate->id)
               ->where('activity', 'IS', NULL)
@@ -419,7 +407,7 @@ abstract class Model_Object extends ORM {
 
    public function getPublishedChildren() {
 
-      $children = ORM::Factory('object')
+      $children = Graph::object()
 							->latticeChildrenFilter($this->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
@@ -436,7 +424,7 @@ abstract class Model_Object extends ORM {
    }
    
    public function getLatticeChildren($lattice = 'lattice'){
-      $children = ORM::Factory('object')
+      $children = Graph::object()
 							->latticeChildrenFilter($this->id, $lattice)
               ->where('activity', 'IS', NULL)
               ->order_by('sortorder')
@@ -446,7 +434,7 @@ abstract class Model_Object extends ORM {
    }
 
    public function getNextPublishedPeer() {
-      $next = ORM::Factory('object')
+      $next = Graph::object()
 							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
@@ -462,7 +450,7 @@ abstract class Model_Object extends ORM {
    }
 
    public function getPrevPublishedPeer() {
-      $next = ORM::Factory('object')
+      $next = Graph::object()
 							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
@@ -478,7 +466,7 @@ abstract class Model_Object extends ORM {
    }
 
    public function getFirstPublishedPeer() {
-      $first = ORM::Factory('object')
+      $first = Graph::object()
 							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
@@ -493,7 +481,7 @@ abstract class Model_Object extends ORM {
    }
 
    public function getLastPublishedPeer() {
-      $last = ORM::Factory('object')
+      $last = Graph::object()
 							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
@@ -1033,7 +1021,7 @@ abstract class Model_Object extends ORM {
 
          if (in_array($fieldInfo->tagName, $objectTypes) && is_array($value)) {
             $clusterTemplateName = $fieldInfo->tagName;
-            $clusterObjectId = ORM::Factory('object')->addObject($clusterTemplateName, $value); //adding object to null parent
+            $clusterObjectId = Graph::object()->addObject($clusterTemplateName, $value); //adding object to null parent
             $newObject->$field = $clusterObjectId;
             continue;
          }
