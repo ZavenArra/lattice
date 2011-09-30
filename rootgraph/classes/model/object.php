@@ -8,7 +8,7 @@
  * by extending 4 abstract methods from this class.
  * @author deepwinter1
  */
-class Model_Object extends ORM {
+abstract class Model_Object extends ORM {
 
    protected $_belongs_to = array(
        'objecttype' => array()

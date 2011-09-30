@@ -24,7 +24,7 @@ class Graph {
 	public static function object($objectId =null) {
 		//this will be implemented to support different drivers
 		if ($objectId == null) {
-			return ORM::Factory('object');
+			return ORM::Factory('Lattice_Object');
 		} else {
          return ORM::Factory('Lattice_Object', $objectId);
          /*
