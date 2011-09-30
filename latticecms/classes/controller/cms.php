@@ -23,14 +23,14 @@ class Controller_CMS extends Lattice_CMS {
 
    }
    
-   public function cms_getNodeHtml($id){
-      
-		 //Dial up associated navi and ask for details
-      $item = Navigation::getNodeInfoById($id);
-		$nodeView = new View('navigationNode');
-		$nodeView->content = $item;
-		return $nodeView->render();
+	 public function cms_getNodeHtml($id){
 
-   }
-  
+		 //Dial up associated navi and ask for details
+		 $item = Navigation::getNodeInfoById($id);
+		 $nodeView = new View('navigationNode');
+		 $nodeView->content = $item;
+		 return $nodeView->render();
+
+	 }
+
 }

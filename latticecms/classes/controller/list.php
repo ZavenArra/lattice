@@ -37,7 +37,6 @@ class Controller_List extends Lattice_CMSInterface {
 
    
    protected $_listObject;
-   protected $_itemView;
    
    
    
@@ -71,33 +70,8 @@ class Controller_List extends Lattice_CMSInterface {
          $this->_listObject = ORM::Factory('listcontainer', $listObjectIdOrParentId);
       }
       
-      
-      
    }
    
-   protected function itemView(){
-      
-     if(!$this->_itemView){
-      
-     if(!$this->_listObject->loaded()){
-        throw new Exception('listObject not set: controller must call setListObject before requesting itemView');
-     }
-     
-      
-      $customItemView = $this->_listObject->objecttype->objecttypename . '_item';
-      if (Kohana::find_file('views', $customItemView)) {
-         $this->_itemView = $customitemView;
-      } else {
-         $this->_itemView = 'list_item';
-      }
-      
-     }
-     
-     return $this->_itemView;
-     
-   
-   }
-
    
    /*
     * Function: action_getList
@@ -111,8 +85,9 @@ class Controller_List extends Lattice_CMSInterface {
       
 
       $view = null;
-      if (Kohana::find_file('views', $this->_listObject->objecttype->objecttypename)) {
-         $view = new View($this->_listObject->objecttype->objecttypename);
+			$customListView = 'objectTypes/'.$this->_listObject->objecttype->objecttypename;
+      if (Kohana::find_file('views', $customListView)) {
+         $view = new View($customListView);
       } else {
          $view = new View('list');
       }
@@ -123,7 +98,16 @@ class Controller_List extends Lattice_CMSInterface {
       foreach ($listMembers as $object) {
 
          $htmlChunks = latticecms::buildUIHtmlChunksForObject($object);
-         $itemt = new View($this->itemView());
+
+				 $customItemView = 'objectTypes/'.$object->objecttype->objecttypename;
+				 $itemt = null;
+				 if (Kohana::find_file('views', $customItemView)) {
+					 $itemt = new View($customItemView);
+				 } else {
+					 $itemt = new View('list_item');
+				 }
+
+
          $itemt->uiElements = $htmlChunks;
 
          $data = array();
@@ -189,7 +173,16 @@ class Controller_List extends Lattice_CMSInterface {
       
       $item = Graph::object($newId);
       $htmlChunks = latticecms::buildUIHtmlChunksForObject($item);
-      $itemt = new View($this->itemView());
+
+			$customItemView = 'objectTypes/'.$item->objecttype->objecttypename;
+			$itemt = null;
+			if (Kohana::find_file('views', $customItemView)) {
+				$itemt = new View($customItemView);
+			} else {
+				$itemt = new View('list_item');
+			}
+
+
       $itemt->uiElements = $htmlChunks;
 
       $data = array();

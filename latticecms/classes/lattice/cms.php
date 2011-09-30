@@ -185,19 +185,19 @@ class Lattice_CMS extends Lattice_CMSInterface {
 		
 		$nodetitlehtml = $this->nodetitle->render();
 
-		$customview = 'objectTypes/'.$object->objecttype->objecttypename; //check for custom view for this objectType
+		$customView = 'objectTypes/'.$object->objecttype->objecttypename; //check for custom view for this objectType
 		$htmlChunks = latticecms::buildUIHtmlChunksForObject($object, $languageCode);
 
-		$usecustomview = false;
-		if(Kohana::find_file('views', $customview)){
-			$usecustomview = true;	
+		$useCustomView = false;
+		if(Kohana::find_file('views', $customView)){
+			$useCustomView = true;	
 		}
-		if(!$usecustomview){
+		if(!$useCustomView){
 			$html = $nodetitlehtml.implode($htmlChunks);
 		} else {
 			$html = $nodetitlehtml;
-			$view = new View($customview);
-			$view->loadResources();
+			$view = new View($customView);
+			$this->loadResourcesForKey($customView);
 			foreach($htmlChunks as $key=>$value){
 				$view->$key = $value;
 			}

@@ -87,8 +87,8 @@ lattice.modules.CMS = new Class({
 		return  lattice.util.getBaseURL() + "ajax/data/cms/savefield/"+ this.getObjectId();
 	},	
 
-	getSubmitSortOrderURL: function(){
-	    return lattice.util.getBaseURL() + "ajax/data/cms/saveSortOrder/" + this.getObjectId();
+	getSubmitSortOrderURL: function( nodeId ){
+	    return lattice.util.getBaseURL() + "ajax/data/cms/saveSortOrder/" + nodeId;
 	},
 	
 	getGetTagsURL: function(){
@@ -143,7 +143,6 @@ lattice.modules.CMS = new Class({
 		loc = href.substr( href.lastIndexOf( "/" )+1, href.length );
 		if( loc == this.loc ) return;
 		this.loc = loc;
-		console.log( 'onLanguageSelected:', this.loc );
 		this.requestTranslatedPage( this.getObjectId(), this.loc );
 	},
 	 
@@ -185,7 +184,6 @@ lattice.modules.CMS = new Class({
 	},
     	
 	clearPages: function(){
-		console.log( ":::::", this.pages )
 		Object.each( this.pages, function( aPage ){
 			aPage.clearContent();
 			aPage.destroy();
@@ -315,6 +313,7 @@ lattice.modules.CMS = new Class({
 	},
 
 	saveTierSortRequest: function( newOrder, objectId ){
+		console.log( 'lattice.cms.saveTierSortRequest', 'order', newOrder,  'objectId', objectId );
 		return new Request.JSON( { url: this.getSubmitSortOrderURL(objectId) } ).post( { sortOrder: newOrder });
 	},
 

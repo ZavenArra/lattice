@@ -58,11 +58,11 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
 	public function action_clearField($objectId, $field){
 		$object = Graph::object($objectId);
-		if(Graph::isFileModel($object->contenttable->$field) && $object->contenttable->$field->loaded()){
-			$file = $object->contenttable->$field;
+		if(Graph::isFileModel($object->$field) && $object->$field->loaded()){
+			$file = $object->$field;
 			$file->delete(); //may or may not want to do this
 		}
-		$object->contenttable->$field = null;
+		$object->$field = null;
       $return = array('cleared'=>'true');
       $this->response->data($return);
 	}
@@ -122,18 +122,14 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 		Parameters:
 		$_POST['sortOrder'] - array of object ids in their new sort order
 		*/
-		public function action_saveSortOrder(){
+		public function action_saveSortOrder($parentId, $lattice='lattice'){
+         
 			$order = explode(',', $_POST['sortOrder']);
+         $object = ORM::Factory('object', $parentId);
+         $object->setSortOrder($order, $lattice);
 
-			for($i=0; $i<count($order); $i++){
-				if(!is_numeric($order[$i])){
-					throw new Kohana_Exception('bad sortorder string: >'.$order[$i].'<');
-				}
-				$object = Graph::object($order[$i]);
-            $object->sortorder = $i+1;
-				$object->save();
-			}
-
+         
+		
 			$this->response->data( array('saved'=>true));
 		}
 
@@ -197,7 +193,6 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 	protected function cascade_delete($id){
 		$object = Graph::object($id);
 		$object->activity = 'D';
-		$object->sortorder = 0;
 		$object->slug = DB::expr('null');
 		$object->save();
 		$object->contenttable->activity = 'D';

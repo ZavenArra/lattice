@@ -13,6 +13,17 @@
 class Initializer_DefaultUsers {
    
    public function initialize() {
+
+
+		 $user = ORM::Factory('user')->where('username', '=', 'deepwinter')->find();
+		 if($user->loaded()){
+			 $user->delete();
+		 }
+		 $user = ORM::Factory('user')->where('username', '=', 'thiago')->find();
+		 if($user->loaded()){
+			 $user->delete();
+		 }
+
       
       $user = ORM::Factory('user');
       $values = array(
@@ -30,7 +41,7 @@ class Initializer_DefaultUsers {
       
       $user = ORM::Factory('user');
       $user->username = 'thiago';
-      $user->password = 'christ';
+      $user->password = 'christchrist';
       $user->email = 'thiago@thiagodemellobueno.com';
       $user->status = 'ACTIVE';
       $user->save();

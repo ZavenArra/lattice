@@ -8,6 +8,7 @@ class frontend {
 		switch($element->nodeName){
 		case 'list':
 			$family = $element->getAttribute('name');
+
 			$addables = lattice::config('objects', 'addableObject', $element);		
 			$addable = $addables->item(0);
 			$objectTypeName = $addable->getAttribute('objectTypeName');

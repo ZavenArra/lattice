@@ -53,6 +53,7 @@ class Graph_ObjectQuery {
 						$from = Graph::object($from);
 						$objects->latticeChildrenFilter($from->id);
 					}
+					$objects->order_by('objectrelationships.sortorder');
 				}
       }
 
@@ -66,8 +67,6 @@ class Graph_ObjectQuery {
 
 	
       $objects->publishedFilter();
-      //order_by can be configurable later on
-      $objects->order_by('objectrelationships.sortorder');
       $objects = $objects->find_all();
   
       $items = array();

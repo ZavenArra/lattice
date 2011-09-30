@@ -21,9 +21,8 @@ Class Builder_Frontend {
 		$createdViews = array();
 	//	foreach(lattice::config('frontend', '//view') as $view ){
 		//	//this has removed the ability to build virtual views
-		foreach(ORM::Factory('objecttype')->find_all() as $objectType){
-
-			$view = lattice::config('frontend', '//view[@name="'.$objectType->objecttypename.'"]');
+		foreach(lattice::config('objects', '//objectType') as $objectType){
+			$view = lattice::config('frontend', '//view[@name="'.$objectType->getAttribute('name').'"]');
 			if(count($view)){
 				$view = $view->item(0);
 			}
@@ -31,10 +30,9 @@ Class Builder_Frontend {
 			if($view){
 				$viewName = $view->getAttribute('name');
 			} else {
-				$viewName = $objectType->objecttypename;
+				$viewName = $objectType->getAttribute('name');
 			}
-			touch($this->basePath.$viewName.'.php');
-
+         
 			if(!$view ||  ($view && $view->getAttribute('loadPage')=='true')){
 				echo "<h1><?=\$content['main']['title'];?></h1>\n\n";
 				//this also implies that name is a objecttypename

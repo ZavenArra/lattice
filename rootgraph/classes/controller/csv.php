@@ -4,6 +4,13 @@ Class Controller_CSV extends Controller {
 
    private $csvOutput = '';
    private $level = 0;
+
+	 public function __construct($request, $response){
+		 parent::__construct($request, $response);
+		 if(!latticeutil::checkRoleAccess('superuser')){
+			 die('Only superuser can access builder tool');
+		 }
+	 }
    
    public function action_index(){
          $view = new View('csv/index');
@@ -22,8 +29,8 @@ Class Controller_CSV extends Controller {
 
 			$filename = $exportFileIdentifier .'.csv';
 			$filepath = 'application/export/'.$filename;
-         $file = fopen($filepath, 'w');
-         fwrite($file, $this->csvOutput);
+			$file = fopen($filepath, 'w');
+			fwrite($file, $this->csvOutput);
     // exit;
 			header("Pragma: public");
 			header("Expires: 0");
@@ -38,10 +45,10 @@ Class Controller_CSV extends Controller {
 			exit;
    }
    
-   private function csvWalkTree($parent){
+   private function csvWalkTree($parent, $example = false){
       $objects = $parent->getLatticeChildren();
       
-      if ($this->level > 0 && count($objects)) {
+      if ($example || ($this->level > 0 && count($objects))) {
          $childrenLine = array_pad(array('Children'), -1 - $this->level, '');
          $this->csvOutput .= latticeutil::arrayToCsv($childrenLine, ',');
          $this->csvOutput .= "\n";
@@ -49,98 +56,150 @@ Class Controller_CSV extends Controller {
 
       foreach($objects as $object){
          
-         $csvView = new View_CSV($this->level, $object);
+				$csvView = NULL;
+				if($object->objecttype->nodeType != 'container'){
+					$csvView = new View_CSV($this->level, $object);
+				} else {
+					$csvView = new View_CSVContainer($this->level, $object);
+				}
+				$this->csvOutput .= $csvView->render();
+				$this->level++;
+				$this->csvWalkTree($object, false);  //false turning off example for now
+																						 //big problem with walking descedent objects since they don't exist
 
-         $this->csvOutput .= $csvView->render();
-         $this->level++;
-         $this->csvWalkTree($object);
-         
-        //And now append one example object of each addable object
-         foreach ($object->objecttype->addableObjects as $addableObjectType) {
-           $object = Graph::object()->setObjectType($addableObjectType['objectTypeId']);
+				if($example){
+					//And now append one example object of each addable object
+					foreach ($object->objecttype->addableObjects as $addableObjectType) {
+						$object = Graph::object()->setObjectType($addableObjectType['objectTypeId']);
 
 
-            $csvView = new View_Csv($this->level, $object);
-            $this->csvOutput .= $csvView->render();
+						$csvView = new View_Csv($this->level, $object);
+						$this->csvOutput .= $csvView->render();
 
-         
-         }
-         $this->level--;
+
+					}
+				}
+				$this->level--;
       }
    
    }
    
-	/*
-	 * Function: createImportTemplateFilled($view)
-	 * This function creates a csv import objectType which has data pre-filled from the table
-	 */
-	public function action_createImportTemplateFilled($exportParamterKey){
-         
-         $query = new Graph_ObjectQuery();
-         $query->initWithArray(Kohana::config('csv.parameters.'.$exportParamterKey));
-
-         $data = $query->run();
-
-         //print_r($data);
-         //$dataQueryResults = new Graph_ObjectQuery_Xml($dataQueryParameters)->run();
-
-         
-			$outputCSV = fopen('application/media/'.$exportParamterKey.'.csv', 'w');
-			
-			//print_r($data);
-			//safely compute fields
-			$columns = array();
-			foreach($data as $item){
-					foreach($item as $field => $value){
-                  $columns[$field] = $field;
-					}	
-			}
-			fputcsv($outputCSV, $columns);
-
-
-			//output the file
-			foreach($data as $item){
-				$output = array();
-				foreach($columns as $column => $label){
-					if(isset($item[$column])){
-						$output[] = $item[$column];
-					} else {
-						$output[] = '';
-					}
-				}
-	//			print_r($output);
-				fputcsv($outputCSV, $output);
-			}
-
-			fclose($outputCSV);
-         echo 'Exported to application/media/'.$exportParamterKey.'.csv';
-	}
-   
-   public function action_importUploadForm(){
+   public function action_import(){
        $view = new View('csv/uploadform');
        $this->response->body($view->render());
    }
    
    public function action_importCSVFile(){
-      $csvFile = fopen($_FILES['upload']['tmp_name'], 'r');
-      $columns = fgetcsv($csvFile); //skip 
-      $columns = array_flip($columns);
-      if(!isset($columns['id'])){
-         throw new Kohana_Exception("CSV File must have ID column");
-      }
-      while($csvRow = fgetcsv($csvFile)){
-         $id = $csvRow[$columns['id']];
-         $object = Graph::object($id);
-         foreach($columns as $column => $index){
-            if($column == 'id' || $column == 'dateAdded' || $column == 'objectTypeName' ){
-               continue;
-            } 
-            $object->$column = $csvRow[$index];
-            //the update array should be passed to the object, not hanlded here
-//            $object->contentTable->$column = $csvRow[$index];
-         }
-         $object->save();
-      }
+      $this->csvFile = fopen($_FILES['upload']['tmp_name'], 'r');
+			$this->column = 0;
+
+			$this->walkCSVObjects(Graph::getLatticeRoot());
+			
+			fclose($this->csvFile);
       echo 'Done';
    }
+
+	 protected function walkCSVObjects($parent){
+		 $this->advance();
+		 while($this->line){
+			 $objectTypeName = $this->line[$this->column];
+			 if(!$objectTypeName){
+				 throw new Kohana_Exception("Expecting objectType at column :column, but none found :line",
+					 array(
+						 ':column'=>$this->column,
+						 ':line'=>implode(',',$this->line)
+				 )); 
+			 }
+
+			 //check if this object type is valid for the current objects.xml
+			 $objectConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName));
+			 if(!$objectConfig->item(0)){
+				 throw new Kohana_Exception("No object type configured in objects.xml for ".$objectTypeName);	
+			 }
+
+			 //we have an objectType
+			 $newObjectId = $parent->addObject($objectTypeName);
+			 $newObject = Graph::object($newObjectId);
+			 $this->walkCSVElements($newObject);
+
+		 }
+	 }
+
+	 protected function walkCSVElements($object){
+		 echo "Walking\n";
+
+		 if($object->objecttype->nodeType != 'container'){ 
+			 //get the elements line
+			 $this->advance();
+			 //check here for Elements in $this->column +1;
+			 if($this->line[$this->column+1] != 'Elements'){
+				 throw new Kohana_Exception("Didn't find expected Elements line");
+			 }
+		 }
+
+
+		 //iterate through any elements
+		 $this->advance();	
+		 $data = array();
+		 while(isset($this->line[$this->column]) 
+			 && $this->line[$this->column]=='' 
+			 && $this->line[$this->column+1]!='' 
+			 && $this->line[$this->column+1]!='Children'){
+			 $fieldName = $this->line[$this->column+1];	
+			 echo "Reading $fieldName \n";
+			 if(isset($this->line[$this->column+2])){
+				 $value = $this->line[$this->column+2];
+			 } else {
+				$value = null;
+			 }
+			 $field = strtok($fieldName, '_');
+			 $lang = strtok('_');
+			 if(!isset($data[$lang])){
+				 $data[$lang] = array();
+			 }
+			 $data[$lang][$field] = $value;
+
+			 $this->advance();
+		 }
+
+
+		 //and actually add the data to the objects
+		 foreach($data as $lang=>$langData){
+				$objectToUpdate = $object->getTranslatedObject(Graph::language($lang));
+				foreach($langData as $field => $value){
+					$objectToUpdate->$field = $value;
+				}
+				$objectToUpdate->save();
+		 }
+
+		 //Check here for Children in $this->column +1
+		 if(!isset($this->line[$this->column+1]) || $this->line[$this->column+1] != 'Children'){
+			 echo "No children found, returning from Walk ";//.implode(',', $this->line)."\n";
+			 return;
+		 }
+
+		 //Iterate through any children
+		 $this->advance();
+		 while(isset($this->line[$this->column]) 
+			 && $this->line[$this->column]=='' 
+			 && $this->line[$this->column+1]!=''){
+			 echo "foudn Child\n";
+			 echo $this->column;
+			 $childObjectTypeName = $this->line[$this->column+1];	
+			 $childObjectId = $object->addObject($childObjectTypeName);
+			 $childObject = Graph::object($childObjectId);
+			 $this->column++;
+			 echo $this->column;
+			 $this->walkCSVElements($childObject);
+			 $this->column--;
+		 }
+
+		 echo "Returning from Walk\n";
+		 //at this point this->line contains the next object to add at this depth level
+	 }
+
+	 protected function advance(){
+		 $this->line = fgetcsv($this->csvFile);
+	 }
+
 }

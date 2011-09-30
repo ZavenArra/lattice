@@ -46,11 +46,12 @@ Class Controller_LatticeViews extends Controller_Layout{
 
 		self::$slug = $objectidorslug;
 
-		$this->view = latticeviews::createView($objectidorslug);
+		$this->viewModel = latticeview::Factory($objectidorslug);
 
 		//possible hook for processing content	
 
-		$this->response->body($this->view->render());
+		$this->response->body($this->viewModel->view()->render());
+		$this->response->data($this->viewModel->data());
 
 
 	}
@@ -58,7 +59,7 @@ Class Controller_LatticeViews extends Controller_Layout{
 
 	public function action_getVirtualView($viewName){
 
-		$this->view = latticeviews::createVirtualView($viewName);
+		$this->view = new latticeview($viewName);
 
 		//possible hook for processing content	
 

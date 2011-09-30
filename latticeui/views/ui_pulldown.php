@@ -1,4 +1,5 @@
 <div class="ui-Pulldown <?=$class;?>" data-field="<?=$name;?>">
 	<label class="groupLabel"><?=$label;?></label>
-	 <?=form::select( $groupLabel, $options );?> 
+	 <? array_unshift($options, 'Select');?>
+	 <?=form::select( $groupLabel, $options, $value );?> 
 </div>

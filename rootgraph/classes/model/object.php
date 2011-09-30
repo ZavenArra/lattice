@@ -84,7 +84,6 @@ abstract class Model_Object extends ORM {
          
       } else if (in_array($column, array_keys($this->_table_columns))){
          //this catchs the configured columsn for this table
-         Kohana::$log->add(Log::INFO, $column);
          return parent::__get($column);
      
       } else if ($column == 'parent') {
@@ -126,8 +125,17 @@ abstract class Model_Object extends ORM {
             return $listContainerObject;
          }
 
-         return $this->getContentColumn($column);
-         
+
+				 //Also need to check for file, but in 3.1 file will be an object itself and this will
+				 //not be necessary.
+				 if (strstr($contentColumn, 'file') && !is_object($this->contenttable->$contentColumn)) {
+					 $file = ORM::Factory('file', $this->contenttable->$contentColumn);
+					 //file needs to know what module it's from if its going to check against valid resizes
+					 $this->contenttable->$contentColumn = $file;
+				 }
+
+				 return $this->getContentColumn($column);
+ 
       }
    }
    
@@ -149,6 +157,21 @@ abstract class Model_Object extends ORM {
       
    }
    
+
+	 public function getElementConfig($elementName){
+
+		 if ($this->__get('objecttype')->nodeType == 'container') {
+			 //For lists, values will be on the 2nd level 
+			 $xPath = sprintf('//list[@name="%s"]', $this->__get('objecttype')->objecttypename);
+		 } else {
+			 //everything else is a normal lookup
+			 $xPath = sprintf('//objectType[@name="%s"]', $this->__get('objecttype')->objecttypename);
+		 }
+		 $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $elementName));
+		 return $fieldConfig;
+
+	 }
+
    /*
      Function: __set
      Custom setter, saves to appropriate contenttable
@@ -321,10 +344,10 @@ abstract class Model_Object extends ORM {
 	 public function getTagStrings() {
 		 $tagObjects = $this->getTagObjects();
 		 $tags = array();
-      foreach ($tagObjects as $tagObject) {
-         $tags[] = $tagObject->tag;
-      }
-      return $tags;
+		 foreach ($tagObjects as $tagObject) {
+			 $tags[] = $tagObject->tag;
+		 }
+		 return $tags;
 
 	 }
 
@@ -411,7 +434,7 @@ abstract class Model_Object extends ORM {
 							->latticeChildrenFilter($this->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
-              ->order_by('sortorder')
+              ->order_by('objectrelationships.sortorder')
 							->join('objecttypes')->on('objects.objecttype_id', '=', 'objecttypes.id')
 							->where('nodeType', '!=', 'container')
               ->find_all();
@@ -427,7 +450,7 @@ abstract class Model_Object extends ORM {
       $children = Graph::object()
 							->latticeChildrenFilter($this->id, $lattice)
               ->where('activity', 'IS', NULL)
-              ->order_by('sortorder')
+              ->order_by('objectrelationships.sortorder')
               ->find_all();
       return $children;
    
@@ -438,7 +461,7 @@ abstract class Model_Object extends ORM {
 							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
-              ->order_by('sortorder', 'ASC')
+              ->order_by('objectrelationships.sortorder', 'ASC')
               ->where('sortorder', '>', $this->sortorder)
               ->limit(1)
               ->find();
@@ -454,7 +477,7 @@ abstract class Model_Object extends ORM {
 							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
-              ->order_by('sortorder', 'DESC')
+              ->order_by('objectrelationships.sortorder',  'DESC')
               ->where('sortorder', '<', $this->sortorder)
               ->limit(1)
               ->find();
@@ -470,7 +493,7 @@ abstract class Model_Object extends ORM {
 							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
-              ->order_by('sortorder', 'ASC')
+              ->order_by('objectrelationships.sortorder', 'ASC')
               ->limit(1)
               ->find();
       if ($first->loaded()) {
@@ -485,13 +508,39 @@ abstract class Model_Object extends ORM {
 							->latticeChildrenFilter($getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
-              ->order_by('sortorder', 'DESC')
+              ->order_by('objectrelationships.sortorder', 'DESC')
               ->limit(1)
               ->find();
       if ($last->loaded()) {
          return $last;
       } else {
          return null;
+      }
+   }
+   
+   public function setSortOrder($order, $lattice='lattice') {
+      $lattice = Graph::lattice($lattice);
+
+      for ($i = 0; $i < count($order); $i++) {
+         if (!is_numeric($order[$i])) {
+            throw new Kohana_Exception('bad sortorder string: >' . $order[$i] . '<');
+         }
+
+         $objectRelationship = ORM::Factory('objectrelationship')
+                 ->where('object_id', '=', $this->id)
+                 ->where('lattice_id', '=', $lattice->id)
+                 ->where('connectedobject_id', '=', $order[$i])
+                 ->find();
+         if(!$objectRelationship->loaded()){
+            throw new Kohana_Exception('No object relationship found matching sort order object_id :object_id, lattice_id :lattice_id, connectedobject_id :connectedobject_id',
+                    array(':object_id' => $this->id,
+                        ':lattice_id' => $lattice->id,
+                        ':connectedobject_id' => $order[$i]
+                    )
+            );
+         }
+         $objectRelationship->sortorder = $i;
+         $objectRelationship->save();
       }
    }
 
