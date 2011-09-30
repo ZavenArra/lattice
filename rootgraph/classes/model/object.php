@@ -59,6 +59,8 @@ abstract class Model_Object extends ORM {
    abstract protected function loadContentTable();
 
    abstract protected function getTitle();
+   abstract protected function setTitle($title);
+
    
    abstract protected function getContentColumn($column);
 
@@ -126,13 +128,7 @@ abstract class Model_Object extends ORM {
          }
 
 
-				 //Also need to check for file, but in 3.1 file will be an object itself and this will
-				 //not be necessary.
-				 if (strstr($contentColumn, 'file') && !is_object($this->contenttable->$contentColumn)) {
-					 $file = ORM::Factory('file', $this->contenttable->$contentColumn);
-					 //file needs to know what module it's from if its going to check against valid resizes
-					 $this->contenttable->$contentColumn = $file;
-				 }
+				
 
 				 return $this->getContentColumn($column);
  

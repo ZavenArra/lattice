@@ -61,6 +61,9 @@ class Model_Lattice_Object extends Model_Object {
    protected function getTitle(){
          return $this->contenttable->title; 
    }
+   protected function setTitle($title){
+         return $this->contenttable->title = $title; 
+   }
    
    protected function getContentColumn($column){
       //This is a mapped field in the contents table

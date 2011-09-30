@@ -26,35 +26,17 @@ class Graph {
 		if ($objectId == null) {
 			return  new Model_Lattice_Object();
 		} else {
-			return new Model_Lattice_Object($objectId);
-         /*
-			if(is_numeric($objectId)){
-				return ORM::Factory('object', $objectId);
-			} else {
-            
-            $objectTypeName = $object->objecttype->objecttypename;
-            if(Kohana::find_file('classes/model', $objectTypeName)){
-           //    $object = //the wrapper
-            } else {
-         //      $object = 
-            
-            }
-            
-            $object = RootGraphLinkedTable::Factory()
-            
-				$object = ORM::Factory('object', $objectId);
-				$graphObjectModelName = 'graph'.ucfirst($object->objecttype->objecttypename);
-				if(Kohana::find_file('classes/model', $graphObjectModelName)){
-					$object = ORM::Factory($graphObjectModelName)->initializeLatticeObject($objectId);
-				}
-
-				return $object;
-			}
-          * }
-*/
+		   $object = new Model_Lattice_Object($objectId);
+         $objectTypeName = $object->objecttype->objecttypename;
+         if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+            $modelName = 'Model_Lattice_' . $objectTypeName;
+            $model = new $modelName($objectId);
+            return $model;
+         } else {
+            return $object;
+         }
       }
-		
-	}
+   }
    
    
    
