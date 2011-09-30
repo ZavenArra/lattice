@@ -26,15 +26,17 @@ class Graph {
 		if ($objectId == null) {
 			return ORM::Factory('object');
 		} else {
+         return ORM::Factory('Lattice_Object', $objectId);
+         /*
 			if(is_numeric($objectId)){
 				return ORM::Factory('object', $objectId);
 			} else {
             
             $objectTypeName = $object->objecttype->objecttypename;
             if(Kohana::find_file('classes/model', $objectTypeName)){
-               $object = //the wrapper
+           //    $object = //the wrapper
             } else {
-               $object = 
+         //      $object = 
             
             }
             
@@ -48,7 +50,10 @@ class Graph {
 
 				return $object;
 			}
-		}
+          * }
+*/
+      }
+		
 	}
    
    
