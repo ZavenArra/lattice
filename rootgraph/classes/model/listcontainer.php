@@ -10,7 +10,7 @@
  *
  * @author deepwinter1
  */
-class Model_ListContainer extends Model_Object {
+class Model_ListContainer extends Model_Lattice_Object {
 
    private $_sortDirection = null;
    
