@@ -125,7 +125,12 @@ class Controller_Navigation extends Controller_Lattice{
          while($objectId){
             $object = Graph::object($objectId);
             $deeplinkPath[] = $object->id;
-            $objectId = $object->parentid;
+						$parent = $object->getLatticeParent();
+						if($parent){
+							$objectId = $parent->id;
+						} else {
+							$objectId = NULL;
+						}	
          }
          $deeplinkPath = array_reverse($deeplinkPath);
       

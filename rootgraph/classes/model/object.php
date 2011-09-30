@@ -579,7 +579,7 @@ class Model_Object extends ORM {
 
    public function getNextPublishedPeer() {
       $next = ORM::Factory('object')
-							->latticeChildrenFilter($getLatticeParent()->id)
+							->latticeChildrenFilter($this->getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder', 'ASC')
@@ -595,7 +595,7 @@ class Model_Object extends ORM {
 
    public function getPrevPublishedPeer() {
       $next = ORM::Factory('object')
-							->latticeChildrenFilter($getLatticeParent()->id)
+							->latticeChildrenFilter($this->getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder',  'DESC')
@@ -611,7 +611,7 @@ class Model_Object extends ORM {
 
    public function getFirstPublishedPeer() {
       $first = ORM::Factory('object')
-							->latticeChildrenFilter($getLatticeParent()->id)
+							->latticeChildrenFilter($this->getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder', 'ASC')
@@ -626,7 +626,7 @@ class Model_Object extends ORM {
 
    public function getLastPublishedPeer() {
       $last = ORM::Factory('object')
-							->latticeChildrenFilter($getLatticeParent()->id)
+							->latticeChildrenFilter($this->getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder', 'DESC')
@@ -947,16 +947,27 @@ class Model_Object extends ORM {
    }
 
 	 public function getLatticeParent($lattice='lattice'){
-		 if(!isset($getLatticeParents[$lattice])){
-			 $lattice = Graph::lattice($lattice);
-			 $relationship = ORM::Factory('objectrelationship')
-											->where('lattice_id', '=', $lattice->id)
-											->where('connectedobject_id', '=', $this->id)
-											->find();
+
+		 $latticeParents =  $this->getLatticeParents($lattice);
+		 if(count($latticeParents)){
+			 return $latticeParents[0];
+		 } else {
+			 return NULL;
+		 }
+	 }
+
+	 public function getLatticeParents($lattice='lattice'){
+		 if(!isset($this->latticeParents[$lattice])){
+				$this->latticeParents[$lattice] = array();
+		 }
+		 $latticeO = Graph::lattice($lattice);
+		 $relationships = ORM::Factory('objectrelationship')
+			 ->where('lattice_id', '=', $latticeO->id)
+			 ->where('connectedobject_id', '=', $this->id)
+			 ->find_all();
+		 foreach($relationships as $relationship){
 			 if($relationship->loaded()){
-				 $this->latticeParents[$lattice] = Graph::object($relationship->object_id);
-			 } else {
-				 $this->latticeParents[$lattice] = null;
+				 $this->latticeParents[$lattice][] = Graph::object($relationship->object_id);
 			 }
 		 }
 		 return $this->latticeParents[$lattice];
