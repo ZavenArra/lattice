@@ -1,5 +1,9 @@
 <div class="objectTitle">	
-	<a class='button floatRight' href="#">Preview this Page</a>
+
+	<?if(Kohana::config('cms.preview')):?>
+  	<a class='button floatRight' href="#">Preview this Page</a>
+	<?endif;?>
+
 	<div class="<?if($allowTitleEdit):?>ui-Text<?endif;?> grid_7" data-ismultiline='false' data-field='title'>
 		<input type='text' class='og title<?=$translationModifier;?> h2' value="<?=$title;?>" />
 	</div>
