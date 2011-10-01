@@ -53,7 +53,12 @@ abstract class Model_Lattice_Foreign extends Model_Lattice_ContentDriver {
    }
 
    public function saveContentTable($object, $inserting) {
+      if($inserting){
+         $this->contenttable->object_id = $object->id;
+      }
+      
       $this->contenttable->save();
+     // die('saved foregih'.$this->foreignTableName());
    }
 
 }

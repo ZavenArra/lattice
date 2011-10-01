@@ -56,15 +56,17 @@ class Model_Object extends ORM {
 
 
       $objectTypeName = $this->objecttype->objecttypename;
-      if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
-         $modelName = 'Model_Lattice_' . $objectTypeName;
-         $model = new $modelName($objectId);
-         $this->contentDriver = $model;
-      } else {
-         $this->contentDriver = new Model_Lattice_Object();
-      }
-      if ($this->loaded()) {
-         $this->contentDriver->loadContentTable($this);
+      if ($objectTypeName) {
+         if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+            $modelName = 'Model_Lattice_' . $objectTypeName;
+            $model = new $modelName($objectId);
+            $this->contentDriver = $model;
+         } else {
+            $this->contentDriver = new Model_Lattice_Object();
+         }
+         if ($this->loaded()) {
+            $this->contentDriver->loadContentTable($this);
+         }
       }
    }
    
@@ -151,6 +153,21 @@ class Model_Object extends ORM {
       }
 
       parent::save();
+      
+      if ($inserting) {
+         //create the content driver table
+         $objectTypeName = $this->objecttype->objecttypename;
+         if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+            $modelName = 'Model_Lattice_' . $objectTypeName;
+            $model = new $modelName($objectId);
+            $this->contentDriver = $model;
+         } else {
+            $this->contentDriver = new Model_Lattice_Object();
+         }
+         if ($this->loaded()) {
+            $this->contentDriver->loadContentTable($this);
+         }
+      }
       
       $this->contentDriver->saveContentTable($this, $inserting);
       
@@ -1013,6 +1030,8 @@ class Model_Object extends ORM {
       $newObject->rosetta_id = $translationRosettaId;
       
       $newObject->save();
+      
+   
 
 
       //check for enabled publish/unpublish. 
