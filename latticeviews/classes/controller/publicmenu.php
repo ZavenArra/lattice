@@ -16,7 +16,7 @@ Class Controller_PublicMenu extends Controller_Lattice {
 		$navi = array();
 		foreach($topLevel as $object){
 			$entry = array();
-			$entry['title'] = $object->contenttable->title;
+			$entry['title'] = $object->title;
 			$entry['slug'] = $object->slug;
 			$entry['path'] = $object->slug;
 
@@ -35,7 +35,7 @@ Class Controller_PublicMenu extends Controller_Lattice {
 				$entry['children'] = array();
 				foreach($children as $child){
 					$childEntry = array();
-					$childEntry['title'] = $child->contenttable->title;
+					$childEntry['title'] = $child->title;
 					$childEntry['slug'] = $child->slug;
 					$childEntry['path'] = $object->slug.'/'.$child->slug;
 
@@ -46,7 +46,7 @@ Class Controller_PublicMenu extends Controller_Lattice {
 						->find_all();
 					foreach($children2 as $child2){
 						$childEntry2 = array();
-						$childEntry2['title'] = $child2->contenttable->title;
+						$childEntry2['title'] = $child2->title;
 						$childEntry2['slug'] = $child2->slug;
 						$childEntry2['path'] = $object->slug.'/'.$child->slug.'/'.$child2->slug;
 						$childEntry['children'][] = $childEntry2;

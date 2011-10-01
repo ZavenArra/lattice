@@ -6,12 +6,12 @@
  */
 
 /**
- * Model for Object
+ * Model for Objecth
  * 
  *
  * @author deepwinter1
  */
-class Model_Lattice_Object extends Model_Object {
+class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 
 	private static $dbmaps;
 /*
@@ -46,39 +46,39 @@ class Model_Lattice_Object extends Model_Object {
 	}
 
    
-   protected function loadContentTable(){
+   public function loadContentTable($object){
 
       $content = ORM::factory(inflector::singular('contents'));
-      $this->_related['contenttable'] = $content->where('object_id', '=', $this->id)->find();
-      if (!$this->_related['contenttable']->_loaded) {
+      $this->contenttable = $content->where('object_id', '=', $object->id)->find();
+      if (!$this->contenttable->loaded()) {
          //we are going to allow no content object
          //in order to support having empty objects
          //throw new Kohana_Exception('BAD_Lattice_DB' . 'no content record for object ' . $this->id);
       }
-      return $this->_related['contenttable'];
+      return $this->contenttable;
    }
 
-   protected function getTitle(){
+   public function getTitle($object){
          return $this->contenttable->title; 
    }
-   protected function setTitle($title){
+   public function setTitle($object, $title){
          return $this->contenttable->title = $title; 
    }
    
-   protected function getContentColumn($column){
+   public function getContentColumn($object, $column){
       //This is a mapped field in the contents table
-         $contentColumn = self::dbmap($this->objecttype_id, $column);       
+         $contentColumn = self::dbmap($object->objecttype_id, $column);       
 
          //No column mapping set up, attempt to run setup if it's configured.
          if (!$contentColumn) {
                         
             //this column isn't mapped, check to see if it's in the xml
-            if ($this->__get('objecttype')->nodeType == 'container') {
+            if ($object->objecttype->nodeType == 'container') {
                //For lists, values will be on the 2nd level 
-               $xPath = sprintf('//list[@name="%s"]', $this->__get('objecttype')->objecttypename);
+               $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
             } else {
                //everything else is a normal lookup
-               $xPath = sprintf('//objectType[@name="%s"]', $this->__get('objecttype')->objecttypename);
+               $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
             }
             $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
 
@@ -92,12 +92,12 @@ class Model_Lattice_Object extends Model_Object {
                }
 
                //field is configured but not initialized in database
-               $this->objecttype->configureElement($fieldConfig->item(0));
+               $object->objecttype->configureElement($fieldConfig->item(0));
 
-               self::reinitDbmap($this->objecttype_id);
+               self::reinitDbmap($object->objecttype_id);
 
                //now go aheand and get the mapped column
-               $contentColumn = self::dbmap($this->objecttype_id, $column);
+               $contentColumn = self::dbmap($object->objecttype_id, $column);
             }
          }
 
@@ -120,18 +120,18 @@ class Model_Lattice_Object extends Model_Object {
                // it may make sense for the objecttype model to return the config info for itself
                // or something similar
                //
-            if ($this->objecttype->nodeType == 'container') {
+            if ($object->objecttype->nodeType == 'container') {
                   //For lists, values will be on the 2nd level 
-                  $xPath = sprintf('//list[@name="%s"]', $this->objecttype->objecttypename);
+                  $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
                } else {
                   //everything else is a normal lookup
-                  $xPath = sprintf('//objectType[@name="%s"]', $this->objecttype->objecttypename);
+                  $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
                }
 
                $elementConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
 
                //build the object
-               $objectElement = $this->addElementObject($elementConfig->item(0)->tagName, $column);
+               $objectElement = $object->addElementObject($elementConfig->item(0)->tagName, $column);
             }
             return $objectElement;
          }
@@ -148,7 +148,7 @@ class Model_Lattice_Object extends Model_Object {
    }
    
 
-   protected function setContentColumn($column, $value){
+   public function setContentColumn($object, $column, $value){
        
             if (in_array($column, $this->passthroughFields)) {
                return $this->contenttable->__set($column, $value);
@@ -156,30 +156,30 @@ class Model_Lattice_Object extends Model_Object {
 
 
             //check for dbmap
-            if ($mappedcolumn = self::dbmap($this->objecttype_id, $column)) {
+            if ($mappedcolumn = self::dbmap($object->objecttype_id, $column)) {
                return $this->contenttable->__set($mappedcolumn, $value);
             }
             
            
             //this column isn't mapped, check to see if it's in the xml
-            if ($this->objecttype->nodeType == 'container') {
+            if ($object->objecttype->nodeType == 'container') {
                //For lists, values will be on the 2nd level 
-               $xPath = sprintf('//list[@name="%s"]', $this->objecttype->objecttypename);
+               $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
             } else {
                //everything else is a normal lookup
-               $xPath = sprintf('//objectType[@name="%s"]', $this->objecttype->objecttypename);
+               $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
             }
             
             
             $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
             if ($fieldConfig->item(0)) {
                //field is configured but not initialized in database
-               $this->objecttype->configureElement($fieldConfig->item(0));
-               self::reinitDbmap($this->objecttype_id);
+               $object->objecttype->configureElement($fieldConfig->item(0));
+               self::reinitDbmap($object->objecttype_id);
 
                //now go aheand and save on the mapped column
 
-               $mappedcolumn = self::dbmap($this->objecttype_id, $column);
+               $mappedcolumn = self::dbmap($object->objecttype_id, $column);
                return $this->contenttable->__set($mappedcolumn, $value);
             }
 
@@ -188,16 +188,16 @@ class Model_Lattice_Object extends Model_Object {
    }
 
    //this could potentially go into the base class 100%
-   public function saveContentTable($inserting){
+   public function saveContentTable($object, $inserting){
       //if inserting, we add a record to the content table if one does not already exists
       if ($inserting) {
 				$content = ORM::Factory('content');
-         if (!$content->where('object_id', '=', $this->id)->find()->loaded()) {
+         if (!$content->where('object_id', '=', $object->id)->find()->loaded()) {
             $content = ORM::Factory('content');
             $content->object_id = $this->id;
             $content->save();
 
-            $this->_related['contenttable'] = $content;
+            $this->contenttable = $content;
          }
       }
       $this->contenttable->save();

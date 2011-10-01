@@ -8,7 +8,7 @@
  * by extending 4 abstract methods from this class.
  * @author deepwinter1
  */
-abstract class Model_Object extends ORM {
+class Model_Object extends ORM {
 
    protected $_belongs_to = array(
        'objecttype' => array()
@@ -29,11 +29,11 @@ abstract class Model_Object extends ORM {
    private $object_fields = array('loaded', 'objecttype', 'primary_key', 'primary_val');
 
 
+   protected $contentDriver = NULL;
+
    
     public function __construct($id=NULL) {
 
-
-			$this->_table_name = 'objects';
 
 		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id)) {
          
@@ -54,19 +54,21 @@ abstract class Model_Object extends ORM {
 
       
       parent::__construct($id);
+      
+      
+         $objectTypeName = $this->objecttype->objecttypename;
+         if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+            $modelName = 'Model_Lattice_' . $objectTypeName;
+            $model = new $modelName($objectId);
+            $this->contentDriver =  $model;
+         } else {
+            $this->contentDriver =  new Model_Lattice_Object();
+         }
+         $this->contentDriver->loadContentTable($this);
+      
    }
    
-   abstract protected function loadContentTable();
 
-   abstract protected function getTitle();
-   abstract protected function setTitle($title);
-
-   
-   abstract protected function getContentColumn($column);
-
-   abstract protected function setContentColumn($column, $value);
-   
-   abstract protected function saveContentTable($inserting);
 
 
      /*
@@ -77,21 +79,14 @@ abstract class Model_Object extends ORM {
 
    public function __get($column) {
 
-      if ($column == 'contenttable' && !isset($this->_related[$column])) {
          
-         $this->loadContentTable();
-         return $this->_related[$column];
-      } else if ($column == 'contenttable'){
-         return parent::__get($column);
-         
-      } else if (in_array($column, array_keys($this->_table_columns))){
+      if (in_array($column, array_keys($this->_table_columns))){
          //this catchs the configured columsn for this table
          return parent::__get($column);
      
       } else if ($column == 'parent') {
 				return $getLatticeParent(); 
-      } else if ($column == 'title'){
-         return $this->getTitle();
+      
       } else if ($column == 'objecttype'){
         
          //this condition should actually check against associations
@@ -101,6 +96,14 @@ abstract class Model_Object extends ORM {
       } else if (in_array($column, array_keys($this->__get('objecttype')->_table_columns))){
   
         return $this->__get('objecttype')->$column; 
+      } 
+     
+     
+     
+      
+      if ($column == 'title'){
+         return $this->contentDriver->getTitle($this);
+         
       } else {
          //check if this is a list container
          $listConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]', $this->objecttype->objecttypename, $column));
@@ -130,7 +133,7 @@ abstract class Model_Object extends ORM {
 
 				
 
-				 return $this->getContentColumn($column);
+				 return $this->contentDriver->getContentColumn($this, $column);
  
       }
    }
@@ -149,7 +152,7 @@ abstract class Model_Object extends ORM {
 
       parent::save();
       
-      $this->saveContentTable($inserting);
+      $this->contentDriver->saveContentTable($this, $inserting);
       
    }
    
@@ -163,78 +166,65 @@ abstract class Model_Object extends ORM {
 			 //everything else is a normal lookup
 			 $xPath = sprintf('//objectType[@name="%s"]', $this->__get('objecttype')->objecttypename);
 		 }
-		 $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $elementName));
-		 return $fieldConfig;
-
-	 }
+      $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $elementName));
+      return $fieldConfig;
+   }
 
    /*
      Function: __set
-     Custom setter, saves to appropriate contenttable
+     Custom setter, saves to appropriate contentDriver
     */
 
    public function __set($column, $value) {
-      
-      if(!$this->_loaded){
+
+      if (!$this->_loaded) {
          //Bypass special logic when just loading the object
          return parent::__set($column, $value);
       }
-      
-      
-      
-      if ($column == 'contenttable') {
-         $this->_changed[$column] = $column;
 
-         // Object is no longer saved
-         $this->_saved = FALSE;
 
-         $this->object[$column] = $this->load_type($column, $value);
-      } else {
-         if (!is_object($value)) {
-            $value = latticecms::convertNewlines($value);
-         }
-
-         
-         if ($column == 'slug') {
-            parent::__set('slug', latticecms::createSlug($value, $this->id));
-            parent::__set('decoupleSlugTitle', 1);
-            $this->save();
-            return;
-         } else if ($column == 'title') {
-            if (!$this->decoupleSlugTitle) {
-               $this->slug = latticecms::createSlug($value, $this->id);
-            }
-            $this->save();
-            $this->contenttable->title = $value;
-            $this->contenttable->save();
-            return;
-         } else if (in_array($column, array('dateadded'))) {
-            parent::__set($column, $value);
-            $this->save();
-         } else if($this->_table_columns && in_array($column, array_keys($this->_table_columns))){
-            parent::__set($column, $value);
-            $this->save();
-            
-         } else if ($column) {
-            $o = $this->_object;
-            $objecttype_id = $o['objecttype_id'];
-            
-            $objectType = ORM::Factory('objecttype',$objecttype_id);
-            
-            $xpath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $objectType->objecttypename, $column);
-            $fieldInfo = lattice::config('objects', $xpath)->item(0);
-            if (!$fieldInfo) {
-               throw new Kohana_Exception('Invalid field for objectType, using XPath : :xpath', array(':xpath' => $xpath));
-            }
-            
-            
-            $this->setContentColumn($column, $value);
-           
-            
-         } else {
-            throw new Kohana_Exception('Invalid POST Arguments, POST must contain field and value parameters');
-         }
+      if (!is_object($value)) {
+         $value = latticecms::convertNewlines($value);
       }
+
+
+      if ($column == 'slug') {
+         parent::__set('slug', latticecms::createSlug($value, $this->id));
+         parent::__set('decoupleSlugTitle', 1);
+         $this->save();
+         return;
+      } else if ($column == 'title') {
+         if (!$this->decoupleSlugTitle) {
+            $this->slug = latticecms::createSlug($value, $this->id);
+         }
+         $this->save();
+         $this->setTitle($value);
+         $this->save();
+         return;
+      } else if (in_array($column, array('dateadded'))) {
+         parent::__set($column, $value);
+         $this->save();
+      } else if ($this->_table_columns && in_array($column, array_keys($this->_table_columns))) {
+         parent::__set($column, $value);
+         $this->save();
+      } else if ($column) {
+         $o = $this->_object;
+         $objecttype_id = $o['objecttype_id'];
+
+         $objectType = ORM::Factory('objecttype', $objecttype_id);
+
+         $xpath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $objectType->objecttypename, $column);
+         $fieldInfo = lattice::config('objects', $xpath)->item(0);
+         if (!$fieldInfo) {
+            throw new Kohana_Exception('Invalid field for objectType, using XPath : :xpath', array(':xpath' => $xpath));
+         }
+
+
+         $this->contentDriver->setContentColumn($this, $column, $value);
+      } else {
+         throw new Kohana_Exception('Invalid POST Arguments, POST must contain field and value parameters');
+      }
+      
    }
    
   
@@ -362,7 +352,7 @@ abstract class Model_Object extends ORM {
    public function getPageContent() {
       $content = array();
       $content['id'] = $this->id;
-      $content['title'] = $this->__get('contenttable')->title;
+      $content['title'] = $this->contentDriver->getTitle($this);
       $content['slug'] = $this->slug;
       $content['dateadded'] = $this->dateadded;
       $content['objectTypeName'] = $this->objecttype->objecttypename;
@@ -721,8 +711,14 @@ abstract class Model_Object extends ORM {
 
    //this is gonna change a lot!
    //this only supports a very special case of multiSelect objects
+   /*
+    * 
+    * Likely No longer used and can be removed
+    * 
+    */
    public function saveObject() {
-      $object = ORM::Factory('object', $this->contenttable->$field);
+      /*
+      $object = ORM::Factory('object', $this->content table->$field);
       if (!$object->objecttype_id) {
          $object->objecttype_id = 0;
       }
@@ -741,7 +737,8 @@ abstract class Model_Object extends ORM {
          $object->$value = 1;
       }
       $object->save();
-      return true;
+      return true;*/
+      
    }
 
    /* Query Filters */
@@ -817,7 +814,7 @@ abstract class Model_Object extends ORM {
    }
    
    public function latticeChildrenQuery($lattice='lattice'){
-      return Graph::object()->latticeChildrenFilter($this->id, $lattice);
+      return Graph::instance()->latticeChildrenFilter($this->id, $lattice);
    
    }
 
@@ -1006,7 +1003,6 @@ abstract class Model_Object extends ORM {
       if (isset($data['title'])) {
          $newObject->slug = latticecms::createSlug($data['title'], $newObject->id);
       } else {
-				//$newObject->title = 'No Title';
 				//Don't want to do this yet because then all objects will have same title
 				//which is a problem for import, which assumes same title same tier objects
 				//are the same object

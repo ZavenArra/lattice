@@ -10,37 +10,37 @@
  *
  * @author deepwinter1
  */
-abstract class Model_Lattice_Foreign extends Model_Object {
+abstract class Model_Lattice_Foreign extends Model_Lattice_ContentDriver {
    
    protected $contenttable;
 
-   abstract protected function foreignTableName();
+   abstract public function foreignTableName();
    
-   protected function loadContentTable() {
+   public function loadContentTable($object) {
       $this->contenttable = ORM::Factory(inflector::singular($this->foreignTableName()));
-      $this->contenttable->where('object_id', '=', $this->id)->find();
+      $this->contenttable->where('object_id', '=', $object->id)->find();
       if(!$this->contenttable->loaded()){
          throw new Kohana_Exception('Failed to load content table :tablename for object :id',
                  array(
                      ':tablename'=>$this->foreignTableName(),
-                 ":id"=>$this->id));
+                 ":id"=>$object->id));
       }
-      print_r($this->contenttable);
+     
    }
 /*
-   abstract protected function getTitle();
+   abstract public function getTitle();
 
-   abstract protected function setTitle();
+   abstract public function setTitle();
 */
-   protected function getContentColumn($column) {
+   public function getContentColumn($object, $column) {
       return $this->contenttable->$column;
    }
 
-   protected function setContentColumn($column, $value) {
+   public function setContentColumn($object, $column, $value) {
       $this->contenttable->$column = $value;
    }
 
-   protected function saveContentTable($inserting) {
+   public function saveContentTable($object, $inserting) {
       $this->contenttable->save();
    }
 

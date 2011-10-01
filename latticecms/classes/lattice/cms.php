@@ -157,7 +157,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
 		//new generation of object
 		//1 grap cms_nodetitle
 		$this->nodetitle = new View('lattice_cms_nodetitle');
-		$this->nodetitle->title = $object->contenttable->title; //this should change to object table
+		$this->nodetitle->title = $object->title; //this should change to object table
 		$this->nodetitle->slug = $object->slug;
 		$this->nodetitle->id = $object->id;
 		$this->nodetitle->allowDelete = $object->objecttype->allowDelete;

@@ -215,7 +215,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 	protected function cascade_undelete($object_id){
 		$object = Graph::object($id);
 		$object->activity = new Database_Expression(null);
-		$object->slug = latticecms::createSlug($object->contenttable->title, $object->id);
+		$object->slug = latticecms::createSlug($object->title, $object->id);
 		$object->save();
 		$object->contenttable->activity = new Database_Expression(null);
 		$object->contenttable->save();

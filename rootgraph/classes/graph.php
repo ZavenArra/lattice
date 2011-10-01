@@ -18,28 +18,20 @@ class Graph {
    private static $_languages;
 
 	public static function instance(){
-			return  new Model_Lattice_Object();
+			return  ORM::Factory('object');
 	}
 
 	public static function object($objectId =null) {
+
 		//this will be implemented to support different drivers
 		if ($objectId == null) {
-			return  new Model_Lattice_Object();
+			return ORM::Factory('object');
 		} else {
-		   $object = new Model_Lattice_Object($objectId);
-         $objectTypeName = $object->objecttype->objecttypename;
-         if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
-            $modelName = 'Model_Lattice_' . $objectTypeName;
-            $model = new $modelName($objectId);
-            return $model;
-         } else {
-            return $object;
-         }
-      }
-   }
-   
-   
-   
+			return ORM::Factory('object', $objectId);
+		}
+	}
+
+
    public static function lattice($latticeId = 'lattice'){
       if(is_numeric($latticeId)){
          return ORM::Factory('lattice', $latticeId);

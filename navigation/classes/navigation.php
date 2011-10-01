@@ -13,6 +13,10 @@ class Navigation {
 		Utility function to get one node
 	*/
 	public static function getNodeInfo(& $object){
+		if(!substr('Lattice_Object', get_class($object))){
+			$object = Graph::object($object);
+		}
+
 		$nodeInfo = array();
 		foreach(Kohana::config('navigation.navDataFields.object') as $send=>$field){
 			$nodeInfo[$send] = $object->$field;
@@ -25,12 +29,9 @@ class Navigation {
 		}
 
 		
-		if(!is_object($object->contenttable)){
-			throw new Kohana_Exception('No content table for object:' . 'objectType: ' . $object->objecttype->objecttypename . ' table: '.$object->objecttype->contenttable);
-		}
 		foreach(Kohana::config('navigation.navDataFields.content') as $send=>$field){
-			$nodeInfo[$send] = $object->contenttable->$field;
-		}
+			$nodeInfo[$send] = $object->$field;
+      }
 		
       
 		if(!$nodeInfo['title']){
@@ -46,7 +47,7 @@ class Navigation {
 	*/
 	public static function getNodeInfoById($id){
 		$object = Graph::object($id);
-      $nodeInfo = Navigation::getNodeInfo($object);
+		$nodeInfo = Navigation::getNodeInfo($object);
 		return $nodeInfo;
 	}
 		
