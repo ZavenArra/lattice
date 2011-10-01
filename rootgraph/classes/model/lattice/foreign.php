@@ -19,12 +19,24 @@ abstract class Model_Lattice_Foreign extends Model_Lattice_ContentDriver {
    public function loadContentTable($object) {
       $this->contenttable = ORM::Factory(inflector::singular($this->foreignTableName()));
       $this->contenttable->where('object_id', '=', $object->id)->find();
+     
       if(!$this->contenttable->loaded()){
+         /* 
+       * 
+       * 
+       * We allow empty objects, so we must allow empty contenttable
+       * 
+       * 
+       *
+     
          throw new Kohana_Exception('Failed to load content table :tablename for object :id',
                  array(
                      ':tablename'=>$this->foreignTableName(),
                  ":id"=>$object->id));
-      }
+        */
+      
+         $this->contenttable = ORM::Factory(inflector::singular($this->foreignTableName())); 
+       }
      
    }
 /*

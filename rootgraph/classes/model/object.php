@@ -35,37 +35,37 @@ class Model_Object extends ORM {
     public function __construct($id=NULL) {
 
 
-		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id)) {
-         
+		if (!empty($id) AND is_string($id) AND !ctype_digit($id)) {
+
          //check for translation reference
-         if(strpos('_', $id)){
+         if (strpos('_', $id)) {
             $slug = strtok($id, '_');
             $languageCode = strtok($id);
             $object = Graph::object($slug);
             $translatedObject = $object->translated($languageCode);
             return $translatedObject;
-        
          } else {
-         
+
             $result = DB::select('id')->from('objects')->where('slug', '=', $id)->execute()->current();
             $id = $result['id'];
          }
-		}
+      }
 
-      
+
       parent::__construct($id);
-      
-      
-         $objectTypeName = $this->objecttype->objecttypename;
-         if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
-            $modelName = 'Model_Lattice_' . $objectTypeName;
-            $model = new $modelName($objectId);
-            $this->contentDriver =  $model;
-         } else {
-            $this->contentDriver =  new Model_Lattice_Object();
-         }
+
+
+      $objectTypeName = $this->objecttype->objecttypename;
+      if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+         $modelName = 'Model_Lattice_' . $objectTypeName;
+         $model = new $modelName($objectId);
+         $this->contentDriver = $model;
+      } else {
+         $this->contentDriver = new Model_Lattice_Object();
+      }
+      if ($this->loaded()) {
          $this->contentDriver->loadContentTable($this);
-      
+      }
    }
    
 
@@ -198,7 +198,7 @@ class Model_Object extends ORM {
             $this->slug = latticecms::createSlug($value, $this->id);
          }
          $this->save();
-         $this->setTitle($value);
+         $this->contentDriver->setTitle($this, $value);
          $this->save();
          return;
       } else if (in_array($column, array('dateadded'))) {

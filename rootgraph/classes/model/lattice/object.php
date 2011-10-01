@@ -194,7 +194,7 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 				$content = ORM::Factory('content');
          if (!$content->where('object_id', '=', $object->id)->find()->loaded()) {
             $content = ORM::Factory('content');
-            $content->object_id = $this->id;
+            $content->object_id = $object->id;
             $content->save();
 
             $this->contenttable = $content;
