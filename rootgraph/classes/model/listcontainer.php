@@ -10,8 +10,12 @@
  *
  * @author deepwinter1
  */
-class Model_ListContainer extends Model_Lattice_Object {
+class Model_ListContainer extends Model_Object {
 
+   protected $_has_one = array(
+       'objecttype' => array('foreign_key'=>'objecttype_id')
+   );
+   
    private $_sortDirection = null;
    
    protected $_table_name = 'objects';

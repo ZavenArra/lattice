@@ -84,7 +84,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       
       $object = Graph::object($id);
       $object->$field = $_POST['value'];
-			$object->save();
+		$object->save();
       $object = Graph::object($id);
       $value = $object->$field;
       
@@ -195,8 +195,8 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 		$object->activity = 'D';
 		$object->slug = DB::expr('null');
 		$object->save();
-		$object->contenttable->activity = 'D';
-		$object->contenttable->save();
+//		$object->contenttable->activity = 'D';
+//		$object->contenttable->save();
 
 		$children = $object->getChildren();
 		foreach($children as $child){

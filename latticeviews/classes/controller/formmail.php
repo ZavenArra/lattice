@@ -18,8 +18,6 @@ Class Controller_Formmail extends Controller_Layout {
 			$result = array( 'error'=>false, 'message'=>"Your message has been sent. We will be in touch as soon as possible. Thank you." );
 		}
 		catch( Exception $e ){
-			echo 'hi';
-			      print_r($e);
 			$result = array( 'error'=>true, 'message'=>"There was a problem submitting the form, please try again later." );			
 		}
 		return $result;
