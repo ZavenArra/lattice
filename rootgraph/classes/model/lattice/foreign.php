@@ -52,13 +52,13 @@ abstract class Model_Lattice_Foreign extends Model_Lattice_ContentDriver {
       $this->contenttable->$column = $value;
    }
 
-   public function saveContentTable($object, $inserting) {
+   public function saveContentTable($object, $inserting=FALSE) {
       if($inserting){
+         $this->contenttable = ORM::Factory(inflector::singular($this->foreignTableName()));
          $this->contenttable->object_id = $object->id;
       }
       
       $this->contenttable->save();
-     // die('saved foregih'.$this->foreignTableName());
    }
 
 }

@@ -24,7 +24,7 @@ Class latticeui{
 		if( in_array($element['type'], array('file', 'image'))){
 
 			if(!is_object($fieldvalue) ){
-				$fieldvalue = ORM::Factory('file')->where('id', $fieldvalue)->find(); //why is where necessary???
+				$fieldvalue = ORM::Factory('file', $fieldvalue);
 			}
 
 			if($fieldvalue->_loaded){

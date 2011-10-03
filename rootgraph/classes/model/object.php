@@ -146,34 +146,47 @@ class Model_Object extends ORM {
     */
 
    public function save(Validation $validation = NULL) {
-
       $inserting = false;
-      if ($this->_loaded == FALSE) {
+      if ($this->loaded() == FALSE) {
          $inserting = true;
       }
 
       parent::save();
       
-      if ($inserting) {
-         //create the content driver table
-         $objectTypeName = $this->objecttype->objecttypename;
-         if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
-            $modelName = 'Model_Lattice_' . $objectTypeName;
-            $model = new $modelName($objectId);
-            $this->contentDriver = $model;
-         } else {
-            $this->contentDriver = new Model_Lattice_Object();
-         }
-         if ($this->loaded()) {
-            $this->contentDriver->loadContentTable($this);
-         }
+      //Postpone adding record to content table until after lattice point
+      //is set.
+      if (!$inserting) {
+        // throw new Kohana_Exception('what');
+         $this->saveContentTable($this);
       }
-      
-      $this->contentDriver->saveContentTable($this, $inserting);
+      return $this;
+     
       
    }
    
 
+   private function insertContentRecord() {
+   
+
+      //create the content driver table
+      $objectTypeName = $this->objecttype->objecttypename;
+      if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+         $modelName = 'Model_Lattice_' . $objectTypeName;
+         $model = new $modelName($objectId);
+         $this->contentDriver = $model;
+      } else {
+         $this->contentDriver = new Model_Lattice_Object();
+      }
+      //$this->contentDriver->loadContentTable($this);
+      //$this->contentDriver->setContentColumn($this, 'object_id', $this->id);
+      $this->contentDriver->saveContentTable($this, true);
+   }
+
+   private function saveContentTable() {
+
+      $this->contentDriver->saveContentTable($this);
+   }
+   
 	 public function getElementConfig($elementName){
 
 		 if ($this->__get('objecttype')->nodeType == 'container') {
@@ -208,22 +221,22 @@ class Model_Object extends ORM {
       if ($column == 'slug') {
          parent::__set('slug', latticecms::createSlug($value, $this->id));
          parent::__set('decoupleSlugTitle', 1);
-         $this->save();
+        // $this->save();
          return;
       } else if ($column == 'title') {
          if (!$this->decoupleSlugTitle) {
             $this->slug = latticecms::createSlug($value, $this->id);
          }
-         $this->save();
+         //$this->save();
          $this->contentDriver->setTitle($this, $value);
-         $this->save();
+         //$this->save();
          return;
       } else if (in_array($column, array('dateadded'))) {
          parent::__set($column, $value);
-         $this->save();
+         //$this->save();
       } else if ($this->_table_columns && in_array($column, array_keys($this->_table_columns))) {
          parent::__set($column, $value);
-         $this->save();
+         //$this->save();
       } else if ($column) {
          $o = $this->_object;
          $objecttype_id = $o['objecttype_id'];
@@ -843,12 +856,12 @@ class Model_Object extends ORM {
 											->where('connectedobject_id', '=', $this->id)
 											->find();
 			 if($relationship->loaded()){
-				 $this->latticeParents[$lattice] = Graph::object($relationship->object_id);
+				 $this->latticeParents[$lattice->name] = Graph::object($relationship->object_id);
 			 } else {
-				 $this->latticeParents[$lattice] = null;
+				 $this->latticeParents[$lattice->name] = null;
 			 }
 		 }
-		 return $this->latticeParents[$lattice];
+		 return $this->latticeParents[$lattice->name];
 	 }
    
    /*
@@ -994,7 +1007,7 @@ class Model_Object extends ORM {
       return $this; //chainable
    }
    
-    private function createObject($objectTypeName, $data, $rosettaId, $languageId){
+    private function createObject($objectTypeName, $rosettaId, $languageId){
        
       if(!$rosettaId){
          $translationRosettaId = Graph::newRosetta();
@@ -1029,10 +1042,6 @@ class Model_Object extends ORM {
       $newObject->language_id = $languageId;
       $newObject->rosetta_id = $translationRosettaId;
       
-      $newObject->save();
-      
-   
-
 
       //check for enabled publish/unpublish. 
       //if not enabled, insert as published
@@ -1044,14 +1053,25 @@ class Model_Object extends ORM {
             $newObject->published = 0;
          }
       }
-      if (isset($data['published']) && $data['published']) {
-         $newObject->published = 1;
-         unset($data['published']);
-      }
 
       $newObject->save();
-
+     
+      return $newObject;
+    }
+    
+    private function updateContentData($data){
+       if(!count($data)){
+          return $this;
+       }
+      
+      if (isset($data['published']) && $data['published']) {
+         $this->published = 1;
+         unset($data['published']);
+      }
+      
       //Add defaults to content table
+      //This needs to happen after the lattice point is set
+      //in case content tables are dependent on lattice point
 
 
       $lookupTemplates = lattice::config('objects', '//objectType');
@@ -1066,14 +1086,14 @@ class Model_Object extends ORM {
          switch ($field) {
             case 'slug':
             case 'decoupleSlugTitle':
-               $newObject->$field = $data[$field];
+               $this->$field = $data[$field];
                continue(2);
             case 'title':
-               $newObject->$field = $data[$field];
+               $this->$field = $data[$field];
                continue(2);
          }
 
-         $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $newObject->objecttype->objecttypename, $field);
+         $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field);
          $fieldInfo = lattice::config('objects', $fieldInfoXPath)->item(0);
          if (!$fieldInfo) {
             throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath' => $fieldInfoXPath));
@@ -1082,7 +1102,7 @@ class Model_Object extends ORM {
          if (in_array($fieldInfo->tagName, $objectTypes) && is_array($value)) {
             $clusterTemplateName = $fieldInfo->tagName;
             $clusterObjectId = Graph::object()->addObject($clusterTemplateName, $value); //adding object to null parent
-            $newObject->$field = $clusterObjectId;
+            $this->$field = $clusterObjectId;
             continue;
          }
 
@@ -1097,21 +1117,21 @@ class Model_Object extends ORM {
 
                if (isset($_FILES[$field])) {
                   Kohana::$log->add(Log::ERROR, 'Adding via post file');
-                  $file = latticecms::saveHttpPostFile($newObject->id, $field, $_FILES[$field]);
+                  $file = latticecms::saveHttpPostFile($this->id, $field, $_FILES[$field]);
                } else {
                   $file = ORM::Factory('file');
                   $file->filename = $value;
                   $file->save();
-                  $newObject->$field = $file->id;
+                  $this->$field = $file->id;
                }
                break;
             default:
-               $newObject->$field = $data[$field];
+               $this->$field = $data[$field];
                break;
          }
       }
-      $newObject->save();
-      return $newObject;
+      $this->save();
+      return $this;
    
    }
    
@@ -1128,14 +1148,20 @@ class Model_Object extends ORM {
    public function addElementObject($objectTypeName, $elementName, $data=array(), $rosettaId = null, $languageId = null){
       $newObjectType = ORM::Factory('objecttype', $objectTypeName);
       
-      $newObject = $this->createObject($objectTypeName, $data, $rosettaId, $languageId);
-     
+      $newObject = $this->createObject($objectTypeName, $rosettaId, $languageId);
+
+      
       //and set up the element relationship
       $elementRelationship = ORM::Factory('objectelementrelationship');
       $elementRelationship->object_id = $this->id;
       $elementRelationship->elementobject_id = $newObject->id;
       $elementRelationship->name = $elementName;
       $elementRelationship->save();
+      
+      //Postpone dealing with content record until after lattice point is set
+      //in case content table logic depends on lattice point.
+      $newObject->insertContentRecord();
+      $newObject->updateContentData($data);
       
       /*
        * Set up any translated peer objects
@@ -1166,21 +1192,27 @@ class Model_Object extends ORM {
        */
       $newObject->addComponents();
 
-      return $newObject->id;
+      return $newObject;
   
    }
     
    private function addLatticeObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null){
       
-      $newObject = $this->createObject($objectTypeName, $data, $rosettaId, $languageId);
-     
+      $newObject = $this->createObject($objectTypeName, $rosettaId, $languageId);
 
+//      print_r($newObject->as_array());
       //The objet has been built, now set it's lattice point
       $lattice = Graph::lattice();
       $objectRelationship = ORM::Factory('objectrelationship');
       $objectRelationship->lattice_id = $lattice->id;
       $objectRelationship->object_id = $this->id;
       $objectRelationship->connectedobject_id = $newObject->id;
+      $objectRelationship->save();
+      $newObject->insertContentRecord();
+  
+      //die($newObject->id);
+      $newObject->updateContentData($data);
+
       
       //calculate sort order
       $sort = DB::select('sortorder')->from('objectrelationships')

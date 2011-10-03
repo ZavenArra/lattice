@@ -12,6 +12,8 @@
  */
 abstract class Model_Lattice_ContentDriver {
    
+   protected $contenttable;
+   
    abstract public function loadContentTable($object);
 
    abstract public function getTitle($object);
@@ -22,7 +24,7 @@ abstract class Model_Lattice_ContentDriver {
 
    abstract public function setContentColumn($object, $column, $value);
    
-   abstract public function saveContentTable($object, $inserting);
+   abstract public function saveContentTable($object, $inserting=false);
    
   }
    

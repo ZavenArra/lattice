@@ -54,6 +54,7 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
          //we are going to allow no content object
          //in order to support having empty objects
          //throw new Kohana_Exception('BAD_Lattice_DB' . 'no content record for object ' . $this->id);
+         $this->contenttable = ORM::factory(inflector::singular('contents'));
       }
       return $this->contenttable;
    }
@@ -188,20 +189,14 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
    }
 
    //this could potentially go into the base class 100%
-   public function saveContentTable($object, $inserting){
-      //if inserting, we add a record to the content table if one does not already exists
-      if ($inserting) {
-				$content = ORM::Factory('content');
-         if (!$content->where('object_id', '=', $object->id)->find()->loaded()) {
-            $content = ORM::Factory('content');
-            $content->object_id = $object->id;
-            $content->save();
-
-            $this->contenttable = $content;
-         }
+   public function saveContentTable($object, $inserting=false){
+      if(!$this->contenttable){
+         $this->loadContentTable($object);
+      }
+      if($inserting){
+         $this->contenttable->object_id = $object->id;
       }
       $this->contenttable->save();
-   
    }
 
    
