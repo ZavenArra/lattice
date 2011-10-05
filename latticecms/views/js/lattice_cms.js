@@ -60,7 +60,7 @@ lattice.modules.CMS = new Class({
 	
 	getRequestTranslatedPageURL: function( nodeId, loc ){
 		var url =  lattice.util.getBaseURL() + "ajax/compound/cms/getTranslatedPage/" + nodeId + '/' + loc;
-		console.log( 'getRequestTranslatedPageURL', url );
+//		console.log( 'getRequestTranslatedPageURL', url );
 		return url;
 	},
 
@@ -233,6 +233,7 @@ lattice.modules.CMS = new Class({
 	},
 	
 	requestTranslatedPage: function( nodeId, loc ){
+		if( !loc ) loc = this.loc;
 		this.setObjectId( nodeId );
 		return new Request.JSON( { url: this.getRequestTranslatedPageURL( nodeId, loc ), onSuccess: this.requestPageResponse.bind( this ) } ).send();
 	},
@@ -281,7 +282,7 @@ lattice.modules.CMS = new Class({
 			this.currentPage.spin();
 		}
 		if( this.pageRequest ) this.pageRequest.cancel();
-		this.pageRequest = this.requestPage( nodeId );
+		this.pageRequest = this.requestTranslatedPage( nodeId );
 	},
 
 /*

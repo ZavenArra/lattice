@@ -46,8 +46,10 @@ lattice.modules.navigation.Navigation = new Class({
 	
 	onAppStateChanged: function( appState ){ console.log( 'lattice.modules.navigation.Navigation.appStateChanged', appState ); },	
 	onObjectNameChanged: function( objId, response ){
-		this.nodeData[ objId ].title = name;
-		$( 'node_' + objId ).getElement( "h5" ).set( 'text', response.value );
+		if( this.nodeData[ objId ] ){
+			this.nodeData[ objId ].title = name;
+			$( 'node_' + objId ).getElement( "h5" ).set( 'text', response.value );
+		}
 	},
 
 	onNodeClicked: function( nodeId, tier ){ 
