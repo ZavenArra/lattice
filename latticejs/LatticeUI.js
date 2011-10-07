@@ -1335,9 +1335,11 @@ lattice.ui.FileElement = new Class({
 		this.uploadLink.store( "Class", this );
 		this.downloadButton = this.element.getElement( ".downloadLink" );
 		this.downloadButton.store( "Class", this );
+
 		this.clearButton = this.element.getElement( ".clearImageLink" );
 		this.clearButton.store( "Class", this );
-		this.clearButton.addEvent( "click", this.clearField.bindWithEvent( this ) );
+		this.clearButton.addEvent( "click", this.clearFile.bindWithEvent( this ) );
+
 		this.uploader = new lattice.util.Uploader({
 			path: lattice.util.getBaseURL() + "lattice/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf",
 			container: this.uploadLink,
@@ -1371,6 +1373,23 @@ lattice.ui.FileElement = new Class({
 		this.reposition();
 	},	
 
+	clearFile: function( e ){
+		e.preventDefault();
+		console.log( 'clearField' );
+		if( this.previewElement ){
+			this.imageFadeOut = new Fx.Morph( this.imagePreview, {
+				'duration': 300,
+				'onComplete': lattice.eventManager.broadcastMessage.bind( lattice.eventManager, "resize" )
+			}).start( { 'opacity' : [ 1, 0 ], 'height': 0 } );
+		}
+		this.clearButton.addClass("hidden");
+		this.downloadButton.addClass("hidden");
+		var msg = ( this.previewElement )? "No image uploaded yet." : "No file uploaded yet.";
+		this.filename.set( "text", msg );
+		
+		this.marshal.clearFile( this.fieldName );
+	},
+	
 	onMouseOut: function( e ){
 		e.preventDefault();
 		if( this.marshal.resumeSort ) this.marshal.resumeSort();
@@ -1423,29 +1442,6 @@ lattice.ui.FileElement = new Class({
 	onFocus: function( e ){
 		lattice.util.stopEvent( e );
 		this.uploader.setFocus( this, this.getPosition() );
-	},
-	
-	clearFileRequest: function( e ){
-		if( this.previewElement ){
-			this.imageFadeOut = new Fx.Morph( this.imagePreview, {
-				'duration': 300,
-				'onComplete': lattice.eventManager.broadcastMessage.bind( lattice.eventManager, "resize" )
-			}).start( { 'opacity' : [ 1, 0 ], 'height': 0 } );
-		}
-		if( this.clearButton ) this.clearButton.fade("out");
-		var myRequest =  new Request.JSON( { url: this.getClearFileURL(), onSuccess: this.onClearFileResponse.bind( this ) } );
-		return myRequest.send();
-	},
-	
-	onClearFileResponse: function( json ){
-		if( !json.returnValue ){
-			throw "Error: lattice.ui.FileElement clearFileRequest " + json.response.error;
-		}else {
-			this.clearButton.addClass("hidden");
-			this.downloadButton.addClass("hidden");
-			var msg = ( this.previewElement )? "No image uploaded yet‚Ä¶" : "No file uploaded yet‚Ä¶";
-			this.filename.set( "text", msg );
-		}
 	},
 	
 	reposition: function(){
