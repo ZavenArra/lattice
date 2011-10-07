@@ -55,6 +55,14 @@ class latticeview {
 
 	 }
 
+	 /*
+		* public static function language()
+		* Returns the currently selected language code
+		*/
+	 public static function language(){
+		 return Session::instance()->get('languageCode');
+	 }
+
 	 public function __construct($objectIdOrSlug = null){
 		 if($objectIdOrSlug != NULL){
 			 $this->object = self::getGraphObject($objectIdOrSlug);
