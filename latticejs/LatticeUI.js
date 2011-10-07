@@ -1506,7 +1506,7 @@ lattice.ui.FileElement = new Class({
 	},
 	
 	onFileComplete: function( json ){
-		console.log("JSON",json);
+		console.log( "onFileComplete : json : ", json );
 		json = JSON.decode( json.response.text );
 		this.clearButton.fade( "in" );
 		if( this.filename ) this.filename.set( "text",  json.response.filename );

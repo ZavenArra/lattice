@@ -392,6 +392,7 @@ label{
 .listLabel{
 	display: block;
 	float: left;
+	min-width: 6em;
 	line-height: 2;
 	padding-right: 1em;
 	margin: 0 1em 1em 0;
