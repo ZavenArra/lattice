@@ -2,13 +2,17 @@
 
 Class Controller_Language extends Controller {
 
-	public function setLanguage($language, $redirect = NULL){
+	public function changeLanguage($language, $redirectObjectId = NULL){
 
 			$session = Session::instance();
 			$session->set('language', $language);
 	
-			if($redirect){
+			if($redirectObjectId){
 				//process redirect, with new language
+				$object = Graph::object($redirectObjectId);
+				$translatedObject = $object->translate($redirectObjectId);
+				$redirectSlug = $translatedObject->slug;
+				url::redirect($redirectSlug);
 			}
 	}
 }
