@@ -46,6 +46,12 @@ Class Controller_LatticeViews extends Controller_Layout{
 
 		self::$slug = $objectidorslug;
 
+		if(Session::instance()->get('language')){
+			$object = Graph::object($objectidorslug);
+			$translatedObject = $object->translate(Session::instance()->get('language'));
+			$objectidorslug = $translatedObject->id;
+		}
+
 		$this->viewModel = latticeview::Factory($objectidorslug);
 
 		//possible hook for processing content	

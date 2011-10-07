@@ -60,7 +60,6 @@ lattice.modules.CMS = new Class({
 	
 	getRequestTranslatedPageURL: function( nodeId, loc ){
 		var url =  lattice.util.getBaseURL() + "ajax/compound/cms/getTranslatedPage/" + nodeId + '/' + loc;
-//		console.log( 'getRequestTranslatedPageURL', url );
 		return url;
 	},
 
@@ -103,6 +102,10 @@ lattice.modules.CMS = new Class({
     return lattice.util.getBaseURL() + "ajax/data/cms/removeTag/" + this.getObjectId();		
 	},
 
+	getClearFileURL: function( fieldName ){
+		return this.getClearFieldURL( fieldName );
+	},
+
 	getClearFieldURL: function( fieldName ){
 		var url = lattice.util.getBaseURL() + "ajax/data/cms/clearField/" + this.getObjectId() + "/" + fieldName;
 		return url;
@@ -113,16 +116,16 @@ lattice.modules.CMS = new Class({
 	getObjectId: function(){ return this.currentObjectId; },
 	setObjectId: function( objectId ){ this.currentObjectId = objectId;	},
 
-	clearField: function( fieldName ){
-		return new Request.JSON( { url: this.getClearFieldURL( fieldName ), onSuccess: function( hxr ){ console.log( xhr ) } } ).send();
-	},
-	
 	/* Section: Constructor */
 	initialize: function( anElement, options ){
     this.parent( anElement, null, options );
 		this.loc = lattice.defaultLanguage;
 		this.pageSlideFx = new Fx.Scroll( this.element.getElement('.pagesPane') );
-//    console.log( this.options, this.elementClass, this.options.rootObjectId );
+    console.log( '============================================================' );
+    console.log( 'CMS INIT' );
+    console.log( '\tloc', lattice.defaultLanguage );
+    console.log( '============================================================' );
+		this.loc = lattice.defaultLanguage;
     this.rootNodeId = this.options.rootObjectId;
     $$( "script" ).each( function( aScriptTag ){ 
         this.loadedJS.push( aScriptTag.get("src") );
@@ -139,11 +142,12 @@ lattice.modules.CMS = new Class({
 
 	onLanguageSelected: function( item ){
 		var href, loc;
-		href = item.get('href');
-		loc = href.substr( href.lastIndexOf( "/" )+1, href.length );
+		loc = item.getData('lang');
+		console.log( 'onLanguageSelected', loc );
 		if( loc == this.loc ) return;
 		this.loc = loc;
-		this.requestTranslatedPage( this.getObjectId(), this.loc );
+		console.log( 'onLanguageSelected', this, loc );
+		this.requestTranslatedPage( this.getObjectId(), loc );
 	},
 	 
 	/* Section: Methods */
@@ -235,7 +239,9 @@ lattice.modules.CMS = new Class({
 	requestTranslatedPage: function( nodeId, loc ){
 		if( !loc ) loc = this.loc;
 		this.setObjectId( nodeId );
-		return new Request.JSON( { url: this.getRequestTranslatedPageURL( nodeId, loc ), onSuccess: this.requestPageResponse.bind( this ) } ).send();
+		console.log( 'requestTranslatedPage', loc );
+		var url = this.getRequestTranslatedPageURL( nodeId, loc );
+		return new Request.JSON( { url: url, onSuccess: this.requestPageResponse.bind( this ) } ).send();
 	},
     
 	/*

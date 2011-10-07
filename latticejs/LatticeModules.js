@@ -33,11 +33,23 @@ lattice.modules.Module = new Class({
 	getClearFieldURL: function(){
 		throw "Abstract function getClearFieldURL must be overriden in" + this.toString();		
 	},
+
+	getClearFiledURL: function(){
+		throw "Abstract function getClearFieldURL must be overriden in" + this.toString();		
+	},
 	
 	saveField: function( postData, callback ){
 //			console.log( "saveField.postData:", postData );
 	    return new Request.JSON( { url: this.getSaveFieldURL(), onSuccess: callback } ).post( postData );
 	},
+
+	clearFile: function( fieldName ){
+		return new Request.JSON( { url: this.getClearFileURL( fieldName ) } ).send();		
+	},
+	
+	clearField: function( fieldName ){
+		return new Request.JSON( { url: this.getClearFieldURL( fieldName ) } ).send();
+	},	
 	
 	getObjectId: function(){
 		return this.objectId;
@@ -345,6 +357,7 @@ lattice.modules.LatticeList = new Class({
 		return "[ Object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.LatticeList ]";
 	},
 	
+	
 	clearField: function( fieldName ){
 		this.marshal.clearField( fieldName );
 	},
@@ -415,7 +428,7 @@ lattice.modules.LatticeList = new Class({
 	},
 
 	insertItem: function( anItem ){
-		var where, listItemInstance;
+		var where, listItemInstance, coords;
 		where = ( this.options.sortDirection == "DESC" )? "top" : "bottom";
 		console.log( "\t", this.options.sortDirection, where );
 		this.listing.grab( anItem.element, where );
@@ -425,8 +438,8 @@ lattice.modules.LatticeList = new Class({
 			if( aUIField.reposition ) aUIField.reposition()
 		});
 		anItem.element.tween( "opacity", 1 );
-		console.log( "insertItem", this.element.getOffsetParent() );
-		this.element.getOffsetParent().scrollTo( 0, anItem.element.getCoordinates().top )
+		coords = anItem.element.getCoordinates();
+		this.element.getOffsetParent().scrollTo( coords.left, coords.top )
 		if( this.allowChildSort != null ) this.onOrderChanged();
 	},
 
@@ -515,6 +528,12 @@ lattice.modules.ListItem = new Class({
 	getSaveFileSubmitURL: function(){
 			return lattice.util.getBaseURL() + 'ajax/data/cms/savefile/' + this.getObjectId()+"/";
 	},
+	
+	getClearFileURL: function( fieldName ){
+		var url = lattice.util.getBaseURL() + "ajax/data/cms/clearField/" + this.getObjectId() + "/" + fieldName;
+		return url;
+	},
+	
 
 	initialize: function( anElement, aMarshal, options ){
 		this.element = anElement;
@@ -543,7 +562,7 @@ lattice.modules.ListItem = new Class({
 		this.fadeOut = new Fx.Morph( this.element, { duration: 350, onComplete: function(){ this.marshal.removeObject( this ) }.bind( this ) } );
 		this.fadeOut.start( { height: 0, opacity: 0 } );
 	},
-	
+
 	clearField: function( fieldName ){
 		this.marshal.clearField( fieldName );
 	},

@@ -87,5 +87,15 @@ Route::set('preview', 'preview/<id>',
 
 
 
+
+Route::set('language', 'language/<action>(/<param1>(/<param2>))', array(
+
+	)
+)
+->defaults(
+	array(
+		'controller' => 'language',
+	));
+
  
 

@@ -99,24 +99,28 @@ class Controller_List extends Lattice_CMSInterface {
 
          $htmlChunks = latticecms::buildUIHtmlChunksForObject($object);
 
-				 $customItemView = 'objectTypes/'.$object->objecttype->objecttypename;
-				 $itemt = null;
-				 if (Kohana::find_file('views', $customItemView)) {
-					 $itemt = new View($customItemView);
-				 } else {
-					 $itemt = new View('list_item');
-				 }
+         $customItemView = 'objectTypes/' . $object->objecttype->objecttypename;
+         $itemView = null;
+         if (Kohana::find_file('views', $customItemView)) {
+            $itemView = new View($customItemView);
+            $this->loadResourcesForKey($customItemView);
+            foreach($htmlChunks as $key=>$value){
+               $itemView->$key = $value;
+            }
+         } else {
+            $itemView = new View('list_item');
+         }
 
 
-         $itemt->uiElements = $htmlChunks;
+         $itemView->uiElements = $htmlChunks;
 
          $data = array();
          $data['id'] = $object->id;
          $data['object_id'] = $this->_listObject->id;
          $data['instance'] = $this->_listObject->objecttype->templatname;
-         $itemt->data = $data;
+         $itemView->data = $data;
 
-         $html.=$itemt->render();
+         $html.=$itemView->render();
       }
 
       //actually we need to do an absolute path for local config
@@ -127,6 +131,7 @@ class Controller_List extends Lattice_CMSInterface {
       $view->class .= ' sortDirection-' . $this->_listObject->getSortDirection();
       $view->items = $html;
       $view->instance = $this->_listObject->objecttype->templatname;
+			$view->addableObjects = $this->_listObject->objecttype->addableObjects;
       $view->listObjectId = $this->_listObject->id;
 
 
@@ -175,15 +180,15 @@ class Controller_List extends Lattice_CMSInterface {
       $htmlChunks = latticecms::buildUIHtmlChunksForObject($item);
 
 			$customItemView = 'objectTypes/'.$item->objecttype->objecttypename;
-			$itemt = null;
+			$itemView = null;
 			if (Kohana::find_file('views', $customItemView)) {
-				$itemt = new View($customItemView);
+				$itemView = new View($customItemView);
 			} else {
-				$itemt = new View('list_item');
+				$itemView = new View('list_item');
 			}
 
 
-      $itemt->uiElements = $htmlChunks;
+      $itemView->uiElements = $htmlChunks;
 
       $data = array();
       $data['id'] = $newId;
@@ -192,9 +197,9 @@ class Controller_List extends Lattice_CMSInterface {
       $data['instance'] = $this->_listObject->objecttype->objecttypename;
 
 
-      $itemt->data = $data;
+      $itemView->data = $data;
 
-      $html = $itemt->render();
+      $html = $itemView->render();
 
       $this->response->body($html);
     }
