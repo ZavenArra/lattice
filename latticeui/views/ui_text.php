@@ -5,6 +5,6 @@
 	<?if( isset($isMultiline) && $isMultiline ):?>
 		<textarea class="og <?=$tag;?>"><?=($value!=null)?$value:"";?></textarea>
 	<?else:?>
-		<input class="og <?=$tag;?>" type="text" value="<?if($value!=null)echo$value;?>" />
+		<textarea class="og <?=$tag;?>" rows="1"><?=($value!=null)?$value:"";?></textarea>
 	<?endif;?>
 </div>

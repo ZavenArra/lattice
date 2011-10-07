@@ -2268,7 +2268,7 @@ lattice.ui.Text = new Class({
 	
 	setValue: function( aValue ){
 		if( this.field ) this.field.set( 'value', aValue );
-		this.ipeElement.set( 'html', aValue.formatToHTML() );
+		this.ipeElement.set( 'html', aValue.formatForDisplay() );
 	},
 
 	initialize: function( anElement, aMarshal, options ) {
@@ -2280,6 +2280,7 @@ lattice.ui.Text = new Class({
 		this.mode = "atRest";
 		if( this.submitOnBlur ) this.allowSubmitOnBlur = true;
 		this.field = anElement.getElement( ".og" );
+		console.log( this.field.get( 'html' ) );
 		// if( this.validate ){
 		// 	//do validation (refactor to use mootools validation )
 		// }
@@ -2342,7 +2343,7 @@ lattice.ui.Text = new Class({
 		console.log( 'prepareField' );
 		var val, size, h, w, inputType;
 		this.field.removeEvents();
-		val = this.ipeElement.get( 'html' ).toPlain();
+		val = this.ipeElement.get( 'html' ).formatForStorage();
 		this.field.set( 'value', val );
 		w = this.ipeElement.getSize().x - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width' ) ) + 2 * parseInt( this.ipeElement.getStyle('padding-left' ) ) );
 		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') ) +  2 * parseInt( this.field.getComputedStyle('padding-bottom' ) ) ); 
@@ -2428,7 +2429,7 @@ lattice.ui.Text = new Class({
 	submit: function( e ){
 		console.log( 'submit' );
 		this.parent( e );
-		var val = ( this.field.get( 'type' ) == 'password' )?  this.submittedValue.replace( /./g, '*' ) : this.submittedValue.formatToHTML();
+		var val = ( this.field.get( 'type' ) == 'password' )?  this.submittedValue.replace( /./g, '*' ) : this.submittedValue.formatForDisplay();
 		this.ipeElement.set( 'text', val );
 	},
 		
@@ -2490,7 +2491,7 @@ lattice.ui.Text = new Class({
 		console.log('cancelEditing');
 		e.preventDefault();
 		if( this.oldValue ){
-			var val = this.oldValue.formatToHTML()
+			var val = this.oldValue.formatForDisplay()
 			this.field.set( 'value', val );
 			this.ipeElement.set( 'html', this.oldValue );
 		}else{
@@ -2520,7 +2521,7 @@ lattice.ui.Text = new Class({
 	
 	fitToContent: function(){
 		var val, size;
-		val = this.getValue().formatToHTML()
+		val = this.getValue().formatForDisplay();
 		size = this.measureIPEElementWithValue( val );
 		this.field.setStyle( "height", size.y + 12 );
 		if( this.controls ) this.controls.position();
@@ -2531,7 +2532,7 @@ lattice.ui.Text = new Class({
 		ogVal = this.getValue();
 		ogSize = this.ipeElement.getSize();
 		this.ipeElement.setStyle( 'height', 'auto' );
-		this.ipeElement.set( 'html', aValue.formatToHTML() );
+		this.ipeElement.set( 'html', aValue.formatForDisplay() );
 		w = this.ipeElement.getSize().x - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width' ) ) + 2 * parseInt( this.ipeElement.getStyle('padding-left' ) ) );
 		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') ) +  2 * parseInt( this.field.getComputedStyle( 'padding-bottom' ) ) ); 
 		this.setValue( ogVal );

@@ -109,11 +109,11 @@ String.implement({
 		return this.replace( /\n/g, "<br/>" ).entityDecode();
 	},
 
-	toPlain: function(){
+	formatForStorage: function(){
 		return this.htmlBreaksToNewlines().entityEncode();
 	},
 	
-	formatToHTML: function(){
+	formatForDisplay: function(){
 		return this.newLinesToHTMLBreaks().entityDecode();
 	},
 	
