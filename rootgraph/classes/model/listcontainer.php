@@ -15,8 +15,14 @@ class Model_ListContainer extends Model_Object {
    private $_sortDirection = null;
    
    protected $_table_name = 'objects';
-   protected $_xml_config = null;
+   protected $_xmlConfig = null;
    
+	public function __construct($id){
+		parent::__construct($id);
+
+
+	}
+
    public function getSortDirection(){
       
       if(!$this->_sortDirection){
@@ -27,16 +33,17 @@ class Model_ListContainer extends Model_Object {
    }
    
    public function getConfig(){
-      if (!$this->_xml_config) {
+      if(!$this->_xmlConfig) {
          $xPathLookup = sprintf('//list[@name="%s"]', $this->objecttype->objecttypename);
-         $this->_xml_config = lattice::config('objects', $xPathLookup)->item(0);
-         if(!$this->_xml_config){
-              throw new Kohana_Exception('Failed to find xPath config in objects.xml :lookup', array(':lookup'=>$xPathLookup));
+         $this->_xmlConfig = lattice::config('objects', $xPathLookup)->item(0);
+         if (!$this->_xmlConfig) {
+            throw new Kohana_Exception('Failed to find xPath config in objects.xml :lookup', array(':lookup' => $xPathLookup));
          }
       }
-      return $this->_xml_config;
+      return $this->_xmlConfig;
    }
-   
+
+	
    public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
       $data['published'] = 'true';
       return parent::addObject($objectTypeName, $data, $lattice, $rosettaId, $languageId);
