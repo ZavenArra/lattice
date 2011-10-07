@@ -319,9 +319,6 @@ class latticecms {
 							break;
 				 }
 
-				 if($translatedLanguageCode != null){
-					 $entry['fieldId'] = $entry['name'].'_'.$translatedLanguageCode;
-				 }
 
 				 $elementsConfig[] = $entry;
 			}

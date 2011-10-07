@@ -29,30 +29,30 @@ Class Controller_LatticeViews extends Controller_Layout{
 
 
 	/*
-	 * Function: object($objectidorslug)
+	 * Function: object($objectIdOrSlug)
 	 * By default called after a rewrite of routing by slugs hooks, gets all content
 	 * for an object and loads view
 	 * Parameters:
-	 * $objectidorslug - the id or slug of the object to display, null is allowed but causes exception
+	 * $objectIdOrSlug - the id or slug of the object to display, null is allowed but causes exception
 	 * Returns: nothing, renders full webobject to browser or sents html if AJAX request
 	 */
 
-	public function action_getView($objectidorslug=null) {
+	public function action_getView($objectIdOrSlug=null) {
 
-		$access = Kohana::config('latticeviews.access.'.$objectidorslug);
+		$access = Kohana::config('latticeviews.access.'.$objectIdOrSlug);
 		if(!latticeutil::checkAccess($access)){
 			Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
 		}
 
-		self::$slug = $objectidorslug;
+		self::$slug = $objectIdOrSlug;
 
-		if(Session::instance()->get('language')){
-			$object = Graph::object($objectidorslug);
-			$translatedObject = $object->translate(Session::instance()->get('language'));
-			$objectidorslug = $translatedObject->id;
+		if(Session::instance()->get('languageCode')){
+			$object = Graph::object($objectIdOrSlug);
+			$translatedObject = $object->translate(Session::instance()->get('languageCode'));
+			$objectIdOrSlug = $translatedObject->id;
 		}
 
-		$this->viewModel = latticeview::Factory($objectidorslug);
+		$this->viewModel = latticeview::Factory($objectIdOrSlug);
 
 		//possible hook for processing content	
 
