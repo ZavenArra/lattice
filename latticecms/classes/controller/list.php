@@ -127,6 +127,7 @@ class Controller_List extends Lattice_CMSInterface {
       $view->class .= ' sortDirection-' . $this->_listObject->getSortDirection();
       $view->items = $html;
       $view->instance = $this->_listObject->objecttype->templatname;
+			$view->addableObjects = $this->_listObject->objecttype->addableObjects;
       $view->listObjectId = $this->_listObject->id;
 
 

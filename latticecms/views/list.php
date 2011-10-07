@@ -5,7 +5,11 @@
 	<?if(isset($label) && $label):?>
 	<label class='listLabel'><?=$label;?></label>
 	<?endif;?>
-	<div class="controls clearFix"><a href="#" class="addItem button">Add an Item</a></div>	
+<?foreach($addableObjects as $addableObject):?>
+	<div class="controls clearFix"><a href="addObject/<?=$addableObject['objectTypeId'];?>" class="addItem button"><?=$addableObject['objectTypeAddText'];?></a></div>	
+<?endforeach;?>
 	<ul class="listing"><?=$items;?></ul>
-	<div class="controls clearFix"><a href="#" class="addItem button">Add an Item</a></div>	
+<?foreach($addableObjects as $addableObject):?>
+	<div class="controls clearFix"><a href="#" class="addItem button"><?=$addableObject['objectTypeAddText'];?></a></div>	
+<?endforeach;?>
 </div>
