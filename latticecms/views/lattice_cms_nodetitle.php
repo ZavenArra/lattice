@@ -1,15 +1,18 @@
 <div class="objectTitle">	
 	<a class='button floatRight' href="#">Preview this Page</a>
-	<div class="<?if($allowTitleEdit):?>ui-Text<?endif;?> grid_7" data-ismultiline='false' data-field='title'>
-		<input type='text' class='og title<?=$translationModifier;?> h2' value="<?=$title;?>" />
-	</div>
-	<?if(Kohana::config('cms.enableSlugEditing')):?>
-	<div class="ui-Text discrete grid_2" data-ismultiline='false' data-field='slug'>
-				<input type="text" class="og p" value="<?=$slug;?>" />
-	</div>
- 	<?endif;?>
-	
+	<?
+	if($allowTitleEdit){
+		$elementArray = array( 'type'=>'text', 'name'=>'title', 'isMultiline'=>'false', 'label'=>'Title', 'class'=>'grid_7', 'tag'=>'h2', 'labelClass'=>'hidden' );
+		echo latticeui::buildUIElement( $elementArray, $title );
+	}else{
+		$elementArray = array( 'type'=>'text', 'name'=>'title', 'isMultiline'=>'false', 'label'=>'Title', 'class'=>'grid_7 inactive', 'tag'=>'h2', 'labelClass'=>'hidden' );
+		echo latticeui::buildUIElement( $elementArray, $title );
+	}	
+	if( Kohana::config('cms.enableSlugEditing') ){
+		$elementArray = array( 'type'=>'text', 'name'=>'slug', 'isMultiline'=>'false', 'label'=>'Title', 'class'=>'grid_2 discrete', 'tag'=>'p', 'labelClass'=>'hidden' );
+		echo latticeui::buildUIElement( $elementArray, $slug );
+	}
+	?>
 	<div class="clear"></div>
-
 </div>
 
