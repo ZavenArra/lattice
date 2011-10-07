@@ -149,7 +149,7 @@ Class latticeui{
 	}
 
 	public static function password( $field, $class, $tag, $fieldValue, $label=null, $labelClass=null ){
-		return latticeui::text( $field, $class, $tag, $fieldValue, $label=null, $labelClass=null );
+		return latticeui::text( $field, $class, $tag, $fieldValue, $label, $labelClass=null );
 	}
 
 	public static function radioGroup( $field, $class, $radios, $fieldValue, $groupLabel=null, $labelClass=null ){
