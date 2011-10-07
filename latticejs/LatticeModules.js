@@ -43,10 +43,12 @@ lattice.modules.Module = new Class({
 	    return new Request.JSON( { url: this.getSaveFieldURL(), onSuccess: callback } ).post( postData );
 	},
 
-	clearFile: function( fieldName ){
-		return new Request.JSON( { url: this.getClearFileURL( fieldName ) } ).send();		
+	clearFile: function( fieldName, callback ){
+		var url = this.getClearFileURL( fieldName );
+		console.log( 'module.clearFile', fieldName, url );
+		return new Request.JSON( { url: url, onComplete: this.callback } ).send();		
 	},
-	
+		
 	clearField: function( fieldName ){
 		return new Request.JSON( { url: this.getClearFieldURL( fieldName ) } ).send();
 	},	
