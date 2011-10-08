@@ -495,14 +495,43 @@ class Model_Object extends ORM {
       $this->contenttable->save();
    }
 
+	public function cascadeUndelete(){
+		$this->activity = new Database_Expression(null);
+		$this->slug = Model_Object::createSlug($this->contenttable->title, $this->id);
+		$this->contentdriver()->undelete();
+		$this->save();
+
+		$children = $object->getLatticeChildren();
+		foreach($children as $child){
+			$this->cascadeUndelete($child->id);
+		}
+
+
+	}
+
+	public function cascadeDelete(){
+		$this->activity = 'D';
+		$this->slug = DB::expr('null');
+		$this->contentdriver()->delete();
+		$this->save();
+
+		$children = $object->getLatticeChildren();
+		foreach($children as $child){
+			$this->cascadeDelete($child->id);
+		}
+
+
+
+	}
+
    
    
    public function translate($languageCode){
       $rosettaId = $this->rosetta_id;
-      if(!$rosettaId){
-         throw new Kohana_Exception('No Rosetta ID found for object during translation with objectId :objectId',
-                                    array(':objectId'=>$objectId)
-                 );
+			if(!$rosettaId){
+				throw new Kohana_Exception('No Rosetta ID found for object during translation with objectId :objectId',
+					array(':objectId'=>$objectId)
+				);
       }
       if(is_numeric($languageCode)){
          $languageId = intval($languageCode);
