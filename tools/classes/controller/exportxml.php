@@ -28,8 +28,10 @@ class Controller_ExportXML extends Controller {
                case 'Model_File':
                   //or copy to directory and just use filename
                   if ($value->filename) {
-                     $targetPath = $this->outputDir . $value->filename;
-                     $node->appendChild($this->doc->createTextNode($targetPath));
+										$targetPath = $this->outputDir . $value->filename;
+										if(file_exists('application/media/'.$targetPath)){
+											$node->appendChild($this->doc->createTextNode($targetPath));
+										}
                   }
                   break;
                case 'Model_Page':
@@ -82,7 +84,9 @@ class Controller_ExportXML extends Controller {
 //or copy to directory and just use filename
                   if ($value->filename) {
                      $targetPath = $this->outputDir . $value->filename;
-                     $node->appendChild($this->doc->createTextNode($targetPath));
+										 if(file_exists('application/media/'.$targetPath)){
+											 $node->appendChild($this->doc->createTextNode($targetPath));
+										 }
                   }
                   break;
                case 'Model_Object':

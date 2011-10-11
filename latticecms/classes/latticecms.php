@@ -7,120 +7,6 @@
 class latticecms {
 
 	/*
-	 * Variable: createSlug($title, $forPageId)
-	 * Creates a unique slug to identify a object
-	 * Parameters:
-	 * $title - optional title for the slug
-	 * $forPageId - optionally indicate the id of the object this slug is for to avoid false positive slug collisions
-	 * Returns: The new, unique slug
-	 */
-	public static function createSlug($title=NULL, $forPageId=NULL){
-		//create slug
-		if($title!=NULL){
-			$slug = preg_replace('/[^a-z0-9\- ]/', '', strtolower($title));
-			$slug = str_replace(' ', '-', $slug);
-			$slug = trim($slug);
-
-			$checkSlug = Graph::object()
-				->where('slug', 'REGEXP',  '^'.$slug.'[0-9]*$')
-				->order_by("slug");
-      	
-			if($forPageId != NULL){
-				$checkSlug->where('id', '!=', $forPageId);
-			}
-			$checkSlug = $checkSlug->find_all();
-			if(count($checkSlug)){
-				$idents = array();
-				foreach($checkSlug as $ident){
-					$idents[] = $ident->slug;
-				}
-				natsort($idents);
-				$idents = array_values($idents);
-				$maxslug = $idents[count($idents)-1];
-				if($maxslug){
-					$curindex = substr($maxslug, strlen($slug));
-					$newindex = $curindex+1;
-					$slug .= $newindex;
-				}
-			}
-			return $slug;
-		} else {
-			return 'No_Title_'.microtime(); //try something else
-		}
-	}
-
-	public static function convertNewlines($value){
-		$value = preg_replace('/(<.*>)[ ]*\n/', "$1------Lattice_NEWLINE------", $value);
-		$value = preg_replace('/[ ]*\n/', '<br />', $value);
-		$value = preg_replace('/------Lattice_NEWLINE------/', "\n", $value);
-		return $value;
-	}
-
-	/*
-	 *
-	 */
-	public static function resizeImage($originalfilename, $newfilename, $width, $height, $forceDimension='width', $crop='false'){
-		//set up dimenion to key off of
-		switch($forceDimension){
-		case 'width':
-			$keydimension = Image::WIDTH;
-			break;
-		case 'height':
-			$keydimension = Image::HEIGHT;
-			break;
-		default:
-			$keydimension = Image::AUTO;
-			break;
-		}
-
-		$image = Image::factory(Graph::mediapath().$originalfilename);
-		if($crop) {
-			//resample with crop
-			//set up sizes, and crop
-			if( ($image->width / $image->height) > ($image->height / $image->width) ){
-				$cropKeyDimension = Image::HEIGHT;
-			} else {
-				$cropKeyDimension = Image::WIDTH;
-			}
-			$image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
-			$image->save(Graph::mediapath().$newfilename);
-
-		} else {
-			//just do the resample
-			//set up sizes
-			$resizewidth = $width;
-			$resizeheight = $height;
-
-			if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
-				$osize = getimagesize(Graph::mediapath().$imagefilename);
-				$horizontal = false;
-				if($osize[0] > $osize[1]){
-					//horizontal
-					$horizontal = true;	
-				}
-				$newsize = array($resizewidth, $resizeheight);
-				sort($newsize);
-				if($horizontal){
-					$resizewidth = $newsize[1];
-					$resizeheight = $newsize[0];
-				} else {
-					$resizewidth = $newsize[0];
-					$resizeheight = $newsize[1];
-				}
-			}
-
-			//maintain aspect ratio
-			//use the forcing when it applied
-			//forcing with aspectfolloworientation is gonna give weird results!
-			$image->resize($resizewidth, $resizeheight, $keydimension);
-
-			$image->save(Graph::mediapath() .$newfilename);
-
-		}
-
-	}
-
-	/*
 	 * Function: buildUIHtmlChunks
 	 * This function builds the html for the UI elements specified in an object type's paramters
 	 * Parameters:
@@ -319,9 +205,6 @@ class latticecms {
 							break;
 				 }
 
-				 if($translatedLanguageCode != null){
-					 $entry['fieldId'] = $entry['name'].'_'.$translatedLanguageCode;
-				 }
 
 				 $elementsConfig[] = $entry;
 			}

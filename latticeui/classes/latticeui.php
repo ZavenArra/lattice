@@ -148,6 +148,10 @@ Class latticeui{
 		return latticeui::buildUIElement( $elementArray, $fieldValue);
 	}
 
+	public static function password( $field, $class, $tag, $fieldValue, $label=null, $labelClass=null ){
+		return latticeui::text( $field, $class, $tag, $fieldValue, $label=null, $labelClass=null );
+	}
+
 	public static function radioGroup( $field, $class, $radios, $fieldValue, $groupLabel=null, $labelClass=null ){
 		$microtime = str_replace(array(' ', '.'), '', microtime());
 		$name =$field.latticeui::$unique++.$microtime;
