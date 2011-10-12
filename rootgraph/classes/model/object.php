@@ -35,41 +35,49 @@ class Model_Object extends ORM {
     public function __construct($id=NULL) {
 
 
-		if (!empty($id) AND is_string($id) AND !ctype_digit($id)) {
+			if (!empty($id) AND is_string($id) AND !ctype_digit($id)) {
 
-         //check for translation reference
-         if (strpos('_', $id)) {
-            $slug = strtok($id, '_');
-            $languageCode = strtok($id);
-            $object = Graph::object($slug);
-            $translatedObject = $object->translated($languageCode);
-            return $translatedObject;
-         } else {
+				//check for translation reference
+				if (strpos('_', $id)) {
+					$slug = strtok($id, '_');
+					$languageCode = strtok($id);
+					$object = Graph::object($slug);
+					$translatedObject = $object->translated($languageCode);
+					return $translatedObject;
+				} else {
 
-            $result = DB::select('id')->from('objects')->where('slug', '=', $id)->execute()->current();
-            $id = $result['id'];
-         }
-      }
+					$result = DB::select('id')->from('objects')->where('slug', '=', $id)->execute()->current();
+					$id = $result['id'];
+				}
+			}
+
+			parent::__construct($id);
+
+			if($this->loaded()){
+				$this->loadContentDriver();
+			}
+		}
+
+	 protected function loadContentDriver(){
+
+		 Kohana::$log->add(Kohana_Log::INFO, 'Loading content driver');
+
+		 $objectTypeName = $this->objecttype->objecttypename;
+		 if ($objectTypeName) {
+			 if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+				 $modelName = 'Model_Lattice_' . $objectTypeName;
+				 $model = new $modelName($objectId);
+				 $this->contentDriver = $model;
+			 } else {
+				 $this->contentDriver = new Model_Lattice_Object();
+			 }
+			 if ($this->loaded()) {
+				 $this->contentDriver->loadContentTable($this);
+			 }
+		 }
+	 }
 
 
-      parent::__construct($id);
-
-
-      $objectTypeName = $this->objecttype->objecttypename;
-      if ($objectTypeName) {
-         if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
-            $modelName = 'Model_Lattice_' . $objectTypeName;
-            $model = new $modelName($objectId);
-            $this->contentDriver = $model;
-         } else {
-            $this->contentDriver = new Model_Lattice_Object();
-         }
-         if ($this->loaded()) {
-            $this->contentDriver->loadContentTable($this);
-         }
-      }
-   }
-   
 
 
 
@@ -94,6 +102,7 @@ class Model_Object extends ORM {
          //OR just call parent::__get($column) with an exception
          //though that seems pretty messy
          $return = parent::__get($column);
+
        /*  if(!$return->loaded()){
             throw new Kohana_Exception('Objecttype model not loaded '. $this->id .':'.$this->objecttype_id);
          }*/
@@ -107,7 +116,7 @@ class Model_Object extends ORM {
      
       
       if ($column == 'title'){
-         return $this->contentDriver->getTitle($this);
+         return $this->contentDriver()->getTitle($this);
          
       } else {
          //check if this is a list container
@@ -142,7 +151,7 @@ class Model_Object extends ORM {
 
 				
 
-				 return $this->contentDriver->getContentColumn($this, $column);
+				 return $this->contentDriver()->getContentColumn($this, $column);
  
       }
    }
@@ -152,7 +161,26 @@ class Model_Object extends ORM {
    //needing the id of the content table, plus there could
    //be other reasons that justify this.
    public function contentDriver(){
-      return $this->contentDriver;
+		 if(!$this->contentDriver){
+
+			 $objectTypeName = $this->objecttype->objecttypename;
+
+			 if ($objectTypeName) {
+				 if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+					 $modelName = 'Model_Lattice_' . $objectTypeName;
+					 $model = new $modelName($objectId);
+					 $this->contentDriver = $model;
+				 } else {
+					 $this->contentDriver = new Model_Lattice_Object();
+				 }
+				 if ($this->loaded()) {
+					 $this->contentDriver->loadContentTable($this);
+				 }
+			 }
+
+		 }
+
+		 return $this->contentDriver;
    
    }
    
@@ -200,7 +228,7 @@ class Model_Object extends ORM {
 
    private function saveContentTable() {
 
-      $this->contentDriver->saveContentTable($this);
+      $this->contentDriver()->saveContentTable($this);
    }
    
 	 public function getElementConfig($elementName){
@@ -244,7 +272,7 @@ class Model_Object extends ORM {
             $this->slug = latticecms::createSlug($value, $this->id);
          }
          //$this->save();
-         $this->contentDriver->setTitle($this, $value);
+         $this->contentDriver()->setTitle($this, $value);
          //$this->save();
          return;
       } else if (in_array($column, array('dateadded'))) {
@@ -266,7 +294,7 @@ class Model_Object extends ORM {
          }
 
 
-         $this->contentDriver->setContentColumn($this, $column, $value);
+         $this->contentDriver()->setContentColumn($this, $column, $value);
       } else {
          throw new Kohana_Exception('Invalid POST Arguments, POST must contain field and value parameters');
       }
@@ -398,7 +426,7 @@ class Model_Object extends ORM {
    public function getPageContent() {
       $content = array();
       $content['id'] = $this->id;
-      $content['title'] = $this->contentDriver->getTitle($this);
+      $content['title'] = $this->title;
       $content['slug'] = $this->slug;
       $content['dateadded'] = $this->dateadded;
       $content['objectTypeName'] = $this->objecttype->objecttypename;
