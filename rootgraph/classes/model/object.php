@@ -1080,12 +1080,12 @@ class Model_Object extends ORM {
 			 ->find_all();
 		 foreach($relationships as $relationship){
 			 if($relationship->loaded()){
-				 $this->latticeParents[$lattice->name] = Graph::object($relationship->object_id);
+				 $this->latticeParents[$lattice] = Graph::object($relationship->object_id);
 			 } else {
-				 $this->latticeParents[$lattice->name] = null;
+				 $this->latticeParents[$lattice] = null;
 			 }
 		 }
-		 return $this->latticeParents[$lattice->name];
+		 return $this->latticeParents[$lattice];
 	 }
    
    /*
