@@ -6,24 +6,6 @@ class frontend {
 		$field = $element->getAttribute('name');
 
 		switch($element->nodeName){
-		case 'list':
-			$family = $element->getAttribute('name');
-
-			$addables = lattice::config('objects', 'addableObject', $element);		
-			$addable = $addables->item(0);
-			$objectTypeName = $addable->getAttribute('objectTypeName');
-			$listItemElements = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $objectTypeName));		
-			echo $indent."<ul id=\"$family\" >\n";
-			echo $indent."<?foreach({$prefix}['$family'] as \$label => \${$family}ListItem):?>\n";
-			echo $indent." <li class=\"$objectTypeName\">\n";
-			foreach($listItemElements as $element){
-				frontend::makeHtmlElement($element, "\${$family}ListItem", $indent.'  ');
-			}
-			echo $indent." </li>\n";
-			echo $indent."<?endforeach;?>\n";
-			echo $indent."</ul>\n\n";
-			break;
-
 		case 'image':
 			if(!($size=$element->getAttribute('size'))){
 				$size = 'original';	
