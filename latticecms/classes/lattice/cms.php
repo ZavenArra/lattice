@@ -200,7 +200,6 @@ class Lattice_CMS extends Lattice_CMSInterface {
 			$view = new View($customView);
 			$this->loadResourcesForKey($customView);
 			foreach($htmlChunks as $key=>$value){
-            echo $key;
 				$view->$key = $value;
 			}
 			$html .= $view->render();

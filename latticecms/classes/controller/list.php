@@ -182,19 +182,34 @@ class Controller_List extends Lattice_CMSInterface {
  
       $newId = $listObject->addObject($objectTypeId);
       
+       //$this->response->data( $this->cms_getNodeInfo($newId) );	
+      //$this->response->body( $this->cms_getNodeHtml($newId));
+      
+      
       $item = Graph::object($newId);
+      
+      /*Cludge to bypass echoing placeholders necessary to pass validation*/
+      $item->username = NULL;
+      $item->password = NULL;
+      $item->email = NULL;
+      /*End cludge*/
+      
       $htmlChunks = latticecms::buildUIHtmlChunksForObject($item);
 
-			$customItemView = 'objectTypes/'.$item->objecttype->objecttypename;
-			$itemView = null;
-			if (Kohana::find_file('views', $customItemView)) {
-				$itemView = new View($customItemView);
-			} else {
-				$itemView = new View('list_item');
+		$customItemView = 'objectTypes/' . $item->objecttype->objecttypename;
+      $itemView = null;
+      if (Kohana::find_file('views', $customItemView)) {
+         $itemView = new View($customItemView);
+         foreach($htmlChunks as $key=>$value){
+				$itemView->$key = $value;
 			}
+      } else {
+         $itemView = new View('list_item');
+         $itemView->uiElements = $htmlChunks;
+
+      }
 
 
-      $itemView->uiElements = $htmlChunks;
 
       $data = array();
       $data['id'] = $newId;

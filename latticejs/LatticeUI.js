@@ -2586,9 +2586,12 @@ lattice.ui.MooSwitch = new Class({
 	
 	Extends: Drag.Move,
 	isVirgin: true,
+   element: null,
+   radio_el: null,
 	
-	initialize: function( radios, options ){
+	initialize: function( element, options ){
 		options = options || [];
+      this.element = element;
 		this.duration = options.duration || 100;
 		this.hide_radios = (options.hide_radios ) ? options.hide_radios : true;
 		this.hide_labels = (options.hide_labels ) ? options.hide_labels : false;
@@ -2623,7 +2626,7 @@ lattice.ui.MooSwitch = new Class({
 		this.labels = this.container.getElements('.label');
 		
 		//Hide Radioboxes and Labels//
-		this.radio_el = radios;//this.element.getElements('input[name='+radios+']');
+		this.radio_el = this.element.getElements('input[type="radio"]');
 //		console.log( ":::: ", this.radio_el );
 		this.container.inject( this.radio_el[ this.radio_el.length - 1 ], 'after');
 		
@@ -2723,17 +2726,37 @@ lattice.ui.MooSwitch = new Class({
 			'opacity' : 1
 		});
 
-	}
+	},
+
+
 });
 
 lattice.ui.SlideSwitch = new Class({
-	Extends: lattice.ui.MooSwitch,
+	Extends: lattice.ui.UIField,
+   
+   toggleSwitch: null,
+   
 	initialize: function( anElement, aMarshal, options ){
-		this.element = anElement;
-		this.marshal = aMarshal;
-		this.radios = anElement.getElements( "input[type='radio']" );
-		this.parent( this.radios, options );
-	}	
+      switchOptions = {
+         label_position: 'inside',
+         onChange: this.onChange.bind(this)
+      };
+      this.toggleSwitch = new lattice.ui.MooSwitch(anElement, switchOptions );
+		this.parent( anElement, aMarshal, options );
+	},	
+   
+   onChange: function(val){
+  
+		this.submittedValue = val;
+		if( !this.autoSubmit ){
+			this.setValue( val );
+			return true;
+		}		
+		if( this.showSaving ) this.showSaving();
+		if( this.leaveEditMode ) this.leaveEditMode();
+      alert(this.marshal);
+		this.marshal.saveField( { field: this.fieldName, value: val }, this.onResponse.bind( this ) );
+	}
 });
 
 lattice.ui.ScrollableTable = new Class({

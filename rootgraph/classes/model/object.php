@@ -445,7 +445,7 @@ class Model_Object extends ORM {
 
 		$children = $object->getLatticeChildren();
 		foreach($children as $child){
-			$this->cascadeUndelete($child->id);
+			$child->cascadeUndelete();
 		}
 
 
@@ -454,12 +454,13 @@ class Model_Object extends ORM {
 	public function cascadeDelete(){
 		$this->activity = 'D';
 		$this->slug = DB::expr('null');
-		$this->contentdriver()->delete();
 		$this->save();
+      $this->contentdriver()->delete();
 
-		$children = $object->getLatticeChildren();
+
+		$children = $this->getLatticeChildren();
 		foreach($children as $child){
-			$this->cascadeDelete($child->id);
+			$child->cascadeDelete();
 		}
 	}
    
@@ -1108,7 +1109,7 @@ class Model_Object extends ORM {
    public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
       
       $newObjectType = ORM::Factory('objecttype', $objectTypeName);
-      
+
       $newObject = $this->addLatticeObject($objectTypeName, $data, $lattice, $rosettaId, $languageId);
      
       
