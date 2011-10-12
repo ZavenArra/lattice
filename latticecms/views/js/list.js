@@ -9,8 +9,10 @@ lattice.modules.List = new Class({
 		return url;
 	},
 	
-	getAddObjectURL: function(){
-		return lattice.util.getBaseURL() + "ajax/html/list/addObject/" + this.getObjectId();
+	getAddObjectURL: function( path ){
+		var url = lattice.util.getBaseURL() + 'ajax/html/list/' + path;
+		console.log( '\t\tgetAddObjectURL', url );
+		return url;
 	},
 	
 	getRemoveObjectURL: function( itemObjectId ){
