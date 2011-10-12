@@ -49,6 +49,7 @@ class Model_Object extends ORM {
 	private $objecttypename = null;
 
 
+
 	public static function dbmap($objecttype_id, $column=null){
 		if(!isset(self::$dbmaps[$objecttype_id])){
 			$dbmaps = ORM::Factory('objectmap')->where('objecttype_id', '=', $objecttype_id)->find_all();
@@ -73,6 +74,126 @@ class Model_Object extends ORM {
 	}
 
    
+	/*
+	 * Variable: createSlug($title, $forPageId)
+	 * Creates a unique slug to identify a object
+	 * Parameters:
+	 * $title - optional title for the slug
+	 * $forPageId - optionally indicate the id of the object this slug is for to avoid false positive slug collisions
+	 * Returns: The new, unique slug
+	 */
+	public static function createSlug($title=NULL, $forPageId=NULL){
+		//create slug
+		if($title!=NULL){
+			$slug = preg_replace('/[^a-z0-9\- ]/', '', strtolower($title));
+			$slug = str_replace(' ', '-', $slug);
+			$slug = trim($slug);
+
+			$checkSlug = Graph::object()
+				->where('slug', 'REGEXP',  '^'.$slug.'[0-9]*$')
+				->order_by("slug");
+      	
+			if($forPageId != NULL){
+				$checkSlug->where('id', '!=', $forPageId);
+			}
+			$checkSlug = $checkSlug->find_all();
+			if(count($checkSlug)){
+				$idents = array();
+				foreach($checkSlug as $ident){
+					$idents[] = $ident->slug;
+				}
+				natsort($idents);
+				$idents = array_values($idents);
+				$maxslug = $idents[count($idents)-1];
+				if($maxslug){
+					$curindex = substr($maxslug, strlen($slug));
+					$newindex = $curindex+1;
+					$slug .= $newindex;
+				}
+			}
+			return $slug;
+		} else {
+			return 'No_Title_'.microtime(); //try something else
+		}
+	}
+
+	/*
+	 * convertNewLines($value)
+	 * Replace \n with <br /> for saving into the database
+	 * This replacement is wrapped by detection for \n values that should not be converted into br tags, 
+	 * those which follow lines that only contain html tags
+	 */
+	public static function convertNewLines($value){
+		$value = preg_replace('/(<.*>)[ ]*\n/', "$1------Lattice_NEWLINE------", $value);
+		$value = preg_replace('/[ ]*\n/', '<br />', $value);
+		$value = preg_replace('/------Lattice_NEWLINE------/', "\n", $value);
+		return $value;
+	}
+
+	/*
+	 *
+	 */
+	public static function resizeImage($originalfilename, $newfilename, $width, $height, $forceDimension='width', $crop='false'){
+		//set up dimenion to key off of
+		switch($forceDimension){
+		case 'width':
+			$keydimension = Image::WIDTH;
+			break;
+		case 'height':
+			$keydimension = Image::HEIGHT;
+			break;
+		default:
+			$keydimension = Image::AUTO;
+			break;
+		}
+
+		$image = Image::factory(Graph::mediapath().$originalfilename);
+		if($crop) {
+			//resample with crop
+			//set up sizes, and crop
+			if( ($image->width / $image->height) > ($image->height / $image->width) ){
+				$cropKeyDimension = Image::HEIGHT;
+			} else {
+				$cropKeyDimension = Image::WIDTH;
+			}
+			$image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
+			$image->save(Graph::mediapath().$newfilename);
+
+		} else {
+			//just do the resample
+			//set up sizes
+			$resizewidth = $width;
+			$resizeheight = $height;
+
+			if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
+				$osize = getimagesize(Graph::mediapath().$imagefilename);
+				$horizontal = false;
+				if($osize[0] > $osize[1]){
+					//horizontal
+					$horizontal = true;	
+				}
+				$newsize = array($resizewidth, $resizeheight);
+				sort($newsize);
+				if($horizontal){
+					$resizewidth = $newsize[1];
+					$resizeheight = $newsize[0];
+				} else {
+					$resizewidth = $newsize[0];
+					$resizeheight = $newsize[1];
+				}
+			}
+
+			//maintain aspect ratio
+			//use the forcing when it applied
+			//forcing with aspectfolloworientation is gonna give weird results!
+			$image->resize($resizewidth, $resizeheight, $keydimension);
+
+			$image->save(Graph::mediapath() .$newfilename);
+
+		}
+
+	}
+
    
    public function __construct($id=NULL) {
       
@@ -268,18 +389,18 @@ class Model_Object extends ORM {
          $this->object[$column] = $this->load_type($column, $value);
       } else {
          if (!is_object($value)) {
-            $value = latticecms::convertNewlines($value);
+            $value = Model_Object::convertNewLines($value);
          }
 
          
          if ($column == 'slug') {
-            parent::__set('slug', latticecms::createSlug($value, $this->id));
+            parent::__set('slug', Model_Object::createSlug($value, $this->id));
             parent::__set('decoupleSlugTitle', 1);
             $this->save();
             return;
          } else if ($column == 'title') {
             if (!$this->decoupleSlugTitle) {
-               $this->slug = latticecms::createSlug($value, $this->id);
+               $this->slug = Model_Object::createSlug($value, $this->id);
             }
             $this->save();
             $this->contenttable->title = $value;
@@ -825,7 +946,7 @@ class Model_Object extends ORM {
 
 				 //This dependency should be moved out of latticecms
 				 //Rootgraph should never require latticecms
-         latticecms::resizeImage($imagefilename, $newfilename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('forceDimension'), $resize->getAttribute('crop')
+         Model_Object::resizeImage($imagefilename, $newfilename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('forceDimension'), $resize->getAttribute('crop')
          );
 
          if (isset($oldfilename) && $newfilename != $prefix . $oldfilename) {
@@ -837,7 +958,7 @@ class Model_Object extends ORM {
 
 			//And process resizes passed in from caller
       foreach($additionalResizes as $uiresize){
-        latticecms::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
+        Model_Object::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
       }
 
 
@@ -1140,13 +1261,9 @@ class Model_Object extends ORM {
 
       //create slug
       if (isset($data['title'])) {
-         $newObject->slug = latticecms::createSlug($data['title'], $newObject->id);
+        $newObject->slug = Model_Object::createSlug($data['title'], $newObject->id);
       } else {
-				//$newObject->title = 'No Title';
-				//Don't want to do this yet because then all objects will have same title
-				//which is a problem for import, which assumes same title same tier objects
-				//are the same object
-				$newObject->slug = latticecms::createSlug();
+				$newObject->slug = Model_Object::createSlug();
       }
      
       $newObject->language_id = $languageId;

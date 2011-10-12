@@ -33,6 +33,36 @@ class latticeview {
 			return $viewModel;
 	 }
 
+	 /*
+		* slug($slug)
+		* Gets the a language aware slug based on the requested slug
+		*/
+	 public static function slug($slugOrObjectId){
+
+		 //look in the cache
+		 $languageCode = Session::instance()->get('languageCode');
+		 $object = Graph::object($slugOrObjectId);
+		 $originalSlugBase = str_replace(array('0','1','2','3','4','5','6','7','8','9'), '', strtok($object->slug,'_'));
+		 $translatedObject = $object->translate($languageCode);
+		 $redirectSlug = $translatedObject->slug;
+
+
+		 if(preg_match("/{$originalSlugBase}[0-9]+/", $redirectSlug)){
+			 return $originalSlugBase.'_'.$languageCode;
+		 } else {	
+			 return $redirectSlug;
+		 }
+
+	 }
+
+	 /*
+		* public static function language()
+		* Returns the currently selected language code
+		*/
+	 public static function language(){
+		 return Session::instance()->get('languageCode');
+	 }
+
 	 public function __construct($objectIdOrSlug = null){
 		 if($objectIdOrSlug != NULL){
 			 $this->object = self::getGraphObject($objectIdOrSlug);

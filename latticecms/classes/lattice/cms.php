@@ -148,7 +148,6 @@ class Lattice_CMS extends Lattice_CMSInterface {
          return;
 		}
       
-      
 		
 		if($object->id == 0){
 			throw new Kohana_Exception('Invalid Page Id '.$id);
@@ -182,16 +181,18 @@ class Lattice_CMS extends Lattice_CMSInterface {
       } else {
          $this->nodetitle->translationModifier = '';
       }
-		
+
 		$nodetitlehtml = $this->nodetitle->render();
 
 		$customView = 'objectTypes/'.$object->objecttype->objecttypename; //check for custom view for this objectType
-		$htmlChunks = latticecms::buildUIHtmlChunksForObject($object, $languageCode);
+
+      $htmlChunks = latticecms::buildUIHtmlChunksForObject($object, $languageCode);
 
 		$useCustomView = false;
 		if(Kohana::find_file('views', $customView)){
 			$useCustomView = true;	
 		}
+
 		if(!$useCustomView){
 			$html = $nodetitlehtml.implode($htmlChunks);
 		} else {
@@ -199,10 +200,12 @@ class Lattice_CMS extends Lattice_CMSInterface {
 			$view = new View($customView);
 			$this->loadResourcesForKey($customView);
 			foreach($htmlChunks as $key=>$value){
+            echo $key;
 				$view->$key = $value;
 			}
 			$html .= $view->render();
 		}
+ 
 
 		$this->response->data($object->getPageContent());	
 		$this->response->body($html);

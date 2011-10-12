@@ -4,7 +4,7 @@
 	<?if(!$data['superuser'] || latticeutil::checkRoleAccess('superuser')):?>
 		<?=latticeui::Text( 'username', "rows-1 validation-nonEmpty grid_3 alpha", "p", $data['username'], 'Username' );?>
 		<?=latticeui::Text( 'email', "rows-1 validation-email grid_4", "p", $data['email'], 'Email' );?>
-		<?=latticeui::Text( 'password', "rows-1 validation-nonEmpty type-password grid_3 omega", "p", '', 'Reset and Mail Password' );?>
+		<?=latticeui::Password( 'password', "rows-1 validation-nonEmpty type-password grid_3 omega", "p", '', 'Reset and Mail Password' );?>
 	<?else:?>
 		<?=$data['username'];?>	
 	<?endif;?>
