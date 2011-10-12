@@ -38,7 +38,11 @@ Class Builder_Frontend {
 				//this also implies that name is a objecttypename
 				foreach(lattice::config('objects', 
 					sprintf('//objectType[@name="%s"]/elements/*', $viewName )) as $element){
-						frontend::makeHtmlElement($element, "\$content['main']");
+                  if($element->tagName != 'list'){
+                     frontend::makeHtmlElement($element, "\$content['main']");
+                  } else {
+                     $this->makeListDataHtml($element, "\$content['main']");
+                  }
 					}
 			}
 
@@ -109,6 +113,25 @@ Class Builder_Frontend {
 
 		echo "Done\n";
 	}
+   
+   public function makeListDataHtml($listDataConfig, $prefix, $indent = ''){
+     $objectTypes = array();
+     foreach (lattice::config('objects', 'addableObject', $listDataConfig) as $addable) {
+         $objectTypeName = $addable->getAttribute('objectTypeName');
+         $objectTypes[$objectTypeName] = $objectTypeName;
+      }
+      
+      $this->makeMultiObjectTypeLoop($objectTypes, $listDataConfig->getAttribute('name'),  $prefix, $indent);
+      //and follow up with any existing data
+      /*
+      $children = $object->getPublishedChildren();
+      foreach ($children as $child) {
+         $objectTypeName = $child->objecttype->objecttypename;
+         $objectTypes[$objectTypeName] = $objectTypeName;
+      }
+       
+       */
+   }
 
 	public function makeIncludeDataHtml($iDataConfig, $prefix, $parentTemplate, $indent=''){
 		$label = $iDataConfig->getAttribute('label');
@@ -154,67 +177,89 @@ Class Builder_Frontend {
 				}
 			} else {
 				//see if from is a slug
-				$object = Graph::object($from);
-				if($object->loaded()){
-					//find its addable objects
-					foreach(lattice::config('objects', sprintf('//objectType[@name="%s"]/addableObject', $object->objecttype->objecttypename)) as $addable){
-						$objectTypeName = $addable->getAttribute('objectTypeName');
-						$objectTypes[$objectTypeName] = $objectTypeName;
-					}
-					//and follow up with any existing data
-					$children = $object->getPublishedChildren();
-					foreach($children as $child){
-						$objectTypeName = $child->objecttype->objecttypename;
-						$objectTypes[$objectTypeName] = $objectTypeName;
-					}
-				}
+            $objectTypesFromParent = $this->getChildrenObjectTypes(Graph::$object($from));
+            $objectTypes = array_merge($objectTypes, $objectTypesFromParent);
+            
+				
 			}
 		}	
 
 		// now $objectTypes contains all the needed objectTypes in the view
-		echo $indent."<h2>$label</h2>\n\n";
+		
 
+      $this->makeMultiObjectTypeLoop($objectTypes, $label, $prefix, $indent, $iDataConfig);
+   }
+   
+   protected function makeMultiObjectTypeLoop($objectTypes, $label, $prefix, $indent='', $frontendNode=NULL ){
+      echo $indent."<h2>$label</h2>\n\n";
+		echo $indent."<ul id=\"$label\" >\n";
 		$doSwitch = false;
 		if(count($objectTypes)>1){
 			$doSwitch = true;
 		}
 
-		echo $indent."<ul id=\"$label\" >\n";
 		echo $indent."<?foreach({$prefix}['$label'] as \${$label}Item):?>\n";
 		if($doSwitch){
-			echo $indent." <?switch(\${$label}Item['objectTypeName']){?>\n";
+			echo $indent." <?switch(\${$label}Item['objectTypeName']){\n";
 		}
 
-		foreach($objectTypes as $objectTypeName){
-			if($doSwitch){
-				echo $indent."<? case '$objectTypeName':?>\n";
-			}
-			echo $indent."  <li class=\"$objectTypeName\">\n";
-      echo $indent."   "."<h2><?=\${$label}Item['title'];?></h2>\n\n";
-			foreach(lattice::config('objects', 
-				sprintf('//objectType[@name="%s"]/elements/*', $objectTypeName )) as $element){
-					frontend::makeHtmlElement($element, "\${$label}Item", $indent."   ");
-				}
+      $i=0;
+		foreach ($objectTypes as $objectTypeName) {
+         if ($doSwitch) {
+            echo $indent;
+            if($i==0)
+               echo "    case '$objectTypeName':?>\n";
+            else 
+               echo " <? case '$objectTypeName':?>\n";
+         }
+         echo $indent . "  <li class=\"$objectTypeName\">\n";
+         echo $indent . "   " . "<h2><?=\${$label}Item['title'];?></h2>\n\n";
+         foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $objectTypeName)) as $element) {
+            if ($element->tagName != 'list') {
+               frontend::makeHtmlElement($element, "\${$label}Item", $indent . "   ");
+            } else {
+               $this->makeListDataHtml($element, "\${$label}Item", $indent);
+            }
+         }
 
-			//handle lower levels
-			foreach(lattice::config('frontend', 'includeData', $iDataConfig) as $nextLevel){
-				$this->makeIncludeDataHtml($nextLevel, "\${$label}Item", $objectTypeName, $indent."   ");
-			}
+         //handle lower levels
+         if ($frontendNode) {
+            foreach (lattice::config('frontend', 'includeData', $frontendNode) as $nextLevel) {
+               $this->makeIncludeDataHtml($nextLevel, "\${$label}Item", $objectTypeName, $indent . "   ");
+            }
+         }
 
-			echo $indent."  </li>\n";
-			if($doSwitch){
-				echo $indent."<?  break;?>\n";
-			}
-		}
-		if($doSwitch){
-			echo $indent."<? }?>\n";
-		}
+         echo $indent . "  </li>\n";
+         if ($doSwitch) {
+            echo $indent . " <?  break;?>\n";
+         }
+         $i++;
+      }
+      if ($doSwitch) {
+         echo $indent . "<? }?>\n";
+      }
 
 
-		echo $indent."<?endforeach;?>\n".
-			$indent."</ul>\n\n";
+      echo $indent . "<?endforeach;?>\n" .
+      $indent . "</ul>\n\n";
+   }
 
-
-	}
-
+   protected function getChildrenObjectTypes($object){
+      $objectTypes = array();
+	   if ($object->loaded()) {
+         //find its addable objects
+         foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/addableObject', $object->objecttype->objecttypename)) as $addable) {
+            $objectTypeName = $addable->getAttribute('objectTypeName');
+            $objectTypes[$objectTypeName] = $objectTypeName;
+         }
+         //and follow up with any existing data
+         $children = $object->getPublishedChildren();
+         foreach ($children as $child) {
+            $objectTypeName = $child->objecttype->objecttypename;
+            $objectTypes[$objectTypeName] = $objectTypeName;
+         }
+      }
+      return $objectTypes;
+      
+   }
 }

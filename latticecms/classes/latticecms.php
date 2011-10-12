@@ -205,7 +205,6 @@ class latticecms {
 							break;
 				 }
 
-
 				 $elementsConfig[] = $entry;
 			}
 			return latticecms::buildUIHtmlChunks($elementsConfig, $object);
