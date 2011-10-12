@@ -2280,7 +2280,7 @@ lattice.ui.Text = new Class({
 		this.mode = "atRest";
 		if( this.submitOnBlur ) this.allowSubmitOnBlur = true;
 		this.field = anElement.getElement( ".og" );
-		console.log( this.field.get( 'html' ) );
+//		console.log( this.field.get( 'html' ) );
 		// if( this.validate ){
 		// 	//do validation (refactor to use mootools validation )
 		// }
@@ -2354,10 +2354,7 @@ lattice.ui.Text = new Class({
 		});
 		if( this.isMultiline ){
 			this.field.addEvent( 'keyup', this.fitToContent.bind( this ) );
-		}else{
-			inputType = ( this.element.getValueFromClassName( 'type' ) == 'password' )? 'password' : 'text';
-			this.field.set( 'type', inputType );
-		};
+		}
 		if( this.maxLength ) this.field.addEvent( 'keydown', this.checkFormaxLength.bindWithEvent( this ) );
 		window.addEvent( "mousedown", this.documentBoundUpdateAndClose );
 		if( this.submitOnBlur ){
@@ -2427,7 +2424,7 @@ lattice.ui.Text = new Class({
 	},
 	
 	submit: function( e ){
-		console.log( 'submit' );
+//		console.log( 'submit' );
 		this.parent( e );
 		var val = ( this.field.get( 'type' ) == 'password' )?  this.submittedValue.replace( /./g, '*' ) : this.submittedValue.formatForDisplay();
 		this.ipeElement.set( 'text', val );
@@ -2441,7 +2438,7 @@ lattice.ui.Text = new Class({
 	},
 
 	enableElement: function( e ){
-		console.log( 'enableElement' );
+//		console.log( 'enableElement' );
 		this.parent( e );
 		this.ipeElement.removeEvents();
 		this.field.addEvent( 'focus' , this.boundOnFieldFocus );
@@ -2450,13 +2447,13 @@ lattice.ui.Text = new Class({
 	},
 	
 	disableElement: function( e ){
-		console.log( 'disableElement' );
+//		console.log( 'disableElement' );
 		this.parent( e );
 		this.ipeElement.removeEvents();
 	},
 	
 	enterEditMode: function( e ){
-		console.log("enterEditMode");
+//		console.log("enterEditMode");
 		lattice.util.stopEvent( e );
 		if( this.mode == "editing ") return false;
 		this.mode = "editing";
@@ -2466,7 +2463,7 @@ lattice.ui.Text = new Class({
 	},
 	
 	leaveEditMode: function(){
-		console.log('leaveEditMode');
+//		console.log('leaveEditMode');
 
 		document.removeEvent( "mousedown", this.documentBoundUpdateAndClose );
 
