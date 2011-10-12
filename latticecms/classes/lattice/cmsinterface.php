@@ -193,16 +193,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 	 */
 	protected function cascade_delete($id){
 		$object = Graph::object($id);
-		$object->activity = 'D';
-		$object->slug = DB::expr('null');
-		$object->save();
-		$object->contenttable->activity = 'D';
-		$object->contenttable->save();
-
-		$children = $object->getChildren();
-		foreach($children as $child){
-			$this->cascade_delete($child->id);
-		}
+		$object->cascadeDelete();
 	}
 
 	/*
@@ -215,18 +206,9 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 	 */
 	protected function cascade_undelete($object_id){
 		$object = Graph::object($id);
-		$object->activity = new Database_Expression(null);
-		$object->slug = Model_Object::createSlug($object->contenttable->title, $object->id);
-		$object->save();
-		$object->contenttable->activity = new Database_Expression(null);
-		$object->contenttable->save();
+		$object->undelete();
 
-		$children = $object->getChildren();
-		foreach($children as $child){
-			$this->cascade_undelete($child->id);
 		}
-
-	}
 
    //abstract
    protected function cms_getNode($id){
