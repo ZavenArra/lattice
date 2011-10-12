@@ -26,7 +26,8 @@ class Model_Object extends ORM {
    );
 
 	
-	 private $latticeParents = array();
+   //cache
+	private $latticeParents = array();
 
    private $object_fields = array('loaded', 'objecttype', 'primary_key', 'primary_val');
 
@@ -48,6 +49,8 @@ class Model_Object extends ORM {
 	 */
 	private $objecttypename = null;
 
+   
+   protected $messages = array();
 
 
 	public static function dbmap($objecttype_id, $column=null){
@@ -78,17 +81,29 @@ class Model_Object extends ORM {
 	 * Variable: createSlug($title, $forPageId)
 	 * Creates a unique slug to identify a object
 	 * Parameters:
-	 * $title - optional title for the slug
+	 * $titleOrSlug - optional starting point for the slug
 	 * $forPageId - optionally indicate the id of the object this slug is for to avoid false positive slug collisions
 	 * Returns: The new, unique slug
 	 */
-	public static function createSlug($title=NULL, $forPageId=NULL){
+	public static function createSlug($titleOrSlug=NULL, $forPageId=NULL){
 		//create slug
-		if($title!=NULL){
-			$slug = preg_replace('/[^a-z0-9\- ]/', '', strtolower($title));
+		if($titleOrSlug!=NULL){
+			$slug = preg_replace('/[^a-z0-9\- ]/', '', strtolower($titleOrSlug));
 			$slug = str_replace(' ', '-', $slug);
 			$slug = trim($slug);
 
+         
+			$checkSlug = Graph::object()
+                 ->where('slug', '=', $slug);
+         if ($forPageId != NULL) {
+            $checkSlug->where('id', '!=', $forPageId);
+         }
+         $checkSlug->find();
+         if (!$checkSlug->loaded()) {
+            return $slug;
+         }
+
+         
 			$checkSlug = Graph::object()
 				->where('slug', 'REGEXP',  '^'.$slug.'[0-9]*$')
 				->order_by("slug");
@@ -113,7 +128,7 @@ class Model_Object extends ORM {
 			}
 			return $slug;
 		} else {
-			return 'No_Title_'.microtime(); //try something else
+			return self::createSlug(str_replace(' ', '',microtime())); //try something else
 		}
 	}
 
@@ -394,7 +409,12 @@ class Model_Object extends ORM {
 
          
          if ($column == 'slug') {
-            parent::__set('slug', Model_Object::createSlug($value, $this->id));
+            $slug =  Model_Object::createSlug($value, $this->id);
+         
+            if($slug != $value){
+               $this->addMessage(Kohana::message('graph', 'slug.conflictResolvedByGraph'));
+            }
+            parent::__set('slug', $slug);
             parent::__set('decoupleSlugTitle', 1);
             $this->save();
             return;
@@ -495,14 +515,47 @@ class Model_Object extends ORM {
       $this->contenttable->save();
    }
 
+	public function cascadeUndelete(){
+		$this->activity = new Database_Expression(null);
+		$this->slug = Model_Object::createSlug($this->contenttable->title, $this->id);
+		$this->contentdriver()->undelete();
+		$this->save();
+
+		$children = $object->getLatticeChildren();
+		foreach($children as $child){
+			$this->cascadeUndelete($child->id);
+		}
+
+
+	}
+
+	public function cascadeDelete(){
+		$this->activity = 'D';
+		$this->slug = DB::expr('null');
+		$this->contentdriver()->delete();
+		$this->save();
+
+		$children = $object->getLatticeChildren();
+		foreach($children as $child){
+			$this->cascadeDelete($child->id);
+		}
+	}
+   
+   protected function addMessage($message){
+      $this->messages[] = $message;
+   }
+
+   public function getMessages(){
+      return $this->messages;
+   }
    
    
    public function translate($languageCode){
       $rosettaId = $this->rosetta_id;
-      if(!$rosettaId){
-         throw new Kohana_Exception('No Rosetta ID found for object during translation with objectId :objectId',
-                                    array(':objectId'=>$objectId)
-                 );
+			if(!$rosettaId){
+				throw new Kohana_Exception('No Rosetta ID found for object during translation with objectId :objectId',
+					array(':objectId'=>$objectId)
+				);
       }
       if(is_numeric($languageCode)){
          $languageId = intval($languageCode);
