@@ -2,5 +2,5 @@
 	<?if(isset($label)):?>
 		<label><?=$label;?></label>
 	<?endif;?>
-		<input class="og <?=$tag;?>" type="password" value="<?if($value!=null)echo$value;?>" />
+	<input class="og <?=$tag;?>" type="password" value="<?if($value!=null)echo$value;?>" />
 </div>
