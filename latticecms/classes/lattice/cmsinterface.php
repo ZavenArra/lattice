@@ -86,14 +86,20 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       $object = Graph::object($id);
       $object->$field = $_POST['value'];
 		$object->save();
+      
+      $returnData = array();
+      if(count($object->getMessages())){
+         $returnData['messages'] = $object->getMessages();
+      }
+      
       $object = Graph::object($id);
       $value = $object->$field;
       
-      $returnData = array('value'=>$value);
+      $returnData['value']=$value;
       if($_POST['field']=='title'){
          $returnData['slug'] = $object->slug;
       }
-      
+   
       $this->response->data($returnData);
 	}
 

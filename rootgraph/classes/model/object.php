@@ -26,7 +26,8 @@ class Model_Object extends ORM {
    );
 
 	
-	 private $latticeParents = array();
+   //cache
+	private $latticeParents = array();
 
    private $object_fields = array('loaded', 'objecttype', 'primary_key', 'primary_val');
 
@@ -48,6 +49,8 @@ class Model_Object extends ORM {
 	 */
 	private $objecttypename = null;
 
+   
+   protected $messages = array();
 
 
 	public static function dbmap($objecttype_id, $column=null){
@@ -78,14 +81,14 @@ class Model_Object extends ORM {
 	 * Variable: createSlug($title, $forPageId)
 	 * Creates a unique slug to identify a object
 	 * Parameters:
-	 * $title - optional title for the slug
+	 * $titleOrSlug - optional starting point for the slug
 	 * $forPageId - optionally indicate the id of the object this slug is for to avoid false positive slug collisions
 	 * Returns: The new, unique slug
 	 */
-	public static function createSlug($title=NULL, $forPageId=NULL){
+	public static function createSlug($titleOrSlug=NULL, $forPageId=NULL){
 		//create slug
-		if($title!=NULL){
-			$slug = preg_replace('/[^a-z0-9\- ]/', '', strtolower($title));
+		if($titleOrSlug!=NULL){
+			$slug = preg_replace('/[^a-z0-9\- ]/', '', strtolower($titleOrSlug));
 			$slug = str_replace(' ', '-', $slug);
 			$slug = trim($slug);
 
@@ -406,7 +409,12 @@ class Model_Object extends ORM {
 
          
          if ($column == 'slug') {
-            parent::__set('slug', Model_Object::createSlug($value, $this->id));
+            $slug =  Model_Object::createSlug($value, $this->id);
+         
+            if($slug != $value){
+               $this->addMessage(Kohana::message('graph', 'slug.conflictResolvedByGraph'));
+            }
+            parent::__set('slug', $slug);
             parent::__set('decoupleSlugTitle', 1);
             $this->save();
             return;
@@ -531,11 +539,15 @@ class Model_Object extends ORM {
 		foreach($children as $child){
 			$this->cascadeDelete($child->id);
 		}
-
-
-
 	}
+   
+   protected function addMessage($message){
+      $this->messages[] = $message;
+   }
 
+   public function getMessages(){
+      return $this->messages;
+   }
    
    
    public function translate($languageCode){
