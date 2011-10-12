@@ -23,7 +23,6 @@ Class latticeutil {
 	 */
 	public static function getMicroTimestamp(){
 		$timestamp = date('YmdHis') . substr(latticeutil::getMicroSeconds(), 1) ;
-		Kohana::log('info', 'TIMESTAMP: '.$timestamp);
 		return $timestamp;
 	}
 

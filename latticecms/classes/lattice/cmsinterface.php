@@ -211,10 +211,9 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 	 * id - the id to undelete as well as everything beneath it.
 	 * Returns: Nothing
 	 */
-	protected function cascade_undelete($object_id){
-		$object = Graph::object($id);
-		$object->undelete();
-
+		protected function cascade_undelete($object_id){
+			$object = Graph::object($id);
+			$object->undelete();
 		}
 
    //abstract

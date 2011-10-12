@@ -3,7 +3,7 @@
 	<ul class="associable">
 		<?foreach($pool as $object):?>
 		<li class="objectId-<?=$object->id;?>">
-		<p class="objectTitle"><?=$object->contenttable->title;?></p> 
+		<p class="objectTitle"><?=$object->title;?></p> 
 			<div class="controls">
 				<a class="icon associate" href="cms/associate/"><span>associate</span></a>
 				<a class="icon dissociate hidden" href="{can you build wole dissociate url here?}"><span>dissociate</span></a>

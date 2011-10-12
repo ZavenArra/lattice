@@ -18,25 +18,20 @@ class Graph {
    private static $_languages;
 
 	public static function instance(){
-      return ORM::Factory('object');
+			return  ORM::Factory('object');
 	}
 
 	public static function object($objectId =null) {
+
 		//this will be implemented to support different drivers
 		if ($objectId == null) {
 			return ORM::Factory('object');
 		} else {
-			if(is_numeric($objectId)){
-				return ORM::Factory('object', $objectId);
-			} else {
-				$object = ORM::Factory('object')->where('slug', '=', $objectId)->find();
-				return $object;
-			}
+			return ORM::Factory('object', $objectId);
 		}
 	}
-   
-   
-   
+
+
    public static function lattice($latticeId = 'lattice'){
       if(is_numeric($latticeId)){
          return ORM::Factory('lattice', $latticeId);
@@ -141,10 +136,13 @@ class Graph {
 			$tRecord->save();
 		}
 
+		/*
+		 * This can just happen on the fly - lazy configure
 		foreach( lattice::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
 			$tRecord->configureElement($item);
 		}
-      Model_Object::reinitDbmap($tRecord->id); // Rethink this.
+    Model_Object::reinitDbmap($tRecord->id); // Rethink this.
+		 */
 	}
    
    public static function addRootNode($rootNodeObjectType){
@@ -170,7 +168,7 @@ class Graph {
               ->join('objects')->on('objects.id', '=', 'objectrelationships.connectedobject_id' )
               ->where('language_id', '=', $language->id)
               ->find();
-      $root = ORM::Factory('object', $objectRelationship->id);
+      $root = ORM::Factory('Lattice_Object', $objectRelationship->id);
       if(!$root->loaded()){
          throw new Kohana_Exception('Root object not found');
       }

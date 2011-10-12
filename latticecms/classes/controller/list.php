@@ -53,7 +53,6 @@ class Controller_List extends Lattice_CMSInterface {
    
    
    protected function setListObject($listObjectIdOrParentId, $family=null) {
-
       if ($family != null) {
 				$parentId = $listObjectIdOrParentId;
 
@@ -65,9 +64,14 @@ class Controller_List extends Lattice_CMSInterface {
          }
 
          $this->_listObject = $listContainerObject;
+
       } else {
 
          $this->_listObject = ORM::Factory('listcontainer', $listObjectIdOrParentId);
+      }
+      
+      if(!$this->_listObject->loaded()){
+         throw new Kohana_Exception('Failed to load list object');
       }
       
    }
@@ -82,7 +86,8 @@ class Controller_List extends Lattice_CMSInterface {
    public function action_getList($listObjectIdOrParentId, $family = null) {
       
       $this->setListObject($listObjectIdOrParentId, $family);
-      
+ 
+      //throw new Kohana_Exception('what');
 
       $view = null;
 			$customListView = 'objectTypes/'.$this->_listObject->objecttype->objecttypename;
@@ -122,6 +127,7 @@ class Controller_List extends Lattice_CMSInterface {
 
          $html.=$itemView->render();
       }
+      
 
       //actually we need to do an absolute path for local config
       $listConfig = $this->_listObject->getConfig();

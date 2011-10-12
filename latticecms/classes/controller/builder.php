@@ -7,7 +7,7 @@ class Controller_Builder extends Controller {
   public function __construct(){
 		
 		if(!latticeutil::checkRoleAccess('superuser')){
-			die('Only superuser can access builder tool');
+	//		die('Only superuser can access builder tool');
 		}
 		
 		$this->rootNodeObjectType = Kohana::config('cms.graphRootNode');

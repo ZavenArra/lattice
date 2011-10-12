@@ -41,8 +41,8 @@ class Controller_Navigation extends Controller_Lattice{
 		$items = Graph::object($parent->id)
               ->latticeChildrenQuery()
               ->activeFilter()
-              ->order_by('objectrelationships.sortorder', 'ASC')
-              ->find_all();
+				  ->order_by('objectrelationships.sortorder', 'ASC');
+	   $items = $items->find_all();
       
 		if($items){
 			$sendItemContainers = array(); //these will go first

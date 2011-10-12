@@ -26,7 +26,7 @@
 	allowTitleEdit  CDATA "true"
 >
 
-<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator|link|extendedImage|extendedFile|tags)* >
+<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator|link|extendedImage|extendedFile|tags|password)* >
 
 <!ELEMENT components (component*) >
 
@@ -73,6 +73,11 @@
 
 <!ELEMENT text EMPTY >
 <!ATTLIST text
+	%elementAttributes;
+>
+
+<!ELEMENT password EMPTY >
+<!ATTLIST password
 	%elementAttributes;
 >
 
