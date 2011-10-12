@@ -89,6 +89,18 @@ class Model_Object extends ORM {
 			$slug = str_replace(' ', '-', $slug);
 			$slug = trim($slug);
 
+         
+			$checkSlug = Graph::object()
+                 ->where('slug', '=', $slug);
+         if ($forPageId != NULL) {
+            $checkSlug->where('id', '!=', $forPageId);
+         }
+         $checkSlug->find();
+         if (!$checkSlug->loaded()) {
+            return $slug;
+         }
+
+         
 			$checkSlug = Graph::object()
 				->where('slug', 'REGEXP',  '^'.$slug.'[0-9]*$')
 				->order_by("slug");
@@ -113,7 +125,7 @@ class Model_Object extends ORM {
 			}
 			return $slug;
 		} else {
-			return 'No_Title_'.microtime(); //try something else
+			return self::createSlug(str_replace(' ', '',microtime())); //try something else
 		}
 	}
 
