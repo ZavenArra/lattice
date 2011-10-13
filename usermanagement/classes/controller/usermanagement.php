@@ -132,14 +132,13 @@ Class Controller_UserManagement extends Controller_Layout {
 		$user = ORM::factory($this->table);
 		$user->status = 'INCOMPLETE';
 		$user->username = 'PLACEHOLDER_'.Utility_Auth::randomPassword();;
-      $user->password = Utility_Auth::randomPassword();
+		$user->password = Utility_Auth::randomPassword();
 		$user->email = 'PLACEHOLDER'.Utility_Auth::randomPassword().'@madeofpeople.org';
 		$user->save();
 
 		//add the login role
 		$user->add('roles', ORM::Factory('role', array('name'=>'login')));
 		$user->add('roles', ORM::Factory('role', array('name'=>'admin')));
-		//$user->add(ORM::Factory('role', 'staging'));
 		$user->save();
 
 		return $user;

@@ -141,7 +141,7 @@ lattice.modules.Module = new Class({
 	getModuleUIFields: function( anElement ){
 		var elements = [];
 		anElement.getChildren().each( function( aChild, anIndex ){
-			console.log( 'getModuleUIFields', aChild, aChild.get('class') );
+//			console.log( 'getModuleUIFields', aChild, aChild.get('class') );
 			if( aChild.get('class') && aChild.get( "class" ).indexOf( "ui-" ) > -1 ){
 //	    console.log( "\t\tfound ui field", aChild.get('class'), ':', aChild.get('data-field'), 'in', anElement.get('class') );
 				elements.combine( [ aChild ] );
@@ -329,7 +329,6 @@ lattice.modules.LatticeList = new Class({
 	sortable: null,
 	sortDirection: null,
 	instanceName: null,
-	addObjectDialogue: null,
 	items: null,
 	controls: null,
 	sortableList: null,
@@ -377,7 +376,6 @@ lattice.modules.LatticeList = new Class({
 	
 	build: function(){
 		this.parent();
-		this.addObjectDialogue = null;
 		this.initControls();
 		this.initList();
 	},	
@@ -386,20 +384,25 @@ lattice.modules.LatticeList = new Class({
 		this.listing = this.element.getElement( ".listing" );
 		var children = this.listing.getChildren("li");
 		children.each( function( element ){
-			new lattice.modules.ListItem( element, this );//, this.addObjectDialogue );
+			new lattice.modules.ListItem( element, this );
 		}, this );
 	},
 
 	initControls: function(){
 		this.controls = this.element.getChildren( ".controls" );
-		var addObjectButton = this.controls.getElement( ".addItem" ).addEvent("click", this.addObjectRequest.bindWithEvent( this ) );
-		addObjectButton = null;
+		this.controls.each( function( controlGroup ){
+			controlGroup.getElements( ".addItem" ).each( function( item ){
+				console.log( '\t\tinitControls', item );
+				item.addEvent("click", this.addObjectRequest.bindWithEvent( this, item.get( 'href' ) ) );
+			}, this );
+		}, this );
 	},
 	
-	addObjectRequest: function( e ){
-		lattice.util.stopEvent( e );
+	addObjectRequest: function( e, path ){
+		console.log( 'addObjectRequest', path );
+		e.preventDefault();
 		this.listing.spin();
-		return new Request.JSON( { url: this.getAddObjectURL(), onSuccess: this.onAddObjectResponse.bind( this ) } ).send();
+		return new Request.JSON( { url: this.getAddObjectURL( path ), onSuccess: this.onAddObjectResponse.bind( this ) } ).send();
 	},
     
 	onAddObjectResponse: function( json ){
@@ -408,7 +411,7 @@ lattice.modules.LatticeList = new Class({
 		var element, listItem, addItemText;
 		element = json.response.html.toElement();
 		addItemText = this.controls.getElement( ".addItem" ).get( "text" );
-		listItem = new lattice.modules.ListItem( element, this, this.addObjectDialogue );
+		listItem = new lattice.modules.ListItem( element, this );
 		Object.each( listItem.UIFields, function( uiField ){
 			uiField.scrollContext = "modal";
 			if( uiField.reposition ) uiField.reposition('modal');
@@ -503,8 +506,7 @@ lattice.modules.LatticeList = new Class({
 	destroy: function(){
 		if(this.sortableList) this.removeSortable( this.sortableList );
 		clearInterval( this.submitDelay );
-//		if( this.addObjectDialogue ) lattice.modalManager.removeModal( this.addObjectDialogue ) 
-		this.addObjectDialogue = this.controls = this.instanceName = this.listing = this.oldSort = this.allowChildSort, this.sortDirection, this.submitDelay = null;
+		this.controls = this.instanceName = this.listing = this.oldSort = this.allowChildSort, this.sortDirection, this.submitDelay = null;
     if( this.scroller ) this.scroller = null;
 		lattice.util.EventManager.broadcastMessage( 'resize' );
 		this.parent();

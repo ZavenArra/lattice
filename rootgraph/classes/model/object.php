@@ -1,13 +1,11 @@
 <?php
 
-/*
- * To change this objectType, choose Tools | Templates
- * and open the objectType in the editor.
- */
-
 /**
- * Model for Object
- *
+ * Model_Object
+ * The ORM Object that connects to the objects table in the database
+ * This class also contains all functionality for using the object in the graph.
+ * Model_Object hosts a content table for tracking content data, which is implemented
+ * by extending 4 abstract methods from this class.
  * @author deepwinter1
  */
 class Model_Object extends ORM {
@@ -18,65 +16,51 @@ class Model_Object extends ORM {
    protected $_has_one = array(
        'objecttype' => array()
    );
-   protected $_has_many = array(
-       'tag' => array(
-           'model' => 'tag',
-           'through' => 'objects_tags'
-       )
-   );
+	 protected $_has_many = array(
+		 'tag' => array(
+			 'model' => 'tag',
+			 'through' => 'objects_tags'
+		 )
+	 );
+	 //cache
+	 private $latticeParents = array();
 
-	
-   //cache
-	private $latticeParents = array();
-
-   private $object_fields = array('loaded', 'objecttype', 'primary_key', 'primary_val');
+	 private $object_fields = array('loaded', 'objecttype', 'primary_key', 'primary_val');
 
 
-   //protected $has_one = array('object');
-	//
+	 protected $contentDriver = NULL;
 
-	private static $dbmaps;
-
-	/*
-	 * Variable: nonmappedfield
-	 * Array of fields to not pass through to the content field mapping logic
-	 */
-	private $nonmappedfields = array('id', 'object_id', 'title', 'activity', '_loaded');
-
-	/*
-	 * Variable: objecttypename
-	 * Private variable storing the name of the temple the current object is using.
-	 */
-	private $objecttypename = null;
-
-   
-   protected $messages = array();
+	 protected $messages = array();
 
 
-	public static function dbmap($objecttype_id, $column=null){
-		if(!isset(self::$dbmaps[$objecttype_id])){
-			$dbmaps = ORM::Factory('objectmap')->where('objecttype_id', '=', $objecttype_id)->find_all();
-			self::$dbmaps[$objecttype_id] = array();
-			foreach($dbmaps as $map){
-				self::$dbmaps[$objecttype_id][$map->column] = $map->type.$map->index;
-			}
-		}
-		if(!isset($column)){
-			return self::$dbmaps[$objecttype_id];
-		} else {
-			if(isset(self::$dbmaps[$objecttype_id][$column])){
-				return self::$dbmaps[$objecttype_id][$column];
-			} else {
-				return null;
-			}
-		}
-	}
+	 public function __construct($id=NULL) {
 
-	public static function reinitDbmap($objecttype_id){
-		unset(self::$dbmaps[$objecttype_id]);
-	}
 
-   
+		 if (!empty($id) AND is_string($id) AND !ctype_digit($id)) {
+
+			 //check for translation reference
+			 if (strpos('_', $id)) {
+				 $slug = strtok($id, '_');
+				 $languageCode = strtok($id);
+				 $object = Graph::object($slug);
+				 $translatedObject = $object->translated($languageCode);
+				 return $translatedObject;
+			 } else {
+
+				 $result = DB::select('id')->from('objects')->where('slug', '=', $id)->execute()->current();
+				 $id = $result['id'];
+			 }
+		 }
+
+		 parent::__construct($id);
+
+		 if($this->loaded()){
+			 $this->loadContentDriver();
+		 }
+	 }
+
+
+
 	/*
 	 * Variable: createSlug($title, $forPageId)
 	 * Creates a unique slug to identify a object
@@ -210,32 +194,29 @@ class Model_Object extends ORM {
 	}
 
    
-   public function __construct($id=NULL) {
-      
-      
-		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id)) {
-         
-         //check for translation reference
-         if(strpos('_', $id)){
-            $slug = strtok($id, '_');
-            $languageCode = strtok($id);
-            $object = Graph::object($slug);
-            $translatedObject = $object->translated($languageCode);
-            return $translatedObject;
-        
-         } else {
-         
-            $result = DB::select('id')->from('objects')->where('slug', '=', $id)->execute()->current();
-            $id = $result['id'];
-         }
-		}
+	 protected function loadContentDriver(){
+		 Kohana::$log->add(Kohana_Log::INFO, 'Loading content driver');
 
-      
-      parent::__construct($id);
-   }
+		 $objectTypeName = $this->objecttype->objecttypename;
+		 if ($objectTypeName) {
+			 if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+				 $modelName = 'Model_Lattice_' . $objectTypeName;
+				 $model = new $modelName($objectId);
+				 $this->contentDriver = $model;
+			 } else {
+				 $this->contentDriver = new Model_Lattice_Object();
+			 }
+			 if ($this->loaded()) {
+				 $this->contentDriver->loadContentTable($this);
+			 }
+		 }
+	 }
 
 
-   /*
+
+
+
+     /*
     *   Function: __get
     *     Custom getter for this model, links in appropriate content table
     *       when related object 'content' is requested
@@ -243,130 +224,148 @@ class Model_Object extends ORM {
 
    public function __get($column) {
 
-      if ($column == 'contenttable' && !isset($this->_related[$column])) {
-         $content = ORM::factory(inflector::singular('contents'));
-         $this->_related[$column] = $content->where('object_id', '=', $this->id)->find();
-         if (!$this->_related[$column]->_loaded) {
-            //we are going to allow no content object
-            //in order to support having empty objects
-            //throw new Kohana_Exception('BAD_Lattice_DB' . 'no content record for object ' . $this->id);
-         }
-         return $this->_related[$column];
-      } else if (in_array($column, array_keys($this->_table_columns))){
+         
+      if (in_array($column, array_keys($this->_table_columns))){
          //this catchs the configured columsn for this table
          return parent::__get($column);
      
       } else if ($column == 'parent') {
 				return $getLatticeParent(); 
-      } else if ($column == 'contenttable'){
-         return parent::__get($column);
-      } else if ($column == 'title'){
-         return $this->contenttable->title;
+      
       } else if ($column == 'objecttype'){
-        
          //this condition should actually check against associations
          //OR just call parent::__get($column) with an exception
          //though that seems pretty messy
-         return parent::__get($column);
+         $return = parent::__get($column);
+
+       /*  if(!$return->loaded()){
+            throw new Kohana_Exception('Objecttype model not loaded '. $this->id .':'.$this->objecttype_id);
+         }*/
+         return $return;
       } else if (in_array($column, array_keys($this->__get('objecttype')->_table_columns))){
   
         return $this->__get('objecttype')->$column; 
+      } 
+     
+     
+     
+      
+      if ($column == 'title'){
+         return $this->contentDriver()->getTitle($this);
+         
       } else {
-				//check if this is a list container
-				$listConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]',
-					$this->objecttype->objecttypename,
-					$column));
-				if($listConfig->length){
-               //look up the object type
-               $family = $column;
+         //check if this is a list container
+         $listConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]', $this->objecttype->objecttypename, $column));
+         if ($listConfig->length) {
+           
+            //look up the object type
+            $family = $column;
+       
+            $listObjectType = ORM::Factory('objecttype', $family);
+            if (!$listObjectType->id) {
+               $this->objecttype->configureElement($listConfig->item(0));
                $listObjectType = ORM::Factory('objecttype', $family);
+            }
 
-               if (!$listObjectType->id) {
-                   $this->objecttype->configureElement($listConfig->item(0));
-                   $listObjectType = ORM::Factory('objecttype', $family);
-               }
-               
-               $listContainerObject = ORM::Factory('listcontainer')
-                 ->latticeChildrenFilter($this->id)
-                 ->objectTypeFilter($listObjectType->id)
-                 ->activeFilter()
-                 ->find();	
-               
-               if(!$listContainerObject->id){
-                  $listContainerObjectId = $this->addObject($family);
-                  $listContainerObject = ORM::Factory('listcontainer', $listContainerObjectId);
-               }
+            $listContainerObject = ORM::Factory('listcontainer')
+                    ->latticeChildrenFilter($this->id)
+                    ->objectTypeFilter($listObjectType->id)
+                    ->activeFilter()
+                    ->find();
+            //The next line is either necessary to correctly initialize the model
+            //or listcontainer could be refactored as a storage class of object
+            //Lattice_Model_...
+            $listContainerObject = ORM::Factory('listcontainer', $listContainerObject->id);
+            if (!$listContainerObject->id) {
+               $listContainerObjectId = $this->addObject($family);
+               $listContainerObject = ORM::Factory('listcontainer', $listContainerObjectId);
+            }
             return $listContainerObject;
          }
 
-         //This is a mapped field in the contents table
-         $contentColumn = self::dbmap($this->objecttype_id, $column);       
 
+				
 
-				$elementConfig = $this->getElementConfig($column);
-				 if ($elementConfig->item(0)) {
-
-					 //This is a temporary stopgap until we have a cleaner handle on what to do when tags is
-					 //requested via the object.
-					 if ($elementConfig->item(0)->tagName == 'tags') {
-						 return $this->getTagStrings();
-					 }
-				 }
-
-
-         //No column mapping set up, attempt to run setup if it's configured.
-         if (!$contentColumn) {
-                        
-            if ($elementConfig->item(0)) {
-
-               //field is configured but not initialized in database
-               $this->objecttype->configureElement($elementConfig->item(0));
-
-               self::reinitDbmap($this->objecttype_id);
-
-               //now go aheand and get the mapped column
-               $contentColumn = self::dbmap($this->objecttype_id, $column);
-            }
-         }
-
-
-         if (!$contentColumn) {
-            throw new Kohana_Exception('Column :column not found in content model', array(':column' => $column));
-         }
-
-         //If the column is an object, then this is a relationship with another object
-         if (strstr($contentColumn, 'object')) {
-            //echo 'iTS AN OBJECT<br>';
-            $objectElementRelationship = ORM::Factory('objectelementrelationship')
-                    ->where('object_id', '=', $this->id)
-                    ->where('name', '=', $column)
-                    ->find();
-            $objectElement = Graph::object($objectElementRelationship->elementobject_id);
-
-            if (!$objectElement->loaded()) {
-
-							$elementConfig = $this->getElementConfig($column);
-
-							//build the object
-               $objectElement = $this->addElementObject($elementConfig->item(0)->tagName, $column);
-            }
-            return $objectElement;
-         }
-
-         //Also need to check for file, but in 3.1 file will be an object itself and this will
-         //not be necessary.
-         if (strstr($contentColumn, 'file') && !is_object($this->contenttable->$contentColumn)) {
-            $file = ORM::Factory('file', $this->contenttable->$contentColumn);
-            //file needs to know what module it's from if its going to check against valid resizes
-            $this->contenttable->$contentColumn = $file;
-         }
-  
-         return $this->contenttable->$contentColumn;
+				 return $this->contentDriver()->getContentColumn($this, $column);
  
       }
    }
+   
+   
+   //Providing access to contentDriver as a quick fix for 
+   //needing the id of the content table, plus there could
+   //be other reasons that justify this.
+   public function contentDriver(){
+		 if(!$this->contentDriver){
 
+			 $objectTypeName = $this->objecttype->objecttypename;
 
+			 if ($objectTypeName) {
+				 if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+					 $modelName = 'Model_Lattice_' . $objectTypeName;
+					 $model = new $modelName($objectId);
+					 $this->contentDriver = $model;
+				 } else {
+					 $this->contentDriver = new Model_Lattice_Object();
+				 }
+				 if ($this->loaded()) {
+					 $this->contentDriver->loadContentTable($this);
+				 }
+			 }
+
+		 }
+
+		 return $this->contentDriver;
+   
+   }
+   
+    /*
+     Function: save()
+     Custom save function, makes sure the content table has a record when inserting new object
+    */
+
+   public function save(Validation $validation = NULL) {
+      $inserting = false;
+      if ($this->loaded() == FALSE) {
+         $inserting = true;
+      }
+
+      parent::save();
+      
+      //Postpone adding record to content table until after lattice point
+      //is set.
+      if (!$inserting) {
+        // throw new Kohana_Exception('what');
+         $this->saveContentTable($this);
+      }
+      return $this;
+     
+      
+   }
+   
+
+   private function insertContentRecord() {
+   
+
+      //create the content driver table
+      $objectTypeName = $this->objecttype->objecttypename;
+      if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+         $modelName = 'Model_Lattice_' . $objectTypeName;
+         $model = new $modelName($objectId);
+         $this->contentDriver = $model;
+      } else {
+         $this->contentDriver = new Model_Lattice_Object();
+      }
+      //$this->contentDriver->loadContentTable($this);
+      //$this->contentDriver->setContentColumn($this, 'object_id', $this->id);
+      $this->contentDriver->saveContentTable($this, true);
+   }
+
+   private function saveContentTable() {
+
+      $this->contentDriver()->saveContentTable($this);
+   }
+   
 	 public function getElementConfig($elementName){
 
 		 if ($this->__get('objecttype')->nodeType == 'container') {
@@ -376,144 +375,67 @@ class Model_Object extends ORM {
 			 //everything else is a normal lookup
 			 $xPath = sprintf('//objectType[@name="%s"]', $this->__get('objecttype')->objecttypename);
 		 }
-		 $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $elementName));
-		 return $fieldConfig;
-
-	 }
+      $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $elementName));
+      return $fieldConfig;
+   }
 
    /*
      Function: __set
-     Custom setter, saves to appropriate contenttable
+     Custom setter, saves to appropriate contentDriver
     */
 
    public function __set($column, $value) {
-      
-      if(!$this->_loaded){
+
+      if (!$this->_loaded) {
          //Bypass special logic when just loading the object
          return parent::__set($column, $value);
       }
-      
-      
-      
-      if ($column == 'contenttable') {
-         $this->_changed[$column] = $column;
 
-         // Object is no longer saved
-         $this->_saved = FALSE;
+      if (!is_object($value)) {
+         $value = Model_Object::convertNewlines($value);
+      }
 
-         $this->object[$column] = $this->load_type($column, $value);
+
+      if ($column == 'slug') {
+         parent::__set('slug', Model_Object::createSlug($value, $this->id));
+         parent::__set('decoupleSlugTitle', 1);
+        // $this->save();
+         return;
+      } else if ($column == 'title') {
+         if (!$this->decoupleSlugTitle) {
+            $this->slug = Model_Object::createSlug($value, $this->id);
+         }
+         //$this->save();
+         $this->contentDriver()->setTitle($this, $value);
+         //$this->save();
+         return;
+      } else if (in_array($column, array('dateadded'))) {
+         parent::__set($column, $value);
+         //$this->save();
+      } else if ($this->_table_columns && in_array($column, array_keys($this->_table_columns))) {
+         parent::__set($column, $value);
+         //$this->save();
+      } else if ($column) {
+         $o = $this->_object;
+         $objecttype_id = $o['objecttype_id'];
+
+         $objectType = ORM::Factory('objecttype', $objecttype_id);
+
+         $xpath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $objectType->objecttypename, $column);
+         $fieldInfo = lattice::config('objects', $xpath)->item(0);
+         if (!$fieldInfo) {
+            throw new Kohana_Exception('Invalid field for objectType, using XPath : :xpath', array(':xpath' => $xpath));
+         }
+
+
+         $this->contentDriver()->setContentColumn($this, $column, $value);
       } else {
-         if (!is_object($value)) {
-            $value = Model_Object::convertNewLines($value);
-         }
-
-         
-         if ($column == 'slug') {
-            $slug =  Model_Object::createSlug($value, $this->id);
-         
-            if($slug != $value){
-               $this->addMessage(Kohana::message('graph', 'slug.conflictResolvedByGraph'));
-            }
-            parent::__set('slug', $slug);
-            parent::__set('decoupleSlugTitle', 1);
-            $this->save();
-            return;
-         } else if ($column == 'title') {
-            if (!$this->decoupleSlugTitle) {
-               $this->slug = Model_Object::createSlug($value, $this->id);
-            }
-            $this->save();
-            $this->contenttable->title = $value;
-            $this->contenttable->save();
-            return;
-         } else if (in_array($column, array('dateadded'))) {
-            parent::__set($column, $value);
-            $this->save();
-         } else if($this->_table_columns && in_array($column, array_keys($this->_table_columns))){
-            parent::__set($column, $value);
-            $this->save();
-            
-         } else if ($column) {
-            $o = $this->_object;
-            $objecttype_id = $o['objecttype_id'];
-            
-            $objectType = ORM::Factory('objecttype',$objecttype_id);
-            
-            $xpath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $objectType->objecttypename, $column);
-            $fieldInfo = lattice::config('objects', $xpath)->item(0);
-            if (!$fieldInfo) {
-               throw new Kohana_Exception('Invalid field for objectType, using XPath : :xpath', array(':xpath' => $xpath));
-            }
-            
-            
-            if (in_array($column, $this->nonmappedfields)) {
-               return $this->contenttable->__set($column, $value);
-            }
-
-
-            //check for dbmap
-            if ($mappedcolumn = self::dbmap($this->objecttype_id, $column)) {
-               return $this->contenttable->__set($mappedcolumn, $value);
-            }
-            
-           
-            //this column isn't mapped, check to see if it's in the xml
-            if ($this->objecttype->nodeType == 'container') {
-               //For lists, values will be on the 2nd level 
-               $xPath = sprintf('//list[@name="%s"]', $this->objecttype->objecttypename);
-            } else {
-               //everything else is a normal lookup
-               $xPath = sprintf('//objectType[@name="%s"]', $this->objecttype->objecttypename);
-            }
-            
-            
-            $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
-            if ($fieldConfig->item(0)) {
-               //field is configured but not initialized in database
-               $this->objecttype->configureElement($fieldConfig->item(0));
-               self::reinitDbmap($this->objecttype_id);
-
-               //now go aheand and save on the mapped column
-
-               $mappedcolumn = self::dbmap($this->objecttype_id, $column);
-               return $this->contenttable->__set($mappedcolumn, $value);
-            }
-
-            $this->contenttable->$mappedcolumn = $value;
-            $this->contenttable->save();
-            
-         } else {
-            throw new Kohana_Exception('Invalid POST Arguments, POST must contain field and value parameters');
-         }
+         throw new Kohana_Exception('Invalid POST Arguments, POST must contain field and value parameters');
       }
+      
    }
-
-   /*
-     Function: save()
-     Custom save function, makes sure the content table has a record when inserting new object
-    */
-
-   public function save(Validation $validation = NULL) {
-
-      $inserting = false;
-      if ($this->_loaded == FALSE) {
-         $inserting = true;
-      }
-
-      parent::save();
-      //if inserting, we add a record to the content table if one does not already exists
-      if ($inserting) {
-				$content = ORM::Factory('content');
-         if (!$content->where('object_id', '=', $this->id)->find()->loaded()) {
-            $content = ORM::Factory('content');
-            $content->object_id = $this->id;
-            $content->save();
-
-            $this->_related['contenttable'] = $content;
-         }
-      }
-      $this->contenttable->save();
-   }
+   
+  
 
 	public function cascadeUndelete(){
 		$this->activity = new Database_Expression(null);
@@ -523,7 +445,7 @@ class Model_Object extends ORM {
 
 		$children = $object->getLatticeChildren();
 		foreach($children as $child){
-			$this->cascadeUndelete($child->id);
+			$child->cascadeUndelete();
 		}
 
 
@@ -532,12 +454,13 @@ class Model_Object extends ORM {
 	public function cascadeDelete(){
 		$this->activity = 'D';
 		$this->slug = DB::expr('null');
-		$this->contentdriver()->delete();
 		$this->save();
+      $this->contentdriver()->delete();
 
-		$children = $object->getLatticeChildren();
+
+		$children = $this->getLatticeChildren();
 		foreach($children as $child){
-			$this->cascadeDelete($child->id);
+			$child->cascadeDelete();
 		}
 	}
    
@@ -567,7 +490,7 @@ class Model_Object extends ORM {
          throw new Kohana_Exception('Invalid language code :code', array(':code'=>$languageCode));
       }
          
-      $translatedObject = ORM::Factory('object')
+      $translatedObject = Graph::object()
               ->where('rosetta_id', '=', $rosettaId)
               ->where('language_id', '=', $languageId)
               ->find();
@@ -583,8 +506,18 @@ class Model_Object extends ORM {
    
    public function updateWithArray($data) {
       foreach ($data as $field => $value) {
-          $this->__set($field, $value);
-          break;  
+         switch ($field) {
+            case 'slug':
+            case 'decoupleSlugTitle':
+            case 'dateAdded':
+            case 'published':
+            case 'activity':
+               $this->__set($field, $value);
+               break;
+            default:
+               $this->$field = $value;
+               break;
+         }
       }
       $this->save();
       return $this->id;
@@ -661,7 +594,7 @@ class Model_Object extends ORM {
    public function getPageContent() {
       $content = array();
       $content['id'] = $this->id;
-      $content['title'] = $this->__get('contenttable')->title;
+      $content['title'] = $this->title;
       $content['slug'] = $this->slug;
       $content['dateadded'] = $this->dateadded;
       $content['objectTypeName'] = $this->objecttype->objecttypename;
@@ -714,7 +647,7 @@ class Model_Object extends ORM {
    public function getListContent($family) {
       //get container
       $cTemplate = ORM::Factory('objecttype', $family);
-      $container = ORM::Factory('object')
+      $container = Graph::object()
 							->latticeChildrenFilter($this->id)
               ->where('objecttype_id', '=', $cTemplate->id)
               ->where('activity', 'IS', NULL)
@@ -725,7 +658,7 @@ class Model_Object extends ORM {
 
    public function getPublishedChildren() {
 
-      $children = ORM::Factory('object')
+      $children = Graph::object()
 							->latticeChildrenFilter($this->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
@@ -742,7 +675,7 @@ class Model_Object extends ORM {
    }
    
    public function getLatticeChildren($lattice = 'lattice'){
-      $children = ORM::Factory('object')
+      $children = Graph::object()
 							->latticeChildrenFilter($this->id, $lattice)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder')
@@ -752,7 +685,7 @@ class Model_Object extends ORM {
    }
 
    public function getNextPublishedPeer() {
-      $next = ORM::Factory('object')
+      $next = Graph::object()
 							->latticeChildrenFilter($this->getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
@@ -768,7 +701,7 @@ class Model_Object extends ORM {
    }
 
    public function getPrevPublishedPeer() {
-      $next = ORM::Factory('object')
+      $next = Graph::object()
 							->latticeChildrenFilter($this->getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
@@ -784,7 +717,7 @@ class Model_Object extends ORM {
    }
 
    public function getFirstPublishedPeer() {
-      $first = ORM::Factory('object')
+      $first = Graph::object()
 							->latticeChildrenFilter($this->getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
@@ -799,7 +732,7 @@ class Model_Object extends ORM {
    }
 
    public function getLastPublishedPeer() {
-      $last = ORM::Factory('object')
+      $last = Graph::object()
 							->latticeChildrenFilter($this->getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
@@ -865,7 +798,7 @@ class Model_Object extends ORM {
    }
 
    private function moveUploadedFileToTmpMedia($tmpName) {
-      $saveName = latticecms::makeFileSaveName('tmp') . microtime();
+      $saveName = Model_Object::makeFileSaveName('tmp') . microtime();
 
       if (!move_uploaded_file($tmpName, Graph::mediapath() . $saveName)) {
          $result = array(
@@ -890,7 +823,7 @@ class Model_Object extends ORM {
       }
 
       $file->unlinkOldFile();
-      $saveName = latticecms::makeFileSaveName($filename);
+      $saveName = Model_Object::makeFileSaveName($filename);
 
       if (!copy(Graph::mediapath() . $tmpName, Graph::mediapath() . $saveName)) {
          throw new Lattice_Exception('this is a MOP Exception');
@@ -1020,8 +953,14 @@ class Model_Object extends ORM {
 
    //this is gonna change a lot!
    //this only supports a very special case of multiSelect objects
+   /*
+    * 
+    * Likely No longer used and can be removed
+    * 
+    */
    public function saveObject() {
-      $object = ORM::Factory('object', $this->contenttable->$field);
+      /*
+      $object = ORM::Factory('object', $this->content table->$field);
       if (!$object->objecttype_id) {
          $object->objecttype_id = 0;
       }
@@ -1040,7 +979,8 @@ class Model_Object extends ORM {
          $object->$value = 1;
       }
       $object->save();
-      return true;
+      return true;*/
+      
    }
 
    /* Query Filters */
@@ -1116,7 +1056,7 @@ class Model_Object extends ORM {
    }
    
    public function latticeChildrenQuery($lattice='lattice'){
-      return Graph::object()->latticeChildrenFilter($this->id, $lattice);
+      return Graph::instance()->latticeChildrenFilter($this->id, $lattice);
    
    }
 
@@ -1169,7 +1109,7 @@ class Model_Object extends ORM {
    public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
       
       $newObjectType = ORM::Factory('objecttype', $objectTypeName);
-      
+
       $newObject = $this->addLatticeObject($objectTypeName, $data, $lattice, $rosettaId, $languageId);
      
       
@@ -1290,7 +1230,7 @@ class Model_Object extends ORM {
       return $this; //chainable
    }
    
-    private function createObject($objectTypeName, $data, $rosettaId, $languageId){
+    private function createObject($objectTypeName, $rosettaId, $languageId){
        
       if(!$rosettaId){
          $translationRosettaId = Graph::newRosetta();
@@ -1322,8 +1262,6 @@ class Model_Object extends ORM {
       $newObject->language_id = $languageId;
       $newObject->rosetta_id = $translationRosettaId;
       
-      $newObject->save();
-
 
       //check for enabled publish/unpublish. 
       //if not enabled, insert as published
@@ -1335,14 +1273,25 @@ class Model_Object extends ORM {
             $newObject->published = 0;
          }
       }
-      if (isset($data['published']) && $data['published']) {
-         $newObject->published = 1;
-         unset($data['published']);
-      }
 
       $newObject->save();
-
+     
+      return $newObject;
+    }
+    
+    private function updateContentData($data){
+       if(!count($data)){
+          return $this;
+       }
+      
+      if (isset($data['published']) && $data['published']) {
+         $this->published = 1;
+         unset($data['published']);
+      }
+      
       //Add defaults to content table
+      //This needs to happen after the lattice point is set
+      //in case content tables are dependent on lattice point
 
 
       $lookupTemplates = lattice::config('objects', '//objectType');
@@ -1357,14 +1306,14 @@ class Model_Object extends ORM {
          switch ($field) {
             case 'slug':
             case 'decoupleSlugTitle':
-               $newObject->$field = $data[$field];
+               $this->$field = $data[$field];
                continue(2);
             case 'title':
-               $newObject->$field = $data[$field];
+               $this->$field = $data[$field];
                continue(2);
          }
 
-         $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $newObject->objecttype->objecttypename, $field);
+         $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field);
          $fieldInfo = lattice::config('objects', $fieldInfoXPath)->item(0);
          if (!$fieldInfo) {
             throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath' => $fieldInfoXPath));
@@ -1372,8 +1321,8 @@ class Model_Object extends ORM {
 
          if (in_array($fieldInfo->tagName, $objectTypes) && is_array($value)) {
             $clusterTemplateName = $fieldInfo->tagName;
-            $clusterObjectId = ORM::Factory('object')->addObject($clusterTemplateName, $value); //adding object to null parent
-            $newObject->$field = $clusterObjectId;
+            $clusterObjectId = Graph::object()->addObject($clusterTemplateName, $value); //adding object to null parent
+            $this->$field = $clusterObjectId;
             continue;
          }
 
@@ -1388,21 +1337,21 @@ class Model_Object extends ORM {
 
                if (isset($_FILES[$field])) {
                   Kohana::$log->add(Log::ERROR, 'Adding via post file');
-                  $file = latticecms::saveHttpPostFile($newObject->id, $field, $_FILES[$field]);
+                  $file = Model_Object::saveHttpPostFile($this->id, $field, $_FILES[$field]);
                } else {
                   $file = ORM::Factory('file');
                   $file->filename = $value;
                   $file->save();
-                  $newObject->$field = $file->id;
+                  $this->$field = $file->id;
                }
                break;
             default:
-               $newObject->$field = $data[$field];
+               $this->$field = $data[$field];
                break;
          }
       }
-      $newObject->save();
-      return $newObject;
+      $this->save();
+      return $this;
    
    }
    
@@ -1419,14 +1368,20 @@ class Model_Object extends ORM {
    public function addElementObject($objectTypeName, $elementName, $data=array(), $rosettaId = null, $languageId = null){
       $newObjectType = ORM::Factory('objecttype', $objectTypeName);
       
-      $newObject = $this->createObject($objectTypeName, $data, $rosettaId, $languageId);
-     
+      $newObject = $this->createObject($objectTypeName, $rosettaId, $languageId);
+
+      
       //and set up the element relationship
       $elementRelationship = ORM::Factory('objectelementrelationship');
       $elementRelationship->object_id = $this->id;
       $elementRelationship->elementobject_id = $newObject->id;
       $elementRelationship->name = $elementName;
       $elementRelationship->save();
+      
+      //Postpone dealing with content record until after lattice point is set
+      //in case content table logic depends on lattice point.
+      $newObject->insertContentRecord();
+      $newObject->updateContentData($data);
       
       /*
        * Set up any translated peer objects
@@ -1457,21 +1412,27 @@ class Model_Object extends ORM {
        */
       $newObject->addComponents();
 
-      return $newObject->id;
+      return $newObject;
   
    }
     
    private function addLatticeObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null){
       
-      $newObject = $this->createObject($objectTypeName, $data, $rosettaId, $languageId);
-     
+      $newObject = $this->createObject($objectTypeName, $rosettaId, $languageId);
 
+//      print_r($newObject->as_array());
       //The objet has been built, now set it's lattice point
       $lattice = Graph::lattice();
       $objectRelationship = ORM::Factory('objectrelationship');
       $objectRelationship->lattice_id = $lattice->id;
       $objectRelationship->object_id = $this->id;
       $objectRelationship->connectedobject_id = $newObject->id;
+      $objectRelationship->save();
+      $newObject->insertContentRecord();
+  
+      //die($newObject->id);
+      $newObject->updateContentData($data);
+
       
       //calculate sort order
       $sort = DB::select('sortorder')->from('objectrelationships')
@@ -1502,5 +1463,4 @@ class Model_Object extends ORM {
    }
 
 }
-
 ?>

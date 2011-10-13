@@ -11,7 +11,7 @@ Class Kohana_Exception extends Kohana_Kohana_Exception {
 			$message = $this->getMessage();
 			foreach( $this->getTrace() as $trace){
 				if(isset($trace['file'])){
-					$message .= " ::::: ".$trace['file'].':'.$trace['line']."\n;";
+					$message .= " :::::\n ".$trace['file'].':'.$trace['line']."\n;";
 				}
 			}
 			return $message;

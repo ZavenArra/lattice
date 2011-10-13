@@ -5,5 +5,7 @@ $config['layout'] = 'LayoutAdmin';
 $config['enableSlugEditing'] = true;
 $config['graphRootNode'] = 'cmsRootNode';
 $config['defaultLanguage'] = 'en';
+$config['internationalization'] = true;
+$config['preview'] = true;
 
 return $config;

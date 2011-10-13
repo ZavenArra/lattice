@@ -24,7 +24,7 @@ Class latticeui{
 		if( in_array($element['type'], array('file', 'image'))){
 
 			if(!is_object($fieldvalue) ){
-				$fieldvalue = ORM::Factory('file')->where('id', $fieldvalue)->find(); //why is where necessary???
+				$fieldvalue = ORM::Factory('file', $fieldvalue);
 			}
 
 			if($fieldvalue->_loaded){
@@ -149,7 +149,8 @@ Class latticeui{
 	}
 
 	public static function password( $field, $class, $tag, $fieldValue, $label=null, $labelClass=null ){
-		return latticeui::text( $field, $class, $tag, $fieldValue, $label=null, $labelClass=null );
+		$elementArray = array( 'type'=>'password', 'name'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "labelClass"=>$labelClass );
+		return latticeui::buildUIElement( $elementArray, $fieldValue);		
 	}
 
 	public static function radioGroup( $field, $class, $radios, $fieldValue, $groupLabel=null, $labelClass=null ){
@@ -172,10 +173,10 @@ Class latticeui{
 	}
 
    // 0ak - revisit this function.  Needed?
-        public static function pulldown ( $field, $class, $options, $fieldValue, $groupLabel=null, $labelClass=null ){
-                $elementArray = array( 'type'=>'pulldown',  'class'=>$class, 'grouplabel'=>$groupLabel, 'name'=>$field, 'options'=> $options, "labelClass"=>$labelClass );
-                return latticeui::buildUIElement( $elementArray, $fieldValue );
-        }
+	public static function pulldown ( $field, $class, $options, $fieldValue, $groupLabel=null, $labelClass=null ){
+	  $elementArray = array( 'type'=>'pulldown',  'class'=>$class, 'grouplabel'=>$groupLabel, 'name'=>$field, 'options'=> $options, "labelClass"=>$labelClass );
+	  return latticeui::buildUIElement( $elementArray, $fieldValue );
+	}
 
    
    public static function tags($currentTags){
