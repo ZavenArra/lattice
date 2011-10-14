@@ -168,7 +168,7 @@ class Graph {
               ->join('objects')->on('objects.id', '=', 'objectrelationships.connectedobject_id' )
               ->where('language_id', '=', $language->id)
               ->find();
-      $root = ORM::Factory('Lattice_Object', $objectRelationship->id);
+      $root = ORM::Factory('object', $objectRelationship->id);
       if(!$root->loaded()){
          throw new Kohana_Exception('Root object not found');
       }
