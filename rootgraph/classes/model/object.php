@@ -199,7 +199,7 @@ class Model_Object extends ORM {
 
 		 $objectTypeName = $this->objecttype->objecttypename;
 		 if ($objectTypeName) {
-			 if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+			 if (Kohana::find_file('classes/model/lattice', strtolower($objectTypeName))) {
 				 $modelName = 'Model_Lattice_' . $objectTypeName;
 				 $model = new $modelName($objectId);
 				 $this->contentDriver = $model;
