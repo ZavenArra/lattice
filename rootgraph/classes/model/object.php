@@ -1158,7 +1158,7 @@ class Model_Object extends ORM {
       $containers = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename));
       foreach ($containers as $c) {
          $arguments['title'] = $c->getAttribute('label');
-         if(! ORM::Factory('objecttype', $c->getAttribute('name')->loaded())){
+         if(! ORM::Factory('objecttype', $c->getAttribute('name'))->loaded()){
             $this->objecttype->configureElement($c);
          }
       }
