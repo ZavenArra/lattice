@@ -268,6 +268,34 @@ lattice.ui.Sticky = new Class({
     
 });
 
+
+lattice.ui.HideShowTabs = new Class({
+
+	initialize: function( el ){
+		console.log( 'HideShowTabs', el );
+		this.element = el;
+		this.tabs = el.getElements( '.tabNav li');
+		this.tabs.each( function( tab ){
+			tab.addEvent( 'click', this.onTabClicked.bindWithEvent( this, tab ) );
+		}, this );
+		this.activeTab = el.getElements( '.tabNav li.active' );
+		this.activePanel = this.element.getElement( '.' + this.activeTab.get( 'data-targetselector' ) );
+	},
+
+	onTabClicked: function( e, tab ){
+		e.preventDefault();
+		var target = this.element.getElement( '.' + tab.get( 'data-targetselector' ) );
+		this.activeTab.removeClass( 'active' );
+		this.activeTab = tab;
+		this.activePanel.addClass('hidden');
+		tab.addClass('active');
+		target.removeClass('hidden');
+		this.activePanel = target;
+	}
+
+});
+
+
 lattice.ui.FieldSticky = new Class({
 		Extends: lattice.ui.Sticky,
 		initialize: function( el, marshal, options ){

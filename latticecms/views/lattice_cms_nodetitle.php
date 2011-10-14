@@ -1,5 +1,5 @@
 <div class="objectTitle">	
-	<a class='button floatRight' href="#">Preview this Page</a>
+	<!-- <a class='button floatRight' href="#">Preview this Page</a> -->
 	<?
 	if($allowTitleEdit){
 		$elementArray = array( 'type'=>'text', 'name'=>'title', 'isMultiline'=>'false', 'label'=>'Title', 'class'=>'grid_7', 'tag'=>'h2', 'labelClass'=>'hidden' );

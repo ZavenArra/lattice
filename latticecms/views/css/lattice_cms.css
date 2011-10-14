@@ -217,9 +217,6 @@ p.logoutMessage{
 }
 
 ul.listing li{
-	margin: 0 0 .75em 0;
-	padding: 0 0 0 6px;
-	border-left: 1px #dedede solid;
 	color:#444;
 }
 
@@ -506,27 +503,27 @@ button:hover, a.button:hover{
 	list-style:none;
 	margin: 0;
 	padding: 0;
-	height: 1.5em;
-	line-height: 1em;
-	border-bottom: 1px #dedede solid;
+	border-bottom: 1px #eaeaea solid;
 }
 
 .tabNav li{
 	float: left;
-	border-top: 1px #dedede solid;
-	border-left: 1px #dedede solid;
-	border-right: 1px #dedede solid;
 	margin: 0 .25em 0 0;
 }
 
 .tabNav li a{
 	display: block;
-	padding: .25em 1em .25em 1em;	
+	padding: .5em 1em;	
 	text-decoration: none;
+	color: #999;
 }
 
-.tabNav li a.active{
-	background: #222;
+.tabNav li a:hover{
+	color: #333;
+}
+
+.tabNav li.active{
+	background: #eaeaea;
 	color: #fff;
 }
 
@@ -1311,9 +1308,10 @@ ul.tokens{
 }
 
 .pagesPane{
+	margin-top: 2em;
 	width: 960px;
-	overflow: hidden;
-}
+/*	overflow: hidden;
+*/}
 
 .page{
 	width: 960px;

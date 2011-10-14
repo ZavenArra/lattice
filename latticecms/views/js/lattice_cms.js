@@ -441,7 +441,17 @@ lattice.modules.CMSPage = new Class({
 			}
 			this.slugIPE = this.pageHeader.getElement( ".field-slug" );
 		}
+		
+		this.initializeHideShowTabs();
+				
 		this.element.unspin();
+	},
+
+	initializeHideShowTabs: function(){
+		tabGroups = this.element.getElements('.tabGroup');
+		tabGroups.each( function( tabGroup ){
+			new lattice.ui.HideShowTabs( tabGroup );
+		});
 	},
 	
 	/*
