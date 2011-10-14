@@ -123,16 +123,6 @@ class Lattice_CMS extends Lattice_CMSInterface {
 	Returns: array('html'=>html, 'js'=>js, 'css'=>css)
 	*/
 	public function action_getPage($id, $languageCode = null){
-
-      if(!$languageCode){
-   		$object = Graph::object($id);
-      } else {
-         $object = Graph::object($id)->translate($languageCode);
-      }
-
-		self::$objectId = $id;
-
-
       /*
        * If the request is actually for a module, instead of a object, build
        * the subrequest and set the response body to the request.
@@ -147,6 +137,18 @@ class Lattice_CMS extends Lattice_CMSInterface {
          $this->response->body( $route->execute()->body() );
          return;
 		}
+
+
+		if(!$languageCode){
+			$object = Graph::object($id);
+		} else {
+			$object = Graph::object($id)->translate($languageCode);
+		}
+
+		self::$objectId = $id;
+
+
+
       
 		
 		if($object->id == 0){
