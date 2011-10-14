@@ -243,30 +243,7 @@ class latticecms {
 		}
 	}
 
-public static function makeFileSaveName($filename) {
-			if(!$filename){
-				return null;
-			}
-      $filename = str_replace('&', '_', $filename);
-      $xarray = explode('.', $filename);
-      $nr = count($xarray);
-      $ext = $xarray[$nr - 1];
-      $name = array_slice($xarray, 0, $nr - 1);
-      $name = implode('.', $name);
-      $i = 1;
-      if (!file_exists(Graph::mediapath() . "$name" . '.' . $ext)) {
-         $i = '';
-      } else {
-         for (; file_exists(Graph::mediapath() . "$name" . $i . '.' . $ext); $i++) {     
-         }
-      }
-      //clean up extension
-      $ext = strtolower($ext);
-      if ($ext == 'jpeg') {
-         $ext = 'jpg';
-      }
-      return $name . $i . '.' . $ext;
-   }
+
 
    public static function saveHttpPostFile($objectid, $field, $postFileVars) {
       Kohana::$log->add(Log::ERROR, 'save uploaded');

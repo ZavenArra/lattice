@@ -189,9 +189,9 @@ class Controller_List extends Lattice_CMSInterface {
       $item = Graph::object($newId);
       
       /*Cludge to bypass echoing placeholders necessary to pass validation*/
-      $item->username = NULL;
-      $item->password = NULL;
-      $item->email = NULL;
+     // $item->username = NULL;
+     // $item->password = NULL;
+     // $item->email = NULL;
       /*End cludge*/
       
       $htmlChunks = latticecms::buildUIHtmlChunksForObject($item);
