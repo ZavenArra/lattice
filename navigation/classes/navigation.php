@@ -13,7 +13,7 @@ class Navigation {
 		Utility function to get one node
 	*/
 	public static function getNodeInfo(& $object){
-		if(!substr('Lattice_Object', get_class($object))){
+		if(!strstr('Lattice_Object', get_class($object))){
 			$object = Graph::object($object);
 		}
 
