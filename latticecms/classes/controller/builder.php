@@ -214,10 +214,9 @@ class Controller_Builder extends Controller {
 			foreach(lattice::config($xmlFile, 'list', $item) as $list){
 				//echo "FOUND A LIST\n\n";
 				//find the container
-				$listT = ORM::Factory('objectType', $list->getAttribute('name'));
 				$container = Graph::object()
                     ->latticeChildrenFilter($objectId)
-                    ->objectTypeFilter($listT->id)
+                    ->objectTypeFilter($list->getAttribute('name'))
                     ->find();
           
             //jump down a level to add object
