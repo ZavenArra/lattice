@@ -1,4 +1,4 @@
-<div id="list_<?=$listObjectId;?>" data-objectid="<?=$listObjectId;?>" class="module <?=$class;?> classPath-lattice_modules_List">
+<div id="list_<?=$listObjectId;?>" data-objectid="<?=$listObjectId;?>" class="module <?=$class;?> classPath-lattice_modules_List clearFix">
 	<?if(isset($label) && $label):?>
 	<label class='listLabel'><?=$label;?></label>
 	<?endif;?>

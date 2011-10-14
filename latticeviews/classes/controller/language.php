@@ -6,11 +6,10 @@ Class Controller_Language extends Controller {
 
 			$session = Session::instance();
 			$session->set('languageCode', $languageCode);
-	
 			if($redirectObjectId){
 				//process redirect with new languageCode
 				//this is actually the latticeview::getLanguageAwareSlug call
-            //die(latticeview::slug($redirectObjectId));
+				//die(latticeview::slug($redirectObjectId));
 				$this->request->redirect(latticeview::slug($redirectObjectId));
 			}
 	}

@@ -6,7 +6,7 @@
 		<div class="localizationControls container_12">
 			<ul class="clearFix">
 			<?foreach($languages as $language):?>
-				<li><a data-lang="<?=$language->code;?>" href="#"><?=$language->fullname;?></a><li>
+				<li><a data-lang="<?=$language->code;?>" href="<?=$language->code;?>"><?=$language->fullname;?></a><li>
 			<?endforeach;?>
 			</ul>
 		</div>
