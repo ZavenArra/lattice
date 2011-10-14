@@ -187,6 +187,18 @@ Class lattice {
 		}
 	}
 
+	public static function setCurrentLanguage($languageCode){
+		Session::instance()->set('languageCode', $languageCode);
+	}
+
+	public static function getCurrentLanguage(){
+		$languageCode = Session::instance()->get('languageCode');
+		if(!$languageCode){
+			$languageCode = Kohana::config('lattice.defaultLanguage');
+		}
+		return $languageCode;
+	}
+
 	//takes Exception as argument
 	public static function getOneLineErrorReport(Exception $e){
 		switch(get_class($e)){

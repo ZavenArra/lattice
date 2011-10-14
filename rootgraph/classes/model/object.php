@@ -199,7 +199,7 @@ class Model_Object extends ORM {
 
 		 $objectTypeName = $this->objecttype->objecttypename;
 		 if ($objectTypeName) {
-			 if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+			 if (Kohana::find_file('classes/model/lattice', strtolower($objectTypeName))) {
 				 $modelName = 'Model_Lattice_' . $objectTypeName;
 				 $model = new $modelName($objectId);
 				 $this->contentDriver = $model;
@@ -1158,9 +1158,10 @@ class Model_Object extends ORM {
       $containers = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename));
       foreach ($containers as $c) {
          $arguments['title'] = $c->getAttribute('label');
-         if(! ORM::Factory('objecttype', $c->getAttribute('name')->loaded())){
+         if(! ORM::Factory('objecttype', $c->getAttribute('name'))->loaded()){
             $this->objecttype->configureElement($c);
          }
+         $this->addObject($c->getAttribute('name'), $arguments);
       }
       
       //look up any components and add them as well
