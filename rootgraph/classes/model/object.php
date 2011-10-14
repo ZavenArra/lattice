@@ -112,7 +112,7 @@ class Model_Object extends ORM {
 			}
 			return $slug;
 		} else {
-			return self::createSlug(str_replace(' ', '',microtime())); //try something else
+			return self::createSlug('slug'.str_replace(' ', '',microtime())); //try something else
 		}
 	}
 
@@ -1158,7 +1158,9 @@ class Model_Object extends ORM {
       $containers = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename));
       foreach ($containers as $c) {
          $arguments['title'] = $c->getAttribute('label');
-         $this->objecttype->configureElement($c);
+         if(! ORM::Factory('objecttype', $c->getAttribute('name')->loaded())){
+            $this->objecttype->configureElement($c);
+         }
       }
       
       //look up any components and add them as well
@@ -1256,7 +1258,7 @@ class Model_Object extends ORM {
       if (isset($data['title'])) {
         $newObject->slug = Model_Object::createSlug($data['title'], $newObject->id);
       } else {
-				$newObject->slug = Model_Object::createSlug();
+         $newObject->slug = Model_Object::createSlug();
       }
      
       $newObject->language_id = $languageId;
