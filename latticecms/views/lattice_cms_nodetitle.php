@@ -13,6 +13,6 @@
 		echo latticeui::buildUIElement( $elementArray, $slug );
 	}
 	?>
-	<div class="clear"></div>
+		<div class="clear"></div>
 </div>
 
