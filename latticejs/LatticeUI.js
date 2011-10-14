@@ -2754,7 +2754,6 @@ lattice.ui.SlideSwitch = new Class({
 		}		
 		if( this.showSaving ) this.showSaving();
 		if( this.leaveEditMode ) this.leaveEditMode();
-      alert(this.marshal);
 		this.marshal.saveField( { field: this.fieldName, value: val }, this.onResponse.bind( this ) );
 	}
 });
