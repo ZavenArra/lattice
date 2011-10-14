@@ -1161,6 +1161,7 @@ class Model_Object extends ORM {
          if(! ORM::Factory('objecttype', $c->getAttribute('name'))->loaded()){
             $this->objecttype->configureElement($c);
          }
+         $this->addObject($c->getAttribute('name'), $arguments);
       }
       
       //look up any components and add them as well
