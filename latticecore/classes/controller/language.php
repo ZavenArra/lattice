@@ -4,7 +4,7 @@ Class Controller_Language extends Controller {
 
 	public function action_changeLanguage($languageCode, $redirectObjectId = NULL){
 
-			lattice::setLanguage($languageCode);
+		lattice::setCurrentLanguage($languageCode);
 			if($redirectObjectId){
 				//process redirect with new languageCode
 				//this is actually the latticeview::getLanguageAwareSlug call

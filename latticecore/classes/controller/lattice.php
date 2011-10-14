@@ -18,6 +18,21 @@ class Controller_Lattice extends Controller {
 	public function __construct($request, $response){
 		parent::__construct($request, $response);
 
+		//set the language requirements
+		
+		$languageCode = NULL;
+		if( ! Session::instance()->get('languageCode') ){
+			$languageCode = Kohana::config('lattice.defaultLanguage');
+			Session::instance()->set('languageCode', $languageCode );
+		}else{
+			$languageCode = Session::instance()->get('languageCode');
+		}
+		if(!$languageCode){
+			throw new Kohana_Exception('No language code found');
+		}
+		i18n::lang( $languageCode );
+
+
 		$this->controllerName = strtolower(substr(get_class($this), 11));
 		$this->checkAccess();
 
