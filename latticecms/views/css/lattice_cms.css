@@ -1309,9 +1309,9 @@ ul.tokens{
 
 .pagesPane{
 	margin-top: 2em;
-	width: 960px;
-/*	overflow: hidden;
-*/}
+	width: 968px;
+	overflow: hidden;
+}
 
 .page{
 	width: 960px;
