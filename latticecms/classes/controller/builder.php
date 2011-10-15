@@ -152,7 +152,7 @@ class Controller_Builder extends Controller {
 				case 'file':
 				case 'image':
 						$path_parts = pathinfo($content->nodeValue);
-						$savename = latticecms::makeFileSaveName($path_parts['basename']);	
+						$savename = Model_Object::makeFileSaveName($path_parts['basename']);	
 						if(file_exists($content->nodeValue)){
 							copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']).$content->nodeValue, Graph::mediapath($savename).$savename);
 							$data[$field] = $savename;
