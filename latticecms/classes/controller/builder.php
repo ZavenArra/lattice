@@ -198,9 +198,10 @@ class Controller_Builder extends Controller {
 			}
 
 			//check for pre-existing object as list container
-			foreach(mop::config('objects', sprintf('//object[@name="%s"]/element/list', $parent->objecttype->objecttypename)	as $listContainerType){
+			//echo sprintf('//objectType[@name="%s"]/elements/list', $parentObject->objecttype->objecttypename);
+			foreach(lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $parentObject->objecttype->objecttypename))	as $listContainerType){
 
-				$prexistingObject = Graph::object()
+				$preexistingObject = Graph::object()
 					->latticeChildrenFilter($parentObject->id)
 					->objectTypeFilter($listContainerType->getAttribute('name'))
 					->find();
