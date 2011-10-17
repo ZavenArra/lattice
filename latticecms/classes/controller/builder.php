@@ -181,23 +181,35 @@ class Controller_Builder extends Controller {
 			}
 
 
-         //now we check for a title collision
+			//now we check for a title collision
 			//if there is a title collision, we assume that this is a component
 			//already added at the next level up, in this case we just
 			//update the objects data
-         $component = false;
-         if(isset($data['title'])){
-            $checkForPreexistingObject = Graph::object()
-                 ->latticeChildrenFilter($parentObject->id)
-                 ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
-                 ->where('title', '=', $data['title'])
-                 ->find();
-            if($checkForPreexistingObject->loaded()){
-                $component = $checkForPreexistingObject;
-            }
-         }
-		
-		
+			$component = false;
+			if(isset($data['title'])){
+				$preexistingObject = Graph::object()
+					->latticeChildrenFilter($parentObject->id)
+					->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
+					->where('title', '=', $data['title'])
+					->find();
+				if($preexistingObject->loaded()){
+					$component = $preexistingObject;
+				}
+			}
+
+			//check for pre-existing object as list container
+			foreach(mop::config('objects', sprintf('//object[@name="%s"]/element/list', $parent->objecttype->objecttypename)	as $listContainerType){
+
+				$prexistingObject = Graph::object()
+					->latticeChildrenFilter($parentObject->id)
+					->objectTypeFilter($listContainerType->getAttribute('name'))
+					->find();
+				if($preexistingObject->loaded()){
+					$component = $preexistingObject;
+				}
+			}
+
+
 			if($component){
 				$component->updateWithArray($data);
 				$objectId = $component->id;
@@ -215,11 +227,11 @@ class Controller_Builder extends Controller {
 				//echo "FOUND A LIST\n\n";
 				//find the container
 				$container = Graph::object()
-                    ->latticeChildrenFilter($objectId)
-                    ->objectTypeFilter($list->getAttribute('name'))
-                    ->find();
-          
-            //jump down a level to add object
+					->latticeChildrenFilter($objectId)
+					->objectTypeFilter($list->getAttribute('name'))
+					->find();
+
+				//jump down a level to add object
 				$this->insertData($xmlFile, $container->id, $list);
 			}
 
