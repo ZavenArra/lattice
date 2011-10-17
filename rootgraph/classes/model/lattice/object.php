@@ -66,127 +66,126 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
          return $this->contenttable->title = $title; 
    }
    
-   public function getContentColumn($object, $column){
-      //This is a mapped field in the contents table
-         $contentColumn = self::dbmap($object->objecttype_id, $column);       
+	 public function getContentColumn($object, $column){
+		 //This is a mapped field in the contents table
+		 $contentColumn = self::dbmap($object->objecttype_id, $column);       
 
-         //No column mapping set up, attempt to run setup if it's configured.
-         if (!$contentColumn) {
-                        
-            //this column isn't mapped, check to see if it's in the xml
-            if ($object->objecttype->nodeType == 'container') {
-               //For lists, values will be on the 2nd level 
-               $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
-            } else {
-               //everything else is a normal lookup
-               $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
-            }
-            $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
+		 //No column mapping set up, attempt to run setup if it's configured.
+		 if (!$contentColumn) {
 
-
-            if ($fieldConfig->item(0)) {
-
-               //This is a temporary stopgap until we have a cleaner handle on what to do when tags is
-               //requested via the object.
-               if ($fieldConfig->item(0)->tagName == 'tags') {
-                  return $this->getTagStrings();
-               }
-
-               //field is configured but not initialized in database
-               $object->objecttype->configureElement($fieldConfig->item(0));
-
-               self::reinitDbmap($object->objecttype_id);
-
-               //now go aheand and get the mapped column
-               $contentColumn = self::dbmap($object->objecttype_id, $column);
-            }
-         }
+			 //this column isn't mapped, check to see if it's in the xml
+			 if ($object->objecttype->nodeType == 'container') {
+				 //For lists, values will be on the 2nd level 
+				 $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
+			 } else {
+				 //everything else is a normal lookup
+				 $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
+			 }
+			 $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
 
 
-         if (!$contentColumn) {
-            throw new Kohana_Exception('Column :column not found in content model', array(':column' => $column));
-         }
+			 if ($fieldConfig->item(0)) {
 
-         //If the column is an object, then this is a relationship with another object
-         if (strstr($contentColumn, 'object')) {
-            //echo 'iTS AN OBJECT<br>';
-            $objectElementRelationship = ORM::Factory('objectelementrelationship')
-                    ->where('object_id', '=', $this->id)
-                    ->where('name', '=', $column)
-                    ->find();
-            $objectElement = Graph::object($objectElementRelationship->elementobject_id);
+				 //This is a temporary stopgap until we have a cleaner handle on what to do when tags is
+				 //requested via the object.
+				 if ($fieldConfig->item(0)->tagName == 'tags') {
+					 return $object->getTagStrings();
+				 }
 
-            if (!$objectElement->loaded()) {
-               //
-               // it may make sense for the objecttype model to return the config info for itself
-               // or something similar
-               //
-            if ($object->objecttype->nodeType == 'container') {
-                  //For lists, values will be on the 2nd level 
-                  $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
-               } else {
-                  //everything else is a normal lookup
-                  $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
-               }
+				 //field is configured but not initialized in database
+				 $object->objecttype->configureElement($fieldConfig->item(0));
 
-               $elementConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
+				 self::reinitDbmap($object->objecttype_id);
 
-               //build the object
-               $objectElement = $object->addElementObject($elementConfig->item(0)->tagName, $column);
-            }
-            return $objectElement;
-         }
-
-         //Also need to check for file, but in 3.1 file will be an object itself and this will
-         //not be necessary.
-         if (strstr($contentColumn, 'file') && !is_object($this->contenttable->$contentColumn)) {
-            $file = ORM::Factory('file', $this->contenttable->$contentColumn);
-            //file needs to know what module it's from if its going to check against valid resizes
-            $this->contenttable->__set($contentColumn, $file);
-         }
-  
-         return $this->contenttable->$contentColumn;
-   }
-   
-
-   public function setContentColumn($object, $column, $value){
-       
-            if (in_array($column, $this->passthroughFields)) {
-               return $this->contenttable->__set($column, $value);
-            }
+				 //now go aheand and get the mapped column
+				 $contentColumn = self::dbmap($object->objecttype_id, $column);
+			 }
+		 }
 
 
-            //check for dbmap
-            if ($mappedcolumn = self::dbmap($object->objecttype_id, $column)) {
-               return $this->contenttable->__set($mappedcolumn, $value);
-            }
-            
-           
-            //this column isn't mapped, check to see if it's in the xml
-            if ($object->objecttype->nodeType == 'container') {
-               //For lists, values will be on the 2nd level 
-               $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
-            } else {
-               //everything else is a normal lookup
-               $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
-            }
-            
-            
-            $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
-            if ($fieldConfig->item(0)) {
-               //field is configured but not initialized in database
-               $object->objecttype->configureElement($fieldConfig->item(0));
-               self::reinitDbmap($object->objecttype_id);
+		 if (!$contentColumn) {
+			 throw new Kohana_Exception('Column :column not found in content model', array(':column' => $column));
+		 }
 
-               //now go aheand and save on the mapped column
+		 //If the column is an object, then this is a relationship with another object
+		 if (strstr($contentColumn, 'object')) {
+			 $objectElementRelationship = ORM::Factory('objectelementrelationship')
+				 ->where('object_id', '=', $object->id)
+				 ->where('name', '=', $column)
+				 ->find();
+			 $objectElement = Graph::object($objectElementRelationship->elementobject_id);
 
-               $mappedcolumn = self::dbmap($object->objecttype_id, $column);
-               return $this->contenttable->__set($mappedcolumn, $value);
-            }
+			 if (!$objectElement->loaded()) {
+				 //
+				 // it may make sense for the objecttype model to return the config info for itself
+				 // or something similar
+				 //
+				 if ($object->objecttype->nodeType == 'container') {
+					 //For lists, values will be on the 2nd level 
+					 $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
+				 } else {
+					 //everything else is a normal lookup
+					 $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
+				 }
 
-            $this->contenttable->$mappedcolumn = $value;
-            $this->contenttable->save();
-   }
+				 $elementConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
+
+				 //build the object
+				 $objectElement = $object->addElementObject($elementConfig->item(0)->tagName, $column);
+			 }
+			 return $objectElement;
+		 }
+
+		 //Also need to check for file, but in 3.1 file will be an object itself and this will
+		 //not be necessary.
+		 if (strstr($contentColumn, 'file') && !is_object($this->contenttable->$contentColumn)) {
+			 $file = ORM::Factory('file', $this->contenttable->$contentColumn);
+			 //file needs to know what module it's from if its going to check against valid resizes
+			 $this->contenttable->__set($contentColumn, $file);
+		 }
+
+		 return $this->contenttable->$contentColumn;
+	 }
+
+
+	 public function setContentColumn($object, $column, $value){
+
+		 if (in_array($column, $this->passthroughFields)) {
+			 return $this->contenttable->__set($column, $value);
+		 }
+
+
+		 //check for dbmap
+		 if ($mappedcolumn = self::dbmap($object->objecttype_id, $column)) {
+			 return $this->contenttable->__set($mappedcolumn, $value);
+		 }
+
+
+		 //this column isn't mapped, check to see if it's in the xml
+		 if ($object->objecttype->nodeType == 'container') {
+			 //For lists, values will be on the 2nd level 
+			 $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
+		 } else {
+			 //everything else is a normal lookup
+			 $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
+		 }
+
+
+		 $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
+		 if ($fieldConfig->item(0)) {
+			 //field is configured but not initialized in database
+			 $object->objecttype->configureElement($fieldConfig->item(0));
+			 self::reinitDbmap($object->objecttype_id);
+
+			 //now go aheand and save on the mapped column
+
+			 $mappedcolumn = self::dbmap($object->objecttype_id, $column);
+			 return $this->contenttable->__set($mappedcolumn, $value);
+		 }
+
+		 $this->contenttable->$mappedcolumn = $value;
+		 $this->contenttable->save();
+	 }
 
    //this could potentially go into the base class 100%
    public function saveContentTable($object, $inserting=false){

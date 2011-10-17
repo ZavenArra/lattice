@@ -29,7 +29,7 @@ class Controller_ExportXML extends Controller {
                   //or copy to directory and just use filename
                   if ($value->filename) {
 										$targetPath = $this->outputDir . $value->filename;
-										if(file_exists('application/media/'.$targetPath)){
+										if(file_exists($targetPath)){
 											$node->appendChild($this->doc->createTextNode($targetPath));
 										}
                   }
@@ -81,17 +81,17 @@ class Controller_ExportXML extends Controller {
 
             switch (get_class($value)) {
                case 'Model_File':
-//or copy to directory and just use filename
+								 //or copy to directory and just use filename
                   if ($value->filename) {
                      $targetPath = $this->outputDir . $value->filename;
-										 if(file_exists('application/media/'.$targetPath)){
+										 if(file_exists($targetPath)){
 											 $node->appendChild($this->doc->createTextNode($targetPath));
 										 }
                   }
                   break;
                case 'Model_Object':
                   foreach ($this->getObjectFields($value) as $subField) {
-//$field->appendChild($subField);
+										//$field->appendChild($subField);
                      echo "sub objects not yet supported for mop export\n";
                      echo $key;
                   }
