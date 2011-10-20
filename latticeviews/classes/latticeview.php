@@ -24,7 +24,7 @@ class latticeview {
 
 			$object = self::getGraphObject($objectIdOrSlug);
 			$objectTypeName = $object->objecttype->objecttypename;
-			if(Kohana::find_file('classes', 'viewmodel/'.$objectTypeName)){
+			if(Kohana::find_file('classes', 'viewmodel/'.strtolower($objectTypeName))){
 				$className = 'ViewModel_'.$objectTypeName;
 				$viewModel = new $className($objectIdOrSlug);
 			} else {
