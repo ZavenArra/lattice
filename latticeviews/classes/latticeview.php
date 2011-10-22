@@ -230,7 +230,7 @@ class latticeview {
 				);
 			}
 		}
-		if($object && $viewConfig && $viewConfig->getAttribute('loadPage')){
+		if($object){
 			$data['content']['main'] = $object->getPageContent();
 		}
 
