@@ -176,7 +176,7 @@ class latticecms {
                foreach ($children as $child) {
                   $label = $child->getAttribute('label');
                   $value = $child->getAttribute('value');
-                  $options[$label] = $value;
+                  $options[$value] = $label;
                }
                $entry['options'] = $options;  
                break;

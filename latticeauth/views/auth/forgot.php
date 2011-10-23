@@ -3,7 +3,7 @@
 		<h3>Forgot Password</h3>
 		<div class="container">
 			<?if(isset($message)):?><?=$message;?><?endif;?>
-			<form action="<?=Kohana::config('config.site_path');?>auth/forgot/" method="POST">
+			<form action="<?=URL::base();?>auth/forgot/" method="POST">
 			Please enter your email.  A new password will be sent to you.<br>
 
 			<label for="emailInput">Email</label>

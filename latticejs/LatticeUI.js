@@ -1526,11 +1526,12 @@ lattice.ui.FileElement = new Class({
 	
 	revertToReadyState: function(){
 //		console.log( this.toString(), "revertToReadyState" );
-		this.statusHide.start( { "opacity":[1,0] });
+		this.statusElement.addClass('hidden');
+//		this.statusHide.start( { "opacity":[1,0] });
 	},
 	
 	onFileComplete: function( json ){
-		console.log( "onFileComplete : json : ", json );
+//		console.log( "onFileComplete : json : ", json );
 		json = JSON.decode( json.response.text );
 		this.clearButton.fade( "in" );
 		if( this.filename ) this.filename.set( "text",  json.response.filename );
@@ -1538,7 +1539,7 @@ lattice.ui.FileElement = new Class({
 		this.downloadButton.removeClass("hidden");
 		this.downloadButton.set( 'title', 'download ' + json.response.filename );
 		this.downloadButton.set( "href", lattice.util.getBaseURL() + json.response.src );
-		console.log( this.toString(), "onFileComplete", lattice.util.getBaseURL() + json.response.thumbSrc );
+//		console.log( this.toString(), "onFileComplete", lattice.util.getBaseURL() + json.response.thumbSrc );
 		this.downloadButton.removeClass("hidden");
 		if( this.previewElement ){
 			this.imgAsset = new Asset.image( lattice.util.getBaseURL() + json.response.thumbSrc, {  alt: json.response.filename, onload: this.updateThumb.bind( this, json ) } );
@@ -1550,9 +1551,9 @@ lattice.ui.FileElement = new Class({
 	updateThumb: function( imageData ){
 //		console.log( this.toString(), "updateThumb", imageData );
 		var size = ( this.imagePreview )? this.imagePreview.getSize() : { x: 0, y: 0 };
-		this.imgAsset.setStyle( 'width', size.x );
-		this.imgAsset.setStyle( 'height', size.y );
-		this.imgAsset.setStyle( 'opacity', 0 );
+		this.imgAsset.setStyle( 'width', imageData.width );
+		this.imgAsset.setStyle( 'height', imageData.height );
+//		this.imgAsset.setStyle( 'opacity', 0 );
 		if( !this.imagePreview ){
 			//this.imagePreview = new Element( "img" ).inject( this.previewElement, "top" );
 			this.imgAsset.inject( this.previewElement, 'top' );
@@ -1561,10 +1562,11 @@ lattice.ui.FileElement = new Class({
 		}
 		this.imagePreview = this.previewElement.getElement( 'img' );
 		this.revertToReadyState();
-		this.imageFadeIn = new Fx.Morph( this.imagePreview, {
-			'duration': 300,
-			'onComplete': lattice.eventManager.broadcastMessage.bind( lattice.eventManager, "resize" )
-		}).start( { 'opacity' : [ 0, 1 ], 'width': imageData.width, 'height': imageData.height } );
+		lattice.eventManager.broadcastMessage('resize');
+		// this.imageFadeIn = new Fx.Morph( this.imagePreview, {
+		// 	'duration': 300,
+		// 	'onComplete': lattice.eventManager.broadcastMessage.bind( lattice.eventManager, "resize" )
+		// }).start( { 'opacity' : [ 0, 1 ], 'width': imageData.width, 'height': imageData.height } );
 
 	},
 

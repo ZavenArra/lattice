@@ -156,6 +156,16 @@ class Controller_ExportXML extends Controller {
    //this should call action_export and then convert with xslt
    public function action_exportMOPFormat($outputfilename='export', $xslt='') {
 
+		 $this->outputDir = 'application/export/' . $outputfilename . '/';
+
+		 try {
+		 mkdir($this->outputDir, 777);
+		 } catch ( Exception $e){
+
+		 }
+		 chmod(getcwd() . '/' . $this->outputDir, 0777);
+		 system('cp -Rp application/media/* ' . $this->outputDir);
+
       //     $this->action_export();
       //do the export
       //and then call xslt to transform
@@ -205,24 +215,16 @@ class Controller_ExportXML extends Controller {
       $object = Graph::getRootNode('cmsRootNode');
       $objects = $object->getChildren();
 
-      $this->outputDir = 'application/export/' . $outputfilename . '/';
 
       foreach ($this->exportTierMOPFormat($objects) as $item) {
          $data->appendChild($item);
       }
       $this->doc->appendChild($data);
 
-      try {
-         mkdir($this->outputDir, 777);
-      } catch (Exception $e) {
-         
-      }
-      echo getcwd() . '/' . $this->outputDir;
+           echo getcwd() . '/' . $this->outputDir;
       flush();
       ob_flush();
-      chmod(getcwd() . '/' . $this->outputDir, 0777);
       $this->doc->save($this->outputDir . '/' . $outputfilename . '.xml');
-      system('cp -Rp application/media/* ' . $this->outputDir);
       echo 'done';
    }
 

@@ -477,7 +477,7 @@ class Model_Object extends ORM {
       $rosettaId = $this->rosetta_id;
 			if(!$rosettaId){
 				throw new Kohana_Exception('No Rosetta ID found for object during translation with objectId :objectId',
-					array(':objectId'=>$objectId)
+					array(':objectId'=>$rosettaId)
 				);
       }
       if(is_numeric($languageCode)){
