@@ -68,27 +68,49 @@ Class lattice {
 			$dom = new MyDOMDocument($dom);
 
 			//check for arena mappings
-			if($customName = Kohana::config('lattice.filenames.'.$arena)){
-				$arena = $customName;
-			}
-
-			if(file_exists($arena)){
-				//if the argument is actually a path to a file
-				$path = getcwd().'/'.$arena;
+			if($customPath = Kohana::config('lattice.paths.'.$arena)){
+				$arenaPath = $customPath;
 			} else {
-				$path = Kohana::find_file('config', $arena, 'xml', true); 
-				if(!count($path)){
-					throw new Kohana_Exception('Could not locate xml :file', array(':file'=>$arena));
-				}
-				$path = $path[count($path)-1];
-			}
-			$dom->load( $path );
-			if(!$dom->validate()){
-				echo('Validation failed on '.$path[0]);
+            $arenaPath = $arena;
+         }
+      
+         $request = Request::Factory($arenaPath);
+      
+         $response = null;
+         try{
+         
+           $response = $request->execute();
+
+         } catch(Exception $e){
+            //checking for existence of xml controller
+            if(get_class($e) != 'HTTP_Exception_404')
+               throw $e;
+            //else continue on
+         }
+
+         if($response){
+            $dom->loadXML($response->body());
+           
+         } else {
+
+            if (file_exists($arenaPath)) {
+               //if the argument is actually a path to a file
+               $arenaPath = getcwd() . '/' . $arenaPath;
+            } else {
+               $arenaPath = Kohana::find_file('config', $arenaPath, 'xml', true);
+               if (!count($arenaPath)) {
+                  throw new Kohana_Exception('Could not locate xml :file', array(':file' => $arenaPath));
+               }
+               $arenaPath = $arenaPath[count($arenaPath) - 1];
+            }
+            $dom->load($arenaPath);
+         }
+         if (!$dom->validate()) {
+            echo('Validation failed on '.$arenaPath);
 				print_r($dom->errors);
 				die();
 			}
-
+       
 			if($arena == 'objects'){
 				$clusters = new DOMDocument();
 				$clusters = new MYDOMDocument($clusters);

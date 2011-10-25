@@ -464,6 +464,12 @@ class Model_Object extends ORM {
 		}
 	}
    
+   /*
+    * Functions for returning messages
+    * This could be used for error handling possibly, but needs more 
+    * work on letting the controller know how to communication with the
+    * presentation/client layer.
+    */
    protected function addMessage($message){
       $this->messages[] = $message;
    }
@@ -1448,7 +1454,6 @@ class Model_Object extends ORM {
       
       $newObject = $this->createObject($objectTypeName, $rosettaId, $languageId);
 
-//      print_r($newObject->as_array());
       //The objet has been built, now set it's lattice point
       $lattice = Graph::lattice();
       $objectRelationship = ORM::Factory('objectrelationship');

@@ -101,21 +101,17 @@ class latticecms {
                   $htmlChunks[$key] = $elementHtml;
 
                   break;
+
+               case 'password':
+                  $key = $element['type'] . '_' . $uiArguments['name'];
+                  $html = self::buildUIElement($element, $uiArguments, NULL);
+                  $htmlChunks[$key] = $html;
+                  break;
+               
                default:
                   //deal with html objectType elements
-
-                  if (!isset($uiArguments['name'])) {   // Added by 0ak during debug. Remove?
-                     throw new Kohana_Exception("uiArguments['name'] not set ");
-                  }
-
                   $key = $element['type'] . '_' . $uiArguments['name'];
-                  $html = null;
-                  if (!isset($element['name'])) {
-                     $element['name'] = CMS_Controller::$unique++;
-                     $html = latticeui::buildUIElement($element, null);
-                  } else if (!$html = latticeui::buildUIElement($uiArguments, $object->$element['name'])) {
-                     throw new Kohana_Exception('bad config in cms: bad ui element');
-                  }
+                  $html = self::buildUIElement($element, $uiArguments, $object->{$element['name']});
                   $htmlChunks[$key] = $html;
                   break;
             }
@@ -123,6 +119,18 @@ class latticecms {
       }
       //print_r($htmlChunks);
       return $htmlChunks;
+   }
+   
+   private static function buildUIElement($element, $uiArguments, $value){
+     
+      $html = null;
+      if (!isset($element['name'])) {
+         $element['name'] = CMS_Controller::$unique++;
+         $html = latticeui::buildUIElement($element, null);
+      } else if (!$html = latticeui::buildUIElement($uiArguments, $value)) {
+         throw new Kohana_Exception('bad config in cms: bad ui element');
+      }
+      return $html;
    }
 
    public static function buildUIHtmlChunksForObject($object, $translatedLanguageCode = null) {

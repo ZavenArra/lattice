@@ -112,6 +112,8 @@ class Controller_List extends Lattice_CMSInterface {
             foreach($htmlChunks as $key=>$value){
                $itemView->$key = $value;
             }
+            $itemView->object = $object;
+
          } else {
             $itemView = new View('list_item');
          }
@@ -137,20 +139,13 @@ class Controller_List extends Lattice_CMSInterface {
       $view->class .= ' sortDirection-' . $this->_listObject->getSortDirection();
       $view->items = $html;
       $view->instance = $this->_listObject->objecttype->templatname;
-			$view->addableObjects = $this->_listObject->objecttype->addableObjects;
+		$view->addableObjects = $this->_listObject->objecttype->addableObjects;
       $view->listObjectId = $this->_listObject->id;
 
 
       $this->response->body($view->render());
    }
 
-   //this is the new one
-   public function action_savefield($itemid) {
-      $object = ORM::Factory($this->model, $itemid);
-      $object->$_POST['field'] = $_POST['value'];
-      $object->save();
-      $this->response->data( array('value' => $object->$_POST['field']) );
-   }
 
    /*
      Function: addItem()
@@ -186,7 +181,7 @@ class Controller_List extends Lattice_CMSInterface {
       //$this->response->body( $this->cms_getNodeHtml($newId));
       
       
-      $item = Graph::object($newId);
+      $object = Graph::object($newId);
       
       /*Cludge to bypass echoing placeholders necessary to pass validation*/
      // $item->username = NULL;
@@ -194,15 +189,17 @@ class Controller_List extends Lattice_CMSInterface {
      // $item->email = NULL;
       /*End cludge*/
       
-      $htmlChunks = latticecms::buildUIHtmlChunksForObject($item);
+      $htmlChunks = latticecms::buildUIHtmlChunksForObject($object);
 
-		$customItemView = 'objectTypes/' . $item->objecttype->objecttypename;
+		$customItemView = 'objectTypes/' . $object->objecttype->objecttypename;
       $itemView = null;
       if (Kohana::find_file('views', $customItemView)) {
          $itemView = new View($customItemView);
          foreach($htmlChunks as $key=>$value){
 				$itemView->$key = $value;
 			}
+         $itemView->object = $object;
+
       } else {
          $itemView = new View('list_item');
          $itemView->uiElements = $htmlChunks;
