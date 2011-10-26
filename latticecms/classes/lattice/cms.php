@@ -115,6 +115,8 @@ class Lattice_CMS extends Lattice_CMSInterface {
 		return self::$objectId;
 	}
 
+   
+   
 	/*
 	Function: getPage(id)
 	Builds the editing object for the object currenlty being edited
@@ -123,20 +125,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
 	Returns: array('html'=>html, 'js'=>js, 'css'=>css)
 	*/
 	public function action_getPage($id, $languageCode = null){
-      /*
-       * If the request is actually for a module, instead of a object, build
-       * the subrequest and set the response body to the request.
-       * This should probably be re-engineered to be handled by the navi
-       * module only, and cmsModules.xml should also be a navi thing
-       * since only the navi needs to know about the modules being loaded as long
-       * as the reciever (CMS in this case) has an appropriate container.
-       */
-		$controller = $id;
-		if(Kohana::find_file('classes/controller', $controller)){   
-         $route = Request::Factory($controller);
-         $this->response->body( $route->execute()->body() );
-         return;
-		}
+
 
 
 		if(!$languageCode){
@@ -147,8 +136,23 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
 		self::$objectId = $id;
 
-
-
+      
+      /*
+       * If the request is actually for a module, instead of a object, build
+       * the subrequest and set the response body to the request.
+       * This should probably be re-engineered to be handled by the navi
+       * module only, and cmsModules.xml should also be a navi thing
+       * since only the navi needs to know about the modules being loaded as long
+       * as the reciever (CMS in this case) has an appropriate container.
+       */
+      if (!$object->loaded()) {
+         $controller = $id;
+         if (Kohana::find_file('classes/controller', $controller)) {
+            $route = Request::Factory($controller);
+            $this->response->body($route->execute()->body());
+            return;
+         }
+      }
       
 		
 		if($object->id == 0){
