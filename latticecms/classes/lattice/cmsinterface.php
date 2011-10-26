@@ -29,15 +29,17 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       try {
 
          $this->savefile($objectId);
+
       } catch (Exception $e) {
 
          //return the model errors gracecully;
 
          $this->handleDataException($e);
+
       }
    }
 
-   public function savefile($objectid) {
+   public function savefile($objectId) {
 
       $field = strtok($_POST['field'], '_');
 
