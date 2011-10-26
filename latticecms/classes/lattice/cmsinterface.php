@@ -157,7 +157,11 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
    protected function handleDataException($e) {
 
+			if(get_class($e) != 'ORM_Validation_Exception'){
+				throw $e;
+			}
       $modelErrors = $e->errors('validation');
+
       if (isset($modelErrors['_external'])) {
          $modelErrors = array_values($modelErrors['_external']);
       }
