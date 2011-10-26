@@ -74,17 +74,18 @@ Class lattice {
             $arenaPath = $arena;
          }
       
-         $request = Request::Factory($arenaPath);
-      
-         $response = null;
-         try{
          
+         $request = NULL;
+         $response = NULL;
+         try{
+           $request = Request::Factory($arenaPath);
            $response = $request->execute();
 
          } catch(Exception $e){
             //checking for existence of xml controller
-            if(get_class($e) != 'HTTP_Exception_404')
+            if(get_class($e) != 'HTTP_Exception_404'){
                throw $e;
+            }
             //else continue on
          }
 
