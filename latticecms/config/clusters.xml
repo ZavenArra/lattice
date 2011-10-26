@@ -5,8 +5,8 @@
 	<clusters>
 		<objectType name="link">
 			<elements>
-				<text name="url" label="URL" />
 				<text name="label" label="Label" />	
+				<text name="url" label="URL" />
 			</elements>
 		</objectType>
 	</clusters>
