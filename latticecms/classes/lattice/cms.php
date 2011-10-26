@@ -190,25 +190,20 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
       $htmlChunks = latticecms::buildUIHtmlChunksForObject($object, $languageCode);
 
-		$useCustomView = false;
-		if(Kohana::find_file('views', $customView)){
-			$useCustomView = true;	
-		}
-
-		if(!$useCustomView){
-			$html = $nodetitlehtml.implode($htmlChunks);
-		} else {
-			$html = $nodetitlehtml;
-			$view = new View($customView);
-			$this->loadResourcesForKey($customView);
-			foreach($htmlChunks as $key=>$value){
-				$view->$key = $value;
-			}
-			$html .= $view->render();
-		}
- 
-
-		$this->response->data($object->getPageContent());	
+       if (Kohana::find_file('views', $customView)) {
+         $html = $nodetitlehtml;
+         $view = new View($customView);
+         $this->loadResourcesForKey($customView);
+         foreach ($htmlChunks as $key => $value) {
+            $view->$key = $value;
+         }
+         $view->object = $object;
+         $html .= $view->render();
+      } else {
+         $html = $nodetitlehtml . implode($htmlChunks);
+      }
+      
+      $this->response->data($object->getPageContent());	
 		$this->response->body($html);
 
 	}

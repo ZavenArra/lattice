@@ -194,27 +194,33 @@ class Controller_Builder extends Controller {
 					->find();
 				if($preexistingObject->loaded()){
 					$component = $preexistingObject;
+					echo 'Found prexisting component: '.$preexistingObject->objecttype->objecttypename;
 				}
 			}
 
 			//check for pre-existing object as list container
 			//echo sprintf('//objectType[@name="%s"]/elements/list', $parentObject->objecttype->objecttypename);
 			foreach(lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $parentObject->objecttype->objecttypename))	as $listContainerType){
-
 				$preexistingObject = Graph::object()
 					->latticeChildrenFilter($parentObject->id)
 					->objectTypeFilter($listContainerType->getAttribute('name'))
 					->find();
-				if($preexistingObject->loaded()){
+				if($preexistingObject->loaded() && $preexistingObject->objecttype->objecttypename == $item->getAttribute('objectTypeName') ){
+					echo 'Found prexisting list container: '.$preexistingObject->objecttype->objecttypename .' '.$item->getAttribute('objectTypeName');
 					$component = $preexistingObject;
 				}
 			}
 
 
 			if($component){
+				echo 'Updating Object '.$component->objecttype->objecttypename."\n";
+				print_r($data);
 				$component->updateWithArray($data);
 				$objectId = $component->id;
 			} else {
+				//actually add the object
+				echo 'Adding Object '.$item->getAttribute('objectTypeName')."\n";
+				print_r($data);
 				$objectId = $parentObject->addObject($item->getAttribute('objectTypeName'), $data);
 				$this->newObjectIds[] = $objectId;
 			}
@@ -225,7 +231,6 @@ class Controller_Builder extends Controller {
 			}
 
 			foreach(lattice::config($xmlFile, 'list', $item) as $list){
-				//echo "FOUND A LIST\n\n";
 				//find the container
 				$container = Graph::object()
 					->latticeChildrenFilter($objectId)
