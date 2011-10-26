@@ -109,6 +109,21 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 
 		 //If the column is an object, then this is a relationship with another object
 		 if (strstr($contentColumn, 'object')) {
+			 return $this->getObjectElement();
+		 }
+
+		 //Also need to check for file, but in 3.1 file will be an object itself and this will
+		 //not be necessary.
+		 if (strstr($contentColumn, 'file') && !is_object($this->contenttable->$contentColumn)) {
+			 $file = ORM::Factory('file', $this->contenttable->$contentColumn);
+			 //file needs to know what module it's from if its going to check against valid resizes
+			 $this->contenttable->__set($contentColumn, $file);
+		 }
+
+		 return $this->contenttable->$contentColumn;
+	 }
+	 
+	 private function getObjectElement($object, $column){
 			 $objectElementRelationship = ORM::Factory('objectelementrelationship')
 				 ->where('object_id', '=', $object->id)
 				 ->where('name', '=', $column)
@@ -134,17 +149,7 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 				 $objectElement = $object->addElementObject($elementConfig->item(0)->tagName, $column);
 			 }
 			 return $objectElement;
-		 }
 
-		 //Also need to check for file, but in 3.1 file will be an object itself and this will
-		 //not be necessary.
-		 if (strstr($contentColumn, 'file') && !is_object($this->contenttable->$contentColumn)) {
-			 $file = ORM::Factory('file', $this->contenttable->$contentColumn);
-			 //file needs to know what module it's from if its going to check against valid resizes
-			 $this->contenttable->__set($contentColumn, $file);
-		 }
-
-		 return $this->contenttable->$contentColumn;
 	 }
 
 
@@ -156,8 +161,8 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 
 
 		 //check for dbmap
-		 if ($mappedcolumn = self::dbmap($object->objecttype_id, $column)) {
-			 return $this->contenttable->__set($mappedcolumn, $value);
+		 if ($mappedColumn = self::dbmap($object->objecttype_id, $column)) {
+			 return $this->contenttable->__set($mappedColumn, $value);
 		 }
 
 
@@ -179,11 +184,22 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 
 			 //now go aheand and save on the mapped column
 
-			 $mappedcolumn = self::dbmap($object->objecttype_id, $column);
-			 return $this->contenttable->__set($mappedcolumn, $value);
+			 $mappedColumn = self::dbmap($object->objecttype_id, $column);
+
+			 //If the column is an object, then this is a relationship with another object
+			 echo '::::::::::'.$mappedColumn;
+			 if (strstr($mappedColumn, 'object')) {
+				 echo 'yes';
+				 $objectElement = $this->getObjectElement($object, $column);
+				 foreach($value as $clusterColumn => $clusterValue){
+					 $objectElement->$clusterColumn = $clusterValue;	
+				 } 
+				 return $objectElement;
+			 }
+
 		 }
 
-		 $this->contenttable->$mappedcolumn = $value;
+		 $this->contenttable->$mappedColumn = $value;
 		 $this->contenttable->save();
 	 }
 

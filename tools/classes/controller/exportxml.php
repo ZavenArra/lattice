@@ -9,7 +9,7 @@ class Controller_ExportXML extends Controller {
 //	die('application/views/xmldumps/ must be writable');
       }
    }
-
+//all this logic should be moved to the export MODEL
    private function getObjectFields($object) {
       $nodes = array();
       $content = $object->getContent();
@@ -90,10 +90,8 @@ class Controller_ExportXML extends Controller {
                   }
                   break;
                case 'Model_Object':
-                  foreach ($this->getObjectFields($value) as $subField) {
-										//$field->appendChild($subField);
-                     echo "sub objects not yet supported for mop export\n";
-                     echo $key;
+                  foreach ($this->getObjectFieldsMOPFormat($value) as $subElement) {
+										$node->appendChild($subElement);
                   }
                   break;
             }

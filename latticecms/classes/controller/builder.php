@@ -108,25 +108,20 @@ class Controller_Builder extends Controller {
  
 
 		foreach(lattice::config($xmlFile, 'item', $context)  as $item){
-			$lists = array();
-			if(!$item->getAttribute('objectTypeName')){
+
+         if(!$item->getAttribute('objectTypeName')){
 				echo $item->tagName;
-            die("No objecttypename specified for Item ".$item->tagName."\n\n");
+            throw new Kohana_Exception("No objecttypename specified for Item " . $item->tagName);
 			}
-      //echo "\n found contentnod ".$item->getAttribute('objectTypeName');
-			flush();
-			ob_flush();
+         
+
          $object = Graph::instance();
 			$objectType = ORM::Factory('objecttype', $item->getAttribute('objectTypeName'));
-			if($objectType->nodeType == 'container'){
-			//	die("Can't add list family as objectType name in data.xml: {$objectType->objecttypename} \n");
-			}
-
-      //echo ')))'.$item->getAttribute('objectTypeName');
+			
 			$data = array();
 			foreach(lattice::config($xmlFile, 'field', $item ) as $content){
 				$field = $content->getAttribute('name');
-				//echo 'This Fielad '.$field."\n\n";
+            
 				switch($field){
 				case 'title':
 					$data[$field] = $content->nodeValue;	
@@ -146,8 +141,26 @@ class Controller_Builder extends Controller {
 				if(!$fieldInfo){
 					throw new Kohana_Exception("Bad field in data/objects!\n". sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
 				}
+            
+            //if an element is actually an object, insert it
+            if(lattice::config('objects', sprintf('//objectType[@name="%s"]', $fieldInfo->tagName))->length > 0){
+               //we have a cluster..
+               echo 'we have a cluster'.$fieldInfo->tagName;
+               
+               $clusterData = array();
+               foreach (lattice::config($xmlFile, 'field', $content) as $clusterField) {
+                  $clusterData[$clusterField->getAttribute('name')] = $clusterField->nodeValue;
+               }
+               
+               echo 'cluster'.$fieldInfo->tagName;
+               print_r($clusterData);
+               echo 'end cluster';
+             
+               $data[$fieldInfo->tagName] = $clusterData;
+            }
 
-				//special setup based on field type
+
+            //special setup based on field type
 				switch($fieldInfo->tagName){
 				case 'file':
 				case 'image':
@@ -158,8 +171,7 @@ class Controller_Builder extends Controller {
 							$data[$field] = $savename;
 						} else {
 							if($content->nodeValue){
-								echo "File does not exist {$content->nodeValue} \n";
-								die();
+								throw new Kohana_Exception( "File does not exist {$content->nodeValue} ");
 							}
 						}
 						break;
@@ -171,14 +183,6 @@ class Controller_Builder extends Controller {
 			}
 			$data['published'] = true;
 			
-
-			foreach(lattice::config($xmlFile, 'object', $item) as $object){
-				$clusterData = array();
-				foreach(lattice::config($xmlFile, 'field', $object) as $clusterField){
-					$clusterData[$clusterField->getAttribute('name')] = $clusterField->nodeValue;
-				}
-				$data[$object->getAttribute('name')] = $clusterData;
-			}
 
 
 			//now we check for a title collision

@@ -430,7 +430,7 @@ class Model_Object extends ORM {
 
          $this->contentDriver()->setContentColumn($this, $column, $value);
       } else {
-         throw new Kohana_Exception('Invalid POST Arguments, POST must contain field and value parameters');
+         throw new Kohana_Exception('No field found for __set');
       }
       
    }

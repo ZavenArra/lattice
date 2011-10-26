@@ -13,7 +13,7 @@
 	objectTypeName		CDATA #REQUIRED
 >
 
-<!ELEMENT field ANY >
+<!ELEMENT field (#PCDATA|field)* >  
 <!ATTLIST field
 	name CDATA #REQUIRED
 >
