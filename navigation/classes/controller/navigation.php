@@ -47,13 +47,17 @@ class Controller_Navigation extends Controller_Lattice{
 			foreach($items as $child){
 				if(strtolower($child->objecttype->nodeType) == 'container'){
 					//we might be skipping this node
-
-					$display = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]', 
+            	$display = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]', 
 						$parent->objecttype->objecttypename,
 						$child->objecttype->objecttypename))
-						->item(0)
-						->getAttribute('display');
-					if($display == 'inline'){
+						->item(0);
+               if(!is_object($display)){
+                  //this child object doesn't match a configured list
+                  continue;
+               }
+               $display = $display->getAttribute('display');
+
+              if($display == 'inline'){
 						continue;
 					}
 				}
