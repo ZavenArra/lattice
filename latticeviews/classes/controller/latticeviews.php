@@ -48,6 +48,12 @@ Class Controller_LatticeViews extends Controller_Layout{
 
 		if(Session::instance()->get('languageCode')){
 			$object = Graph::object($objectIdOrSlug);
+			if(!$object->loaded()){
+				if(!$objectIdOrSlug){
+					$objectIdOrSlug = 'No object id or slug specified';
+				}
+				throw new Kohana_Exception('No object found for id: '.$objectIdOrSlug);
+			}
 			$translatedObject = $object->translate(Session::instance()->get('languageCode'));
 			$objectIdOrSlug = $translatedObject->id;
 		}

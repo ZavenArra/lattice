@@ -31,7 +31,7 @@ lattice.ui.UIField = new Class({
 	
 	options: {
 	    autoSubmit: true,
-	    enabled: true,
+	    enabled: true
 	},
 
 	/* Section: getters / setters */
@@ -1531,7 +1531,7 @@ lattice.ui.FileElement = new Class({
 	},
 	
 	onFileComplete: function( json ){
-//		console.log( "onFileComplete : json : ", json );
+		console.log( "onFileComplete : json : ", json );
 		json = JSON.decode( json.response.text );
 		this.clearButton.fade( "in" );
 		if( this.filename ) this.filename.set( "text",  json.response.filename );
