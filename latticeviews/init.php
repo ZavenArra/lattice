@@ -46,6 +46,7 @@ class FrontendRouting {
          return;
       }
 
+			return;
 			$config = lattice::config('frontend', '//view[@name="'.$uri.'"]');
 			if($config->length){
          return array(

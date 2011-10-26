@@ -59,7 +59,6 @@
 <!ELEMENT pulldown (option)* >
 <!ATTLIST pulldown
 	%uiattrs;
-	groupLabel                      CDATA #REQUIRED
 >
 
  
