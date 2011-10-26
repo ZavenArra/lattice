@@ -1028,6 +1028,9 @@ class Model_Object extends ORM {
          $tIds = array();
          foreach ($tNames as $tname) {
             $result = DB::query("Select id from objecttypes where objecttypename = '$objectTypes'")->execute();
+            if(!$result->current->id){
+             throw new Kohana_Exception('Invalid object type requested in objectTypeFilter '.$objectTypes);
+            }
             $tIds[] = $result->current()->id;
          }
          $this->in('objecttype_id', $tIds);
@@ -1035,6 +1038,9 @@ class Model_Object extends ORM {
          //set no filter
       } else {
          $result = DB::query(Database::SELECT, "Select id from objecttypes where objecttypename = '$objectTypes'")->execute()->current();
+          if(!$result['id']){
+             throw new Kohana_Exception('Invalid object type requested in objectTypeFilter '.$objectTypes);
+          }
          $this->where('objecttype_id', '=', $result['id']);
       }
       return $this;
