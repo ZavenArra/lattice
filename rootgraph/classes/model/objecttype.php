@@ -25,6 +25,15 @@ class Model_ObjectType extends ORM {
 		parent::__construct($id);
 
 	}
+   
+   public static function getConfig($objectTypeName){
+     $config = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName));
+     if($config->length){
+        return $config->item(0);
+     } else {
+        return false;
+     }
+   }
 
 	/*
 	 * Function: __get($column)
