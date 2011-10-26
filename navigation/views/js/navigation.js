@@ -61,6 +61,7 @@ lattice.modules.navigation.Navigation = new Class({
 		this.detachTiers( paneIndex + 1 );
 		this.removeCrumbs( paneIndex + 1 );
 		this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
+		
 		this.marshal.onNodeSelected( nodeId );
 		if( this.getNodeTypeFromId( nodeId ) == 'object' ) this.requestTier( nodeId, tier );
 	},
@@ -144,9 +145,7 @@ lattice.modules.navigation.Navigation = new Class({
 		console.log( "appState:", lattice.historyManager.getAppState() );
 		console.log( "/////////////////////////////////" );
 		var deepLink = ( lattice.historyManager.getAppState().slug )? lattice.historyManager.getAppState().slug : null;
-		
-		this.breadCrumbs.addCrumb( { label: '/' } );
-		
+		this.breadCrumbs.addCrumb( { label: '/' } );		
 		this.requestTier( this.rootId, null, deepLink );
 		if( deepLink ) this.marshal.onNodeSelected( deepLink );
 	},
