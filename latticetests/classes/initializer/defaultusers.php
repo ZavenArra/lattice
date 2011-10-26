@@ -28,7 +28,7 @@ class Initializer_DefaultUsers {
       $user = ORM::Factory('user');
       $values = array(
         'username'=>'deepwinter',
-        'password'=>'likeseverything',
+        'password'=>'mojojojo',
         'email'=>'deepwinter@winterroot.net',
         'status'=>'ACTIVE',
       );
@@ -41,7 +41,7 @@ class Initializer_DefaultUsers {
       
       $user = ORM::Factory('user');
       $user->username = 'thiago';
-      $user->password = 'christchrist';
+      $user->password = 'mojojojo';
       $user->email = 'thiago@thiagodemellobueno.com';
       $user->status = 'ACTIVE';
       $user->save();
