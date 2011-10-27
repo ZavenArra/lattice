@@ -951,14 +951,18 @@ class Model_Object extends ORM {
       );
 			Kohana::$log->add(Log::INFO, 'printing out resizess');
 			Kohana::$log->add(Log::INFO, var_export($additionalResizes, true));
+			Kohana::$log->add(Log::INFO, var_export($rpesizes, true));
       foreach ($resizes as $resize) {
-
-         if ($prefix = $resize->getAttribute('name')) {
-            $prefix = $prefix . '_';
+ 
+				$newfilename = NULL;
+				$tag == NULL;
+         if ($tag = $resize->getAttribute('name')) {
+						$prefix = $tag . '_';
+						$newfilename = $prefix .  $imagefilename;
          } else {
             $prefix = '';
+						$newfilename = $imagefilename;
          }
-         $newfilename = $prefix . $imagefilename;
          $saveName = Graph::mediapath() . $newfilename;
 
 				 //This dependency should be moved out of latticecms
@@ -971,6 +975,10 @@ class Model_Object extends ORM {
                unlink(Graph::mediapath() . $oldfilename);
             }
          }
+
+				 if(array_key_exists($tag, $additionalResizes)){
+					unset($additionalResizes[$tag]);
+				 }
       }
 
 			//And process resizes passed in from caller

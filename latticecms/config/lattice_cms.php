@@ -30,7 +30,7 @@ $config['defaultsettings']['editable_title'] = true;
 $config['newObjectPlacement'] = 'bottom';
 
 $config['uiresizes'] =  array(
-	'uiresize' => array(
+	'uithumb' => array(
 		'width'=>240,
 		'height'=>120,
 		'prefix' => 'uithumb',

@@ -38,7 +38,7 @@
 		<objectType name="singleIPE" contentType="document" allowChildSort="true" allowDelete="true" allowTogglePublish="false">
 
 			<elements>
-				<pulldown name="state"  label="State"  groupLabel="State">
+				<pulldown name="state"  label="State"  >
 					<option value="AL" label="Alabama" />
 					<option value="AK" label="Alaska" />
 				</pulldown>
@@ -117,9 +117,10 @@
 			<elements>
 				<image name="file" label="Single Image">
 					<resize name="test" width="96" height="58" forceDimension="height" /> 
+					<resize name="uithumb" width="6" height="8" forceDimension="height" /> 
 					<ext>jpg</ext>
-         				 <ext>tiff</ext>
-         				 <ext>tif</ext>
+    				 <ext>tiff</ext>
+      				 <ext>tif</ext>
 				</image>
 				<text name="singleIPE2" label="Single Single Single" isMultiline="false" />
 				<text name="singleIPE3" label="Single Single Single" isMultiline="false" />
