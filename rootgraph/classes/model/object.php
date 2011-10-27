@@ -951,7 +951,7 @@ class Model_Object extends ORM {
       );
 			Kohana::$log->add(Log::INFO, 'printing out resizess');
 			Kohana::$log->add(Log::INFO, var_export($additionalResizes, true));
-			Kohana::$log->add(Log::INFO, var_export($rpesizes, true));
+			Kohana::$log->add(Log::INFO, var_export($resizes, true));
       foreach ($resizes as $resize) {
  
 				$newfilename = NULL;
