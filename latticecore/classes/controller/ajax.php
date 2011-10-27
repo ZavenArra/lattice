@@ -6,6 +6,37 @@ class Controller_Ajax extends Controller_Lattice {
 	{
 		throw new HTTP_Exception_404('Ajax controller called without action. Check URL.');
 	}
+   
+   private function handleException($e){
+      
+      // Get the exception information
+      $type    = get_class($e);
+      $code    = $e->getCode();
+      $message = $e->getMessage();
+      $file    = $e->getFile();
+      $line    = $e->getLine();
+
+      // Get the exception backtrace
+      $trace = $e->getTrace();
+      
+      ob_start();
+
+      // Include the exception HTML
+      if ($view_file = Kohana::find_file('views', Kohana_Exception::$error_view))
+      {
+        include $view_file;
+      }
+      else
+      {
+        throw new Kohana_Exception('Error view file does not exist: views/:file', array(
+          ':file' => Kohana_Exception::$error_view,
+        ));
+      }
+
+      // Display the contents of the output buffer
+      $message = ob_get_clean();
+      return $message;
+   }
 
 	public function action_data($uri)
 	{
@@ -17,10 +48,12 @@ class Controller_Ajax extends Controller_Lattice {
 			$data = $subRequest->execute()->data();
 		} catch (Exception $e) {
 			//return HTML from exception
-			$message = lattice::getOneLineErrorReport($e);
+         
+          // Start an output buffer
+   
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
-				'response' => $message,
+				'response' => $this->handleException($e),
 				'arguments'=>$arguments
 
 			);
@@ -49,10 +82,10 @@ class Controller_Ajax extends Controller_Lattice {
 		} catch (Exception $e) {
 			//return HTML from exception
 
-			$message = lattice::getOneLineErrorReport($e);
+			$message = $e;
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
-				'response' => $message,
+				'response' => $this->handleException($e),
 				'arguments'=>$arguments
 
 			);
@@ -100,10 +133,10 @@ class Controller_Ajax extends Controller_Lattice {
 			$requestResponse = $subRequest->execute();
    	} catch (Exception $e) {
 			//return HTML from exception
-			$message = lattice::getOneLineErrorReport($e);
+			$message = $e;
 			$ajaxResponse = array(
 				'returnValue' => FALSE,
-				'response' => $message,
+				'response' => $this->handleException($e),
 				'arguments'=>$arguments
 			);
 			$this->response->headers('Content-Type', 'application/json');

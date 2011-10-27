@@ -1148,7 +1148,7 @@ class Model_Object extends ORM {
       
       $newObjectType = ORM::Factory('objecttype', $objectTypeName);
 
-      $newObject = $this->addLatticeObject($objectTypeName, $data, $lattice, $rosettaId, $languageId);
+      $newObject = $this->addLatticeObject($objectTypeName, $lattice, $rosettaId, $languageId);
      
       
       /*
@@ -1156,8 +1156,7 @@ class Model_Object extends ORM {
        */
       if (!$rosettaId) {
          $languages = Graph::languages();
-         foreach ($languages as $translationLanguage) {
-           
+         foreach ($languages as $translationLanguage) {           
             if ($translationLanguage->id == $newObject->language_id) {
                continue;
             }
@@ -1165,13 +1164,18 @@ class Model_Object extends ORM {
             if ($this->loaded()) {
                $translatedParent = $this->getTranslatedObject($translationLanguage->id);
           
-               $translatedParent->addLatticeObject($newObject->objecttype->objecttypename, $data, $lattice, $newObject->rosetta_id, $translationLanguage->id);
+               $translatedParent->addLatticeObject($newObject->objecttype->objecttypename, $lattice, $newObject->rosetta_id, $translationLanguage->id);
             } else {
-               Graph::object()->addLatticeObject($newObject->objecttype->objecttypename, $data, $lattice,  $newObject->rosetta_id, $translationLanguage->id);
+               Graph::object()->addLatticeObject($newObject->objecttype->objecttypename, $lattice,  $newObject->rosetta_id, $translationLanguage->id);
             }
 
          }
       }
+      
+      //die($newObject->id);
+      echo 'WOW';
+      $newObject->updateContentData($data);
+      echo 'UPDATED CONTENT DATA';
 
       /*
        * adding of components is delayed until after alternate language objects creates,
@@ -1241,36 +1245,6 @@ class Model_Object extends ORM {
    }
    
    
-   public function setObjectType($objectTypeClassOrName) {
-      $objectType = null;
-      if (!is_object($objectTypeClassOrName)) {
-         
-         $objectTypeName = $objectTypeClassOrName;
-         
-         $objectType = ORM::Factory('objecttype', $objectTypeName);
-
-         if (!$objectType->id) {
-
-
-            //check objects.xml for configuration
-            if ($objectTypeConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName))->item(0)) {
-               //there's a config for this objectType
-               //go ahead and configure it
-               Graph::configureObjectType($objectTypeName);
-               $objectType = ORM::Factory('objecttype', $objectTypeName);
-            } else {
-               throw new Kohana_Exception('No config for objectType ' . $objectTypeName);
-            }
-         }
-      } else {
-         $objectType = $objectTypeClassOrName;
-      }
-      $this->objecttype_id = $objectType->id;
-      $this->__set('objecttype', $objectType);
-      
-      return $this; //chainable
-   }
-   
     private function createObject($objectTypeName, $rosettaId, $languageId){
        
       if(!$rosettaId){
@@ -1316,6 +1290,7 @@ class Model_Object extends ORM {
       }
 
       $newObject->save();
+      echo 'OBJECT CREATED';
      
       return $newObject;
     }
@@ -1457,7 +1432,7 @@ class Model_Object extends ORM {
   
    }
     
-   private function addLatticeObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null){
+   private function addLatticeObject($objectTypeName, $lattice = null, $rosettaId = null, $languageId = null){
       
       $newObject = $this->createObject($objectTypeName, $rosettaId, $languageId);
 
@@ -1469,10 +1444,8 @@ class Model_Object extends ORM {
       $objectRelationship->connectedobject_id = $newObject->id;
       $objectRelationship->save();
       $newObject->insertContentRecord();
-  
-      //die($newObject->id);
-      $newObject->updateContentData($data);
-
+      echo 'INSERTED CONTENT RECORD';
+      
       
       //calculate sort order
       $sort = DB::select('sortorder')->from('objectrelationships')
@@ -1502,5 +1475,36 @@ class Model_Object extends ORM {
        return $translatedObject;
    }
 
+   
+    
+   public function setObjectType($objectTypeClassOrName) {
+      $objectType = null;
+      if (!is_object($objectTypeClassOrName)) {
+         
+         $objectTypeName = $objectTypeClassOrName;
+         
+         $objectType = ORM::Factory('objecttype', $objectTypeName);
+
+         if (!$objectType->id) {
+
+
+            //check objects.xml for configuration
+            if ($objectTypeConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName))->item(0)) {
+               //there's a config for this objectType
+               //go ahead and configure it
+               Graph::configureObjectType($objectTypeName);
+               $objectType = ORM::Factory('objecttype', $objectTypeName);
+            } else {
+               throw new Kohana_Exception('No config for objectType ' . $objectTypeName);
+            }
+         }
+      } else {
+         $objectType = $objectTypeClassOrName;
+      }
+      $this->objecttype_id = $objectType->id;
+      $this->__set('objecttype', $objectType);
+      
+      return $this; //chainable
+   }
 }
 ?>

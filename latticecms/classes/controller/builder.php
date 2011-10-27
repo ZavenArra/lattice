@@ -119,6 +119,7 @@ class Controller_Builder extends Controller {
 			$objectType = ORM::Factory('objecttype', $item->getAttribute('objectTypeName'));
 			
 			$data = array();
+         $clustersData = array();
 			foreach(lattice::config($xmlFile, 'field', $item ) as $content){
 				$field = $content->getAttribute('name');
             
@@ -142,21 +143,16 @@ class Controller_Builder extends Controller {
 					throw new Kohana_Exception("Bad field in data/objects!\n". sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
 				}
             
-            //if an element is actually an object, insert it
+            //if an element is actually an object, prepare it for insert/update
             if(lattice::config('objects', sprintf('//objectType[@name="%s"]', $fieldInfo->tagName))->length > 0){
-               //we have a cluster..
-               echo 'we have a cluster'.$fieldInfo->tagName;
-               
+               //we have a cluster..               
                $clusterData = array();
                foreach (lattice::config($xmlFile, 'field', $content) as $clusterField) {
                   $clusterData[$clusterField->getAttribute('name')] = $clusterField->nodeValue;
                }
-               
-               echo 'cluster'.$fieldInfo->tagName;
-               print_r($clusterData);
-               echo 'end cluster';
              
-               $data[$fieldInfo->tagName] = $clusterData;
+               $clustersData[$fieldInfo->tagName] = $clusterData;
+               //have to wait until object is inserted to respect translations
             }
 
 
@@ -228,6 +224,14 @@ class Controller_Builder extends Controller {
 				$objectId = $parentObject->addObject($item->getAttribute('objectTypeName'), $data);
 				$this->newObjectIds[] = $objectId;
 			}
+         
+         //and now update with elementObjects;
+         if(count($clustersData)){
+            $object = Graph::object($objectId);
+            print_r($clustersData);
+          //  $object->updateWithArray($data);
+         }
+         
 
 			//do recursive if it has children
 			if(lattice::config($xmlFile, 'item', $item)->length ){

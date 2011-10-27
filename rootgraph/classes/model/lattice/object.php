@@ -109,7 +109,7 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 
 		 //If the column is an object, then this is a relationship with another object
 		 if (strstr($contentColumn, 'object')) {
-			 return $this->getObjectElement();
+			 return $this->getObjectElement($object, $column);
 		 }
 
 		 //Also need to check for file, but in 3.1 file will be an object itself and this will
@@ -187,13 +187,13 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 			 $mappedColumn = self::dbmap($object->objecttype_id, $column);
 
 			 //If the column is an object, then this is a relationship with another object
-			 echo '::::::::::'.$mappedColumn;
 			 if (strstr($mappedColumn, 'object')) {
-				 echo 'yes';
 				 $objectElement = $this->getObjectElement($object, $column);
-				 foreach($value as $clusterColumn => $clusterValue){
-					 $objectElement->$clusterColumn = $clusterValue;	
-				 } 
+             if (is_array($value)) {
+               foreach ($value as $clusterColumn => $clusterValue) {
+                  $objectElement->$clusterColumn = $clusterValue;
+               }
+             }
 				 return $objectElement;
 			 }
 
