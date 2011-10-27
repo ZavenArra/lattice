@@ -48,6 +48,8 @@ class Controller_Builder extends Controller {
 		$db->query(Database::UPDATE, 'alter table objectmaps AUTO_INCREMENT = 1');
 		$db->query(Database::DELETE, 'delete from objectrelationships');
 		$db->query(Database::UPDATE, 'alter table objectrelationships AUTO_INCREMENT = 1');
+      $db->query(Database::DELETE, 'delete from objectelementrelationships');
+		$db->query(Database::UPDATE, 'alter table objectelementrelationships AUTO_INCREMENT = 1');
 		$db->query(Database::DELETE, 'delete from rosettas');
 		$db->query(Database::UPDATE, 'alter table rosettas AUTO_INCREMENT = 1');
 		flush();
@@ -122,61 +124,67 @@ class Controller_Builder extends Controller {
          $clustersData = array();
 			foreach(lattice::config($xmlFile, 'field', $item ) as $content){
 				$field = $content->getAttribute('name');
-            
-				switch($field){
-				case 'title':
-					$data[$field] = $content->nodeValue;	
-					continue(2);
-				case 'slug':
-					$data[$field] = $content->nodeValue;	
-					$data['decoupleSlugTitle'] = 1;
-					continue(2);
-				default:
-					$data[$field] = $content->nodeValue;
-					break;
-				}
+
+            	switch ($field) {
+               case 'title':
+                  $data[$field] = $content->nodeValue;
+                  continue(2);
+               case 'slug':
+                  $data[$field] = $content->nodeValue;
+                  $data['decoupleSlugTitle'] = 1;
+                  continue(2);
+            }
 
 
-				//need to look up field and switch on field type	
-				$fieldInfo = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
-				if(!$fieldInfo){
-					throw new Kohana_Exception("Bad field in data/objects!\n". sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
-				}
-            
+            //need to look up field and switch on field type	
+            $fieldInfo = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
+            if (!$fieldInfo) {
+               throw new Kohana_Exception("Bad field in data/objects!\n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
+            }
+
             //if an element is actually an object, prepare it for insert/update
-            if(lattice::config('objects', sprintf('//objectType[@name="%s"]', $fieldInfo->tagName))->length > 0){
+            if (lattice::config('objects', sprintf('//objectType[@name="%s"]', $fieldInfo->tagName))->length > 0) {
                //we have a cluster..               
                $clusterData = array();
                foreach (lattice::config($xmlFile, 'field', $content) as $clusterField) {
                   $clusterData[$clusterField->getAttribute('name')] = $clusterField->nodeValue;
                }
-             
-               $clustersData[$fieldInfo->tagName] = $clusterData;
+
+               $clustersData[$field] = $clusterData;
                //have to wait until object is inserted to respect translations
+               echo 'continueing';
+               continue;
             }
 
 
+
+
+
+
             //special setup based on field type
-				switch($fieldInfo->tagName){
-				case 'file':
-				case 'image':
-						$path_parts = pathinfo($content->nodeValue);
-						$savename = Model_Object::makeFileSaveName($path_parts['basename']);	
-						if(file_exists($content->nodeValue)){
-							copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']).$content->nodeValue, Graph::mediapath($savename).$savename);
-							$data[$field] = $savename;
+            switch ($fieldInfo->tagName) {
+               case 'file':
+               case 'image':
+                  $path_parts = pathinfo($content->nodeValue);
+                  $savename = Model_Object::makeFileSaveName($path_parts['basename']);
+                  if (file_exists($content->nodeValue)) {
+                     copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $content->nodeValue, Graph::mediapath($savename) . $savename);
+                     $data[$field] = $savename;
 						} else {
 							if($content->nodeValue){
 								throw new Kohana_Exception( "File does not exist {$content->nodeValue} ");
 							}
 						}
 						break;
-				default:
-						$data[$field] = $content->nodeValue;
-						break;
+             default:
+					$data[$field] = $content->nodeValue;
+					break;
 				}
 
 			}
+         echo '$$$$$$$$$$';
+print_r($data);
+            print_r($clustersData);
 			$data['published'] = true;
 			
 
@@ -226,10 +234,14 @@ class Controller_Builder extends Controller {
 			}
          
          //and now update with elementObjects;
+         echo 'ssssss';
+                     print_r($clustersData);
+
          if(count($clustersData)){
             $object = Graph::object($objectId);
+            echo 'Updating clusters';
             print_r($clustersData);
-          //  $object->updateWithArray($data);
+            $object->updateWithArray($clustersData);
          }
          
 

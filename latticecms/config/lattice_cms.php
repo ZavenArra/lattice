@@ -14,8 +14,8 @@ $config['resources']['libraryjs'] = array(
 	'lattice/thirdparty/arian/datepicker/Picker.Date.js',
 	'lattice/thirdparty/arian/datepicker/Picker.js',
 	'lattice/latticejs/LatticeCore.js',
-	'lattice/latticejs/LatticeUI.js',
 	'lattice/latticejs/LatticeModules.js',
+	'lattice/latticejs/LatticeUI.js',
 	'lattice/navigation/views/js/navigationDataSourceInterface.js',
 );
 

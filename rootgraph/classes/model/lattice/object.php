@@ -161,7 +161,8 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 
 
 		 //check for dbmap
-		 if ($mappedColumn = self::dbmap($object->objecttype_id, $column)) {
+       $mappedColumn = self::dbmap($object->objecttype_id, $column);
+		 if ($mappedColumn && !strstr($mappedColumn, 'object')) {
 			 return $this->contenttable->__set($mappedColumn, $value);
 		 }
 
@@ -189,12 +190,14 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 			 //If the column is an object, then this is a relationship with another object
 			 if (strstr($mappedColumn, 'object')) {
 				 $objectElement = $this->getObjectElement($object, $column);
+            
              if (is_array($value)) {
                foreach ($value as $clusterColumn => $clusterValue) {
+                  echo 'fer';
                   $objectElement->$clusterColumn = $clusterValue;
                }
              }
-				 return $objectElement;
+				 return $objectElement->save();;
 			 }
 
 		 }

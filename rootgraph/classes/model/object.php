@@ -1172,10 +1172,7 @@ class Model_Object extends ORM {
          }
       }
       
-      //die($newObject->id);
-      echo 'WOW';
       $newObject->updateContentData($data);
-      echo 'UPDATED CONTENT DATA';
 
       /*
        * adding of components is delayed until after alternate language objects creates,
@@ -1290,7 +1287,6 @@ class Model_Object extends ORM {
       }
 
       $newObject->save();
-      echo 'OBJECT CREATED';
      
       return $newObject;
     }
@@ -1397,7 +1393,9 @@ class Model_Object extends ORM {
       //Postpone dealing with content record until after lattice point is set
       //in case content table logic depends on lattice point.
       $newObject->insertContentRecord();
+      //print_r($data);
       $newObject->updateContentData($data);
+      //echo 'yay'. $newObject->id;
       
       /*
        * Set up any translated peer objects
@@ -1444,7 +1442,6 @@ class Model_Object extends ORM {
       $objectRelationship->connectedobject_id = $newObject->id;
       $objectRelationship->save();
       $newObject->insertContentRecord();
-      echo 'INSERTED CONTENT RECORD';
       
       
       //calculate sort order
