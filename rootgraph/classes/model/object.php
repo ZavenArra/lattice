@@ -955,7 +955,7 @@ class Model_Object extends ORM {
       foreach ($resizes as $resize) {
  
 				$newfilename = NULL;
-				$tag == NULL;
+				$tag = NULL;
          if ($tag = $resize->getAttribute('name')) {
 						$prefix = $tag . '_';
 						$newfilename = $prefix .  $imagefilename;
@@ -983,7 +983,7 @@ class Model_Object extends ORM {
 
 			//And process resizes passed in from caller
       foreach($additionalResizes as $uiresize){
-        Model_Object::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
+       // Model_Object::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
       }
 
 
