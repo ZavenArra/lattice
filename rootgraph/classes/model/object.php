@@ -983,7 +983,7 @@ class Model_Object extends ORM {
 
 			//And process resizes passed in from caller
       foreach($additionalResizes as $uiresize){
-       // Model_Object::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
+        Model_Object::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
       }
 
 
