@@ -129,6 +129,21 @@
 			</elements>
 		</objectType>
 
+		<objectType name="singleImage2" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
+			<elements>
+				<image name="file" label="Single Image">
+					<resize name="test" width="96" height="58" forceDimension="height" /> 
+					<ext>jpg</ext>
+    				 <ext>tiff</ext>
+      				 <ext>tif</ext>
+				</image>
+				<text name="singleIPE2" label="Single Single Single" isMultiline="false" />
+				<text name="singleIPE3" label="Single Single Single" isMultiline="false" />
+				<text name="singleIPE4" label="Single Single Single" isMultiline="false" />
+				<text name="singleIPE5" label="Single Single Single" isMultiline="false" />
+			</elements>
+		</objectType>
+
 		<objectType name="simpleListModule" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
 				<list name="simplelist" label="Simple List Module" display="inline">
@@ -220,6 +235,8 @@
 		</objectType>
 		<objectType name="linkTest" >
       <elements>
+				<text name="something" label="A athing"/>
+				<text name="somethin2g" label="A athing2"/>
 				<link name="theLink" label="A Link for All"/>
       </elements>
 			<addableObject objectTypeName="linkTest" addText="Add Link Test"/>
