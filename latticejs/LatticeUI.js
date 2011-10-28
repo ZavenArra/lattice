@@ -1403,7 +1403,7 @@ lattice.ui.FileElement = new Class({
 
 	clearFile: function( e ){
 		e.preventDefault();
-		console.log( 'clearField' );
+		// console.log( 'clearField' );
 		if( this.previewElement ){
 			this.imageFadeOut = new Fx.Morph( this.imagePreview, {
 				'duration': 300,
@@ -1531,12 +1531,15 @@ lattice.ui.FileElement = new Class({
 	},
 	
 	onFileComplete: function( json ){
-		console.log( "onFileComplete : json : ", json );
+
 		json = JSON.decode( json.response.text );
+		console.log( "onFileComplete : json : ", json );
+
 		this.clearButton.fade( "in" );
 		if( this.filename ) this.filename.set( "text",  json.response.filename );
 		this.clearButton.removeClass("hidden");
 		this.downloadButton.removeClass("hidden");
+		console.log( '\n\tthumbSrc:', lattice.util.getBaseURL() + json.response.thumbSrc, "\n\tsrc: ", json.response.src );
 		this.downloadButton.set( 'title', 'download ' + json.response.filename );
 		this.downloadButton.set( "href", lattice.util.getBaseURL() + json.response.src );
 //		console.log( this.toString(), "onFileComplete", lattice.util.getBaseURL() + json.response.thumbSrc );
@@ -1788,7 +1791,7 @@ lattice.util.Uploader = new Class({
 
 	update: function( data ) {
 		// the data is saved right to the instance
-		console.log( "lattice.util.Uploader", "update", data );
+//		console.log( "lattice.util.Uploader", "update", data );
 		if( data ) this.currentFileElementInstance.showProgress( data );
 		Object.append( this,  data );
 		this.fireEvent('queue', [this], 10);
