@@ -98,11 +98,11 @@ Class lattice {
                //if the argument is actually a path to a file
                $arenaPath = getcwd() . '/' . $arenaPath;
             } else {
-               $arenaPath = Kohana::find_file('config', $arenaPath, 'xml', true);
-               if (!count($arenaPath)) {
+               $arenaFilePath = Kohana::find_file('config', $arenaPath, 'xml', true);
+               if (!count($arenaFilePath)) {
                   throw new Kohana_Exception('Could not locate xml :file', array(':file' => $arenaPath));
                }
-               $arenaPath = $arenaPath[count($arenaPath) - 1];
+               $arenaPath = $arenaFilePath[count($arenaFilePath) - 1];
             }
             $dom->load($arenaPath);
          }
