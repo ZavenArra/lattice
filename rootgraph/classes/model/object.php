@@ -480,6 +480,10 @@ class Model_Object extends ORM {
    
    
    public function translate($languageCode){
+		 if(!$this->loaded()){
+			 return $this;
+		 }
+
       $rosettaId = $this->rosetta_id;
 			if(!$rosettaId){
 				throw new Kohana_Exception('No Rosetta ID found for object during translation with objectId :objectId',
