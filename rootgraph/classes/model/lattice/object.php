@@ -193,7 +193,6 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
             
              if (is_array($value)) {
                foreach ($value as $clusterColumn => $clusterValue) {
-                  echo 'fer';
                   $objectElement->$clusterColumn = $clusterValue;
                }
              }
@@ -216,6 +215,10 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
       }
       $this->contenttable->save();
    }
+
+	 public function delete(){
+			$this->contenttable->delete();
+	 }
 
    
 }

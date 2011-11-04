@@ -16,8 +16,8 @@ class latticeview {
    
    private static $initialObject = NULL;
 
-	 private $data;
-	 private $view;
+	 protected $data;
+	 protected $view;
 	 protected $object;
 
 	 public static function Factory($objectIdOrSlug){
