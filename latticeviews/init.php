@@ -20,7 +20,7 @@ class FrontendRouting {
 				 if(latticeutil::checkAccess('admin')){
 					 $object = Graph::object($slug);
 				 } else {
-					 $object = Graph::object()->getPublishedObjectBySlug($slug);
+					 $object = Graph::object()->getPublishedFilter()->where('slug', '=', $slug)->find();
 				 }
          if ($languageCode) {
             $object = $object->translate($languageCode);
