@@ -569,32 +569,23 @@ class Model_Object extends ORM {
       return $this;
    }
 
-	 public function getTagObjects() {
-		 $tagObjects = ORM::Factory('objects_tag')
-			 ->select('*')
-			 ->select('tag')
-			 ->where('object_id', '=', $this->id)
-			 ->join('tags')->on('tag_id', '=', 'tags.id')
-			 ->find_all();
-		 return $tagObjects;
-	 }
+   public function getTagObjects() {
+      $tagObjects = ORM::Factory('objects_tag')
+              ->select('*')
+              ->select('tag')
+              ->where('object_id', '=', $this->id)
+              ->join('tags')->on('tag_id', '=', 'tags.id')
+              ->find_all();
+      return $tagObjects;
+   }
 
-	 public function getTagStrings() {
-		 $tagObjects = $this->getTagObjects();
-		 $tags = array();
-		 foreach ($tagObjects as $tagObject) {
-			 $tags[] = $tagObject->tag;
-		 }
-		 return $tags;
-
-	 }
-
-   public function getPublishedObjectBySlug($slug) {
-
-      return $this->where('slug', '=', $slug)
-              ->where('published', '=', 1)
-              ->where('activity', 'IS', NULL)
-              ->find();
+   public function getTagStrings() {
+      $tagObjects = $this->getTagObjects();
+      $tags = array();
+      foreach ($tagObjects as $tagObject) {
+         $tags[] = $tagObject->tag;
+      }
+      return $tags;
    }
 
    public function getContent() {
@@ -994,37 +985,6 @@ class Model_Object extends ORM {
       return $imagefilename;
    }
 
-   //this is gonna change a lot!
-   //this only supports a very special case of multiSelect objects
-   /*
-    * 
-    * Likely No longer used and can be removed
-    * 
-    */
-   public function saveObject() {
-      /*
-      $object = ORM::Factory('object', $this->content table->$field);
-      if (!$object->objecttype_id) {
-         $object->objecttype_id = 0;
-      }
-
-      $element['options'] = array();
-      foreach (Kohana::config('cms.objectTypes.' . $object->objecttype->objecttypename) as $field) {
-         if ($field['type'] == 'checkbox') {
-            $options = $field['field'];
-         }
-      }
-      foreach ($options as $field) {
-         $object->$field = 0;
-      }
-
-      foreach ($_POST['values'] as $value) {
-         $object->$value = 1;
-      }
-      $object->save();
-      return true;*/
-      
-   }
 
    /* Query Filters */
 
@@ -1136,6 +1096,27 @@ class Model_Object extends ORM {
 		 }
 		 return $this->latticeParents[$lattice];
 	 }
+    
+    public function isWithinSubTree($objectId, $lattice='lattice'){
+       $subTreeObject = NULL;
+       if(!is_object($objectId)){
+          $subTreeObject = Graph::object($objectId);
+       } else {
+          $subTreeObject = $objectId;
+       }
+       if(!$subTreeObject->loaded()){
+          throw new Kohana_Exception('Checking for object subtree of object that is not in database: :objectid',
+                  array(':objectid'=>$objectId));
+       }
+       $object = $this;
+       do{
+          if($object->id == $subTreeObject->id){
+             return TRUE;
+          }
+       } while($object = $object->getLatticeParent($lattice) );
+       
+       return FALSE;
+    }
    
    /*
      Function: addLatticeObject($id)
