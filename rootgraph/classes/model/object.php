@@ -1128,16 +1128,8 @@ class Model_Object extends ORM {
      Returns: the new object id
     */
 
-   /* Consider moving this into Object, and creating a hidden top level object that contains these objects
-    * then hidden objects or other kinds of data can be stored, but not within the cms object tree
-    * This makes sense for separating the CMS from the graph, and containing all addObject code within the model.
-    * */
-
    
-  
-   
-   //'addTranslatableObject'
-   public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
+    public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
       
       $newObjectType = ORM::Factory('objecttype', $objectTypeName);
 
