@@ -99,7 +99,7 @@ class Controller_Lattice extends Controller {
 	}
 
 	protected function loadResources(){
-		$this->loadResourcesForKey($this->controllerName);
+		$this->loadResourcesForKey(strtolower($this->controllerName));
 
 		$parents = array_reverse($this->getParents());
 		foreach($parents as $parent){
@@ -113,8 +113,6 @@ class Controller_Lattice extends Controller {
 	}
 
 	protected function loadResourcesForKey($key){
-
-		 $key = strtolower($key);
 
 		//should add to self, then merge into topController
 		if($css = Kohana::find_file('views', 'css/'.$key, 'css')){
