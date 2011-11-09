@@ -19,8 +19,8 @@ CREATE TABLE `languages` (
 
 
 insert into `languages` ( `code`, `fullname`, `activity`) values ('en', 'English', NULL);
-insert into `languages` ( `code`, `fullname`, `activity`) values ('es', 'Spanish', NULL);
-insert into `languages` ( `code`, `fullname`, `activity`) values ('br', 'Portugese', NULL);
+insert into `languages` ( `code`, `fullname`, `activity`) values ('es', 'Spanish', 'D');
+insert into `languages` ( `code`, `fullname`, `activity`) values ('br', 'Portugese', 'D');
 
 CREATE TABLE `rosettas` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
