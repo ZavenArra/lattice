@@ -139,11 +139,8 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
       $config = $object->getElementConfig($field);
 
-      if ($config->item(0)->tagName != 'password') {
-         $returnData['value'] = $value;
-      } else {
-         $returnData['value'] = 'xxxxxxx';
-      }
+			$returnData['value'] = $value;
+
       if ($_POST['field'] == 'title') {
          $returnData['slug'] = $object->slug;
       }
