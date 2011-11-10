@@ -66,6 +66,8 @@ Class Controller_UserManagement extends Controller_Layout {
 			$userobjectType = new View($this->viewName.'_item');
 			$data['id'] = $user->id;
 			$data['username'] = $user->username;
+			$data['firstname'] = $user->firstname;
+			$data['lastname'] = $user->lastname;
 			$data['email'] = $user->email;
 
 			if(strlen($user->password)){
