@@ -108,7 +108,7 @@ class Controller_Lattice extends Controller {
 			} else {
 				$parentKey = $parent;
 			}
-			$this->loadResourcesForKey($parentKey);
+			$this->loadResourcesForKey(strtolower($parentKey));
 		}	
 	}
 
