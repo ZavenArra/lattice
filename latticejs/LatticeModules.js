@@ -366,10 +366,10 @@ lattice.modules.LatticeList = new Class({
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.objectId = this.element.get( 'data-objectid' );
-		console.log( "============================================" );
-		console.log( "element", anElement );
-		console.log( "options", this.options );
-		console.log( "============================================" );
+		// console.log( "============================================" );
+		// console.log( "element", anElement );
+		// console.log( "options", this.options );
+		// console.log( "============================================" );
 		this.allowChildSort = ( this.options.allowChildSort == 'true' )? true : false;
 		this.makeSortable( this.listing );
 	},
@@ -381,21 +381,20 @@ lattice.modules.LatticeList = new Class({
 	},	
 	
 	initList: function(){
+		var children, classPath, ref;
 		this.listing = this.element.getElement( ".listing" );
-		var children = this.listing.getChildren("li");
+		children = this.listing.getChildren("li");
 		children.each( function( element ){
-         var classPath = element.getData('classpath');
-         
-         classPath = classPath.split('.');
-         classPath.each( function( node ){
-			ref = ( !ref )? this[node] : ref[node]; 
-        	});
-      
-         if(ref){
-            new ref( element, this)
-         } else {
-            new lattice.modules.ListItem(element, this)
-         }
+			classPath = element.getData('classpath');
+      classPath = classPath.split('.');
+      classPath.each( function( node ){
+				ref = ( !ref )? this[node] : ref[node]; 
+      });
+			if(ref){
+				new ref( element, this)
+			} else {
+				new lattice.modules.ListItem(element, this)
+			}
 		}, this );
 	},
 
@@ -403,7 +402,7 @@ lattice.modules.LatticeList = new Class({
 		this.controls = this.element.getChildren( ".controls" );
 		this.controls.each( function( controlGroup ){
 			controlGroup.getElements( ".addItem" ).each( function( item ){
-				console.log( '\t\tinitControls', item );
+//				console.log( '\t\tinitControls', item );
 				item.addEvent("click", this.addObjectRequest.bindWithEvent( this, item.get( 'href' ) ) );
 			}, this );
 		}, this );
