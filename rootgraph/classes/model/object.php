@@ -345,11 +345,10 @@ class Model_Object extends ORM {
    
 
    private function insertContentRecord() {
-   
 
       //create the content driver table
       $objectTypeName = $this->objecttype->objecttypename;
-      if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+      if (Kohana::find_file('classes','model/lattice/'.strtolower($objectTypeName))) {
          $modelName = 'Model_Lattice_' . $objectTypeName;
          $model = new $modelName($objectId);
          $this->contentDriver = $model;
@@ -362,7 +361,6 @@ class Model_Object extends ORM {
    }
 
    private function saveContentTable() {
-
       $this->contentDriver()->saveContentTable($this);
    }
    
