@@ -386,7 +386,7 @@ initList: function(){
     children = this.listing.getChildren("li");
     children.each( function( element ){
         classPath = element.getData('classpath');
-        if(classPath == undefined){
+        if(classPath == false || classPath== undefined){
              new lattice.modules.ListItem( element, this );
         } else {
              classPath = classPath.split('.');
