@@ -383,19 +383,23 @@ lattice.modules.LatticeList = new Class({
 	initList: function(){
 		var children, classPath, ref;
 		this.listing = this.element.getElement( ".listing" );
-		children = this.listing.getChildren("li");
-		children.each( function( element ){
-			classPath = element.getData('classpath');
-      classPath = classPath.split('.');
-      classPath.each( function( node ){
-				ref = ( !ref )? this[node] : ref[node]; 
-      });
-			if(ref){
-				new ref( element, this)
-			} else {
-				new lattice.modules.ListItem(element, this)
-			}
-		}, this );
+    children = this.listing.getChildren("li");
+    children.each( function( element ){
+        classPath = element.getData('classpath');
+        if(classPath == undefined){
+        new lattice.modules.ListItem( element, this );
+        } else {
+        classPath = classPath.split('.');
+        classPath.each( function( node ){
+          ref = ( !ref )? this[node] : ref[node]; 
+          });
+        if(ref){
+        new ref( element, this)
+        } else {
+        new lattice.modules.ListItem(element, this)
+        }
+        }, this );
+    }
 	},
 
 	initControls: function(){
