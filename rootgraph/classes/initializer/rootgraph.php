@@ -19,11 +19,11 @@ Class Initializer_RootGraph {
       }
 
 			$problems = 0;
-			if(! (file_exists('application/media') && is_writable('application/media'))){
+			if(! (file_exists(DOCROOT.'application/media') && is_writable(DOCROOT.'application/media'))){
 				Lattice_Initializer::addProblem('application/media must exist and be writable.  Use mkdir application/media; chmod 777 application/media');	
 				$problems++;
 			}
-			if(! (file_exists('application/export') && is_writable('application/export'))){
+			if(! (file_exists(DOCROOT.'application/export') && is_writable(DOCROOT.'application/export'))){
 				Lattice_Initializer::addProblem('application/export must exist and be writable.  Use mkdir application/export; chmod 777 application/export');	
 				$problems++;
 			}

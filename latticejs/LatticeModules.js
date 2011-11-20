@@ -40,17 +40,17 @@ lattice.modules.Module = new Class({
 	
 	saveField: function( postData, callback ){
 //			console.log( "saveField.postData:", postData );
-	    return new Request.JSON( { url: this.getSaveFieldURL(), onSuccess: callback } ).post( postData );
+	    return new Request.JSON( {url: this.getSaveFieldURL(), onSuccess: callback} ).post( postData );
 	},
 
 	clearFile: function( fieldName, callback ){
 		var url = this.getClearFileURL( fieldName );
 		console.log( 'module.clearFile', fieldName, url );
-		return new Request.JSON( { url: url, onComplete: this.callback } ).send();		
+		return new Request.JSON( {url: url, onComplete: this.callback} ).send();		
 	},
 		
 	clearField: function( fieldName ){
-		return new Request.JSON( { url: this.getClearFieldURL( fieldName ) } ).send();
+		return new Request.JSON( {url: this.getClearFieldURL( fieldName )} ).send();
 	},	
 	
 	getObjectId: function(){
@@ -256,7 +256,7 @@ lattice.modules.AjaxFormModule = new Class({
 		this.resultsContainer = this.element.getElement(".resultsContainer");
 	},
 
-	toString: function(){ return "[ Object, lattice.module.Module, lattice.modules.AjaxFormModule ]"; },
+	toString: function(){return "[ Object, lattice.module.Module, lattice.modules.AjaxFormModule ]";},
 
 	submitForm: function( e ){
     lattice.util.stopEvent( e );
@@ -366,10 +366,10 @@ lattice.modules.LatticeList = new Class({
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.objectId = this.element.get( 'data-objectid' );
-		console.log( "============================================" );
-		console.log( "element", anElement );
-		console.log( "options", this.options );
-		console.log( "============================================" );
+		// console.log( "============================================" );
+		// console.log( "element", anElement );
+		// console.log( "options", this.options );
+		// console.log( "============================================" );
 		this.allowChildSort = ( this.options.allowChildSort == 'true' )? true : false;
 		this.makeSortable( this.listing );
 	},
@@ -380,29 +380,55 @@ lattice.modules.LatticeList = new Class({
 		this.initList();
 	},	
 	
-	initList: function(){
-		this.listing = this.element.getElement( ".listing" );
-		var children = this.listing.getChildren("li");
-		children.each( function( element ){
-			new lattice.modules.ListItem( element, this );
-		}, this );
-	},
+initList: function(){
+    var children, classPath, ref;
+    this.listing = this.element.getElement( ".listing" );
+    children = this.listing.getChildren("li");
+    children.each( function( element ){
+        classPath = element.getData('classpath');
+        if(classPath == false || classPath== undefined){
+             new lattice.modules.ListItem( element, this );
+        } else {
+             classPath = classPath.split('.');
+             classPath.each( function( node ){
+                ref = ( !ref )? this[node] : ref[node]; 
+              });
+              if(ref){
+                new ref( element, this)
+               } else {
+                new lattice.modules.ListItem(element, this)
+               }
+       }
+     }, this );
+  },
 
-	initControls: function(){
+initControls: function(){
 		this.controls = this.element.getChildren( ".controls" );
 		this.controls.each( function( controlGroup ){
 			controlGroup.getElements( ".addItem" ).each( function( item ){
-				console.log( '\t\tinitControls', item );
+//				console.log( '\t\tinitControls', item );
 				item.addEvent("click", this.addObjectRequest.bindWithEvent( this, item.get( 'href' ) ) );
 			}, this );
 		}, this );
 	},
+   
+    getClassFromClassPath: function( classPath, delimiter ){
+      //var classPath, ref;
+      if( !delimiter ) delimiter = "_";
+      classPath = classPath.split( delimiter );
+      //        console.log( "\t\tinitModule classPath",  classPath );
+      classPath.each( function( node ){
+         ref = ( !ref )? this[node] : ref[node]; 
+      //        console.log( ref, node );
+      });
+      return ref;
+   },
 	
 	addObjectRequest: function( e, path ){
 		console.log( 'addObjectRequest', path );
 		e.preventDefault();
 		this.listing.spin();
-		return new Request.JSON( { url: this.getAddObjectURL( path ), onSuccess: this.onAddObjectResponse.bind( this ) } ).send();
+		return new Request.JSON( {url: this.getAddObjectURL( path ), onSuccess: this.onAddObjectResponse.bind( this )} ).send();
 	},
     
 	onAddObjectResponse: function( json ){
@@ -428,7 +454,7 @@ lattice.modules.LatticeList = new Class({
 	},
 	
 	removeObjectRequest: function( itemObjectId ){
-		var jsonRequest = new Request.JSON( { url: this.getRemoveObjectURL( itemObjectId ) } ).send();
+		var jsonRequest = new Request.JSON( {url: this.getRemoveObjectURL( itemObjectId )} ).send();
 		return jsonRequest;
 	},
 
@@ -482,7 +508,7 @@ lattice.modules.LatticeList = new Class({
 		if( this.allowChildSort && this.oldSort != newOrder ){
 			clearInterval( this.submitDelay );
 			this.submitDelay = null;
-     	var request = new Request.JSON( { url: this.getSubmitSortOrderURL() } ).post( { sortOrder: newOrder } );
+     	var request = new Request.JSON( {url: this.getSubmitSortOrderURL()} ).post( {sortOrder: newOrder} );
 			this.oldSort = newOrder;
 			return request;
 		}
@@ -548,7 +574,7 @@ lattice.modules.ListItem = new Class({
 		this.build();
 	},
 
-	toString: function(){ return "[ Object, lattice.modules.Module, lattice.modules.ListItem ]"; },
+	toString: function(){return "[ Object, lattice.modules.Module, lattice.modules.ListItem ]";},
 
 	build: function(){
 		this.parent();
@@ -563,18 +589,18 @@ lattice.modules.ListItem = new Class({
 	removeObject: function( e ){
 		lattice.util.stopEvent( e );
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
-		this.fadeOut = new Fx.Morph( this.element, { duration: 350, onComplete: function(){ this.marshal.removeObject( this ) }.bind( this ) } );
-		this.fadeOut.start( { height: 0, opacity: 0 } );
+		this.fadeOut = new Fx.Morph( this.element, {duration: 350, onComplete: function(){this.marshal.removeObject( this )}.bind( this )} );
+		this.fadeOut.start( {height: 0, opacity: 0} );
 	},
 
 	clearField: function( fieldName ){
 		this.marshal.clearField( fieldName );
 	},
 	
-	hideControls: function(){ this.controls.addClass( 'hidden' ); },
-	showControls: function(){ this.controls.removeClass('hidden') },
-	resumeSort: function(){ if( this.marshal.sortableList ) this.marshal.resumeSort(); },
-	suspendSort: function(){ if( this.marshal.sortableList ) this.marshal.suspendSort(); },
+	hideControls: function(){this.controls.addClass( 'hidden' );},
+	showControls: function(){this.controls.removeClass('hidden')},
+	resumeSort: function(){if( this.marshal.sortableList ) this.marshal.resumeSort();},
+	suspendSort: function(){if( this.marshal.sortableList ) this.marshal.suspendSort();},
 	
 	destroy: function(){
 		this.parent();
