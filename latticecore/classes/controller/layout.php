@@ -30,7 +30,7 @@ class Controller_Layout extends Controller_Lattice {
  */
 	public function wrapWithLayout(){
 		//set layout - read from config file
-		$layout = Kohana::config($this->request->controller() . '.layout');
+		$layout = Kohana::config(strtolower($this->request->controller()) . '.layout');
       if(!$layout){
          throw new Kohana_Exception("Layout controller subclass :controller configured to layout action :action, but no layout set in configuration",
                                     array(
