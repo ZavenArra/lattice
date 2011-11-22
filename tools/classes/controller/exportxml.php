@@ -100,7 +100,10 @@ class Controller_ExportXML extends Controller {
             $node->appendChild($this->doc->createTextNode($value));
          }
          $nodes[] = $node;
-      }
+			}
+			$node = $this->doc->createElement('published');
+			$node->appendChild($this->doc->createTextNode($object->published));
+			$nodes[] = $node;
       return $nodes;
    }
 
