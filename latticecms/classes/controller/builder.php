@@ -32,7 +32,13 @@ class Controller_Builder extends Controller {
 	}
 
 	public function action_initializeSite($xmlFile='data'){
-
+  
+      $mtime = microtime();
+      $mtime = explode(' ', $mtime);
+      $mtime = $mtime[1] + $mtime[0];
+      $starttime = $mtime;
+      
+      
 		if(Kohana::config('lattice.live')){
 			die('builder/initializeSite is disabled on sites marked live');
 		}
@@ -72,9 +78,19 @@ class Controller_Builder extends Controller {
 		latticecms::regenerateImages();
 
     //and run frontend
-		echo "\n Regenerating Fronted";
+	  echo "\n Regenerating Frontend";
     $this->action_frontend();
 
+    
+    $memoryUseFollowingAction = memory_get_usage(true);
+    
+    $mtime = microtime();
+    $mtime = explode(" ", $mtime);
+    $mtime = $mtime[1] + $mtime[0];
+    $endtime = $mtime;
+    $totaltime = ($endtime - $starttime);
+    echo '<!-- initializeSite took ' .$totaltime. ' seconds, and completed with memory usage of '.$memoryUseFollowingAction;
+    
 	}
 
   public function action_frontend(){
@@ -107,36 +123,36 @@ class Controller_Builder extends Controller {
 		} else {
 			$parentObject = Graph::object($parentId);
 		}
- 
+
 
 		foreach(lattice::config($xmlFile, 'item', $context)  as $item){
 
-         if(!$item->getAttribute('objectTypeName')){
+			if(!$item->getAttribute('objectTypeName')){
 				echo $item->tagName;
-            throw new Kohana_Exception("No objecttypename specified for Item " . $item->tagName);
+				throw new Kohana_Exception("No objecttypename specified for Item " . $item->tagName);
 			}
-         
 
-         $object = Graph::instance();
+
+			$object = Graph::instance();
 			$objectType = ORM::Factory('objecttype', $item->getAttribute('objectTypeName'));
-			
+
 			$data = array();
-         $clustersData = array();
+			$clustersData = array();
 			foreach(lattice::config($xmlFile, 'field', $item ) as $content){
 				$field = $content->getAttribute('name');
 
-            	switch ($field) {
-               case 'title':
-                  $data[$field] = $content->nodeValue;
-                  continue(2);
-               case 'slug':
-                  $data[$field] = $content->nodeValue;
-                  $data['decoupleSlugTitle'] = 1;
-                  continue(2);
-            }
+				switch ($field) {
+				case 'title':
+					$data[$field] = $content->nodeValue;
+					continue(2);
+				case 'slug':
+					$data[$field] = $content->nodeValue;
+					$data['decoupleSlugTitle'] = 1;
+					continue(2);
+				}
 
 
-            //need to look up field and switch on field type	
+				//need to look up field and switch on field type	
             $fieldInfo = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
             if (!$fieldInfo) {
                throw new Kohana_Exception("Bad field in data/objects!\n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
@@ -182,10 +198,7 @@ class Controller_Builder extends Controller {
 				}
 
 			}
-         echo '$$$$$$$$$$';
-print_r($data);
-            print_r($clustersData);
-			$data['published'] = true;
+			//$data['published'] = true;
 			
 
 
@@ -222,25 +235,21 @@ print_r($data);
 
 			if($component){
 				echo 'Updating Object '.$component->objecttype->objecttypename."\n";
-				print_r($data);
+				//print_r($data);
 				$component->updateWithArray($data);
 				$objectId = $component->id;
 			} else {
 				//actually add the object
 				echo 'Adding Object '.$item->getAttribute('objectTypeName')."\n";
-				print_r($data);
+				//print_r($data);
 				$objectId = $parentObject->addObject($item->getAttribute('objectTypeName'), $data);
 				$this->newObjectIds[] = $objectId;
 			}
          
          //and now update with elementObjects;
-         echo 'ssssss';
-                     print_r($clustersData);
-
          if(count($clustersData)){
             $object = Graph::object($objectId);
-            echo 'Updating clusters';
-            print_r($clustersData);
+            echo "Updating clusters\n";
             $object->updateWithArray($clustersData);
          }
          

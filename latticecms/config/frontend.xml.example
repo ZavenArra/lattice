@@ -8,6 +8,6 @@
 
 	<view name="whatever">
 		<includeData from="single-ipe" label="something"/>
-</view>
+	</view>
 </configuration>
 
