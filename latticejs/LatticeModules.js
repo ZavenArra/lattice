@@ -366,15 +366,10 @@ lattice.modules.LatticeList = new Class({
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.objectId = this.element.get( 'data-objectid' );
-<<<<<<< HEAD
-		console.log( "element", anElement );
-		console.log( "options", this.options );
-=======
 		// console.log( "============================================" );
 		// console.log( "element", anElement );
 		// console.log( "options", this.options );
 		// console.log( "============================================" );
->>>>>>> c57651b551298ee6b137d3c92dbd48d840b0bce4
 		this.allowChildSort = ( this.options.allowChildSort == 'true' )? true : false;
 		this.makeSortable( this.listing );
 	},
