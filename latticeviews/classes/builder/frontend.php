@@ -17,6 +17,8 @@ Class Builder_Frontend {
 		lattice::config('objects', '//objectTypes');
 		
 		flush();
+      ob_flush();
+      flush();
 		
 		$createdViews = array();
 	//	foreach(lattice::config('frontend', '//view') as $view ){
@@ -26,13 +28,18 @@ Class Builder_Frontend {
 			if(count($view)){
 				$view = $view->item(0);
 			}
-			ob_start();
 			if($view){
 				$viewName = $view->getAttribute('name');
 			} else {
 				$viewName = $objectType->getAttribute('name');
 			}
          
+         echo $viewName."\n";
+         flush();
+         ob_flush();
+         flush();
+         
+         ob_start();
 			if(!$view ||  ($view && $view->getAttribute('loadPage')=='true')){
 				echo "<h1><?=\$content['main']['title'];?></h1>\n\n";
 				//this also implies that name is a objecttypename
@@ -75,11 +82,20 @@ Class Builder_Frontend {
 			$createdViews[] = $viewName;
 		}
 
+      echo 'Completed all basic object views' . "\n";
+      flush();
+      ob_flush();
+      flush();
 
-		//and any virtual views
+      //and any virtual views
 		foreach(lattice::config('frontend', '//view') as $viewConfig){
 			$viewName = $viewConfig->getAttribute('name');
 
+         echo 'Virtual View: '.$viewName . "\n";
+         flush();
+         ob_flush();
+         flush();
+         
 			if( in_array($viewName, $createdViews)){
 				continue;
 			}
@@ -135,7 +151,8 @@ Class Builder_Frontend {
 
 	public function makeIncludeDataHtml($iDataConfig, $prefix, $parentTemplate, $indent=''){
 		$label = $iDataConfig->getAttribute('label');
-
+     
+      
 		$objectTypes = array();
 		//if slug defined, get objectType from slug
 		if($slug = $iDataConfig->getAttribute('slug')){
@@ -154,6 +171,7 @@ Class Builder_Frontend {
 				$objectTypes = array();
 			}
 		}
+
 		if(!count($objectTypes)){
 			//no where for objectTypes
 			//assume that we'll have to make a good guess based off 'from' parent
@@ -177,7 +195,7 @@ Class Builder_Frontend {
 				}
 			} else {
 				//see if from is a slug
-            $objectTypesFromParent = $this->getChildrenObjectTypes(Graph::$object($from));
+            $objectTypesFromParent = $this->getChildrenObjectTypes(Graph::object($from));
             $objectTypes = array_merge($objectTypes, $objectTypesFromParent);
             
 				
