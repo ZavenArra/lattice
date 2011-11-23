@@ -176,7 +176,7 @@ lattice.modules.Module = new Class({
 	destroyUIFields: function(){
 //		console.log( "destroyUIFields before", this.instanceName, this.UIFields );
 		Object.each( this.UIFields, function( aUIField ){
-			console.log( '\t\t', aUIField, aUIField.fieldName );
+//			console.log( '\t\t', aUIField, aUIField.fieldName );
 			var fieldName = aUIField.fieldName;
 			aUIField.destroy();
 			aUIField = null;
@@ -231,9 +231,9 @@ Extends: lattice.modules.Module,
 	},
 
 	getSaveFieldURL: function(){
-		console.log( this.toString(), this.element );
+//		console.log( this.toString(), this.element );
 		var url = lattice.util.getBaseURL() +"ajax/data/cms/savefield/" + this.getObjectId();
-		console.log( 'cluster.getSaveFieldURL', url );
+//		console.log( 'cluster.getSaveFieldURL', url );
 		return url;
 	}
 
@@ -366,10 +366,8 @@ lattice.modules.LatticeList = new Class({
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.objectId = this.element.get( 'data-objectid' );
-		console.log( "============================================" );
 		console.log( "element", anElement );
 		console.log( "options", this.options );
-		console.log( "============================================" );
 		this.allowChildSort = ( this.options.allowChildSort == 'true' )? true : false;
 		this.makeSortable( this.listing );
 	},
@@ -380,38 +378,69 @@ lattice.modules.LatticeList = new Class({
 		this.initList();
 	},	
 	
-	initList: function(){
-		this.listing = this.element.getElement( ".listing" );
-		var children = this.listing.getChildren("li");
-		children.each( function( element ){
-			new lattice.modules.ListItem( element, this );
+initList: function(){
+    var children;
+    this.listing = this.element.getElement( ".listing" );
+    children = this.listing.getChildren("li");
+    children.each( function( element ){
+			this.initItem( element );
 		}, this );
+  },
+
+	initItem: function( element ){
+		var classPath, ref, newItem;
+		classPath = element.getData('classpath');
+		if(!classPath){
+			newItem = new lattice.modules.ListItem( element, this );
+		} else {
+			ref = this.getClassFromClassPath( classPath, '.' );
+			if(ref){
+				newItem = new ref( element, this );
+			} else {
+				throw "classPath " + classPath + "  for element: " + element + " is referring to a class that is not loaded or does not exist";
+				return false;
+			}
+		}
+		return newItem;
 	},
 
 	initControls: function(){
-		this.controls = this.element.getChildren( ".controls" );
-		this.controls.each( function( controlGroup ){
-			controlGroup.getElements( ".addItem" ).each( function( item ){
-				console.log( '\t\tinitControls', item );
-				item.addEvent("click", this.addObjectRequest.bindWithEvent( this, item.get( 'href' ) ) );
+			this.controls = this.element.getChildren( ".controls" );
+			this.controls.each( function( controlGroup ){
+				controlGroup.getElements( ".addItem" ).each( function( item ){
+	//				console.log( '\t\tinitControls', item );
+					item.addEvent("click", this.addObjectRequest.bindWithEvent( this, item.get( 'href' ) ) );
+				}, this );
 			}, this );
-		}, this );
-	},
+		},
+   
+    getClassFromClassPath: function( classPath, delimiter ){
+      var ref;			
+      delimiter = ( !delimiter )? "_" : delimiter;
+      classPath = classPath.split( delimiter );
+//			console.log( "\t\tinitModule classPath",  classPath );
+      classPath.each( function( node ){
+//				console.log( 'node', node, ref );
+         ref = ( !ref )? this[node] : ref[node]; 
+      });
+			//console.log( 'getClassFromClassPath', ref );
+      return ref;
+   },
 	
 	addObjectRequest: function( e, path ){
-		console.log( 'addObjectRequest', path );
+//		console.log( 'addObjectRequest', path );
 		e.preventDefault();
 		this.listing.spin();
 		return new Request.JSON( { url: this.getAddObjectURL( path ), onSuccess: this.onAddObjectResponse.bind( this ) } ).send();
 	},
     
 	onAddObjectResponse: function( json ){
-		console.log( "onAddObjectResponse", json );
+//		console.log( "onAddObjectResponse", json );
 		this.listing.unspin();
-		var element, listItem, addItemText;
+		var element, listItem, addItemText, classPath, ref;
 		element = json.response.html.toElement();
-		addItemText = this.controls.getElement( ".addItem" ).get( "text" );
-		listItem = new lattice.modules.ListItem( element, this );
+		addItemText = this.controls.getElement( ".addItem" ).get( "text" );		
+		listItem = this.initItem( element );
 		Object.each( listItem.UIFields, function( uiField ){
 			uiField.scrollContext = "modal";
 			if( uiField.reposition ) uiField.reposition('modal');
@@ -435,7 +464,7 @@ lattice.modules.LatticeList = new Class({
 	insertItem: function( anItem ){
 		var where, listItemInstance, coords;
 		where = ( this.options.sortDirection == "DESC" )? "top" : "bottom";
-		console.log( "\t", this.options.sortDirection, where );
+//		console.log( "\t", this.options.sortDirection, where );
 		this.listing.grab( anItem.element, where );
 		if( this.allowChildSort && this.sortableList ) this.sortableList.addItems( anItem.element );
 		Object.each( anItem.UIFields, function( aUIField ){
