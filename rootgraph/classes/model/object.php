@@ -70,43 +70,47 @@ class Model_Object extends ORM {
 	 * Returns: The new, unique slug
 	 */
 	public static function createSlug($titleOrSlug=NULL, $forPageId=NULL){
-		//create slug
-		if($titleOrSlug!=NULL){
-			$slug = preg_replace('/[^a-z0-9\- ]/', '', strtolower($titleOrSlug));
-			$slug = str_replace(' ', '-', $slug);
-			$slug = trim($slug);
+    //create slug
+    if($titleOrSlug!=NULL){
+      $slug = preg_replace('/[^a-z0-9\- ]/', '', strtolower($titleOrSlug));
+      $slug = str_replace(' ', '-', $slug);
+      $slug = trim($slug);
+      $slug = substr($slug, 0, 50);
 
-         
-			$checkSlug = Graph::object()
-                 ->where('slug', '=', $slug);
-         if ($forPageId != NULL) {
-            $checkSlug->where('id', '!=', $forPageId);
-         }
-         $checkSlug->find();
-         if (!$checkSlug->loaded()) {
-            return $slug;
-         }
 
-         
-			$checkSlug = Graph::object()
-				->where('slug', 'REGEXP',  '^'.$slug.'[0-9]*$')
-				->order_by("slug");
-      	
-			if($forPageId != NULL){
-				$checkSlug->where('id', '!=', $forPageId);
-			}
-			$checkSlug = $checkSlug->find_all();
-			if(count($checkSlug)){
-				$idents = array();
-				foreach($checkSlug as $ident){
-					$idents[] = $ident->slug;
-				}
-				natsort($idents);
-				$idents = array_values($idents);
-				$maxslug = $idents[count($idents)-1];
-				if($maxslug){
-					$curindex = substr($maxslug, strlen($slug));
-					$newindex = $curindex+1;
+      $checkSlug = Graph::object()
+        ->where('slug', '=', $slug);
+      if ($forPageId != NULL) {
+        $checkSlug->where('id', '!=', $forPageId);
+      }
+      $checkSlug->find();
+      if (!$checkSlug->loaded()) {
+        return $slug;
+      }
+
+
+      $checkSlug = Graph::object()
+        ->where('slug', 'REGEXP',  '^'.$slug.'[0-9]*$')
+        ->order_by("slug", 'DESC');
+
+      if($forPageId != NULL){
+        $checkSlug->where('id', '!=', $forPageId);
+      }
+      $checkSlug = $checkSlug->find_all();
+      if(count($checkSlug)){
+        $idents = array();
+        foreach($checkSlug as $ident){
+          $idents[] = $ident->slug;
+        }
+        natsort($idents);
+        $idents = array_values($idents);
+        $maxslug = $idents[count($idents)-1];
+        if($maxslug){
+          $curindex = substr($maxslug, strlen($slug));
+          $newindex = $curindex+1;
+          if(strlen($slug) > 50 - strlen($newindex)){
+            $slug = substr($slug, 0, 50 - strlen($newindex) );
+          }
 					$slug .= $newindex;
 				}
 			}
@@ -1378,7 +1382,6 @@ class Model_Object extends ORM {
       $newObject->insertContentRecord();
       //print_r($data);
       $newObject->updateContentData($data);
-      //echo 'yay'. $newObject->id;
       
       /*
        * Set up any translated peer objects
