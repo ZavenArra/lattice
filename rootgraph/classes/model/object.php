@@ -1427,6 +1427,8 @@ class Model_Object extends ORM {
       $objectRelationship->object_id = $this->id;
       $objectRelationship->connectedobject_id = $newObject->id;
       $objectRelationship->save();
+
+
       $newObject->insertContentRecord();
       
       
@@ -1442,6 +1444,36 @@ class Model_Object extends ORM {
       return $newObject;
    
    }
+
+   public function connectLatticeChild($lattice, $childObject){
+     if(!is_object($lattice)){
+       $lattice = Graph::lattice($lattice);
+     }
+
+      $objectRelationship = ORM::Factory('objectrelationship');
+      $objectRelationship->lattice_id = $lattice->id;
+      $objectRelationship->object_id = $this->id;
+      $objectRelationship->connectedobject_id = $childObject->id;
+      $objectRelationship->save();
+
+      //calculate sort order
+      $sort = DB::select('sortorder')->from('objectrelationships')
+                        ->where('lattice_id', '=', $lattice->id)
+                        ->where('object_id', '=', $this->id)
+                      ->order_by('sortorder','DESC')->limit(1)
+                      ->execute()->current();
+      $objectRelationship->sortorder = $sort['sortorder'] + 1;
+    
+      $objectRelationship->save();
+   }
+
+  public function clearLatticeConnections($lattice){
+     if(!is_object($lattice)){
+       $lattice = Graph::lattice($lattice);
+     }
+
+     die('Not yet implemented');
+  }
    
    public function getTranslatedObject($languageId){
        $parentRosettaId = $this->rosetta_id;

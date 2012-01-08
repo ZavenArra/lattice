@@ -57,10 +57,9 @@
 <!-- Associator DTD -->
 <!ELEMENT associator (filter*)>
 <!ATTLIST associator  
-	field         CDATA #REQUIRED
+	name         CDATA #REQUIRED
+	lattice         CDATA #REQUIRED
 	label         CDATA #IMPLIED
-	parent        CDATA  #IMPLIED
-	objectTypeName  CDATA  #IMPLIED 
 >   
 
 <!ELEMENT filter EMPTY >

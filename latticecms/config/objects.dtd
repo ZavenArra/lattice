@@ -72,9 +72,8 @@
 <!ELEMENT associator (filter*)>
 <!ATTLIST associator  
 	name         CDATA #REQUIRED
+  lattice       CDATA #REQUIRED
 	label         CDATA #IMPLIED
-	parent        CDATA  #IMPLIED
-	objectTypeName  CDATA  #IMPLIED 
 >   
 
 <!ELEMENT filter EMPTY >
