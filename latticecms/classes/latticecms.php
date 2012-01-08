@@ -86,11 +86,9 @@ class latticecms {
                   break;
 
                case 'associator':
-                  $controller = new Associator_Controller($element['filters'], $object->id, $element['name']);
-                  $controller->createIndexView();
-                  $controller->view->loadResources();
+                  $associator = new Associator($object->id, $element['lattice'],$element['filters']);
                   $key = $element['type'] . '_' . $uiArguments['name'];
-                  $htmlChunks[$key] = $controller->view->render();
+                  $htmlChunks[$key] = $associator->render();
                   
                   break;
 
