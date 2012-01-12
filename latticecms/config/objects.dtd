@@ -165,6 +165,7 @@
 	height				CDATA #REQUIRED
 	forceDimension		(width|height) #IMPLIED
 	crop				(true|false) "false"
+  aspectFollowsOrientation (true|false) "false"
 >
 
 <!ELEMENT ext (#PCDATA) >

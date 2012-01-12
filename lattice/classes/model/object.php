@@ -136,22 +136,23 @@ class Model_Object extends ORM {
 	/*
 	 *
 	 */
-	public static function resizeImage($originalfilename, $newfilename, $width, $height, $forceDimension='width', $crop='false'){
+  public static function resizeImage($originalFilename, $newFilename, $width, $height,
+                                     $forceDimension='width', $crop='false', $aspectFollowsOrientation='false'){
 		//set up dimenion to key off of
 		switch($forceDimension){
 		case 'width':
-			$keydimension = Image::WIDTH;
+			$keyDimension = Image::WIDTH;
 			break;
 		case 'height':
-			$keydimension = Image::HEIGHT;
+			$keyDimension = Image::HEIGHT;
 			break;
 		default:
-			$keydimension = Image::AUTO;
+			$keyDimension = Image::AUTO;
 			break;
 		}
 
-		$image = Image::factory(Graph::mediapath().$originalfilename);
-		if($crop) {
+		$image = Image::factory(Graph::mediapath().$originalFilename);
+		if($crop=='true') {
 			//resample with crop
 			//set up sizes, and crop
 			if( ($image->width / $image->height) > ($image->height / $image->width) ){
@@ -160,38 +161,38 @@ class Model_Object extends ORM {
 				$cropKeyDimension = Image::WIDTH;
 			}
 			$image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
-			$image->save(Graph::mediapath().$newfilename);
+			$image->save(Graph::mediapath().$newFilename);
 
 		} else {
 			//just do the resample
 			//set up sizes
-			$resizewidth = $width;
-			$resizeheight = $height;
+			$resizeWidth = $width;
+			$resizeHeight = $height;
 
-			if(isset($resize['aspectfollowsorientation']) && $resize['aspectfollowsorientation']){
-				$osize = getimagesize(Graph::mediapath().$imagefilename);
+			if($aspectFollowsOrientation == 'true' ){
+				$osize = getimagesize(Graph::mediapath().$originalFilename);
 				$horizontal = false;
 				if($osize[0] > $osize[1]){
 					//horizontal
 					$horizontal = true;	
 				}
-				$newsize = array($resizewidth, $resizeheight);
+				$newsize = array($resizeWidth, $resizeHeight);
 				sort($newsize);
 				if($horizontal){
-					$resizewidth = $newsize[1];
-					$resizeheight = $newsize[0];
+					$resizeWidth = $newsize[1];
+					$resizeHeight = $newsize[0];
 				} else {
-					$resizewidth = $newsize[0];
-					$resizeheight = $newsize[1];
+					$resizeWidth = $newsize[0];
+					$resizeHeight = $newsize[1];
 				}
 			}
 
 			//maintain aspect ratio
 			//use the forcing when it applied
 			//forcing with aspectfolloworientation is gonna give weird results!
-			$image->resize($resizewidth, $resizeheight, $keydimension);
+			$image->resize($resizeWidth, $resizeHeight, $keyDimension);
 
-			$image->save(Graph::mediapath() .$newfilename);
+			$image->save(Graph::mediapath() .$newFilename);
 
 		}
 
@@ -951,23 +952,23 @@ class Model_Object extends ORM {
 			Kohana::$log->add(Log::INFO, var_export($resizes, true));
       foreach ($resizes as $resize) {
  
-				$newfilename = NULL;
+				$newFilename = NULL;
 				$tag = NULL;
          if ($tag = $resize->getAttribute('name')) {
 						$prefix = $tag . '_';
-						$newfilename = $prefix .  $imagefilename;
+						$newFilename = $prefix .  $imagefilename;
          } else {
             $prefix = '';
-						$newfilename = $imagefilename;
+						$newFilename = $imagefilename;
          }
-         $saveName = Graph::mediapath() . $newfilename;
+         $saveName = Graph::mediapath() . $newFilename;
 
 				 //This dependency should be moved out of latticecms
 				 //Rootgraph should never require latticecms
-         Model_Object::resizeImage($imagefilename, $newfilename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('forceDimension'), $resize->getAttribute('crop')
+         Model_Object::resizeImage($imagefilename, $newFilename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('forceDimension'), $resize->getAttribute('crop'), $resize->getAttribute('aspectFollowsOrientation')
          );
 
-         if (isset($oldfilename) && $newfilename != $prefix . $oldfilename) {
+         if (isset($oldfilename) && $newFilename != $prefix . $oldfilename) {
             if (file_exists(Graph::mediapath() . $oldfilename)) {
                unlink(Graph::mediapath() . $oldfilename);
             }
@@ -980,7 +981,8 @@ class Model_Object extends ORM {
 
 			//And process resizes passed in from caller
       foreach($additionalResizes as $uiresize){
-        Model_Object::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop']);
+        Model_Object::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop'], $resize->getAttribute('aspectFollowsOrientation') 
+        );
       }
 
 
