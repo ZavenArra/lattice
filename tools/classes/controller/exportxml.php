@@ -155,7 +155,19 @@ class Controller_ExportXML extends Controller {
    }
 
    //this should call action_export and then convert with xslt
-   public function action_exportMOPFormat($outputfilename='export', $xslt='') {
+   public function action_exportMOPFormat($outputfilename='export') {
+
+     $this->export('MOPFormat', $outputfilename);
+
+   } 
+
+   public function action_export($outputfilename='export') {
+
+     $this->export('XMLFormat', $outputfilename);
+
+   } 
+
+   public function export($format, $outputfilename){
 
 		 $this->outputDir = 'application/export/' . $outputfilename . '/';
 
@@ -216,8 +228,17 @@ class Controller_ExportXML extends Controller {
       $object = Graph::getRootNode('cmsRootNode');
       $objects = $object->getChildren();
 
+      $exportFunction = NULL;
+      switch($format){
+      case 'MOPFormat':
+        $exportFunction = 'exportTierMOPFormat';
+        break;
+      case 'XMLFormat':
+        $exportFunction = 'exportTier';
+         break;
+      }
 
-      foreach ($this->exportTierMOPFormat($objects) as $item) {
+      foreach ($this->$exportFunction($objects) as $item) {
          $data->appendChild($item);
       }
       $this->doc->appendChild($data);
@@ -227,26 +248,6 @@ class Controller_ExportXML extends Controller {
       ob_flush();
       $this->doc->save($this->outputDir . '/' . $outputfilename . '.xml');
       echo 'done';
-   }
-
-   public function action_export($xslt='') {
-
-      //  $this->buildExportXml();
-
-      $this->doc = new DOMDocument('1.0', 'UTF-8');
-      $this->doc->formatOutput = true;
-      $data = $this->doc->createElement('data');
-
-      $object = Graph::getRootNode('cmsRootNode');
-      $objects = $object->getChildren();
-
-
-      foreach ($this->exportTier($objects) as $item) {
-         $data->appendChild($item);
-      }
-
-      $this->doc->appendChild($data);
-      $this->doc->save('application/media/export.xml');
    }
 
 }
