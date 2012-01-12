@@ -1,6 +1,6 @@
 <?
 
-class Controller_ExportXML extends Controller {
+class Controller_Export extends Controller {
 
    public $outputDir;
 
@@ -18,7 +18,7 @@ class Controller_ExportXML extends Controller {
             continue;
          }
          if ($key == 'id') {
-            continue;
+            //continue;
          }
          $node = $this->doc->createElement($key);
          if (is_array($value)) {
