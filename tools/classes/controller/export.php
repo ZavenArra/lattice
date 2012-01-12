@@ -48,7 +48,7 @@ class Controller_Export extends Controller {
       return $nodes;
    }
 
-   private function getObjectFieldsMOPFormat($object) {
+   private function getObjectFieldsLatticeFormat($object) {
       $nodes = array();
       $content = $object->getContent();
       foreach ($content as $key => $value) {
@@ -90,7 +90,7 @@ class Controller_Export extends Controller {
                   }
                   break;
                case 'Model_Object':
-                  foreach ($this->getObjectFieldsMOPFormat($value) as $subElement) {
+                  foreach ($this->getObjectFieldsLatticeFormat($value) as $subElement) {
 										$node->appendChild($subElement);
                   }
                   break;
@@ -129,7 +129,7 @@ class Controller_Export extends Controller {
       return $nodes;
    }
 
-   private function exportTierMOPFormat($objects) {
+   private function exportTierLatticeFormat($objects) {
 
       $nodes = array();
       foreach ($objects as $object) {
@@ -139,13 +139,13 @@ class Controller_Export extends Controller {
          $objectTypeAttr->appendChild($objectTypeValue);
          $item->appendChild($objectTypeAttr);
 
-         foreach ($this->getObjectFieldsMOPFormat($object) as $field) {
+         foreach ($this->getObjectFieldsLatticeFormat($object) as $field) {
             $item->appendChild($field);
          }
 
          //and get the children
          $childObjects = $object->getChildren();
-         foreach ($this->exportTierMOPFormat($childObjects) as $childItem) {
+         foreach ($this->exportTierLatticeFormat($childObjects) as $childItem) {
             $item->appendChild($childItem);
          }
          $nodes[] = $item;
@@ -155,13 +155,13 @@ class Controller_Export extends Controller {
    }
 
    //this should call action_export and then convert with xslt
-   public function action_exportMOPFormat($outputfilename='export') {
+   public function action_LatticeFormat($outputfilename='export') {
 
-     $this->export('MOPFormat', $outputfilename);
+     $this->export('LatticeFormat', $outputfilename);
 
    } 
 
-   public function action_export($outputfilename='export') {
+   public function action_XML($outputfilename='export') {
 
      $this->export('XMLFormat', $outputfilename);
 
@@ -230,8 +230,8 @@ class Controller_Export extends Controller {
 
       $exportFunction = NULL;
       switch($format){
-      case 'MOPFormat':
-        $exportFunction = 'exportTierMOPFormat';
+      case 'LatticeFormat':
+        $exportFunction = 'exportTierLatticeFormat';
         break;
       case 'XMLFormat':
         $exportFunction = 'exportTier';
