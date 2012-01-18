@@ -235,7 +235,7 @@ class Model_Object extends ORM {
          return parent::__get($column);
      
       } else if ($column == 'parent') {
-				return $getLatticeParent(); 
+				return $this->getLatticeParent(); 
       
       } else if ($column == 'objecttype'){
          //this condition should actually check against associations
