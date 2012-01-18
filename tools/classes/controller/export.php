@@ -1,6 +1,6 @@
 <?
 
-class Controller_ExportXML extends Controller {
+class Controller_Export extends Controller {
 
    public $outputDir;
 
@@ -18,7 +18,7 @@ class Controller_ExportXML extends Controller {
             continue;
          }
          if ($key == 'id') {
-            continue;
+            //continue;
          }
          $node = $this->doc->createElement($key);
          if (is_array($value)) {
@@ -48,7 +48,7 @@ class Controller_ExportXML extends Controller {
       return $nodes;
    }
 
-   private function getObjectFieldsMOPFormat($object) {
+   private function getObjectFieldsLatticeFormat($object) {
       $nodes = array();
       $content = $object->getContent();
       foreach ($content as $key => $value) {
@@ -90,7 +90,7 @@ class Controller_ExportXML extends Controller {
                   }
                   break;
                case 'Model_Object':
-                  foreach ($this->getObjectFieldsMOPFormat($value) as $subElement) {
+                  foreach ($this->getObjectFieldsLatticeFormat($value) as $subElement) {
 										$node->appendChild($subElement);
                   }
                   break;
@@ -129,7 +129,7 @@ class Controller_ExportXML extends Controller {
       return $nodes;
    }
 
-   private function exportTierMOPFormat($objects) {
+   private function exportTierLatticeFormat($objects) {
 
       $nodes = array();
       foreach ($objects as $object) {
@@ -139,13 +139,13 @@ class Controller_ExportXML extends Controller {
          $objectTypeAttr->appendChild($objectTypeValue);
          $item->appendChild($objectTypeAttr);
 
-         foreach ($this->getObjectFieldsMOPFormat($object) as $field) {
+         foreach ($this->getObjectFieldsLatticeFormat($object) as $field) {
             $item->appendChild($field);
          }
 
          //and get the children
          $childObjects = $object->getChildren();
-         foreach ($this->exportTierMOPFormat($childObjects) as $childItem) {
+         foreach ($this->exportTierLatticeFormat($childObjects) as $childItem) {
             $item->appendChild($childItem);
          }
          $nodes[] = $item;
@@ -155,7 +155,19 @@ class Controller_ExportXML extends Controller {
    }
 
    //this should call action_export and then convert with xslt
-   public function action_exportMOPFormat($outputfilename='export', $xslt='') {
+   public function action_LatticeFormat($outputfilename='export') {
+
+     $this->export('LatticeFormat', $outputfilename);
+
+   } 
+
+   public function action_XML($outputfilename='export') {
+
+     $this->export('XMLFormat', $outputfilename);
+
+   } 
+
+   public function export($format, $outputfilename){
 
 		 $this->outputDir = 'application/export/' . $outputfilename . '/';
 
@@ -216,8 +228,17 @@ class Controller_ExportXML extends Controller {
       $object = Graph::getRootNode('cmsRootNode');
       $objects = $object->getChildren();
 
+      $exportFunction = NULL;
+      switch($format){
+      case 'LatticeFormat':
+        $exportFunction = 'exportTierLatticeFormat';
+        break;
+      case 'XMLFormat':
+        $exportFunction = 'exportTier';
+         break;
+      }
 
-      foreach ($this->exportTierMOPFormat($objects) as $item) {
+      foreach ($this->$exportFunction($objects) as $item) {
          $data->appendChild($item);
       }
       $this->doc->appendChild($data);
@@ -227,26 +248,6 @@ class Controller_ExportXML extends Controller {
       ob_flush();
       $this->doc->save($this->outputDir . '/' . $outputfilename . '.xml');
       echo 'done';
-   }
-
-   public function action_export($xslt='') {
-
-      //  $this->buildExportXml();
-
-      $this->doc = new DOMDocument('1.0', 'UTF-8');
-      $this->doc->formatOutput = true;
-      $data = $this->doc->createElement('data');
-
-      $object = Graph::getRootNode('cmsRootNode');
-      $objects = $object->getChildren();
-
-
-      foreach ($this->exportTier($objects) as $item) {
-         $data->appendChild($item);
-      }
-
-      $this->doc->appendChild($data);
-      $this->doc->save('application/media/export.xml');
    }
 
 }
