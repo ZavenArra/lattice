@@ -25,10 +25,14 @@ class Graph {
 
 		//this will be implemented to support different drivers
 		if ($objectId == null) {
-			return ORM::Factory('object');
+			$object = ORM::Factory('object');
 		} else {
-			return ORM::Factory('object', $objectId);
-		}
+      $object = ORM::Factory('object', $objectId);
+      if(Kohana::find_file('classes/model/', $object->objecttype->objecttypename)){
+        $object = ORM::Factory($object->objecttype->objecttypename, $objectId);
+      }
+    }
+    return $object;
 	}
 
 
