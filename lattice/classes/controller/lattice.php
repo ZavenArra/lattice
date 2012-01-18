@@ -38,8 +38,7 @@ class Controller_Lattice extends Controller {
 
 		if($request->is_initial()){
 		 self::$topController = $this;
-		}
-
+    }
 		//look up all matching js and css based off controller name
 
 		$this->loadResources();
@@ -112,7 +111,10 @@ class Controller_Lattice extends Controller {
 		}	
 	}
 
-	protected function loadResourcesForKey($key){
+  protected function loadResourcesForKey($key){
+    if(self::$topController == NULL){
+      throw new Kohana_Exception('self::$topController should not be NULL, in order to use loadResourcesForKey you must extend Controller_Lattice in the controller of your initial route ');
+    }
 
 		//should add to self, then merge into topController
 		if($css = Kohana::find_file('views', 'css/'.$key, 'css')){
