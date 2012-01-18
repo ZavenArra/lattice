@@ -101,8 +101,12 @@ class Controller_Export extends Controller {
          }
          $nodes[] = $node;
 			}
-			$node = $this->doc->createElement('published');
-			$node->appendChild($this->doc->createTextNode($object->published));
+      $node = $this->doc->createElement('field');
+      $nodeAttr = $this->doc->createAttribute('name');
+      $nodeValue = $this->doc->createTextNode('published');
+      $nodeAttr->appendChild($nodeValue);
+      $node->appendChild($nodeAttr);
+      $node->appendChild($this->doc->createTextNode($object->published));
 			$nodes[] = $node;
       return $nodes;
    }

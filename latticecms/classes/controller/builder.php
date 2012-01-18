@@ -143,6 +143,7 @@ class Controller_Builder extends Controller {
 
 				switch ($field) {
 				case 'title':
+        case 'published':
 					$data[$field] = $content->nodeValue;
 					continue(2);
 				case 'slug':
