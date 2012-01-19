@@ -200,7 +200,6 @@ class Model_Object extends ORM {
 
    
 	 protected function loadContentDriver(){
-		 Kohana::$log->add(Kohana_Log::INFO, 'Loading content driver');
 
 		 $objectTypeName = $this->objecttype->objecttypename;
 		 if ($objectTypeName) {
@@ -214,6 +213,9 @@ class Model_Object extends ORM {
 			 if ($this->loaded()) {
 				 $this->contentDriver->loadContentTable($this);
 			 }
+       if(!$this->contentDriver){
+         throw new Kohana_Exception('Content Driver did not load for '.$this->id);
+       }
 		 }
 	 }
 
@@ -252,13 +254,14 @@ class Model_Object extends ORM {
         return $this->__get('objecttype')->$column; 
       } 
      
-     
-     
-      
+      if(!$this->loaded())
+        return NULL; 
+
       if ($column == 'title'){
          return $this->contentDriver()->getTitle($this);
          
       } else {
+
          //check if this is a list container
          $listConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]', $this->objecttype->objecttypename, $column));
          if ($listConfig->length) {
@@ -288,9 +291,6 @@ class Model_Object extends ORM {
             return $listContainerObject;
          }
 
-
-				
-
 				 return $this->contentDriver()->getContentColumn($this, $column);
  
       }
@@ -301,6 +301,9 @@ class Model_Object extends ORM {
    //needing the id of the content table, plus there could
    //be other reasons that justify this.
    public function contentDriver(){
+     if(!$this->loaded()){
+        throw new Kohana_Exception('Object is not loaded');
+     }
 		 if(!$this->contentDriver){
 
 			 $objectTypeName = $this->objecttype->objecttypename;
@@ -319,6 +322,9 @@ class Model_Object extends ORM {
 			 }
 
 		 }
+     if(!$this->contentDriver){
+       throw new Kohana_Exception('Content Driver did not load for object id '.$this->id);
+     }
 
 		 return $this->contentDriver;
    
