@@ -24,7 +24,7 @@ $config['resources']['js'] = array(
 
 );
 
-$config['redirect'] = 'cms';
+$config['redirect'] = '';
 
 
 return $config;
