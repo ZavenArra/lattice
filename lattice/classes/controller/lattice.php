@@ -56,8 +56,6 @@ class Controller_Lattice extends Controller {
 		//Authentication check
 		$roles = Kohana::config(strtolower($this->controllerName).'.authrole', FALSE, FALSE);
 
-   // echo Session::instance()->id();
-    //echo '<<<<<';
 		//checked if logged in
 		if($roles && !Auth::instance()->logged_in()){
 			Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
