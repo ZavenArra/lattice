@@ -111,7 +111,8 @@ class Controller_Lattice extends Controller {
 
   protected function loadResourcesForKey($key){
     if(self::$topController == NULL){
-      throw new Kohana_Exception('self::$topController should not be NULL, in order to use loadResourcesForKey you must extend Controller_Lattice in the controller of your initial route ');
+      return;
+      //self::$topController should not be NULL, in order to use loadResourcesForKey you must extend Controller_Lattice in the controller of your initial route 
     }
 
 		//should add to self, then merge into topController
