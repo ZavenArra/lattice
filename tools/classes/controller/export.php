@@ -159,13 +159,13 @@ class Controller_Export extends Controller {
    }
 
    //this should call action_export and then convert with xslt
-   public function action_LatticeFormat($outputfilename='export') {
+   public function action_lattice($outputfilename='export') {
 
      $this->export('LatticeFormat', $outputfilename);
 
    } 
 
-   public function action_XML($outputfilename='export') {
+   public function action_xml($outputfilename='export') {
 
      $this->export('XMLFormat', $outputfilename);
 
