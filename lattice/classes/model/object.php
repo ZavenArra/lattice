@@ -25,9 +25,6 @@ class Model_Object extends ORM {
 	 //cache
 	 private $latticeParents = array();
 
-	 private $object_fields = array('loaded', 'objecttype', 'primary_key', 'primary_val');
-
-
 	 protected $contentDriver = NULL;
 
 	 protected $messages = array();
@@ -928,7 +925,6 @@ class Model_Object extends ORM {
 
    public function processImage($filename, $field, $additionalResizes = array()) {
 
-			Kohana::$log->add(Log::INFO, 'inasdf asdf asd f');
       //First check for tiff, and convert if necessary
       $ext = substr(strrchr($filename, '.'), 1);
       switch ($ext) {
@@ -936,11 +932,11 @@ class Model_Object extends ORM {
          case 'tif':
          case 'TIFF':
          case 'TIF':
-            Kohana::$log->add(Log::INFO, 'Converting TIFF image to JPG for resize');
+          //  Kohana::$log->add(Log::INFO, 'Converting TIFF image to JPG for resize');
 
             $imagefilename = $filename . '_converted.jpg';
             $command = sprintf('convert %s %s', addcslashes(Graph::mediapath() . $filename, "'\"\\ "), addcslashes(Graph::mediapath() . $imagefilename, "'\"\\ "));
-            Kohana::$log->add(Log::INFO, $command);
+         //   Kohana::$log->add(Log::INFO, $command);
             system(sprintf('convert %s %s', addcslashes(Graph::mediapath() . $filename, "'\"\\ "), addcslashes(Graph::mediapath() . $imagefilename, "'\"\\ ")));
             break;
          default:
@@ -953,9 +949,6 @@ class Model_Object extends ORM {
       $resizes = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]/resize', $objecttypename, $field
                       )
       );
-			Kohana::$log->add(Log::INFO, 'printing out resizess');
-			Kohana::$log->add(Log::INFO, var_export($additionalResizes, true));
-			Kohana::$log->add(Log::INFO, var_export($resizes, true));
       foreach ($resizes as $resize) {
  
 				$newFilename = NULL;
@@ -987,7 +980,7 @@ class Model_Object extends ORM {
 
 			//And process resizes passed in from caller
       foreach($additionalResizes as $uiresize){
-        Model_Object::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop'], $resize->getAttribute('aspectFollowsOrientation') 
+        Model_Object::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop'], $uiresize['aspectFollowsOrientation'] 
         );
       }
 
@@ -1291,8 +1284,8 @@ class Model_Object extends ORM {
           return $this;
        }
       
-      if (isset($data['published']) && $data['published']) {
-         $this->published = 1;
+      if (isset($data['published']) ) {
+         $this->published = $data['published'];
          unset($data['published']);
       }
       
@@ -1512,13 +1505,18 @@ class Model_Object extends ORM {
 
 
             //check objects.xml for configuration
-            if ($objectTypeConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName))->item(0)) {
+            $xPath =  sprintf('//objectType[@name="%s"]', $objectTypeName);
+            $xPathList =  sprintf('//list[@name="%s"]', $objectTypeName);
+            if ($objectTypeConfig = lattice::config('objects', $xPath)->item(0)) {
                //there's a config for this objectType
                //go ahead and configure it
                Graph::configureObjectType($objectTypeName);
                $objectType = ORM::Factory('objecttype', $objectTypeName);
+            } else if($objectTypeConfig = lattice::config('objects', $xPathList)->item(0)){ 
+               Graph::configureObjectType($objectTypeName);
+               $objectType = ORM::Factory('objecttype', $objectTypeName);
             } else {
-               throw new Kohana_Exception('No config for objectType ' . $objectTypeName);
+              throw new Kohana_Exception('No config for objectType ' . $objectTypeName .' '.$xPath);
             }
          }
       } else {
