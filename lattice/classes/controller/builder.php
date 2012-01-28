@@ -110,6 +110,7 @@ class Controller_Builder extends Controller {
 			$parentObject = Graph::getRootNode($this->rootNodeObjectType);
 		}
 
+    $xmlFile = 'application/export/'.$xmlFile.'/'.$xmlFile.'.xml';
 
 		$this->insertData($xmlFile, $parentObject->id);	
 
