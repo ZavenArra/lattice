@@ -6,8 +6,8 @@ class Controller_Builder extends Controller {
 
   public function __construct(){
 		
-		if(!latticeutil::checkRoleAccess('superuser')){
-	//		die('Only superuser can access builder tool');
+		if(!latticeutil::checkRoleAccess('superuser') && PHP_SAPI != 'cli' ){
+			die('Only superuser can access builder tool');
 		}
 		
 		$this->rootNodeObjectType = Kohana::config('cms.graphRootNode');
@@ -39,9 +39,9 @@ class Controller_Builder extends Controller {
       $starttime = $mtime;
       
       
-		if(Kohana::config('lattice.live')){
-			die('builder/initializeSite is disabled on sites marked live');
-		}
+      if(Kohana::config('lattice.live')){
+        die('builder/initializeSite is disabled on sites marked live');
+      }
 
 		$db = Database::instance();
 		$db->query(Database::DELETE, 'delete from objects');
@@ -90,6 +90,7 @@ class Controller_Builder extends Controller {
     $endtime = $mtime;
     $totaltime = ($endtime - $starttime);
     echo '<!-- initializeSite took ' .$totaltime. ' seconds, and completed with memory usage of '.$memoryUseFollowingAction;
+    echo 'done';
     
 	}
 

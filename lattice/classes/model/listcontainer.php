@@ -49,7 +49,7 @@ class Model_ListContainer extends Model_Object {
 
 	
    public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
-      $data['published'] = 'true';
+      $data['published'] = 1;
       return parent::addObject($objectTypeName, $data, $lattice, $rosettaId, $languageId);
    }
 
