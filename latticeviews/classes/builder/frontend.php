@@ -10,135 +10,136 @@ Class Builder_Frontend {
 		}
 	}
 
-	public function index(){
-		echo "Configuring Frontend\n";
-		echo "Reading application/config/frontend.xml\n";
+  public function index(){
+    echo "Configuring Frontend\n";
+    echo "Reading application/config/frontend.xml\n";
 
-		lattice::config('objects', '//objectTypes');
-		
-		flush();
-      ob_flush();
-      flush();
-		
-		$createdViews = array();
-	//	foreach(lattice::config('frontend', '//view') as $view ){
-		//	//this has removed the ability to build virtual views
-		foreach(lattice::config('objects', '//objectType') as $objectType){
-			$view = lattice::config('frontend', '//view[@name="'.$objectType->getAttribute('name').'"]');
-			if(count($view)){
-				$view = $view->item(0);
-			}
-			if($view){
-				$viewName = $view->getAttribute('name');
-			} else {
-				$viewName = $objectType->getAttribute('name');
-			}
-         
-         echo $viewName."\n";
-         flush();
-         ob_flush();
-         flush();
-         
-         ob_start();
-			if(!$view ||  ($view && $view->getAttribute('loadPage')=='true')){
-				echo "<h1><?=\$content['main']['title'];?></h1>\n\n";
-				//this also implies that name is a objecttypename
-				foreach(lattice::config('objects', 
-					sprintf('//objectType[@name="%s"]/elements/*', $viewName )) as $element){
-                  if($element->tagName != 'list'){
-                     frontend::makeHtmlElement($element, "\$content['main']");
-                  } else {
-                     $this->makeListDataHtml($element, "\$content['main']");
-                  }
-					}
-			}
+    lattice::config('objects', '//objectTypes');
 
-			if($view && $view->getAttribute('loadPage')=='true'){
+    flush();
+    ob_flush();
+    flush();
 
-				//Now the includeData
-				if($iDataNodes = lattice::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/includeData")){
-					foreach($iDataNodes as $iDataConfig){
-						$prefix = "\$content";
-						$this->makeIncludeDataHtml($iDataConfig, $prefix, null);
-					}
-				}
-
-				if($subviews = lattice::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/subview")){
-					foreach($subviews as $subviewConfig){
-						echo "\n<?=\$".$subviewConfig->getAttribute('label').";?>\n";
-					}
-				}
-
-			}
-
-
-
-			$html = ob_get_contents();
-			ob_end_clean();
-			$file = fopen($this->basePath.$viewName.'.php', 'w');
-			fwrite($file, $html);
-			fclose($file);
-
-			$createdViews[] = $viewName;
-		}
-
-      echo 'Completed all basic object views' . "\n";
-      flush();
-      ob_flush();
-      flush();
-
-      //and any virtual views
-		foreach(lattice::config('frontend', '//view') as $viewConfig){
-			$viewName = $viewConfig->getAttribute('name');
-
-         echo 'Virtual View: '.$viewName . "\n";
-         flush();
-         ob_flush();
-         flush();
-         
-			if( in_array($viewName, $createdViews)){
-				continue;
-			}
-			touch($this->basePath.$viewName.'.php');
-
-			ob_start();
-			//Now the includeData
-			
-			if($iDataNodes = lattice::config('frontend',"//view[@name=\"".$viewName."\"]/includeData")){
-				foreach($iDataNodes as $iDataConfig){
-					$prefix = "\$content";
-					$this->makeIncludeDataHtml($iDataConfig, $prefix, null);
-				}
-			}
-
-			if($subviews = lattice::config('frontend',"//view[@name=\"".$viewName."\"]/subview")){
-				foreach($subviews as $subviewConfig){
-					echo "\n<?=\$".$subviewConfig->getAttribute('label').";?>\n";
-				}
-			}
-
-
-			$html = ob_get_contents();
-			ob_end_clean();
-			$file = fopen($this->basePath.$viewName.'.php', 'w');
-			fwrite($file, $html);
-			fclose($file);
-		}
-
-
-
-		echo "Done\n";
-	}
-   
-   public function makeListDataHtml($listDataConfig, $prefix, $indent = ''){
-     $objectTypes = array();
-     foreach (lattice::config('objects', 'addableObject', $listDataConfig) as $addable) {
-         $objectTypeName = $addable->getAttribute('objectTypeName');
-         $objectTypes[$objectTypeName] = $objectTypeName;
+    $createdViews = array();
+    //	foreach(lattice::config('frontend', '//view') as $view ){
+    //	//this has removed the ability to build virtual views
+    foreach(lattice::config('objects', '//objectType') as $objectType){
+      $view = lattice::config('frontend', '//view[@name="'.$objectType->getAttribute('name').'"]');
+      if(count($view)){
+        $view = $view->item(0);
       }
-      
-      $this->makeMultiObjectTypeLoop($objectTypes, $listDataConfig->getAttribute('name'),  $prefix, $indent);
-      //and follow up with any existing data
+      if($view){
+        $viewName = $view->getAttribute('name');
+      } else {
+        $viewName = $objectType->getAttribute('name');
+      }
+
+      echo $viewName."\n";
+      flush();
+      ob_flush();
+      flush();
+
+      ob_start();
+      if(!$view ||  ($view && $view->getAttribute('loadPage')=='true')){
+        echo "<h1><?=\$content['main']['title'];?></h1>\n\n";
+        //this also implies that name is a objecttypename
+        foreach(lattice::config('objects', 
+          sprintf('//objectType[@name="%s"]/elements/*', $viewName )) as $element){
+            if($element->tagName != 'list'){
+              frontend::makeHtmlElement($element, "\$content['main']");
+            } else {
+              $this->makeListDataHtml($element, "\$content['main']");
+            }
+          }
+      }
+
+      if($view && $view->getAttribute('loadPage')=='true'){
+
+        //Now the includeData
+        if($iDataNodes = lattice::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/includeData")){
+          foreach($iDataNodes as $iDataConfig){
+            $prefix = "\$content";
+            $this->makeIncludeDataHtml($iDataConfig, $prefix, null);
+          }
+        }
+
+        if($subviews = lattice::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/subview")){
+          foreach($subviews as $subviewConfig){
+            echo "\n<?=\$".$subviewConfig->getAttribute('label').";?>\n";
+          }
+        }
+
+      }
+
+
+
+      $html = ob_get_contents();
+      ob_end_clean();
+      $file = fopen($this->basePath.$viewName.'.php', 'w');
+      fwrite($file, $html);
+      fclose($file);
+
+      $createdViews[] = $viewName;
+    }
+
+    echo 'Completed all basic object views' . "\n";
+    flush();
+    ob_flush();
+    flush();
+
+    //and any virtual views
+    foreach(lattice::config('frontend', '//view') as $viewConfig){
+      $viewName = $viewConfig->getAttribute('name');
+
+      if( in_array($viewName, $createdViews)){
+        continue;
+      }
+      echo 'Virtual View: '.$viewName . "\n";
+      flush();
+      ob_flush();
+      flush();
+
+
+      touch($this->basePath.$viewName.'.php');
+
+      ob_start();
+      //Now the includeData
+
+      if($iDataNodes = lattice::config('frontend',"//view[@name=\"".$viewName."\"]/includeData")){
+        foreach($iDataNodes as $iDataConfig){
+          $prefix = "\$content";
+          $this->makeIncludeDataHtml($iDataConfig, $prefix, null);
+        }
+      }
+
+      if($subviews = lattice::config('frontend',"//view[@name=\"".$viewName."\"]/subview")){
+        foreach($subviews as $subviewConfig){
+          echo "\n<?=\$".$subviewConfig->getAttribute('label').";?>\n";
+        }
+      }
+
+
+      $html = ob_get_contents();
+      ob_end_clean();
+      $file = fopen($this->basePath.$viewName.'.php', 'w');
+      fwrite($file, $html);
+      fclose($file);
+    }
+
+
+
+    echo "Done\n";
+  }
+
+  public function makeListDataHtml($listDataConfig, $prefix, $indent = ''){
+    $objectTypes = array();
+    foreach (lattice::config('objects', 'addableObject', $listDataConfig) as $addable) {
+      $objectTypeName = $addable->getAttribute('objectTypeName');
+      $objectTypes[$objectTypeName] = $objectTypeName;
+    }
+
+    $this->makeMultiObjectTypeLoop($objectTypes, $listDataConfig->getAttribute('name'),  $prefix, $indent);
+    //and follow up with any existing data
       /*
       $children = $object->getPublishedChildren();
       foreach ($children as $child) {
