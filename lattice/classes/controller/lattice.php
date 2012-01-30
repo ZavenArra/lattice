@@ -1,5 +1,6 @@
 <?
 
+
 class Controller_Lattice extends Controller {
 
 	public static $topController;

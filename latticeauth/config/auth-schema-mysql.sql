@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `email` varchar(127) NOT NULL,
   `username` varchar(32) NOT NULL DEFAULT '',
   `password` varchar(64) NOT NULL,
+  `firstname` varchar(100) NOT NULL,
+  `lastname` varchar(100) NOT NULL,
   `logins` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `last_login` int(10) UNSIGNED,
 	`status` enum('ACTIVE','INCOMPLETE','DELETED') NOT NULL DEFAULT 'INCOMPLETE',

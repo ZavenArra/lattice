@@ -51,14 +51,6 @@ $config['enableSlugEditing'] = false;
 $config['baseName'] = 'lattice_cms';
 $config['localization'] = FALSE;
 
-//module-wide settings
-$config['dependencies'] = array(
-	'latticeauth',
-	'latticecore',
-	'rootgraph',
-	'cms',
-	'latticecms',
-);
 
 
 

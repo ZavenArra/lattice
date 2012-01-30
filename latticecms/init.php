@@ -1,12 +1,5 @@
 <?
 
-
-//check for setup
-Lattice_Initializer::check(
-	Kohana::config('lattice_cms.dependencies')
-);
-
-
 Route::set('cms_save', '<id>/<action>', array(
 	'action' => 'save',
 )
