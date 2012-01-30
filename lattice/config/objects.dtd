@@ -6,8 +6,10 @@
 	Date: 2010/08/26	
 -->
 
-<!ENTITY % elementAttributes
-	"field				CDATA	#REQUIRED "
+<!ENTITY % uiattrs
+	"name				CDATA	#REQUIRED
+	 label				CDATA	#IMPLIED
+	 className			CDATA	#IMPLIED"
 >
 
 <!ELEMENT configuration (objectTypes) >
@@ -26,7 +28,7 @@
 	allowTitleEdit  CDATA "true"
 >
 
-<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator|link|extendedImage|extendedFile|tags|password)* >
+<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator|link|extendedImage|extendedFile|tags|pulldown)* >
 
 <!ELEMENT components (component*) >
 
@@ -44,7 +46,7 @@
 
 <!ELEMENT list (addableObject*) >
 <!ATTLIST list
-	family				CDATA #REQUIRED
+	name				CDATA #REQUIRED
 	label				CDATA #REQUIRED
 	display				(inline|component)	"inline"
 	allowChildSort   	(true|false)		"true"
@@ -52,13 +54,25 @@
 	allowTogglePublish	(true|false)		"true"	
 	contentType  		CDATA "document"
 >
+<!-- last two attributes currently not supported -->
 
+<!ELEMENT pulldown (option)* >
+<!ATTLIST pulldown
+	%uiattrs;
+>
 
-<!-- Associator DTD -->
+ 
+ <!ELEMENT option EMPTY >
+ <!ATTLIST option
+       label                           CDATA #REQUIRED
+       value                           CDATA #REQUIRED
+ >
+ 
+
 <!ELEMENT associator (filter*)>
 <!ATTLIST associator  
 	name         CDATA #REQUIRED
-	lattice         CDATA #REQUIRED
+  lattice       CDATA #REQUIRED
 	label         CDATA #IMPLIED
 >   
 
@@ -68,31 +82,29 @@
 	objectTypeName   CDATA #IMPLIED
 	tagged         CDATA #IMPLIED
 >
-<!-- /Associator DTD -->
 
 <!ELEMENT text EMPTY >
 <!ATTLIST text
-	%elementAttributes;
->
-
-<!ELEMENT password EMPTY >
-<!ATTLIST password
-	%elementAttributes;
+	%uiattrs;
+	tag					CDATA "p"
+	isMultiline	(true|false) "false"
 >
 
 <!ELEMENT image (resize|ext)* >
 <!ATTLIST image
-	%elementAttributes;
+	%uiattrs;
+	maxLength			CDATA #IMPLIED
 >
 
 <!ELEMENT file (ext)* >
 <!ATTLIST file
-	%elementAttributes;
+	%uiattrs;
+	maxLength			CDATA #IMPLIED
 >
 
 <!ELEMENT radioGroup (radio*) >
 <!ATTLIST radioGroup
-	%elementAttributes;
+	%uiattrs;
 	groupLabel			CDATA #REQUIRED
 >
 
@@ -104,44 +116,46 @@
 
 <!ELEMENT multiSelect EMPTY >
 <!ATTLIST multiSelect
-	%elementAttributes;
+	%uiattrs;
 >
 
 
 <!ELEMENT date EMPTY>
 <!ATTLIST date
-	%elementAttributes;
+	%uiattrs;
 >
 
 <!ELEMENT time EMPTY>
 <!ATTLIST time
-	%elementAttributes;
+	%uiattrs;
 >
 
 
 <!ELEMENT checkbox EMPTY>
 <!ATTLIST checkbox
-	%elementAttributes;
+	%uiattrs;
 >
 
 <!ELEMENT link EMPTY>
 <!ATTLIST link
-	%elementAttributes;
+	%uiattrs;
 >
 
 <!ELEMENT extendedImage EMPTY>
 <!ATTLIST extendedImage 
-	%elementAttributes;
+	%uiattrs;
 >
 
 <!ELEMENT extendedFile EMPTY>
 <!ATTLIST extendedFile 
-	%elementAttributes;
+	%uiattrs;
 >
 
 <!ELEMENT tags EMPTY >
 <!ATTLIST tags 
+	name CDATA "tags"
 	label				CDATA	#IMPLIED
+	className			CDATA	#IMPLIED
 >
 
 <!ELEMENT resize EMPTY >
@@ -151,6 +165,7 @@
 	height				CDATA #REQUIRED
 	forceDimension		(width|height) #IMPLIED
 	crop				(true|false) "false"
+  aspectFollowsOrientation (true|false) "false"
 >
 
 <!ELEMENT ext (#PCDATA) >

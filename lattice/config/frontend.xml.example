@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration SYSTEM "frontend.dtd">
+
+<configuration>
+	<view name="singleIPE">
+		<includeData from="parent" label="something"/>
+	</view>
+
+	<view name="whatever">
+		<includeData from="single-ipe" label="something"/>
+	</view>
+</configuration>
+

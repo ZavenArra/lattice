@@ -2,6 +2,38 @@
 
 require('lattice/lattice/includes/mysqlfuncs.php');
 
+Route::set('cms_save', '<id>/<action>', array(
+	'action' => 'save',
+)
+		)
+		->defaults(
+			array(
+				'controller' => 'cms',
+			));
+
+
+
+Route::set('list', 'list/<action>(/<param1>(/<param2>))', array(
+
+	)
+)
+->defaults(
+	array(
+		'controller' => 'list',
+	));
+
+
+Route::set('cms', 'cms/<action>(/<param1>(/<param2>))', array(
+
+	)
+)
+->defaults(
+	array(
+		'controller' => 'cms',
+	));
+
+
+
 
 Route::set('graph_addChild', '<id>/<action>/<type>', array(
 	'action' => 'addChild',
