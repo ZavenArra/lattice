@@ -29,7 +29,9 @@ class Graph {
 		} else {
       $object = ORM::Factory('object', $objectId);
       if(Kohana::find_file('classes/model/', $object->objecttype->objecttypename)){
-        $object = ORM::Factory($object->objecttype->objecttypename, $objectId);
+        if( is_subclass_of('Model_'.$object->objecttype->objecttypename, 'Model_Object')){
+          $object = ORM::Factory($object->objecttype->objecttypename, $objectId);
+        } 
       }
     }
     return $object;
