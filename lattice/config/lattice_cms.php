@@ -20,7 +20,7 @@ $config['resources']['libraryjs'] = array(
 );
 
 $config['resources']['js'] = array(
-	'lattice/latticecms/views/js/list.js',
+	'lattice/lattice/views/js/list.js',
 );
 
 

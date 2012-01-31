@@ -14,7 +14,7 @@ $config['layout'] = 'LayoutLogin';
 $config['resources']['css'] = array(
 	'lattice/thirdparty/960Grid/reset.css',
 	'lattice/thirdparty/960Grid/960.css',
-	'lattice/latticecms/views/css/lattice_cms.css'
+	'lattice/lattice/views/css/lattice_cms.css'
 );
 
 
