@@ -38,7 +38,11 @@ Class Controller_UserManagement extends Controller_Layout {
 
 		$this->managedRoles = Kohana::config(strtolower($this->controllerName).'.managedRoles');
 		if(latticeutil::checkRoleAccess('superuser')){
-			$this->managedRoles['Superuser'] = 'superuser';
+      $keys = array_keys($this->managedRoles);
+      $vals = array_values($this->managedRoles);
+			array_unshift($keys,'Superuser');
+			array_unshift($vals,'superuser');
+      $this->managedRoles = array_combine($keys, $vals);
 		}
 		
 	}
