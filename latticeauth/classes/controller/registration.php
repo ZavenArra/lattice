@@ -35,6 +35,10 @@ Class Controller_Registration extends Controller_Lattice {
 
   public function action_confirmed($user_id){
     $user = ORM::Factory('user',$user_id);
+    if(!$user->loaded()){
+      $this->response->body('Invalid Confirmation - User Does Not Exist');
+      return;
+    }
     $user->status = 'ACTIVE';
     $user->save();
 
