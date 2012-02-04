@@ -3,17 +3,17 @@
 $config['authrole'] = 'admin'; //access controlled by default for safety
 
 $config['resources']['librarycss'] = array(
-	'lattice/thirdparty/960Grid/reset.css',
-	'lattice/thirdparty/960Grid/960.css'
+	'lattice/lattice/views/thirdparty/960Grid/reset.css',
+	'lattice/lattice/views/thirdparty/960Grid/960.css'
 );
 $config['resources']['libraryjs'] = array(
-	'lattice/thirdparty/mootools/mootools.js',
-	'lattice/thirdparty/mootools/mootools-more.js',
+	'lattice/lattice/views/thirdparty/mootools/mootools.js',
+	'lattice/lattice/views/thirdparty/mootools/mootools-more.js',
 	//these are required by LatticeUI
-	'lattice/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
-	'lattice/thirdparty/arian/datepicker/Picker.js',
-	'lattice/thirdparty/arian/datepicker/Picker.Attach.js',
-	'lattice/thirdparty/arian/datepicker/Picker.Date.js',
+	'lattice/lattice/views/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
+	'lattice/lattice/views/thirdparty/arian/datepicker/Picker.js',
+	'lattice/lattice/views/thirdparty/arian/datepicker/Picker.Attach.js',
+	'lattice/lattice/views/thirdparty/arian/datepicker/Picker.Date.js',
 	'lattice/lattice/views/js/LatticeCore.js',
 	'lattice/lattice/views/js/LatticeUI.js',
 	'lattice/lattice/views/js/LatticeModules.js'

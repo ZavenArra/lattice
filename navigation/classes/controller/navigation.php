@@ -45,17 +45,18 @@ class Controller_Navigation extends Controller_Lattice{
       $sendItemContainers = array(); //these will go first
       $sendItemObjects = array();
       foreach($items as $child){
+
+        //Check for Access to this object
+        if($roles = $child->accessRoles){
+          if(!latticeutil:checkAccess($roles)){
+            continue;
+          } 
+        }
+
+        //Containers should be skipped
         if(strtolower($child->objecttype->nodeType) == 'container'){
           //we might be skipping this node
-          $display = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]', 
-            $parent->objecttype->objecttypename,
-            $child->objecttype->objecttypename))
-            ->item(0);
-          if(!is_object($display)){
-            //this child object doesn't match a configured list
-            continue;
-          }
-          $display = $display->getAttribute('display');
+          $display = $child->objecttype->display;
 
           if($display == 'inline'){
             continue;
@@ -79,7 +80,7 @@ class Controller_Navigation extends Controller_Lattice{
           $sendItem['tier'] = $childTier;
         }
 
-        if(strtolower($child->objecttype->nodeType)=='container'){
+            if(strtolower($child->objecttype->nodeType)=='container'){
           $sendItemContainers[] = $sendItem;
         } else {
           $sendItemObjects[] = $sendItem;
