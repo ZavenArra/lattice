@@ -5,11 +5,22 @@ Class ObjectRolesTest extends Kohana_UnitTest_TestCase {
     $object = Graph::object();
     $object->slug = 'test';
     $object->save();
+
+    $role = ORM::Factory('role', array('name'=>'editor'));
+    if(!$role->loaded()){
+      $role = ORM::Factory('role');
+      $role->name = 'editor';
+      $role->save();
+    }
+
   }
 
   public static function tearDownAfterClass(){
     $object = Graph::object('test');
     $object->delete();
+
+    $role = ORM::Factory('role', array('name'=>'editor'));
+    //$role->delete();
   }
 
 	public function testCrossTableExists(){
@@ -43,14 +54,16 @@ Class ObjectRolesTest extends Kohana_UnitTest_TestCase {
   }
 
   public function testCreateWithConfiguredAccess(){
-    $object = Graph::object()->addObject('editorOnlyObjectType');
+    $objectId = Graph::object()->addObject('editorOnlyObjectType');
+    $object = Graph::object($objectId);
     $this->assertTrue($object->checkRoleAccess('editor'));
     $this->assertFalse($object->checkRoleAccess('admin'));
     $object->delete();
   }
 
   public function testChangeAccess(){
-    $object = Graph::object()->addObject('editorOnlyObjectType');
+    $objectId = Graph::object()->addObject('editorOnlyObjectType');
+    $object = Graph::object($objectId);
     $object->removeRoleAccess('editor');
     $object->addRoleAccess('admin');
     $this->assertFalse($object->checkRoleAccess('editor'));
