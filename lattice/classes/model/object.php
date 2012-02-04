@@ -20,7 +20,11 @@ class Model_Object extends ORM {
 		 'tag' => array(
 			 'model' => 'tag',
 			 'through' => 'objects_tags'
-		 )
+     ),
+     'roles' => array(
+       'model' => 'role',
+       'through' => 'objects_roles',
+     ),
 	 );
 	 //cache
 	 private $latticeParents = array();
@@ -249,6 +253,8 @@ class Model_Object extends ORM {
       } else if (in_array($column, array_keys($this->__get('objecttype')->_table_columns))){
   
         return $this->__get('objecttype')->$column; 
+      } else if ($column == 'roles'){
+        return parent::__get('roles');
       } 
      
       if(!$this->loaded())
@@ -1527,5 +1533,18 @@ class Model_Object extends ORM {
       
       return $this; //chainable
    }
+
+   public function addRoleAccess($role){
+      $this->add('roles', ORM::Factory('role', array('name'=>$role)));
+   }
+
+   public function removeRoleAccess($role){
+      $this->remove('roles', ORM::Factory('role', array('name'=>$role)));
+   }
+
+   public function checkRoleAccess($role){
+     return $this->has('roles', ORM::Factory('role', array('name'=>$role)));
+   }
+
 }
 ?>
