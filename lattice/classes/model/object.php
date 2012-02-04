@@ -476,12 +476,9 @@ class Model_Object extends ORM {
 		}
 	}
    
-   /*
-    * Functions for returning messages
-    * This could be used for error handling possibly, but needs more 
-    * work on letting the controller know how to communication with the
-    * presentation/client layer.
-    */
+  /*
+   * Functions for returning messages
+       */
    protected function addMessage($message){
       $this->messages[] = $message;
    }
@@ -1281,7 +1278,9 @@ class Model_Object extends ORM {
       }
 
       $newObject->save();
-     
+
+      $newObject->resetRoleAccess();
+
       return $newObject;
     }
     
@@ -1544,6 +1543,25 @@ class Model_Object extends ORM {
 
    public function checkRoleAccess($role){
      return $this->has('roles', ORM::Factory('role', array('name'=>$role)));
+   }
+
+   /*
+    * Function: resetRoleAccess
+    * Reset the access roles for this object to the defaults of it's objecttype
+       */
+   public function resetRoleAccess(){
+     $roles = $this->roles->find_all();
+     foreach($roles as $role){
+      $this->removeRoleAccess($role->name);
+     }
+
+     $defaultRoles = $this->objecttype->initialAccessRoles;
+     if($defaultRoles){
+       foreach($defaultRoles as $role){
+         $this->addRoleAccess($role);
+       }
+     }
+
    }
 
 }
