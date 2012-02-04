@@ -115,7 +115,7 @@ Class lattice {
 			if($arena == 'objects'){
 				$clusters = new DOMDocument();
 				$clusters = new MYDOMDocument($clusters);
-				$path = Kohana::find_file('config', 'clusters', 'xml', true);
+				$path = Kohana::find_file('xml', 'clusters', 'xml', true);
 				if(!count($path)){
 					throw new Kohana_Exception('Could not locate xml clusters');
 				}
