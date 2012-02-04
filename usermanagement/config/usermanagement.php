@@ -14,9 +14,9 @@ $config['resources']['libraryjs'] = array(
 	'lattice/thirdparty/arian/datepicker/Picker.js',
 	'lattice/thirdparty/arian/datepicker/Picker.Attach.js',
 	'lattice/thirdparty/arian/datepicker/Picker.Date.js',
-	'lattice/latticejs/LatticeCore.js',
-	'lattice/latticejs/LatticeUI.js',
-	'lattice/latticejs/LatticeModules.js'
+	'lattice/lattice/LatticeCore.js',
+	'lattice/lattice/LatticeUI.js',
+	'lattice/lattice/LatticeModules.js'
 );
 
 $config['layout'] = 'LayoutAdmin';
