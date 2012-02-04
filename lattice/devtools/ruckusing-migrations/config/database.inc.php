@@ -1,6 +1,6 @@
 <?php
 
-require('../../testindex.php');
+require('../../../../testindex.php');
 
 
 //----------------------------
