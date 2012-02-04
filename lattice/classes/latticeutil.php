@@ -59,11 +59,15 @@ Class latticeutil {
 	 */
 	public static function checkRoleAccess($role){
 
-		if($role && !Auth::instance()->logged_in($role)){
-			return false;
-		} else {
-			return true;
-		}
+    if(class_exists('Auth')){ //If auth module not installed, grant access
+      if($role && !Auth::instance()->logged_in($role)){
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return true;
+    }
 	}
    
    /*
@@ -77,7 +81,7 @@ Class latticeutil {
          $roles = array($roles);
       }
       foreach($roles as $role){
-         if(Auth::instance()->logged_in($role)){
+         if(latticeurl::checkRoleAccess($role)){
             return true;
          }
       }

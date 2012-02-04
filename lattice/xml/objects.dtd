@@ -26,6 +26,7 @@
 	allowChildSort		(true|false) "true"
 	sortDirection		(ASC|DESC)	"ASC"
 	allowTitleEdit  CDATA "true"
+  initialAccessRoles  CDATA #IMPLIED
 >
 
 <!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator|link|extendedImage|extendedFile|tags|pulldown)* >
