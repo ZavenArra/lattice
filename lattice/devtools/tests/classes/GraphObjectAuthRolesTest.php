@@ -37,4 +37,35 @@ Class ObjectRolesTest extends Kohana_UnitTest_TestCase {
     $this->assertFalse($object->checkRoleAccess('admin'));
   }
 
+  public function testResetAccessExists(){
+    $object = Graph::object('test');
+    $object->resetRoleAccess();
+  }
+
+  public function testCreateWithConfiguredAccess(){
+    $object = Graph::object()->addObject('editorOnlyObjectType');
+    $this->assertTrue($object->checkRoleAccess('editor'));
+    $this->assertFalse($object->checkRoleAccess('admin'));
+    $object->delete();
+  }
+
+  public function testChangeAccess(){
+    $object = Graph::object()->addObject('editorOnlyObjectType');
+    $object->removeRoleAccess('editor');
+    $object->addRoleAccess('admin');
+    $this->assertFalse($object->checkRoleAccess('editor'));
+    $this->assertTrue($object->checkRoleAccess('admin'));
+    return $object;
+  }
+
+  /**
+   * @depends testChangeAccess
+   */
+  public function testResetAccess($object){
+    $object->resetRoleAccess();
+    $this->assertTrue($object->checkRoleAccess('editor'));
+    $this->assertFalse($object->checkRoleAccess('admin'));
+    $object->delete();
+  }
+
 }
