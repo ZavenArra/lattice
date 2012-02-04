@@ -81,7 +81,7 @@ Class latticeutil {
          $roles = array($roles);
       }
       foreach($roles as $role){
-         if(latticeurl::checkRoleAccess($role)){
+         if(latticeutil::checkRoleAccess($role)){
             return true;
          }
       }
