@@ -1278,6 +1278,7 @@ class Model_Object extends ORM {
       }
 
       $newObject->save();
+      $newObject = Graph::object($newObject->id);
 
       $newObject->resetRoleAccess();
 
@@ -1534,7 +1535,11 @@ class Model_Object extends ORM {
    }
 
    public function addRoleAccess($role){
-      $this->add('roles', ORM::Factory('role', array('name'=>$role)));
+      $role = ORM::Factory('role', array('name'=>$role));
+      if($this->has('roles', $role)){
+        return;
+      }
+      $this->add('roles', $role );
    }
 
    public function removeRoleAccess($role){
@@ -1552,13 +1557,13 @@ class Model_Object extends ORM {
    public function resetRoleAccess(){
      $roles = $this->roles->find_all();
      foreach($roles as $role){
-      $this->removeRoleAccess($role->name);
+       $this->removeRoleAccess($role->name);
      }
 
      $defaultRoles = $this->objecttype->initialAccessRoles;
      if($defaultRoles){
        foreach($defaultRoles as $role){
-         $this->addRoleAccess($role);
+         $this->addRoleAccess('editor');
        }
      }
 

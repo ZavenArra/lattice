@@ -56,9 +56,9 @@ Class ObjectRolesTest extends Kohana_UnitTest_TestCase {
   public function testCreateWithConfiguredAccess(){
     $objectId = Graph::object()->addObject('editorOnlyObjectType');
     $object = Graph::object($objectId);
-    $this->assertTrue($object->checkRoleAccess('editor'));
-    $this->assertFalse($object->checkRoleAccess('admin'));
-    $object->delete();
+    $this->assertTrue($object->checkRoleAccess('editor'), 'Configured access does not have access');
+    $this->assertFalse($object->checkRoleAccess('admin'), 'Unconfigured access has access');
+    //$object->delete();
   }
 
   public function testChangeAccess(){
@@ -78,6 +78,17 @@ Class ObjectRolesTest extends Kohana_UnitTest_TestCase {
     $object->resetRoleAccess();
     $this->assertTrue($object->checkRoleAccess('editor'));
     $this->assertFalse($object->checkRoleAccess('admin'));
+    $object->delete();
+  }
+
+  public function testDoubleAddDoesntBreak(){
+    $object = Graph::object();
+    $object->slug = 'testDoubleAddDoesntBreak';
+    $object->save();
+    
+    $object->addRoleAccess('editor');
+    $object->addRoleAccess('editor');
+    $this->assertTrue($object->checkRoleAccess('editor'));
     $object->delete();
   }
 

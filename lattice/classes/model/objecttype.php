@@ -58,11 +58,11 @@ class Model_ObjectType extends ORM {
 				$xQuery =  sprintf('//objectType[@name="%s"]', parent::__get('objecttypename'));
 			}
 
-			$valuefromconfig=NULL;
+			$valueFromConfig=NULL;
 			if($column == 'addableObjects'){
 				$xQuery .= '/addableObject';
 				$nodes = lattice::config('objects', $xQuery);
-				$valuefromconfig = array();
+				$valueFromConfig = array();
 				foreach($nodes as $node){
 					$entry = array();
 					$entry['objectTypeId'] = $node->getAttribute('objectTypeName');
@@ -73,16 +73,26 @@ class Model_ObjectType extends ORM {
           }
 					$entry['nodeType'] = $tConfig->getAttribute('nodeType');
 					$entry['contentType'] = $tConfig->getAttribute('contentType');
-					$valuefromconfig[] = $entry;
+					$valueFromConfig[] = $entry;
 				}
 			} else {
 				$node = lattice::config('objects', $xQuery)->item(0);
 				if($node)
-					$valuefromconfig = $node->getAttribute($column);
-			}
+					$valueFromConfig = $node->getAttribute($column);
 
-      return $valuefromconfig;	
-	}
+        switch($column){
+        case 'initialAccessRoles':
+          if($valueFromConfig){
+            $valueFromConfig = explode(',',$valueFromConfig);
+          } else {
+            $valueFromConfig = array();
+          }
+          break;
+        }
+      }
+
+      return $valueFromConfig;	
+  }
 
 
 	/*
