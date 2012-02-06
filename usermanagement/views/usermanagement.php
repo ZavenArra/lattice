@@ -1,4 +1,4 @@
-<div id="<?=$instance;?>" class="module <?=$class;?> classPath-lattice_modules_UserManagement sortable-true">
+<div id="<?=$instance;?>" class="module usermanagement controller-<?=$class;?> classPath-lattice_modules_UserManagement sortable-true">
 
 	<?if(isset($label)):?>
 		<label class='listLabel'><?=$label;?></label>

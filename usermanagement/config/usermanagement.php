@@ -26,14 +26,14 @@ $config['layout'] = 'LayoutAdmin';
  * Config: ['resources']['css']
  */
 $config['resources']['css'] = array( 
-   	'lattice/latticecms/views/css/lattice_cms.css'
+   	'lattice/lattice/views/css/lattice_cms.css'
 );
 
 /*
  * Config: ['resources']['js']
  */
 $config['resources']['js'] = array(
-	'lattice/latticecms/views/js/list.js'
+	'lattice/lattice/views/js/list.js'
 );
 
 /*
@@ -49,5 +49,7 @@ $config['passwordChangeEmail']['from'] = "Lattice Usermanagement <usermanagement
  * Array is of format array( {label} => {role unique text key})
  */
 $config['managedRoles'] = array('Admin'=>'admin');
+$config['defaultRoles'] = 'admin';
+$config['superuserEdit'] = true;
 
 return $config;

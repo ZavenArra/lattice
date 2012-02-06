@@ -37,7 +37,8 @@ Class Controller_UserManagement extends Controller_Layout {
 		parent::__construct($request, $response);
 
 		$this->managedRoles = Kohana::config(strtolower($this->controllerName).'.managedRoles');
-		if(latticeutil::checkRoleAccess('superuser')){
+    if(Kohana::config(strtolower($this->controllerName).'.superuserEdit')
+      && latticeutil::checkRoleAccess('superuser')){
       if(is_array($this->managedRoles)){
         $keys = array_keys($this->managedRoles);
         $vals = array_values($this->managedRoles);
@@ -64,17 +65,29 @@ Class Controller_UserManagement extends Controller_Layout {
 
 		$this->view = new View($this->viewName);
 		$this->view->instance = $this->viewName;
-		$this->view->class = $this->viewName;
+		$this->view->class = strtolower($this->controllerName);
 
-		$users = ORM::Factory($this->table)->find_all();
+    $users = ORM::Factory($this->table)->find_all();
+    $managedUsers = array();
+    foreach($users as $user){
+      foreach($this->managedRoles as $role){
+        if($user->has('roles', ORM::Factory('role', array('name'=>$role)))){
+          $managedUsers[] = $user;
+          continue (2);
+        }
+      }
+    }
 		$html = '';
-		foreach($users as $user){
+		foreach($managedUsers as $user){
 			$userobjectType = new View($this->viewName.'_item');
 			$data['id'] = $user->id;
 			$data['username'] = $user->username;
 			$data['firstname'] = $user->firstname;
 			$data['lastname'] = $user->lastname;
 			$data['email'] = $user->email;
+      if(strstr($data['email'], 'PLACEHOLDER')){
+        $data['email'] = '';
+      }
 
 			if(strlen($user->password)){
 				$data['password'] = '******';
@@ -82,12 +95,7 @@ Class Controller_UserManagement extends Controller_Layout {
 				$data['password'] = '';
 			}
 
-			$data['role'] = null;
-			foreach($this->managedRoles as $label=>$role){
-				if($user->has('roles', ORM::Factory('role')->where('name','=',$role)->find()) ){
-					$data['role'] = $role;
-				}
-			}
+      $data['role'] = $this->getActiveManagedRole($user);
 			if($user->has('roles', ORM::Factory('role')->where('name','=','superuser')->find()) ){
 				$data['superuser'] = true;
 			} else {
@@ -105,6 +113,17 @@ Class Controller_UserManagement extends Controller_Layout {
 
 	}	
 
+  private function getActiveManagedRole($user){
+    $activeRole = null;
+    foreach($this->managedRoles as $label=>$role){
+      if($user->has('roles', ORM::Factory('role')->where('name','=',$role)->find()) ){
+        $activeRole = $role;
+        break;
+      }
+    }
+    return $activeRole;
+  }
+
 	/*
 	 * Function: addItem($objectid)
 	 * Ajax interface to add a new user object to the users table.
@@ -117,13 +136,13 @@ Class Controller_UserManagement extends Controller_Layout {
 		$data = $user->as_array();
 	
 		//set no managedRole
-		$data['role'] = null;
 		$data['username'] = null;
 		$data['password'] = null;
 		$data['email'] = null;
 		$data['superuser'] = false;
+    $data['role'] = $this->getActiveManagedRole($user);
 
-		$view = new View($this->viewName.'_item');
+    $view = new View($this->viewName.'_item');
 		$view->data = $data;
 		$view->managedRoles = $this->managedRoles;
 		$this->response->body( $view->render() );
@@ -146,7 +165,8 @@ Class Controller_UserManagement extends Controller_Layout {
 
 		//add the login role
 		$user->add('roles', ORM::Factory('role', array('name'=>'login')));
-		$user->add('roles', ORM::Factory('role', array('name'=>'admin')));
+    //add the default role
+    $user->add('roles', ORM::Factory('role', array('name'=>Kohana::config(strtolower($this->controllerName).'.defaultRole') ) ) );
 		$user->save();
 
 		return $user;
@@ -200,6 +220,7 @@ Class Controller_UserManagement extends Controller_Layout {
 				$roleObj = ORM::Factory('role')->where('name','=',$role)->find();
 				if($user->has('roles',$roleObj)){
 					$user->remove('roles', $roleObj);
+          $user->save();
 				}
 			}
 			$role = ORM::Factory('role')->where('name','=',$value)->find();

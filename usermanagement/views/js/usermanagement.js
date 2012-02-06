@@ -2,29 +2,33 @@ lattice.modules.UserManagement = new Class({
 	
 	Extends: lattice.modules.LatticeList,	
 	
+  controller: null,
+
 	/* Section: Constructor */
 
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
+    var elementClass = anElement.get( 'class' );
+    this.controller = lattice.util.getValueFromClassName( "controller", elementClass );
 	},
 	
 	/* Section: Getters & Setters */
 	
 	getSaveFieldURL: function( itemObjectId  ){
-	  var url = lattice.util.getBaseURL() +"ajax/data/usermanagement/savefield/" + itemObjectId;
+	  var url = lattice.util.getBaseURL() +"ajax/data/"+this.controller+"/savefield/" + itemObjectId;
 		return url;
 	},
 	
 	getAddObjectURL: function(){
-	    return lattice.util.getBaseURL() + "ajax/html/usermanagement/addObject/";
+	    return lattice.util.getBaseURL() + "ajax/html/"+this.controller+"/addObject/";
 	},
 	
 	getRemoveObjectURL: function( itemId ){
-	    return lattice.util.getBaseURL()  + "ajax/data/usermanagement/removeObject/" + itemId;
+	    return lattice.util.getBaseURL()  + "ajax/data/"+this.controller+"/removeObject/" + itemId;
 	},
 	
 	getSubmitSortOrderURL: function(){
-	    return lattice.util.getBaseURL() + "ajax/data/usermanagement/saveSortOrder/";
+	    return lattice.util.getBaseURL() + "ajax/data/"+this.controller+"/saveSortOrder/";
 	},
 	
 	/* Section: Methods */
