@@ -79,39 +79,57 @@ Class Controller_UserManagement extends Controller_Layout {
     }
 		$html = '';
 		foreach($managedUsers as $user){
-			$userobjectType = new View($this->viewName.'_item');
-			$data['id'] = $user->id;
-			$data['username'] = $user->username;
-			$data['firstname'] = $user->firstname;
-			$data['lastname'] = $user->lastname;
-			$data['email'] = $user->email;
-      if(strstr($data['email'], 'PLACEHOLDER')){
-        $data['email'] = '';
-      }
-
-			if(strlen($user->password)){
-				$data['password'] = '******';
-			} else {
-				$data['password'] = '';
-			}
-
-      $data['role'] = $this->getActiveManagedRole($user);
-			if($user->has('roles', ORM::Factory('role')->where('name','=','superuser')->find()) ){
-				$data['superuser'] = true;
-			} else {
-				$data['superuser'] = false;
-			}
-
-			$userobjectType->data = $data;
-
-			$userobjectType->managedRoles = $this->managedRoles;
-			$html .= $userobjectType->render();
+      $userItemView = $this->createUserItemView($user);	
+			$html .= $userItemView->render();
 		}
 
 		$this->view->items = $html;
 		$this->response->body($this->view->render());
 
 	}	
+
+  protected function getUserData($user){
+    $data['id'] = $user->id;
+    $data['username'] = $user->username;
+    $data['firstname'] = $user->firstname;
+    $data['lastname'] = $user->lastname;
+    $data['email'] = $user->email;
+
+    if(strstr($data['email'], 'PLACEHOLDER')){
+      $data['email'] = '';
+    }
+
+    if(strlen($user->password)){
+      $data['password'] = '******';
+    } else {
+      $data['password'] = '';
+    }
+
+    $data['role'] = $this->getActiveManagedRole($user);
+    if($user->has('roles', ORM::Factory('role')->where('name','=','superuser')->find()) ){
+      $data['superuser'] = true;
+    } else {
+      $data['superuser'] = false;
+    }
+
+    return $data;
+  }
+
+  protected function createUserItemView($user){
+    $userItemView = new View($this->viewName.'_item');
+    $userItemView->data = $this->getUserData($user);
+    $userItemView->managedRoles = $this->managedRoles;
+    $userItemView->viewData = $this->getUserViewData();
+    return $userItemView;
+  }
+
+  /*
+   * Function getViewData()
+   * Get data specific for the item view
+   */
+  protected function getUserViewData(){
+    return array();
+  }
 
   private function getActiveManagedRole($user){
     $activeRole = null;
@@ -141,10 +159,13 @@ Class Controller_UserManagement extends Controller_Layout {
 		$data['email'] = null;
 		$data['superuser'] = false;
     $data['role'] = $this->getActiveManagedRole($user);
+    $data['site'] = null;
+    $data['userType'] = null;
 
     $view = new View($this->viewName.'_item');
 		$view->data = $data;
 		$view->managedRoles = $this->managedRoles;
+    $view->viewData = $this->getUserViewData();
 		$this->response->body( $view->render() );
 	}
 
