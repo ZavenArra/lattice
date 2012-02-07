@@ -30,6 +30,11 @@ class Model_ObjectType extends ORM {
      $config = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName));
      if($config->length){
         return $config->item(0);
+     }
+
+     $config = lattice::config('objects', sprintf('//list[@name="%s"]', $objectTypeName));
+     if($config->length){
+        return $config->item(0);
      } else {
         return false;
      }
