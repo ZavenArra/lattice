@@ -3,8 +3,8 @@
   <?
     $optionsWithSelectText = array();
     $optionsWithSelectText["0"] = 'Select';
-    foreach($options as $value => $key){
-      $optionsWithSelectText[$value] = $key;
+    foreach($options as $optionValue => $key){
+      $optionsWithSelectText[$optionValue] = $key;
     }
 ?>
 	 <?=form::select( $label, $optionsWithSelectText, $value );?> 

@@ -173,8 +173,8 @@ Class latticeui{
 	}
 
    // 0ak - revisit this function.  Needed?
-	public static function pulldown ( $field, $class, $options, $fieldValue, $groupLabel=null, $labelClass=null ){
-	  $elementArray = array( 'type'=>'pulldown',  'class'=>$class, 'grouplabel'=>$groupLabel, 'name'=>$field, 'options'=> $options, "labelClass"=>$labelClass );
+	public static function pulldown ( $field, $class, $options, $fieldValue, $label=null, $labelClass=null ){
+	  $elementArray = array( 'type'=>'pulldown',  'class'=>$class, 'label'=>$label, 'name'=>$field, 'options'=> $options, "labelClass"=>$labelClass );
 	  return latticeui::buildUIElement( $elementArray, $fieldValue );
 	}
 
