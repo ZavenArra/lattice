@@ -47,9 +47,10 @@ class Controller_Navigation extends Controller_Lattice{
       foreach($items as $child){
 
         //Check for Access to this object
-        if($roles = $child->accessRoles){
-          if(!latticeutil::checkAccess($roles)){
-            continue;
+        $roles = $child->roles->find_all();
+        foreach($roles as $role){
+          if(!latticeutil::checkAccess($role->name)){
+            continue (2);
           } 
         }
 

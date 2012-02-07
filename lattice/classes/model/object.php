@@ -1563,7 +1563,7 @@ class Model_Object extends ORM {
      $defaultRoles = $this->objecttype->initialAccessRoles;
      if($defaultRoles){
        foreach($defaultRoles as $role){
-         $this->addRoleAccess('editor');
+         $this->addRoleAccess($role);
        }
      }
 

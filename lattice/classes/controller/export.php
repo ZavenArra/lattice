@@ -220,7 +220,7 @@ class Controller_Export extends Controller {
       $implementation = new DOMImplementation();
       $dtd = $implementation->createDocumentType('data',
         '-//WINTERROOT//DTD Data//EN',
-        '../../../lattice/latticecms/config/data.dtd');
+        '../../../lattice/lattice/xml/data.dtd');
       $this->doc = $implementation->createDocument('', '', $dtd);
    
       $this->doc->xmlVersion="1.0";
