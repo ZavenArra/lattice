@@ -8,6 +8,13 @@
  * @package Kororor
  */
 abstract class Lattice_CMSInterface extends Controller_Layout {
+
+
+    public function __construct($request, $response){
+      parent::__construct($request, $response);
+    }
+
+
    /*
     * Function:  saveFile($objectId)
     * Function called on file upload

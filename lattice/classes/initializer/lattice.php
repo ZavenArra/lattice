@@ -1,19 +1,15 @@
 <?
 
-Class Initializer_RootGraph {
+Class Initializer_Lattice {
 
   public function initialize(){
     try {
       Graph::object();
     } catch (Exception $e) {
       if ($e->getCode() == 1146) { //code for table doesn't exist
-        $sqlFile = Kohana::find_file('config', 'graph-mysql', $ext = 'sql');
-        $sql = file_get_contents($sqlFile[0]);
-        mysql_multiquery($sql); 
-
-
-        $sqlFile = Kohana::find_file('config', 'tags-mysql', $ext = 'sql');
-        $sql = file_get_contents($sqlFile[0]);
+        $sqlFile = Kohana::find_file('sql', 'lattice', $ext = 'sql');
+        echo $sqlFile;
+        $sql = file_get_contents($sqlFile);
         mysql_multiquery($sql); 
       }
     }

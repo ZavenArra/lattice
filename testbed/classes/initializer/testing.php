@@ -16,8 +16,8 @@ class Initializer_Testing {
 
 			 $role = ORM::Factory('role')->where('name', '=', 'editor')->find();
 			 if(!$role->loaded()){
-				 $sqlFile = Kohana::find_file('config', 'testing-mysql', $ext = 'sql');
-				 $sql = file_get_contents( $sqlFile[0]);
+				 $sqlFile = Kohana::find_file('sql', 'testing-mysql', $ext = 'sql');
+				 $sql = file_get_contents( $sqlFile);
          $rval = mysql_multiquery($sql);
 
          Lattice_Initializer::addMessage('Initialized testing data');
