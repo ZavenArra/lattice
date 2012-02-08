@@ -3,6 +3,7 @@
 Class Controller_Setup extends Controller {
 
   public function action_index(){
+
     Lattice_Initializer::check(
       array(
         'lattice',
@@ -12,6 +13,7 @@ Class Controller_Setup extends Controller {
       )
     );
 
-    echo 'Done!';
+    $view = new View('latticeInstalled');
+    $this->response->body($view->render());
   }
 }
