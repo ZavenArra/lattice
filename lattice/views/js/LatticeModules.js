@@ -719,7 +719,7 @@ lattice.modules.LatticeAssociator = new Class({
 		e.preventDefault();
 		this.container.grab( item );
 		item.spin();
-		var path = item.get( 'href' ) );
+		var path = item.get( 'href' );
 		return new Request.JSON( {url: this.getAssociateURL( path ), onSuccess: function( json ){ this.onAssociateResponse( json, item ); }.bind( this ) } ).send();
 	},
     
@@ -874,7 +874,7 @@ lattice.modules.AssociatorItem = new Class({
 	},
 
 	isAssociated: function(){
-		return ( this.marshal.element.hasClass('.pool')? false : true;
+		return ( this.marshal.element.hasClass('.pool') )? false : true;
 	},
 	
 	initControls: function(){
@@ -893,14 +893,14 @@ lattice.modules.AssociatorItem = new Class({
 		lattice.util.stopEvent( e );
 		this.addClass('associated');
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
-		this.marshal.associateRequest( this )}.bind( this )} );
+		this.marshal.associateRequest( this );
 	},
 	
 	dissociate: function( e ){
 		lattice.util.stopEvent( e );
 		this.removeClass('associated');
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
-		this.marshal.dissociateRequest( this )}.bind( this )} );
+		this.marshal.dissociateRequest( this );
 	},
 
 	clearField: function( fieldName ){

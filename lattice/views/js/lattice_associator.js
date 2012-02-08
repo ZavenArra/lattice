@@ -47,3 +47,5 @@ lattice.modules.AssociatorItem = new Class({
     }
     
 });
+
+alert("hi!");

@@ -1,9 +1,8 @@
 <?
 /*
-@todo, make ticket to add associator_<?=$listObjectId;?>
 */
 ?>
-<div id="associator" data-objectid="LISTOBJECTID" class="module <?=$class;?> classPath-lattice_modules_Associator clearFix">
+<div id="associator" data-objectid="ASSOCIATORID" class="module <?=$class;?> classPath-lattice_modules_Associator clearFix">
 Pool:
 <ul>
 <?foreach($pool as $object):?>
