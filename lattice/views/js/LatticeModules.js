@@ -699,7 +699,7 @@ lattice.modules.LatticeAssociator = new Class({
 			this.controls = this.element.getChildren( ".controls" );
 			this.controls.each( function( controlGroup ){
 				controlGroup.getElements( ".associate" ).each( function( item ){
-					item.addEvent("click", this.associateRequest.bindWithEvent( this, item ) ) );
+					item.addEvent("click", this.associateRequest.bindWithEvent( this, item ) )
 				}, this );
 			}, this );
 		},
