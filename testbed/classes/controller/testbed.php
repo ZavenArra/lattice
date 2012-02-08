@@ -1,6 +1,6 @@
 <?
 
-Class TestBed_Controller extends Controller {
+Class Controller_TestBed extends Controller {
 
 	public function __construct(){
 		//sanity checks
@@ -22,14 +22,14 @@ Class TestBed_Controller extends Controller {
 		parent::__construct();
 	}
 
-	public function index(){
+	public function action_index(){
 		$this->view = new View('testbedIndex');
 		$this->view->render(true);
 		exit;
 	}
 	
 
-	public function revertTestingData(){
+	public function action_revertTestingData(){
 		$db = new Database();
 		//drop tables
 		foreach(Kohana::config('testbed.tablesToRevert') as $table){

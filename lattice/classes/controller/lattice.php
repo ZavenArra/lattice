@@ -1,6 +1,5 @@
 <?
 
-
 class Controller_Lattice extends Controller {
 
 	public static $topController;
@@ -18,6 +17,16 @@ class Controller_Lattice extends Controller {
 	//constructor
 	public function __construct($request, $response){
 		parent::__construct($request, $response);
+
+    try {
+      ORM::Factory('object')->find_all();
+    } catch(Exception $e){
+      $view = new View('latticeNotInstalled');
+      echo $view->render();
+      die();
+    }
+
+
 
 		//set the language requirements
 		
