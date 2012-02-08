@@ -613,3 +613,309 @@ lattice.modules.ListItem = new Class({
 	}
 	
 });
+
+lattice.modules.LatticeAssociator = new Class({
+
+	/* TODO write unit tests for List*/
+	Extends: lattice.modules.Module,
+	// listing properties and members, helps with maintenance and destruction.... standard practice from now on
+	sortable: null,
+	sortDirection: null,
+	instanceName: null,
+	items: null,
+	controls: null,
+	sortableList: null,
+	scroller: null,
+	submitDelay: null,
+	oldSort: null,
+	
+	/* Section: Getters & Setters */
+	
+	getSaveFieldURL: function(){
+    throw "Abstract function getSaveFieldURL must be overriden in" + this.toString();
+	},
+
+	getAssociateURL: function(){
+	    throw "Abstract function getAddObjectURL must be overriden in" + this.toString();
+	},
+	
+	getDissociateURL: function(){
+	    throw "Abstract function getRemoveObjectURL must be overriden in" + this.toString();
+	},
+
+	getSubmitSortOrderURL: function(){ 
+	    throw "Abstract function getSubmitSortOrderURL must be overriden in" + this.toString();
+	},
+
+	toString: function(){
+		return "[ Object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.LatticeAssociator ]";
+	},
+	
+	clearField: function( fieldName ){
+		this.marshal.clearField( fieldName );
+	},
+	
+	initialize: function( anElement, aMarshal, options ){
+		this.parent( anElement, aMarshal, options );
+		this.objectId = this.element.get( 'data-objectid' );
+		this.allowChildSort = ( this.options.allowChildSort == 'true' )? true : false;
+		this.makeSortable( this.listing );
+	},
+	
+	build: function(){
+		this.parent();
+		this.initControls();
+		this.initItems();
+	},	
+	
+	initItems: function(){
+    var items, pool, contents;
+		contents = this.element.getElement( ".container li" );
+    pool = this.element.getElement( ".pool li" );
+    items = contents.combine( pool );
+    items.each( function( el ){
+			this.initItem( el );
+		}, this );
+  },
+
+	initItem: function( el ){
+		var classPath, ref, newItem;
+		classPath = el.getData('classpath');
+		if(!classPath){
+			newItem = new lattice.modules.AssociatorItem( el, this );
+		} else {
+			ref = this.getClassFromClassPath( classPath, '.' );
+			if(ref){
+				newItem = new ref( el, this );
+			} else {
+				throw "classPath " + classPath + "  for element: " + el + " is referring to a class that is not loaded or does not exist";
+				return false;
+			}
+		}
+		return newItem;
+	},
+
+	initControls: function(){
+			this.controls = this.element.getChildren( ".controls" );
+			this.controls.each( function( controlGroup ){
+				controlGroup.getElements( ".associate" ).each( function( item ){
+					item.addEvent("click", this.associateRequest.bindWithEvent( this, item ) ) );
+				}, this );
+			}, this );
+		},
+   
+    getClassFromClassPath: function( classPath, delimiter ){
+      var ref;			
+      delimiter = ( !delimiter )? "_" : delimiter;
+      classPath = classPath.split( delimiter );
+      classPath.each( function( node ){
+         ref = ( !ref )? this[node] : ref[node]; 
+      });
+      return ref;
+   },
+	
+	associateRequest: function( e, item ){
+		if( lattice.debug ) console.log( 'addObjectRequest', path );
+		e.preventDefault();
+		this.container.grab( item );
+		item.spin();
+		var path = item.get( 'href' ) );
+		return new Request.JSON( {url: this.getAssociateURL( path ), onSuccess: function( json ){ this.onAssociateResponse( json, item ); }.bind( this ) } ).send();
+	},
+    
+	onAssociateResponse: function( json, item ){
+		if( lattice.debug ) console.log( "onAssociateResponse", json );
+		item.unspin();
+		var element, listItem, addItemText, classPath, ref;
+		element = json.response.html.toElement();
+		associateText = this.controls.getElement( ".associate" ).get( "text" );
+		listItem = this.initItem( element );
+		Object.each( listItem.UIFields, function( uiField ){
+			uiField.scrollContext = "modal";
+			if( uiField.reposition ) uiField.reposition('modal');
+		});
+		lattice.util.EventManager.broadcastMessage( "resize" );
+		this.insertItem( listItem );
+	},
+
+	dissociate: function( item ){
+    this.dissociateRequest( item.getObjectId() );
+		item.spin();
+		this.pool.grab( item );
+		lattice.util.EventManager.broadcastMessage( "resize" );          
+	},
+	
+	dissociateRequest: function( itemObjectId ){
+		var jsonRequest = new Request.JSON( { url: this.getDissociateURL( itemObjectId ) } ).send();
+		return jsonRequest;
+	},
+
+// 	insertItem: function( anItem ){
+// 		var where, listItemInstance, coords;
+// 		where = ( this.options.sortDirection == "DESC" )? "top" : "bottom";
+// //		console.log( "\t", this.options.sortDirection, where );
+// 		this.listing.grab( anItem.element, where );
+// 		if( this.allowChildSort && this.sortableList ) this.sortableList.addItems( anItem.element );
+// 		Object.each( anItem.UIFields, function( aUIField ){
+// 			aUIField.scrollContext = "window";
+// 			if( aUIField.reposition ) aUIField.reposition()
+// 		});
+// 		anItem.element.tween( "opacity", 1 );
+// 		coords = anItem.element.getCoordinates();
+// 		this.element.getOffsetParent().scrollTo( coords.left, coords.top )
+// 		if( this.allowChildSort != null ) this.onOrderChanged();
+// 	},
+
+	makeSortable: function(){
+		if( this.allowChildSort && !this.sortableList ){
+			this.sortableList = new lattice.ui.Sortable( this.container, this, $( document.body ) );
+		}else if( this.allowChildSort ){
+			this.sortableList.attach();
+		}
+		this.oldSort = this.serialize();
+	},
+	
+	resumeSort: function(){
+		if( this.allowChildSort && this.sortableList ) this.sortableList.attach();
+	},
+	
+	suspendSort: function(){
+		if( this.allowChildSort && this.sortableList ) this.sortableList.detach();
+	},
+	
+	removeSortable: function( aSortable ){
+		aSortable.detach();
+		delete aSortable;
+		aSortable = null;
+	},
+	
+	onOrderChanged: function(){
+		var newOrder = this.serialize();
+		clearInterval( this.submitDelay );
+		this.submitDelay = this.submitSortOrder.periodical( 3000, this, newOrder.join(",") );
+		newOrder = null;
+	},
+	
+	submitSortOrder: function( newOrder ){
+		if( this.allowChildSort && this.oldSort != newOrder ){
+			clearInterval( this.submitDelay );
+			this.submitDelay = null;
+     	var request = new Request.JSON( {url: this.getSubmitSortOrderURL()} ).post( {sortOrder: newOrder} );
+			this.oldSort = newOrder;
+			return request;
+		}
+	},
+	
+	serialize:function(){
+		var sortArray, children, listItemId, listItemIdSplit;
+		sortArray = [];
+		children = this.container.getChildren("li");
+		children.each( function ( aListing ){
+	    if( aListing.get( "id" ) ){
+        listItemId = aListing.get("id");
+        listItemIdSplit = listItemId.split( "_" );
+        listItemId = listItemIdSplit[ listItemIdSplit.length - 1 ];
+        sortArray.push( listItemId );		        
+	    }
+		});
+		return sortArray;
+	},
+
+	destroy: function(){
+		if(this.sortableList) this.removeSortable( this.sortableList );
+		clearInterval( this.submitDelay );
+		this.controls = this.instanceName = this.pool = this.container = this.oldSort = this.allowChildSort, this.sortDirection, this.submitDelay = null;
+    if( this.scroller ) this.scroller = null;
+		lattice.util.EventManager.broadcastMessage( 'resize' );
+		this.parent();
+	}
+
+});
+
+lattice.modules.AssociatorItem = new Class({
+
+	Extends: lattice.modules.Module,
+	Implements: [ Events, Options ],
+	objectId: null,
+	controls: null,
+	fadeOut: null,
+	
+  /* Section: Getters & Setters */
+	getSaveFieldURL: function(){
+		var url =  this.marshal.getSaveFieldURL( this.getObjectId() );
+		if( lattice.debug ) console.log( "AssociatorItem.getSaveFieldURL", url );
+		return url;
+	},
+
+	getSaveFileSubmitURL: function(){
+			return lattice.util.getBaseURL() + 'ajax/data/cms/savefile/' + this.getObjectId()+"/";
+	},
+	
+	getClearFileURL: function( fieldName ){
+		var url = lattice.util.getBaseURL() + "ajax/data/cms/clearField/" + this.getObjectId() + "/" + fieldName;
+		return url;
+	},
+	
+
+	initialize: function( anElement, aMarshal, options ){
+		this.element = anElement;
+		this.element.store( "Class", this );
+		this.marshal = aMarshal;
+		this.instanceName = this.element.get( "id" );
+		this.objectId = this.element.get("data-objectId");
+		this.build();
+	},
+
+	toString: function(){return "[ Object, lattice.modules.Module, lattice.modules.AssociatorItem ]";},
+
+	build: function(){
+		this.parent();
+		this.initControls();
+	},
+
+	isAssociated: function(){
+		return ( this.marshal.element.hasClass('.pool')? false : true;
+	},
+	
+	initControls: function(){
+		this.controls = this.element.getElement(".itemControls");
+		if( this.controls.getElement(".associate") ){
+			// if the item is associated, add the associated class (which then determines its appearance )
+			if( isAssociated ) this.element.addClass("associated");
+			this.controls.getElement(".associate").addEvent( "click", this.associate.bindWithEvent( this ) );
+		}
+		if( this.controls.getElement(".dissociate") ){
+			this.controls.getElement(".dissociate").addEvent( "click", this.dissociate.bindWithEvent( this ) );
+		}
+	},
+	
+	associate: function( e ){
+		lattice.util.stopEvent( e );
+		this.addClass('associated');
+		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
+		this.marshal.associateRequest( this )}.bind( this )} );
+	},
+	
+	dissociate: function( e ){
+		lattice.util.stopEvent( e );
+		this.removeClass('associated');
+		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
+		this.marshal.dissociateRequest( this )}.bind( this )} );
+	},
+
+	clearField: function( fieldName ){
+		this.marshal.clearField( fieldName );
+	},
+	
+	// hideControls: function(){this.controls.addClass( 'hidden' );},
+	// showControls: function(){this.controls.removeClass('hidden')},
+	
+	resumeSort: function(){if( this.marshal.sortableList ) this.marshal.resumeSort();},
+	suspendSort: function(){if( this.marshal.sortableList ) this.marshal.suspendSort();},
+	
+	destroy: function(){
+		this.parent();
+		this.controls = this.objectId = null;
+	}
+	
+});
