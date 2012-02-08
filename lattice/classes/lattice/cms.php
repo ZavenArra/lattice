@@ -202,6 +202,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
             $view->$key = $value;
          }
          $view->object = $object;
+         $view->objectId = $object->id;
          $html .= $view->render();
       } else {
          $html = $nodetitlehtml . implode($htmlChunks);
