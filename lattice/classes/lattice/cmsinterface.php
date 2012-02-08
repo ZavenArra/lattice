@@ -287,6 +287,17 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       $object->undelete();
    }
 
+   public function action_associate($parentId, $objectId, $lattice){
+     $parent = Graph::object($parentId);
+     $parent->addLatticeRelationship($objectid, $lattice);
+     $metaObjectType = $parent->getMetaObjectType($lattice);
+   }
+
+   public function action_disassociate($parentId, $objectId, $lattice){
+      Graph::object($parentId)->removeLatticeRelationship($objectid, $lattice);
+   }
+
+
    //abstract
    protected function cms_getNode($id) {
       

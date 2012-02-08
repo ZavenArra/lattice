@@ -75,6 +75,7 @@
 	name         CDATA #REQUIRED
   lattice       CDATA #REQUIRED
 	label         CDATA #IMPLIED
+  metaObjectTypeName  CDATA #IMPLIED
 >   
 
 <!ELEMENT filter EMPTY >

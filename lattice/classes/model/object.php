@@ -1423,12 +1423,11 @@ class Model_Object extends ORM {
   
    }
 
-   public function addLatticeAssociation($lattice, $newObjectId){
+   public function addLatticeRelationship($lattice, $newObjectId){
 
      if(!is_object($lattice)){
        $lattice = Graph::lattice($lattice);
      }
-
 
      $objectRelationship = ORM::Factory('objectrelationship');
      $objectRelationship->lattice_id = $lattice->id;
@@ -1447,13 +1446,30 @@ class Model_Object extends ORM {
       $objectRelationship->save();
    }
 
+   public function removeLatticeRelationship($lattice, $removeObjectId){
+     if(!is_object($lattice)){
+       $lattice = Graph::lattice($lattice);
+     }
+
+     $objectRelationship = ORM::Factory('objectrelationship');
+     $objectRelationship->where('lattice_id', '=', $lattice->id);
+     $objectRelationship->where('object_id', '=', $this->id);
+     $objectRelationship->where('connectedobject_id', '=', $removeObjectId);
+     $objectRelationship->find();
+     if($objectRelationship->loaded()){
+      $objectRelationship->delete();
+     }
+
+   }
+
+
    private function addLatticeObject($objectTypeName, $lattice = null, $rosettaId = null, $languageId = null){
 
      $newObject = $this->createObject($objectTypeName, $rosettaId, $languageId);
 
      //The objet has been built, now set it's lattice point
      $lattice = Graph::lattice();
-     $this->addLatticeAssociation($lattice->id, $newObject->id);
+     $this->addLatticeRelationship($lattice->id, $newObject->id);
 
 
      $newObject->insertContentRecord();
@@ -1555,6 +1571,19 @@ class Model_Object extends ORM {
        }
      }
 
+   }
+
+   public function getMetaObjectTypeName($lattice){
+     $xPath = sprintf('//objectType[@name="%s"]/elements/associator[@lattice="%s"]', 
+       $this->objecttype->objecttypename,
+       $lattice);
+     //echo $xPath;
+
+     $config = lattice::config('objects', $xPath); 
+     if(!$config->item(0)){
+       return NULL;
+     }
+     return $config->item(0)->getAttribute('metaObjectTypeName');
    }
 
 }
