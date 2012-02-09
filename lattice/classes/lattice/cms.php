@@ -233,18 +233,6 @@ class Lattice_CMS extends Lattice_CMSInterface {
 		$this->response->data($newId);
 	}
 
-	
-
-
-
-	/*
-	 * Function: associate
-	 * Associate an object to another object
-	 */
-	public function action_associate($objectId){
-		//gotta issue here
-	}
-
 	/*
 	Function: action_addObject($id)
 	Public interface for adding an object to the cms data

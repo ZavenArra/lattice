@@ -43,8 +43,13 @@ class Graph {
          return ORM::Factory('lattice', $latticeId);
       } else {
          $lattice = ORM::Factory('lattice')->where('name', '=', $latticeId)->find();
-         return $lattice;
       }
+      if(!$lattice->loaded()){
+        $lattice = ORM::Factory('lattice');
+        $lattice->name = $latticeId;
+        $lattice->save();
+      }
+      return $lattice;
    
    }
 
