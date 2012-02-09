@@ -15,8 +15,8 @@ lattice.modules.List = new Class({
 		return url;
 	},
 	
-	getRemoveObjectURL: function( itemObjectId ){
-		return lattice.util.getBaseURL() + "ajax/data/list/removeObject/" + itemObjectId;
+	getRemoveObjectURL: function( objectId ){
+		return lattice.util.getBaseURL() + "ajax/data/list/removeObject/" + objectId;
 	},
 	
 	getSubmitSortOrderURL: function(){
@@ -28,7 +28,7 @@ lattice.modules.List = new Class({
 	},
 	
 	initialize: function( anElement, aMarshal, options ){
-        this.parent( anElement, aMarshal, options );
+		this.parent( anElement, aMarshal, options );
 	}
 	
 });

@@ -220,14 +220,90 @@ ul.listing li{
 	color:#444;
 }
 
-.classPath-lattice_modules_ListModule{
+.classPath-lattice_modules_ListModule,
+.associator{
 	margin-bottom: 2em;
 	border-bottom: 1px #dedede solid;
 }
 
-.controls{ margin-bottom: 1em; }
+
+/*.controls{ margin-bottom: 1em; }
+*/
 .listItem>.itemControls .delete{
 	background: url( ../images/icon_trash.gif );
+}
+
+/*
+-----------------------------------------------
+	Associator 
+--------------------------------------------------
+*/
+.associator ul{
+	display: relative;
+}
+
+.associator .associated{
+	margin-bottom: 2em;
+}
+
+.associator>ul{
+	clear: both;
+}
+
+.associator .pool{
+	display: none;
+	border-top: 1px #dedede solid;
+	padding-top: 1.5em;
+}
+
+.associator ul li{
+	float: left;
+	width: 196px;
+	height: 64px;
+	padding: 12px;
+	margin: 0 10px 1.5em 10px;
+}
+
+.associator ul li{
+	position: relative;
+}
+
+.associator .itemControls{
+	display:none;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background: url( ../images/bg_white80.png );
+}
+
+.associator .itemControls .dissociate,
+.associator .itemControls .associate{
+	display: none;
+}
+
+.associator .pool li:hover .itemControls,
+.associator .associated li:hover .itemControls{
+	display: block;
+}
+
+.associator .pool li:hover .itemControls a.associate,
+.associator .associated li:hover .itemControls a.dissociate{
+	display:block;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+}
+
+.associator .itemControls a.associate{
+	background: url( ../images/icon_associate.png ) center no-repeat;
+	vertical-align: middle;
+}
+
+.associator .itemControls a.dissociate{
+	background: url( ../images/icon_dissociate.png ) center no-repeat;
+	vertical-align: middle;
 }
 
 /* /////////////////////////////////////////////////////////// */
@@ -474,8 +550,10 @@ button:hover, a.button:hover{
 	color:#fff;
 }
 
-.modalContainer h3{
+h3, h4{
 	font-family: Georgia, Times, serif;
+}
+.modalContainer h3{
 	font-weight: normal;
 	color:#fff;
 	float: left;
@@ -921,7 +999,6 @@ DATE PICKER
 .ui-MultiSelect p,
 .ui-DatePicker input[type~='text'],
 .ui-DateRangePicker input[type~='text']{
-
 	color:#222;
 	font-family: Georgia, Times, Serif;
 	margin: 0 0 .5em 0;

@@ -14,11 +14,13 @@ Element.implement({
 		var styles = ( shadow )? shadow : '1px 1px 3px #444';
 		var styleName;
 		if( Browser.safari && Browser.version <= 5 ){ styleName = "-webkit-box-shadow"; }else if( Browser.firefox && Browser.version < 4 ){ styleName = "-moz-box-shadow"; }else{ styleName = "box-shadow"; }
+		console.log( ">>>> ", styleName );
 		if( (Browser.ie && Browser.version >= 9) || !Browser.ie ){
 			this.setStyle( styleName, styles );
 		}
 	}
 });
+
 
 lattice.ui.UIField = new Class({
 
@@ -540,7 +542,7 @@ lattice.ui.Modal = new Class({
 			cancelText: 'Cancel'
 		},
 
-		setTitle: function( aString ){ this.title.set( "text", aString ); },
+		setTitle: function( aString ){ if( this.title ) this.title.set( "text", aString ); },
 		spin: function(){ this.modal.show(); },
 		unSpin: function(){ this.modal.unspin(); },
 		getScrollOffset: function(){ return this.element.getScroll(); },

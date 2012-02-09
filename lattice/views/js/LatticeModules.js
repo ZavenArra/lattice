@@ -62,6 +62,7 @@ lattice.modules.Module = new Class({
 		this.parent( anElementOrId, aMarshal, options );  
 		this.instanceName = this.element.get("id");
 		this.objectId = this.element.get( 'data-objectid');
+		
 		this.build();
 	},
 	
@@ -624,6 +625,8 @@ lattice.modules.LatticeAssociator = new Class({
 	instanceName: null,
 	items: null,
 	controls: null,
+	associated: null,
+	pool: null,
 	sortableList: null,
 	scroller: null,
 	submitDelay: null,
@@ -636,11 +639,11 @@ lattice.modules.LatticeAssociator = new Class({
 	},
 
 	getAssociateURL: function(){
-	    throw "Abstract function getAddObjectURL must be overriden in" + this.toString();
+	    throw "Abstract function getAssociateURL must be overriden in" + this.toString();
 	},
 	
 	getDissociateURL: function(){
-	    throw "Abstract function getRemoveObjectURL must be overriden in" + this.toString();
+	    throw "Abstract function getDissociateURL must be overriden in" + this.toString();
 	},
 
 	getSubmitSortOrderURL: function(){ 
@@ -664,16 +667,42 @@ lattice.modules.LatticeAssociator = new Class({
 	
 	build: function(){
 		this.parent();
+		this.associated = this.element.getElement( 'ul.associated' );
+		this.pool = this.element.getElement( 'ul.pool' );
+		this.element.getElements( '.shadow' ).each( function( el ){
+			el.addBoxShadow( "1px 1px 5px #ddd");
+		});
+		this.poolMorph = new Fx.Morph( this.pool, { duration: 'short', transition: Fx.Transitions.Sine.easeOut } );
+
+		this.element.addEvent( 'mouseenter', function(){
+			this.poolMorph.cancel();
+			this.pool.setStyles({
+				"opacity": 0,
+				"height": 0,
+				"display": "block"
+			});
+			this.poolMorph.start({
+				"opacity": 1,
+				"height": "auto",
+				"display": "block"				
+			});
+		}.bind( this ) );		
+
+		this.element.addEvent( 'mouseleave', function(){
+			this.poolMorph.cancel();
+			this.poolMorph.start({
+				"opacity": 0,
+				"height": "0px"
+			});
+		}.bind( this ));
 		this.initControls();
 		this.initItems();
 	},	
 	
 	initItems: function(){
-    var items, pool, contents;
-		contents = this.element.getElement( ".container li" );
-    pool = this.element.getElement( ".pool li" );
-    items = contents.combine( pool );
-    items.each( function( el ){
+		console.log(">>>>>>>>>>>>>>>>", this.element.getElements( "ul.associated li" ), this.element.getElements( "ul.pool li" ))
+    var items = this.element.getElements( "ul.associated li" ).combine( this.element.getElements( "ul.pool li" ) );
+		items.each( function( el ){
 			this.initItem( el );
 		}, this );
   },
@@ -714,58 +743,42 @@ lattice.modules.LatticeAssociator = new Class({
       return ref;
    },
 	
-	associateRequest: function( e, item ){
-		if( lattice.debug ) console.log( 'addObjectRequest', path );
-		e.preventDefault();
-		this.container.grab( item );
-		item.spin();
-		var path = item.get( 'href' );
-		return new Request.JSON( {url: this.getAssociateURL( path ), onSuccess: function( json ){ this.onAssociateResponse( json, item ); }.bind( this ) } ).send();
+	associateRequest: function( item ){
+		if( lattice.debug ) console.log( 'addObjectRequest', item );
+		this.associated.grab( item.getElement() );
+		return new Request.JSON( {url: this.getAssociateURL( item.getObjectId() ), onSuccess: function( json ){ this.onAssociateResponse( json, item ); }.bind( this ) } ).send();
 	},
     
 	onAssociateResponse: function( json, item ){
 		if( lattice.debug ) console.log( "onAssociateResponse", json );
-		item.unspin();
+		item.element.unspin();
 		var element, listItem, addItemText, classPath, ref;
-		element = json.response.html.toElement();
 		associateText = this.controls.getElement( ".associate" ).get( "text" );
+/*	FOR META FIELDS WE NEED TO TAKE THE JSON RESPONSE AND REPLACE THE ELEMENT WITH IT, WHICH MEANS WE'LL NEED TO REINIT IT TOO 
+		element = json.response.html.toElement();
 		listItem = this.initItem( element );
-		Object.each( listItem.UIFields, function( uiField ){
-			uiField.scrollContext = "modal";
-			if( uiField.reposition ) uiField.reposition('modal');
-		});
+*/
+		// Object.each( listItem.UIFields, function( uiField ){
+		// 	uiField.scrollContext = "modal";
+		// 	if( uiField.reposition ) uiField.reposition('modal');
+		// });
 		lattice.util.EventManager.broadcastMessage( "resize" );
-		this.insertItem( listItem );
+//	this.insertItem( listItem );
 	},
 
-	dissociate: function( item ){
-    this.dissociateRequest( item.getObjectId() );
-		item.spin();
-		this.pool.grab( item );
+	dissociateRequest: function( item ){
+		if( lattice.debug ) console.log("dissociate", item, item.getObjectId() );
+    item.element.spin();
+		this.pool.grab( item.element );
 		lattice.util.EventManager.broadcastMessage( "resize" );          
-	},
-	
-	dissociateRequest: function( itemObjectId ){
-		var jsonRequest = new Request.JSON( { url: this.getDissociateURL( itemObjectId ) } ).send();
+		var jsonRequest = new Request.JSON( { url: this.getDissociateURL( item.getObjectId() ), onSuccess: function( json ){ this.onDissociateResponse( json, item ); }.bind( this ) } ).send();
 		return jsonRequest;
 	},
 
-// 	insertItem: function( anItem ){
-// 		var where, listItemInstance, coords;
-// 		where = ( this.options.sortDirection == "DESC" )? "top" : "bottom";
-// //		console.log( "\t", this.options.sortDirection, where );
-// 		this.listing.grab( anItem.element, where );
-// 		if( this.allowChildSort && this.sortableList ) this.sortableList.addItems( anItem.element );
-// 		Object.each( anItem.UIFields, function( aUIField ){
-// 			aUIField.scrollContext = "window";
-// 			if( aUIField.reposition ) aUIField.reposition()
-// 		});
-// 		anItem.element.tween( "opacity", 1 );
-// 		coords = anItem.element.getCoordinates();
-// 		this.element.getOffsetParent().scrollTo( coords.left, coords.top )
-// 		if( this.allowChildSort != null ) this.onOrderChanged();
-// 	},
-
+	onDissociateResponse: function( json, item ){
+		item.element.unspin();
+	},
+	
 	makeSortable: function(){
 		if( this.allowChildSort && !this.sortableList ){
 			this.sortableList = new lattice.ui.Sortable( this.container, this, $( document.body ) );
@@ -807,10 +820,9 @@ lattice.modules.LatticeAssociator = new Class({
 	},
 	
 	serialize:function(){
-		var sortArray, children, listItemId, listItemIdSplit;
+		var sortArray, listItemId, listItemIdSplit;
 		sortArray = [];
-		children = this.container.getChildren("li");
-		children.each( function ( aListing ){
+		this.associated.getChildren("li").each( function ( aListing ){
 	    if( aListing.get( "id" ) ){
         listItemId = aListing.get("id");
         listItemIdSplit = listItemId.split( "_" );
@@ -824,7 +836,7 @@ lattice.modules.LatticeAssociator = new Class({
 	destroy: function(){
 		if(this.sortableList) this.removeSortable( this.sortableList );
 		clearInterval( this.submitDelay );
-		this.controls = this.instanceName = this.pool = this.container = this.oldSort = this.allowChildSort, this.sortDirection, this.submitDelay = null;
+		this.controls = this.instanceName = this.pool = this.associated = this.oldSort = this.allowChildSort, this.sortDirection, this.submitDelay = null;
     if( this.scroller ) this.scroller = null;
 		lattice.util.EventManager.broadcastMessage( 'resize' );
 		this.parent();
@@ -862,7 +874,8 @@ lattice.modules.AssociatorItem = new Class({
 		this.element.store( "Class", this );
 		this.marshal = aMarshal;
 		this.instanceName = this.element.get( "id" );
-		this.objectId = this.element.get("data-objectId");
+		this.objectId = this.element.get("data-objectid");
+		console.log( "ASSOCIATORITEM", this.objectId );
 		this.build();
 	},
 
@@ -880,8 +893,8 @@ lattice.modules.AssociatorItem = new Class({
 	initControls: function(){
 		this.controls = this.element.getElement(".itemControls");
 		if( this.controls.getElement(".associate") ){
-			// if the item is associated, add the associated class (which then determines its appearance )
-			if( isAssociated ) this.element.addClass("associated");
+//		if the item is associated, add the associated class (which then determines its appearance )
+//		if( this.isAssociated() ) this.element.addClass("associated");
 			this.controls.getElement(".associate").addEvent( "click", this.associate.bindWithEvent( this ) );
 		}
 		if( this.controls.getElement(".dissociate") ){
@@ -891,14 +904,15 @@ lattice.modules.AssociatorItem = new Class({
 	
 	associate: function( e ){
 		lattice.util.stopEvent( e );
-		this.addClass('associated');
+//	this.addClass('associated');
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
+		this.element.spin();
 		this.marshal.associateRequest( this );
 	},
 	
 	dissociate: function( e ){
 		lattice.util.stopEvent( e );
-		this.removeClass('associated');
+//	this.removeClass('associated');
 		if( this.marshal.sortableList != null ) this.marshal.onOrderChanged();
 		this.marshal.dissociateRequest( this );
 	},
