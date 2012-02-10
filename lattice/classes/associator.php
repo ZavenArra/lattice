@@ -37,10 +37,40 @@ Class Associator {
     $this->associated = $this->parent->getLatticeChildren($this->lattice);
   }
 
-  public function render(){
-    $view = new View('lattice_associator');
-    $view->pool = $this->pool;
-    $view->associatedChildren = $this->associated;
+  public function render($viewName = NULL){
+    if($viewName && $view = Kohana::find_file('views/lattice/associator', $viewName)){
+      $view = $view[0];
+      $view = new View($view);
+    } else {
+      $view = new View('lattice/associator');
+    }
+
+    $view->pool = array();
+    foreach($this->pool as $poolItem){
+      $view->pool[] = $this->getItemView($poolItem, $viewName);
+    }
+
+    $view->associated = array();
+    foreach($this->associated as $associatedItem){
+      $view->associated[] = $this->getItemView($associatedItem, $viewName);
+    }
+
     return $view->render();
   }
+
+  private function getItemView($iItem, $viewName){
+
+    if($viewName && $view = Kohana::find_file('views/lattice/associator/'.$viewName, $item->objecttype->objecttypename)){
+      $view = $view[0];
+      $view = new View($view);
+    } else if($viewName && $view = Kohana::find_file('views/lattice/associator/'.$viewName, 'item')){ 
+      $view = $view[0];
+      $view = new View($view);
+    } else  {
+      $view = new View('lattice/associator/item');
+    }
+    return $view;
+
+  }
+
 }
