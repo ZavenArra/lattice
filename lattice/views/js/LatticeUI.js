@@ -1371,7 +1371,7 @@ lattice.ui.FileElement = new Class({
 		this.clearButton.addEvent( "click", this.clearFile.bindWithEvent( this ) );
 
 		this.uploader = new lattice.util.Uploader({
-			path: lattice.util.getBaseURL() + "lattice/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf",
+			path: lattice.util.getBaseURL() + "lattice/lattice/views/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf",
 			container: this.uploadLink,
 			target: this.uploadButton,
 			cookie: Cookie.read( 'session' )
