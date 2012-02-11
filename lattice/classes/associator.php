@@ -77,6 +77,9 @@ Class Associator {
       $view->associated[] = $this->getItemView($associatedItem, $viewName);
     }
 
+    $view->parentId = $this->parentId;
+    $view->lattice = $this->lattice;
+
     return $view->render();
   }
 

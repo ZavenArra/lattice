@@ -1,4 +1,4 @@
-<div id="" data-objectid="ASSOCIATORID" class="module associator classPath-lattice_modules_Associator clearFix">
+<div id="" data-objectid="<?=$parentId;?>" data-lattice="<?=$lattice;?>" class="module associator classPath-lattice_modules_Associator clearFix">
 
 <ul class="associated">
 <?foreach($associated as $view):?>
