@@ -749,7 +749,7 @@ lattice.modules.LatticeAssociator = new Class({
 	associateRequest: function( item ){
 		if( lattice.debug ) console.log( 'addObjectRequest', item );
 		this.associated.grab( item.getElement() );
-		return new Request.JSON( {url: this.getAssociateURL( this.getObjectId(), item.getObjectId() ), onSuccess: function( json ){ this.onAssociateResponse( json, item ); }.bind( this ) } ).send();
+		return new Request.JSON( {url: this.getAssociateURL( this.getObjectId(), item.getObjectId(), this.element.get('data-lattice')  ), onSuccess: function( json ){ this.onAssociateResponse( json, item ); }.bind( this ) } ).send();
 	},
     
 	onAssociateResponse: function( json, item ){
@@ -774,7 +774,7 @@ lattice.modules.LatticeAssociator = new Class({
     item.element.spin();
 		this.pool.grab( item.element );
 		lattice.util.EventManager.broadcastMessage( "resize" );          
-		var jsonRequest = new Request.JSON( { url: this.getDissociateURL( item.getObjectId() ), onSuccess: function( json ){ this.onDissociateResponse( json, item ); }.bind( this ) } ).send();
+		var jsonRequest = new Request.JSON( { url: this.getDissociateURL( this.getObjectId(), item.getObjectId(), this.element.get('data-lattice') ), onSuccess: function( json ){ this.onDissociateResponse( json, item ); }.bind( this ) } ).send();
 		return jsonRequest;
 	},
 

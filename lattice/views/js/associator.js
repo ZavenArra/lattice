@@ -10,14 +10,14 @@ lattice.modules.Associator = new Class({
 		return url;
 	},
 	
-	getAssociateURL: function( id, latticeid ){
-		var url = lattice.util.getBaseURL() + 'ajax/html/associator/associate' + id;
+	getAssociateURL: function( id, itemid, latticeid ){
+		var url = lattice.util.getBaseURL() + 'ajax/html/associator/associate/' + id + "/" + itemid + "/" + latticeid;
 		if( lattice.debug ) console.log( '\t\getAssociateURL', id );
 		return url;
 	},
 	
-	getDissociateURL: function( id ){
-		var url = lattice.util.getBaseURL() + "ajax/html/associator/dissociate/" + id;
+	getDissociateURL: function( id, itemid, latticeid ){
+		var url = lattice.util.getBaseURL() + 'ajax/html/associator/dissociate/' + id + "/" + itemid + "/" + latticeid;
 		if( lattice.debug ) console.log( '\t\getDissociateURL', url );
 		return url;
 	},
