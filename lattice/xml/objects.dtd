@@ -72,15 +72,17 @@
 
 <!ELEMENT associator (filter*)>
 <!ATTLIST associator  
+  label        CDATA #IMPLIED
+  poolLabel    CDATA #IMPLIED
 	name         CDATA #REQUIRED
   lattice       CDATA #REQUIRED
-	label         CDATA #IMPLIED
   metaObjectTypeName  CDATA #IMPLIED
 >   
 
 <!ELEMENT filter EMPTY >
 <!ATTLIST filter
 	from           CDATA #IMPLIED
+  lattice         CDATA #IMPLIED
 	objectTypeName   CDATA #IMPLIED
 	tagged         CDATA #IMPLIED
 >
