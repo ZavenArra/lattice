@@ -613,18 +613,20 @@ class Model_Object extends ORM {
 
       foreach ($fields as $fieldInfo) {
          $field = $fieldInfo->getAttribute('name');
-     //    if (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field))->length) {
-            $content[$field] = $this->__get($field);
-      //   }
+         $content[$field] = $this->__get($field);
       }
 
       //find any lists
       foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list) {
-
-         $family = $list->getAttribute('name');
-         $content[$family] = $this->getListContentAsArray($family);
+         $name = $list->getAttribute('name');
+         $content[$name] = $this->getListContentAsArray($name);
       }
 
+      //find any associators
+      foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/associator', $this->objecttype->objecttypename)) as $list) {
+         $name = $list->getAttribute('name');
+         $content[$name] = $this->getLatticeChildren($list->getAttribute('name'));;
+      }
       return $content;
    }
    

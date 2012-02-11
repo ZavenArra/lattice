@@ -42,9 +42,9 @@ Class Associator {
 
         }
 
-        if($filter['match'])){
+        //if($filter['match']){
           //not yet implemented
-        }
+        //}
 
         $objects->where('language_id', '=', Graph::defaultLanguage());
         $objects->limit($this->maxPoolSize);

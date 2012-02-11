@@ -45,12 +45,19 @@ Class Builder_Frontend {
         //this also implies that name is a objecttypename
         foreach(lattice::config('objects', 
           sprintf('//objectType[@name="%s"]/elements/*', $viewName )) as $element){
-            if($element->tagName != 'list'){
-              frontend::makeHtmlElement($element, "\$content['main']");
-            } else {
-              $this->makeListDataHtml($element, "\$content['main']");
-            }
-          }
+
+           switch($element->tagName){
+           case 'list':
+             $this->makeListDataHtml($element, "\$content['main']");
+             break;
+           case 'associator':
+             $this->makeAssociatorDataHtml($element, "\$content['main']");
+             break;
+           default:
+             frontend::makeHtmlElement($element, "\$content['main']");
+             break;
+           }
+
       }
 
       if($view && $view->getAttribute('loadPage')=='true'){
@@ -80,6 +87,7 @@ Class Builder_Frontend {
       fclose($file);
 
       $createdViews[] = $viewName;
+    }
     }
 
     echo 'Completed all basic object views' . "\n";
@@ -139,16 +147,23 @@ Class Builder_Frontend {
     }
 
     $this->makeMultiObjectTypeLoop($objectTypes, $listDataConfig->getAttribute('name'),  $prefix, $indent);
-    //and follow up with any existing data
-      /*
-      $children = $object->getPublishedChildren();
-      foreach ($children as $child) {
-         $objectTypeName = $child->objecttype->objecttypename;
-         $objectTypes[$objectTypeName] = $objectTypeName;
-      }
-       
-       */
+
    }
+
+  //TODO: This doesn't currently support filter types that don't declare objecTypeNames or 
+  //nor with multiple objectTypeNames per filter
+  public function makeAssociatorDataHtml($associatorDataConfig, $prefix, $indent = ''){
+    $objectTypes = array();
+    $filters = lattice::config('objects', 'filter', $associatorDataConfig);
+    foreach($filters as $filter){
+      if($filter->getAttribute('objectTypeName')){
+        $objectTypes[] = $filter->getAttribute('objectTypeName');
+      }
+    }
+
+    $this->makeMultiObjectTypeLoop($objectTypes, $associatorDataConfig->getAttribute('name'),  $prefix, $indent);
+  }
+
 
 	public function makeIncludeDataHtml($iDataConfig, $prefix, $parentTemplate, $indent=''){
 		$label = $iDataConfig->getAttribute('label');
@@ -234,11 +249,17 @@ Class Builder_Frontend {
          echo $indent . "  <li class=\"$objectTypeName\">\n";
          echo $indent . "   " . "<h2><?=\${$label}Item['title'];?></h2>\n\n";
          foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $objectTypeName)) as $element) {
-            if ($element->tagName != 'list') {
-               frontend::makeHtmlElement($element, "\${$label}Item", $indent . "   ");
-            } else {
-               $this->makeListDataHtml($element, "\${$label}Item", $indent);
-            }
+           switch($element->tagName){
+           case 'list':
+             $this->makeListDataHtml($element, "\${$label}Item", $indent);
+             break;
+           case 'associator':
+             $this->makeAssociatorDataHtml($element, "\${$label}Item", $index);
+             break;
+           default:
+             frontend::makeHtmlElement($element, "\${$label}Item", $indent . "   ");
+             break;
+           }
          }
 
          //handle lower levels

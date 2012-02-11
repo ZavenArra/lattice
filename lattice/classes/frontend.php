@@ -29,6 +29,9 @@ class frontend {
       case 'tags':
          echo $indent."<p class=\"$field\"> <?=implode({$prefix}['$field'], ', ');?></p>\n\n";
          break;
+      case 'associator':
+
+        break;
 		default:
 			echo $indent."<p class=\"$field\"> <?={$prefix}['$field'];?></p>\n\n";
 			break;
