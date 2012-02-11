@@ -36,6 +36,15 @@ Route::set('cms', 'cms/<action>(/<param1>(/<param2>))', array(
 		'controller' => 'cms',
 	));
 
+Route::set('associator', 'associator/<action>/<param1>/<param2>/<param3>', array(
+
+	)
+)
+->defaults(
+	array(
+		'controller' => 'associator',
+	));
+
 
 
 
@@ -51,10 +60,7 @@ Route::set('graph_addChild', '<id>/<action>/<type>', array(
 /*
  * Default path to allow 4 arguments to graph if necessary
  */
-Route::set('graph', 'graph/<action>(/<param1>(/<param2>))', array(
-
-	)
-)
+Route::set('graph', 'graph/<action>(/<param1>(/<param2>))', array( ))
 ->defaults(
 	array(
 		'controller' => 'graph',

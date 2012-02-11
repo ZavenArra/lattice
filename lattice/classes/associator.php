@@ -11,6 +11,10 @@ Class Associator {
 
   private $maxPoolSize = 50;
 
+  //TODO
+  public function setViewName($viewName){throw new Kohana_Exception('Not Implemented');} //to support multi-lattice single custom view
+  public function setAssociatorName($associatorName){throw new Kohana_Exception('Not Implemented');} //to support mutli-instance single lattice
+
   public function __construct($parentId, $lattice, $filters=NULL){
     $this->parentId = $parentId;
     $this->parent = Graph::object($this->parentId);
@@ -36,6 +40,10 @@ Class Associator {
         }
         if(isset($filters['tagged']) && $filters['tagged']){
 
+        }
+
+        if($filter['match'])){
+          //not yet implemented
         }
 
         $objects->where('language_id', '=', Graph::defaultLanguage());
@@ -87,7 +95,7 @@ Class Associator {
   public function poolItemViews(){
     $poolItemViews = array();
     foreach($this->pool as $poolItem){
-      $poolItemViews[] = $this->getItemView($poolItem, $viewName);
+      $poolItemViews[] = $this->getItemView($poolItem, $this->lattice);
     }
     return $poolItemViews;
   }
