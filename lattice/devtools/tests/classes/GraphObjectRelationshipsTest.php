@@ -37,6 +37,16 @@ Class GraphObjectRelationshipsTest extends Kohana_UnitTest_TestCase {
     $this->assertTrue(count($associated) == 0);
   }
 
+  public function testCheckObjectRelationship(){
+    $object = Graph::object('test');
+    $newObject = Graph::createObject('article', 'testCheckAssoc');
+    $this->assertFalse($object->checkLatticeRelationship('testlattice', $newObject->id));
+    $object->addLatticeRelationship('testlattice', $newObject->id);
+    $this->assertTrue($object->checkLatticeRelationship('testlattice', $newObject->id));
+    $object->removeLatticeRelationship('testlattice', $newObject->id);
+    $this->assertFalse($object->checkLatticeRelationship('testlattice', $newObject->id));
+  }
+
   public function testMetaObjectTypeName(){
     $object = Graph::object( Graph::object()->addObject('singleAssociator') );
     $newObject = Graph::object( Graph::object()->addObject('meta') );
@@ -45,5 +55,6 @@ Class GraphObjectRelationshipsTest extends Kohana_UnitTest_TestCase {
     $this->assertNotNull($metaObjectTypeName);
     $this->assertEquals($metaObjectTypeName,'meta');
   }
+
 
 }

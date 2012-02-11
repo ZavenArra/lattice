@@ -11,14 +11,14 @@ lattice.modules.Associator = new Class({
 	},
 	
 	getAssociateURL: function( id ){
-		var url = lattice.util.getBaseURL() + 'ajax/html/associator/' + id;
+		var url = lattice.util.getBaseURL() + 'ajax/html/associator/associate/' + id;
 		if( lattice.debug ) console.log( '\t\getAssociateURL', id );
 		return url;
 	},
 	
 	getDissociateURL: function( id ){
 		var url = lattice.util.getBaseURL() + "ajax/html/associator/dissociate/" + id;
-		if( lattice.debug ) console.log( '\t\getDesociateURL', url );
+		if( lattice.debug ) console.log( '\t\getDissociateURL', url );
 		return url;
 	},
 	

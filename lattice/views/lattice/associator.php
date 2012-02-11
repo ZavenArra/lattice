@@ -2,64 +2,8 @@
 
 <ul class="associated">
 <?foreach($associated as $view):?>
-<?foreach($associated as $view):?>
   <?=$view->render();?>
 <?endforeach;?>
-  <?=$view->render();?>
-<?endforeach;?>
-<li class="shadow" data-objectid="XX">
-	<h4>A title of some sort</h4>
-	<p>Just to simulate some stuffage, you know, like the real world</p>
-	<div class="itemControls">
-		<a class="associate" href="#">Associate This!</a>
-		<a class="dissociate" href="#">Dissociate This!</a>
-	</div>
-</li>
-
-<li class="shadow" data-objectid="XX">
-	<h4>A title of some sort</h4>
-	<p>Just to simulate some stuffage, you know, like the real world</p>
-	<div class="itemControls">
-		<a class="associate" href="#">Associate This!</a>
-		<a class="dissociate" href="#">Dissociate This!</a>
-	</div>
-</li>
-
-<li class="shadow" data-objectid="XX">
-	<h4>A title of some sort</h4>
-	<p>Just to simulate some stuffage, you know, like the real world</p>
-	<div class="itemControls">
-		<a class="associate" href="#">Associate This!</a>
-		<a class="dissociate" href="#">Dissociate This!</a>
-	</div>
-</li>
-
-<li class="shadow" data-objectid="XX">
-	<h4>A title of some sort</h4>
-	<p>Just to simulate some stuffage, you know, like the real world</p>
-	<div class="itemControls">
-		<a class="associate" href="#">Associate This!</a>
-		<a class="dissociate" href="#">Dissociate This!</a>
-	</div>
-</li>
-
-<li class="shadow" data-objectid="XX">
-	<h4>A title of some sort</h4>
-	<p>Just to simulate some stuffage, you know, like the real world</p>
-	<div class="itemControls">
-		<a class="associate" href="#">Associate This!</a>
-		<a class="dissociate" href="#">Dissociate This!</a>
-	</div>
-</li>
-
-<li class="shadow" data-objectid="XX">
-	<h4>A title of some sort</h4>
-	<p>Just to simulate some stuffage, you know, like the real world</p>
-	<div class="itemControls">
-		<a class="associate" href="#">Associate This!</a>
-		<a class="dissociate" href="#">Dissociate This!</a>
-	</div>
-</li>
 </ul>
 
 <ul class="pool">

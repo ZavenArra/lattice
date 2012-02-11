@@ -6,15 +6,22 @@ Class GraphTest extends Kohana_UnitTest_TestCase {
     $this->assertNotNull($object);
 	}
 
-	public function testGraphCreateObject(){
+	public function testGraphNewObject(){
     $object = Graph::object();
     $object->save();
     $this->assertTrue($object->loaded());
     return $object->id;
 	}
+
+	public function testGraphCreateObject(){
+    $object = Graph::createObject('article');
+    $this->assertTrue($object->loaded());
+    $object->delete();
+	}
+
   
   /**
-   * @depends testGraphCreateObject
+   * @depends testGraphNewObject
    */
   public function testGraphLoadObject($objectId){
     $object = Graph::object($objectId);
@@ -23,7 +30,7 @@ Class GraphTest extends Kohana_UnitTest_TestCase {
 
   
   /**
-   * @depends testGraphCreateObject
+   * @depends testGraphNewObject
    */
   public function testGraphDeleteObject($objectId){
     $object = Graph::object($objectId);

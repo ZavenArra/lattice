@@ -38,7 +38,7 @@ Class Associator_Controller extends Controller {
 
 	}
 
-	public function action_disassociate($parentId, $objectId, $lattice){
+	public function action_disociate($parentId, $objectId, $lattice){
 
 	}
 }

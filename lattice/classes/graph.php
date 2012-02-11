@@ -37,6 +37,12 @@ class Graph {
     return $object;
 	}
 
+  public static function createObject($objectTypeName, $key){
+    $objectId = Graph::instance()->addObject($objectTypeName, array('slug'=>$key));
+    return Graph::object($objectId);
+
+  }
+
 
    public static function lattice($latticeId = 'lattice'){
       if(is_numeric($latticeId)){

@@ -1,14 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Auth module demo controller. This controller should NOT be used in production.
- * It is for demonstration purposes only!
- *
- * $Id: auth_demo.php 3267 2008-08-06 03:44:02Z Shadowhand $
- *
- * @package    MopAuth
+ * @package    LatticeAuth
  * @author     Deepwinter
- * @copyright  (c) 2007-2008 Kohana Team
- * @license    http://kohanaphp.com/license.html
  */
 class Controller_Auth extends Controller_Layout {
 

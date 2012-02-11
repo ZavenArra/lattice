@@ -1,11 +1,11 @@
 <?php
-
 /**
  * Model_Object
  * The ORM Object that connects to the objects table in the database
  * This class also contains all functionality for using the object in the graph.
  * Model_Object hosts a content table for tracking content data, which is implemented
  * by extending 4 abstract methods from this class.
+ * @package Lattice
  * @author deepwinter1
  */
 class Model_Object extends ORM {
@@ -1425,6 +1425,10 @@ class Model_Object extends ORM {
 
    public function addLatticeRelationship($lattice, $newObjectId){
 
+     if($this->checkLatticeRelationship($lattice, $newObjectId)){
+      return;
+     }
+
      if(!is_object($lattice)){
        $lattice = Graph::lattice($lattice);
      }
@@ -1444,6 +1448,24 @@ class Model_Object extends ORM {
       $objectRelationship->sortorder = $sort['sortorder'] + 1;
     
       $objectRelationship->save();
+   }
+
+   public function checkLatticeRelationship($lattice, $newObjectId){
+     if(!is_object($lattice)){
+       $lattice = Graph::lattice($lattice);
+     }
+
+     $objectRelationship = ORM::Factory('objectRelationship')
+       ->where('lattice_id', '=', $lattice->id)
+       ->where('object_id', '=', $this->id)
+       ->where('connectedobject_id', '=', $newObjectId)
+       ->find(); 
+
+     if($objectRelationship->loaded()){
+       return true;
+     } else {
+       return false;
+     }
    }
 
    public function removeLatticeRelationship($lattice, $removeObjectId){
