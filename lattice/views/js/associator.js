@@ -10,8 +10,8 @@ lattice.modules.Associator = new Class({
 		return url;
 	},
 	
-	getAssociateURL: function( id ){
-		var url = lattice.util.getBaseURL() + 'ajax/html/associator/associate/' + id;
+	getAssociateURL: function( id, latticeid ){
+		var url = lattice.util.getBaseURL() + 'ajax/html/associator/associate' + id;
 		if( lattice.debug ) console.log( '\t\getAssociateURL', id );
 		return url;
 	},

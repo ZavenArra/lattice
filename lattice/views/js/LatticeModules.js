@@ -661,8 +661,8 @@ lattice.modules.LatticeAssociator = new Class({
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.objectId = this.element.get( 'data-objectid' );
-		this.allowChildSort = ( this.options.allowChildSort == 'true' )? true : false;
-		this.makeSortable( this.listing );
+//		this.allowChildSort = ( this.options.allowChildSort == 'true' )? true : false;
+		this.allowChildSort = ( this.element.get('data-allowchildsort') == 'true' )? true : false;
 	},
 	
 	build: function(){
@@ -697,10 +697,13 @@ lattice.modules.LatticeAssociator = new Class({
 		}.bind( this ));
 		this.initControls();
 		this.initItems();
+		this.makeSortable( this.pool );
+		this.makeSortable( this.associated );
+
 	},	
 	
 	initItems: function(){
-		console.log(">>>>>>>>>>>>>>>>", this.element.getElements( "ul.associated li" ), this.element.getElements( "ul.pool li" ))
+//		console.log(">>>>>>>>>>>>>>>>", this.element.getElements( "ul.associated li" ), this.element.getElements( "ul.pool li" ))
     var items = this.element.getElements( "ul.associated li" ).combine( this.element.getElements( "ul.pool li" ) );
 		items.each( function( el ){
 			this.initItem( el );
@@ -746,7 +749,7 @@ lattice.modules.LatticeAssociator = new Class({
 	associateRequest: function( item ){
 		if( lattice.debug ) console.log( 'addObjectRequest', item );
 		this.associated.grab( item.getElement() );
-		return new Request.JSON( {url: this.getAssociateURL( item.getObjectId() ), onSuccess: function( json ){ this.onAssociateResponse( json, item ); }.bind( this ) } ).send();
+		return new Request.JSON( {url: this.getAssociateURL( this.getObjectId(), item.getObjectId() ), onSuccess: function( json ){ this.onAssociateResponse( json, item ); }.bind( this ) } ).send();
 	},
     
 	onAssociateResponse: function( json, item ){
