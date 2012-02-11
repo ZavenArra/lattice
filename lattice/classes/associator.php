@@ -67,10 +67,7 @@ Class Associator {
       $view = new View('lattice/associator');
     }
 
-    $view->pool = array();
-    foreach($this->pool as $poolItem){
-      $view->pool[] = $this->getItemView($poolItem, $viewName);
-    }
+    $view->pool = $this->poolItemViews();
 
     $view->associated = array();
     foreach($this->associated as $associatedItem){
@@ -81,6 +78,18 @@ Class Associator {
     $view->lattice = $this->lattice;
 
     return $view->render();
+  }
+
+  public function renderPoolItems(){
+    return(implode($this->poolItemViews()));
+  }
+
+  public function poolItemViews(){
+    $poolItemViews = array();
+    foreach($this->pool as $poolItem){
+      $poolItemViews[] = $this->getItemView($poolItem, $viewName);
+    }
+    return $poolItemViews;
   }
 
   private function getItemView($item, $viewName){

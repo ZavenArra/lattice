@@ -131,6 +131,14 @@ class latticecms {
       return $html;
    }
 
+   public static function getElementConfig($object, $elementName){
+     $element = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/[@name="%s"]',
+       $object->objecttype->objecttypename,
+       $elementName
+     ));
+     return self::convertXMLElementToArray($object, $element->item(0));
+   }
+
    public static function buildUIHtmlChunksForObject($object, $translatedLanguageCode = null) {
       $elements = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename));
       // should be Model_object->getElements();
@@ -138,39 +146,47 @@ class latticecms {
       $elementsConfig = array();
       foreach ($elements as $element) {
 
-         $entry = array();
-				//$entry should become an object, that contains configuration logic for each  view
-				 //or better yet, each mopui view should have it's own view object
-				 //which translates the configuration into the view display
+        $entry = self::convertXmlElementToArray($object, $element);
 
-         $entry['type'] = $element->tagName;
-         for ($i = 0; $i < $element->attributes->length; $i++) {
-            $entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
+        $elementsConfig[$entry['name']] = $entry;
+      }
+			return latticecms::buildUIHtmlChunks($elementsConfig, $object);
+	 }
+
+   private static function convertXMLElementToArray($object, $element){
+     $entry = array();
+     //$entry should become an object, that contains configuration logic for each  view
+     //or better yet, each mopui view should have it's own view object
+     //which translates the configuration into the view display
+
+     $entry['type'] = $element->tagName;
+     for ($i = 0; $i < $element->attributes->length; $i++) {
+       $entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
+     }
+     //load defaults
+     $entry['tag'] = $element->getAttribute('tag');
+     $entry['isMultiline'] = ( $element->getAttribute('isMultiline') == 'true' )? true : false;
+
+     //any special xml reading that is necessary
+     switch ($entry['type']) {
+     case 'file':
+       case 'image':
+         $ext = array();
+         $children = lattice::config('objects', 'ext', $element);
+         foreach ($children as $child) {
+           if ($child->tagName == 'ext') {
+             $ext[] = $child->nodeValue;
+           }
          }
-               //load defaults
-         $entry['tag'] = $element->getAttribute('tag');
-         $entry['isMultiline'] = ( $element->getAttribute('isMultiline') == 'true' )? true : false;
-
-         //any special xml reading that is necessary
-         switch ($entry['type']) {
-            case 'file':
-            case 'image':
-               $ext = array();
-               $children = lattice::config('objects', 'ext', $element);
-               foreach ($children as $child) {
-                  if ($child->tagName == 'ext') {
-                     $ext[] = $child->nodeValue;
-                  }
-               }
-               $entry['extensions'] = implode(',', $ext);
-               break;
-            case 'radioGroup':
-               $children = lattice::config('objects', 'radio', $element);
-               $radios = array();
-               foreach ($children as $child) {
-                  $label = $child->getAttribute('label');
-                  $value = $child->getAttribute('value');
-                  $radios[$label] = $value;
+         $entry['extensions'] = implode(',', $ext);
+         break;
+       case 'radioGroup':
+         $children = lattice::config('objects', 'radio', $element);
+         $radios = array();
+         foreach ($children as $child) {
+           $label = $child->getAttribute('label');
+           $value = $child->getAttribute('value');
+           $radios[$label] = $value;
                }
                $entry['radios'] = $radios;
                break;
@@ -210,11 +226,9 @@ class latticecms {
 						default:
 							break;
 				 }
+     return $entry;
 
-				 $elementsConfig[] = $entry;
-			}
-			return latticecms::buildUIHtmlChunks($elementsConfig, $object);
-	 }
+   }
 
 	public static function regenerateImages(){
 		//find all images
