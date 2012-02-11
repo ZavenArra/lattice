@@ -91,7 +91,7 @@
 <!ATTLIST text
 	%uiattrs;
 	tag					CDATA "p"
-	isMultiline	(true|false) "false"
+	isMultiline	(true|false) "true"
 >
 
 <!ELEMENT image (resize|ext)* >
