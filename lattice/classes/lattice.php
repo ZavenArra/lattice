@@ -1,4 +1,5 @@
 <?
+/* @package Lattice */
 
     class MyDOMDocument {
       public $_delegate;

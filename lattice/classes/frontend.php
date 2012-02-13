@@ -1,4 +1,5 @@
 <?
+/* @package Lattice */
 
 class frontend {
 	public static function makeHtmlElement($element, $prefix, $indent=''){

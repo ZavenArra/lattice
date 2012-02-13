@@ -3,6 +3,7 @@
 /* Class: CMS helper
  * Contains utility function for CMS
  */
+/* @package Lattice */
 
 class latticecms {
 

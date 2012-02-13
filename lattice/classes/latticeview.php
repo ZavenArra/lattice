@@ -11,6 +11,7 @@
  *
  * @author deepwinter1
  */
+/* @package Lattice */
 
 class latticeview {
    

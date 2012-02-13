@@ -10,6 +10,7 @@
  *
  * @author deepwinter1
  */
+/* @package Lattice */
 class Graph {
 
 	public static $mediapath;	

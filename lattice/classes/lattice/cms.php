@@ -3,8 +3,7 @@
  * Class: CMS_Controller
  * The main CMS class, handling add, delete, and retrieval of objects
  * @author Matthew Shultz
- * @version 1.0
- * @package Kororor
+ * @package Lattice
  */
 
 

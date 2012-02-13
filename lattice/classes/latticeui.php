@@ -5,6 +5,7 @@
  * Helper class which generates all the latticeui form elements
  * Functions in this class need to be stardardized and have their parameters cleaned up
  */
+/* @package Lattice */
 
 Class latticeui{
 
