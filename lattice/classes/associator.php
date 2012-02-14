@@ -62,7 +62,6 @@ Class Associator {
         }
 
         if(isset($filter['function']) && $filter['function']){
-
           $callback = explode('::', $filter['function']);
           $objects = call_user_func($callback, $objects, $parentId);
         }
