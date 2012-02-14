@@ -81,17 +81,16 @@ class View_Csv {
                $csv .= latticeutil::arrayToCsv($dataItemLine, ',');
                $csv .= "\n";
                //and do the other languages
-               $langCodes = array();
-               if(count($languages) > 1){
-                foreach($langCodes as $code){
-                  $langCodes[] = $code;
-                }
-               } else {
-                $langCodes = array('');
-               }
-               foreach ($langCodes as $languageCode) {
-                  $dataItem = $il8nObjects[$languageCode]->$columnName;
-                  $columnNameOut = $columnName . '_' . $languageCode;
+               foreach ($languages as $language) {
+                  $dataItem = $il8nObjects[$language->code]->$columnName;
+
+                  if(count($language)>1){
+                    $suffix =  '_' . $language->code;
+                  } else {
+                    $suffix = '';
+                  }
+                  $columnNameOut = $columnName . $suffix;
+
                   $dataItemLine = array_pad(array($columnNameOut, $dataItem->filename), - 2 - $this->_indent - 1, '');
                   $csv .= latticeutil::arrayToCsv($dataItemLine, ',');
                   $csv .= "\n";
@@ -109,26 +108,22 @@ class View_Csv {
             }
          } else {
 
-           $langCodes = array();
-           if(count($languages) > 1){
-             foreach($langCodes as $code){
-               $langCodes[] = $code;
-             }
-           } else {
-             $langCodes = array('');
-           }
-           foreach ($langCodes as $languageCode) {
-             $dataItem = $il8nObjects[$languageCode]->$columnName;
-             $dataItem = $il8nObjects[$languageCode]->$columnName;
-             if (is_array($dataItem)) {
-               $dataItem = implode($dataItem, ',');
-             }
+            foreach ($languages as $language) {
+               $dataItem = $il8nObjects[$language->code]->$columnName;
+               if (is_array($dataItem)) {
+                  $dataItem = implode($dataItem, ',');
+               }
 
-             $columnNameOut = $columnName . '_' . $languageCode;
-             $dataItemLine = array_pad(array($columnNameOut, $dataItem), - 2 - $this->_indent - 1, '');
-             $csv .= latticeutil::arrayToCsv($dataItemLine, ',');
-             $csv .= "\n";
-           }
+               if(count($language)>1){
+                 $suffix =  '_' . $language->code;
+               } else {
+                 $suffix = '';
+               }
+               $columnNameOut = $columnName . $suffix;
+               $dataItemLine = array_pad(array($columnNameOut, $dataItem), - 2 - $this->_indent - 1, '');
+               $csv .= latticeutil::arrayToCsv($dataItemLine, ',');
+               $csv .= "\n";
+            }
          }
 
       }
