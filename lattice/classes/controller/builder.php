@@ -210,7 +210,7 @@ class Controller_Builder extends Controller {
 			//already added at the next level up, in this case we just
 			//update the objects data
 			$component = false;
-			if(isset($data['title'])){
+			if(isset($data['title']) && $data['title']){
 				$preexistingObject = Graph::object()
 					->latticeChildrenFilter($parentObject->id)
 					->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')

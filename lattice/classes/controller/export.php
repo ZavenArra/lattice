@@ -59,7 +59,7 @@ class Controller_Export extends Controller {
             continue;
          }
          if ($key == "title" && $value == "") {
-            $value = microtime();
+            //$value = microtime();
          }
          if ($key == "id") {
             continue;
