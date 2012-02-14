@@ -11,6 +11,11 @@ Class Controller_Associator extends Controller_Lattice {
 	}
 
   public function action_filterPoolByWord($parentId, $name, $word){
+    $parent = Graph::object($parentId);
+    if(!$parent->loaded()){
+      throw new Kohana_Exception('Parent object not found, invalid parentId?');
+    }
+
     $element = latticecms::getElementConfig(Graph::object($parentId), $name);
     $filters = array( 
       array(

@@ -138,9 +138,8 @@ class latticecms {
        $elementName
      );
      $element = lattice::config('objects', $xPath);
-     if(!$element){
-       echo $xPath;
-      throw new Kohana_Exception('xPath returned no results: ', $xPath);
+     if(!$element || !$element->length ){
+      throw new Kohana_Exception('xPath returned no results: '. $xPath);
      }
      return self::convertXMLElementToArray($object, $element->item(0));
    }

@@ -1069,7 +1069,7 @@ class Model_Object extends ORM {
    }
    
    public function activeFilter(){
-    $this->where('activity', 'IS', NULL);
+    $this->where('objects.activity', 'IS', NULL);
     return $this;   
    }
 

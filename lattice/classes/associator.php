@@ -30,11 +30,12 @@ Class Associator {
     if($filters){
       foreach($filters as $filter){
         $objects = Graph::object();
-        if($filter['from']){
+        if(isset($filter['from']) && $filter['from']){
           $from = Graph::object($filter['from']);
           ($filter['lattice']) ? $lattice = $filter['lattice'] : $lattice = 'lattice';
           $objects = $from->latticeChildrenQuery($lattice);
         }
+
         if(isset($filter['objectTypeName']) && $filter['objectTypeName']){
           $t = ORM::Factory('objectType', $filter['objectTypeName']);
           $objects->where('objecttype_id', '=', $t->id);
@@ -54,6 +55,7 @@ Class Associator {
         }
 
         $objects->where('language_id', '=', Graph::defaultLanguage());
+        $objects->publishedFilter();
         $objects->limit($this->maxPoolSize);
 
         $results = $objects->find_all();
@@ -67,6 +69,7 @@ Class Associator {
       $objects = Graph::object()
         ->where('id', '!=', $parentId)
         ->where('language_id', '=', Graph::defaultLanguage())
+        ->publishedFilter()
         ->limit($this->maxPoolSize)
         ->find_all();
       $this->pool = $objects;
