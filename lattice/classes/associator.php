@@ -10,6 +10,9 @@ Class Associator {
   public $pool = array();
   public $associated = array();
 
+  protected $label;
+  protected $poolLabel;
+
   private $maxPoolSize = 50;
 
   //TODO
@@ -30,6 +33,7 @@ Class Associator {
     if($filters){
       foreach($filters as $filter){
         $objects = Graph::object();
+
         if(isset($filter['from']) && $filter['from']){
           $from = Graph::object($filter['from']);
           ($filter['lattice']) ? $lattice = $filter['lattice'] : $lattice = 'lattice';
@@ -38,6 +42,9 @@ Class Associator {
 
         if(isset($filter['objectTypeName']) && $filter['objectTypeName']){
           $t = ORM::Factory('objectType', $filter['objectTypeName']);
+          if(!$t->loaded()){
+            throw new Kohana_Exception($filter['objectTypeName'] .' Not Found');
+          }
           $objects->where('objecttype_id', '=', $t->id);
         }
         if(isset($filter['tagged']) && $filter['tagged']){
@@ -52,6 +59,12 @@ Class Associator {
           }
           $objects->contentFilter($wheres);
 
+        }
+
+        if(isset($filter['function']) && $filter['function']){
+
+          $callback = explode('::', $filter['function']);
+          $objects = call_user_func($callback, $objects, $parentId);
         }
 
         $objects->where('language_id', '=', Graph::defaultLanguage());
@@ -77,6 +90,14 @@ Class Associator {
 
   }
 
+  public function setLabel($label){
+    $this->label = $label;
+  }
+
+  public function setPoolLabel($poolLabel){
+    $this->poolLabel = $poolLabel;
+  }
+
   public function render($viewName = NULL){
     if($viewName && $view = Kohana::find_file('views/lattice/associator', $viewName)){
       $view = $view[0];
@@ -95,6 +116,8 @@ Class Associator {
     $view->parentId = $this->parentId;
     $view->lattice = $this->lattice;
 
+    $view->label = $this->label;
+    $view->poolLabel = $this->poolLabel;
     return $view->render();
   }
 

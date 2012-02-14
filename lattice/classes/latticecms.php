@@ -88,6 +88,8 @@ class latticecms {
 
                case 'associator':
                   $associator = new Associator($object->id, $element['lattice'],$element['filters']);
+                  $associator->setLabel($element['label']);
+                  $associator->setPoolLabel($element['poolLabel']);
                   $key = $element['type'] . '_' . $uiArguments['name'];
                   $htmlChunks[$key] = $associator->render();
                   
@@ -220,9 +222,11 @@ class latticecms {
 								 $setting['from'] = $filter->getAttribute('from');
 								 $setting['objectTypeName'] = $filter->getAttribute('objectTypeName');
 								 $setting['tagged'] = $filter->getAttribute('tagged');
+								 $setting['function'] = $filter->getAttribute('function');
 								 $filterSettings[] = $setting;
 							 }
 							 $entry['filters'] = $filterSettings;
+               $entry['poolLabel'] = $element->getAttribute('poolLabel');
 							 break;
 						case 'tags':
 							$entry['name'] = 'tags'; //this is a cludge

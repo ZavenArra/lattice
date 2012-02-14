@@ -85,6 +85,7 @@
   lattice         CDATA #IMPLIED
 	objectTypeName   CDATA #IMPLIED
 	tagged         CDATA #IMPLIED
+  function     CDATA #IMPLIED
 >
 
 <!ELEMENT text EMPTY >

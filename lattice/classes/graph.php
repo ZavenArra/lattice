@@ -51,7 +51,7 @@ class Graph {
       } else {
          $lattice = ORM::Factory('lattice')->where('name', '=', $latticeId)->find();
       }
-      if(!$lattice->loaded()){
+      if(isset($lattice) && !$lattice->loaded()){
         $lattice = ORM::Factory('lattice');
         $lattice->name = $latticeId;
         $lattice->save();
