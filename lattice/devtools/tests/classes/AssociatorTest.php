@@ -55,12 +55,23 @@ Class AssociatorTest extends Kohana_UnitTest_TestCase {
   }
 
   /**
+   * @depends testNewAssociator
+   */
+  public function testAssociatorPoolRender($a){
+    $html = $a->renderPoolItems();
+    $this->assertNotNull($html);
+  }
+
+  /**
    * @depends testNewAssociatorWithObjectTypeName
    */
   public function testAssociatorRenderWithObjectTypeFilter($a){
     $html = $a->render();
     $this->assertNotNull($html);
   }
+
+
+
 
   public function testAssociatorPoolExcludesAssociated(){
     $object1 = Graph::instance()->addObject('article', array('slug'=>'test1'));

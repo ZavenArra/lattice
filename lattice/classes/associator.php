@@ -35,17 +35,23 @@ Class Associator {
           ($filter['lattice']) ? $lattice = $filter['lattice'] : $lattice = 'lattice';
           $objects = $from->latticeChildrenQuery($lattice);
         }
-        if($filter['objectTypeName']){
+        if(isset($filter['objectTypeName']) && $filter['objectTypeName']){
           $t = ORM::Factory('objectType', $filter['objectTypeName']);
           $objects->where('objecttype_id', '=', $t->id);
         }
-        if(isset($filters['tagged']) && $filters['tagged']){
-
+        if(isset($filter['tagged']) && $filter['tagged']){
+          throw new Kohana_Exception('Not Implemented');
         }
 
-        //if($filter['match']){
-          //not yet implemented
-        //}
+        if(isset($filter['match']) && $filter['match']){
+          $matchFields = explode(',',$filter['matchFields']);
+          $wheres = array();
+          foreach($matchFields as $matchField){
+            $wheres[] = array($matchField, 'LIKE', '%'.$filter['match'].'%'); 
+          }
+          $objects->contentFilter($wheres);
+
+        }
 
         $objects->where('language_id', '=', Graph::defaultLanguage());
         $objects->limit($this->maxPoolSize);
@@ -90,10 +96,10 @@ Class Associator {
   }
 
   public function renderPoolItems(){
-    return(implode($this->poolItemViews()));
+    return(implode("\n",$this->poolItemViews()));
   }
 
-  public function poolItemViews(){
+  private function poolItemViews(){
     $poolItemViews = array();
     foreach($this->pool as $poolItem){
       $poolItemViews[] = $this->getItemView($poolItem, $this->lattice);

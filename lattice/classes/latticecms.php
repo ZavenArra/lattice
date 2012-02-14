@@ -133,10 +133,15 @@ class latticecms {
    }
 
    public static function getElementConfig($object, $elementName){
-     $element = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/[@name="%s"]',
+     $xPath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]',
        $object->objecttype->objecttypename,
        $elementName
-     ));
+     );
+     $element = lattice::config('objects', $xPath);
+     if(!$element){
+       echo $xPath;
+      throw new Kohana_Exception('xPath returned no results: ', $xPath);
+     }
      return self::convertXMLElementToArray($object, $element->item(0));
    }
 

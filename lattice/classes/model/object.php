@@ -304,35 +304,32 @@ class Model_Object extends ORM {
    //needing the id of the content table, plus there could
    //be other reasons that justify this.
    public function contentDriver(){
-     if(!$this->loaded()){
-        throw new Kohana_Exception('Object is not loaded');
-     }
-   if(!$this->contentDriver){
+     if(!$this->contentDriver){
 
-    $objectTypeName = $this->objecttype->objecttypename;
+       $objectTypeName = $this->objecttype->objecttypename;
 
-    if ($objectTypeName) {
-     if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
-      $modelName = 'Model_Lattice_' . $objectTypeName;
-      $model = new $modelName($objectId);
-      $this->contentDriver = $model;
-     } else {
-      $this->contentDriver = new Model_Lattice_Object();
-     }
-     if ($this->loaded()) {
-      $this->contentDriver->loadContentTable($this);
-     }
-    }
+       if ($objectTypeName) {
+         if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+           $modelName = 'Model_Lattice_' . $objectTypeName;
+           $model = new $modelName($objectId);
+           $this->contentDriver = $model;
+         } else {
+           $this->contentDriver = new Model_Lattice_Object();
+         }
+         if ($this->loaded()) {
+           $this->contentDriver->loadContentTable($this);
+         }
+       }
 
-   }
+     }
      if(!$this->contentDriver){
        throw new Kohana_Exception('Content Driver did not load for object id '.$this->id);
      }
 
-   return $this->contentDriver;
-   
+     return $this->contentDriver;
+
    }
-   
+
     /*
      Function: save()
      Custom save function, makes sure the content table has a record when inserting new object
@@ -1025,6 +1022,23 @@ class Model_Object extends ORM {
          $this->where('objecttype_id', '=', $result['id']);
       }
       return $this;
+   }
+
+   public function contentFilter($wheres){
+     //  $driverInfo = $this->contentDriver()->driverInfo();
+     //Extension point for implementing support for contentFilter with other drivers
+     $driverInfo = array(
+       'driver' => 'mysql', 
+       'tableName' => 'contents',
+     );
+     if($driverInfo['driver']=='mysql'){
+       $this->join($driverInfo['tableName'])->on('objects.id', '=', $driverInfo['tableName'].'.object_id');
+       foreach($wheres as $where){
+        // print_r($where);
+        $this->where($driverInfo['tableName'].'.'.$where[0], $where[1], $where[2]);
+       }
+     }
+     return $this;
    }
 
   /*

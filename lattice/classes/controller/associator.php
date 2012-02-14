@@ -14,7 +14,8 @@ Class Controller_Associator extends Controller_Lattice {
     $element = latticecms::getElementConfig(Graph::object($parentId), $name);
     $filters = array( 
       array(
-        'match' => $word
+        'match' => $word,
+        'matchFields' => 'title',
       )
     );
     $a = new Associator($parentId, $element['lattice'], $filters);
