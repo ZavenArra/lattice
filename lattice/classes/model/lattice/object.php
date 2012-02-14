@@ -77,56 +77,56 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
     //No column mapping set up, attempt to run setup if it's configured.
     if (!$contentColumn) {
 
-    //this column isn't mapped, check to see if it's in the xml
-    if ($object->objecttype->nodeType == 'container') {
-     //For lists, values will be on the 2nd level 
-     $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
-    } else {
-     //everything else is a normal lookup
-     $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
+      //this column isn't mapped, check to see if it's in the xml
+      if ($object->objecttype->nodeType == 'container') {
+        //For lists, values will be on the 2nd level 
+        $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
+      } else {
+        //everything else is a normal lookup
+        $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
+      }
+      $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
+
+
+      if ($fieldConfig->item(0)) {
+
+        //This is a temporary stopgap until we have a cleaner handle on what to do when tags is
+        //requested via the object.
+        if ($fieldConfig->item(0)->tagName == 'tags') {
+          return $object->getTagStrings();
+        }
+
+        //field is configured but not initialized in database
+        $object->objecttype->configureElement($fieldConfig->item(0));
+
+        self::reinitDbmap($object->objecttype_id);
+
+        //now go aheand and get the mapped column
+        $contentColumn = self::dbmap($object->objecttype_id, $column);
+      }
     }
-    $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
 
 
-    if ($fieldConfig->item(0)) {
-
-     //This is a temporary stopgap until we have a cleaner handle on what to do when tags is
-     //requested via the object.
-     if ($fieldConfig->item(0)->tagName == 'tags') {
-      return $object->getTagStrings();
-     }
-
-     //field is configured but not initialized in database
-     $object->objecttype->configureElement($fieldConfig->item(0));
-
-     self::reinitDbmap($object->objecttype_id);
-
-     //now go aheand and get the mapped column
-     $contentColumn = self::dbmap($object->objecttype_id, $column);
+    if (!$contentColumn) {
+      throw new Kohana_Exception('Column :column not found in content model', array(':column' => $column));
     }
-   }
 
+    //If the column is an object, then this is a relationship with another object
+    if (strstr($contentColumn, 'object')) {
+      return $this->getObjectElement($object, $column);
+    }
 
-   if (!$contentColumn) {
-    throw new Kohana_Exception('Column :column not found in content model', array(':column' => $column));
-   }
+    //Also need to check for file, but in 3.1 file will be an object itself and this will
+    //not be necessary.
+    if (strstr($contentColumn, 'file') && !is_object($this->contenttable->$contentColumn)) {
+      $file = ORM::Factory('file', $this->contenttable->$contentColumn);
+      //file needs to know what module it's from if its going to check against valid resizes
+      $this->contenttable->__set($contentColumn, $file);
+    }
 
-   //If the column is an object, then this is a relationship with another object
-   if (strstr($contentColumn, 'object')) {
-    return $this->getObjectElement($object, $column);
-   }
-
-   //Also need to check for file, but in 3.1 file will be an object itself and this will
-   //not be necessary.
-   if (strstr($contentColumn, 'file') && !is_object($this->contenttable->$contentColumn)) {
-    $file = ORM::Factory('file', $this->contenttable->$contentColumn);
-    //file needs to know what module it's from if its going to check against valid resizes
-    $this->contenttable->__set($contentColumn, $file);
-   }
-
-   return $this->contenttable->$contentColumn;
+    return $this->contenttable->$contentColumn;
   }
-  
+
   private function getObjectElement($object, $column){
     $objectElementRelationship = ORM::Factory('objectelementrelationship')
      ->where('object_id', '=', $object->id)
