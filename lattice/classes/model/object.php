@@ -8,7 +8,7 @@
  * @package Lattice
  * @author deepwinter1
  */
-class Model_Object extends ORM {
+class Model_Object extends ORM implements arrayaccess {
 
    protected $_belongs_to = array(
        'objecttype' => array()
@@ -232,16 +232,16 @@ class Model_Object extends ORM {
 
    public function __get($column) {
 
-         
-      if (in_array($column, array_keys($this->_table_columns))){
-         //this catchs the configured columsn for this table
-         return parent::__get($column);
-     
-      } else if ($column == 'parent') {
-    return $this->getLatticeParent(); 
-      
-      } else if ($column == 'objecttype'){
-         //this condition should actually check against associations
+
+     if (in_array($column, array_keys($this->_table_columns))){
+       //this catchs the configured columsn for this table
+       return parent::__get($column);
+
+     } else if ($column == 'parent') {
+       return $this->getLatticeParent(); 
+
+     } else if ($column == 'objecttype'){
+       //this condition should actually check against associations
          //OR just call parent::__get($column) with an exception
          //though that seems pretty messy
          $return = parent::__get($column);
@@ -257,13 +257,19 @@ class Model_Object extends ORM {
         return parent::__get('roles');
       } 
      
-      if(!$this->loaded())
+      if(!$this->loaded()) {
         return NULL; 
+      }
 
-      if ($column == 'title'){
+      switch($column){
+      case 'title':
          return $this->contentDriver()->getTitle($this);
+         break;
+      case 'tags':
+        return $this->getTagStrings();
+        break;
+      }
          
-      } else {
 
          //check if this is a list container
          $listConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]', $this->objecttype->objecttypename, $column));
@@ -294,9 +300,8 @@ class Model_Object extends ORM {
             return $listContainerObject;
          }
 
-     return $this->contentDriver()->getContentColumn($this, $column);
+         return $this->contentDriver()->getContentColumn($this, $column);
  
-      }
    }
    
    
@@ -1034,7 +1039,6 @@ class Model_Object extends ORM {
      if($driverInfo['driver']=='mysql'){
        $this->join($driverInfo['tableName'])->on('objects.id', '=', $driverInfo['tableName'].'.object_id');
        foreach($wheres as $where){
-        // print_r($where);
         $this->where($driverInfo['tableName'].'.'.$where[0], $where[1], $where[2]);
        }
      }
@@ -1622,6 +1626,20 @@ class Model_Object extends ORM {
        return NULL;
      }
      return $config->item(0)->getAttribute('metaObjectTypeName');
+   }
+
+
+   public function offsetExists ($offset ){
+      return true; // TODO: Fix this
+   }
+   public function offsetGet ( $offset ) {
+      return $this->__get($offset);
+   }
+   public function offsetSet (  $offset , $value ) {
+      return $this->__set($offset, value);
+   }
+   public function offsetUnset ( $offset ) {
+     return true; //can't unset in this class
    }
 
 }
