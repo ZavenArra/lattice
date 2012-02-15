@@ -39,13 +39,13 @@ lattice.modules.Module = new Class({
 	},
 	
 	saveField: function( postData, callback ){
-//			console.log( "saveField.postData:", postData );
+//			lattice.log( "saveField.postData:", postData );
 	    return new Request.JSON( {url: this.getSaveFieldURL(), onSuccess: callback} ).post( postData );
 	},
 
 	clearFile: function( fieldName, callback ){
 		var url = this.getClearFileURL( fieldName );
-		console.log( 'module.clearFile', fieldName, url );
+//		lattice.log( 'module.clearFile', fieldName, url );
 		return new Request.JSON( {url: url, onComplete: this.callback} ).send();		
 	},
 		
@@ -58,7 +58,7 @@ lattice.modules.Module = new Class({
 	},
 	
 	initialize: function( anElementOrId, aMarshal, options ){
-//		console.log( "Constructing", this.toString(), this.childModules );
+//		lattice.log( "Constructing", this.toString(), this.childModules );
 		this.parent( anElementOrId, aMarshal, options );  
 		this.instanceName = this.element.get("id");
 		this.objectId = this.element.get( 'data-objectid');
@@ -70,11 +70,11 @@ lattice.modules.Module = new Class({
 	Function build: Instantiates lattice.ui elements by calling initUI, can be extended for other purposes...
 	*/ 	
 	build: function(){
-//		console.log( "lattice.modules.Module.build!", this.element );
+//		lattice.log( "lattice.modules.Module.build!", this.element );
 		this.UIFields = this.initUI();
-//		console.log( ">>> ", this.UIFields );
+//		lattice.log( ">>> ", this.UIFields );
 		this.childModules = this.initModules( this.element );
-//		console.log( ">>> ", this.childModules );
+//		lattice.log( ">>> ", this.childModules );
 	},
 	
 	toElement: function(){
@@ -91,7 +91,7 @@ lattice.modules.Module = new Class({
 		// there is likely a better ( faster ) way to solve this 
 	*/
 	initModules: function( anElement ){
-//	console.log( 'initModules', anElement );
+//	lattice.log( 'initModules', anElement );
 		var childModules, filteredOutModules, descendantModules;
 		descendantModules = ( anElement )? anElement.getElements(".module") : this.element.getElements(".module");
 		childModules = [];
@@ -99,17 +99,17 @@ lattice.modules.Module = new Class({
 		descendantModules.each( function( aDescendant ){
 			descendantModules.each( function( anotherDescendant ){
 				if(  aDescendant.contains( anotherDescendant ) && aDescendant != anotherDescendant ){
-//					console.log( "::::::", anotherDescendant );
+//					lattice.log( "::::::", anotherDescendant );
 					filteredOutModules.push( anotherDescendant );
 				}
 			}, this );
 		}, this );		
 		descendantModules.each( function( aDescendant ){
 			if( !filteredOutModules.contains( aDescendant ) ){
-				// console.log( "\t", 'calling initmodule on', aDescendant );
+				// lattice.log( "\t", 'calling initmodule on', aDescendant );
 				var module = this.initModule( aDescendant );
 				var instanceName = module.instanceName;
-				// console.log( "\n::\t", module.instanceName, "is a descendant of ", this.toString());
+				// lattice.log( "\n::\t", module.instanceName, "is a descendant of ", this.toString());
 				childModules[ instanceName ] = module;
 			}
 		}, this );
@@ -122,15 +122,15 @@ lattice.modules.Module = new Class({
 		Initializes a specific module
 	*/
 	initModule: function( anElement ){
-		// console.log( Array.from( arguments ) );
-		// console.log( "initModule", this.toString(),  "element", anElement );
+		// lattice.log( Array.from( arguments ) );
+		// lattice.log( "initModule", this.toString(),  "element", anElement );
 		var elementClass = anElement.get( 'class' );
 		var classPath = lattice.util.getValueFromClassName( "classPath", elementClass ).split( "_" );
 		ref = null;
-//		console.log( "\t\tinitModule classPath",  classPath );
+//		lattice.log( "\t\tinitModule classPath",  classPath );
 		classPath.each( function( node ){
 			ref = ( !ref )? this[node] : ref[node]; 
-//		console.log( ref, node );
+//		lattice.log( ref, node );
 		});
 		var newModule = new ref( anElement, this );
 		return newModule;		
@@ -142,9 +142,9 @@ lattice.modules.Module = new Class({
 	getModuleUIFields: function( anElement ){
 		var elements = [];
 		anElement.getChildren().each( function( aChild, anIndex ){
-//			console.log( 'getModuleUIFields', aChild, aChild.get('class') );
+//			lattice.log( 'getModuleUIFields', aChild, aChild.get('class') );
 			if( aChild.get('class') && aChild.get( "class" ).indexOf( "ui-" ) > -1 ){
-//	    console.log( "\t\tfound ui field", aChild.get('class'), ':', aChild.get('data-field'), 'in', anElement.get('class') );
+//	    lattice.log( "\t\tfound ui field", aChild.get('class'), ':', aChild.get('data-field'), 'in', anElement.get('class') );
 				elements.combine( [ aChild ] );
 			} else if( !aChild.hasClass( "modal" ) && !aChild.hasClass( "module" ) && !aChild.hasClass( "listItem" ) ){
 				elements.combine( this.getModuleUIFields( aChild ) );
@@ -162,33 +162,33 @@ lattice.modules.Module = new Class({
 		moduleUIFields = this.getModuleUIFields( anElement );
 		moduleUIFields.each( function( anElement, i ){
 			field = this.initUIField( anElement );
-			console.log( anElement.getValueFromClassName('ui'), anElement.get('data-field'), field, typeof this.UIFields );
+//			lattice.log( anElement.getValueFromClassName('ui'), anElement.get('data-field'), field, typeof this.UIFields );
 			this.UIFields[ anElement.get('data-field') ] = field; 
 		}, this );
 		return this.UIFields;
 	},
 
 	initUIField: function( anElement ){
-//		console.log( "\t\tinitUIField", anElement )
+//		lattice.log( "\t\tinitUIField", anElement )
 		var field = new lattice.ui[anElement.getValueFromClassName( "ui" )]( anElement, this );
 		return field;
 	},
 	
 	destroyUIFields: function(){
-//		console.log( "destroyUIFields before", this.instanceName, this.UIFields );
+//		lattice.log( "destroyUIFields before", this.instanceName, this.UIFields );
 		Object.each( this.UIFields, function( aUIField ){
-//			console.log( '\t\t', aUIField, aUIField.fieldName );
+//			lattice.log( '\t\t', aUIField, aUIField.fieldName );
 			var fieldName = aUIField.fieldName;
 			aUIField.destroy();
 			aUIField = null;
 			delete this.UIFields[ fieldName ];
 		}, this );
-//		console.log( "destroyUIFields after ", this.instanceName, this.UIFields );
+//		lattice.log( "destroyUIFields after ", this.instanceName, this.UIFields );
 	},
 
 /*  Function: destroyChildModules */
 	destroyChildModules: function( whereToLook ){
-		//console.log( "destroyChildModules", this.toString(), this.childModules );
+		//lattice.log( "destroyChildModules", this.toString(), this.childModules );
 		if( !this.childModules || Object.getLength( this.childModules ) == 0 ) return;
 		var possibleTargets = ( whereToLook )? whereToLook.getElements( ".module" ) : this.element.getElements( ".module" );
 		Object.each( this.childModules, function( aModule ){
@@ -232,9 +232,9 @@ Extends: lattice.modules.Module,
 	},
 
 	getSaveFieldURL: function(){
-//		console.log( this.toString(), this.element );
+//		lattice.log( this.toString(), this.element );
 		var url = lattice.util.getBaseURL() +"ajax/data/cms/savefield/" + this.getObjectId();
-//		console.log( 'cluster.getSaveFieldURL', url );
+//		lattice.log( 'cluster.getSaveFieldURL', url );
 		return url;
 	}
 
@@ -304,9 +304,9 @@ lattice.modules.AjaxFormModule = new Class({
 	onFormSubmissionComplete: function( text, json ){
 
 		if( json ){
-//			console.log( this.toString(), "onFormSubmissionComplete", text, json );
+//			lattice.log( this.toString(), "onFormSubmissionComplete", text, json );
 			json = JSON.decode( json );
-//			console.log( this.toString(), "onFormSubmissionComplete" );
+//			lattice.log( this.toString(), "onFormSubmissionComplete" );
 			if( this.resultsContainer ){
 //				this.resultsContainer.setStyle( "height", 'auto' );
 //				this.resultsContainer.removeClass( "centeredSpinner" );
@@ -367,10 +367,10 @@ lattice.modules.LatticeList = new Class({
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.objectId = this.element.get( 'data-objectid' );
-		// console.log( "============================================" );
-		// console.log( "element", anElement );
-		// console.log( "options", this.options );
-		// console.log( "============================================" );
+		// lattice.log( "============================================" );
+		// lattice.log( "element", anElement );
+		// lattice.log( "options", this.options );
+		// lattice.log( "============================================" );
 		this.allowChildSort = ( this.options.allowChildSort == 'true' )? true : false;
 		this.makeSortable( this.listing );
 	},
@@ -411,7 +411,7 @@ initList: function(){
 			this.controls = this.element.getChildren( ".controls" );
 			this.controls.each( function( controlGroup ){
 				controlGroup.getElements( ".addItem" ).each( function( item ){
-	//				console.log( '\t\tinitControls', item );
+	//				lattice.log( '\t\tinitControls', item );
 					item.addEvent("click", this.addObjectRequest.bindWithEvent( this, item.get( 'href' ) ) );
 				}, this );
 			}, this );
@@ -421,24 +421,24 @@ initList: function(){
       var ref;			
       delimiter = ( !delimiter )? "_" : delimiter;
       classPath = classPath.split( delimiter );
-//			console.log( "\t\tinitModule classPath",  classPath );
+//			lattice.log( "\t\tinitModule classPath",  classPath );
       classPath.each( function( node ){
-//				console.log( 'node', node, ref );
+//				lattice.log( 'node', node, ref );
          ref = ( !ref )? this[node] : ref[node]; 
       });
-			//console.log( 'getClassFromClassPath', ref );
+			//lattice.log( 'getClassFromClassPath', ref );
       return ref;
    },
 	
 	addObjectRequest: function( e, path ){
-//		console.log( 'addObjectRequest', path );
+//		lattice.log( 'addObjectRequest', path );
 		e.preventDefault();
 		this.listing.spin();
 		return new Request.JSON( {url: this.getAddObjectURL( path ), onSuccess: this.onAddObjectResponse.bind( this )} ).send();
 	},
     
 	onAddObjectResponse: function( json ){
-//		console.log( "onAddObjectResponse", json );
+//		lattice.log( "onAddObjectResponse", json );
 		this.listing.unspin();
 		var element, listItem, addItemText, classPath, ref;
 		element = json.response.html.toElement();
@@ -467,7 +467,7 @@ initList: function(){
 	insertItem: function( anItem ){
 		var where, listItemInstance, coords;
 		where = ( this.options.sortDirection == "DESC" )? "top" : "bottom";
-//		console.log( "\t", this.options.sortDirection, where );
+//		lattice.log( "\t", this.options.sortDirection, where );
 		this.listing.grab( anItem.element, where );
 		if( this.allowChildSort && this.sortableList ) this.sortableList.addItems( anItem.element );
 		Object.each( anItem.UIFields, function( aUIField ){
@@ -557,7 +557,7 @@ lattice.modules.ListItem = new Class({
   /* Section: Getters & Setters */
 	getSaveFieldURL: function(){
 		var url =  this.marshal.getSaveFieldURL( this.getObjectId() );
-//		console.log( "listItem.getSaveFieldURL", url );
+//		lattice.log( "listItem.getSaveFieldURL", url );
 		return url;
 	},
 
@@ -613,6 +613,185 @@ lattice.modules.ListItem = new Class({
 		this.controls = this.fadeOut = this.objectId = null;
 	}
 	
+});
+
+lattice.modules.RadioAssociator = new Class({
+
+	/* TODO write unit tests for List*/
+	Extends: lattice.modules.Module,
+	// listing properties and members, helps with maintenance and destruction.... standard practice from now on
+	sortable: null,
+	sortDirection: null,
+	instanceName: null,
+	items: null,
+	controls: null,
+	associated: null,
+	pool: null,
+	sortableList: null,
+	scroller: null,
+	submitDelay: null,
+	oldSort: null,
+	
+	/* Section: Getters & Setters */
+	
+	getAssociateURL: function(){
+	    throw "Abstract function getAssociateURL must be overriden in" + this.toString();
+	},
+	
+	getDissociateURL: function(){
+	    throw "Abstract function getDissociateURL must be overriden in" + this.toString();
+	},
+
+	getSubmitSortOrderURL: function(){ 
+	    throw "Abstract function getSubmitSortOrderURL must be overriden in" + this.toString();
+	},
+
+	toString: function(){
+		return "[ Object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.LatticeAssociator ]";
+	},
+
+	saveField: function( postData, callback ){
+//		lattice.log( "»", postData );
+		this.associateRequest();
+//	    return new Request.JSON( {url: this.getSaveFieldURL(), onSuccess: callback} ).post( postData );
+	},
+	
+	associateRequest: function( item ){
+//		lattice.log( 'addObjectRequest', item );
+		return new Request.JSON( {url: this.getAssociateURL( this.getObjectId(), item.getObjectId(), this.element.get('data-lattice')  ), onSuccess: function( json ){ this.onAssociateResponse( json, item ); }.bind( this ) } ).send();
+	},
+
+	onAssociateResponse: function( json, item ){
+//		lattice.log( "onAssociateResponse", json );
+		item.element.unspin();
+		var element, listItem, addItemText, classPath, ref;
+		associateText = this.controls.getElement( ".associate" ).get( "text" );
+/*	FOR META FIELDS WE NEED TO TAKE THE JSON RESPONSE AND REPLACE THE ELEMENT WITH IT, WHICH MEANS WE'LL NEED TO REINIT IT TOO 
+		element = json.response.html.toElement();
+		listItem = this.initItem( element );
+*/
+		// Object.each( listItem.UIFields, function( uiField ){
+		// 	uiField.scrollContext = "modal";
+		// 	if( uiField.reposition ) uiField.reposition('modal');
+		// });
+		lattice.util.EventManager.broadcastMessage( "resize" );
+//	this.insertItem( listItem );
+	},
+
+	dissociateRequest: function( item ){
+//		lattice.log("dissociate", item, item.getObjectId() );
+    item.element.spin();
+		this.pool.grab( item.element );
+		lattice.util.EventManager.broadcastMessage( "resize" );          
+		var jsonRequest = new Request.JSON( { url: this.getDissociateURL( this.getObjectId(), item.getObjectId(), this.element.get('data-lattice') ), onSuccess: function( json ){ this.onDissociateResponse( json, item ); }.bind( this ) } ).send();
+		return jsonRequest;
+	},
+
+	onDissociateResponse: function( json, item ){
+		item.element.unspin();
+	},
+
+	clearField: function( fieldName ){
+		this.marshal.clearField( fieldName );
+	},
+	
+	initialize: function( anElement, aMarshal, options ){
+		this.parent( anElement, aMarshal, options );
+		this.objectId = this.element.get( 'data-objectid' );
+//		this.allowChildSort = ( this.options.allowChildSort == 'true' )? true : false;
+		this.allowChildSort = ( this.element.get('data-allowchildsort') == 'true' )? true : false;
+	},
+	
+	build: function(){
+		this.parent();
+		this.associated = this.element.getElement( 'ul.associated' );
+		this.pool = this.element.getElement( 'ul.pool' );
+		this.element.getElements( '.shadow' ).each( function( el ){
+			el.addBoxShadow( "1px 1px 5px #ddd");
+		});
+		this.poolMorph = new Fx.Morph( this.pool, { duration: 'short', transition: Fx.Transitions.Sine.easeOut } );
+
+		this.element.addEvent( 'mouseenter', function(){
+			this.poolMorph.cancel();
+			this.pool.setStyles({
+				"opacity": 0,
+				"height": 0,
+				"display": "block"
+			});
+			this.poolMorph.start({
+				"opacity": 1,
+				"height": "auto",
+				"display": "block"				
+			});
+		}.bind( this ) );		
+
+		this.element.addEvent( 'mouseleave', function(){
+			this.poolMorph.cancel();
+			this.poolMorph.start({
+				"opacity": 0,
+				"height": "0px"
+			});
+		}.bind( this ));
+		this.initControls();
+		this.initItems();
+		this.makeSortable( this.pool );
+		this.makeSortable( this.associated );
+
+	},	
+	
+	initItems: function(){
+//		lattice.log(">>>>>>>>>>>>>>>>", this.element.getElements( "ul.associated li" ), this.element.getElements( "ul.pool li" ))
+    var items = this.element.getElements( "ul.associated li" ).combine( this.element.getElements( "ul.pool li" ) );
+		items.each( function( el ){
+			this.initItem( el );
+		}, this );
+  },
+
+	initItem: function( el ){
+		var classPath, ref, newItem;
+		classPath = el.getData('classpath');
+		if(!classPath){
+			newItem = new lattice.modules.AssociatorItem( el, this );
+		} else {
+			ref = this.getClassFromClassPath( classPath, '.' );
+			if(ref){
+				newItem = new ref( el, this );
+			} else {
+				throw "classPath " + classPath + "  for element: " + el + " is referring to a class that is not loaded or does not exist";
+				return false;
+			}
+		}
+		return newItem;
+	},
+
+	initControls: function(){
+			this.controls = this.element.getChildren( ".controls" );
+			this.controls.each( function( controlGroup ){
+				controlGroup.getElements( ".associate" ).each( function( item ){
+					item.addEvent("click", this.associateRequest.bindWithEvent( this, item ) )
+				}, this );
+			}, this );
+		},
+   
+    getClassFromClassPath: function( classPath, delimiter ){
+      var ref;			
+      delimiter = ( !delimiter )? "_" : delimiter;
+      classPath = classPath.split( delimiter );
+      classPath.each( function( node ){
+         ref = ( !ref )? this[node] : ref[node]; 
+      });
+      return ref;
+   },
+
+	destroy: function(){
+		if(this.sortableList) this.removeSortable( this.sortableList );
+		clearInterval( this.submitDelay );
+		this.controls = this.instanceName = this.pool = this.associated = this.oldSort = this.allowChildSort, this.sortDirection, this.submitDelay = null;
+    if( this.scroller ) this.scroller = null;
+		lattice.util.EventManager.broadcastMessage( 'resize' );
+		this.parent();
+	}
+
 });
 
 lattice.modules.LatticeAssociator = new Class({
@@ -703,7 +882,7 @@ lattice.modules.LatticeAssociator = new Class({
 	},	
 	
 	initItems: function(){
-//		console.log(">>>>>>>>>>>>>>>>", this.element.getElements( "ul.associated li" ), this.element.getElements( "ul.pool li" ))
+//		lattice.log(">>>>>>>>>>>>>>>>", this.element.getElements( "ul.associated li" ), this.element.getElements( "ul.pool li" ))
     var items = this.element.getElements( "ul.associated li" ).combine( this.element.getElements( "ul.pool li" ) );
 		items.each( function( el ){
 			this.initItem( el );
@@ -747,13 +926,13 @@ lattice.modules.LatticeAssociator = new Class({
    },
 	
 	associateRequest: function( item ){
-		if( lattice.debug ) console.log( 'addObjectRequest', item );
+//		lattice.log( 'addObjectRequest', item );
 		this.associated.grab( item.getElement() );
 		return new Request.JSON( {url: this.getAssociateURL( this.getObjectId(), item.getObjectId(), this.element.get('data-lattice')  ), onSuccess: function( json ){ this.onAssociateResponse( json, item ); }.bind( this ) } ).send();
 	},
     
 	onAssociateResponse: function( json, item ){
-		if( lattice.debug ) console.log( "onAssociateResponse", json );
+//		lattice.log( "onAssociateResponse", json );
 		item.element.unspin();
 		var element, listItem, addItemText, classPath, ref;
 		associateText = this.controls.getElement( ".associate" ).get( "text" );
@@ -770,7 +949,7 @@ lattice.modules.LatticeAssociator = new Class({
 	},
 
 	dissociateRequest: function( item ){
-		if( lattice.debug ) console.log("dissociate", item, item.getObjectId() );
+//		lattice.log("dissociate", item, item.getObjectId() );
     item.element.spin();
 		this.pool.grab( item.element );
 		lattice.util.EventManager.broadcastMessage( "resize" );          
@@ -858,7 +1037,7 @@ lattice.modules.AssociatorItem = new Class({
   /* Section: Getters & Setters */
 	getSaveFieldURL: function(){
 		var url =  this.marshal.getSaveFieldURL( this.getObjectId() );
-		if( lattice.debug ) console.log( "AssociatorItem.getSaveFieldURL", url );
+//		lattice.log( "AssociatorItem.getSaveFieldURL", url );
 		return url;
 	},
 
@@ -878,7 +1057,7 @@ lattice.modules.AssociatorItem = new Class({
 		this.marshal = aMarshal;
 		this.instanceName = this.element.get( "id" );
 		this.objectId = this.element.get("data-objectid");
-		console.log( "ASSOCIATORITEM", this.objectId );
+//		lattice.log( "ASSOCIATORITEM", this.objectId );
 		this.build();
 	},
 

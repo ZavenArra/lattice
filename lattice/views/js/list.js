@@ -11,7 +11,7 @@ lattice.modules.List = new Class({
 	
 	getAddObjectURL: function( path ){
 		var url = lattice.util.getBaseURL() + 'ajax/html/list/' + path;
-		console.log( '\t\tgetAddObjectURL', url );
+//		lattice.log( '\t\tgetAddObjectURL', url );
 		return url;
 	},
 	

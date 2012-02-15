@@ -227,7 +227,7 @@ String.implement({
 	encodeUTF8: function(){
 		return unescape( encodeURIComponent( this ) );
 	},
-  toElement: function() { 
+  toElement: function() {
     return new Element( 'div', { html:this } ).getFirst(); 
   } 
 });
@@ -267,6 +267,11 @@ Request.JSON.implement({
 	Mop is a namespace, quick definition of namespace, more useful for documentation than anything else.
 */
 if( !lattice ) var lattice = {};
+
+lattice.log = function(){
+	if( lattice.debug ) console.log( Array.from( arguments ) );
+}
+
 
 /*
 	Pakcage: lattice.util

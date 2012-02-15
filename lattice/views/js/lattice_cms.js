@@ -121,10 +121,12 @@ lattice.modules.CMS = new Class({
     this.parent( anElement, null, options );
 		this.loc = lattice.defaultLanguage;
 		this.pageSlideFx = new Fx.Scroll( this.element.getElement('.pagesPane') );
-    console.log( '============================================================' );
-    console.log( 'CMS INIT' );
-    console.log( '\tloc', lattice.defaultLanguage );
-    console.log( '============================================================' );
+/*
+    lattice.log( '============================================================' );
+    lattice.log( 'CMS INIT' );
+    lattice.log( '\tloc', lattice.defaultLanguage );
+    lattice.log( '============================================================' );
+*/
 		this.loc = lattice.defaultLanguage;
     this.rootNodeId = this.options.rootObjectId;
     $$( "script" ).each( function( aScriptTag ){ 
@@ -133,7 +135,7 @@ lattice.modules.CMS = new Class({
     $$( "link[rel=stylesheet]" ).each( 
         function( aStyleSheetTag ){this.loadedCSS.push(  aStyleSheetTag );
     }, this );
-//	console.log( 'localizationControls', this.element.getElement( '.localizationControls' ) );		
+//	lattice.log( 'localizationControls', this.element.getElement( '.localizationControls' ) );		
 		if( this.element.getElement( '.localizationControls' ) ){
 			this.localizationControls = new lattice.ui.Menu( 
 				this.element.getElement( '.localizationControls' ), this, { 'clickCallback': this.onLanguageSelected.bind( this ) } );
@@ -143,10 +145,10 @@ lattice.modules.CMS = new Class({
 	onLanguageSelected: function( item ){
 		var href, loc;
 		loc = item.getData('lang');
-		console.log( 'onLanguageSelected', loc );
+//		lattice.log( 'onLanguageSelected', loc );
 		if( loc == this.loc ) return;
 		this.loc = loc;
-		console.log( 'onLanguageSelected', this, loc );
+//		lattice.log( 'onLanguageSelected', this, loc );
 		this.requestTranslatedPage( this.getObjectId(), loc );
 	},
 	 
@@ -154,7 +156,7 @@ lattice.modules.CMS = new Class({
 	toString: function(){return this.stringIdentifier},
 
 	build: function(){
-//		console.log( "build", this.element );
+//		lattice.log( "build", this.element );
 		this.pageContainer = $("pageContainer");
 		this.initModules( this.element );
 	},
@@ -197,7 +199,7 @@ lattice.modules.CMS = new Class({
 	},
 	
 	onUIFieldSaved: function( fieldName, response ){
-//		console.log( "onUIFieldSaved", fieldName, response );
+//		lattice.log( "onUIFieldSaved", fieldName, response );
 		switch( fieldName ){
 			case 'title':
 				this.onTitleEdited( response );
@@ -216,7 +218,7 @@ lattice.modules.CMS = new Class({
 	onJSLoaded: function( html, jsLoadCount ){
 		// keeps any callbacks from previous pageloads from registering
 		this.scriptsLoaded++;
-//		console.log( this, "onJSLoaded", html, this.scriptsLoaded, this.loadedJS.length );
+//		lattice.log( this, "onJSLoaded", html, this.scriptsLoaded, this.loadedJS.length );
 		if( this.loadedJS.length == this.loadedJS.length ){			
 			this.populate( html );
 		}
@@ -239,7 +241,7 @@ lattice.modules.CMS = new Class({
 	requestTranslatedPage: function( nodeId, loc ){
 		if( !loc ) loc = this.loc;
 		this.setObjectId( nodeId );
-		console.log( 'requestTranslatedPage', loc );
+		// lattice.log( 'requestTranslatedPage', loc );
 		var url = this.getRequestTranslatedPageURL( nodeId, loc );
 		return new Request.JSON( { url: url, onSuccess: this.requestPageResponse.bind( this ) } ).send();
 	},
@@ -262,7 +264,7 @@ lattice.modules.CMS = new Class({
 		if( json.response.js.length && json.response.js.length > 0){
 			json.response.js.each( function( urlString, i ){
 			urlString = lattice.util.getBaseURL() + urlString;
-			//                console.log( ":::: ", urlString, this.loadedJS.indexOf( urlString ) );
+			//                lattice.log( ":::: ", urlString, this.loadedJS.indexOf( urlString ) );
 			if( this.loadedJS.indexOf( urlString ) == -1 ){
 				noneLoaded = false;
 				this.loadedJS.push( urlString );
@@ -297,7 +299,7 @@ lattice.modules.CMS = new Class({
 	requestTier: function( parentId, deepLink, callback ){
 		var url;
 		url = this.getRequestTierURL( parentId, deepLink );
-//		console.log( 'cms.requestTier.url:', url );
+//		lattice.log( 'cms.requestTier.url:', url );
 		this.setObjectId( parentId );
 		this.clearPendingTierRequest()
 		this.currentTierRequest = new Request.JSON( {
@@ -320,12 +322,12 @@ lattice.modules.CMS = new Class({
 	},
 
 	saveTierSortRequest: function( newOrder, objectId ){
-		console.log( 'lattice.cms.saveTierSortRequest', 'order', newOrder,  'objectId', objectId );
+		lattice.log( 'lattice.cms.saveTierSortRequest', 'order', newOrder,  'objectId', objectId );
 		return new Request.JSON( { url: this.getSubmitSortOrderURL(objectId) } ).post( { sortOrder: newOrder });
 	},
 
 	addObjectRequest: function( parentId, templateId, nodeProperties, callback ){
-		console.log( "addObjectRequest", parentId, templateId, nodeProperties, callback );
+		lattice.log( "addObjectRequest", parentId, templateId, nodeProperties, callback );
 		return new Request.JSON({
 			url: this.getAddObjectRequestURL( parentId, templateId ),
 			onSuccess: function( json  ){
@@ -336,7 +338,7 @@ lattice.modules.CMS = new Class({
 	},
 
 	addObjectResponse: function( json ){
-		console.log( "addObjectResponse", json );
+//		lattice.log( "addObjectResponse", json );
 	},
 
 	getTags: function( callback ){
@@ -377,7 +379,7 @@ lattice.modules.CMS = new Class({
 	},
 
 	removeObjectResponse: function( json ){
-		console.log( this.toString(), "removeObjectResponse", json, Array.from( arguments ) );
+//		lattice.log( this.toString(), "removeObjectResponse", json, Array.from( arguments ) );
 	},
 
 /*
@@ -387,7 +389,7 @@ lattice.modules.CMS = new Class({
 	Callback: onTogglePublish
 */
 	togglePublishedStatusRequest: function( nodeId, callback ){
-		console.log( "::::", this.getTogglePublishedStatusRequestURL( nodeId ) );
+//		lattice.log( "::::", this.getTogglePublishedStatusRequestURL( nodeId ) );
 		return new Request.JSON({
 			url: this.getTogglePublishedStatusRequestURL( nodeId ),
 			onSuccess: function( json ){
