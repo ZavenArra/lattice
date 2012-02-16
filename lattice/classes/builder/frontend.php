@@ -228,6 +228,8 @@ Class Builder_Frontend {
       echo $indent."<h2>$label</h2>\n\n";
 		echo $indent."<ul id=\"$label\" >\n";
 		$doSwitch = false;
+
+
 		if(count($objectTypes)>1){
 			$doSwitch = true;
 		}
@@ -236,6 +238,10 @@ Class Builder_Frontend {
 		if($doSwitch){
 			echo $indent." <?switch(\${$label}Item['objectTypeName']){\n";
 		}
+
+    if(count($objectTypes) == 0){
+        echo $indent." <?=latticeview::Factory(\${$label}Item)->view()->render();?>\n";
+    }
 
       $i=0;
 		foreach ($objectTypes as $objectTypeName) {
