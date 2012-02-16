@@ -1455,6 +1455,10 @@ class Model_Object extends ORM implements arrayaccess {
 
    public function addLatticeRelationship($lattice, $newObjectId){
 
+     if(!is_numeric($newObjectId)){
+        $newObjectId = Graph::object($newObjectId);
+     }
+
      if($this->checkLatticeRelationship($lattice, $newObjectId)){
       return;
      }

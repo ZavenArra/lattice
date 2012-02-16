@@ -183,44 +183,11 @@ class Controller_Export extends Controller {
 		 chmod(getcwd() . '/' . $this->outputDir, 0777);
 		 system('cp -Rp application/media/* ' . $this->outputDir);
 
-      //     $this->action_export();
-      //do the export
-      //and then call xslt to transform
-      //export should build, but not write to file
-      //enabling xslt to transform in memory xml, not load again from disk
-      # LOAD XML FILE
-      $XML = new DOMDocument();
-//$XML->load( 'application/media/export.xml' );
-
-      /*
-        # START XSLT
-        $xslt = new XSLTProcessor();
-
-        # IMPORT STYLESHEET 1
-        $XSL = new DOMDocument();
-        $XSL->load( 'template1.xsl' );
-        $xslt->importStylesheet( $XSL );
-
-        #IMPORT STYLESHEET 2
-        $XSL = new DOMDocument();
-        $XSL->load( 'template2.xsl' );
-        $xslt->importStylesheet( $XSL );
-
-        #PRINT
-        print $xslt->transformToXML( $XML );
-
-        return;
-       */
-/*
-      $this->doc = new DOMDocument('1.0', 'UTF-8');
-      $this->doc->formatOutput = true;
-      $data = $this->doc->createElement('data');
-  */    
-      //
-      $implementation = new DOMImplementation();
-      $dtd = $implementation->createDocumentType('data',
-        '-//WINTERROOT//DTD Data//EN',
-        '../../../lattice/lattice/xml/data.dtd');
+     $XML = new DOMDocument();
+     $implementation = new DOMImplementation();
+     $dtd = $implementation->createDocumentType('data',
+       '-//WINTERROOT//DTD Data//EN',
+        '../../../lattice/lattice/lattice/data.dtd');
       $this->doc = $implementation->createDocument('', '', $dtd);
    
       $this->doc->xmlVersion="1.0";
@@ -228,6 +195,7 @@ class Controller_Export extends Controller {
       $this->doc->formatOutput = true;
     
       $data = $this->doc->createElement('data');
+      $nodes = $this->doc->createElement('nodes');
 
       $object = Graph::getRootNode('cmsRootNode');
       $objects = $object->getLatticeChildren();
@@ -243,11 +211,44 @@ class Controller_Export extends Controller {
       }
 
       foreach ($this->$exportFunction($objects) as $item) {
-         $data->appendChild($item);
+        $nodes->appendChild($item);
       }
+      $data->appendChild($nodes);
+
+
+      $relationships = $this->doc->createElement('relationships');
+
+      $lattices = Graph::lattices();
+      foreach($lattices as $lattice){
+        if($lattice->name == 'lattice'){
+          continue;
+        }
+        $l = $this->doc->createElement('lattice');
+        $nameAttr = $this->doc->createAttribute('name');
+        $nameValue = $this->doc->createTextNode($lattice->name);
+        $nameAttr->appendChild($nameValue);
+        $l->appendChild($nameAttr);
+
+        foreach($lattice->getRelationships() as $relationship){
+          $r = $this->doc->createElement('relationship');
+          $parentSlug = $this->doc->createTextNode(Graph::object($relationship->object_id)->slug);
+          $parent = $this->doc->createAttribute('parent');
+          $parent->appendChild($parentSlug);
+          $childSlug = $this->doc->createTextNode(Graph::object($relationship->connectedobject_id)->slug);
+          $child = $this->doc->createAttribute('child');
+          $child->appendChild($childSlug);
+          $r->appendChild($parent);
+          $r->appendChild($child);
+          $l->appendChild($r);
+        }
+        $relationships->appendChild($l);
+      }
+
+      $data->appendChild($relationships);
+
       $this->doc->appendChild($data);
 
-           echo getcwd() . '/' . $this->outputDir;
+      echo getcwd() . '/' . $this->outputDir;
       flush();
       ob_flush();
       $this->doc->save($this->outputDir . '/' . $outputfilename . '.xml');
