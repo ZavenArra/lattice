@@ -615,7 +615,7 @@ lattice.modules.ListItem = new Class({
 	
 });
 
-lattice.modules.RadioAssociator = new Class({
+lattice.modules.LatticeRadioAssociator = new Class({
 
 	/* TODO write unit tests for List*/
 	Extends: lattice.modules.Module,
@@ -651,37 +651,24 @@ lattice.modules.RadioAssociator = new Class({
 	},
 
 	saveField: function( postData, callback ){
-//		lattice.log( "»", postData );
-		this.associateRequest();
+		lattice.log( "»", postData.value );
+		this.associateRequest( postData.value );
 //	    return new Request.JSON( {url: this.getSaveFieldURL(), onSuccess: callback} ).post( postData );
 	},
 	
-	associateRequest: function( item ){
-//		lattice.log( 'addObjectRequest', item );
-		return new Request.JSON( {url: this.getAssociateURL( this.getObjectId(), item.getObjectId(), this.element.get('data-lattice')  ), onSuccess: function( json ){ this.onAssociateResponse( json, item ); }.bind( this ) } ).send();
+	associateRequest: function( val ){
+		lattice.log( 'associateRequest', val );
+		return new Request.JSON( {url: this.getAssociateURL( this.getObjectId(), val, this.element.get('data-lattice')  ), onSuccess: function( json ){ this.onAssociateResponse( json ); }.bind( this ) } ).send();
 	},
 
-	onAssociateResponse: function( json, item ){
-//		lattice.log( "onAssociateResponse", json );
-		item.element.unspin();
-		var element, listItem, addItemText, classPath, ref;
-		associateText = this.controls.getElement( ".associate" ).get( "text" );
-/*	FOR META FIELDS WE NEED TO TAKE THE JSON RESPONSE AND REPLACE THE ELEMENT WITH IT, WHICH MEANS WE'LL NEED TO REINIT IT TOO 
-		element = json.response.html.toElement();
-		listItem = this.initItem( element );
-*/
-		// Object.each( listItem.UIFields, function( uiField ){
-		// 	uiField.scrollContext = "modal";
-		// 	if( uiField.reposition ) uiField.reposition('modal');
-		// });
-		lattice.util.EventManager.broadcastMessage( "resize" );
-//	this.insertItem( listItem );
+	onAssociateResponse: function( json ){
+		lattice.log( "onAssociateResponse", json );
 	},
 
 	dissociateRequest: function( item ){
-//		lattice.log("dissociate", item, item.getObjectId() );
+//	lattice.log("dissociate", item, item.getObjectId() );
     item.element.spin();
-		this.pool.grab( item.element );
+//	this.pool.grab( item.element );
 		lattice.util.EventManager.broadcastMessage( "resize" );          
 		var jsonRequest = new Request.JSON( { url: this.getDissociateURL( this.getObjectId(), item.getObjectId(), this.element.get('data-lattice') ), onSuccess: function( json ){ this.onDissociateResponse( json, item ); }.bind( this ) } ).send();
 		return jsonRequest;
@@ -704,39 +691,6 @@ lattice.modules.RadioAssociator = new Class({
 	
 	build: function(){
 		this.parent();
-		this.associated = this.element.getElement( 'ul.associated' );
-		this.pool = this.element.getElement( 'ul.pool' );
-		this.element.getElements( '.shadow' ).each( function( el ){
-			el.addBoxShadow( "1px 1px 5px #ddd");
-		});
-		this.poolMorph = new Fx.Morph( this.pool, { duration: 'short', transition: Fx.Transitions.Sine.easeOut } );
-
-		this.element.addEvent( 'mouseenter', function(){
-			this.poolMorph.cancel();
-			this.pool.setStyles({
-				"opacity": 0,
-				"height": 0,
-				"display": "block"
-			});
-			this.poolMorph.start({
-				"opacity": 1,
-				"height": "auto",
-				"display": "block"				
-			});
-		}.bind( this ) );		
-
-		this.element.addEvent( 'mouseleave', function(){
-			this.poolMorph.cancel();
-			this.poolMorph.start({
-				"opacity": 0,
-				"height": "0px"
-			});
-		}.bind( this ));
-		this.initControls();
-		this.initItems();
-		this.makeSortable( this.pool );
-		this.makeSortable( this.associated );
-
 	},	
 	
 	initItems: function(){
@@ -754,7 +708,7 @@ lattice.modules.RadioAssociator = new Class({
 			newItem = new lattice.modules.AssociatorItem( el, this );
 		} else {
 			ref = this.getClassFromClassPath( classPath, '.' );
-			if(ref){
+			if( ref ){
 				newItem = new ref( el, this );
 			} else {
 				throw "classPath " + classPath + "  for element: " + el + " is referring to a class that is not loaded or does not exist";
@@ -774,7 +728,7 @@ lattice.modules.RadioAssociator = new Class({
 		},
    
     getClassFromClassPath: function( classPath, delimiter ){
-      var ref;			
+      var ref;
       delimiter = ( !delimiter )? "_" : delimiter;
       classPath = classPath.split( delimiter );
       classPath.each( function( node ){
