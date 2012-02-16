@@ -260,7 +260,7 @@ Class Builder_Frontend {
              $this->makeListDataHtml($element, "\${$label}Item", $indent);
              break;
            case 'associator':
-             $this->makeAssociatorDataHtml($element, "\${$label}Item", $index);
+             $this->makeAssociatorDataHtml($element, "\${$label}Item", $indent);
              break;
            default:
              frontend::makeHtmlElement($element, "\${$label}Item", $indent . "   ");

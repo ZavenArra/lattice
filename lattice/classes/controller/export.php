@@ -122,7 +122,7 @@ class Controller_Export extends Controller {
          }
 
          //and get the children
-         $childObjects = $object->getChildren();
+         $childObjects = $object->getLatticeChildren();
 
          foreach ($this->exportTier($childObjects) as $childItem) {
             $item->appendChild($childItem);
@@ -148,7 +148,7 @@ class Controller_Export extends Controller {
          }
 
          //and get the children
-         $childObjects = $object->getChildren();
+         $childObjects = $object->getLatticeChildren();
          foreach ($this->exportTierLatticeFormat($childObjects) as $childItem) {
             $item->appendChild($childItem);
          }
@@ -230,7 +230,7 @@ class Controller_Export extends Controller {
       $data = $this->doc->createElement('data');
 
       $object = Graph::getRootNode('cmsRootNode');
-      $objects = $object->getChildren();
+      $objects = $object->getLatticeChildren();
 
       $exportFunction = NULL;
       switch($format){

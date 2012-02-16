@@ -97,7 +97,7 @@ class Controller_List extends Lattice_CMSInterface {
          $view = new View('list');
       }
 
-      $listMembers = $this->_listObject->getChildren();
+      $listMembers = $this->_listObject->getLatticeChildren();
 
       $html = '';
       foreach ($listMembers as $object) {
