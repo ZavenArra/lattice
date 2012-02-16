@@ -7,6 +7,12 @@
 
 class latticecms {
 
+  private static $unique = 0;
+
+  public static function uniqueElementId(){
+    return self::$unique++;
+  }
+
 	/*
 	 * Function: buildUIHtmlChunks
 	 * This function builds the html for the UI elements specified in an object type's paramters
@@ -91,7 +97,7 @@ class latticecms {
                   $associator->setLabel($element['label']);
                   $associator->setPoolLabel($element['poolLabel']);
                   $key = $element['type'] . '_' . $uiArguments['name'];
-                  $htmlChunks[$key] = $associator->render();
+                  $htmlChunks[$key] = $associator->render($element['associatorType']);
                   
                   break;
 
@@ -126,7 +132,7 @@ class latticecms {
      
       $html = null;
       if (!isset($element['name'])) {
-         $element['name'] = CMS_Controller::$unique++;
+         $element['name'] = LatticeCMS::uniqueElementId();
          $html = latticeui::buildUIElement($element, null);
       } else if (!$html = latticeui::buildUIElement($uiArguments, $value)) {
          throw new Kohana_Exception('bad config in cms: bad ui element');
@@ -227,6 +233,7 @@ class latticecms {
 							 }
 							 $entry['filters'] = $filterSettings;
                $entry['poolLabel'] = $element->getAttribute('poolLabel');
+               $entry['associatorType'] = $element->getAttribute('associatorType');
 							 break;
 						case 'tags':
 							$entry['name'] = 'tags'; //this is a cludge

@@ -1080,7 +1080,7 @@ class Model_Object extends ORM implements arrayaccess {
    public function taggedFilter() {
       
    }
-
+   
    public function latticeChildrenFilter($parentId, $lattice="lattice"){
       $lattice = Graph::lattice($lattice);
        

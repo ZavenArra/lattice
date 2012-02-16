@@ -98,14 +98,13 @@ Class Associator {
   }
 
   public function render($viewName = NULL){
-    if($viewName && $view = Kohana::find_file('views/lattice/associator', $viewName)){
-      $view = $view[0];
-      $view = new View($view);
+    if($viewName &&  ($view = Kohana::find_file('views', 'lattice/associator/'.$viewName) )){
+      $view = new View('lattice/associator/'.$viewName);
     } else {
       $view = new View('lattice/associator');
     }
 
-    $view->pool = $this->poolItemViews();
+    $view->pool = $this->poolItemViews($viewName);
 
     $view->associated = array();
     foreach($this->associated as $associatedItem){
@@ -121,13 +120,13 @@ Class Associator {
   }
 
   public function renderPoolItems(){
-    return(implode("\n",$this->poolItemViews()));
+    return(implode("\n",$this->poolItemViews($this->lattice)));
   }
 
-  private function poolItemViews(){
+  private function poolItemViews($viewName = NULL){
     $poolItemViews = array();
     foreach($this->pool as $poolItem){
-      $poolItemViews[] = $this->getItemView($poolItem, $this->lattice);
+      $poolItemViews[] = $this->getItemView($poolItem, $viewName);
     }
     return $poolItemViews;
   }
@@ -135,11 +134,9 @@ Class Associator {
   private function getItemView($item, $viewName){
 
     if($viewName && $view = Kohana::find_file('views/lattice/associator/'.$viewName, $item->objecttype->objecttypename)){
-      $view = $view[0];
-      $view = new View($view);
+      $view = new View('lattice/associator/'.$viewName.'/'.$item->objecttype->objecttypename);
     } else if($viewName && $view = Kohana::find_file('views/lattice/associator/'.$viewName, 'item')){ 
-      $view = $view[0];
-      $view = new View($view);
+      $view = new View('lattice/associator/'.$viewName.'/'.'item');
     } else  {
       $view = new View('lattice/associator/item');
     }

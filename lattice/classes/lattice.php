@@ -99,7 +99,7 @@ Class lattice {
                //if the argument is actually a path to a file
                $arenaPath = getcwd() . '/' . $arenaPath;
             } else {
-               $arenaFilePath = Kohana::find_file('xml', $arenaPath, 'xml', true);
+               $arenaFilePath = Kohana::find_file('lattice', $arenaPath, 'xml', true);
                if (!count($arenaFilePath)) {
                   throw new Kohana_Exception('Could not locate xml :file', array(':file' => $arenaPath));
                }
@@ -116,7 +116,7 @@ Class lattice {
 			if($arena == 'objects'){
 				$clusters = new DOMDocument();
 				$clusters = new MYDOMDocument($clusters);
-				$path = Kohana::find_file('xml', 'clusters', 'xml', true);
+				$path = Kohana::find_file('lattice', 'clusters', 'xml', true);
 				if(!count($path)){
 					throw new Kohana_Exception('Could not locate xml clusters');
 				}
