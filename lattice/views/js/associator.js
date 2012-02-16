@@ -59,7 +59,7 @@ lattice.modules.RadioAssociator = new Class({
 	
 	getDissociateURL: function( id, itemid, latticeid ){
 		var url = lattice.util.getBaseURL() + 'ajax/html/associator/dissociate/' + id + "/" + itemid + "/" + latticeid;
-		lattice.log( '\t\getDissociateURL', url );
+//		lattice.log( '\t\getDissociateURL', url );
 		return url;
 	},
 	

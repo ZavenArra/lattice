@@ -2,9 +2,9 @@
 
 <?=$label;?>
 
-<div class="ui-RadioGroup " data-field="<?=$lattice;?>">
+<div data-field="<?=$lattice;?>">
     <label class="groupLabel"><?=$label;?></label>
-			<fieldset>
+			<fieldset class="radios">
         <?foreach( Associator_Radios::makePool($associated, $pool) as $view):?>
 
           <?=$view->render();?>

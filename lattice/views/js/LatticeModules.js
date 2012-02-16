@@ -650,32 +650,41 @@ lattice.modules.LatticeRadioAssociator = new Class({
 		return "[ Object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.LatticeAssociator ]";
 	},
 
-	saveField: function( postData, callback ){
-		lattice.log( "»", postData.value );
-		this.associateRequest( postData.value );
-//	    return new Request.JSON( {url: this.getSaveFieldURL(), onSuccess: callback} ).post( postData );
+	radioClicked: function( e, el ){
+		lattice.util.stopEvent( e );
+		this.associateRequest( el );
 	},
 	
-	associateRequest: function( val ){
-		lattice.log( 'associateRequest', val );
-		return new Request.JSON( {url: this.getAssociateURL( this.getObjectId(), val, this.element.get('data-lattice')  ), onSuccess: function( json ){ this.onAssociateResponse( json ); }.bind( this ) } ).send();
+	associateRequest: function( el ){
+		if( this.activeItem ){
+			var oldel = this.activeItem;
+			this.dissociateRequest( oldel.get("data-objectid") );
+			oldel.erase( "checked" );
+		}
+		this.activeItem = el;			
+		lattice.log( 'associateRequest', el, 	this.activeItem.get("data-objectid") );
+		return new Request.JSON({
+			url: this.getAssociateURL( this.getObjectId(), this.activeItem.get('data-objectid'), this.element.get('data-lattice')  ), 
+			onSuccess: function( json ){ this.onAssociateResponse( json ); }.bind( this )
+		}).send();
 	},
 
 	onAssociateResponse: function( json ){
-		lattice.log( "onAssociateResponse", json );
+//		lattice.log( "onAssociateResponse", json );
 	},
 
-	dissociateRequest: function( item ){
-//	lattice.log("dissociate", item, item.getObjectId() );
-    item.element.spin();
-//	this.pool.grab( item.element );
+	dissociateRequest: function( objid ){
+		lattice.log( 'dissociateRequest', objid );
 		lattice.util.EventManager.broadcastMessage( "resize" );          
-		var jsonRequest = new Request.JSON( { url: this.getDissociateURL( this.getObjectId(), item.getObjectId(), this.element.get('data-lattice') ), onSuccess: function( json ){ this.onDissociateResponse( json, item ); }.bind( this ) } ).send();
+		var jsonRequest = new Request.JSON({
+			url: this.getDissociateURL( this.getObjectId(), objid, this.element.get('data-lattice') ),
+			onSuccess: function( json ){ this.onDissociateResponse( json ); }.bind( this )
+		}).send();
 		return jsonRequest;
 	},
 
 	onDissociateResponse: function( json, item ){
-		item.element.unspin();
+//		lattice.log( "onDissociateResponse", json );
 	},
 
 	clearField: function( fieldName ){
@@ -691,6 +700,14 @@ lattice.modules.LatticeRadioAssociator = new Class({
 	
 	build: function(){
 		this.parent();
+		this.element.getElements('.radios input').each( function( el ){
+			el.addEvent( 'click', this.radioClicked.bindWithEvent( this, el ) );
+		}, this );
+		var checkedItem = this.element.getElement("input[checked='checked']");
+		if( checkedItem ){
+			this.activeItem = checkedItem;
+			console.log( "Active Id:", this.activeItem );
+		}
 	},	
 	
 	initItems: function(){
