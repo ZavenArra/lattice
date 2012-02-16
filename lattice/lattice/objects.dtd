@@ -76,6 +76,7 @@
   poolLabel    CDATA #IMPLIED
 	name         CDATA #REQUIRED
   lattice       CDATA #REQUIRED
+  associatorType      CDATA #IMPLIED
   metaObjectTypeName  CDATA #IMPLIED
 >   
 
