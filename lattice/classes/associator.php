@@ -40,6 +40,12 @@ Class Associator {
           $objects = $from->latticeChildrenQuery($lattice);
         }
 
+        if(isset($filter['tagged']) && $filter['tagged']){
+          $objects->taggedFilter($filter['tagged']); 
+        }
+
+
+
         if(isset($filter['objectTypeName']) && $filter['objectTypeName']){
           $t = ORM::Factory('objectType', $filter['objectTypeName']);
           if(!$t->loaded()){
@@ -47,11 +53,7 @@ Class Associator {
           }
           $objects->where('objecttype_id', '=', $t->id);
         }
-        if(isset($filter['tagged']) && $filter['tagged']){
-          throw new Kohana_Exception('Not Implemented');
-        }
-
-        if(isset($filter['match']) && $filter['match']){
+           if(isset($filter['match']) && $filter['match']){
           $matchFields = explode(',',$filter['matchFields']);
           $wheres = array();
           foreach($matchFields as $matchField){
@@ -66,7 +68,7 @@ Class Associator {
           $objects = call_user_func($callback, $objects, $parentId);
         }
 
-        $objects->where('language_id', '=', Graph::defaultLanguage());
+        $objects->where('objects.language_id', '=', Graph::defaultLanguage());
         $objects->publishedFilter();
         $objects->limit($this->maxPoolSize);
 
@@ -80,7 +82,7 @@ Class Associator {
     } else {
       $objects = Graph::object()
         ->where('id', '!=', $parentId)
-        ->where('language_id', '=', Graph::defaultLanguage())
+        ->where('objects.language_id', '=', Graph::defaultLanguage())
         ->publishedFilter()
         ->limit($this->maxPoolSize)
         ->find_all();

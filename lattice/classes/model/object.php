@@ -513,7 +513,7 @@ class Model_Object extends ORM implements arrayaccess {
          
       $translatedObject = Graph::object()
               ->where('rosetta_id', '=', $rosettaId)
-              ->where('language_id', '=', $languageId)
+              ->where('objects.language_id', '=', $languageId)
               ->find();
       if(!$translatedObject->loaded()){
          throw new Kohana_Exception('No translated object available for objectId :id with language :language',
@@ -1077,8 +1077,10 @@ class Model_Object extends ORM implements arrayaccess {
     return $this;   
    }
 
-   public function taggedFilter() {
-      
+   public function taggedFilter($tags) {
+     return $this->join('objects_tags')->on('objects_tags.tag_id', '=', 'objects.id')
+       ->join('tags')->on('objects_tags.tag_id', '=', 'tags.id')
+       ->where('tag', '=', $tags);
    }
    
    public function latticeChildrenFilter($parentId, $lattice="lattice"){
@@ -1532,7 +1534,7 @@ class Model_Object extends ORM implements arrayaccess {
        $parentRosettaId = $this->rosetta_id;
        $translatedObject = Graph::object()
                ->where('rosetta_id', '=', $this->rosetta_id)
-               ->where('language_id', '=', $languageId)
+               ->where('objects.language_id', '=', $languageId)
                ->find();
        if(!$translatedObject->loaded()){
           throw new Kohana_Exception('No matching translated object for rosetta :rosetta and language :language',
