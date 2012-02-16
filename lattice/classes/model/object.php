@@ -670,10 +670,10 @@ class Model_Object extends ORM implements arrayaccess {
       return $container->getPublishedChildren();
    }
 
-   public function getPublishedChildren() {
+   public function getPublishedChildren($lattice = 'lattice') {
 
       $children = Graph::object()
-       ->latticeChildrenFilter($this->id)
+       ->latticeChildrenFilter($this->id, $lattice)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder')
@@ -683,10 +683,6 @@ class Model_Object extends ORM implements arrayaccess {
       return $children;
    }
 
-   public function getChildren() {
-
-      return $this->getLatticeChildren();
-   }
    
    public function getLatticeChildren($lattice = 'lattice'){
       $children = Graph::object()
@@ -697,6 +693,7 @@ class Model_Object extends ORM implements arrayaccess {
       return $children;
    
    }
+
 
    public function getNextPublishedPeer() {
       $next = Graph::object()
@@ -1108,15 +1105,20 @@ class Model_Object extends ORM implements arrayaccess {
    }
   }
 
-  public function getLatticeParents($lattice='lattice'){
+  public function getLatticeParents($lattice='lattice', $published = false){
    if(!isset($this->latticeParents[$lattice])){
     $this->latticeParents[$lattice] = array();
    }
    $latticeO = Graph::lattice($lattice);
    $relationships = ORM::Factory('objectrelationship')
     ->where('lattice_id', '=', $latticeO->id)
-    ->where('connectedobject_id', '=', $this->id)
-    ->find_all();
+    ->where('connectedobject_id', '=', $this->id);
+   if($published){
+     $relationships->join('objects')->on('objects.id', '=', 'objectrelationships.object_id')
+       ->where('published', '=', 1)
+       ->where('activity', 'IS', NULL);
+   }
+   $relationships = $relationships->find_all();
    foreach($relationships as $relationship){
     if($relationship->loaded()){
      $this->latticeParents[$lattice][] = Graph::object($relationship->object_id);
@@ -1124,6 +1126,12 @@ class Model_Object extends ORM implements arrayaccess {
    }
    return $this->latticeParents[$lattice];
   }
+
+  public function getPublishedParents($lattice='lattice'){
+    $this->getLatticeParents($lattice, true);
+  }
+
+
     
     public function isWithinSubTree($objectId, $lattice='lattice'){
        $subTreeObject = NULL;
