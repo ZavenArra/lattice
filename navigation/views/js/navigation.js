@@ -388,7 +388,9 @@ lattice.modules.navigation.Tier = new Class({
 		aNodeElement.store( "options", aNodeElement.getOptionsFromClassName() );
 		aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
 		if( togglePublishedStatusElement ) togglePublishedStatusElement.addEvent( "click", this.onTogglePublishedStatusClicked.bindWithEvent( this, aNodeElement ) );
-		if( node.tier ){ this.setActiveNode( aNodeElement ) }
+
+		if( node && node.tier ){ this.setActiveNode( aNodeElement ) }
+
 		if( removeNodeElement ) removeNodeElement.addEvent( "click", this.onRemoveNodeClicked.bindWithEvent( this, aNodeElement ) );
 	},
 
