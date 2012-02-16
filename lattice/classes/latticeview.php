@@ -230,7 +230,7 @@ class latticeview {
 
 		if ($view == 'default') {
 			if (!$object->loaded()) {
-				throw new Koahan_Exception('latticeviews::getViewContent : Default view callled with no slug');
+				throw new Kohana_Exception('latticeviews::getViewContent : Default view callled with no slug');
 			}
 			$data['content']['main'] = $object->getPageContent();
 			return $data;
