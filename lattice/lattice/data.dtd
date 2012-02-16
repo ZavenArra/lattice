@@ -6,7 +6,9 @@
 	Date: 2010/09/18	
 -->
 
-<!ELEMENT data (item*) >
+<!ELEMENT data (nodes,relationships) >
+
+<!ELEMENT nodes (item*) >
 
 <!ELEMENT item (item|field|list|object)* >
 <!ATTLIST item
@@ -26,4 +28,17 @@
 <!ELEMENT object (field*) >
 <!ATTLIST object
 	name CDATA #REQUIRED
+>
+
+<!ELEMENT relationships (lattice*) >
+
+<!ELEMENT lattice (relationship*)>
+<!ATTLIST lattice
+  name CDATA #REQUIRED
+>
+
+<!ELEMENT relationship EMPTY >
+<!ATTLIST relationship
+  parent CDATA #REQUIRED
+  child CDATA #REQUIRED
 >

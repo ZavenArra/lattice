@@ -57,8 +57,11 @@ class Graph {
         $lattice->save();
       }
       return $lattice;
-   
    }
+
+  public static function lattices(){
+    return ORM::Factory('lattice')->find_all();
+  }
 
 	public static function file($fileId = null){
 
