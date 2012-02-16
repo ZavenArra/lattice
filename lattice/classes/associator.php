@@ -143,6 +143,9 @@ Class Associator {
       $view = new View('lattice/associator/item');
     }
     $view->object = $item;
+
+    $view->selected = false;
+
     return $view;
 
   }
