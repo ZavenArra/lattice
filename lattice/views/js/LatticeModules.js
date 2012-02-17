@@ -789,15 +789,19 @@ lattice.modules.LatticeAssociator = new Class({
 	},
 
 	getAssociateURL: function(){
-	    throw "Abstract function getAssociateURL must be overriden in" + this.toString();
+		throw "Abstract function getAssociateURL must be overriden in" + this.toString();
 	},
 	
 	getDissociateURL: function(){
-	    throw "Abstract function getDissociateURL must be overriden in" + this.toString();
+		throw "Abstract function getDissociateURL must be overriden in" + this.toString();
 	},
 
+	getFilterPoolByWordURL: function(){
+		throw "Abstract function getFilterPoolByWordURL must be overriden in" + this.toString();
+	},
+	
 	getSubmitSortOrderURL: function(){ 
-	    throw "Abstract function getSubmitSortOrderURL must be overriden in" + this.toString();
+		throw "Abstract function getSubmitSortOrderURL must be overriden in" + this.toString();
 	},
 
 	toString: function(){
@@ -811,14 +815,26 @@ lattice.modules.LatticeAssociator = new Class({
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
 		this.objectId = this.element.get( 'data-objectid' );
-//		this.allowChildSort = ( this.options.allowChildSort == 'true' )? true : false;
+//	this.allowChildSort = ( this.options.allowChildSort == 'true' )? true : false;
 		this.allowChildSort = ( this.element.get('data-allowchildsort') == 'true' )? true : false;
 	},
 	
+	filterPoolByWord: function( e ){
+		e.preventDefault();
+		var word = this.element.getElement( '.filter input' ).get("value");
+		var url = this.getFilterPoolByWordURL( this.getObjectId(), this.element.get('data-lattice'), word );
+		var jsonRequest = new Request.JSON({
+			url: url,
+			onSuccess: function( json ){ console.log( "filterPoolByWord Success", json ) }
+		}).send();
+		return jsonRequest;
+	},
+
 	build: function(){
 		this.parent();
 		this.associated = this.element.getElement( 'ul.associated' );
-		this.pool = this.element.getElement( 'ul.pool' );
+		this.pool = this.element.getElement('div.pool');
+		this.poolList = this.element.getElement( 'ul' );
 		this.element.getElements( '.shadow' ).each( function( el ){
 			el.addBoxShadow( "1px 1px 5px #ddd");
 		});
@@ -847,7 +863,8 @@ lattice.modules.LatticeAssociator = new Class({
 		}.bind( this ));
 		this.initControls();
 		this.initItems();
-		this.makeSortable( this.pool );
+		this.filterSubmitButton = this.element.getElement(".filter .button");
+		this.filterSubmitButton.addEvent('click', this.filterPoolByWord.bindWithEvent( this ) );
 		this.makeSortable( this.associated );
 
 	},	
@@ -922,7 +939,7 @@ lattice.modules.LatticeAssociator = new Class({
 	dissociateRequest: function( item ){
 //		lattice.log("dissociate", item, item.getObjectId() );
     item.element.spin();
-		this.pool.grab( item.element );
+		this.poolList.grab( item.element );
 		lattice.util.EventManager.broadcastMessage( "resize" );          
 		var jsonRequest = new Request.JSON( { url: this.getDissociateURL( this.getObjectId(), item.getObjectId(), this.element.get('data-lattice') ), onSuccess: function( json ){ this.onDissociateResponse( json, item ); }.bind( this ) } ).send();
 		return jsonRequest;
@@ -989,7 +1006,7 @@ lattice.modules.LatticeAssociator = new Class({
 	destroy: function(){
 		if(this.sortableList) this.removeSortable( this.sortableList );
 		clearInterval( this.submitDelay );
-		this.controls = this.instanceName = this.pool = this.associated = this.oldSort = this.allowChildSort, this.sortDirection, this.submitDelay = null;
+		this.controls = this.instanceName = this.poolList = this.associated = this.oldSort = this.allowChildSort, this.sortDirection, this.submitDelay = null;
     if( this.scroller ) this.scroller = null;
 		lattice.util.EventManager.broadcastMessage( 'resize' );
 		this.parent();

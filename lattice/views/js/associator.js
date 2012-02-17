@@ -28,6 +28,13 @@ lattice.modules.Associator = new Class({
 		return url;
 	},
 	
+	getFilterPoolByWordURL: function( pid, latticeid, word ){
+		lattice.log( lattice, lattice.util );
+		var url = lattice.util.getBaseURL() + "ajax/html/associator/filterPoolByWord/" + pid + "/" + latticeid + "/" + word;
+		lattice.log( '\t\getFilterPoolByWordURL', url );
+		return url;
+	},
+	
 	toString: function(){
 		return "[ object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.LatticeAssociator, lattice.modules.Associator ]";
 	},
