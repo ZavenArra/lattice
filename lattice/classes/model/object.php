@@ -1075,7 +1075,7 @@ class Model_Object extends ORM implements arrayaccess {
    }
 
    public function taggedFilter($tags) {
-     return $this->join('objects_tags')->on('objects_tags.tag_id', '=', 'objects.id')
+     return $this->join('objects_tags')->on('objects_tags.object_id', '=', 'objects.id')
        ->join('tags')->on('objects_tags.tag_id', '=', 'tags.id')
        ->where('tag', '=', $tags);
    }
