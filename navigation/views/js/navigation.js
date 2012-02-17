@@ -247,7 +247,7 @@ lattice.modules.navigation.Navigation = new Class({
 			paneIndex = this.getVisibleTiers().indexOf( tier );		
 			this.detachTiers( paneIndex + 1 );
 			this.removeCrumbs( paneIndex + 1 );
-			this.marshal.clearPages();
+			this.marshal.clearPageContent();
 		}
 	},
   	

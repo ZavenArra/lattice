@@ -198,6 +198,12 @@ lattice.modules.CMS = new Class({
 		this.pages = {};
 	},
 	
+	clearPageContent: function(){
+		Object.each( this.pages, function( aPage ){
+			aPage.clearContent();
+		}, this );
+	},
+		
 	onUIFieldSaved: function( fieldName, response ){
 //		lattice.log( "onUIFieldSaved", fieldName, response );
 		switch( fieldName ){
@@ -482,7 +488,8 @@ lattice.modules.CMSPage = new Class({
 	clearContent: function(){
 		this.destroyChildModules( this.element );
 		this.destroyUIFields( this.element );
-		this.element.empty();
+		console.log( ">>>>>> ", this.element );
+		if( this.element ) this.element.empty();
 	},
 	
 	destroy: function(){
