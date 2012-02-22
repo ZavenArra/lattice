@@ -229,6 +229,7 @@ lattice.modules.navigation.Navigation = new Class({
 	},
 
 	onAddObjectResponse: function( json, parentId, tierInstance ){
+		lattice.log( "onAddObjectResponse", json );
 		this.nodeData[ json.response.data.id ] = json.response.data;
 		var newNode = json.response.html.toElement();
 		tierInstance.adoptNode( newNode );
@@ -241,6 +242,7 @@ lattice.modules.navigation.Navigation = new Class({
 		this.nodeData[ nodeId ] = null;
 		delete this.nodeData[ nodeId ];
 		this.dataSource.removeObjectRequest( nodeId );
+		console.log( "removeObject", nodeId, this.toString() );
 		if( nodeId == this.dataSource.getObjectId() ){			
 			lattice.historyManager.changeState( "slug", null );
 			// this.breadCrumbs.removeCrumbByLabel( title );			
@@ -430,10 +432,14 @@ lattice.modules.navigation.Tier = new Class({
 		if( !confirmation ) return; 
 		var nodeId = this.marshal.getNodeIdFromElement( nodeElement );
 		nodeElement.destroy();
+		nodeElement = null;
+		this.html = this.element.get("html");
+		console.log("onRemoveNodeClicked", nodeElement );
 		this.removeObject( nodeId );
 	},
 
 	removeObject: function( nodeId ){
+		console.log( "removeObject", nodeId, this.toString() );
 		this.marshal.removeObject( nodeId, this );
 	},
 	

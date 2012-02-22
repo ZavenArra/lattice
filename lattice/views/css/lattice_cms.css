@@ -250,7 +250,7 @@ ul.listing li{
 	clear: both;
 }
 
-.associator .pool{
+.associator div.pool{
 	display: none;
 	border-top: 1px #dedede solid;
 	padding-top: 1.5em;
