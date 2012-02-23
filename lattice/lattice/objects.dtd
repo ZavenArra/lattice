@@ -29,7 +29,7 @@
   initialAccessRoles  CDATA #IMPLIED
 >
 
-<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|dateRange|checkbox|time|associator|link|extendedImage|extendedFile|tags|pulldown)* >
+<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|checkbox|time|associator|link|extendedImage|extendedFile|tags|pulldown)* >
 
 <!ELEMENT components (component*) >
 
