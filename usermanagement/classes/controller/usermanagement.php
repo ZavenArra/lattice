@@ -187,7 +187,7 @@ Class Controller_UserManagement extends Controller_Layout {
 		//add the login role
 		$user->add('roles', ORM::Factory('role', array('name'=>'login')));
     //add the default role
-    $user->add('roles', ORM::Factory('role', array('name'=>Kohana::config(strtolower($this->controllerName).'.defaultRole') ) ) );
+    $user->add('roles', ORM::Factory('role', array('name'=>Kohana::config(strtolower($this->controllerName).'.defaultRoles') ) ) );
 		$user->save();
 
 		return $user;
