@@ -81,7 +81,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       $object = Graph::object($objectId);
       if (Graph::isFileModel($object->$field) && $object->$field->loaded()) {
          $file = $object->$field;
-         $file->delete(); //may or may not want to do this
+         $file->delete();
       }
       $object->$field = null;
       $return = array('cleared' => 'true');
