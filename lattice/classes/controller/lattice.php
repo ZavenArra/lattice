@@ -126,10 +126,10 @@ class Controller_Lattice extends Controller {
     }
 
 		//should add to self, then merge into topController
-		if($css = Kohana::find_file('assets', 'css/'.$key, 'css')){
+		if($css = Kohana::find_file('resources', 'css/'.$key, 'css')){
 			$this->resources['css'][$css] = lattice::convertFullPathToWebPath($css);
 		}
-		if($js = Kohana::find_file('assets', 'js/'.$key, 'js')){
+		if($js = Kohana::find_file('resources', 'js/'.$key, 'js')){
 			$this->resources['js'][$js] = lattice::convertFullPathToWebPath($js);
 		}
 

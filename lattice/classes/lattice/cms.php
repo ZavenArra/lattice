@@ -87,8 +87,6 @@ class Lattice_CMS extends Lattice_CMSInterface {
 		$this->view->languages = $languages;
 		
 		$this->response->body($this->view->render());
-		//$this->outputLayout();  //consider using AFTER for this, but need to know whats up with ajax, etc
-		//can we route through a layout controller???
 	}
 
 	/*
