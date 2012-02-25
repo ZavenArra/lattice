@@ -111,7 +111,6 @@
 <!ELEMENT radioGroup (radio*) >
 <!ATTLIST radioGroup
 	%uiattrs;
-	groupLabel			CDATA #REQUIRED
 >
 
 <!ELEMENT radio EMPTY >

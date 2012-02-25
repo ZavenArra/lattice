@@ -154,10 +154,10 @@ Class latticeui{
 		return latticeui::buildUIElement( $elementArray, $fieldValue);		
 	}
 
-	public static function radioGroup( $field, $class, $radios, $fieldValue, $groupLabel=null, $labelClass=null ){
+	public static function radioGroup( $field, $class, $radios, $fieldValue, $label=null, $labelClass=null ){
 		$microtime = str_replace(array(' ', '.'), '', microtime());
 		$name =$field.latticeui::$unique++.$microtime;
-		$elementArray = array( 'type'=>'radioGroup', 'radioname'=>$name, 'class'=>$class, 'grouplabel'=>$groupLabel, 'name'=>$field, 'radios'=> $radios, "labelClass"=>$labelClass );
+		$elementArray = array( 'type'=>'radioGroup', 'radioname'=>$name, 'class'=>$class, 'grouplabel'=>$label, 'name'=>$field, 'radios'=> $radios, "labelClass"=>$labelClass );
 		return latticeui::buildUIElement( $elementArray, $fieldValue );
 	}
 

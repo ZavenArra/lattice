@@ -81,7 +81,7 @@
 		
 		<objectType name="singleRadioGroup" contentType="document" allowChildSort="true" allowDelete="false" allowTogglePublish="false">
 			<elements>
-        			<radioGroup name="singleRadioGroup" groupLabel="Single Radio Group">
+        			<radioGroup name="singleRadioGroup" label="Single Radio Group">
           				<radio label="One" value="1"/>
           				<radio label="Two" value="2"/>
           				<radio label="Three" value="3"/>
@@ -212,7 +212,7 @@
 			<elements>
 				<text name="description" label="Description"/>
 				<checkbox name="singleCheckbox" label="One"/>
-				<radioGroup name="singleRadioGroup" groupLabel="Single Radio Group">
+				<radioGroup name="singleRadioGroup" label="Single Radio Group">
          		 		<radio label="One" value="1"/>
           				<radio label="Two" value="2"/>
           				<radio label="Three" value="3"/>
