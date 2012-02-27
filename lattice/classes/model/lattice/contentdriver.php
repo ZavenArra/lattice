@@ -27,6 +27,16 @@ abstract class Model_Lattice_ContentDriver {
    abstract public function saveContentTable($object, $inserting=false);
 
    abstract public function delete();
+
+   /*
+    * Returns info about the driver.
+    */
+   public function driverInfo(){
+    return array(
+      'driver'=>'mysql',
+      'tableName'=>$this->contenttable,
+    );
+   }
    
   }
    

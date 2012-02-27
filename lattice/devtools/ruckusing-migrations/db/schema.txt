@@ -318,21 +318,21 @@ CREATE TABLE `contents` (
   `activity` char(1) CHARACTER SET latin1 DEFAULT NULL,
   PRIMARY KEY (`object_id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=201 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `files` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `filename` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `mime` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=126 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `initializedmodules` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `module` varchar(255) NOT NULL,
   `status` enum('INITIALIZED','DISABLED','NOTINITIALIZED') NOT NULL DEFAULT 'NOTINITIALIZED',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `languages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -363,7 +363,7 @@ CREATE TABLE `objectmaps` (
   `index` int(11) NOT NULL,
   `column` varchar(100) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objectrelationships` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -372,7 +372,7 @@ CREATE TABLE `objectrelationships` (
   `connectedobject_id` int(11) NOT NULL,
   `sortorder` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=279 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `objects` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -388,14 +388,14 @@ CREATE TABLE `objects` (
   `activity` char(1) CHARACTER SET latin1 DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `identifier` (`slug`,`language_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=368 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objects_roles` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `object_id` int(11) DEFAULT NULL,
   `role_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=575 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objects_tags` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -412,6 +412,7 @@ CREATE TABLE `objecttypes` (
   `contentType` varchar(20) CHARACTER SET latin1 DEFAULT NULL,
   `sort_order` smallint(2) DEFAULT NULL,
   PRIMARY KEY (`id`)
+<<<<<<< HEAD
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objecttypes_roles` (
@@ -434,7 +435,7 @@ CREATE TABLE `ratingsobjecttypes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `object_type` varchar(200) COLLATE latin1_general_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `roles` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -442,7 +443,7 @@ CREATE TABLE `roles` (
   `description` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `roles_users` (
   `user_id` int(10) unsigned NOT NULL,
@@ -456,7 +457,7 @@ CREATE TABLE `roles_users` (
 CREATE TABLE `rosettas` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=131 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=uft8;
 
 CREATE TABLE `schema_migrations` (
   `version` varchar(255) DEFAULT NULL,
@@ -522,6 +523,8 @@ CREATE TABLE `users` (
   `email` varchar(127) NOT NULL,
   `username` varchar(32) NOT NULL DEFAULT '',
   `password` varchar(64) NOT NULL,
+  `firstname` varchar(100) NOT NULL,
+  `lastname` varchar(100) NOT NULL,
   `logins` int(10) unsigned NOT NULL DEFAULT '0',
   `last_login` int(10) unsigned DEFAULT NULL,
   `status` enum('ACTIVE','INCOMPLETE','DELETED') NOT NULL DEFAULT 'INCOMPLETE',

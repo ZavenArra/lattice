@@ -1,3 +1,6 @@
 [submodule "mopjs/thirdparty/textboxlist"]
 	path = mopjs/thirdparty/textboxlist
 	url = git@github.com:codebase/TextboxList.git
+[submodule "lattice/resources"]
+	path = lattice/resources
+	url = git@github.com:madeofpeople/lattice-resources.git

@@ -2,6 +2,10 @@
 
 require(LATTICEPATH.'lattice/includes/mysqlfuncs.php');
 
+
+
+
+
 Route::set('cms_save', '<id>/<action>', array(
 	'action' => 'save',
 )
@@ -32,6 +36,15 @@ Route::set('cms', 'cms/<action>(/<param1>(/<param2>))', array(
 		'controller' => 'cms',
 	));
 
+Route::set('associator', 'associator/<action>/<param1>/<param2>/<param3>', array(
+
+	)
+)
+->defaults(
+	array(
+		'controller' => 'associator',
+	));
+
 
 
 
@@ -47,10 +60,7 @@ Route::set('graph_addChild', '<id>/<action>/<type>', array(
 /*
  * Default path to allow 4 arguments to graph if necessary
  */
-Route::set('graph', 'graph/<action>(/<param1>(/<param2>))', array(
-
-	)
-)
+Route::set('graph', 'graph/<action>(/<param1>(/<param2>))', array( ))
 ->defaults(
 	array(
 		'controller' => 'graph',
@@ -103,3 +113,101 @@ Route::set('default4', '(<controller>(/<action>(/<id>(/<thing>))))')
 	));
  */
 
+class FrontendRouting {
+
+   public static function routeSlug($uri) {
+      $segments = explode('/', $uri);
+
+    
+      if(Kohana::find_file('classes/controller', $segments[0])){
+         return;
+      }
+      
+      $slug = $segments[0];
+      $object = null;
+      foreach ($segments as $segment) {
+         
+         $slug = strtok($segment, '_');
+         $languageCode = strtok('_');
+				 if(latticeutil::checkAccess('admin')){
+					 $object = Graph::object($slug);
+				 } else {
+					 $object = Graph::object()->publishedFilter()->where('slug', '=', $slug)->find();
+				 }
+         if ($languageCode) {
+            $object = $object->translate($languageCode);
+         }
+
+         if (!$object->loaded()) {
+            return;
+         }
+      }
+      if ($object) {
+         return array(
+             'controller' => 'latticeviews',
+             'action' => 'getView',
+             'objectidorslug' => $object->slug
+         );
+      }
+   }
+
+	 public static function routeVirtual($uri){
+		
+      $segments = explode('/', $uri);
+      if(Kohana::find_file('classes/controller', $segments[0])){
+         return;
+      }
+
+			return;
+			$config = lattice::config('frontend', '//view[@name="'.$uri.'"]');
+			if($config->length){
+         return array(
+             'controller' => 'latticeviews',
+             'action' => 'getVirtualView',
+             'objectidorslug' => $uri
+         );
+			} 
+
+			return;
+      
+	 }
+
+}
+
+Route::set('latticeViewsSlug', array('FrontendRouting', 'routeSlug'));
+
+Route::set('latticeViewsVirtual', array('FrontendRouting', 'routeVirtual'));
+
+Route::set('defaultLatticeFrontend', '(<controller>)',
+	array(
+		'controller'=>'',
+	))
+	->defaults(array(
+		'controller' => 'latticeviews',
+		'action' => 'getView',
+		'id'     => 'home',
+	));
+
+
+Route::set('preview', 'preview/<id>',
+	array(
+		 'id' => '[A-z\-]+',
+	 ))
+	->defaults(array(
+		'controller' => 'preview',
+		'action' => 'preview',
+	));
+
+
+
+
+Route::set('language', 'language/<action>(/<param1>(/<param2>))', array(
+
+	)
+)
+->defaults(
+	array(
+		'controller' => 'language',
+	));
+
+ 

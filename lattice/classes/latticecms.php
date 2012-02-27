@@ -3,8 +3,15 @@
 /* Class: CMS helper
  * Contains utility function for CMS
  */
+/* @package Lattice */
 
 class latticecms {
+
+  private static $unique = 0;
+
+  public static function uniqueElementId(){
+    return self::$unique++;
+  }
 
 	/*
 	 * Function: buildUIHtmlChunks
@@ -87,8 +94,10 @@ class latticecms {
 
                case 'associator':
                   $associator = new Associator($object->id, $element['lattice'],$element['filters']);
+                  $associator->setLabel($element['label']);
+                  $associator->setPoolLabel($element['poolLabel']);
                   $key = $element['type'] . '_' . $uiArguments['name'];
-                  $htmlChunks[$key] = $associator->render();
+                  $htmlChunks[$key] = $associator->render($element['associatorType']);
                   
                   break;
 
@@ -123,12 +132,24 @@ class latticecms {
      
       $html = null;
       if (!isset($element['name'])) {
-         $element['name'] = CMS_Controller::$unique++;
+         $element['name'] = LatticeCMS::uniqueElementId();
          $html = latticeui::buildUIElement($element, null);
       } else if (!$html = latticeui::buildUIElement($uiArguments, $value)) {
          throw new Kohana_Exception('bad config in cms: bad ui element');
       }
       return $html;
+   }
+
+   public static function getElementConfig($object, $elementName){
+     $xPath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]',
+       $object->objecttype->objecttypename,
+       $elementName
+     );
+     $element = lattice::config('objects', $xPath);
+     if(!$element || !$element->length ){
+      throw new Kohana_Exception('xPath returned no results: '. $xPath);
+     }
+     return self::convertXMLElementToArray($object, $element->item(0));
    }
 
    public static function buildUIHtmlChunksForObject($object, $translatedLanguageCode = null) {
@@ -138,39 +159,47 @@ class latticecms {
       $elementsConfig = array();
       foreach ($elements as $element) {
 
-         $entry = array();
-				//$entry should become an object, that contains configuration logic for each  view
-				 //or better yet, each mopui view should have it's own view object
-				 //which translates the configuration into the view display
+        $entry = self::convertXmlElementToArray($object, $element);
 
-         $entry['type'] = $element->tagName;
-         for ($i = 0; $i < $element->attributes->length; $i++) {
-            $entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
+        $elementsConfig[$entry['name']] = $entry;
+      }
+			return latticecms::buildUIHtmlChunks($elementsConfig, $object);
+	 }
+
+   private static function convertXMLElementToArray($object, $element){
+     $entry = array();
+     //$entry should become an object, that contains configuration logic for each  view
+     //or better yet, each mopui view should have it's own view object
+     //which translates the configuration into the view display
+
+     $entry['type'] = $element->tagName;
+     for ($i = 0; $i < $element->attributes->length; $i++) {
+       $entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
+     }
+     //load defaults
+     $entry['tag'] = $element->getAttribute('tag');
+     $entry['isMultiline'] = ( $element->getAttribute('isMultiline') == 'true' )? true : false;
+
+     //any special xml reading that is necessary
+     switch ($entry['type']) {
+     case 'file':
+       case 'image':
+         $ext = array();
+         $children = lattice::config('objects', 'ext', $element);
+         foreach ($children as $child) {
+           if ($child->tagName == 'ext') {
+             $ext[] = $child->nodeValue;
+           }
          }
-               //load defaults
-         $entry['tag'] = $element->getAttribute('tag');
-         $entry['isMultiline'] = ( $element->getAttribute('isMultiline') == 'true' )? true : false;
-
-         //any special xml reading that is necessary
-         switch ($entry['type']) {
-            case 'file':
-            case 'image':
-               $ext = array();
-               $children = lattice::config('objects', 'ext', $element);
-               foreach ($children as $child) {
-                  if ($child->tagName == 'ext') {
-                     $ext[] = $child->nodeValue;
-                  }
-               }
-               $entry['extensions'] = implode(',', $ext);
-               break;
-            case 'radioGroup':
-               $children = lattice::config('objects', 'radio', $element);
-               $radios = array();
-               foreach ($children as $child) {
-                  $label = $child->getAttribute('label');
-                  $value = $child->getAttribute('value');
-                  $radios[$label] = $value;
+         $entry['extensions'] = implode(',', $ext);
+         break;
+       case 'radioGroup':
+         $children = lattice::config('objects', 'radio', $element);
+         $radios = array();
+         foreach ($children as $child) {
+           $label = $child->getAttribute('label');
+           $value = $child->getAttribute('value');
+           $radios[$label] = $value;
                }
                $entry['radios'] = $radios;
                break;
@@ -199,9 +228,12 @@ class latticecms {
 								 $setting['from'] = $filter->getAttribute('from');
 								 $setting['objectTypeName'] = $filter->getAttribute('objectTypeName');
 								 $setting['tagged'] = $filter->getAttribute('tagged');
+								 $setting['function'] = $filter->getAttribute('function');
 								 $filterSettings[] = $setting;
 							 }
 							 $entry['filters'] = $filterSettings;
+               $entry['poolLabel'] = $element->getAttribute('poolLabel');
+               $entry['associatorType'] = $element->getAttribute('associatorType');
 							 break;
 						case 'tags':
 							$entry['name'] = 'tags'; //this is a cludge
@@ -210,11 +242,9 @@ class latticecms {
 						default:
 							break;
 				 }
+     return $entry;
 
-				 $elementsConfig[] = $entry;
-			}
-			return latticecms::buildUIHtmlChunks($elementsConfig, $object);
-	 }
+   }
 
 	public static function regenerateImages(){
 		//find all images

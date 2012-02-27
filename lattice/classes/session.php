@@ -1,4 +1,5 @@
 <?php defined('SYSPATH') or die('No direct script access.');
+/* @package Lattice */
 
 abstract class Session extends Kohana_Session {
    

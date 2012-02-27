@@ -1,62 +1,30 @@
 <?
 
-Class Associator_Controller extends Controller {
+Class Controller_Associator extends Controller_Lattice {
 
-	private $pool;
-	private $associated;
-	private $parent;
-	private $field;
-
-	public function __construct($filters, $object_id, $field){
-		//load parent
-		$this->parent = Graph::object($object_id);
-
-		//load pool
-		foreach($filters as $filter){
-			$objects = Graph::object();
-			if($filter['from']){
-				$objects->where('parentId', $this->parent->id);
-			}
-			if($filter['objectTypeName']){
-				$t = ORM::Factory('objectType', $filter['objectTypeName']);
-				$object->where('objecttype_id', $t->id);
-			}
-			if(isset($filters['tagged']) && $filters['tagged']){
-
-			}
-			$results = $objects->find_all();
-			foreach($results as $object){
-				$this->pool[$object->id] = $object;
-			}
-		}	
-
-		//get already associated objects
-		//
-		/*
-		$association = ORM::Factory('association');
-		$association_id = $association->getAssociationId($this->parent->id, $field);
-		$associated = ORM::Factory('
-*/
-
-		$this->field = $field;
-
+	public function action_associate($parentId, $objectId, $lattice){
+    Graph::object($parentId)->addLatticeRelationship($lattice, $objectId);
 	}
 
-	public function createIndexView(){
-		$this->view = new View('lattice_associator');		
-		$this->view->pool = $this->pool;
-		$this->view->field = $this->field;
+	public function action_dissociate($parentId, $objectId, $lattice){
+    Graph::object($parentId)->removeLatticeRelationship($lattice, $objectId);
 	}
 
+  public function action_filterPoolByWord($parentId, $name, $word){
+    $parent = Graph::object($parentId);
+    if(!$parent->loaded()){
+      throw new Kohana_Exception('Parent object not found, invalid parentId?');
+    }
 
+    $element = latticecms::getElementConfig(Graph::object($parentId), $name);
+    $filters = array( 
+      array(
+        'match' => $word,
+        'matchFields' => 'title',
+      )
+    );
+    $a = new Associator($parentId, $element['lattice'], $filters);
+    $this->response->body($a->renderPoolItems());
+  }
 
-
-
-	public function associate($parentId, $objectId){
-
-	}
-
-	public function disassociate($parentId, $objectId){
-
-	}
 }

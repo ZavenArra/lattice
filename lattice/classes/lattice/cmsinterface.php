@@ -4,10 +4,16 @@
  * Class: CMS_Intergace_Controller
  * The main CMS class, handling add, delete, and retrieval of objects
  * @author Matthew Shultz
- * @version 1.0
- * @package Kororor
+ * @package Lattice
  */
 abstract class Lattice_CMSInterface extends Controller_Layout {
+
+
+    public function __construct($request, $response){
+      parent::__construct($request, $response);
+    }
+
+
    /*
     * Function:  saveFile($objectId)
     * Function called on file upload
@@ -75,7 +81,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       $object = Graph::object($objectId);
       if (Graph::isFileModel($object->$field) && $object->$field->loaded()) {
          $file = $object->$field;
-         $file->delete(); //may or may not want to do this
+         $file->delete();
       }
       $object->$field = null;
       $return = array('cleared' => 'true');
@@ -279,6 +285,17 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       $object = Graph::object($id);
       $object->undelete();
    }
+
+   public function action_associate($parentId, $objectId, $lattice){
+     $parent = Graph::object($parentId);
+     $parent->addLatticeRelationship($objectid, $lattice);
+     $metaObjectType = $parent->getMetaObjectType($lattice);
+   }
+
+   public function action_disassociate($parentId, $objectId, $lattice){
+      Graph::object($parentId)->removeLatticeRelationship($objectid, $lattice);
+   }
+
 
    //abstract
    protected function cms_getNode($id) {

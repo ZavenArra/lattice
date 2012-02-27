@@ -12,15 +12,15 @@ $config = array(
 $config['layout'] = 'LayoutLogin';
 
 $config['resources']['css'] = array(
-	'lattice/lattice/views/thirdparty/960Grid/reset.css',
-	'lattice/lattice/views/thirdparty/960Grid/960.css',
-	'lattice/lattice/views/css/lattice_cms.css'
+	'lattice/lattice/resources/thirdparty/960Grid/reset.css',
+	'lattice/lattice/resources/thirdparty/960Grid/960.css',
+	'lattice/lattice/resources/css/lattice_cms.css'
 );
 
 
 $config['resources']['js'] = array(
-	'lattice/lattice/views/thirdparty/mootools/mootools.js',
-	'lattice/lattice/views/thirdparty/mootools/mootools-more.js',
+	'lattice/lattice/resources/thirdparty/mootools/mootools.js',
+	'lattice/lattice/resources/thirdparty/mootools/mootools-more.js',
 
 );
 

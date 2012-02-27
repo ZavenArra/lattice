@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="latticesite" default="pull">
+
+  <target name="checkout">
+    <exec executable="git" >
+      <arg value="submodule"/>
+      <arg value="init"/>
+    </exec>
+    <exec executable="git" >
+      <arg value="submodule"/>
+      <arg value="update"/>
+    </exec>
+  </target>
+
+  <target name="pull">
+    <exec executable="git" dir="lattice/resources">
+      <arg value="checkout"/>
+      <arg value="master"/>
+    </exec>
+    <exec executable="git" dir="lattice/resources">
+      <arg value="pull"/>
+    </exec>  
+  </target>
+
+</project>
+

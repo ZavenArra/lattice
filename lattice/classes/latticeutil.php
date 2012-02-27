@@ -4,6 +4,7 @@
  * Class: latticeutil
  * Utility helper class
  */
+/* @package Lattice */
 Class latticeutil {
 
 	/*

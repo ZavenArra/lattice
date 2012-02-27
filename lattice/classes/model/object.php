@@ -1,14 +1,14 @@
 <?php
-
 /**
  * Model_Object
  * The ORM Object that connects to the objects table in the database
  * This class also contains all functionality for using the object in the graph.
  * Model_Object hosts a content table for tracking content data, which is implemented
  * by extending 4 abstract methods from this class.
+ * @package Lattice
  * @author deepwinter1
  */
-class Model_Object extends ORM {
+class Model_Object extends ORM implements arrayaccess {
 
    protected $_belongs_to = array(
        'objecttype' => array()
@@ -16,61 +16,61 @@ class Model_Object extends ORM {
    protected $_has_one = array(
        'objecttype' => array()
    );
-	 protected $_has_many = array(
-		 'tag' => array(
-			 'model' => 'tag',
-			 'through' => 'objects_tags'
+  protected $_has_many = array(
+   'tag' => array(
+    'model' => 'tag',
+    'through' => 'objects_tags'
      ),
      'roles' => array(
        'model' => 'role',
        'through' => 'objects_roles',
      ),
-	 );
-	 //cache
-	 private $latticeParents = array();
+  );
+  //cache
+  private $latticeParents = array();
 
-	 protected $contentDriver = NULL;
+  protected $contentDriver = NULL;
 
-	 protected $messages = array();
-
-
-	 public function __construct($id=NULL) {
+  protected $messages = array();
 
 
-		 if (!empty($id) AND is_string($id) AND !ctype_digit($id)) {
-
-			 //check for translation reference
-			 if (strpos('_', $id)) {
-				 $slug = strtok($id, '_');
-				 $languageCode = strtok($id);
-				 $object = Graph::object($slug);
-				 $translatedObject = $object->translated($languageCode);
-				 return $translatedObject;
-			 } else {
-
-				 $result = DB::select('id')->from('objects')->where('slug', '=', $id)->execute()->current();
-				 $id = $result['id'];
-			 }
-		 }
-
-		 parent::__construct($id);
-
-		 if($this->loaded()){
-			 $this->loadContentDriver();
-		 }
-	 }
+  public function __construct($id=NULL) {
 
 
+   if (!empty($id) AND is_string($id) AND !ctype_digit($id)) {
 
-	/*
-	 * Variable: createSlug($title, $forPageId)
-	 * Creates a unique slug to identify a object
-	 * Parameters:
-	 * $titleOrSlug - optional starting point for the slug
-	 * $forPageId - optionally indicate the id of the object this slug is for to avoid false positive slug collisions
-	 * Returns: The new, unique slug
-	 */
-	public static function createSlug($titleOrSlug=NULL, $forPageId=NULL){
+    //check for translation reference
+    if (strpos('_', $id)) {
+     $slug = strtok($id, '_');
+     $languageCode = strtok($id);
+     $object = Graph::object($slug);
+     $translatedObject = $object->translated($languageCode);
+     return $translatedObject;
+    } else {
+
+     $result = DB::select('id')->from('objects')->where('slug', '=', $id)->execute()->current();
+     $id = $result['id'];
+    }
+   }
+
+   parent::__construct($id);
+
+   if($this->loaded()){
+    $this->loadContentDriver();
+   }
+  }
+
+
+
+ /*
+  * Variable: createSlug($title, $forPageId)
+  * Creates a unique slug to identify a object
+  * Parameters:
+  * $titleOrSlug - optional starting point for the slug
+  * $forPageId - optionally indicate the id of the object this slug is for to avoid false positive slug collisions
+  * Returns: The new, unique slug
+  */
+ public static function createSlug($titleOrSlug=NULL, $forPageId=NULL){
     //create slug
     if($titleOrSlug!=NULL){
       $slug = preg_replace('/[^a-z0-9\- ]/', '', strtolower($titleOrSlug));
@@ -112,113 +112,113 @@ class Model_Object extends ORM {
           if(strlen($slug) > 50 - strlen($newindex)){
             $slug = substr($slug, 0, 50 - strlen($newindex) );
           }
-					$slug .= $newindex;
-				}
-			}
-			return $slug;
-		} else {
-			return self::createSlug('slug'.str_replace(' ', '',microtime())); //try something else
-		}
-	}
+     $slug .= $newindex;
+    }
+   }
+   return $slug;
+  } else {
+   return self::createSlug('slug'.str_replace(' ', '',microtime())); //try something else
+  }
+ }
 
-	/*
-	 * convertNewLines($value)
-	 * Replace \n with <br /> for saving into the database
-	 * This replacement is wrapped by detection for \n values that should not be converted into br tags, 
-	 * those which follow lines that only contain html tags
-	 */
-	public static function convertNewLines($value){
-		$value = preg_replace('/(<.*>)[ ]*\n/', "$1------Lattice_NEWLINE------", $value);
-		$value = preg_replace('/[ ]*\n/', '<br />', $value);
-		$value = preg_replace('/------Lattice_NEWLINE------/', "\n", $value);
-		return $value;
-	}
+ /*
+  * convertNewLines($value)
+  * Replace \n with <br /> for saving into the database
+  * This replacement is wrapped by detection for \n values that should not be converted into br tags, 
+  * those which follow lines that only contain html tags
+  */
+ public static function convertNewLines($value){
+  $value = preg_replace('/(<.*>)[ ]*\n/', "$1------Lattice_NEWLINE------", $value);
+  $value = preg_replace('/[ ]*\n/', '<br />', $value);
+  $value = preg_replace('/------Lattice_NEWLINE------/', "\n", $value);
+  return $value;
+ }
 
-	/*
-	 *
-	 */
+ /*
+  *
+  */
   public static function resizeImage($originalFilename, $newFilename, $width, $height,
                                      $forceDimension='width', $crop='false', $aspectFollowsOrientation='false'){
-		//set up dimenion to key off of
-		switch($forceDimension){
-		case 'width':
-			$keyDimension = Image::WIDTH;
-			break;
-		case 'height':
-			$keyDimension = Image::HEIGHT;
-			break;
-		default:
-			$keyDimension = Image::AUTO;
-			break;
-		}
+  //set up dimenion to key off of
+  switch($forceDimension){
+  case 'width':
+   $keyDimension = Image::WIDTH;
+   break;
+  case 'height':
+   $keyDimension = Image::HEIGHT;
+   break;
+  default:
+   $keyDimension = Image::AUTO;
+   break;
+  }
 
-		$image = Image::factory(Graph::mediapath().$originalFilename);
-		if($crop=='true') {
-			//resample with crop
-			//set up sizes, and crop
-			if( ($image->width / $image->height) > ($image->height / $image->width) ){
-				$cropKeyDimension = Image::HEIGHT;
-			} else {
-				$cropKeyDimension = Image::WIDTH;
-			}
-			$image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
-			$image->save(Graph::mediapath().$newFilename);
+  $image = Image::factory(Graph::mediapath().$originalFilename);
+  if($crop=='true') {
+   //resample with crop
+   //set up sizes, and crop
+   if( ($image->width / $image->height) > ($image->height / $image->width) ){
+    $cropKeyDimension = Image::HEIGHT;
+   } else {
+    $cropKeyDimension = Image::WIDTH;
+   }
+   $image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
+   $image->save(Graph::mediapath().$newFilename);
 
-		} else {
-			//just do the resample
-			//set up sizes
-			$resizeWidth = $width;
-			$resizeHeight = $height;
+  } else {
+   //just do the resample
+   //set up sizes
+   $resizeWidth = $width;
+   $resizeHeight = $height;
 
-			if($aspectFollowsOrientation == 'true' ){
-				$osize = getimagesize(Graph::mediapath().$originalFilename);
-				$horizontal = false;
-				if($osize[0] > $osize[1]){
-					//horizontal
-					$horizontal = true;	
-				}
-				$newsize = array($resizeWidth, $resizeHeight);
-				sort($newsize);
-				if($horizontal){
-					$resizeWidth = $newsize[1];
-					$resizeHeight = $newsize[0];
-				} else {
-					$resizeWidth = $newsize[0];
-					$resizeHeight = $newsize[1];
-				}
-			}
+   if($aspectFollowsOrientation == 'true' ){
+    $osize = getimagesize(Graph::mediapath().$originalFilename);
+    $horizontal = false;
+    if($osize[0] > $osize[1]){
+     //horizontal
+     $horizontal = true; 
+    }
+    $newsize = array($resizeWidth, $resizeHeight);
+    sort($newsize);
+    if($horizontal){
+     $resizeWidth = $newsize[1];
+     $resizeHeight = $newsize[0];
+    } else {
+     $resizeWidth = $newsize[0];
+     $resizeHeight = $newsize[1];
+    }
+   }
 
-			//maintain aspect ratio
-			//use the forcing when it applied
-			//forcing with aspectfolloworientation is gonna give weird results!
-			$image->resize($resizeWidth, $resizeHeight, $keyDimension);
+   //maintain aspect ratio
+   //use the forcing when it applied
+   //forcing with aspectfolloworientation is gonna give weird results!
+   $image->resize($resizeWidth, $resizeHeight, $keyDimension);
 
-			$image->save(Graph::mediapath() .$newFilename);
+   $image->save(Graph::mediapath() .$newFilename);
 
-		}
+  }
 
-	}
+ }
 
    
-	 protected function loadContentDriver(){
+  protected function loadContentDriver(){
 
-		 $objectTypeName = $this->objecttype->objecttypename;
-		 if ($objectTypeName) {
-			 if (Kohana::find_file('classes/model/lattice', strtolower($objectTypeName))) {
-				 $modelName = 'Model_Lattice_' . $objectTypeName;
-				 $model = new $modelName($objectId);
-				 $this->contentDriver = $model;
-			 } else {
-				 $this->contentDriver = new Model_Lattice_Object();
-			 }
-			 if ($this->loaded()) {
-				 $this->contentDriver->loadContentTable($this);
-			 }
+   $objectTypeName = $this->objecttype->objecttypename;
+   if ($objectTypeName) {
+    if (Kohana::find_file('classes/model/lattice', strtolower($objectTypeName))) {
+     $modelName = 'Model_Lattice_' . $objectTypeName;
+     $model = new $modelName($objectId);
+     $this->contentDriver = $model;
+    } else {
+     $this->contentDriver = new Model_Lattice_Object();
+    }
+    if ($this->loaded()) {
+     $this->contentDriver->loadContentTable($this);
+    }
        if(!$this->contentDriver){
          throw new Kohana_Exception('Content Driver did not load for '.$this->id);
        }
-		 }
-	 }
+   }
+  }
 
 
 
@@ -232,16 +232,16 @@ class Model_Object extends ORM {
 
    public function __get($column) {
 
-         
-      if (in_array($column, array_keys($this->_table_columns))){
-         //this catchs the configured columsn for this table
-         return parent::__get($column);
-     
-      } else if ($column == 'parent') {
-				return $this->getLatticeParent(); 
-      
-      } else if ($column == 'objecttype'){
-         //this condition should actually check against associations
+
+     if (in_array($column, array_keys($this->_table_columns))){
+       //this catchs the configured columsn for this table
+       return parent::__get($column);
+
+     } else if ($column == 'parent') {
+       return $this->getLatticeParent(); 
+
+     } else if ($column == 'objecttype'){
+       //this condition should actually check against associations
          //OR just call parent::__get($column) with an exception
          //though that seems pretty messy
          $return = parent::__get($column);
@@ -257,13 +257,19 @@ class Model_Object extends ORM {
         return parent::__get('roles');
       } 
      
-      if(!$this->loaded())
+      if(!$this->loaded()) {
         return NULL; 
+      }
 
-      if ($column == 'title'){
+      switch($column){
+      case 'title':
          return $this->contentDriver()->getTitle($this);
+         break;
+      case 'tags':
+        return $this->getTagStrings();
+        break;
+      }
          
-      } else {
 
          //check if this is a list container
          $listConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]', $this->objecttype->objecttypename, $column));
@@ -294,9 +300,8 @@ class Model_Object extends ORM {
             return $listContainerObject;
          }
 
-				 return $this->contentDriver()->getContentColumn($this, $column);
+         return $this->contentDriver()->getContentColumn($this, $column);
  
-      }
    }
    
    
@@ -304,35 +309,32 @@ class Model_Object extends ORM {
    //needing the id of the content table, plus there could
    //be other reasons that justify this.
    public function contentDriver(){
-     if(!$this->loaded()){
-        throw new Kohana_Exception('Object is not loaded');
+     if(!$this->contentDriver){
+
+       $objectTypeName = $this->objecttype->objecttypename;
+
+       if ($objectTypeName) {
+         if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
+           $modelName = 'Model_Lattice_' . $objectTypeName;
+           $model = new $modelName($objectId);
+           $this->contentDriver = $model;
+         } else {
+           $this->contentDriver = new Model_Lattice_Object();
+         }
+         if ($this->loaded()) {
+           $this->contentDriver->loadContentTable($this);
+         }
+       }
+
      }
-		 if(!$this->contentDriver){
-
-			 $objectTypeName = $this->objecttype->objecttypename;
-
-			 if ($objectTypeName) {
-				 if (Kohana::find_file('classes/model/lattice', $objectTypeName)) {
-					 $modelName = 'Model_Lattice_' . $objectTypeName;
-					 $model = new $modelName($objectId);
-					 $this->contentDriver = $model;
-				 } else {
-					 $this->contentDriver = new Model_Lattice_Object();
-				 }
-				 if ($this->loaded()) {
-					 $this->contentDriver->loadContentTable($this);
-				 }
-			 }
-
-		 }
      if(!$this->contentDriver){
        throw new Kohana_Exception('Content Driver did not load for object id '.$this->id);
      }
 
-		 return $this->contentDriver;
-   
+     return $this->contentDriver;
+
    }
-   
+
     /*
      Function: save()
      Custom save function, makes sure the content table has a record when inserting new object
@@ -378,15 +380,15 @@ class Model_Object extends ORM {
       $this->contentDriver()->saveContentTable($this);
    }
    
-	 public function getElementConfig($elementName){
+  public function getElementConfig($elementName){
 
-		 if ($this->__get('objecttype')->nodeType == 'container') {
-			 //For lists, values will be on the 2nd level 
-			 $xPath = sprintf('//list[@name="%s"]', $this->__get('objecttype')->objecttypename);
-		 } else {
-			 //everything else is a normal lookup
-			 $xPath = sprintf('//objectType[@name="%s"]', $this->__get('objecttype')->objecttypename);
-		 }
+   if ($this->__get('objecttype')->nodeType == 'container') {
+    //For lists, values will be on the 2nd level 
+    $xPath = sprintf('//list[@name="%s"]', $this->__get('objecttype')->objecttypename);
+   } else {
+    //everything else is a normal lookup
+    $xPath = sprintf('//objectType[@name="%s"]', $this->__get('objecttype')->objecttypename);
+   }
       $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $elementName));
       return $fieldConfig;
    }
@@ -449,32 +451,32 @@ class Model_Object extends ORM {
    
   
 
-	public function cascadeUndelete(){
-		$this->activity = new Database_Expression(null);
-		$this->slug = Model_Object::createSlug($this->contenttable->title, $this->id);
-		$this->contentdriver()->undelete();
-		$this->save();
+ public function cascadeUndelete(){
+  $this->activity = new Database_Expression(null);
+  $this->slug = Model_Object::createSlug($this->contenttable->title, $this->id);
+  $this->contentdriver()->undelete();
+  $this->save();
 
-		$children = $object->getLatticeChildren();
-		foreach($children as $child){
-			$child->cascadeUndelete();
-		}
+  $children = $object->getLatticeChildren();
+  foreach($children as $child){
+   $child->cascadeUndelete();
+  }
 
 
-	}
+ }
 
-	public function cascadeDelete(){
-		$this->activity = 'D';
-		$this->slug = DB::expr('null');
-		$this->save();
+ public function cascadeDelete(){
+  $this->activity = 'D';
+  $this->slug = DB::expr('null');
+  $this->save();
       $this->contentdriver()->delete();
 
 
-		$children = $this->getLatticeChildren();
-		foreach($children as $child){
-			$child->cascadeDelete();
-		}
-	}
+  $children = $this->getLatticeChildren();
+  foreach($children as $child){
+   $child->cascadeDelete();
+  }
+ }
    
   /*
    * Functions for returning messages
@@ -489,15 +491,15 @@ class Model_Object extends ORM {
    
    
    public function translate($languageCode){
-		 if(!$this->loaded()){
-			 return $this;
-		 }
+   if(!$this->loaded()){
+    return $this;
+   }
 
       $rosettaId = $this->rosetta_id;
-			if(!$rosettaId){
-				throw new Kohana_Exception('No Rosetta ID found for object during translation with objectId :objectId',
-					array(':objectId'=>$rosettaId)
-				);
+   if(!$rosettaId){
+    throw new Kohana_Exception('No Rosetta ID found for object during translation with objectId :objectId',
+     array(':objectId'=>$rosettaId)
+    );
       }
       if(is_numeric($languageCode)){
          $languageId = intval($languageCode);
@@ -511,7 +513,7 @@ class Model_Object extends ORM {
          
       $translatedObject = Graph::object()
               ->where('rosetta_id', '=', $rosettaId)
-              ->where('language_id', '=', $languageId)
+              ->where('objects.language_id', '=', $languageId)
               ->find();
       if(!$translatedObject->loaded()){
          throw new Kohana_Exception('No translated object available for objectId :id with language :language',
@@ -613,18 +615,20 @@ class Model_Object extends ORM {
 
       foreach ($fields as $fieldInfo) {
          $field = $fieldInfo->getAttribute('name');
-     //    if (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field))->length) {
-            $content[$field] = $this->__get($field);
-      //   }
+         $content[$field] = $this->__get($field);
       }
 
       //find any lists
       foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list) {
-
-         $family = $list->getAttribute('name');
-         $content[$family] = $this->getListContentAsArray($family);
+         $name = $list->getAttribute('name');
+         $content[$name] = $this->getListContentAsArray($name);
       }
 
+      //find any associators
+      foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/associator', $this->objecttype->objecttypename)) as $list) {
+         $name = $list->getAttribute('name');
+         $content[$name] = $this->getLatticeChildren($list->getAttribute('name'));;
+      }
       return $content;
    }
    
@@ -658,7 +662,7 @@ class Model_Object extends ORM {
       //get container
       $cTemplate = ORM::Factory('objecttype', $family);
       $container = Graph::object()
-							->latticeChildrenFilter($this->id)
+       ->latticeChildrenFilter($this->id)
               ->where('objecttype_id', '=', $cTemplate->id)
               ->where('activity', 'IS', NULL)
               ->find();
@@ -666,27 +670,23 @@ class Model_Object extends ORM {
       return $container->getPublishedChildren();
    }
 
-   public function getPublishedChildren() {
+   public function getPublishedChildren($lattice = 'lattice') {
 
       $children = Graph::object()
-							->latticeChildrenFilter($this->id)
+       ->latticeChildrenFilter($this->id, $lattice)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder')
-							->join('objecttypes')->on('objects.objecttype_id', '=', 'objecttypes.id')
-							->where('nodeType', '!=', 'container')
+       ->join('objecttypes')->on('objects.objecttype_id', '=', 'objecttypes.id')
+       ->where('nodeType', '!=', 'container')
               ->find_all();
       return $children;
    }
 
-   public function getChildren() {
-
-      return $this->getLatticeChildren();
-   }
    
    public function getLatticeChildren($lattice = 'lattice'){
       $children = Graph::object()
-							->latticeChildrenFilter($this->id, $lattice)
+       ->latticeChildrenFilter($this->id, $lattice)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder')
               ->find_all();
@@ -694,9 +694,10 @@ class Model_Object extends ORM {
    
    }
 
+
    public function getNextPublishedPeer() {
       $next = Graph::object()
-							->latticeChildrenFilter($this->getLatticeParent()->id)
+       ->latticeChildrenFilter($this->getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder', 'ASC')
@@ -712,7 +713,7 @@ class Model_Object extends ORM {
 
    public function getPrevPublishedPeer() {
       $next = Graph::object()
-							->latticeChildrenFilter($this->getLatticeParent()->id)
+       ->latticeChildrenFilter($this->getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder',  'DESC')
@@ -728,7 +729,7 @@ class Model_Object extends ORM {
 
    public function getFirstPublishedPeer() {
       $first = Graph::object()
-							->latticeChildrenFilter($this->getLatticeParent()->id)
+       ->latticeChildrenFilter($this->getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder', 'ASC')
@@ -743,7 +744,7 @@ class Model_Object extends ORM {
 
    public function getLastPublishedPeer() {
       $last = Graph::object()
-							->latticeChildrenFilter($this->getLatticeParent()->id)
+       ->latticeChildrenFilter($this->getLatticeParent()->id)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder', 'DESC')
@@ -796,7 +797,7 @@ class Model_Object extends ORM {
 
    /*
     *
-    * 	Returns: file model of saved file
+    *  Returns: file model of saved file
     * */
 
    public function saveUploadedImage($field, $filename, $type, $tmpName, $additionalResizes=array()) {
@@ -823,9 +824,9 @@ class Model_Object extends ORM {
    }
    
    public static function makeFileSaveName($filename) {
-			if(!$filename){
-				return null;
-			}
+   if(!$filename){
+    return null;
+   }
       $filename = str_replace('&', '_', $filename);
       $xarray = explode('.', $filename);
       $nr = count($xarray);
@@ -954,19 +955,19 @@ class Model_Object extends ORM {
       );
       foreach ($resizes as $resize) {
  
-				$newFilename = NULL;
-				$tag = NULL;
+    $newFilename = NULL;
+    $tag = NULL;
          if ($tag = $resize->getAttribute('name')) {
-						$prefix = $tag . '_';
-						$newFilename = $prefix .  $imagefilename;
+      $prefix = $tag . '_';
+      $newFilename = $prefix .  $imagefilename;
          } else {
             $prefix = '';
-						$newFilename = $imagefilename;
+      $newFilename = $imagefilename;
          }
          $saveName = Graph::mediapath() . $newFilename;
 
-				 //This dependency should be moved out of latticecms
-				 //Rootgraph should never require latticecms
+     //This dependency should be moved out of latticecms
+     //Rootgraph should never require latticecms
          Model_Object::resizeImage($imagefilename, $newFilename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('forceDimension'), $resize->getAttribute('crop'), $resize->getAttribute('aspectFollowsOrientation')
          );
 
@@ -976,12 +977,12 @@ class Model_Object extends ORM {
             }
          }
 
-				 if(array_key_exists($tag, $additionalResizes)){
-					unset($additionalResizes[$tag]);
-				 }
+     if(array_key_exists($tag, $additionalResizes)){
+     unset($additionalResizes[$tag]);
+     }
       }
 
-			//And process resizes passed in from caller
+   //And process resizes passed in from caller
       foreach($additionalResizes as $uiresize){
         Model_Object::resizeImage($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['forceDimension'], $uiresize['crop'], $uiresize['aspectFollowsOrientation'] 
         );
@@ -1025,12 +1026,28 @@ class Model_Object extends ORM {
       return $this;
    }
 
-	 /*
-		* Recode as latticeParentFilter
+   public function contentFilter($wheres){
+     //  $driverInfo = $this->contentDriver()->driverInfo();
+     //Extension point for implementing support for contentFilter with other drivers
+     $driverInfo = array(
+       'driver' => 'mysql', 
+       'tableName' => 'contents',
+     );
+     if($driverInfo['driver']=='mysql'){
+       $this->join($driverInfo['tableName'])->on('objects.id', '=', $driverInfo['tableName'].'.object_id');
+       foreach($wheres as $where){
+        $this->where($driverInfo['tableName'].'.'.$where[0], $where[1], $where[2]);
+       }
+     }
+     return $this;
+   }
+
+  /*
+  * Recode as latticeParentFilter
    public function parentFilter($parentid) {
       $this->where('parentid', '=', $parentid);
-	 }
-		*/
+  }
+  */
 
    public function noContainerObjects() {
       $res = ORM::Factory('objecttype')
@@ -1053,14 +1070,16 @@ class Model_Object extends ORM {
    }
    
    public function activeFilter(){
-    $this->where('activity', 'IS', NULL);
+    $this->where('objects.activity', 'IS', NULL);
     return $this;   
    }
 
-   public function taggedFilter() {
-      
+   public function taggedFilter($tags) {
+     return $this->join('objects_tags')->on('objects_tags.object_id', '=', 'objects.id')
+       ->join('tags')->on('objects_tags.tag_id', '=', 'tags.id')
+       ->where('tag', '=', $tags);
    }
-
+   
    public function latticeChildrenFilter($parentId, $lattice="lattice"){
       $lattice = Graph::lattice($lattice);
        
@@ -1076,32 +1095,43 @@ class Model_Object extends ORM {
    
    }
 
-	 public function getLatticeParent($lattice='lattice'){
+  public function getLatticeParent($lattice='lattice'){
 
-		 $latticeParents =  $this->getLatticeParents($lattice);
-		 if(count($latticeParents)){
-			 return $latticeParents[0];
-		 } else {
-			 return NULL;
-		 }
-	 }
+   $latticeParents =  $this->getLatticeParents($lattice);
+   if(count($latticeParents)){
+    return $latticeParents[0];
+   } else {
+    return NULL;
+   }
+  }
 
-	 public function getLatticeParents($lattice='lattice'){
-		 if(!isset($this->latticeParents[$lattice])){
-				$this->latticeParents[$lattice] = array();
-		 }
-		 $latticeO = Graph::lattice($lattice);
-		 $relationships = ORM::Factory('objectrelationship')
-			 ->where('lattice_id', '=', $latticeO->id)
-			 ->where('connectedobject_id', '=', $this->id)
-			 ->find_all();
-		 foreach($relationships as $relationship){
-			 if($relationship->loaded()){
-				 $this->latticeParents[$lattice][] = Graph::object($relationship->object_id);
-			 }
-		 }
-		 return $this->latticeParents[$lattice];
-	 }
+  public function getLatticeParents($lattice='lattice', $published = false){
+   if(!isset($this->latticeParents[$lattice])){
+    $this->latticeParents[$lattice] = array();
+   }
+   $latticeO = Graph::lattice($lattice);
+   $relationships = ORM::Factory('objectrelationship')
+    ->where('lattice_id', '=', $latticeO->id)
+    ->where('connectedobject_id', '=', $this->id);
+   if($published){
+     $relationships->join('objects')->on('objects.id', '=', 'objectrelationships.object_id')
+       ->where('published', '=', 1)
+       ->where('activity', 'IS', NULL);
+   }
+   $relationships = $relationships->find_all();
+   foreach($relationships as $relationship){
+    if($relationship->loaded()){
+     $this->latticeParents[$lattice][] = Graph::object($relationship->object_id);
+    }
+   }
+   return $this->latticeParents[$lattice];
+  }
+
+  public function getPublishedParents($lattice='lattice'){
+    $this->getLatticeParents($lattice, true);
+  }
+
+
     
     public function isWithinSubTree($objectId, $lattice='lattice'){
        $subTreeObject = NULL;
@@ -1422,46 +1452,26 @@ class Model_Object extends ORM {
       return $newObject;
   
    }
-    
-   private function addLatticeObject($objectTypeName, $lattice = null, $rosettaId = null, $languageId = null){
-      
-      $newObject = $this->createObject($objectTypeName, $rosettaId, $languageId);
 
-      //The objet has been built, now set it's lattice point
-      $lattice = Graph::lattice();
-      $objectRelationship = ORM::Factory('objectrelationship');
-      $objectRelationship->lattice_id = $lattice->id;
-      $objectRelationship->object_id = $this->id;
-      $objectRelationship->connectedobject_id = $newObject->id;
-      $objectRelationship->save();
+   public function addLatticeRelationship($lattice, $newObjectId){
 
+     if(!is_numeric($newObjectId)){
+        $newObjectId = Graph::object($newObjectId);
+     }
 
-      $newObject->insertContentRecord();
-      
-      
-      //calculate sort order
-      $sort = DB::select('sortorder')->from('objectrelationships')
-                        ->where('lattice_id', '=', $lattice->id)
-                        ->where('object_id', '=', $this->id)
-                      ->order_by('sortorder','DESC')->limit(1)
-                      ->execute()->current();
-      $objectRelationship->sortorder = $sort['sortorder'] + 1;
-    
-      $objectRelationship->save();
-      return $newObject;
-   
-   }
+     if($this->checkLatticeRelationship($lattice, $newObjectId)){
+      return;
+     }
 
-   public function connectLatticeChild($lattice, $childObject){
      if(!is_object($lattice)){
        $lattice = Graph::lattice($lattice);
      }
 
-      $objectRelationship = ORM::Factory('objectrelationship');
-      $objectRelationship->lattice_id = $lattice->id;
-      $objectRelationship->object_id = $this->id;
-      $objectRelationship->connectedobject_id = $childObject->id;
-      $objectRelationship->save();
+     $objectRelationship = ORM::Factory('objectrelationship');
+     $objectRelationship->lattice_id = $lattice->id;
+     $objectRelationship->object_id = $this->id;
+     $objectRelationship->connectedobject_id = $newObjectId;
+     $objectRelationship->save();
 
       //calculate sort order
       $sort = DB::select('sortorder')->from('objectrelationships')
@@ -1472,6 +1482,56 @@ class Model_Object extends ORM {
       $objectRelationship->sortorder = $sort['sortorder'] + 1;
     
       $objectRelationship->save();
+   }
+
+   public function checkLatticeRelationship($lattice, $newObjectId){
+     if(!is_object($lattice)){
+       $lattice = Graph::lattice($lattice);
+     }
+
+     $objectRelationship = ORM::Factory('objectRelationship')
+       ->where('lattice_id', '=', $lattice->id)
+       ->where('object_id', '=', $this->id)
+       ->where('connectedobject_id', '=', $newObjectId)
+       ->find(); 
+
+     if($objectRelationship->loaded()){
+       return true;
+     } else {
+       return false;
+     }
+   }
+
+   public function removeLatticeRelationship($lattice, $removeObjectId){
+     if(!is_object($lattice)){
+       $lattice = Graph::lattice($lattice);
+     }
+
+     $objectRelationship = ORM::Factory('objectrelationship');
+     $objectRelationship->where('lattice_id', '=', $lattice->id);
+     $objectRelationship->where('object_id', '=', $this->id);
+     $objectRelationship->where('connectedobject_id', '=', $removeObjectId);
+     $objectRelationship->find();
+     if($objectRelationship->loaded()){
+      $objectRelationship->delete();
+     }
+
+   }
+
+
+   private function addLatticeObject($objectTypeName, $lattice = null, $rosettaId = null, $languageId = null){
+
+     $newObject = $this->createObject($objectTypeName, $rosettaId, $languageId);
+
+     //The objet has been built, now set it's lattice point
+     $lattice = Graph::lattice();
+     $this->addLatticeRelationship($lattice->id, $newObject->id);
+
+
+     $newObject->insertContentRecord();
+
+      return $newObject;
+   
    }
 
   public function clearLatticeConnections($lattice){
@@ -1486,7 +1546,7 @@ class Model_Object extends ORM {
        $parentRosettaId = $this->rosetta_id;
        $translatedObject = Graph::object()
                ->where('rosetta_id', '=', $this->rosetta_id)
-               ->where('language_id', '=', $languageId)
+               ->where('objects.language_id', '=', $languageId)
                ->find();
        if(!$translatedObject->loaded()){
           throw new Kohana_Exception('No matching translated object for rosetta :rosetta and language :language',
@@ -1567,6 +1627,33 @@ class Model_Object extends ORM {
        }
      }
 
+   }
+
+   public function getMetaObjectTypeName($lattice){
+     $xPath = sprintf('//objectType[@name="%s"]/elements/associator[@lattice="%s"]', 
+       $this->objecttype->objecttypename,
+       $lattice);
+     //echo $xPath;
+
+     $config = lattice::config('objects', $xPath); 
+     if(!$config->item(0)){
+       return NULL;
+     }
+     return $config->item(0)->getAttribute('metaObjectTypeName');
+   }
+
+
+   public function offsetExists ($offset ){
+      return true; // TODO: Fix this
+   }
+   public function offsetGet ( $offset ) {
+      return $this->__get($offset);
+   }
+   public function offsetSet (  $offset , $value ) {
+      return $this->__set($offset, value);
+   }
+   public function offsetUnset ( $offset ) {
+     return true; //can't unset in this class
    }
 
 }

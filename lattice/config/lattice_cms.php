@@ -1,26 +1,27 @@
 <?
 
 $config['resources']['librarycss'] = array(
-	'lattice/lattice/views/thirdparty/960Grid/reset.css',
-	'lattice/lattice/views/thirdparty/960Grid/960.css'
+	'lattice/lattice/resources/thirdparty/960Grid/reset.css',
+	'lattice/lattice/resources/thirdparty/960Grid/960.css'
 );
 $config['resources']['libraryjs'] = array(
-	'lattice/lattice/views/thirdparty/mootools/mootools.js',
-	'lattice/lattice/views/thirdparty/mootools/mootools-more.js',
+	'lattice/lattice/resources/thirdparty/mootools/mootools.js',
+	'lattice/lattice/resources/thirdparty/mootools/mootools-more.js',
 	//these are required by LatticeUI
-	'lattice/lattice/views/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
-	'lattice/lattice/views/thirdparty/arian/datepicker/Picker.js',
-	'lattice/lattice/views/thirdparty/arian/datepicker/Picker.Attach.js',
-	'lattice/lattice/views/thirdparty/arian/datepicker/Picker.Date.js',
-	'lattice/lattice/views/thirdparty/arian/datepicker/Picker.js',
-	'lattice/lattice/views/js/LatticeCore.js',
-	'lattice/lattice/views/js/LatticeModules.js',
-	'lattice/lattice/views/js/LatticeUI.js',
-	'lattice/navigation/views/js/navigationDataSourceInterface.js',
+	'lattice/lattice/resources/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
+	'lattice/lattice/resources/thirdparty/arian/datepicker/Picker.js',
+	'lattice/lattice/resources/thirdparty/arian/datepicker/Picker.Attach.js',
+	'lattice/lattice/resources/thirdparty/arian/datepicker/Picker.Date.js',
+	'lattice/lattice/resources/thirdparty/arian/datepicker/Picker.js',
+	'lattice/lattice/resources/js/LatticeCore.js',
+	'lattice/lattice/resources/js/LatticeModules.js',
+	'lattice/lattice/resources/js/LatticeUI.js',
+	'lattice/navigation/resources/js/navigationDataSourceInterface.js',
 );
 
 $config['resources']['js'] = array(
-	'lattice/lattice/views/js/list.js',
+	'lattice/lattice/resources/js/list.js',
+	'lattice/lattice/resources/js/associator.js',
 );
 
 

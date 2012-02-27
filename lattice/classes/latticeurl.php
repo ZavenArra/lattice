@@ -1,4 +1,5 @@
 <?
+/* @package Lattice */
 
 Class LatticeUrl {
 

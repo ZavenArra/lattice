@@ -10,6 +10,7 @@
  *
  * @author deepwinter1
  */
+/* @package Lattice */
 class Graph {
 
 	public static $mediapath;	
@@ -37,16 +38,30 @@ class Graph {
     return $object;
 	}
 
+  public static function createObject($objectTypeName, $key){
+    $objectId = Graph::instance()->addObject($objectTypeName, array('slug'=>$key));
+    return Graph::object($objectId);
+
+  }
+
 
    public static function lattice($latticeId = 'lattice'){
       if(is_numeric($latticeId)){
          return ORM::Factory('lattice', $latticeId);
       } else {
          $lattice = ORM::Factory('lattice')->where('name', '=', $latticeId)->find();
-         return $lattice;
       }
-   
+      if(isset($lattice) && !$lattice->loaded()){
+        $lattice = ORM::Factory('lattice');
+        $lattice->name = $latticeId;
+        $lattice->save();
+      }
+      return $lattice;
    }
+
+  public static function lattices(){
+    return ORM::Factory('lattice')->find_all();
+  }
 
 	public static function file($fileId = null){
 

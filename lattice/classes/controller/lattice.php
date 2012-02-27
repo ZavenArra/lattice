@@ -1,6 +1,5 @@
 <?
 
-
 class Controller_Lattice extends Controller {
 
 	public static $topController;
@@ -18,6 +17,16 @@ class Controller_Lattice extends Controller {
 	//constructor
 	public function __construct($request, $response){
 		parent::__construct($request, $response);
+
+    try {
+      ORM::Factory('object')->find_all();
+    } catch(Exception $e){
+      $view = new View('latticeNotInstalled');
+      echo $view->render();
+      die();
+    }
+
+
 
 		//set the language requirements
 		
@@ -117,10 +126,10 @@ class Controller_Lattice extends Controller {
     }
 
 		//should add to self, then merge into topController
-		if($css = Kohana::find_file('views', 'css/'.$key, 'css')){
+		if($css = Kohana::find_file('resources', 'css/'.$key, 'css')){
 			$this->resources['css'][$css] = lattice::convertFullPathToWebPath($css);
 		}
-		if($js = Kohana::find_file('views', 'js/'.$key, 'js')){
+		if($js = Kohana::find_file('resources', 'js/'.$key, 'js')){
 			$this->resources['js'][$js] = lattice::convertFullPathToWebPath($js);
 		}
 

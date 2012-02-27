@@ -9,7 +9,7 @@
 		echo latticeui::buildUIElement( $elementArray, $title );
 	}	
 	if( Kohana::config('cms.enableSlugEditing') ){
-		$elementArray = array( 'type'=>'text', 'name'=>'slug', 'isMultiline'=>'false', 'label'=>'Title', 'class'=>'grid_2 discrete', 'tag'=>'p', 'labelClass'=>'hidden' );
+		$elementArray = array( 'type'=>'text', 'name'=>'slug', 'isMultiline'=>'false', 'label'=>'Slug', 'class'=>'grid_2 discrete', 'tag'=>'p', 'labelClass'=>'hidden' );
 		echo latticeui::buildUIElement( $elementArray, $slug );
 	}
 	?>

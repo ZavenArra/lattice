@@ -83,7 +83,14 @@ class View_Csv {
                //and do the other languages
                foreach ($languages as $language) {
                   $dataItem = $il8nObjects[$language->code]->$columnName;
-                  $columnNameOut = $columnName . '_' . $language->code;
+
+                  if(count($language)>1){
+                    $suffix =  '_' . $language->code;
+                  } else {
+                    $suffix = '';
+                  }
+                  $columnNameOut = $columnName . $suffix;
+
                   $dataItemLine = array_pad(array($columnNameOut, $dataItem->filename), - 2 - $this->_indent - 1, '');
                   $csv .= latticeutil::arrayToCsv($dataItemLine, ',');
                   $csv .= "\n";
@@ -107,7 +114,12 @@ class View_Csv {
                   $dataItem = implode($dataItem, ',');
                }
 
-               $columnNameOut = $columnName . '_' . $language->code;
+               if(count($language)>1){
+                 $suffix =  '_' . $language->code;
+               } else {
+                 $suffix = '';
+               }
+               $columnNameOut = $columnName . $suffix;
                $dataItemLine = array_pad(array($columnNameOut, $dataItem), - 2 - $this->_indent - 1, '');
                $csv .= latticeutil::arrayToCsv($dataItemLine, ',');
                $csv .= "\n";

@@ -3,8 +3,7 @@
  * Class: CMS_Controller
  * The main CMS class, handling add, delete, and retrieval of objects
  * @author Matthew Shultz
- * @version 1.0
- * @package Kororor
+ * @package Lattice
  */
 
 
@@ -88,8 +87,6 @@ class Lattice_CMS extends Lattice_CMSInterface {
 		$this->view->languages = $languages;
 		
 		$this->response->body($this->view->render());
-		//$this->outputLayout();  //consider using AFTER for this, but need to know whats up with ajax, etc
-		//can we route through a layout controller???
 	}
 
 	/*
@@ -231,18 +228,6 @@ class Lattice_CMS extends Lattice_CMSInterface {
     Kohana::$log->add(Log::INFO, var_export($_FILES, true));
 		$newId = Graph::object($id)->addObject($objecttype_id, $data);
 		$this->response->data($newId);
-	}
-
-	
-
-
-
-	/*
-	 * Function: associate
-	 * Associate an object to another object
-	 */
-	public function action_associate($objectId){
-		//gotta issue here
 	}
 
 	/*
