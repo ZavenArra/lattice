@@ -17,14 +17,16 @@ class Model_Object extends ORM implements arrayaccess {
        'objecttype' => array()
    );
   protected $_has_many = array(
-   'tag' => array(
-    'model' => 'tag',
-    'through' => 'objects_tags'
-     ),
-     'roles' => array(
-       'model' => 'role',
-       'through' => 'objects_roles',
-     ),
+    'tag' => array(
+      'model' => 'tag',
+      'through' => 'objects_tags',
+      'foreign_key' => 'object_id',
+    ),
+    'roles' => array(
+      'model' => 'role',
+      'through' => 'objects_roles',
+      'foreign_key' => 'object_id',
+    ),
   );
   //cache
   private $latticeParents = array();
