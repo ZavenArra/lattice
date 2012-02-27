@@ -38,7 +38,7 @@ class latticecms {
 										
 										$clusterHtmlChunks = latticecms::buildUIHtmlChunksForObject($clusterObject);
 
-										$customview = 'objectTypes/' . $clusterObject->objecttype->objecttypename; //check for custom view for this objectType
+										$customview = 'lattice/objectTypes/' . $clusterObject->objecttype->objecttypename; //check for custom view for this objectType
 										$usecustomview = false;
 										if (Kohana::find_file('views', $customview)) {
 												$usecustomview = true;

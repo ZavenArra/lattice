@@ -90,7 +90,7 @@ class Controller_List extends Lattice_CMSInterface {
       //throw new Kohana_Exception('what');
 
       $view = null;
-			$customListView = 'objectTypes/'.$this->_listObject->objecttype->objecttypename;
+			$customListView = 'lattice/objectTypes/'.$this->_listObject->objecttype->objecttypename;
       if (Kohana::find_file('views', $customListView)) {
          $view = new View($customListView);
       } else {
@@ -104,7 +104,7 @@ class Controller_List extends Lattice_CMSInterface {
 
          $htmlChunks = latticecms::buildUIHtmlChunksForObject($object);
 
-         $customItemView = 'objectTypes/' . $object->objecttype->objecttypename;
+         $customItemView = 'lattice/objectTypes/' . $object->objecttype->objecttypename;
          $itemView = null;
          if (Kohana::find_file('views', $customItemView)) {
             $itemView = new View($customItemView);
@@ -191,7 +191,7 @@ class Controller_List extends Lattice_CMSInterface {
       
       $htmlChunks = latticecms::buildUIHtmlChunksForObject($object);
 
-		$customItemView = 'objectTypes/' . $object->objecttype->objecttypename;
+		$customItemView = 'lattice/objectTypes/' . $object->objecttype->objecttypename;
       $itemView = null;
       if (Kohana::find_file('views', $customItemView)) {
          $itemView = new View($customItemView);
