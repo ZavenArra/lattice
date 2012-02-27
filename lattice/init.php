@@ -108,7 +108,8 @@ Route::set('footer', 'footer(/<id>)')
 	);
 
 
-if(str_replace(url::base(), '', $_SERVER['REQUEST_URI']) != 'setup'){
+if(isset($_SERVER['REQUEST_URI'])
+  && (str_replace(url::base(), '', $_SERVER['REQUEST_URI']) != 'setup')){
   try {
     ORM::Factory('object')->find_all();
   } catch(Exception $e){
