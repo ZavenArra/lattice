@@ -10,7 +10,7 @@ CREATE TABLE `confirmations` (
   `timeouthours` int(11) NOT NULL DEFAULT '5',
   `confirmed` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`,`confirmation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `contents` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -318,7 +318,7 @@ CREATE TABLE `contents` (
   `activity` char(1) CHARACTER SET latin1 DEFAULT NULL,
   PRIMARY KEY (`object_id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=201 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `files` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -363,7 +363,7 @@ CREATE TABLE `objectmaps` (
   `index` int(11) NOT NULL,
   `column` varchar(100) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objectrelationships` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -372,7 +372,7 @@ CREATE TABLE `objectrelationships` (
   `connectedobject_id` int(11) NOT NULL,
   `sortorder` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=279 DEFAULT CHARSET=latin1;
 
 CREATE TABLE `objects` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -388,14 +388,21 @@ CREATE TABLE `objects` (
   `activity` char(1) CHARACTER SET latin1 DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `identifier` (`slug`,`language_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=368 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `objects_roles` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `object_id` int(11) DEFAULT NULL,
+  `role_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=575 DEFAULT CHARSET=latin1;
 
 CREATE TABLE `objects_tags` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `object_id` int(11) NOT NULL,
   `tag_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `objecttypes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -405,7 +412,14 @@ CREATE TABLE `objecttypes` (
   `contentType` varchar(20) CHARACTER SET latin1 DEFAULT NULL,
   `sort_order` smallint(2) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE `objecttypes_roles` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `object_id` int(11) DEFAULT NULL,
+  `role_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `ratings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -428,7 +442,7 @@ CREATE TABLE `roles` (
   `description` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `roles_users` (
   `user_id` int(10) unsigned NOT NULL,
@@ -442,12 +456,19 @@ CREATE TABLE `roles_users` (
 CREATE TABLE `rosettas` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=131 DEFAULT CHARSET=latin1;
 
 CREATE TABLE `schema_migrations` (
   `version` varchar(255) DEFAULT NULL,
   UNIQUE KEY `idx_schema_migrations_version` (`version`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `sites` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `site` varchar(255) DEFAULT NULL,
+  `object_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 CREATE TABLE `sitestates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -456,7 +477,7 @@ CREATE TABLE `sitestates` (
   `tabState` enum('description','transcript') CHARACTER SET latin1 DEFAULT NULL,
   `openVideo` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=346 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=519 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `tagbuckets` (
   `id` int(11) NOT NULL,
@@ -469,7 +490,7 @@ CREATE TABLE `tags` (
   `tag` varchar(255) NOT NULL,
   `language_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tags_tagbuckets` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -478,8 +499,8 @@ CREATE TABLE `tags_tagbuckets` (
   PRIMARY KEY (`id`),
   KEY `tagbucket_id` (`tagbucket_id`),
   KEY `tag_id` (`tag_id`),
-  CONSTRAINT `tags_tagbuckets_tag_id_fk` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`),
-  CONSTRAINT `tags_tagbuckets_tagbucket_id_fk` FOREIGN KEY (`tagbucket_id`) REFERENCES `tagbuckets` (`id`)
+  CONSTRAINT `tags_tagbuckets_tagbucket_id_fk` FOREIGN KEY (`tagbucket_id`) REFERENCES `tagbuckets` (`id`),
+  CONSTRAINT `tags_tagbuckets_tag_id_fk` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `user_tokens` (
@@ -506,10 +527,27 @@ CREATE TABLE `users` (
   `status` enum('ACTIVE','INCOMPLETE','DELETED') NOT NULL DEFAULT 'INCOMPLETE',
   `firstname` varchar(255) NOT NULL,
   `lastname` varchar(255) NOT NULL,
+  `usertype_id` int(11) DEFAULT NULL,
+  `site_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_username` (`username`),
   UNIQUE KEY `uniq_email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `usertypes` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `usertype` varchar(255) DEFAULT NULL,
+  `object_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `videoplaycounts` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `object_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `datetime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
 CREATE TABLE `videoviews` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
