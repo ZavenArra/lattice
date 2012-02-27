@@ -60,7 +60,11 @@ Class Lattice_Initializer {
          $view->problems = self::$problems;
          $view->messages = self::$messages;
          echo $view->render();
-         die();
+      }
+      if(count(self::$problems)){
+        return false;
+      } else {
+        return true;
       }
    }
    

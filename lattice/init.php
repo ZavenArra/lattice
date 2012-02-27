@@ -107,6 +107,17 @@ Route::set('footer', 'footer(/<id>)')
 		)
 	);
 
+
+if(str_replace(url::base(), '', $_SERVER['REQUEST_URI']) != 'setup'){
+  try {
+    ORM::Factory('object')->find_all();
+  } catch(Exception $e){
+    $view = new View('latticeNotInstalled');
+    echo $view->render();
+    die();
+  }
+}
+
 /*
 Route::set('default4', '(<controller>(/<action>(/<id>(/<thing>))))')
 	->defaults(array(
