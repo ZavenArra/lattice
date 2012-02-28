@@ -6,8 +6,8 @@
  * */
 function mysql_multiquery($sql){
 	$sql = explode(";\n", $sql);
-	echo $sql;
-	echo "\n\n";
+	//echo $sql;
+	//echo "\n\n";
 	foreach ($sql as $key => $val) {
 		$rval = mysql_query($val);
 		if(!$rval){

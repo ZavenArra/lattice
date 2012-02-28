@@ -40,6 +40,16 @@ class Model_ObjectType extends ORM {
      }
    }
 
+  public static function getElements($objectTypeName){
+    $config = Model_ObjectType::getConfig($objectTypeName);
+    $elements = lattice::config('objects', 'elements/*', $config);
+    return $elements;
+  }
+
+  public static function getElementConfig($objectTypeName, $elementName){
+    throw new Kohana_Expection("Not Implemented");
+  }
+
 	/*
 	 * Function: __get($column)
 	 * Custom getter, allows overriding database values with local file config values
@@ -117,6 +127,33 @@ class Model_ObjectType extends ORM {
 
 		return parent::unique_key($id);
 	}
+
+    /*
+     * Function: defaults()
+     * Get default values for insert
+     */
+    public function defaults(){
+      $elements = Model_ObjectType::getElements($this->objecttypename);
+      $defaults = array();
+      foreach($elements as $element){
+        $default = $element->getAttribute('default');
+        switch($default){
+        case 'now':
+          $defaults[$element->getAttribute('name')] = date('Y-m-d H:i:s ');
+          break;
+        case 'none':
+          break;
+
+        default:
+          if($default){
+            $defaults[$element->getAttribute('name')] = $default; 
+          }
+
+        }
+
+      }
+      return $defaults;
+    }
 
 	/*
 	 * Function: getPublishedMembers($limit)

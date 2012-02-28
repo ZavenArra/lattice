@@ -81,17 +81,21 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
       if ($object->objecttype->nodeType == 'container') {
         //For lists, values will be on the 2nd level 
         $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
+
       } else {
         //everything else is a normal lookup
         $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
+
       }
+
       $fieldConfig = lattice::config('objects', $xPath . sprintf('/elements/*[@name="%s"]', $column));
 
 
       if ($fieldConfig->item(0)) {
 
-        //This is a temporary stopgap until we have a cleaner handle on what to do when tags is
-        //requested via the object.
+        //quick fix for tags
+        //tags is not a dbmapped field / configured field
+        //so just return here
         if ($fieldConfig->item(0)->tagName == 'tags') {
           return $object->getTagStrings();
         }
@@ -141,7 +145,7 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
      //
      if ($object->objecttype->nodeType == 'container') {
       //For lists, values will be on the 2nd level 
-      $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
+      $xPath = sprintf('//objectType/elements/list[@name="%s"]', $object->objecttype->objecttypename);
      } else {
       //everything else is a normal lookup
       $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);

@@ -236,27 +236,22 @@ class Model_Object extends ORM implements arrayaccess {
 
 
      if (in_array($column, array_keys($this->_table_columns))){
-       //this catchs the configured columsn for this table
+       //this catches the configured colums for this table
        return parent::__get($column);
 
      } else if ($column == 'parent') {
        return $this->getLatticeParent(); 
 
-     } else if ($column == 'objecttype'){
-       //this condition should actually check against associations
-         //OR just call parent::__get($column) with an exception
-         //though that seems pretty messy
-         $return = parent::__get($column);
-
-       /*  if(!$return->loaded()){
-            throw new Kohana_Exception('Objecttype model not loaded '. $this->id .':'.$this->objecttype_id);
-         }*/
+     } else if ($column == 'objecttype' || $column == 'objectType'){
+         $return = parent::__get('objecttype');
          return $return;
+
       } else if (in_array($column, array_keys($this->__get('objecttype')->_table_columns))){
-  
         return $this->__get('objecttype')->$column; 
+
       } else if ($column == 'roles'){
         return parent::__get('roles');
+
       } 
      
       if(!$this->loaded()) {
@@ -271,42 +266,42 @@ class Model_Object extends ORM implements arrayaccess {
         return $this->getTagStrings();
         break;
       }
-         
 
-         //check if this is a list container
-         $listConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]', $this->objecttype->objecttypename, $column));
-         if ($listConfig->length) {
-           
-            //look up the object type
-            $family = $column;
-       
-            $listObjectType = ORM::Factory('objecttype', $family);
-            if (!$listObjectType->id) {
-               $this->objecttype->configureElement($listConfig->item(0));
-               $listObjectType = ORM::Factory('objecttype', $family);
-            }
 
-            $listContainerObject = ORM::Factory('listcontainer')
-                    ->latticeChildrenFilter($this->id)
-                    ->objectTypeFilter($listObjectType->id)
-                    ->activeFilter()
-                    ->find();
-            //The next line is either necessary to correctly initialize the model
-            //or listcontainer could be refactored as a storage class of object
-            //Lattice_Model_...
-            $listContainerObject = ORM::Factory('listcontainer', $listContainerObject->id);
-            if (!$listContainerObject->id) {
-               $listContainerObjectId = $this->addObject($family);
-               $listContainerObject = ORM::Factory('listcontainer', $listContainerObjectId);
-            }
-            return $listContainerObject;
-         }
+      //check if this is a list container
+      $listConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]', $this->objecttype->objecttypename, $column));
+      if ($listConfig->length) {
 
-         return $this->contentDriver()->getContentColumn($this, $column);
- 
+        //look up the object type
+        $family = $column;
+
+        $listObjectType = ORM::Factory('objecttype', $family);
+        if (!$listObjectType->id) {
+          $this->objecttype->configureElement($listConfig->item(0));
+          $listObjectType = ORM::Factory('objecttype', $family);
+        }
+
+        $listContainerObject = ORM::Factory('listcontainer')
+          ->latticeChildrenFilter($this->id)
+          ->objectTypeFilter($listObjectType->id)
+          ->activeFilter()
+          ->find();
+        //The next line is either necessary to correctly initialize the model
+        //or listcontainer could be refactored as a storage class of object
+        //Lattice_Model_...
+        $listContainerObject = ORM::Factory('listcontainer', $listContainerObject->id);
+        if (!$listContainerObject->id) {
+          $listContainerObjectId = $this->addObject($family);
+          $listContainerObject = ORM::Factory('listcontainer', $listContainerObjectId);
+        }
+        return $listContainerObject;
+      }
+
+      return $this->contentDriver()->getContentColumn($this, $column);
+
    }
-   
-   
+
+
    //Providing access to contentDriver as a quick fix for 
    //needing the id of the content table, plus there could
    //be other reasons that justify this.
@@ -1194,7 +1189,9 @@ class Model_Object extends ORM implements arrayaccess {
 
          }
       }
+
       
+      echo 'updateing content dat';
       $newObject->updateContentData($data);
 
       /*
@@ -1316,23 +1313,37 @@ class Model_Object extends ORM implements arrayaccess {
 
       return $newObject;
     }
-    
-    private function updateContentData($data){
-       if(!count($data)){
-          return $this;
+
+
+
+   /*
+    * Function: updateContentData($data)
+    * Add defaults to content table 
+    * This happens after the lattice point is set 
+    * in case content tables are dependent on lattice point
+    * */
+   private function updateContentData($data){
+
+     //load defaults for this object type
+     foreach($this->objecttype->defaults() as $field => $default){
+       if(!isset($data[$field])){
+         $data[$field] = $default;
        }
-      
-      if (isset($data['published']) ) {
-         $this->published = $data['published'];
-         unset($data['published']);
-      }
-      
-      //Add defaults to content table
-      //This needs to happen after the lattice point is set
-      //in case content tables are dependent on lattice point
+     }
 
 
-      $lookupTemplates = lattice::config('objects', '//objectType');
+     if(!count($data)){
+       return $this;
+     }
+
+     if (isset($data['published']) ) {
+       $this->published = $data['published'];
+       unset($data['published']);
+     }
+
+
+
+     $lookupTemplates = lattice::config('objects', '//objectType');
       $objectTypes = array();
       foreach ($lookupTemplates as $tConfig) {
          $objectTypes[] = $tConfig->getAttribute('name');
@@ -1351,19 +1362,13 @@ class Model_Object extends ORM implements arrayaccess {
                continue(2);
          }
 
+        //$fieldInfo = Model_ObjectType::getFieldInfoForObjectType($this->objectttype->objecttypename, $field)
+
          $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field);
          $fieldInfo = lattice::config('objects', $fieldInfoXPath)->item(0);
          if (!$fieldInfo) {
             throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath' => $fieldInfoXPath));
          }
-
-         if (in_array($fieldInfo->tagName, $objectTypes) && is_array($value)) {
-            $clusterTemplateName = $fieldInfo->tagName;
-            $clusterObjectId = Graph::object()->addObject($clusterTemplateName, $value); //adding object to null parent
-            $this->$field = $clusterObjectId;
-            continue;
-         }
-
 
          switch ($fieldInfo->tagName) {
             case 'file':
@@ -1419,7 +1424,6 @@ class Model_Object extends ORM implements arrayaccess {
       //Postpone dealing with content record until after lattice point is set
       //in case content table logic depends on lattice point.
       $newObject->insertContentRecord();
-      //print_r($data);
       $newObject->updateContentData($data);
       
       /*

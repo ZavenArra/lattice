@@ -9,7 +9,8 @@
 <!ENTITY % uiattrs
 	"name				CDATA	#REQUIRED
 	 label				CDATA	#IMPLIED
-	 className			CDATA	#IMPLIED"
+	 className			CDATA	#IMPLIED
+   default   CDATA #IMPLIED"
 >
 
 <!ELEMENT configuration (objectTypes) >
@@ -29,7 +30,7 @@
   initialAccessRoles  CDATA #IMPLIED
 >
 
-<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|checkbox|time|associator|link|extendedImage|extendedFile|tags|pulldown)* >
+<!ELEMENT elements (text|list|image|file|radioGroup|multiSelect|date|time|checkbox|time|associator|link|tags|pulldown)* >
 
 <!ELEMENT components (component*) >
 
@@ -111,7 +112,6 @@
 <!ELEMENT radioGroup (radio*) >
 <!ATTLIST radioGroup
 	%uiattrs;
-	groupLabel			CDATA #REQUIRED
 >
 
 <!ELEMENT radio EMPTY >
@@ -129,6 +129,7 @@
 <!ELEMENT date EMPTY>
 <!ATTLIST date
 	%uiattrs;
+  default   (now|none) "none"
 >
 
 <!ELEMENT time EMPTY>
@@ -144,16 +145,6 @@
 
 <!ELEMENT link EMPTY>
 <!ATTLIST link
-	%uiattrs;
->
-
-<!ELEMENT extendedImage EMPTY>
-<!ATTLIST extendedImage 
-	%uiattrs;
->
-
-<!ELEMENT extendedFile EMPTY>
-<!ATTLIST extendedFile 
 	%uiattrs;
 >
 
