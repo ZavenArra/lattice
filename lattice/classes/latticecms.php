@@ -35,7 +35,9 @@ class latticecms {
 
 										$field = $element['name'];
 										$clusterObject = $object->$field;
-										//this should really happen within the models
+                    if(!$clusterObject){
+                      throw new Kohana_Exception('Cluster Object did not load for '.$object->id.': '.$field);
+                    }
 										
 										$clusterHtmlChunks = latticecms::buildUIHtmlChunksForObject($clusterObject);
 

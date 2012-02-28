@@ -93,6 +93,9 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 
       if ($fieldConfig->item(0)) {
 
+        //quick fix for tags
+        //tags is not a dbmapped field / configured field
+        //so just return here
         if ($fieldConfig->item(0)->tagName == 'tags') {
           return $object->getTagStrings();
         }
@@ -142,7 +145,7 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
      //
      if ($object->objecttype->nodeType == 'container') {
       //For lists, values will be on the 2nd level 
-      $xPath = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
+      $xPath = sprintf('//objectType/elements/list[@name="%s"]', $object->objecttype->objecttypename);
      } else {
       //everything else is a normal lookup
       $xPath = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
