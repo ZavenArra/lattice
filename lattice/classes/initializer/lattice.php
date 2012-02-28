@@ -8,7 +8,6 @@ Class Initializer_Lattice {
     } catch (Exception $e) {
       if ($e->getCode() == 1146) { //code for table doesn't exist
         $sqlFile = Kohana::find_file('sql', 'lattice', $ext = 'sql');
-        echo $sqlFile;
         $sql = file_get_contents($sqlFile);
         mysql_multiquery($sql); 
       }

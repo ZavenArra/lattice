@@ -139,6 +139,8 @@ Class Associator {
       $view = new View('lattice/associator/'.$viewName.'/'.$item->objecttype->objecttypename);
     } else if($viewName && $view = Kohana::find_file('views/lattice/associator/'.$viewName, 'item')){ 
       $view = new View('lattice/associator/'.$viewName.'/'.'item');
+    } else if($view = Kohana::find_file('views/lattice/associator/', $item->objecttype->objecttypename)){ 
+      $view = new View('lattice/associator/'.$item->objecttype->objecttypename);
     } else  {
       $view = new View('lattice/associator/item');
     }

@@ -187,7 +187,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
 		$nodetitlehtml = $this->nodetitle->render();
 
-		$customView = 'objectTypes/'.$object->objecttype->objecttypename; //check for custom view for this objectType
+		$customView = 'lattice/objectTypes/'.$object->objecttype->objecttypename; //check for custom view for this objectType
 
       $htmlChunks = latticecms::buildUIHtmlChunksForObject($object, $languageCode);
 

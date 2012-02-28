@@ -4,7 +4,7 @@
 		<input type="file" class="hidden" />
 		<p class="<?=str_replace(',',' ',$extensions);?> fileName"><?if($value):?><?=$value['filename'];?><?else:?>No file uploaded yet&hellip;<?endif;?></p>
 		<div class="status hidden">
-		<img src="<?=url::site('lattice/lattice/views/images/bar.gif', null, false);?>" class="progress" />
+		<img src="<?=url::site('lattice/lattice/resources/images/bar.gif', null, false);?>" class="progress" />
 			<span class="message hidden"></span>
 		</div>
 		<div class="controls clearFix">
