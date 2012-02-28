@@ -9,7 +9,8 @@
 <!ENTITY % uiattrs
 	"name				CDATA	#REQUIRED
 	 label				CDATA	#IMPLIED
-	 className			CDATA	#IMPLIED"
+	 className			CDATA	#IMPLIED
+   default   CDATA #IMPLIED"
 >
 
 <!ELEMENT configuration (objectTypes) >
@@ -128,6 +129,7 @@
 <!ELEMENT date EMPTY>
 <!ATTLIST date
 	%uiattrs;
+  default   (now|none) "none"
 >
 
 <!ELEMENT time EMPTY>

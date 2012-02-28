@@ -243,7 +243,7 @@ class Model_Object extends ORM implements arrayaccess {
        return $this->getLatticeParent(); 
 
      } else if ($column == 'objecttype' || $column == 'objectType'){
-         $return = parent::__get($column);
+         $return = parent::__get('objecttype');
          return $return;
 
       } else if (in_array($column, array_keys($this->__get('objecttype')->_table_columns))){
@@ -1189,7 +1189,9 @@ class Model_Object extends ORM implements arrayaccess {
 
          }
       }
+
       
+      echo 'updateing content dat';
       $newObject->updateContentData($data);
 
       /*
@@ -1311,23 +1313,38 @@ class Model_Object extends ORM implements arrayaccess {
 
       return $newObject;
     }
-    
-    private function updateContentData($data){
-       if(!count($data)){
-          return $this;
+
+
+
+   /*
+    * Function: updateContentData($data)
+    * Add defaults to content table 
+    * This happens after the lattice point is set 
+    * in case content tables are dependent on lattice point
+    * */
+   private function updateContentData($data){
+
+     //load defaults for this object type
+     print_r($this->objecttype->defaults());
+     foreach($this->objecttype->defaults() as $field => $default){
+       if(!isset($data[$field])){
+         $data[$field] = $default;
        }
-      
-      if (isset($data['published']) ) {
-         $this->published = $data['published'];
-         unset($data['published']);
-      }
-      
-      //Add defaults to content table
-      //This needs to happen after the lattice point is set
-      //in case content tables are dependent on lattice point
+     }
 
 
-      $lookupTemplates = lattice::config('objects', '//objectType');
+     if(!count($data)){
+       return $this;
+     }
+
+     if (isset($data['published']) ) {
+       $this->published = $data['published'];
+       unset($data['published']);
+     }
+
+
+
+     $lookupTemplates = lattice::config('objects', '//objectType');
       $objectTypes = array();
       foreach ($lookupTemplates as $tConfig) {
          $objectTypes[] = $tConfig->getAttribute('name');
@@ -1346,19 +1363,13 @@ class Model_Object extends ORM implements arrayaccess {
                continue(2);
          }
 
+        //$fieldInfo = Model_ObjectType::getFieldInfoForObjectType($this->objectttype->objecttypename, $field)
+
          $fieldInfoXPath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field);
          $fieldInfo = lattice::config('objects', $fieldInfoXPath)->item(0);
          if (!$fieldInfo) {
             throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath' => $fieldInfoXPath));
          }
-
-         if (in_array($fieldInfo->tagName, $objectTypes) && is_array($value)) {
-            $clusterTemplateName = $fieldInfo->tagName;
-            $clusterObjectId = Graph::object()->addObject($clusterTemplateName, $value); //adding object to null parent
-            $this->$field = $clusterObjectId;
-            continue;
-         }
-
 
          switch ($fieldInfo->tagName) {
             case 'file':
