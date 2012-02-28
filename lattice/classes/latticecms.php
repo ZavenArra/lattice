@@ -28,10 +28,11 @@ class latticecms {
 						foreach ($elements as $element) {
 
 								//check if this element type is in fact a objectType
-								$tConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $element['type']))->item(0);
+                $xPath =  sprintf('//objectType[@name="%s"]', $element['type']);
+								$tConfig = lattice::config('objects', $xPath)->item(0);
 
 								if ($tConfig) {
-                           
+
 										$field = $element['name'];
 										$clusterObject = $object->$field;
 										//this should really happen within the models
@@ -166,7 +167,7 @@ class latticecms {
 			return latticecms::buildUIHtmlChunks($elementsConfig, $object);
 	 }
 
-   private static function convertXMLElementToArray($object, $element){
+   public static function convertXMLElementToArray($object, $element){
      $entry = array();
      //$entry should become an object, that contains configuration logic for each  view
      //or better yet, each mopui view should have it's own view object
