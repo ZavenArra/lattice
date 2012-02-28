@@ -19,7 +19,7 @@ Class Controller_LatticeViews extends Controller_Layout{
 	 */
 	protected $content = array();
 
-  public __construct($request, $response){
+  public function __construct($request, $response){
     parent::__construct($request, $response);
   }
 
