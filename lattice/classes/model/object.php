@@ -1325,7 +1325,6 @@ class Model_Object extends ORM implements arrayaccess {
    private function updateContentData($data){
 
      //load defaults for this object type
-     print_r($this->objecttype->defaults());
      foreach($this->objecttype->defaults() as $field => $default){
        if(!isset($data[$field])){
          $data[$field] = $default;
@@ -1425,7 +1424,6 @@ class Model_Object extends ORM implements arrayaccess {
       //Postpone dealing with content record until after lattice point is set
       //in case content table logic depends on lattice point.
       $newObject->insertContentRecord();
-      //print_r($data);
       $newObject->updateContentData($data);
       
       /*

@@ -141,6 +141,8 @@ class Model_ObjectType extends ORM {
         case 'now':
           $defaults[$element->getAttribute('name')] = date('Y-m-d H:i:s ');
           break;
+        case 'none':
+          break;
 
         default:
           if($default){
