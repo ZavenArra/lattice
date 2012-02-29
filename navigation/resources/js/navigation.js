@@ -450,8 +450,10 @@ lattice.modules.navigation.Tier = new Class({
 		togglePublishedStatusLink = nodeElement.getElement( ".togglePublishedStatus" );
 		if( togglePublishedStatusLink.hasClass( "published" ) ){
 			togglePublishedStatusLink.removeClass( "published" );
+			togglePublishedStatusLink.set( 'title', 'publish' );
 		}else{
 			togglePublishedStatusLink.addClass( "published" );            
+			togglePublishedStatusLink.set( 'title', 'unpublish' );
 		}
 		this.marshal.togglePublishedStatus( nodeId );
 	},
