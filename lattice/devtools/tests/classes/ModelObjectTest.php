@@ -11,6 +11,8 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
 
   public static function tearDownAfterClass(){
     Graph::object('modelObjectTest')->delete();
+    Graph::object('modelObjectTest2')->delete();
+    Graph::object('modelObjectTest3')->delete();
   }
 
   public function testContentFilterMethodExists(){
@@ -38,14 +40,18 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
 
   public function testNext(){
     $objectQuery = Graph::object()->objectTypeFilter('article');
-    $next = $objectQuery->next('modelObjectTest2');
+    $next = $objectQuery->next('dateadded', Graph::object('modelObjectTest2')->id);
     $this->assertNotNULL($next);
+    echo 'wlll';
+    echo $next->slug;
+    $this->assertTrue($next->slug == 'modelObjectTest2');
   }
 
 
   public function testPrev(){
     $objectQuery = Graph::object()->objectTypeFilter('article');
-    $objectQuery->prev('modelObjectTest2');
+    $objectQuery->prev('dateadded',  Graph::object('modelObjectTest2')->id);
     $this->assertNotNULL($prev);
+    $this->assertTrue($prev->slug == 'modelObjectTest');
   }
 }

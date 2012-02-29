@@ -2,13 +2,8 @@
 Class GraphObjectRelationshipsTest extends Kohana_UnitTest_TestCase {
 
   public static function setUpBeforeClass(){
-    $object = Graph::object();
-    $object->slug = 'test';
-    $object->save();
-
-    $object = Graph::object();
-    $object->slug = 'testAssoc';
-    $object->save();
+    $object = Graph::object()->addObject('article', array('slug'=>'test'));
+    $object = Graph::object()->addObject('article', array('slug'=>'testAssoc'));
   }
 
   public static function tearDownAfterClass(){

@@ -332,28 +332,43 @@ class Model_Object extends ORM implements arrayaccess {
 
    }
 
-    /*
-     Function: save()
-     Custom save function, makes sure the content table has a record when inserting new object
+   /*
+    * Function: save()
+    * Public interface to save(), can only be called from a loaded object.  Use createObject to save a new object
     */
+   public function save(Validation $validation = NULL){
+     if(!$this->loaded()){
+       throw new Kohana_Exception('Calling save on object which is not loaded.  Use createObject to insert a new object');
+     }
 
-   public function save(Validation $validation = NULL) {
-      $inserting = false;
-      if ($this->loaded() == FALSE) {
-         $inserting = true;
-      }
+     parent::save();
+     $this->saveContentTable($this);
+     return $this;
 
-      parent::save();
-      
-      //Postpone adding record to content table until after lattice point
-      //is set.
-      if (!$inserting) {
-        // throw new Kohana_Exception('what');
-         $this->saveContentTable($this);
-      }
-      return $this;
-     
-      
+   }
+
+
+    /*
+      Function: _save()
+      Custom save function, makes sure the content table has a record when inserting new object
+      This is the implementation method
+     */
+   private function _save() {
+     $inserting = false;
+     if ($this->loaded() == FALSE) {
+       $inserting = true;
+     }
+
+     parent::save();
+
+     //Postpone adding record to content table until after lattice point
+     //is set.
+     if (!$inserting) {
+       $this->saveContentTable($this);
+     }
+     return $this;
+
+
    }
    
 
@@ -410,22 +425,17 @@ class Model_Object extends ORM implements arrayaccess {
       if ($column == 'slug') {
          parent::__set('slug', Model_Object::createSlug($value, $this->id));
          parent::__set('decoupleSlugTitle', 1);
-        // $this->save();
          return;
       } else if ($column == 'title') {
          if (!$this->decoupleSlugTitle) {
             $this->slug = Model_Object::createSlug($value, $this->id);
          }
-         //$this->save();
          $this->contentDriver()->setTitle($this, $value);
-         //$this->save();
          return;
       } else if (in_array($column, array('dateadded'))) {
          parent::__set($column, $value);
-         //$this->save();
       } else if ($this->_table_columns && in_array($column, array_keys($this->_table_columns))) {
          parent::__set($column, $value);
-         //$this->save();
       } else if ($column) {
          $o = $this->_object;
          $objecttype_id = $o['objecttype_id'];
@@ -446,36 +456,49 @@ class Model_Object extends ORM implements arrayaccess {
       
    }
    
+   public function deactivate(){
+    $this->cascadeDelete();
+   }
+
+   public function reactivate(){
+    $this->cascadeUndelete();
+   }
+
+   public function delete(){
+    $this->cascadeDelete(true);
+   }
   
 
- public function cascadeUndelete(){
-  $this->activity = new Database_Expression(null);
-  $this->slug = Model_Object::createSlug($this->contenttable->title, $this->id);
-  $this->contentdriver()->undelete();
-  $this->save();
+   private function cascadeUndelete(){
+     $this->activity = new Database_Expression(null);
+     $this->slug = Model_Object::createSlug($this->contenttable->title, $this->id);
+     $this->contentdriver()->undelete();
+     $this->_save();
 
-  $children = $object->getLatticeChildren();
-  foreach($children as $child){
-   $child->cascadeUndelete();
-  }
+     $children = $object->getLatticeChildren();
+     foreach($children as $child){
+       $child->cascadeUndelete();
+     }
 
+   }
 
- }
+   private function cascadeDelete($permanent=false){
+     $this->activity = 'D';
+     $this->slug = DB::expr('NULL');
+     $this->_save();
 
- public function cascadeDelete(){
-  $this->activity = 'D';
-  $this->slug = DB::expr('null');
-  $this->save();
-      $this->contentdriver()->delete();
+     $children = $this->getLatticeChildren();
+     foreach($children as $child){
+       $child->cascadeDelete($permanent);
+     }
 
+     if($permanent){
+       $this->contentdriver()->delete();
+       parent::delete();
+     }
+   }
 
-  $children = $this->getLatticeChildren();
-  foreach($children as $child){
-   $child->cascadeDelete();
-  }
- }
-   
-  /*
+   /*
    * Functions for returning messages
        */
    protected function addMessage($message){
@@ -537,7 +560,7 @@ class Model_Object extends ORM implements arrayaccess {
                break;
          }
       }
-      $this->save();
+      $this->_save();
       return $this->id;
    }
 
@@ -783,13 +806,13 @@ class Model_Object extends ORM implements arrayaccess {
 
    public function saveField($field, $value) {
       $this->__set($field, $value);
-      $this->save();
+      $this->_save();
       return $this->$field;
    }
 
    public function saveUploadedFile($field, $filename, $type, $tmpName) {
       $tmpName = $this->moveUploadedFileToTmpMedia($tmpName);
-      return $this->saveFile($field, $filename, $type, $tmpName);
+      return $this->_saveFile($field, $filename, $type, $tmpName);
    }
 
    /*
@@ -800,7 +823,7 @@ class Model_Object extends ORM implements arrayaccess {
    public function saveUploadedImage($field, $filename, $type, $tmpName, $additionalResizes=array()) {
       $tmpName = $this->moveUploadedFileToTmpMedia($tmpName);
       Kohana::$log->add(Log::INFO, 'clling save image' . $filename);
-      $file = $this->saveImage($field, $filename, $type, $tmpName, $additionalResizes);
+      $file = $this->_saveImage($field, $filename, $type, $tmpName, $additionalResizes);
 
       return $file;
    }
@@ -868,7 +891,7 @@ class Model_Object extends ORM implements arrayaccess {
       $file->save(); //inserts or updates depending on if it got loaded above
 
       $this->$field = $file->id;
-      $this->save();
+      $this->_save();
       
       //Handle localized object linked via rosetta
       if($replacingEmptyFile){
@@ -913,7 +936,7 @@ class Model_Object extends ORM implements arrayaccess {
 
    public function saveImage($field, $filename, $type, $tmpName, $additionalResizes = array() ) {
       //do the saving of the file
-      $file = $this->saveFile($field, $filename, $type, $tmpName);
+      $file = $this->_saveFile($field, $filename, $type, $tmpName);
       $imagefilename = $this->processImage($file->filename, $field, $additionalResizes );
 
       return $file;
@@ -1155,7 +1178,7 @@ class Model_Object extends ORM implements arrayaccess {
 
    public function next($sortField, $currentId=NULL){
     $query = clone($this); 
-    if(!$currentId){
+    if($currentId){
       $current = Graph::object($currentId);
     } else {
       $current = $this;
@@ -1166,12 +1189,13 @@ class Model_Object extends ORM implements arrayaccess {
       ->order_by($sortField, 'ASC')
       ->order_by('id', 'ASC')
       ->limit(1);
+    Kohana::$log->add(Log::INFO, 'BITCH PLES');
     return $query->find();
    } 
 
    public function prev($sortField, $currentId=NULL){
     $query = clone($this); 
-    if(!$currentId){
+    if($currentId){
       $current = Graph::object($currentId);
     } else {
       $current = $this;
@@ -1283,57 +1307,51 @@ class Model_Object extends ORM implements arrayaccess {
 
    }
    
+
+   public function createObject($objectTypeName, $rosettaId=NULL, $languageId=NULL){
+     if($this->loaded()){
+       throw new Kohana_Exception('Create cannot be called on a loaded object');
+     } 
+     if(!$objectTypeName){
+       throw new Kohana_Exception('Create cannot be called without a valid objectTypeName: '.$objectTypeName );
+     }
+
+     !$rosettaId ?  $translationRosettaId = Graph::newRosetta() : $translationRosettaId = $rosettaId;
+
+     if ($languageId == NULL) {
+       $this->language_id == NULL ? $languageId = Graph::defaultLanguage() : $languageId = $this->language_id;
+     }
+
+     $this->setObjectType($objectTypeName);
+     $this->language_id = $languageId;
+     $this->rosetta_id = $translationRosettaId;
+
+     //check for enabled publish/unpublish. 
+     //if not enabled, insert as published
+     $tSettings = lattice::config('objects', sprintf('//objectType[@name="%s"]', $this->objecttype->objecttypename));
+     $tSettings = $tSettings->item(0);
+     $this->published = 1;
+     if ($tSettings) { //entry won't exist for Container objects
+       if ($tSettings->getAttribute('allowTogglePublish') == 'true') {
+         $this->published = 0;
+       }
+     }
+
+     $this->dateadded = new Database_Expression('now()');
+     $this->_save();
+
+     $this->resetRoleAccess();
+     return $this;
+
+   }
    
-    private function createObject($objectTypeName, $rosettaId, $languageId){
+    private function _createObject($objectTypeName, $rosettaId = NULL, $languageId = NULL){
        
-      if(!$rosettaId){
-         $translationRosettaId = Graph::newRosetta();
-      } else {
-         $translationRosettaId = $rosettaId;
-      }
-      
-      
-      if ($languageId == NULL) {
-         if ($this->language_id == NULL) {
-            $languageId = Graph::defaultLanguage();
-         } else {
-            $languageId = $this->language_id;
-         }
-      }
-      
       $newObject = Graph::object();
-      $newObject->setObjectType($objectTypeName);
-      
-      
-
-      //create slug
-      if (isset($data['title'])) {
-        $newObject->slug = Model_Object::createSlug($data['title'], $newObject->id);
-      } else {
-         $newObject->slug = Model_Object::createSlug();
-      }
-     
-      $newObject->language_id = $languageId;
-      $newObject->rosetta_id = $translationRosettaId;
-      
-
-      //check for enabled publish/unpublish. 
-      //if not enabled, insert as published
-      $tSettings = lattice::config('objects', sprintf('//objectType[@name="%s"]', $newObject->objecttype->objecttypename));
-      $tSettings = $tSettings->item(0);
-      $newObject->published = 1;
-      if ($tSettings) { //entry won't exist for Container objects
-         if ($tSettings->getAttribute('allowTogglePublish') == 'true') {
-            $newObject->published = 0;
-         }
-      }
-
-      $newObject->save();
+      $newObject->createObject($objectTypeName, $rosettaId, $languageId);
       $newObject = Graph::object($newObject->id);
-
-      $newObject->resetRoleAccess();
-
       return $newObject;
+
     }
 
 
@@ -1415,7 +1433,7 @@ class Model_Object extends ORM implements arrayaccess {
                break;
          }
       }
-      $this->save();
+      $this->_save();
       return $this;
    
    }
@@ -1433,7 +1451,7 @@ class Model_Object extends ORM implements arrayaccess {
    public function addElementObject($objectTypeName, $elementName, $data=array(), $rosettaId = null, $languageId = null){
       $newObjectType = ORM::Factory('objecttype', $objectTypeName);
       
-      $newObject = $this->createObject($objectTypeName, $rosettaId, $languageId);
+      $newObject = $this->_createObject($objectTypeName, $rosettaId, $languageId);
 
       
       //and set up the element relationship
@@ -1549,7 +1567,7 @@ class Model_Object extends ORM implements arrayaccess {
 
    private function addLatticeObject($objectTypeName, $lattice = null, $rosettaId = null, $languageId = null){
 
-     $newObject = $this->createObject($objectTypeName, $rosettaId, $languageId);
+     $newObject = $this->_createObject($objectTypeName, $rosettaId, $languageId);
 
      //The objet has been built, now set it's lattice point
      $lattice = Graph::lattice();

@@ -38,6 +38,10 @@ class Graph {
     return $object;
 	}
 
+  public static function addObject($objectTypeName, $data = array()) {
+    return Graph::object(Graph::instance()->addObject($objectTypeName, $data));
+  }
+
   public static function createObject($objectTypeName, $key){
     $objectId = Graph::instance()->addObject($objectTypeName, array('slug'=>$key));
     return Graph::object($objectId);

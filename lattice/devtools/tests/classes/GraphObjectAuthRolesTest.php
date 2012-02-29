@@ -1,10 +1,8 @@
 <?
-Class ObjectRolesTest extends Kohana_UnitTest_TestCase {
+Class GraphObjectAuthRolesTest extends Kohana_UnitTest_TestCase {
 
   public static function setUpBeforeClass(){
-    $object = Graph::object();
-    $object->slug = 'test';
-    $object->save();
+    $object = Graph::addObject('article', array('slug'=>'test'));
 
     $role = ORM::Factory('role', array('name'=>'editor'));
     if(!$role->loaded()){
@@ -82,9 +80,7 @@ Class ObjectRolesTest extends Kohana_UnitTest_TestCase {
   }
 
   public function testDoubleAddDoesntBreak(){
-    $object = Graph::object();
-    $object->slug = 'testDoubleAddDoesntBreak';
-    $object->save();
+    $object = Graph::addObject('article', array('slug'=>'testDoubleAddDoesntBreak'));
     
     $object->addRoleAccess('editor');
     $object->addRoleAccess('editor');
