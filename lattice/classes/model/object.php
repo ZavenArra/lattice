@@ -1094,35 +1094,29 @@ class Model_Object extends ORM implements arrayaccess {
 
   public function getLatticeParent($lattice='lattice'){
 
-   $latticeParents =  $this->getLatticeParents($lattice);
-   if(count($latticeParents)){
-    return $latticeParents[0];
-   } else {
-    return NULL;
-   }
+    $latticeParents = $this->latticeParentsQuery($lattice)->find_all();
+    if(count($latticeParents)){
+      return $latticeParents[0];
+    } else {
+      return NULL;
+    }
   }
 
-  public function getLatticeParents($lattice='lattice', $published = false){
-   if(!isset($this->latticeParents[$lattice])){
-    $this->latticeParents[$lattice] = array();
-   }
-   $latticeO = Graph::lattice($lattice);
-   $relationships = ORM::Factory('objectrelationship')
-    ->where('lattice_id', '=', $latticeO->id)
-    ->where('connectedobject_id', '=', $this->id);
-   if($published){
-     $relationships->join('objects')->on('objects.id', '=', 'objectrelationships.object_id')
-       ->where('published', '=', 1)
-       ->where('activity', 'IS', NULL);
-   }
-   $relationships = $relationships->find_all();
-   foreach($relationships as $relationship){
-    if($relationship->loaded()){
-     $this->latticeParents[$lattice][] = Graph::object($relationship->object_id);
-    }
-   }
-   return $this->latticeParents[$lattice];
+  public function latticeParentsFilter($childId, $lattice="lattice"){
+    $lattice = Graph::lattice($lattice);
+
+    $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
+    $this->where('objectrelationships.lattice_id', '=', $lattice->id);
+    $this->where('objectrelationships.connectedobject_id', '=', $childId);
+    return $this;
+
   }
+   
+   public function latticeParentsQuery($lattice='lattice'){
+      return Graph::instance()->latticeParentsFilter($this->id, $lattice);
+   
+   }
+
 
   public function getPublishedParents($lattice='lattice'){
     $this->getLatticeParents($lattice, true);
@@ -1191,7 +1185,6 @@ class Model_Object extends ORM implements arrayaccess {
       }
 
       
-      echo 'updateing content dat';
       $newObject->updateContentData($data);
 
       /*
