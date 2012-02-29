@@ -4,13 +4,17 @@
 	</div>
 	<div class="modal container_12">
 		<form action="<?=url::base();?>auth/login" method="post" class="form">
-			<div class="content clearFix">
-				<?if(isset($message)):?><p class="statusMessage"><?=$message;?></p><?endif;?>
+			<div class="content login">
 				<fieldset>
+					<legend>
+					<?if(isset($message)):?>
+						<?=$message;?>
+					<?else:?>
+						Please enter your login credentials.
+					<?endif;?>
+					</legend>
 					<label for="username">Username</label>
 					<input id="username" name="username" value="" size="56" type="text" />
-				</fieldset>
-				<fieldset>
 					<label for="password">Password</label>
 					<input id="password" name="password" value="" size="56" type="password" />
 				</fieldset>
