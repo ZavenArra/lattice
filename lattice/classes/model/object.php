@@ -1092,15 +1092,23 @@ class Model_Object extends ORM implements arrayaccess {
    
    }
 
-  public function getLatticeParent($lattice='lattice'){
+   public function getLatticeParents($lattice='lattice', $justOne = false){
 
-    $latticeParents = $this->latticeParentsQuery($lattice)->find_all();
-    if(count($latticeParents)){
-      return $latticeParents[0];
-    } else {
-      return NULL;
-    }
-  }
+     $latticeParents = $this->latticeParentsQuery($lattice)->find_all();
+     if($justOne){
+       if(count($latticeParents)){
+         return $latticeParents[0];
+       } else {
+         return NULL;
+       }
+     } else {
+       return $latticeParents;
+     }
+   }
+
+   public function getLatticeParent($lattice='lattice'){
+     return $this->getLatticeParents($lattice, true);
+   }
 
   public function latticeParentsFilter($childId, $lattice="lattice"){
     $lattice = Graph::lattice($lattice);
