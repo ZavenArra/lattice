@@ -22,6 +22,8 @@
 	where       CDATA #IMPLIED
 	tagged      CDATA #IMPLIED
 	slug        CDATA #IMPLIED
+  sortBy      CDATA #IMPLIED
+  sortDirection CDATA #IMPLIED
 >
 
 <!ELEMENT subView EMPTY >

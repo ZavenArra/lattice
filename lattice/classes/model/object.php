@@ -1121,64 +1121,85 @@ class Model_Object extends ORM implements arrayaccess {
   }
    
    public function latticeParentsQuery($lattice='lattice'){
-      return Graph::instance()->latticeParentsFilter($this->id, $lattice);
-   
+     return Graph::instance()->latticeParentsFilter($this->id, $lattice);
+
    }
 
 
-  public function getPublishedParents($lattice='lattice'){
-    $this->getLatticeParents($lattice, true);
-  }
+   public function getPublishedParents($lattice='lattice'){
+     $this->getLatticeParents($lattice, true);
+   }
 
 
-    
-    public function isWithinSubTree($objectId, $lattice='lattice'){
-       $subTreeObject = NULL;
-       if(!is_object($objectId)){
-          $subTreeObject = Graph::object($objectId);
-       } else {
-          $subTreeObject = $objectId;
+
+   public function isWithinSubTree($objectId, $lattice='lattice'){
+     $subTreeObject = NULL;
+     if(!is_object($objectId)){
+       $subTreeObject = Graph::object($objectId);
+     } else {
+       $subTreeObject = $objectId;
+     }
+     if(!$subTreeObject->loaded()){
+       throw new Kohana_Exception('Checking for object subtree of object that is not in database: :objectid',
+         array(':objectid'=>$objectId));
+     }
+     $object = $this;
+     do{
+       if($object->id == $subTreeObject->id){
+         return TRUE;
        }
-       if(!$subTreeObject->loaded()){
-          throw new Kohana_Exception('Checking for object subtree of object that is not in database: :objectid',
-                  array(':objectid'=>$objectId));
-       }
-       $object = $this;
-       do{
-          if($object->id == $subTreeObject->id){
-             return TRUE;
-          }
-       } while($object = $object->getLatticeParent($lattice) );
-       
-       return FALSE;
+     } while($object = $object->getLatticeParent($lattice) );
+
+     return FALSE;
+   }
+
+   public function next($sortField, $currentId=NULL){
+    $query = clone($this); 
+    if(!$currentId){
+      $current = Graph::object($currentId);
+    } else {
+      $current = $this;
     }
-   
-   /*
-     Function: addLatticeObject($id)
-     Private function for adding an object to the cms data
-     Parameters:
-     id - the id of the parent category
-     objecttype_id - the type of object to add
-     $data - possible array of keys and values to initialize with
-     Returns: the new object id
-    */
+    $sortValue = $current->$sortField;
+    $query->where($sortField, '>=', $sortValue)
+      ->where('id', '>', $current->id) 
+      ->order_by($sortField, 'ASC')
+      ->order_by('id', 'ASC')
+      ->limit(1);
+    return $query->find();
+   } 
 
-   
-    public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
-      
-      $newObjectType = ORM::Factory('objecttype', $objectTypeName);
+   public function prev($sortField, $currentId=NULL){
+    $query = clone($this); 
+    if(!$currentId){
+      $current = Graph::object($currentId);
+    } else {
+      $current = $this;
+    }
+    $sortValue = $current->$sortField;
+    $query->where($sortField, '<=', $sortValue)
+      ->where('id', '<', $current->id) 
+      ->order_by($sortField, 'ASC')
+      ->order_by('id', 'ASC')
+      ->limit(1);
+    return $query->find();
+   }
 
-      $newObject = $this->addLatticeObject($objectTypeName, $lattice, $rosettaId, $languageId);
-     
-      
-      /*
-       * Set up any translated peer objects
+   public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
+
+     $newObjectType = ORM::Factory('objecttype', $objectTypeName);
+
+     $newObject = $this->addLatticeObject($objectTypeName, $lattice, $rosettaId, $languageId);
+
+
+     /*
+      * Set up any translated peer objects
        */
-      if (!$rosettaId) {
-         $languages = Graph::languages();
-         foreach ($languages as $translationLanguage) {           
-            if ($translationLanguage->id == $newObject->language_id) {
-               continue;
+   if (!$rosettaId) {
+     $languages = Graph::languages();
+     foreach ($languages as $translationLanguage) {           
+       if ($translationLanguage->id == $newObject->language_id) {
+         continue;
             }
 
             if ($this->loaded()) {

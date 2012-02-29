@@ -307,6 +307,22 @@ class latticeview {
                $includeContent[$i] = array_merge($includeContent[$i], $children);
             }
             $content[$query->attributes['label']] = $includeContent;
+
+            /*
+            if($sortBy = $includeContentQueryParams->getAttribute('sortBy')){
+              $sortFunction = function($a, $b) use ($sortBy){
+                $a = $a[$sortBy];
+                $b = $b[$sortBy];
+                if ($a == $b) {
+                  return 0;
+                }
+                return ($a < $b) ? -1 : 1;
+              }
+
+              uasort($content, $sortFunction);
+
+            }
+             */
          }
     }
     return $content;
