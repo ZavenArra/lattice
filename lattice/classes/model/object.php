@@ -1105,7 +1105,7 @@ class Model_Object extends ORM implements arrayaccess {
   public function latticeParentsFilter($childId, $lattice="lattice"){
     $lattice = Graph::lattice($lattice);
 
-    $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
+    $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.object_id');
     $this->where('objectrelationships.lattice_id', '=', $lattice->id);
     $this->where('objectrelationships.connectedobject_id', '=', $childId);
     return $this;
