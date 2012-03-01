@@ -1,9 +1,11 @@
 <?
 
-Class LatticeAuth_Controller_Registration extends Controller_Lattice {
+Class LatticeAuth_Controller_Registration extends Controller_Layout {
 
   protected $_actionsThatGetLayout = array(
     'index',
+    'create',
+    'confirmed',
   );
 
   protected $errors = NULL;
