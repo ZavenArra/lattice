@@ -15,9 +15,27 @@ Class Associator {
 
   private $maxPoolSize = 50;
 
+  public static function getFiltersFromDomNode($node){
+    $filtersNodeList = lattice::config('objects', 'filter', $node);
+    $filters = array();
+    foreach($filtersNodeList as $filter){
+      $setting = array();
+      $setting['from'] = $filter->getAttribute('from');
+      $setting['objectTypeName'] = $filter->getAttribute('objectTypeName');
+      $setting['tagged'] = $filter->getAttribute('tagged');
+      $setting['function'] = $filter->getAttribute('function');
+      $filters[] = $setting;
+    }
+    return $filters;
+
+  }
+
+
   //TODO
   public function setViewName($viewName){throw new Kohana_Exception('Not Implemented');} //to support multi-lattice single custom view
   public function setAssociatorName($associatorName){throw new Kohana_Exception('Not Implemented');} //to support mutli-instance single lattice
+
+
 
   public function __construct($parentId, $lattice, $filters=NULL){
     $this->parentId = $parentId;
