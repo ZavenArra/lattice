@@ -1,4 +1,4 @@
-<div id="" data-objectid="<?=$parentId;?>" data-lattice="<?=$lattice;?>" class="module associator classPath-lattice_modules_Associator clearFix">
+<div data-objectid="<?=$parentId;?>" data-lattice="<?=$lattice;?>" class="module associator classPath-lattice_modules_Associator clearFix">
 
 	<h4><?=$label;?></h4>
 
@@ -16,7 +16,7 @@
 
 		<div class="filter clearFix">
 			<label>
-				<input type="text" name="filter" value="" id="FILTERuniqueID" />
+				<input type="text" name="filter" value="" id="{{FilterUniqueID}}" />
 				<a href="#" class="button">Filter Pool</a>
 			</label>
 		</div>
