@@ -1083,6 +1083,9 @@ class Model_Object extends ORM implements arrayaccess {
        }
 
      }
+     if(!count($mapQuery)){
+      throw new Kohana_Exception('Content Column: '.$column.' not specifid for any objects');
+     }
      $mapQuery = implode($mapQuery, 'UNION');
      $mapQuery = '('.$mapQuery.') ';
      $viewTableName =  $column.'View';
