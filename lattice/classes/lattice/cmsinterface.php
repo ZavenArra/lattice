@@ -236,9 +236,9 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
      deletes a object/category and all categories and leaves underneath
      Returns: returns html for undelete pane
     */
-
    public function action_removeObject($id) {
-      $this->cascade_delete($id);
+     $object = Graph::object($id);
+     $object->deactivate($id);
 
       $view = new View('lattice_cms_undelete');
       $view->id = $id;
@@ -252,38 +252,10 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
      Returns: 1;
     */
-
    public function action_undelete($id) {
-      $this->cascade_undelete($id);
-      //should return something about failure...
-      $this->response->data(array('undeleted' => true));
-   }
-
-   /*
-    * Function: cascade_delete($id)
-    * Private utility to recursively delete and object and everything beneath a node
-    * Parameters:
-    * id - the id to delete as well as everything beneath it.
-    * Returns: nothing 
-    */
-
-   protected function cascade_delete($id) {
-      $object = Graph::object($id);
-      $object->cascadeDelete();
-   }
-
-   /*
-    * Function: cascade_undelete($id)
-    * Private utility to recursively undelete and object and everything beneath a node
-    * This will cause previously deleted children to reappear
-    * Parameters:
-    * id - the id to undelete as well as everything beneath it.
-    * Returns: Nothing
-    */
-
-   protected function cascade_undelete($object_id) {
-      $object = Graph::object($id);
-      $object->undelete();
+     $object = Graph::object($id);
+     $object->reactivate($id);
+     $this->response->data(array('undeleted' => true));
    }
 
    public function action_associate($parentId, $objectId, $lattice){

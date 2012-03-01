@@ -1,4 +1,4 @@
-<div id="" data-objectid="<?=$parentId;?>" data-lattice="<?=$lattice;?>" class="module associator_radio classPath-lattice_modules_RadioAssociator clearFix">
+<div id="<?=$lattice;?><?=$parentId;?>" data-objectid="<?=$parentId;?>" data-lattice="<?=$lattice;?>" class="module associator_radio classPath-lattice_modules_RadioAssociator clearFix">
 
 <?=$label;?>
 
