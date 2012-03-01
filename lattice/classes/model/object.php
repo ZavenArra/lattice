@@ -234,7 +234,6 @@ class Model_Object extends ORM implements arrayaccess {
 
    public function __get($column) {
 
-
      if (in_array($column, array_keys($this->_table_columns))){
        //this catches the configured colums for this table
        return parent::__get($column);
@@ -1062,29 +1061,35 @@ class Model_Object extends ORM implements arrayaccess {
            $this->where($driverInfo['tableName'].'.'.$where[0], $where[1], $where[2]);
 
          } else {
-           $xPath =  '//objectType[elements/[@name="'.$where[0].'"]]';
-           $map = lattice::config('objects', '//objectType[elements/*/@name="'.$where[0].'"]'); 
-           if($map->length){
-             $mapQuery = array();
-             foreach($map as $objectType){
-               $objectType = ORM::Factory('objecttype', $objectType->getAttribute('name')); 
-               $mappedColumn = Model_Lattice_Object::dbmap($objectType->id, $where[0]);
-               $mapQuery[] = 'select object_id, '.$mappedColumn.' as '.$where[0]
-                 .' from contents where object_id in (select id from objects where objecttype_id = '.$objectType->id.')';  
-             }
-             $mapQuery = implode($mapQuery, 'UNION');
-             $mapQuery = '('.$mapQuery.') ';
-
-           }
-           $viewTable =  $where[0].'View';
-           $this->join(new Database_Expression($mapQuery . $viewTable ))->on('objects.id', '=', $viewTable.'.object_id');
-           $this->where($viewTable.'.'.$where[0], $where[1], $where[2]);
+           $viewTableName = $this->joinContentColumn($where[0]);
+           $this->where($viewTableName.'.'.$where[0], $where[1], $where[2]);
 
          }
        }
      }
      return $this;
    }
+
+   public function joinContentColumn($column){
+     $xPath =  '//objectType[elements/[@name="'.$column.'"]]';
+     $map = lattice::config('objects', '//objectType[elements/*/@name="'.$column.'"]'); 
+     $mapQuery = array();
+     if($map->length){
+       foreach($map as $objectType){
+         $objectType = ORM::Factory('objecttype', $objectType->getAttribute('name')); 
+         $mappedColumn = Model_Lattice_Object::dbmap($objectType->id, $column);
+         $mapQuery[] = 'select object_id, '.$mappedColumn.' as '.$column
+           .' from contents where object_id in (select id from objects where objecttype_id = '.$objectType->id.')';  
+       }
+
+     }
+     $mapQuery = implode($mapQuery, 'UNION');
+     $mapQuery = '('.$mapQuery.') ';
+     $viewTableName =  $column.'View';
+     $this->join(new Database_Expression($mapQuery . $viewTableName ))->on('objects.id', '=', $viewTableName.'.object_id');
+     return $viewTableName;
+   }
+
 
    public function noContainerObjects() {
       $res = ORM::Factory('objecttype')
@@ -1205,13 +1210,13 @@ class Model_Object extends ORM implements arrayaccess {
      switch($direction){
      case 'next':
        $inequality = '>=';
-       $idInequality = 0;
        $order = 'ASC';
+       $idInequality = 0;
        break;
      case 'prev':
        $inequality = '<=';
-       $idInequality = 1;
        $order = 'DESC';
+       $idInequality = 1;
        break;
      default:
        throw new Kohana_Exception('Bad direction sent to adjacent record');
@@ -1235,18 +1240,20 @@ class Model_Object extends ORM implements arrayaccess {
        /*
         * select id,field1 as orderfield from contents where id > 20 UNION select id, field3 as orderfield from contents where id <= 20;
        */
-       $query->contentFilter( array(array($sortField, $inequality, $sortValue)) )->order_by($sortField);  
+       $query->contentFilter( array(array($sortField, $inequality, $sortValue)) )->order_by($sortField, $order);  
      }
 
      $queryCopy = clone($query); //reclone so we can rerun if necessary
-     $query->where('id', $idInequalities[$idInequality], $current->id)->order_by('id', $order)->limit(1);
+     //$query->where('objects.id', $idInequalities[$idInequality], $current->id)->order_by('id', $order)->limit(1);
+     $query->where('objects.id', '!=', $current->id)->order_by('id', $order)->limit(1);
      $result = $query->find();
      if(!$result->loaded()){
        //id inequality (tiebreaker) is backwards, flip it and rerun the query
        $idInequality += 1;
        $idInequality %= 2;
 
-       $queryCopy->where('id', $idInequalities[$idInequality], $current->id)->order_by('id', $order)->limit(1);
+       //$queryCopy->where('objects.id', $idInequalities[$idInequality], $current->id)->order_by('id', $order)->limit(1);
+       $queryCopy->where('objects.id', '!=', $current->id)->order_by('id', $order)->limit(1);
        $result = $queryCopy->find();
      }
      return $result;
