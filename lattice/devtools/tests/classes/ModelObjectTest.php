@@ -2,17 +2,17 @@
 Class ModelObjectTest extends Kohana_UnitTest_TestCase {
 
   public static function setUpBeforeClass(){
-    $object = Graph::createObject('article', 'modelObjectTest');
+    $object = Graph::createObject('article', 'model-object-test');
     $object->title = 'The House';
     $object->save();
-    $object = Graph::createObject('article', 'modelObjectTest2');
-    $object = Graph::createObject('article', 'modelObjectTest3');
+    $object = Graph::createObject('article', 'model-object-test2');
+    $object = Graph::createObject('article', 'model-object-test3');
   }
 
   public static function tearDownAfterClass(){
-    Graph::object('modelObjectTest')->delete();
-    Graph::object('modelObjectTest2')->delete();
-    Graph::object('modelObjectTest3')->delete();
+    Graph::object('model-object-test')->delete();
+    Graph::object('model-object-test2')->delete();
+    Graph::object('model-object-test3')->delete();
   }
 
   public function testContentFilterMethodExists(){
@@ -40,18 +40,16 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
 
   public function testNext(){
     $objectQuery = Graph::object()->objectTypeFilter('article');
-    $next = $objectQuery->next('dateadded', Graph::object('modelObjectTest2')->id);
+    $next = $objectQuery->next('dateadded', Graph::object('model-object-test2')->id);
     $this->assertNotNULL($next);
-    echo 'wlll';
-    echo $next->slug;
-    $this->assertTrue($next->slug == 'modelObjectTest2');
+    $this->assertTrue($next->slug == 'model-object-test3');
   }
 
 
   public function testPrev(){
     $objectQuery = Graph::object()->objectTypeFilter('article');
-    $objectQuery->prev('dateadded',  Graph::object('modelObjectTest2')->id);
+    $prev = $objectQuery->prev('dateadded',  Graph::object('model-object-test2')->id);
     $this->assertNotNULL($prev);
-    $this->assertTrue($prev->slug == 'modelObjectTest');
+    $this->assertTrue($prev->slug == 'model-object-test');
   }
 }

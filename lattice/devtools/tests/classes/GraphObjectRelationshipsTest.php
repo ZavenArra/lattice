@@ -2,20 +2,20 @@
 Class GraphObjectRelationshipsTest extends Kohana_UnitTest_TestCase {
 
   public static function setUpBeforeClass(){
-    $object = Graph::object()->addObject('article', array('slug'=>'test'));
-    $object = Graph::object()->addObject('article', array('slug'=>'testAssoc'));
+    $object = Graph::createObject('article', 'test');
+    $object = Graph::createObject('article', 'test-assoc');
   }
 
   public static function tearDownAfterClass(){
     $object = Graph::object('test');
     $object->delete();
-    $object = Graph::object('testAssoc');
+    $object = Graph::object('test-assoc');
     $object->delete();
   }
 
 	public function testAddRelationship(){
     $object = Graph::object('test');
-    $newObject = Graph::object('testAssoc');
+    $newObject = Graph::object('test-assoc');
     $object->addLatticeRelationship('testlattice', $newObject->id);
     $associated = $object->getLatticeChildren('testlattice');
     $this->assertTrue(count($associated) == 1);
@@ -26,7 +26,7 @@ Class GraphObjectRelationshipsTest extends Kohana_UnitTest_TestCase {
    * @depends testAddRelationship
    */
   public function testRemoveRelationship($object){
-    $removeObject = Graph::object('testAssoc');
+    $removeObject = Graph::object('test-assoc');
     $object->removeLatticeRelationship('testlattice', $removeObject->id);
     $associated = $object->getLatticeChildren('testlattice');
     $this->assertTrue(count($associated) == 0);
@@ -34,21 +34,23 @@ Class GraphObjectRelationshipsTest extends Kohana_UnitTest_TestCase {
 
   public function testCheckObjectRelationship(){
     $object = Graph::object('test');
-    $newObject = Graph::createObject('article', 'testCheckAssoc');
+    $newObject = Graph::createObject('article', 'test-check-assoc');
     $this->assertFalse($object->checkLatticeRelationship('testlattice', $newObject->id));
     $object->addLatticeRelationship('testlattice', $newObject->id);
     $this->assertTrue($object->checkLatticeRelationship('testlattice', $newObject->id));
     $object->removeLatticeRelationship('testlattice', $newObject->id);
     $this->assertFalse($object->checkLatticeRelationship('testlattice', $newObject->id));
+    $newObject->delete();
   }
 
   public function testMetaObjectTypeName(){
-    $object = Graph::object( Graph::object()->addObject('singleAssociator') );
-    $newObject = Graph::object( Graph::object()->addObject('meta') );
+    $object = Graph::createObject('singleAssociator');
+    $newObject = Graph::createObject('meta');
     $object->addLatticeRelationship('myAssociation', $newObject->id);
     $metaObjectTypeName = $object->getMetaObjectTypeName('myAssociation');
     $this->assertNotNull($metaObjectTypeName);
     $this->assertEquals($metaObjectTypeName,'meta');
+    $object->delete();
   }
 
 

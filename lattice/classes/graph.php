@@ -38,12 +38,9 @@ class Graph {
     return $object;
 	}
 
-  public static function addObject($objectTypeName, $data = array()) {
-    return Graph::object(Graph::instance()->addObject($objectTypeName, $data));
-  }
-
-  public static function createObject($objectTypeName, $key){
-    $objectId = Graph::instance()->addObject($objectTypeName, array('slug'=>$key));
+  public static function createObject($objectTypeName, $key=NULL){
+    $key ? $data = array('slug'=>$key) : $data=array(); 
+    $objectId = Graph::instance()->addObject($objectTypeName, $data);
     return Graph::object($objectId);
 
   }

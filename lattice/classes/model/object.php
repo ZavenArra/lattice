@@ -511,40 +511,40 @@ class Model_Object extends ORM implements arrayaccess {
    
    
    public function translate($languageCode){
-   if(!$this->loaded()){
-    return $this;
+     if(!$this->loaded()){
+       return $this;
+     }
+
+     $rosettaId = $this->rosetta_id;
+     if(!$rosettaId){
+       throw new Kohana_Exception('No Rosetta ID found for object during translation with objectId :objectId',
+         array(':objectId'=>$rosettaId)
+       );
+     }
+     if(is_numeric($languageCode)){
+       $languageId = intval($languageCode);
+     } else {
+       //this could just ask the graph, to avoid going to database again
+       $languageId = ORM::Factory('language', $languageCode)->id;
+     }
+     if(!$languageId){
+       throw new Kohana_Exception('Invalid language code :code', array(':code'=>$languageCode));
+     }
+
+     $translatedObject = Graph::object()
+       ->where('rosetta_id', '=', $rosettaId)
+       ->where('objects.language_id', '=', $languageId)
+       ->find();
+     if(!$translatedObject->loaded()){
+       throw new Kohana_Exception('No translated object available for objectId :id with language :language',
+         array(':id'=>$objectId,
+         ':language'=>$languageCode));
+
+     }
+     return $translatedObject;
+
    }
 
-      $rosettaId = $this->rosetta_id;
-   if(!$rosettaId){
-    throw new Kohana_Exception('No Rosetta ID found for object during translation with objectId :objectId',
-     array(':objectId'=>$rosettaId)
-    );
-      }
-      if(is_numeric($languageCode)){
-         $languageId = intval($languageCode);
-      } else {
-         //this could just ask the graph, to avoid going to database again
-         $languageId = ORM::Factory('language', $languageCode)->id;
-      }
-      if(!$languageId){
-         throw new Kohana_Exception('Invalid language code :code', array(':code'=>$languageCode));
-      }
-         
-      $translatedObject = Graph::object()
-              ->where('rosetta_id', '=', $rosettaId)
-              ->where('objects.language_id', '=', $languageId)
-              ->find();
-      if(!$translatedObject->loaded()){
-         throw new Kohana_Exception('No translated object available for objectId :id with language :language',
-                 array(':id'=>$objectId,
-                        ':language'=>$languageCode));
-         
-      }
-      return $translatedObject;
-      
-   }
-   
    public function updateWithArray($data) {
       foreach ($data as $field => $value) {
          switch ($field) {
@@ -1189,7 +1189,6 @@ class Model_Object extends ORM implements arrayaccess {
       ->order_by($sortField, 'ASC')
       ->order_by('id', 'ASC')
       ->limit(1);
-    Kohana::$log->add(Log::INFO, 'BITCH PLES');
     return $query->find();
    } 
 
@@ -1203,8 +1202,8 @@ class Model_Object extends ORM implements arrayaccess {
     $sortValue = $current->$sortField;
     $query->where($sortField, '<=', $sortValue)
       ->where('id', '<', $current->id) 
-      ->order_by($sortField, 'ASC')
-      ->order_by('id', 'ASC')
+      ->order_by($sortField, 'DESC')
+      ->order_by('id', 'DESC')
       ->limit(1);
     return $query->find();
    }
@@ -1325,6 +1324,7 @@ class Model_Object extends ORM implements arrayaccess {
      $this->setObjectType($objectTypeName);
      $this->language_id = $languageId;
      $this->rosetta_id = $translationRosettaId;
+     $this->slug = self::createSlug();
 
      //check for enabled publish/unpublish. 
      //if not enabled, insert as published
