@@ -23,6 +23,10 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 
 
   public static function dbmap($objecttype_id, $column=null){
+    if(!is_int($objecttype_id)){
+      $objecttype_id = ORM::Factory('objecttype', $objecttype_id)->id;
+    }
+
     if(!isset(self::$dbmaps[$objecttype_id])){
       $dbmaps = ORM::Factory('objectmap')->where('objecttype_id', '=', $objecttype_id)->find_all();
       self::$dbmaps[$objecttype_id] = array();

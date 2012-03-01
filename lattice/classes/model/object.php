@@ -1054,20 +1054,37 @@ class Model_Object extends ORM implements arrayaccess {
        'tableName' => 'contents',
      );
      if($driverInfo['driver']=='mysql'){
-       $this->join($driverInfo['tableName'])->on('objects.id', '=', $driverInfo['tableName'].'.object_id');
+
        foreach($wheres as $where){
-        $this->where($driverInfo['tableName'].'.'.$where[0], $where[1], $where[2]);
+
+         if($where[0] == 'title'){
+           $this->join($driverInfo['tableName'])->on('objects.id', '=', $driverInfo['tableName'].'.object_id');
+           $this->where($driverInfo['tableName'].'.'.$where[0], $where[1], $where[2]);
+
+         } else {
+           $xPath =  '//objectType[elements/[@name="'.$where[0].'"]]';
+           $map = lattice::config('objects', '//objectType[elements/*/@name="'.$where[0].'"]'); 
+           if($map->length){
+             $mapQuery = array();
+             foreach($map as $objectType){
+               $objectType = ORM::Factory('objecttype', $objectType->getAttribute('name')); 
+               $mappedColumn = Model_Lattice_Object::dbmap($objectType->id, $where[0]);
+               $mapQuery[] = 'select object_id, '.$mappedColumn.' as '.$where[0]
+                 .' from contents where object_id in (select id from objects where objecttype_id = '.$objectType->id.')';  
+             }
+             $mapQuery = implode($mapQuery, 'UNION');
+             $mapQuery = '('.$mapQuery.') ';
+
+           }
+           $viewTable =  $where[0].'View';
+           $this->join(new Database_Expression($mapQuery . $viewTable ))->on('objects.id', '=', $viewTable.'.object_id');
+           $this->where($viewTable.'.'.$where[0], $where[1], $where[2]);
+
+         }
        }
      }
      return $this;
    }
-
-  /*
-  * Recode as latticeParentFilter
-   public function parentFilter($parentid) {
-      $this->where('parentid', '=', $parentid);
-  }
-  */
 
    public function noContainerObjects() {
       $res = ORM::Factory('objecttype')
@@ -1176,36 +1193,72 @@ class Model_Object extends ORM implements arrayaccess {
      return FALSE;
    }
 
-   public function next($sortField, $currentId=NULL){
-    $query = clone($this); 
-    if($currentId){
-      $current = Graph::object($currentId);
-    } else {
-      $current = $this;
-    }
-    $sortValue = $current->$sortField;
-    $query->where($sortField, '>=', $sortValue)
-      ->where('id', '>', $current->id) 
-      ->order_by($sortField, 'ASC')
-      ->order_by('id', 'ASC')
-      ->limit(1);
-    return $query->find();
+   private function isTableColumn($column){
+     if(in_array($column, array_keys($this->_table_columns))){
+       return true;
+     }
+     return false;
+   }
+
+   public function adjacentRecord($sortField, $direction, $currentId = NULL ){
+     $idInequalities = array('>', '<');
+     switch($direction){
+     case 'next':
+       $inequality = '>=';
+       $idInequality = 0;
+       $order = 'ASC';
+       break;
+     case 'prev':
+       $inequality = '<=';
+       $idInequality = 1;
+       $order = 'DESC';
+       break;
+     default:
+       throw new Kohana_Exception('Bad direction sent to adjacent record');
+       break;
+     }
+
+     $query = clone($this); 
+     if($currentId){
+       $current = Graph::object($currentId);
+     } else {
+       $current = $this;
+     }
+     $sortValue = $current->$sortField;
+
+     if($this->isTableColumn($sortField)){
+       $query->where($sortField, $inequality, $sortValue)
+         ->order_by($sortField, $order);
+     } else {
+       //This assumes sortField is already mapped.. Fragile!
+       /// Here's the way to actually do it, with field translation handled somewhere
+       /*
+        * select id,field1 as orderfield from contents where id > 20 UNION select id, field3 as orderfield from contents where id <= 20;
+       */
+       $query->contentFilter( array(array($sortField, $inequality, $sortValue)) )->order_by($sortField);  
+     }
+
+     $queryCopy = clone($query); //reclone so we can rerun if necessary
+     $query->where('id', $idInequalities[$idInequality], $current->id)->order_by('id', $order)->limit(1);
+     $result = $query->find();
+     if(!$result->loaded()){
+       //id inequality (tiebreaker) is backwards, flip it and rerun the query
+       $idInequality += 1;
+       $idInequality %= 2;
+
+       $queryCopy->where('id', $idInequalities[$idInequality], $current->id)->order_by('id', $order)->limit(1);
+       $result = $queryCopy->find();
+     }
+     return $result;
    } 
 
+
+   public function next($sortField, $currentId=NULL){
+     return $this->adjacentRecord($sortField, 'next', $currentId);
+   }
+
    public function prev($sortField, $currentId=NULL){
-    $query = clone($this); 
-    if($currentId){
-      $current = Graph::object($currentId);
-    } else {
-      $current = $this;
-    }
-    $sortValue = $current->$sortField;
-    $query->where($sortField, '<=', $sortValue)
-      ->where('id', '<', $current->id) 
-      ->order_by($sortField, 'DESC')
-      ->order_by('id', 'DESC')
-      ->limit(1);
-    return $query->find();
+     return $this->adjacentRecord($sortField, 'prev', $currentId);
    }
 
    public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
