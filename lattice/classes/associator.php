@@ -37,7 +37,7 @@ Class Associator {
 
 
 
-  public function __construct($parentId, $lattice, $filters=NULL){
+  public function __construct($parentId, $lattice, $filters=NULL, $loadPool=NULL){
     $this->parentId = $parentId;
     $this->parent = Graph::object($this->parentId);
     $this->lattice = $lattice;
@@ -45,6 +45,10 @@ Class Associator {
     
     foreach($this->parent->getLatticeChildren($this->lattice) as $child){
       $this->associated[] = $child;
+    }
+
+    if(is_array($loadPool)){
+      $this->pool = $loadPool;
     }
 
     //load pool
@@ -97,7 +101,8 @@ Class Associator {
           }
         }
       }	
-    } else {
+    } else if(!is_array($loadPool)) {
+
       $objects = Graph::object()
         ->where('id', '!=', $parentId)
         ->where('objects.language_id', '=', Graph::defaultLanguage())
