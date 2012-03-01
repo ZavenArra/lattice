@@ -6,35 +6,33 @@ Class GraphTest extends Kohana_UnitTest_TestCase {
     $this->assertNotNull($object);
 	}
 
-	public function testGraphNewObject(){
-    $object = Graph::object();
-    $object->save();
-    $this->assertTrue($object->loaded());
-    return $object->id;
-	}
-
 	public function testGraphCreateObject(){
     $object = Graph::createObject('article');
     $this->assertTrue($object->loaded());
     $object->delete();
 	}
 
+	public function testGraphCreateObjectWithKey(){
+    $object = Graph::createObject('article', 'testkey');
+    $this->assertTrue($object->loaded());
+    $object->delete();
+	}
+
   
-  /**
-   * @depends testGraphNewObject
-   */
-  public function testGraphLoadObject($objectId){
+  public function testGraphLoadObject(){
+    $object = Graph::createObject('article', 'testkey');
+    $objectId = $object->id;
     $object = Graph::object($objectId);
     $this->assertTrue($object->loaded());
+    $object->delete();
   }
 
   
-  /**
-   * @depends testGraphNewObject
-   */
-  public function testGraphDeleteObject($objectId){
-    $object = Graph::object($objectId);
+  public function testGraphDeleteObject(){
+    $object = Graph::createObject('article');
+    $objectId = $object->id;
     $object->delete();
+    $object = Graph::object($objectId);
     $this->assertFalse($object->loaded());
   }
 

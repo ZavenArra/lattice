@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE data SYSTEM "data.dtd">
 <data>
+  <nodes>
 	
 	<item objectTypeName="tagsObjectType">
 		<field name="title">Tags</field>
@@ -102,5 +103,7 @@
 			<field name="label">nas as s</field>
 		</object>
 	</item>
+</nodes>
+<relationships></relationships>
 
 </data>

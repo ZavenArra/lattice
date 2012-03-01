@@ -19,6 +19,11 @@ Class Controller_LatticeViews extends Controller_Layout{
 	 */
 	protected $content = array();
 
+  public function __construct($request, $response){
+    parent::__construct($request, $response);
+  }
+
+
 	/*
 	 * Function: index
 	 * Wrapper to object that uses the controller as the slug

@@ -10,10 +10,6 @@ $config['resources']['libraryjs'] = array(
 	'lattice/lattice/resources/thirdparty/mootools/mootools.js',
 	'lattice/lattice/resources/thirdparty/mootools/mootools-more.js',
 	//these are required by LatticeUI
-//	'lattice/lattice/resources/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
-	// 'lattice/lattice/resources/thirdparty/arian/datepicker/Picker.js',
-	// 'lattice/lattice/resources/thirdparty/arian/datepicker/Picker.Attach.js',
-	// 'lattice/lattice/resources/thirdparty/arian/datepicker/Picker.Date.js',
 	'lattice/lattice/resources/js/LatticeCore.js',
 	'lattice/lattice/resources/js/LatticeUI.js',
 	'lattice/lattice/resources/js/LatticeModules.js',

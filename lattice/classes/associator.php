@@ -53,7 +53,7 @@ Class Associator {
           }
           $objects->where('objecttype_id', '=', $t->id);
         }
-           if(isset($filter['match']) && $filter['match']){
+        if(isset($filter['match']) && $filter['match']){
           $matchFields = explode(',',$filter['matchFields']);
           $wheres = array();
           foreach($matchFields as $matchField){
