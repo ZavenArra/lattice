@@ -72,20 +72,20 @@ class latticeview {
 		* Returns true/false depending on if the given slug is either
       * the slug of the initial view loaded or a child of that slug.
 		*/
-    public static function withinSubtree($slug){
-       //Direct links are not within lattice
-       if(strstr($slug, 'http')){
-          return false;
-       }
-       //Only check the first part of given route
-       //This allos support for custom controllers.
-       $route = explode('/', $slug);
-       $slug = $route[0];
-       
-       
-       return self::initialObject()->isWithinSubTree($slug);
-       
-    }
+   public static function withinSubtree($slug){
+     //Direct links are not within lattice
+     if(strstr($slug, 'http')){
+       return false;
+     }
+     //Only check the first part of given route
+     //This allos support for custom controllers.
+     $route = explode('/', $slug);
+     $slug = $route[0];
+
+
+     return self::initialObject()->isWithinSubTree($slug);
+
+   }
 
 	 public function __construct($objectIdOrSlug = null){
 		 if($objectIdOrSlug != NULL){
