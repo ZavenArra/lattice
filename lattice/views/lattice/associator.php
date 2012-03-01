@@ -16,7 +16,7 @@
 
 		<div class="filter clearFix">
 			<label>
-				<input type="text" name="filter" value="" id="FILTERuniqueID" />
+				<input type="text" name="filter" value="" id="{{FilterUniqueID}}" />
 				<a href="#" class="button">Filter Pool</a>
 			</label>
 		</div>
