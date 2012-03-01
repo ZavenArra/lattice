@@ -2,15 +2,25 @@
 Class ModelObjectTest extends Kohana_UnitTest_TestCase {
 
   public static function setUpBeforeClass(){
-    $object = Graph::createObject('article', 'modelObjectTest');
+    $object = Graph::createObject('article', 'object-test-article');
     $object->title = 'The House';
     $object->save();
-    $object = Graph::createObject('article', 'modelObjectTest2');
-    $object = Graph::createObject('article', 'modelObjectTest3');
+    $object = Graph::createObject('prevNext', 'model-object-test');
+    $object->postDate = '2012-01-01';
+    $object->save();
+    $object = Graph::createObject('prevNext', 'model-object-test2');
+    $object->postDate = '2011-01-01';
+    $object->save();
+    $object = Graph::createObject('prevNext', 'model-object-test3');
+    $object->postDate = '2010-01-01';
+    $object->save();
   }
 
   public static function tearDownAfterClass(){
-    Graph::object('modelObjectTest')->delete();
+    Graph::object('object-test-article')->delete();
+    Graph::object('model-object-test')->delete();
+    Graph::object('model-object-test2')->delete();
+    Graph::object('model-object-test3')->delete();
   }
 
   public function testContentFilterMethodExists(){
@@ -37,15 +47,32 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
   }
 
   public function testNext(){
-    $objectQuery = Graph::object()->objectTypeFilter('article');
-    $next = $objectQuery->next('modelObjectTest2');
+    $objectQuery = Graph::object()->objectTypeFilter('prevNext');
+    $next = $objectQuery->next('dateadded', Graph::object('model-object-test2')->id);
     $this->assertNotNULL($next);
+    $this->assertTrue($next->slug == 'model-object-test3');
   }
 
 
   public function testPrev(){
-    $objectQuery = Graph::object()->objectTypeFilter('article');
-    $objectQuery->prev('modelObjectTest2');
+    $objectQuery = Graph::object()->objectTypeFilter('prevNext');
+    $prev = $objectQuery->prev('dateadded',  Graph::object('model-object-test2')->id);
     $this->assertNotNULL($prev);
+    $this->assertTrue($prev->slug == 'model-object-test');
+  }
+
+  public function testNextContentColumn(){
+    $objectQuery = Graph::object()->objectTypeFilter('prevNext');
+    $next = $objectQuery->next('postDate', Graph::object('model-object-test2')->id);
+    $this->assertNotNULL($next);
+    $this->assertTrue($next->slug == 'model-object-test');
+  }
+
+
+  public function testPrevContentColumn(){
+    $objectQuery = Graph::object()->objectTypeFilter('prevNext');
+    $prev = $objectQuery->prev('postDate',  Graph::object('model-object-test2')->id);
+    $this->assertNotNULL($prev);
+    $this->assertTrue($prev->slug == 'model-object-test3');
   }
 }
