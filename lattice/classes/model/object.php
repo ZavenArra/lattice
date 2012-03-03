@@ -811,7 +811,7 @@ class Model_Object extends ORM implements arrayaccess {
 
    public function saveUploadedFile($field, $filename, $type, $tmpName) {
       $tmpName = $this->moveUploadedFileToTmpMedia($tmpName);
-      return $this->_saveFile($field, $filename, $type, $tmpName);
+      return $this->saveFile($field, $filename, $type, $tmpName);
    }
 
    /*
@@ -935,7 +935,7 @@ class Model_Object extends ORM implements arrayaccess {
 
    public function saveImage($field, $filename, $type, $tmpName, $additionalResizes = array() ) {
       //do the saving of the file
-      $file = $this->_saveFile($field, $filename, $type, $tmpName);
+      $file = $this->saveFile($field, $filename, $type, $tmpName);
       $imagefilename = $this->processImage($file->filename, $field, $additionalResizes );
 
       return $file;
