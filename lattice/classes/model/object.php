@@ -822,7 +822,7 @@ class Model_Object extends ORM implements arrayaccess {
    public function saveUploadedImage($field, $filename, $type, $tmpName, $additionalResizes=array()) {
       $tmpName = $this->moveUploadedFileToTmpMedia($tmpName);
       Kohana::$log->add(Log::INFO, 'clling save image' . $filename);
-      $file = $this->_saveImage($field, $filename, $type, $tmpName, $additionalResizes);
+      $file = $this->saveImage($field, $filename, $type, $tmpName, $additionalResizes);
 
       return $file;
    }
