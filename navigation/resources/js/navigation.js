@@ -158,7 +158,7 @@ lattice.modules.navigation.Navigation = new Class({
 		newPane = this.getPaneTemplate().clone();
 		elementDimensions = this.container.getDimensions();
 		this.element.getElement( ".panes" ).adopt( newPane );
-		this.container.setStyle( "width", elementDimensions.width + newPane.getDimensions().width );
+		// this.container.setStyle( "width", elementDimensions.width + newPane.getDimensions().width );
 		newPane.get( "spinner" ).show( true );
 		return newPane;
 	},
