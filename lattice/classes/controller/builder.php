@@ -190,13 +190,9 @@ class Controller_Builder extends Controller {
 
           $clustersData[$field] = $clusterData;
           //have to wait until object is inserted to respect translations
-          echo 'continueing';
+          echo 'continuing';
           continue;
         }
-
-
-
-
 
 
         //special setup based on field type
@@ -220,10 +216,6 @@ class Controller_Builder extends Controller {
         }
 
       }
-      //$data['published'] = true;
-
-
-
       //now we check for a title collision
       //if there is a title collision, we assume that this is a component
       //already added at the next level up, in this case we just
