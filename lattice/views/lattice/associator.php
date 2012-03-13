@@ -9,17 +9,19 @@
 	</ul>
 
 	<div class="actuator clearFix">
+		
 		<a href="#" title="<?=$poolLabel;?>" class="icon closed"><?=$poolLabel;?></a>
+
+		<label for="{{filterUniqueID}}" class="filter hidden" >
+			Filter results
+			<input class="roundedInput" type="text" name="filter" value="" id="{{FilterUniqueID}}" />
+			<a href="#" class="filterButton button">Filter</a>
+		</label>
+
 	</div>
 
-	<div class="poolcontainer clearFix">
+	<div class="poolcontainer clearFix hidden">
 
-		<div class="filter clearFix">
-			<label>
-				<input type="text" name="filter" value="" id="{{FilterUniqueID}}" />
-				<a href="#" class="button">Filter Pool</a>
-			</label>
-		</div>
 	
 		<ul class="pool clearFix">
 		<?foreach($pool as $view):?>

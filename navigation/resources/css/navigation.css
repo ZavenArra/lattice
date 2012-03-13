@@ -1,10 +1,10 @@
 /*Navigation*/
 
 #navigation{
-    height: 27em;
-    width: 100%;
-    clear: both;
-	}
+	height: 27em;
+	width: 100%;
+	clear: both;
+}
 
 #navigation .container{
 	height:24em;    
@@ -83,7 +83,7 @@
 }
 
 #navigation a.icon{
-    text-indent: -3000px;
+	text-indent: -3000px;
 	display:block;
 	float:left;
 	width: 12px;

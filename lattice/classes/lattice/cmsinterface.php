@@ -63,7 +63,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       if ($file->uithumb->filename) {
          if (file_exists(Graph::mediapath() . $file->uithumb->filename)) {
             $resultpath = Graph::mediapath() . $file->uithumb->filename;
-            $thumbSrc = Kohana::config('cms.basemediapath') . $file->uithumb->fullpath;
+            $thumbSrc = $resultpath; //Kohana::config('cms.basemediapath') . $file->uithumb->fullpath;
          }
       }
       if ($thumbSrc) {
