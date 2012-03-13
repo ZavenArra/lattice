@@ -15,11 +15,29 @@ Class Associator {
 
   private $maxPoolSize = 50;
 
+  public static function getFiltersFromDomNode($node){
+    $filtersNodeList = lattice::config('objects', 'filter', $node);
+    $filters = array();
+    foreach($filtersNodeList as $filter){
+      $setting = array();
+      $setting['from'] = $filter->getAttribute('from');
+      $setting['objectTypeName'] = $filter->getAttribute('objectTypeName');
+      $setting['tagged'] = $filter->getAttribute('tagged');
+      $setting['function'] = $filter->getAttribute('function');
+      $filters[] = $setting;
+    }
+    return $filters;
+
+  }
+
+
   //TODO
   public function setViewName($viewName){throw new Kohana_Exception('Not Implemented');} //to support multi-lattice single custom view
   public function setAssociatorName($associatorName){throw new Kohana_Exception('Not Implemented');} //to support mutli-instance single lattice
 
-  public function __construct($parentId, $lattice, $filters=NULL){
+
+
+  public function __construct($parentId, $lattice, $filters=NULL, $loadPool=NULL){
     $this->parentId = $parentId;
     $this->parent = Graph::object($this->parentId);
     $this->lattice = $lattice;
@@ -27,6 +45,10 @@ Class Associator {
     
     foreach($this->parent->getLatticeChildren($this->lattice) as $child){
       $this->associated[] = $child;
+    }
+
+    if(is_array($loadPool)){
+      $this->pool = $loadPool;
     }
 
     //load pool
@@ -79,7 +101,8 @@ Class Associator {
           }
         }
       }	
-    } else {
+    } else if(!is_array($loadPool)) {
+
       $objects = Graph::object()
         ->where('id', '!=', $parentId)
         ->where('objects.language_id', '=', Graph::defaultLanguage())

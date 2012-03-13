@@ -198,7 +198,7 @@ lattice.modules.navigation.Navigation = new Class({
 		if( !target || this.getPanes().indexOf( target ) < this.numberOfVisiblePanes ){
 			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toLeft();
 		}else{
-			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toElementEdge( target );
+			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).start( target.getCoordinates().left - target.getCoordinates().width - this.element.getElement('.container').getCoordinates().left , 0 );//toRight( target );
 		}		
 	},
 	
@@ -233,7 +233,8 @@ lattice.modules.navigation.Navigation = new Class({
 		this.nodeData[ json.response.data.id ] = json.response.data;
 		var newNode = json.response.html.toElement();
 		tierInstance.adoptNode( newNode );
-		tierInstance.onObjectAdded();
+		tierInstance.onObjectAdded( newNode );
+		
 	},
 
 	removeObject: function( nodeId, tier ){
@@ -313,7 +314,7 @@ lattice.modules.navigation.Tier = new Class({
 		lattice.util.stopEvent( e );
 		if( this.element.get('html') != this.html ) this.element.set( 'html', this.html );
 		this.nodeElement = this.element.getElement( ".nodes" );
-		if( this.options.allowChildSort ) this.makeSortable( this.nodeElement );
+		if( this.options.allowChildSort ) this.makeSortable();
 		this.nodes = this.element.getElements(".node");
 		this.nodes.each( function( aNodeElement ){ 
 			this.initNode( aNodeElement );
@@ -479,15 +480,20 @@ lattice.modules.navigation.Tier = new Class({
 		this.marshal.addObject( this.id, templateId, { title: nodeTitle }, this );
 	},
 
-	onObjectAdded: function(){ this.spinner.hide(); },
-
-	makeSortable: function( sortableListElement ){	
-		this.sortableListElement = sortableListElement;
-		if( !this.sortableList ){
-			this.sortableList = new lattice.ui.Sortable( this.sortableListElement, this, this.sortableListElement  );
-		}else{
-			this.sortableList.attach();
+	onObjectAdded: function( aNode ){
+		console.log( "onObjectAdded", aNode );
+		if( this.options.allowChildSort && this.sortableList ){
+//			console.log( "onObjectAdded", this.options.allowChildSort, this.sortableList, this.sortableListElement, aNode )
+			this.sortableList.addItems( aNode ); 
 		}
+		this.spinner.hide(); 
+	},
+
+	makeSortable: function(){	
+		this.sortableListElement = this.nodeElement;
+		if( this.sortableList) this.removeSortable( this.sortableList );
+		this.sortableList = null;
+		this.sortableList = new lattice.ui.Sortable( this.sortableListElement, this, this.sortableListElement  );
 		this.oldSort = this.serialize();
 	},
 	

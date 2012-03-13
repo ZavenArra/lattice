@@ -45,15 +45,15 @@
 
 
     <label for="reg_usertype">
-    Type of user
-    <select name="usertype" id="reg_usertype">
-    <option value="0">Select a user</option>
-    <option value="1">A value</option>
-    <option value="2">A value</option>
-    <option value="3">A value</option>
-    </select>
+    	Type of user
+    	<select name="usertype" id="reg_usertype">
+    		<option value="0">Select a user</option>
+    		<option value="1">A value</option>
+    		<option value="2">A value</option>
+    		<option value="3">A value</option>
+    	</select>
     </label>
 
-    <input type="submit" value="Continue →">
+    <input type="submit" value="Continue &rarr;">
 
 </form>

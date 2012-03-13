@@ -90,12 +90,29 @@ Class Controller_CSV extends Controller {
    }
    
    public function action_importCSVFile(){
+       //get the php default Resource Limits
+       $max_execution_time = ini_get("max_execution_time");
+       $max_input_time = ini_get("max_input_time");
+       $memory_limit = ini_get("memory_limit");
+       
+       //we need a lot of time and memory for the import
+       ini_set("max_execution_time","200");
+       ini_set("max_input_time","200");
+       ini_set("memory_limit","128M");
+       
       $this->csvFile = fopen($_FILES['upload']['tmp_name'], 'r');
 			$this->column = 0;
 
 			$this->walkCSVObjects(Graph::getLatticeRoot());
 			
 			fclose($this->csvFile);
+                        
+      
+       //set the php Resource Limits back to default
+       ini_set("max_execution_time",$max_execution_time);
+       ini_set("max_input_time",$max_input_time);
+       ini_set("memory_limit",$memory_limit);
+       
       echo 'Done';
    }
 

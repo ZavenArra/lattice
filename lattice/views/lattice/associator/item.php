@@ -1,4 +1,3 @@
-
 <li class="shadow" data-objectid="<?=$object->id;?>">
   <h4><?=$object->title;?></h4>
   <div class="itemControls">

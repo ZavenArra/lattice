@@ -144,15 +144,21 @@ class latticecms {
    }
 
    public static function getElementConfig($object, $elementName){
+     latticecms::getElementDomNode($object, $elementName);
+     return self::convertXMLElementToArray($object, $element->item(0));
+   }
+
+   public static function getElementDomNode($object, $elementName){
      $xPath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]',
        $object->objecttype->objecttypename,
        $elementName
      );
      $element = lattice::config('objects', $xPath);
      if(!$element || !$element->length ){
-      throw new Kohana_Exception('xPath returned no results: '. $xPath);
+       throw new Kohana_Exception('xPath returned no results: '. $xPath);
      }
-     return self::convertXMLElementToArray($object, $element->item(0));
+     return $element->item(0);
+
    }
 
    public static function buildUIHtmlChunksForObject($object, $translatedLanguageCode = null) {
@@ -222,19 +228,8 @@ class latticecms {
 
             case 'associator':
                //need to load filters here
-               $filters = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]/filter', 
-								 $object->objecttype->objecttypename,
-								 $element->getAttribute('name') ));
-							 $filterSettings = array();
-							 foreach($filters as $filter){
-								 $setting = array();
-								 $setting['from'] = $filter->getAttribute('from');
-								 $setting['objectTypeName'] = $filter->getAttribute('objectTypeName');
-								 $setting['tagged'] = $filter->getAttribute('tagged');
-								 $setting['function'] = $filter->getAttribute('function');
-								 $filterSettings[] = $setting;
-							 }
-							 $entry['filters'] = $filterSettings;
+              
+							 $entry['filters'] = Associator::getFiltersFromDomNode($element);
                $entry['poolLabel'] = $element->getAttribute('poolLabel');
                $entry['associatorType'] = $element->getAttribute('associatorType');
 							 break;
