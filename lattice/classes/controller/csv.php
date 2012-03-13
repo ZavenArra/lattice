@@ -5,12 +5,12 @@ Class Controller_CSV extends Controller {
    private $csvOutput = '';
    private $level = 0;
 
-	 public function __construct($request, $response){
-		 parent::__construct($request, $response);
-		 if(!latticeutil::checkRoleAccess('superuser')  && PHP_SAPI != 'cli' ){
-			 die('Only superuser can access builder tool');
-		 }
-	 }
+  public function __construct($request, $response){
+   parent::__construct($request, $response);
+   if(!latticeutil::checkRoleAccess('superuser')  && PHP_SAPI != 'cli' ){
+    die('Only superuser can access builder tool');
+   }
+  }
    
    public function action_index(){
          $view = new View('csv/index');
@@ -27,228 +27,238 @@ Class Controller_CSV extends Controller {
       
       $this->csvWalkTree($rootObject);
 
-			$filename = $exportFileIdentifier .'.csv';
-			$filepath = 'application/export/'.$filename;
-			$file = fopen($filepath, 'w');
-			fwrite($file, $this->csvOutput);
+   $filename = $exportFileIdentifier .'.csv';
+   $filepath = 'application/export/'.$filename;
+   $file = fopen($filepath, 'w');
+   fwrite($file, $this->csvOutput);
     // exit;
-			header("Pragma: public");
-			header("Expires: 0");
-			header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-			header("Cache-Control: private",false);
-			header("Content-Type: csv");
-			header("Content-Disposition: attachment; filename=\"".$filename."\";");
-			header("Content-Transfer-Encoding: binary");
-			header("Content-Length: ".@filesize($filepath));
-			set_time_limit(0);
-			@readfile($filepath) or die("File not found.");	
-			exit;
+   header("Pragma: public");
+   header("Expires: 0");
+   header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+   header("Cache-Control: private",false);
+   header("Content-Type: csv");
+   header("Content-Disposition: attachment; filename=\"".$filename."\";");
+   header("Content-Transfer-Encoding: binary");
+   header("Content-Length: ".@filesize($filepath));
+   set_time_limit(0);
+   @readfile($filepath) or die("File not found."); 
+   exit;
    }
-   
+
    private function csvWalkTree($parent, $example = false){
-      $objects = $parent->getLatticeChildren();
-      
-      if ($example || ($this->level > 0 && count($objects))) {
-         $childrenLine = array_pad(array('Children'), -1 - $this->level, '');
-         $this->csvOutput .= latticeutil::arrayToCsv($childrenLine, ',');
-         $this->csvOutput .= "\n";
-      }
+     $objects = $parent->getLatticeChildren();
 
-      foreach($objects as $object){
-         
-				$csvView = NULL;
-				if($object->objecttype->nodeType != 'container'){
-					$csvView = new View_CSV($this->level, $object);
-				} else {
-					$csvView = new View_CSVContainer($this->level, $object);
-				}
-				$this->csvOutput .= $csvView->render();
-				$this->level++;
-				$this->csvWalkTree($object, false);  //false turning off example for now
-																						 //big problem with walking descedent objects since they don't exist
+     if ($example || ($this->level > 0 && count($objects))) {
+       $childrenLine = array_pad(array('Children'), -1 - $this->level, '');
+       $this->csvOutput .= latticeutil::arrayToCsv($childrenLine, ',');
+       $this->csvOutput .= "\n";
+     }
 
-				if($example){
-					//And now append one example object of each addable object
-					foreach ($object->objecttype->addableObjects as $addableObjectType) {
-						$object = Graph::object()->setObjectType($addableObjectType['objectTypeId']);
+     foreach($objects as $object){
 
+       $csvView = NULL;
+       if($object->objecttype->nodeType != 'container'){
+         $csvView = new View_CSV($this->level, $object);
+       } else {
+         $csvView = new View_CSVContainer($this->level, $object);
+       }
+       $this->csvOutput .= $csvView->render();
+       $this->level++;
+       $this->csvWalkTree($object, false);  //false turning off example for now
+       //big problem with walking descedent objects since they don't exist
 
-						$csvView = new View_Csv($this->level, $object);
-						$this->csvOutput .= $csvView->render();
+       if($example){
+         //And now append one example object of each addable object
+         foreach ($object->objecttype->addableObjects as $addableObjectType) {
+           $object = Graph::object()->setObjectType($addableObjectType['objectTypeId']);
 
 
-					}
-				}
-				$this->level--;
-      }
-   
+           $csvView = new View_Csv($this->level, $object);
+           $this->csvOutput .= $csvView->render();
+
+
+         }
+       }
+       $this->level--;
+     }
+
    }
-   
+
    public function action_import(){
-       $view = new View('csv/uploadform');
-       $this->response->body($view->render());
-   }
-   
-   public function action_importCSVFile(){
-       //get the php default Resource Limits
-       $max_execution_time = ini_get("max_execution_time");
-       $memory_limit = ini_get("memory_limit");
-       
-       //we need a lot of time and memory for the import
-       ini_set("max_execution_time",200);
-       ini_set("memory_limit","128M");
-       
-       $max_execution_time = ini_get("max_execution_time");
-       $memory_limit = ini_get("memory_limit");
-       
-      $this->csvFile = fopen($_FILES['upload']['tmp_name'], 'r');
-			$this->column = 0;
-
-			$this->walkCSVObjects(Graph::getLatticeRoot());
-			
-			fclose($this->csvFile);
-                        
-      
-       //set the php Resource Limits back to default
-       ini_set("max_execution_time",$max_execution_time);
-       ini_set("memory_limit",$memory_limit);
-       
-      echo 'Done';
+     $view = new View('csv/uploadform');
+     $this->response->body($view->render());
    }
 
-	 protected function walkCSVObjects($parent){
-		 $this->advance();
-		 while($this->line){
-			 $objectTypeName = $this->line[$this->column];
-			 if(!$objectTypeName){
-				 throw new Kohana_Exception("Expecting objectType at column :column, but none found :line",
-					 array(
-						 ':column'=>$this->column,
-						 ':line'=>implode(',',$this->line)
-				 )); 
-			 }
+   public function action_importCSVFile($csvFileName=NULL){
+     //get the php default Resource Limits
+     $max_execution_time = ini_get("max_execution_time");
+     $memory_limit = ini_get("memory_limit");
 
-			 //check if this object type is valid for the current objects.xml
-			 $objectConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName));
-			 if(!$objectConfig->item(0)){
-				 throw new Kohana_Exception("No object type configured in objects.xml for ".$objectTypeName);	
-			 }
+     //we need a lot of time and memory for the import
+     ini_set("max_execution_time",200);
+     ini_set("memory_limit","128M");
 
-			 //we have an objectType
-			 $newObjectId = $parent->addObject($objectTypeName);
-			 $newObject = Graph::object($newObjectId);
-			 $this->walkCSVElements($newObject);
+     $max_execution_time = ini_get("max_execution_time");
+     $memory_limit = ini_get("memory_limit");
 
-		 }
-	 }
+     if($csvFileName == NULL){
+       $this->csvFile = fopen($_FILES['upload']['tmp_name'], 'r');
+     } else {
+       $this->csvFile = fopen($csvFileName, 'r');
+     }
+     $this->column = 0;
 
-	 protected function walkCSVElements($object){
-		 echo "Walking\n";
+     $this->walkCSVObjects(Graph::getLatticeRoot());
 
-		 if($object->objecttype->nodeType != 'container'){ 
-			 //get the elements line
-			 $this->advance();
-			 //check here for Elements in $this->column +1;
-			 if($this->line[$this->column+1] != 'Elements'){
-				 throw new Kohana_Exception("Didn't find expected Elements line");
-			 }
-		 }
+     fclose($this->csvFile);
 
 
-		 //iterate through any elements
-		 $this->advance();	
-		 $data = array();
-		 while(isset($this->line[$this->column]) 
-			 && $this->line[$this->column]=='' 
-			 && $this->line[$this->column+1]!='' 
-			 && $this->line[$this->column+1]!='Children'){
-			 $fieldName = $this->line[$this->column+1];	
-			 echo "Reading $fieldName \n";
-			 if(isset($this->line[$this->column+2])){
-				 $value = $this->line[$this->column+2];
-			 } else {
-				$value = null;
-			 }
-			 $field = strtok($fieldName, '_');
-			 $lang = strtok('_');
-			 if(!isset($data[$lang])){
-				 $data[$lang] = array();
-			 }
-			 $data[$lang][$field] = $value;
+     //set the php Resource Limits back to default
+     ini_set("max_execution_time",$max_execution_time);
+     ini_set("memory_limit",$memory_limit);
 
-			 $this->advance();
-		 }
-                 
+     echo 'Done';
+   }
+
+   protected function walkCSVObjects($parent){
+     $this->advance();
+     while($this->line){
+       $objectTypeName = $this->line[$this->column];
+       if(!$objectTypeName){
+         throw new Kohana_Exception("Expecting objectType at column :column, but none found :line",
+           array(
+             ':column'=>$this->column,
+             ':line'=>implode(',',$this->line)
+           )); 
+       }
+
+       //check if this object type is valid for the current objects.xml
+       $objectConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName));
+       if(!$objectConfig->item(0)){
+         throw new Kohana_Exception("No object type configured in objects.xml for ".$objectTypeName); 
+       }
+
+       //we have an objectType
+       $newObjectId = $parent->addObject($objectTypeName);
+       $newObject = Graph::object($newObjectId);
+       $this->walkCSVElements($newObject);
+
+     }
+   }
+
+   protected function walkCSVElements($object){
+     echo "Walking\n";
+
+     if($object->objecttype->nodeType != 'container'){ 
+       //get the elements line
+       $this->advance();
+       //check here for Elements in $this->column +1;
+       if($this->line[$this->column+1] != 'Elements'){
+         throw new Kohana_Exception("Didn't find expected Elements line");
+       }
+     }
+
+
+     //iterate through any elements
+     $this->advance(); 
+     $data = array();
+     while(isset($this->line[$this->column]) 
+       && $this->line[$this->column]=='' 
+       && $this->line[$this->column+1]!='' 
+       && $this->line[$this->column+1]!='Children'){
+         $fieldName = $this->line[$this->column+1]; 
+         echo "Reading $fieldName \n";
+         if(isset($this->line[$this->column+2])){
+           $value = $this->line[$this->column+2];
+         } else {
+           $value = null;
+         }
+         $field = strtok($fieldName, '_');
+         $lang = strtok('_');
+         if(!isset($data[$lang])){
+           $data[$lang] = array();
+         }
+         $data[$lang][$field] = $value;
+
+         $this->advance();
+       }
 
 
 
-		 //and actually add the data to the objects
-		 foreach($data as $lang=>$langData){
-				$objectToUpdate = $object->getTranslatedObject(Graph::language($lang));
-				foreach($langData as $field => $value){
-                                      
-                                    //need to look up field and switch on field type 
-                                    $fieldInfo = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $field, $value));
-                                    if (!$fieldInfo) {
-                                        throw new Kohana_Exception("Bad field in data/objects!\n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $field, $value));
-                                    }
+
+     //and actually add the data to the objects
+     foreach($data as $lang=>$langData){
+       $objectToUpdate = $object->getTranslatedObject(Graph::language($lang));
+       foreach($langData as $field => $value){
+
+         $objectToUpdate->$field = $value;
+
+         if(in_array($field, array('title', 'slug', 'published'))){
+           continue;
+         }
+
+         //need to look up field and switch on field type 
+         $fieldInfo = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]',$object->objecttype->objecttypename, $field));
+         $fieldInfo = $fieldInfo->item(0);
+         if (!$fieldInfo) {
+           throw new Kohana_Exception("Bad field in data/objects!\n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $object->objecttype->objecttypename, $field));
+         }
 
 
-                                    //special setup based on field type
-                                    switch ($fieldInfo->tagName) {
-                                        case 'file':
-                                        case 'image':
-                                            $path_parts = pathinfo($content->nodeValue);
-                                            $savename = Model_Object::makeFileSaveName($path_parts['basename']);
-                                            if (file_exists($content->nodeValue)) {
-                                                copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $content->nodeValue, Graph::mediapath($savename) . $savename);
-                                                $object->$field = $savename;
-                                            } else {
-                                                if($content->nodeValue){
-                                                    throw new Kohana_Exception( "File does not exist {$content->nodeValue} ");
-                                                }
-                                            }
-                                            break;
-                                        default:
-                                            $objectToUpdate->$field = $value;
-                                            break;
-                                    }
-                                    
-                                    
-                                    
-					$objectToUpdate->$field = $value;
-				}
-				$objectToUpdate->save();
-		 }
+         //special setup based on field type
+         switch ($fieldInfo->tagName) {
+         case 'file':
+           case 'image':
+             $path_parts = pathinfo($value);
+             $savename = Model_Object::makeFileSaveName($path_parts['basename']);
+             if (file_exists($value)) {
+               copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $value, Graph::mediapath($savename) . $savename);
+               $objectToUpdate->$field = $savename;
+             } else {
+               if($value){
+                 throw new Kohana_Exception( "File does not exist {$value} ");
+               }
+             }
+             break;
+           default:
+             break;
+         }
 
-		 //Check here for Children in $this->column +1
-		 if(!isset($this->line[$this->column+1]) || $this->line[$this->column+1] != 'Children'){
-			 echo "No children found, returning from Walk ";//.implode(',', $this->line)."\n";
-			 return;
-		 }
 
-		 //Iterate through any children
-		 $this->advance();
-		 while(isset($this->line[$this->column]) 
-			 && $this->line[$this->column]=='' 
-			 && $this->line[$this->column+1]!=''){
-			 echo "foudn Child\n";
-			 echo $this->column;
-			 $childObjectTypeName = $this->line[$this->column+1];	
-			 $childObjectId = $object->addObject($childObjectTypeName);
-			 $childObject = Graph::object($childObjectId);
-			 $this->column++;
-			 echo $this->column;
-			 $this->walkCSVElements($childObject);
-			 $this->column--;
-		 }
 
-		 echo "Returning from Walk\n";
-		 //at this point this->line contains the next object to add at this depth level
-	 }
+         $objectToUpdate->$field = $value;
+       }
+       $objectToUpdate->save();
+     }
 
-	 protected function advance(){
-		 $this->line = fgetcsv($this->csvFile);
-	 }
+     //Check here for Children in $this->column +1
+     if(!isset($this->line[$this->column+1]) || $this->line[$this->column+1] != 'Children'){
+       echo "No children found, returning from Walk ";//.implode(',', $this->line)."\n";
+       return;
+     }
+
+     //Iterate through any children
+     $this->advance();
+     while(isset($this->line[$this->column]) 
+       && $this->line[$this->column]=='' 
+       && $this->line[$this->column+1]!=''){
+         echo "foudn Child\n";
+         echo $this->column;
+         $childObjectTypeName = $this->line[$this->column+1]; 
+         $childObjectId = $object->addObject($childObjectTypeName);
+         $childObject = Graph::object($childObjectId);
+         $this->column++;
+         echo $this->column;
+         $this->walkCSVElements($childObject);
+         $this->column--;
+       }
+
+     echo "Returning from Walk\n";
+     //at this point this->line contains the next object to add at this depth level
+   }
+
+   protected function advance(){
+     $this->line = fgetcsv($this->csvFile);
+  }
 
 }
