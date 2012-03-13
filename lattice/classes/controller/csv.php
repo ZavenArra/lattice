@@ -90,12 +90,29 @@ Class Controller_CSV extends Controller {
    }
    
    public function action_importCSVFile(){
+       //get the php default Resource Limits
+       $max_execution_time = ini_get("max_execution_time");
+       $memory_limit = ini_get("memory_limit");
+       
+       //we need a lot of time and memory for the import
+       ini_set("max_execution_time",200);
+       ini_set("memory_limit","128M");
+       
+       $max_execution_time = ini_get("max_execution_time");
+       $memory_limit = ini_get("memory_limit");
+       
       $this->csvFile = fopen($_FILES['upload']['tmp_name'], 'r');
 			$this->column = 0;
 
 			$this->walkCSVObjects(Graph::getLatticeRoot());
 			
 			fclose($this->csvFile);
+                        
+      
+       //set the php Resource Limits back to default
+       ini_set("max_execution_time",$max_execution_time);
+       ini_set("memory_limit",$memory_limit);
+       
       echo 'Done';
    }
 
@@ -161,12 +178,44 @@ Class Controller_CSV extends Controller {
 
 			 $this->advance();
 		 }
+                 
+
 
 
 		 //and actually add the data to the objects
 		 foreach($data as $lang=>$langData){
 				$objectToUpdate = $object->getTranslatedObject(Graph::language($lang));
 				foreach($langData as $field => $value){
+                                      
+                                    //need to look up field and switch on field type 
+                                    $fieldInfo = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $field, $value));
+                                    if (!$fieldInfo) {
+                                        throw new Kohana_Exception("Bad field in data/objects!\n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $field, $value));
+                                    }
+
+
+                                    //special setup based on field type
+                                    switch ($fieldInfo->tagName) {
+                                        case 'file':
+                                        case 'image':
+                                            $path_parts = pathinfo($content->nodeValue);
+                                            $savename = Model_Object::makeFileSaveName($path_parts['basename']);
+                                            if (file_exists($content->nodeValue)) {
+                                                copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $content->nodeValue, Graph::mediapath($savename) . $savename);
+                                                $object->$field = $savename;
+                                            } else {
+                                                if($content->nodeValue){
+                                                    throw new Kohana_Exception( "File does not exist {$content->nodeValue} ");
+                                                }
+                                            }
+                                            break;
+                                        default:
+                                            $objectToUpdate->$field = $value;
+                                            break;
+                                    }
+                                    
+                                    
+                                    
 					$objectToUpdate->$field = $value;
 				}
 				$objectToUpdate->save();
