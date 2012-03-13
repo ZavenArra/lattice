@@ -7,7 +7,7 @@ Class Controller_CSV extends Controller {
 
 	 public function __construct($request, $response){
 		 parent::__construct($request, $response);
-		 if(!latticeutil::checkRoleAccess('superuser')){
+		 if(!latticeutil::checkRoleAccess('superuser')  && PHP_SAPI != 'cli' ){
 			 die('Only superuser can access builder tool');
 		 }
 	 }
