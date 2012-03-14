@@ -4,6 +4,7 @@ Class Controller_CSV extends Controller {
 
    private $csvOutput = '';
    private $level = 0;
+   private $lineNumber = 0;
 
   public function __construct($request, $response){
    parent::__construct($request, $response);
@@ -25,7 +26,12 @@ Class Controller_CSV extends Controller {
 
      $this->level = 0;
 
-     $this->csvWalkTree($rootObject);
+     try {
+       $this->csvWalkTree($rootObject);
+     } catch (Exception $e){
+       echo  "Error at line {$this->lineNumber} \n";
+       throw $e;
+     }
 
      $filename = $exportFileIdentifier .'.csv';
      $filepath = 'application/export/'.$filename;
@@ -144,6 +150,15 @@ Class Controller_CSV extends Controller {
        $this->walkCSVElements($newObject);
 
      }
+
+     try {
+       latticecms::regenerateImages();
+     } catch(Exception $e){
+       print_r($e->getMessage() . $e->getTrace());
+     }
+     echo 'Done';
+     flush();
+     ob_flush();
    }
 
    protected function walkCSVElements($object){
@@ -153,8 +168,8 @@ Class Controller_CSV extends Controller {
        //get the elements line
        $this->advance();
        //check here for Elements in $this->column +1;
-       if($this->line[$this->column+1] != 'Elements'){
-         throw new Kohana_Exception("Didn't find expected Elements line");
+       if(!(isset($this->line[$this->column+1])) || $this->line[$this->column+1] != 'Elements'){
+         throw new Kohana_Exception("Didn't find expected Elements line at line ".$this->lineNumber);
        }
      }
 
@@ -198,7 +213,7 @@ Class Controller_CSV extends Controller {
 
          $objectToUpdate->$field = $value;
 
-         if(in_array($field, array('title', 'slug', 'published'))){
+         if(in_array($field, array('title', 'slug', 'published', 'dateadded'))){
            continue;
          }
 
@@ -218,10 +233,14 @@ Class Controller_CSV extends Controller {
              $savename = Model_Object::makeFileSaveName($path_parts['basename']);
              if (file_exists($value)) {
                copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $value, Graph::mediapath($savename) . $savename);
-               $objectToUpdate->$field = $savename;
+               $file = ORM::Factory('file');
+               $file->filename = $savename;
+               $file->save();
+               $objectToUpdate->$field = $file->id;
              } else {
                if($value){
-                 throw new Kohana_Exception( "File does not exist {$value} ");
+                 echo "file does not exist";
+                 //throw new Kohana_Exception( "File does not exist {$value} ");
                }
              }
              break;
@@ -258,9 +277,11 @@ Class Controller_CSV extends Controller {
 
      echo "Returning from Walk\n";
      //at this point this->line contains the next object to add at this depth level
+    
    }
 
    protected function advance(){
+     $this->lineNumber++;
      $this->line = fgetcsv($this->csvFile);
   }
 
