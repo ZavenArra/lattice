@@ -18,31 +18,31 @@ Class Controller_CSV extends Controller {
    }
    
    public function action_export($exportFileIdentifier='latticeCsvExport'){
-      $this->csvOutput = '';
-      
-      $rootObject = Graph::getLatticeRoot();
-      
-      
-      $this->level = 0;
-      
-      $this->csvWalkTree($rootObject);
+     $this->csvOutput = '';
 
-   $filename = $exportFileIdentifier .'.csv';
-   $filepath = 'application/export/'.$filename;
-   $file = fopen($filepath, 'w');
-   fwrite($file, $this->csvOutput);
-    // exit;
-   header("Pragma: public");
-   header("Expires: 0");
-   header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-   header("Cache-Control: private",false);
-   header("Content-Type: csv");
-   header("Content-Disposition: attachment; filename=\"".$filename."\";");
-   header("Content-Transfer-Encoding: binary");
-   header("Content-Length: ".@filesize($filepath));
-   set_time_limit(0);
-   @readfile($filepath) or die("File not found."); 
-   exit;
+     $rootObject = Graph::getLatticeRoot();
+
+
+     $this->level = 0;
+
+     $this->csvWalkTree($rootObject);
+
+     $filename = $exportFileIdentifier .'.csv';
+     $filepath = 'application/export/'.$filename;
+     $file = fopen($filepath, 'w');
+     fwrite($file, $this->csvOutput);
+     // exit;
+     header("Pragma: public");
+     header("Expires: 0");
+     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+     header("Cache-Control: private",false);
+     header("Content-Type: csv");
+     header("Content-Disposition: attachment; filename=\"".$filename."\";");
+     header("Content-Transfer-Encoding: binary");
+     header("Content-Length: ".@filesize($filepath));
+     set_time_limit(0);
+     @readfile($filepath) or die("File not found."); 
+     exit;
    }
 
    private function csvWalkTree($parent, $example = false){
@@ -96,7 +96,7 @@ Class Controller_CSV extends Controller {
 
      //we need a lot of time and memory for the import
      ini_set("max_execution_time",200);
-     ini_set("memory_limit","128M");
+     ini_set("memory_limit","428M");
 
      $max_execution_time = ini_get("max_execution_time");
      $memory_limit = ini_get("memory_limit");
@@ -167,7 +167,7 @@ Class Controller_CSV extends Controller {
        && $this->line[$this->column+1]!='' 
        && $this->line[$this->column+1]!='Children'){
          $fieldName = $this->line[$this->column+1]; 
-         echo "Reading $fieldName \n";
+         //echo "Reading $fieldName \n";
          if(isset($this->line[$this->column+2])){
            $value = $this->line[$this->column+2];
          } else {
@@ -190,6 +190,11 @@ Class Controller_CSV extends Controller {
      foreach($data as $lang=>$langData){
        $objectToUpdate = $object->getTranslatedObject(Graph::language($lang));
        foreach($langData as $field => $value){
+
+         if($field=='tags'){
+            //do the tags
+           continue;
+         }
 
          $objectToUpdate->$field = $value;
 
@@ -225,8 +230,6 @@ Class Controller_CSV extends Controller {
          }
 
 
-
-         $objectToUpdate->$field = $value;
        }
        $objectToUpdate->save();
      }
@@ -242,13 +245,13 @@ Class Controller_CSV extends Controller {
      while(isset($this->line[$this->column]) 
        && $this->line[$this->column]=='' 
        && $this->line[$this->column+1]!=''){
-         echo "foudn Child\n";
-         echo $this->column;
+         //echo "foudn Child\n";
+         //echo $this->column;
          $childObjectTypeName = $this->line[$this->column+1]; 
          $childObjectId = $object->addObject($childObjectTypeName);
          $childObject = Graph::object($childObjectId);
          $this->column++;
-         echo $this->column;
+         //echo $this->column;
          $this->walkCSVElements($childObject);
          $this->column--;
        }
