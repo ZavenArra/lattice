@@ -231,8 +231,10 @@ Class Controller_CSV extends Controller {
            case 'image':
              $path_parts = pathinfo($value);
              $savename = Model_Object::makeFileSaveName($path_parts['basename']);
-             if (file_exists($value)) {
-               copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $value, Graph::mediapath($savename) . $savename);
+             $importMediaPath = Kohana::config('cms.importMediaPath');
+             $imagePath = $_SERVER['DOCUMENT_ROOT']."/".trim($importMediaPath,"/")."/".$value;
+             if (file_exists($imagePath)) {
+               copy($imagePath, Graph::mediapath($savename) . $savename);
                $file = ORM::Factory('file');
                $file->filename = $savename;
                $file->save();
