@@ -1,8 +1,8 @@
-<div id="<?=$lattice;?><?=$parentId;?>" data-objectid="<?=$parentId;?>" data-lattice="<?=$lattice;?>" class="module associator classPath-lattice_modules_Associator clearFix">
+<div id="<?=$lattice;?><?=$parentId;?>" data-objectid="<?=$parentId;?>" data-lattice="<?=$lattice;?>" class="module associator classPath-lattice_modules_Associator clearfix">
 
-	<h4><?=$label;?></h4>
+	<h4><?=$label;?> <?=count($associated);?></h4>
 
-	<ul class="associated clearFix">
+	<ul class="associated <?if(!count($associated)):?>empty<?endif;?> clearfix ">
 	<?foreach($associated as $view):?>
 	  <?=$view->render();?>
 	<?endforeach;?>
@@ -10,7 +10,7 @@
 
 	<div class="actuator clearFix">
 		
-		<a href="#" title="<?=$poolLabel;?>" class="icon closed"><?=$poolLabel;?></a>
+		<a href="#" class="actuatorButton" title="<?=$poolLabel;?>" class="closed"><?=$poolLabel;?></a>
 
 		<label for="{{filterUniqueID}}" class="filter hidden" >
 			Filter results
@@ -20,15 +20,11 @@
 
 	</div>
 
-	<div class="poolcontainer clearFix hidden">
+	<ul class="pool clearfix">
+	<?foreach($pool as $view):?>
+	  <?=$view->render();?>
+	<?endforeach;?>
+	</ul>
 
-	
-		<ul class="pool clearFix">
-		<?foreach($pool as $view):?>
-		  <?=$view->render();?>
-		<?endforeach;?>
-		</ul>
-
-	</div>
 	
 </div>
