@@ -115,6 +115,12 @@ Class Controller_CSV extends Controller {
 
      fclose($this->csvFile);
 
+     try {
+       latticecms::regenerateImages();
+     } catch(Exception $e){
+       print_r($e->getMessage() . $e->getTrace());
+     }
+
      echo 'Done';
    }
 
@@ -143,11 +149,6 @@ Class Controller_CSV extends Controller {
 
      }
 
-     try {
-       latticecms::regenerateImages();
-     } catch(Exception $e){
-       print_r($e->getMessage() . $e->getTrace());
-     }
      echo 'Done';
      flush();
      ob_flush();
@@ -228,8 +229,10 @@ Class Controller_CSV extends Controller {
            case 'image':
              $path_parts = pathinfo($value);
              $savename = Model_Object::makeFileSaveName($path_parts['basename']);
-             $importMediaPath = Kohana::config('cms.importMediaPath');
-             $imagePath = $_SERVER['DOCUMENT_ROOT']."/".trim($importMediaPath,"/")."/".$value;
+             //TODO: Spec and engineer this, import media path needs to be fully workshopped
+             //$importMediaPath = Kohana::config('cms.importMediaPath');
+             //$imagePath = $_SERVER['DOCUMENT_ROOT']."/".trim($importMediaPath,"/")."/".$value;
+             $imagePath = $value;
              if (file_exists($imagePath)) {
                copy($imagePath, Graph::mediapath($savename) . $savename);
                $file = ORM::Factory('file');
