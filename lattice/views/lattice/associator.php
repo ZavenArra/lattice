@@ -1,8 +1,8 @@
 <div id="<?=$lattice;?><?=$parentId;?>" data-objectid="<?=$parentId;?>" data-lattice="<?=$lattice;?>" class="module associator classPath-lattice_modules_Associator clearfix">
 
-	<h4><?=$label;?> <?=count($associated);?></h4>
+	<h4><?=$label;?></h4>
 
-	<ul class="associated <?if(!count($associated)):?>empty<?endif;?> clearfix ">
+	<ul class="associated clearfix ">
 	<?foreach($associated as $view):?>
 	  <?=$view->render();?>
 	<?endforeach;?>
