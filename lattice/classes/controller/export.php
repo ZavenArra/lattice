@@ -64,26 +64,24 @@ class Controller_Export extends Controller {
          if ($key == "id") {
             continue;
          }
-         if (is_array($value)) {
+         if ($key != "tags" && is_array($value)) {
             //skipping container objects.
             continue;
          }
-
-
+    
          $node = $this->doc->createElement('field');
          $nodeAttr = $this->doc->createAttribute('name');
          $nodeValue = $this->doc->createTextNode($key);
          $nodeAttr->appendChild($nodeValue);
          $node->appendChild($nodeAttr);
 
-
          if (is_object($value)) {
 
-            switch (get_class($value)) {
-               case 'Model_File':
-								 //or copy to directory and just use filename
-                  if ($value->filename) {
-                     $targetPath = $this->outputDir . $value->filename;
+           switch (get_class($value)) {
+           case 'Model_File':
+             //or copy to directory and just use filename
+             if ($value->filename) {
+               $targetPath = $this->outputDir . $value->filename;
 										 if(file_exists($targetPath)){
 											 $node->appendChild($this->doc->createTextNode($targetPath));
 										 }
@@ -95,6 +93,10 @@ class Controller_Export extends Controller {
                   }
                   break;
             }
+         } else if($key == "tags") {
+
+            $node->appendChild($this->doc->createTextNode(implode(',',$value)));
+
          } else {
 
             $node->appendChild($this->doc->createTextNode($value));

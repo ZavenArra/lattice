@@ -579,6 +579,7 @@ class Model_Object extends ORM implements arrayaccess {
    }
 
    public function addTag($tagName) {
+      $tagName = trim($tagName);
       $tag = ORM::Factory('tag')->where('tag', '=', $tagName)->find();
       if (!$tag->loaded()) {
          $tag = ORM::Factory('tag');
