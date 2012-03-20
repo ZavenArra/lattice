@@ -105,10 +105,12 @@ class Controller_Builder extends Controller {
       foreach($relationships as $relationship){
         $parentSlug = $relationship->getAttribute('parent');  
         $childSlug = $relationship->getAttribute('child');  
-        echo 'Adding lattice relationship';
+        //echo 'Adding lattice relationship';
         $parent = Graph::object($parentSlug)->addLatticeRelationship($lattice, $childSlug);
       }
+      unset($relationships);
     }
+    unset($lattices);
   }
 
   public function action_frontend(){
@@ -146,10 +148,11 @@ class Controller_Builder extends Controller {
     }
 
 
-    foreach(lattice::config($xmlFile, 'item', $context)  as $item){
+    $items = lattice::config($xmlFile, 'item', $context);
+    foreach($items as $item){
 
       if(!$item->getAttribute('objectTypeName')){
-        echo $item->tagName;
+        //echo $item->tagName;
         throw new Kohana_Exception("No objecttypename specified for Item " . $item->tagName);
       }
 
@@ -159,7 +162,8 @@ class Controller_Builder extends Controller {
 
       $data = array();
       $clustersData = array();
-      foreach(lattice::config($xmlFile, 'field', $item ) as $content){
+      $fields = lattice::config($xmlFile, 'field', $item );
+      foreach($fields as $content){
         $field = $content->getAttribute('name');
 
         switch ($field) {
@@ -190,7 +194,7 @@ class Controller_Builder extends Controller {
 
           $clustersData[$field] = $clusterData;
           //have to wait until object is inserted to respect translations
-          echo 'continuing';
+          //echo 'continuing';
           continue;
         }
 
@@ -229,7 +233,7 @@ class Controller_Builder extends Controller {
           ->find();
         if($preexistingObject->loaded()){
           $component = $preexistingObject;
-          echo 'Found prexisting component: '.$preexistingObject->objecttype->objecttypename;
+          //echo 'Found prexisting component: '.$preexistingObject->objecttype->objecttypename;
         }
       }
 
@@ -241,20 +245,20 @@ class Controller_Builder extends Controller {
           ->objectTypeFilter($listContainerType->getAttribute('name'))
           ->find();
         if($preexistingObject->loaded() && $preexistingObject->objecttype->objecttypename == $item->getAttribute('objectTypeName') ){
-          echo 'Found prexisting list container: '.$preexistingObject->objecttype->objecttypename .' '.$item->getAttribute('objectTypeName');
+          //echo 'Found prexisting list container: '.$preexistingObject->objecttype->objecttypename .' '.$item->getAttribute('objectTypeName');
           $component = $preexistingObject;
         }
       }
 
 
       if($component){
-        echo 'Updating Object '.$component->objecttype->objecttypename."\n";
+        //echo 'Updating Object '.$component->objecttype->objecttypename."\n";
         //print_r($data);
         $component->updateWithArray($data);
         $objectId = $component->id;
       } else {
         //actually add the object
-        echo 'Adding Object '.$item->getAttribute('objectTypeName')."\n";
+        //echo 'Adding Object '.$item->getAttribute('objectTypeName')."\n";
         //print_r($data);
         $objectId = $parentObject->addObject($item->getAttribute('objectTypeName'), $data);
         $this->newObjectIds[] = $objectId;
@@ -263,7 +267,7 @@ class Controller_Builder extends Controller {
       //and now update with elementObjects;
       if(count($clustersData)){
         $object = Graph::object($objectId);
-        echo "Updating clusters\n";
+        //echo "Updating clusters\n";
         $object->updateWithArray($clustersData);
       }
 
@@ -273,7 +277,8 @@ class Controller_Builder extends Controller {
         $this->insertData($xmlFile, $objectId,  $item);
       }
 
-      foreach(lattice::config($xmlFile, 'list', $item) as $list){
+      $lists = lattice::config($xmlFile, 'list', $item);
+      foreach($lists as $list){
         //find the container
         $container = Graph::object()
           ->latticeChildrenFilter($objectId)
@@ -283,8 +288,10 @@ class Controller_Builder extends Controller {
         //jump down a level to add object
         $this->insertData($xmlFile, $container->id, $list);
       }
+      unset($lists);
 
     }
+    unset($items);
 
   }
 

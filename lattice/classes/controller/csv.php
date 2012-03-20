@@ -4,6 +4,7 @@ Class Controller_CSV extends Controller {
 
    private $csvOutput = '';
    private $level = 0;
+   private $lineNumber = 0;
 
   public function __construct($request, $response){
    parent::__construct($request, $response);
@@ -25,7 +26,12 @@ Class Controller_CSV extends Controller {
 
      $this->level = 0;
 
-     $this->csvWalkTree($rootObject);
+     try {
+       $this->csvWalkTree($rootObject);
+     } catch (Exception $e){
+       echo  "Error at line {$this->lineNumber} \n";
+       throw $e;
+     }
 
      $filename = $exportFileIdentifier .'.csv';
      $filepath = 'application/export/'.$filename;
@@ -94,9 +100,6 @@ Class Controller_CSV extends Controller {
      $max_execution_time = ini_get("max_execution_time");
      $memory_limit = ini_get("memory_limit");
 
-     //we need a lot of time and memory for the import
-     ini_set("max_execution_time",200);
-     ini_set("memory_limit","428M");
 
      $max_execution_time = ini_get("max_execution_time");
      $memory_limit = ini_get("memory_limit");
@@ -112,11 +115,6 @@ Class Controller_CSV extends Controller {
 
      fclose($this->csvFile);
 
-
-     //set the php Resource Limits back to default
-     ini_set("max_execution_time",$max_execution_time);
-     ini_set("memory_limit",$memory_limit);
-
      echo 'Done';
    }
 
@@ -128,7 +126,7 @@ Class Controller_CSV extends Controller {
          throw new Kohana_Exception("Expecting objectType at column :column, but none found :line",
            array(
              ':column'=>$this->column,
-             ':line'=>implode(',',$this->line)
+             ':line'=>$this->lineNumber,
            )); 
        }
 
@@ -162,8 +160,8 @@ Class Controller_CSV extends Controller {
        //get the elements line
        $this->advance();
        //check here for Elements in $this->column +1;
-       if($this->line[$this->column+1] != 'Elements'){
-         throw new Kohana_Exception("Didn't find expected Elements line");
+       if(!(isset($this->line[$this->column+1])) || $this->line[$this->column+1] != 'Elements'){
+         throw new Kohana_Exception("Didn't find expected Elements line at line ".$this->lineNumber);
        }
      }
 
@@ -201,13 +199,18 @@ Class Controller_CSV extends Controller {
        foreach($langData as $field => $value){
 
          if($field=='tags'){
-            //do the tags
+           if($value){
+             $tags = explode(',',$value); 
+             foreach($tags as $tag){
+                $objectToUpdate->addTag($tag);
+             }
+           }
            continue;
          }
 
          $objectToUpdate->$field = $value;
 
-         if(in_array($field, array('title', 'slug', 'published'))){
+         if(in_array($field, array('title', 'slug', 'published', 'dateadded'))){
            continue;
          }
 
@@ -225,12 +228,18 @@ Class Controller_CSV extends Controller {
            case 'image':
              $path_parts = pathinfo($value);
              $savename = Model_Object::makeFileSaveName($path_parts['basename']);
-             if (file_exists($value)) {
-               copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $value, Graph::mediapath($savename) . $savename);
-               $objectToUpdate->$field = $savename;
+             $importMediaPath = Kohana::config('cms.importMediaPath');
+             $imagePath = $_SERVER['DOCUMENT_ROOT']."/".trim($importMediaPath,"/")."/".$value;
+             if (file_exists($imagePath)) {
+               copy($imagePath, Graph::mediapath($savename) . $savename);
+               $file = ORM::Factory('file');
+               $file->filename = $savename;
+               $file->save();
+               $objectToUpdate->$field = $file->id;
              } else {
                if($value){
-                 throw new Kohana_Exception( "File does not exist {$value} ");
+                 echo "file does not exist";
+                 //throw new Kohana_Exception( "File does not exist {$value} ");
                }
              }
              break;
@@ -271,6 +280,7 @@ Class Controller_CSV extends Controller {
    }
 
    protected function advance(){
+     $this->lineNumber++;
      $this->line = fgetcsv($this->csvFile);
   }
 
