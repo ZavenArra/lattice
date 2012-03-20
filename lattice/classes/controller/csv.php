@@ -144,6 +144,15 @@ Class Controller_CSV extends Controller {
        $this->walkCSVElements($newObject);
 
      }
+
+     try {
+       latticecms::regenerateImages();
+     } catch(Exception $e){
+       print_r($e->getMessage() . $e->getTrace());
+     }
+     echo 'Done';
+     flush();
+     ob_flush();
    }
 
    protected function walkCSVElements($object){
@@ -258,6 +267,7 @@ Class Controller_CSV extends Controller {
 
      echo "Returning from Walk\n";
      //at this point this->line contains the next object to add at this depth level
+    
    }
 
    protected function advance(){
