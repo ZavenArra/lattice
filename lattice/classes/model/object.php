@@ -435,6 +435,11 @@ class Model_Object extends ORM implements arrayaccess {
          parent::__set($column, $value);
       } else if ($this->_table_columns && in_array($column, array_keys($this->_table_columns))) {
          parent::__set($column, $value);
+      } else if ($column == 'tags'){
+        $tags = explode(',', $value);
+        foreach($tags as $tagName){
+          $this->addTag($tagName);
+        }
       } else if ($column) {
          $o = $this->_object;
          $objecttype_id = $o['objecttype_id'];
