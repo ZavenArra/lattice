@@ -71,7 +71,11 @@ Class Associator {
         if(isset($filter['objectTypeName']) && $filter['objectTypeName']){
           $t = ORM::Factory('objectType', $filter['objectTypeName']);
           if(!$t->loaded()){
-            throw new Kohana_Exception($filter['objectTypeName'] .' Not Found');
+            Graph::configureObjectType($objectTypeName);
+            $t = ORM::Factory('objecttype', $objectTypeName);
+            if(!$t->loaded()){
+              throw new Kohana_Exception($filter['objectTypeName'] .' Not Found');
+            }
           }
           $objects->where('objecttype_id', '=', $t->id);
         }

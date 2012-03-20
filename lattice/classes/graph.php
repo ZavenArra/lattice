@@ -141,13 +141,30 @@ class Graph {
 	}
 
 
-	public static function configureObjectType($objectTypeName){
+	public static function configureObjectType($objectTypeName, $force = false){
+
+
 		//validation
-		foreach(lattice::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item){
-			if($item->getAttribute('name')=='title'){
-				throw new Kohana_Exception('Title is a reserved field name');
-			}
-		}
+    //
+    //check objects.xml for configuration
+
+    if(!$force){
+      $objectTypeConfig = NULL;
+      $xPath =  sprintf('//objectType[@name="%s"]', $objectTypeName);
+      $xPathList =  sprintf('//list[@name="%s"]', $objectTypeName);
+      if (!$objectTypeConfig = lattice::config('objects', $xPath)->item(0)) { 
+        if(!$objectTypeConfig = lattice::config('objects', $xPathList)->item(0)) {
+          throw new Kohana_Exception("Object type '".$objectTypeName."' does not exist in objects.xml"); 
+        }
+      }
+
+      foreach(lattice::config('objects', 'elements/*', $objectTypeConfig) as $item){
+        if($item->getAttribute('name')=='title'){
+          throw new Kohana_Exception('Title is a reserved field name');
+        }
+      }
+
+    }
 
 		//find or create objectType record
 		$tRecord = ORM::Factory('objecttype', $objectTypeName );
