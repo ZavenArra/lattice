@@ -65,7 +65,7 @@ class Controller_Builder extends Controller {
     $this->destroy('application/media/');
 
     //reinitialize the graph
-    Graph::configureObjectType($this->rootNodeObjectType);
+    Graph::configureObjectType($this->rootNodeObjectType, true);
     Graph::addRootNode($this->rootNodeObjectType);
 
     if($xmlFile != 'data'){

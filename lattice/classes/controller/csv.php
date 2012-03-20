@@ -100,9 +100,6 @@ Class Controller_CSV extends Controller {
      $max_execution_time = ini_get("max_execution_time");
      $memory_limit = ini_get("memory_limit");
 
-     //we need a lot of time and memory for the import
-     ini_set("max_execution_time",200);
-     ini_set("memory_limit","428M");
 
      $max_execution_time = ini_get("max_execution_time");
      $memory_limit = ini_get("memory_limit");
@@ -118,10 +115,11 @@ Class Controller_CSV extends Controller {
 
      fclose($this->csvFile);
 
-
-     //set the php Resource Limits back to default
-     ini_set("max_execution_time",$max_execution_time);
-     ini_set("memory_limit",$memory_limit);
+     try {
+       latticecms::regenerateImages();
+     } catch(Exception $e){
+       print_r($e->getMessage() . $e->getTrace());
+     }
 
      echo 'Done';
    }
@@ -134,7 +132,7 @@ Class Controller_CSV extends Controller {
          throw new Kohana_Exception("Expecting objectType at column :column, but none found :line",
            array(
              ':column'=>$this->column,
-             ':line'=>implode(',',$this->line)
+             ':line'=>$this->lineNumber,
            )); 
        }
 
@@ -151,11 +149,6 @@ Class Controller_CSV extends Controller {
 
      }
 
-     try {
-       latticecms::regenerateImages();
-     } catch(Exception $e){
-       print_r($e->getMessage() . $e->getTrace());
-     }
      echo 'Done';
      flush();
      ob_flush();
@@ -207,7 +200,12 @@ Class Controller_CSV extends Controller {
        foreach($langData as $field => $value){
 
          if($field=='tags'){
-            //do the tags
+           if($value){
+             $tags = explode(',',$value); 
+             foreach($tags as $tag){
+                $objectToUpdate->addTag($tag);
+             }
+           }
            continue;
          }
 
@@ -231,8 +229,10 @@ Class Controller_CSV extends Controller {
            case 'image':
              $path_parts = pathinfo($value);
              $savename = Model_Object::makeFileSaveName($path_parts['basename']);
-             $importMediaPath = Kohana::config('cms.importMediaPath');
-             $imagePath = $_SERVER['DOCUMENT_ROOT']."/".trim($importMediaPath,"/")."/".$value;
+             //TODO: Spec and engineer this, import media path needs to be fully workshopped
+             //$importMediaPath = Kohana::config('cms.importMediaPath');
+             //$imagePath = $_SERVER['DOCUMENT_ROOT']."/".trim($importMediaPath,"/")."/".$value;
+             $imagePath = $value;
              if (file_exists($imagePath)) {
                copy($imagePath, Graph::mediapath($savename) . $savename);
                $file = ORM::Factory('file');
