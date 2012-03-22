@@ -1079,12 +1079,15 @@ class Model_Object extends ORM implements arrayaccess {
    }
 
    public function joinContentColumn($column){
-     $xPath =  '//objectType[elements/[@name="'.$column.'"]]';
      $map = lattice::config('objects', '//objectType[elements/*/@name="'.$column.'"]'); 
      $mapQuery = array();
      if($map->length){
-       foreach($map as $objectType){
-         $objectType = ORM::Factory('objecttype', $objectType->getAttribute('name')); 
+       foreach($map as $objectTypeConfig){
+         $objectType = ORM::Factory('objecttype', $objectTypeConfig->getAttribute('name')); 
+         if(!$objectType->loaded()){
+           continue;
+           //Continue here because the object type might not be lazy-configured yet 
+         }
          $mappedColumn = Model_Lattice_Object::dbmap($objectType->id, $column);
          $mapQuery[] = 'select object_id, '.$mappedColumn.' as '.$column
            .' from contents where object_id in (select id from objects where objecttype_id = '.$objectType->id.')';  
@@ -1094,7 +1097,7 @@ class Model_Object extends ORM implements arrayaccess {
      if(!count($mapQuery)){
       throw new Kohana_Exception('Content Column: '.$column.' not specifid for any objects');
      }
-     $mapQuery = implode($mapQuery, 'UNION');
+     $mapQuery = implode($mapQuery, ' UNION ');
      $mapQuery = '('.$mapQuery.') ';
      $viewTableName =  $column.'View';
      $this->join(new Database_Expression($mapQuery . $viewTableName ))->on('objects.id', '=', $viewTableName.'.object_id');
