@@ -594,7 +594,9 @@ class Model_Object extends ORM implements arrayaccess {
          $tag->language_id = $this->language_id;
          $tag->save();
       }
-      $this->add('tag', $tag);
+      if(!$this->has('tag', $tag)){
+        $this->add('tag', $tag);
+      }
       return $this;
    }
 
