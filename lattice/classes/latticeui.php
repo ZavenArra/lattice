@@ -99,6 +99,7 @@ Class latticeui{
       case 'date':
         $fieldvalue = explode(' ',$fieldvalue);
         $fieldvalue = $fieldvalue[0];
+        $fieldvalue = date('m/d/Y', strtotime($fieldvalue));
         break;
 
 			case 'radioGroup':
