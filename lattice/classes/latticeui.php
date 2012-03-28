@@ -96,6 +96,12 @@ Class latticeui{
 				}
 			break;
 
+      case 'date':
+        $fieldvalue = explode(' ',$fieldvalue);
+        $fieldvalue = $fieldvalue[0];
+        $fieldvalue = date('m/d/Y', strtotime($fieldvalue));
+        break;
+
 			case 'radioGroup':
 				$element['radioname'] = $id; 
 			break;
