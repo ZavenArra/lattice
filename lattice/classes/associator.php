@@ -13,7 +13,7 @@ Class Associator {
   protected $label;
   protected $poolLabel;
 
-  private $maxPoolSize = 30;
+  private $maxPoolSize = 50;
 
   public static function getFiltersFromDomNode($node){
     $filtersNodeList = lattice::config('objects', 'filter', $node);
