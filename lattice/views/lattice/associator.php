@@ -9,12 +9,10 @@
 	</ul>
 
 	<div class="actuator clearFix">
-		
-		<a href="#" class="actuatorButton" title="<?=$poolLabel;?>" class="closed"><?=$poolLabel;?></a>
-
-		<label for="{{filterUniqueID}}" class="filter hidden" >
+		<h4><?=$label;?></h4>		
+		<label for="<?=$lattice;?>SearchBox<?=$parentId;?>" class="filter hidden" >
 			Filter results
-			<input class="roundedInput" type="text" name="filter" value="" id="{{FilterUniqueID}}" />
+			<input class="roundedInput" type="text" name="filter" value="" id="<?=$lattice;?>SearchBox<?=$parentId;?>" />
 			<a href="#" class="filterButton button">Filter</a>
 		</label>
 
