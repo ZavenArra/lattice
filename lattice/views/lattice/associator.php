@@ -9,10 +9,10 @@
 	</ul>
 
 	<div class="actuator clearFix">
-		<h4><?=$label;?></h4>		
+		<h4><?=$poolLabel;?></h4>		
 		<label for="<?=$lattice;?>SearchBox<?=$parentId;?>" class="filter hidden" >
 			Filter results
-			<input class="roundedInput" type="text" name="filter" value="" id="<?=$lattice;?>SearchBox<?=$parentId;?>" />
+			<input class="roundedInput" type="text" name="filter" value="Showing first fourty." id="<?=$lattice;?>SearchBox<?=$parentId;?>" />
 			<a href="#" class="filterButton button">Filter</a>
 		</label>
 
