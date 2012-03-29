@@ -173,9 +173,17 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 
 
    //check for dbmap
-       $mappedColumn = self::dbmap($object->objecttype_id, $column);
+   $mappedColumn = self::dbmap($object->objecttype_id, $column);
+
+   //TODO: This is a temporary stop gap to support title editing for objects that do not 
+   //expose a title.  Handling of objects that don't expose a title (list items) needs further work
+   if($mappedColumn=='field1' && ($this->contenttable->title == $this->contenttable->field1)){
+     $this->contenttable->title = $value;
+   }
    if ($mappedColumn && !strstr($mappedColumn, 'object')) {
-    return $this->contenttable->__set($mappedColumn, $value);
+     $this->contenttable->$mappedColumn = $value;
+     $this->contenttable->save();
+     return;
    }
 
 
@@ -201,38 +209,45 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 
     //If the column is an object, then this is a relationship with another object
     if (strstr($mappedColumn, 'object')) {
-     $objectElement = $this->getObjectElement($object, $column);
-            
-             if (is_array($value)) {
-               foreach ($value as $clusterColumn => $clusterValue) {
-                  $objectElement->$clusterColumn = $clusterValue;
-               }
-             }
-     return $objectElement->save();;
+      $objectElement = $this->getObjectElement($object, $column);
+
+      if (is_array($value)) {
+        foreach ($value as $clusterColumn => $clusterValue) {
+          $objectElement->$clusterColumn = $clusterValue;
+        }
+      }
+      return $objectElement->save();;
     }
 
+   }
+
+
+   //TODO: This is a temporary stop gap to support title editing for objects that do not 
+   //expose a title.  Handling of objects that don't expose a title (list items) needs further work
+   if($mappedColumn=='field1' && ($this->contenttable->title == $this->contenttable->field1)){
+     $this->contenttable->title = $value;
    }
 
    $this->contenttable->$mappedColumn = $value;
    $this->contenttable->save();
   }
 
-   //this could potentially go into the base class 100%
-   public function saveContentTable($object, $inserting=false){
-      if(!$this->contenttable){
-         $this->loadContentTable($object);
-      }
-      if($inserting){
-         $this->contenttable->object_id = $object->id;
-      }
-      $this->contenttable->save();
-   }
-
-  public function delete(){
-   $this->contenttable->delete();
+  //this could potentially go into the base class 100%
+  public function saveContentTable($object, $inserting=false){
+    if(!$this->contenttable){
+      $this->loadContentTable($object);
+    }
+    if($inserting){
+      $this->contenttable->object_id = $object->id;
+    }
+    $this->contenttable->save();
   }
 
-   
+  public function delete(){
+    $this->contenttable->delete();
+  }
+
+
 }
 
 ?>
