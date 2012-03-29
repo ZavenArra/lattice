@@ -23,16 +23,11 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 
 
   public static function dbmap($objecttype_id, $column=null){
-    if(!is_int($objecttype_id)){
-      $objecttype_id = ORM::Factory('objecttype', $objecttype_id)->id;
-    }
+    $objecttype = ORM::Factory('objecttype', $objecttype_id);
+    $objecttype_id = $objecttype->id;
 
     if(!isset(self::$dbmaps[$objecttype_id])){
-      $dbmaps = ORM::Factory('objectmap')->where('objecttype_id', '=', $objecttype_id)->find_all();
-      self::$dbmaps[$objecttype_id] = array();
-      foreach($dbmaps as $map){
-        self::$dbmaps[$objecttype_id][$map->column] = $map->type.$map->index;
-      }
+      self::loadDbmapForObjectType($objecttype_id);
     }
     if(!isset($column)){
       return self::$dbmaps[$objecttype_id];
@@ -40,8 +35,24 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
       if(isset(self::$dbmaps[$objecttype_id][$column])){
         return self::$dbmaps[$objecttype_id][$column];
       } else {
-        return null;
+        //Attempt lazy configuration
+        $xpath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $objecttype->objecttypename, $column);
+        $element = lattice::config('objects', $xpath)->item(0);
+        if(!count($element)){
+          throw new Kohana_Exception('DBMap column not found or configured: '.$column);
+        }
+        $objecttype->configureElement($element);
+        self::loadDbmapForObjectType($objecttype_id);
+        return self::$dbmaps[$objecttype_id][$column];
       }
+    }
+  }
+
+  private static function loadDbmapForObjectType($objecttype_id){
+    $dbmaps = ORM::Factory('objectmap')->where('objecttype_id', '=', $objecttype_id)->find_all();
+    self::$dbmaps[$objecttype_id] = array();
+    foreach($dbmaps as $map){
+      self::$dbmaps[$objecttype_id][$map->column] = $map->type.$map->index;
     }
   }
 

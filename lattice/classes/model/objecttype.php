@@ -214,7 +214,6 @@ class Model_ObjectType extends ORM {
 			break;
 
 		default:
-
 			Model_Objectmap::configureNewField($this->id, $item->getAttribute('name'), $item->tagName );
 			break;
 
