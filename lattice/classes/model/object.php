@@ -1050,7 +1050,7 @@ class Model_Object extends ORM implements arrayaccess {
           if(!$result['id'] && !Model_ObjectType::getConfig($objectType)){
              throw new Kohana_Exception('Invalid object type requested in objectTypeFilter '.$objectType);
           }
-         $this->where('objecttype_id', '=', $result['id']);
+         $this->where('objecttype_id', '=', intval($result['id']));
       }
       return $this;
    }
