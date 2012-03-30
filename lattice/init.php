@@ -4,6 +4,23 @@ require(LATTICEPATH.'lattice/includes/mysqlfuncs.php');
 
 
 
+Route::set('navigation', 'navigation/<action>(/<param1>(/<param2>))', array(
+
+	)
+)
+->defaults(
+	array(
+		'controller' => 'navigation',
+	));
+
+
+Route::set('authWithRedirect', '<controller>/<action>(/<redirect>)', array(
+    'controller' => 'auth',
+    'redirect' => '[A-z\/0-9]++',
+        )
+);
+
+
 
 
 Route::set('cms_save', '<id>/<action>', array(
