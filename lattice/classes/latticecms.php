@@ -48,7 +48,7 @@ class latticecms {
 										}
 										if (!$usecustomview) {
 												$html = implode($clusterHtmlChunks);
-												$view = new View('clusters_wrapper');
+												$view = new View('ui/clusters_wrapper');
 												$view->label = $element['label'];
 												$view->html = $html;
 												$view->objectId = $clusterObject->id;

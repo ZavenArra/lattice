@@ -19,7 +19,7 @@ Class latticeui{
 	 * Example: buildTextElement(array('type'=>'text', 'name'=>'fieldname', 'class'=>'className'), {Value})
 	 */
 	public static function buildUIElement($element, $fieldvalue=null){
-		$view = 'ui_'.$element['type'];
+		$view = 'ui/'.$element['type'];
 
 		//allow files to be passed either by id or as already quireid objects
 		if( in_array($element['type'], array('file', 'image'))){
