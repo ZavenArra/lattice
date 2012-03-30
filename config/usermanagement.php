@@ -3,17 +3,17 @@
 $config['authrole'] = 'admin'; //access controlled by default for safety
 
 $config['resources']['librarycss'] = array(
-	'lattice/lattice/resources/thirdparty/960Grid/reset.css',
-	'lattice/lattice/resources/thirdparty/960Grid/960.css'
+	'modules/lattice/resources/thirdparty/960Grid/reset.css',
+	'modules/lattice/resources/thirdparty/960Grid/960.css'
 );
 $config['resources']['libraryjs'] = array(
-	'lattice/lattice/resources/thirdparty/mootools/mootools.js',
-	'lattice/lattice/resources/thirdparty/mootools/mootools-more.js',
+	'modules/lattice/resources/thirdparty/mootools/mootools.js',
+	'modules/lattice/resources/thirdparty/mootools/mootools-more.js',
 	//these are required by LatticeUI
-	'lattice/lattice/resources/js/LatticeCore.js',
-	'lattice/lattice/resources/js/LatticeUI.js',
-	'lattice/lattice/resources/js/LatticeModules.js',
-	'lattice/usermanagement/resources/usermanagement.js',
+	'modules/lattice/resources/js/LatticeCore.js',
+	'modules/lattice/resources/js/LatticeUI.js',
+	'modules/lattice/resources/js/LatticeModules.js',
+	'modules/usermanagement/resources/usermanagement.js',
 );
 
 $config['layout'] = 'LayoutAdmin';
@@ -23,14 +23,14 @@ $config['layout'] = 'LayoutAdmin';
  * Config: ['resources']['css']
  */
 $config['resources']['css'] = array( 
-   	'lattice/lattice/resources/css/lattice_cms.css'
+   	'modules/lattice/resources/css/lattice_cms.css'
 );
 
 /*
  * Config: ['resources']['js']
  */
 $config['resources']['js'] = array(
-	'lattice/lattice/resources/js/list.js'
+	'modules/lattice/resources/js/list.js'
 );
 
 /*

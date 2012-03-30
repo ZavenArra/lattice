@@ -1,6 +1,6 @@
 <?
 
-require(LATTICEPATH.'lattice/includes/mysqlfuncs.php');
+require(MODPATH.'lattice/includes/mysqlfuncs.php');
 
 
 

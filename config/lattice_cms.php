@@ -1,33 +1,33 @@
 <?
 
 $config['resources']['librarycss'] = array(
-	'lattice/lattice/resources/thirdparty/960Grid/reset.css',
-	'lattice/lattice/resources/thirdparty/960Grid/960.css',
-	'lattice/lattice/resources/thirdparty/arian/datepicker/Source/datepicker.css'
+	'modules/lattice/resources/thirdparty/960Grid/reset.css',
+	'modules/lattice/resources/thirdparty/960Grid/960.css',
+	'modules/lattice/resources/thirdparty/arian/datepicker/datepicker.css'
 );
 $config['resources']['libraryjs'] = array(
 
-	'lattice/lattice/resources/thirdparty/mootools/mootools.js',
-	'lattice/lattice/resources/thirdparty/mootools/mootools-more.js',
+	'modules/lattice/resources/thirdparty/mootools/mootools.js',
+	'modules/lattice/resources/thirdparty/mootools/mootools-more.js',
 
 	//these are required by LatticeUI
-	'lattice/lattice/resources/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
-	'lattice/lattice/resources/thirdparty/arian/datepicker/Source/Locale.en-US.DatePicker.js',
-	'lattice/lattice/resources/thirdparty/arian/datepicker/Source/Picker.js',
-	'lattice/lattice/resources/thirdparty/arian/datepicker/Source/Picker.Attach.js',
-	'lattice/lattice/resources/thirdparty/arian/datepicker/Source/Picker.Date.js',
-	'lattice/lattice/resources/thirdparty/arian/datepicker/Source/Picker.Date.Range.js',
+	'modules/lattice/resources/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
+	'modules/lattice/resources/thirdparty/arian/datepicker/Locale.en-US.DatePicker.js',
+	'modules/lattice/resources/thirdparty/arian/datepicker/Picker.js',
+	'modules/lattice/resources/thirdparty/arian/datepicker/Picker.Attach.js',
+	'modules/lattice/resources/thirdparty/arian/datepicker/Picker.Date.js',
+	'modules/lattice/resources/thirdparty/arian/datepicker/Picker.Date.Range.js',
 
-	'lattice/lattice/resources/js/LatticeCore.js',
-	'lattice/lattice/resources/js/LatticeModules.js',
-	'lattice/lattice/resources/js/LatticeUI.js',
+	'modules/lattice/resources/js/LatticeCore.js',
+	'modules/lattice/resources/js/LatticeModules.js',
+	'modules/lattice/resources/js/LatticeUI.js',
 
-	'lattice/navigation/resources/js/navigationDataSourceInterface.js',
+	'modules/lattice/resources/js/navigationDataSourceInterface.js',
 );
 
 $config['resources']['js'] = array(
-	'lattice/lattice/resources/js/list.js',
-	'lattice/lattice/resources/js/associator.js',
+	'modules/lattice/resources/js/list.js',
+	'modules/lattice/resources/js/associator.js',
 );
 
 
@@ -55,7 +55,7 @@ $config['basemediapath'] = 'application/media/';
 
 $config['enableSlugEditing'] = false;
 
-$config['baseName'] = 'lattice_cms';
+$config['baseName'] = 'modules_cms';
 $config['localization'] = FALSE;
 
 
