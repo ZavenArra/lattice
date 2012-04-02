@@ -1128,7 +1128,7 @@ class Model_Object extends ORM implements arrayaccess {
    }
    
    public function activeFilter(){
-    $this->where('objects.activity', 'IS', NULL);
+    $this->where('object.activity', 'IS', NULL);
     return $this;   
    }
 
