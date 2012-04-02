@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE configuration SYSTEM "objects.dtd">
+<!DOCTYPE configuration SYSTEM "../../modules/lattice/lattice/objects.dtd">
 
 <configuration>
 
@@ -228,7 +228,7 @@
 
 		<objectType name="singleAssociator" >
 			<elements>
-				<associator name="association">
+				<associator name="association" lattice="association" >
 					<filter></filter>
 				</associator>
 			</elements>
