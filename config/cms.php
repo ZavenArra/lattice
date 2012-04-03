@@ -7,5 +7,6 @@ $config['graphRootNode'] = 'cmsRootNode';
 $config['defaultLanguage'] = 'en';
 $config['internationalization'] = true;
 $config['preview'] = true;
+$config['authrole'] = 'admin';
 
 return $config;

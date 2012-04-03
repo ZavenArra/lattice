@@ -3,7 +3,7 @@
 $config['resources']['librarycss'] = array(
 	'modules/lattice/resources/thirdparty/960Grid/reset.css',
 	'modules/lattice/resources/thirdparty/960Grid/960.css',
-	'modules/lattice/resources/thirdparty/arian/datepicker/datepicker.css'
+	'modules/lattice/resources/thirdparty/arian/datepicker/Source/datepicker.css'
 );
 $config['resources']['libraryjs'] = array(
 
@@ -12,11 +12,11 @@ $config['resources']['libraryjs'] = array(
 
 	//these are required by LatticeUI
 	'modules/lattice/resources/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
-	'modules/lattice/resources/thirdparty/arian/datepicker/Locale.en-US.DatePicker.js',
-	'modules/lattice/resources/thirdparty/arian/datepicker/Picker.js',
-	'modules/lattice/resources/thirdparty/arian/datepicker/Picker.Attach.js',
-	'modules/lattice/resources/thirdparty/arian/datepicker/Picker.Date.js',
-	'modules/lattice/resources/thirdparty/arian/datepicker/Picker.Date.Range.js',
+	'modules/lattice/resources/thirdparty/arian/datepicker/Source/Locale.en-US.DatePicker.js',
+	'modules/lattice/resources/thirdparty/arian/datepicker/Source/Picker.js',
+	'modules/lattice/resources/thirdparty/arian/datepicker/Source/Picker.Attach.js',
+	'modules/lattice/resources/thirdparty/arian/datepicker/Source/Picker.Date.js',
+	'modules/lattice/resources/thirdparty/arian/datepicker/Source/Picker.Date.Range.js',
 
 	'modules/lattice/resources/js/LatticeCore.js',
 	'modules/lattice/resources/js/LatticeModules.js',
