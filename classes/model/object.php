@@ -1067,7 +1067,7 @@ class Model_Object extends ORM implements arrayaccess {
        foreach($wheres as $where){
 
          if($where[0] == 'title'){
-           $this->join($driverInfo['tableName'])->on('objects.id', '=', $driverInfo['tableName'].'.object_id');
+           $this->join($driverInfo['tableName'])->on('object.id', '=', $driverInfo['tableName'].'.object_id');
            $this->where($driverInfo['tableName'].'.'.$where[0], $where[1], $where[2]);
 
          } else {
@@ -1133,7 +1133,7 @@ class Model_Object extends ORM implements arrayaccess {
    }
 
    public function taggedFilter($tags) {
-     return $this->join('objects_tags')->on('objects_tags.object_id', '=', 'objects.id')
+     return $this->join('objects_tags')->on('objects_tags.object_id', '=', 'object.id')
        ->join('tags')->on('objects_tags.tag_id', '=', 'tags.id')
        ->where('tag', '=', $tags);
    }
@@ -1141,7 +1141,7 @@ class Model_Object extends ORM implements arrayaccess {
    public function latticeChildrenFilter($parentId, $lattice="lattice"){
       $lattice = Graph::lattice($lattice);
        
-      $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
+      $this->join('objectrelationships', 'LEFT')->on('object.id', '=', 'objectrelationships.connectedobject_id');
       $this->where('objectrelationships.lattice_id', '=', $lattice->id);
       $this->where('objectrelationships.object_id', '=', $parentId);
       return $this;
@@ -1174,7 +1174,7 @@ class Model_Object extends ORM implements arrayaccess {
   public function latticeParentsFilter($childId, $lattice="lattice"){
     $lattice = Graph::lattice($lattice);
 
-    $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.object_id');
+    $this->join('objectrelationships', 'LEFT')->on('object.id', '=', 'objectrelationships.object_id');
     $this->where('objectrelationships.lattice_id', '=', $lattice->id);
     $this->where('objectrelationships.connectedobject_id', '=', $childId);
     return $this;
@@ -1366,7 +1366,7 @@ class Model_Object extends ORM implements arrayaccess {
          if(isset($arguments['title'])){
             $checkForPreexistingObject = Graph::object()
                  ->latticeChildrenFilter($this->id)
-                 ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
+                 ->join('contents', 'LEFT')->on('object.id',  '=', 'contents.object_id')
                  ->where('title', '=', $arguments['title'])
                  ->find();
             if($checkForPreexistingObject->loaded()){
