@@ -35,6 +35,8 @@ class Initializer_Latticeauth {
          $user = ORM::factory('user');
          $user->status = 'ACTIVE';
          $user->username = 'admin';
+         $user->firstname = 'Admin';
+         $user->lastname = 'Admin';
          $password = Utility_Auth::randomPassword(); 
          $user->password = $password;
          $user->email = 'PLACEHOLDER_' . rand() . '@placeholder.com';
