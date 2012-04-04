@@ -539,7 +539,7 @@ class Model_Object extends ORM implements arrayaccess {
 
      $translatedObject = Graph::object()
        ->where('rosetta_id', '=', $rosettaId)
-       ->where('objects.language_id', '=', $languageId)
+       ->where('object.language_id', '=', $languageId)
        ->find();
      if(!$translatedObject->loaded()){
        throw new Kohana_Exception('No translated object available for objectId :id with language :language',
@@ -1261,7 +1261,7 @@ class Model_Object extends ORM implements arrayaccess {
 
      $queryCopy = clone($query); //reclone so we can rerun if necessary
      //$query->where('objects.id', $idInequalities[$idInequality], $current->id)->order_by('id', $order)->limit(1);
-     $query->where('objects.id', '!=', $current->id)->order_by('id', $order)->limit(1);
+     $query->where('object.id', '!=', $current->id)->order_by('id', $order)->limit(1);
      $result = $query->find();
      if(!$result->loaded()){
        //id inequality (tiebreaker) is backwards, flip it and rerun the query
@@ -1269,7 +1269,7 @@ class Model_Object extends ORM implements arrayaccess {
        $idInequality %= 2;
 
        //$queryCopy->where('objects.id', $idInequalities[$idInequality], $current->id)->order_by('id', $order)->limit(1);
-       $queryCopy->where('objects.id', '!=', $current->id)->order_by('id', $order)->limit(1);
+       $queryCopy->where('object.id', '!=', $current->id)->order_by('id', $order)->limit(1);
        $result = $queryCopy->find();
      }
      return $result;
@@ -1668,7 +1668,7 @@ class Model_Object extends ORM implements arrayaccess {
        $parentRosettaId = $this->rosetta_id;
        $translatedObject = Graph::object()
                ->where('rosetta_id', '=', $this->rosetta_id)
-               ->where('objects.language_id', '=', $languageId)
+               ->where('object.language_id', '=', $languageId)
                ->find();
        if(!$translatedObject->loaded()){
           throw new Kohana_Exception('No matching translated object for rosetta :rosetta and language :language',
