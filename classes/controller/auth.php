@@ -154,7 +154,6 @@ class Controller_Auth extends Controller_Layout {
 				$body = I18n::get('forgotPasswordEmailBody');
 				$body = str_replace('___Lattice___username___Lattice___', $user->username, $body);
 				$body = str_replace('___Lattice___password___Lattice___', $password, $body);
-die($password . '-'.$user->password);
 
 				mail($user->email, I18n::get('forgotPasswordEmailSubject'), $body);
 				Request::current()->redirect('auth/login/resetPasswordSuccess');

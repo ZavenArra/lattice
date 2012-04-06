@@ -22,7 +22,7 @@ class Controller_File extends Controller{
 		$ctype = $file->mime;
 
 		if (!file_exists($filename)) {
-			die("NO FILE HERE");
+      throw new Kohana_Exception("NO FILE HERE");
 		}
 
 		header("Pragma: public");
@@ -34,7 +34,7 @@ class Controller_File extends Controller{
 		header("Content-Transfer-Encoding: binary");
 		header("Content-Length: ".@filesize($filename));
 		set_time_limit(0);
-		@readfile("$filename") or die("File not found.");	
+		@readfile("$filename") or throw new Kohana_Exception("File not found.");	
 		exit;
 	}
 
@@ -46,7 +46,7 @@ class Controller_File extends Controller{
 		$ctype = $file->mime;
 
 		if (!file_exists($filename)) {
-			die("NO FILE HERE");
+      throw new Kohana_Exception("NO FILE HERE");
 		}
 
 		header("Expires: 0");
@@ -57,7 +57,7 @@ class Controller_File extends Controller{
 		header("Content-Length: ".@filesize($filename));
 		header("Content-Disposition: inline;  filename=\"".basename($filename)."\";");
 		set_time_limit(0);
-		@readfile("$filename") or die("File not found.");	
+		@readfile("$filename") or throw new Kohana_Exception("File not found.");	
 		exit;
 	}
 

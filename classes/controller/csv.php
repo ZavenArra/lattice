@@ -47,7 +47,7 @@ Class Controller_CSV extends Controller {
      header("Content-Transfer-Encoding: binary");
      header("Content-Length: ".@filesize($filepath));
      set_time_limit(0);
-     @readfile($filepath) or die("File not found."); 
+     @readfile($filepath) or throw new Kohana_Exception("File not found."); 
      exit;
    }
 
