@@ -98,6 +98,10 @@ class latticeview {
 			return $this->data;
 	 }
 
+   /*
+    * Function: view()
+    * Returns the rendered view for the current view model
+    */
 	 public function view(){
 			return $this->view;
 	 }
