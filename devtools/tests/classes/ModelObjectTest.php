@@ -14,6 +14,13 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
     $object = Graph::createObject('prevNext', 'model-object-test3');
     $object->postDate = '2010-01-01';
     $object->save();
+
+    /*
+    $testParent = Graph::createObject('article', 'testParent');
+    $testParent->addObject('article', array('slug'=>'child1'));
+    $testParent->addObject('article', array('slug'=>'child2'));
+    $testParent->addObject('article', array('slug'=>'child3'));
+     */
   }
 
   public static function tearDownAfterClass(){
@@ -21,6 +28,10 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
     Graph::object('model-object-test')->delete();
     Graph::object('model-object-test2')->delete();
     Graph::object('model-object-test3')->delete();
+    Graph::object('testParent')->delete();
+    Graph::object('child1')->delete();
+    Graph::object('child2')->delete();
+    Graph::object('child3')->delete();
   }
 
   public function testContentFilterMethodExists(){
@@ -74,5 +85,29 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
     $prev = $objectQuery->prev('postDate',  Graph::object('model-object-test2')->id);
     $this->assertNotNULL($prev);
     $this->assertTrue($prev->slug == 'model-object-test3');
+  }
+
+  public function testChildrenQuery(){
+    $items = Graph::object('testParent')
+      ->latticeChildrenQuery();
+    $items = $items->find_all();
+    $this->assertTrue(count($items)>0);
+  }
+
+  public function testChildrenQueryActive(){
+    $items = Graph::object('testParent')
+      ->latticeChildrenQuery()
+      ->activeFilter();
+    $items = $items->find_all();
+    $this->assertTrue(count($items)>0);
+  }
+
+  public function testChildrenQueryActiveAndOrder(){
+    $items = Graph::object('testParent')
+      ->latticeChildrenQuery()
+      ->activeFilter()
+      ->order_by('objectrelationships.sortorder', 'ASC');
+    $items = $items->find_all();
+    $this->assertTrue(count($items)>0);
   }
 }

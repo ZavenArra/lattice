@@ -51,6 +51,7 @@ Class GraphObjectRelationshipsTest extends Kohana_UnitTest_TestCase {
     $this->assertNotNull($metaObjectTypeName);
     $this->assertEquals($metaObjectTypeName,'meta');
     $object->delete();
+    $newObject->delete();
   }
 
 

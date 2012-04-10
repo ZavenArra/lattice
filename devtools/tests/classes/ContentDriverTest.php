@@ -5,7 +5,7 @@ Class ContentDriverTest extends Kohana_UnitTest_TestCase {
     Graph::createObject('article', 'content-driver-test');
   }
 
-  public static function tearDownBeforeClass(){
+  public static function tearDownAfterClass(){
     Graph::object('content-driver-test')->delete();
   }
 
