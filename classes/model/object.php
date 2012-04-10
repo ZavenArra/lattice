@@ -347,6 +347,7 @@ class Model_Object extends ORM implements arrayaccess {
    }
 
 
+
     /*
       Function: _save()
       Custom save function, makes sure the content table has a record when inserting new object
@@ -366,7 +367,6 @@ class Model_Object extends ORM implements arrayaccess {
        $this->saveContentTable($this);
      }
      return $this;
-
 
    }
    
@@ -1576,6 +1576,14 @@ class Model_Object extends ORM implements arrayaccess {
 
       return $newObject;
   
+   }
+
+   public function move($newLatticeParent, $lattice='lattice', $oldLatticeParent=NULL){
+     $oldLatticeParent == NULL ? $oldLatticeParent = $this->getLatticeParent() : $oldLatticeParent = Graph::object($oldLatticeParent);
+     $newLatticeParent = Graph::object($newLatticeParent);
+     $oldLatticeParent->removeLatticeRelationship('lattice',$this);
+     $newLatticeParent->addLatticeRelationship('lattice',$this);
+
    }
 
    public function addLatticeRelationship($lattice, $newObjectId){
