@@ -1,7 +1,7 @@
 <phpunit colors="true" bootstrap="testindex.php">
 	<testsuites>
 		<testsuite name="Tests">
-      <directory>lattice/lattice/devtools/tests/</directory>
+      <directory>modules/lattice/devtools/tests/</directory>
 		</testsuite>
 	</testsuites>
 </phpunit>
