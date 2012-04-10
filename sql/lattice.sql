@@ -42,7 +42,6 @@ CREATE TABLE `rosettas` (
 CREATE TABLE `objects` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
 	`objecttype_id` int(11) NOT NULL DEFAULT '0',
-	`parentid` int(11) DEFAULT NULL,
 	`language_id` int(11) DEFAULT NULL,
 	`rosetta_id` int(11) DEFAULT NULL,
 	`slug` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
