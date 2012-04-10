@@ -110,23 +110,23 @@ class Model_ObjectType extends ORM {
   }
 
 
-	/*
-	 * Function: unique_key($id)
-	 * Allows both integer id and objecttypename text to be unique key,
-	 * overrides function in base class
-	 * Parameters:
-	 * $id - a primary key
-	 * Returns: type of key being used
-	 */
-	public function unique_key($id)
-	{
-		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id))
-		{
-			return 'objecttypename';
-		}
+    /*
+     * Function: unique_key($id)
+     * Allows both integer id and objecttypename text to be unique key,
+     * overrides function in base class
+     * Parameters:
+     * $id - a primary key
+     * Returns: type of key being used
+     */
+    public function unique_key($id)
+    {
+      if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id))
+      {
+        return 'objecttypename';
+      }
 
-		return parent::unique_key($id);
-	}
+      return parent::unique_key($id);
+    }
 
     /*
      * Function: defaults()

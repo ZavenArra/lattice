@@ -10,11 +10,11 @@ Class ModelObjectTypeTest extends Kohana_UnitTest_TestCase {
   }
 
   public static function tearDownAfterClass(){
-    self::$ot->delete();
     self::$object->delete();
   }
 
 
+  /*
   public function testDefaultsFunction(){
 
     $this->assertNotNULL(self::$ot->defaults());
@@ -38,6 +38,7 @@ Class ModelObjectTypeTest extends Kohana_UnitTest_TestCase {
     $this->assertTrue($object->textFieldDefault == 'Some Default Text');
     $this->assertNULL($Object->textFieldNoDefault);
   }
+   */
 
 
 }
