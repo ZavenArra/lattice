@@ -156,6 +156,13 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       $this->response->data($returnData);
    }
 
+   public function action_move($objectId, $newParentId, $lattice='lattice', $oldParentId=NULL){
+      $object = Graph::object($objectId);
+      $object->move($newParentId, $lattice, $oldParentId);
+      $this->response->data(array('newParentId', $object->getLatticeParent($lattice)->id));
+   }
+
+
    /*
     * Function: handleDataException();
     */
