@@ -471,7 +471,10 @@ class Model_Object extends ORM implements arrayaccess {
    }
 
    public function delete(){
-    $this->cascadeDelete(true);
+     if(!$this->loaded()){
+       throw new Kohana_Exception("Trying to delete object that is not loaded");
+     }
+     $this->cascadeDelete(true);
    }
   
 
