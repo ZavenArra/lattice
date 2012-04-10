@@ -539,7 +539,7 @@ class Model_Object extends ORM implements arrayaccess {
 
      $translatedObject = Graph::object()
        ->where('rosetta_id', '=', $rosettaId)
-       ->where('object.language_id', '=', $languageId)
+       ->where('objects.language_id', '=', $languageId)
        ->find();
      if(!$translatedObject->loaded()){
        throw new Kohana_Exception('No translated object available for objectId :id with language :language',
@@ -1067,7 +1067,7 @@ class Model_Object extends ORM implements arrayaccess {
        foreach($wheres as $where){
 
          if($where[0] == 'title'){
-           $this->join($driverInfo['tableName'])->on('object.id', '=', $driverInfo['tableName'].'.object_id');
+           $this->join($driverInfo['tableName'])->on('objects.id', '=', $driverInfo['tableName'].'.object_id');
            $this->where($driverInfo['tableName'].'.'.$where[0], $where[1], $where[2]);
 
          } else {
@@ -1128,12 +1128,12 @@ class Model_Object extends ORM implements arrayaccess {
    }
    
    public function activeFilter(){
-    $this->where('object.activity', 'IS', NULL);
+    $this->where('objects.activity', 'IS', NULL);
     return $this;   
    }
 
    public function taggedFilter($tags) {
-     return $this->join('objects_tags')->on('objects_tags.object_id', '=', 'object.id')
+     return $this->join('objects_tags')->on('objects_tags.object_id', '=', 'objects.id')
        ->join('tags')->on('objects_tags.tag_id', '=', 'tags.id')
        ->where('tag', '=', $tags);
    }
@@ -1141,7 +1141,7 @@ class Model_Object extends ORM implements arrayaccess {
    public function latticeChildrenFilter($parentId, $lattice="lattice"){
       $lattice = Graph::lattice($lattice);
        
-      $this->join('objectrelationships', 'LEFT')->on('object.id', '=', 'objectrelationships.connectedobject_id');
+      $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
       $this->where('objectrelationships.lattice_id', '=', $lattice->id);
       $this->where('objectrelationships.object_id', '=', $parentId);
       return $this;
@@ -1174,7 +1174,7 @@ class Model_Object extends ORM implements arrayaccess {
   public function latticeParentsFilter($childId, $lattice="lattice"){
     $lattice = Graph::lattice($lattice);
 
-    $this->join('objectrelationships', 'LEFT')->on('object.id', '=', 'objectrelationships.object_id');
+    $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.object_id');
     $this->where('objectrelationships.lattice_id', '=', $lattice->id);
     $this->where('objectrelationships.connectedobject_id', '=', $childId);
     return $this;
@@ -1261,7 +1261,7 @@ class Model_Object extends ORM implements arrayaccess {
 
      $queryCopy = clone($query); //reclone so we can rerun if necessary
      //$query->where('objects.id', $idInequalities[$idInequality], $current->id)->order_by('id', $order)->limit(1);
-     $query->where('object.id', '!=', $current->id)->order_by('id', $order)->limit(1);
+     $query->where('objects.id', '!=', $current->id)->order_by('id', $order)->limit(1);
      $result = $query->find();
      if(!$result->loaded()){
        //id inequality (tiebreaker) is backwards, flip it and rerun the query
@@ -1269,7 +1269,7 @@ class Model_Object extends ORM implements arrayaccess {
        $idInequality %= 2;
 
        //$queryCopy->where('objects.id', $idInequalities[$idInequality], $current->id)->order_by('id', $order)->limit(1);
-       $queryCopy->where('object.id', '!=', $current->id)->order_by('id', $order)->limit(1);
+       $queryCopy->where('objects.id', '!=', $current->id)->order_by('id', $order)->limit(1);
        $result = $queryCopy->find();
      }
      return $result;
@@ -1366,7 +1366,7 @@ class Model_Object extends ORM implements arrayaccess {
          if(isset($arguments['title'])){
             $checkForPreexistingObject = Graph::object()
                  ->latticeChildrenFilter($this->id)
-                 ->join('contents', 'LEFT')->on('object.id',  '=', 'contents.object_id')
+                 ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
                  ->where('title', '=', $arguments['title'])
                  ->find();
             if($checkForPreexistingObject->loaded()){
@@ -1668,7 +1668,7 @@ class Model_Object extends ORM implements arrayaccess {
        $parentRosettaId = $this->rosetta_id;
        $translatedObject = Graph::object()
                ->where('rosetta_id', '=', $this->rosetta_id)
-               ->where('object.language_id', '=', $languageId)
+               ->where('objects.language_id', '=', $languageId)
                ->find();
        if(!$translatedObject->loaded()){
           throw new Kohana_Exception('No matching translated object for rosetta :rosetta and language :language',
