@@ -56,6 +56,7 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
   }
 
   public function testNext(){
+    //This doesn't always work because the field is not microtime
     $objectQuery = Graph::object()->objectTypeFilter('prevNext');
     $next = $objectQuery->next('dateadded', Graph::object('model-object-test2')->id);
     $this->assertNotNULL($next);
@@ -64,6 +65,7 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
 
 
   public function testPrev(){
+    //This doesn't always work because the field is not microtime
     $objectQuery = Graph::object()->objectTypeFilter('prevNext');
     $prev = $objectQuery->prev('dateadded',  Graph::object('model-object-test2')->id);
     $this->assertNotNULL($prev);
