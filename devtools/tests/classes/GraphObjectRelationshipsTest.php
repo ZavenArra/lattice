@@ -44,8 +44,8 @@ Class GraphObjectRelationshipsTest extends Kohana_UnitTest_TestCase {
   }
 
   public function testMetaObjectTypeName(){
-    $object = Graph::createObject('singleAssociator');
-    $newObject = Graph::createObject('meta');
+    $object = Graph::createObject('singleAssociator', 'single-associator-test');
+    $newObject = Graph::createObject('meta', 'meta-test');
     $object->addLatticeRelationship('myAssociation', $newObject->id);
     $metaObjectTypeName = $object->getMetaObjectTypeName('myAssociation');
     $this->assertNotNull($metaObjectTypeName);

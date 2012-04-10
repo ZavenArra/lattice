@@ -52,7 +52,7 @@ Class GraphObjectAuthRolesTest extends Kohana_UnitTest_TestCase {
   }
 
   public function testCreateWithConfiguredAccess(){
-    $objectId = Graph::createObject('editorOnlyObjectType');
+    $objectId = Graph::createObject('editorOnlyObjectType', 'editorOnlyTest');
     $object = Graph::object($objectId);
     $this->assertTrue($object->checkRoleAccess('editor'), 'Configured access does not have access');
     $this->assertFalse($object->checkRoleAccess('admin'), 'Unconfigured access has access');
@@ -60,7 +60,7 @@ Class GraphObjectAuthRolesTest extends Kohana_UnitTest_TestCase {
   }
 
   public function testChangeAccess(){
-    $objectId = Graph::createObject('editorOnlyObjectType');
+    $objectId = Graph::createObject('editorOnlyObjectType', 'editorOnly2');
     $object = Graph::object($objectId);
     $object->removeRoleAccess('editor');
     $object->addRoleAccess('admin');

@@ -7,7 +7,7 @@ Class GraphTest extends Kohana_UnitTest_TestCase {
 	}
 
 	public function testGraphCreateObject(){
-    $object = Graph::createObject('article');
+    $object = Graph::createObject('article', 'anArticle');
     $this->assertTrue($object->loaded());
     $object->delete();
 	}
@@ -29,7 +29,7 @@ Class GraphTest extends Kohana_UnitTest_TestCase {
 
   
   public function testGraphDeleteObject(){
-    $object = Graph::createObject('article');
+    $object = Graph::createObject('article', 'anotherArticle');
     $objectId = $object->id;
     $object->delete();
     $object = Graph::object($objectId);

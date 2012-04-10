@@ -15,12 +15,10 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
     $object->postDate = '2010-01-01';
     $object->save();
 
-    /*
     $testParent = Graph::createObject('article', 'testParent');
     $testParent->addObject('article', array('slug'=>'child1'));
     $testParent->addObject('article', array('slug'=>'child2'));
     $testParent->addObject('article', array('slug'=>'child3'));
-     */
   }
 
   public static function tearDownAfterClass(){
@@ -28,10 +26,10 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
     Graph::object('model-object-test')->delete();
     Graph::object('model-object-test2')->delete();
     Graph::object('model-object-test3')->delete();
-    Graph::object('testParent')->delete();
     Graph::object('child1')->delete();
     Graph::object('child2')->delete();
     Graph::object('child3')->delete();
+    Graph::object('testParent')->delete();
   }
 
   public function testContentFilterMethodExists(){
