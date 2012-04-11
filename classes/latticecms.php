@@ -308,6 +308,37 @@ class latticecms {
       }
    }
 
+  public static function moveNodeHtml($object){
+    $objectTypeName = $object->objecttypename;
+    $xPath = sprintf('//objectType[addableObject[@objectTypeName="%s"]]', $objectTypeName);
+    $objectTypesResult = lattice::config('objects', $xPath);
+    
+    $objectTypes = array();
+    foreach($objectTypesResult as $objectType){
+      $objectType = $objectType->getAttribute('name');
+      $objectTypes[$objectType] = $objectType; 
+    }
+
+    $parentCandidates = array();
+    foreach($objectTypes as $objectType){
+      $objects = Graph::object()->objectTypeFilter($objectType)->activeFilter()->find_all();
+      foreach($objects as $object){
+        $title = $object->title;
+        if(!$title){
+          $title = $object->slug;
+        }
+        $parentCandidates[$object->id] = $title;
+      }
+    }
+    natsort($parentCandidates);
+
+    $view = new View('moveControls');
+    $view->potentialParents = $parentCandidates;
+    $html = $view->render();
+    return $html;
+
+  }
+
 }
 
 
