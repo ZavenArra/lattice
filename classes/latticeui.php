@@ -187,7 +187,7 @@ Class latticeui{
 
    
    public static function tags($currentTags){
-      $view = new View('ui_tags');
+      $view = new View('ui/tags');
       $view->tags = $currentTags;
       return $view->render();
 
