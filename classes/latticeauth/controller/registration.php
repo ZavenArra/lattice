@@ -17,10 +17,30 @@ Class LatticeAuth_Controller_Registration extends Controller_Layout {
 
   public function action_create(){
     //run form validation
+    $validation = Validation::factory($_POST)
+      ->rule('password', 'not_empty')
+      ->rule('password', 'min_length', array(':value', 8))
+      ->rule('password', 'matches', array($_POST, 'password', 'passwordconfirm')) 
+      ->rule('username', 'not_empty')
+      ->rule('username', 'min_length', array(':value', 4))
+      ->rule('email', 'not_empty')
+      ->rule('email', 'min_length', array(':value', 4))
+      ->rule('email', 'email')
+      ->rule('firstname', 'not_empty')
+      ->rule('firstname', 'min_length', array(':value', 3))
+      ->rule('lastname', 'not_empty')
+      ->rule('lastname', 'min_length', array(':value', 3));
 
-    $user = $this->createUser($_POST['username'], $_POST['password'], $_POST['firstname'], $_POST['lastname'], $_POST['email']);
+   
+    if($validation->check()){
+      $user = $this->createUser($_POST['username'], $_POST['password'], $_POST['firstname'], $_POST['lastname'], $_POST['email']);
+    } else {
+      $this->errors = $validation->errors('validation/registration');
+    }
+
+
     if($this->errors){
-      $this->registrationView();
+      $this->registrationView($this->errors);
     } else {
       $confirmation = new Confirmation('registration'
         , $_POST['email'],
@@ -51,6 +71,12 @@ Class LatticeAuth_Controller_Registration extends Controller_Layout {
   protected function registrationView($errors=NULL){
     $view = new View('registration');
     $view->errors = $this->errors;
+    isset(    $_POST['username'] ) ? $view->username = $_POST['username'] : $view->username = '';
+    isset(    $_POST['password'] ) ? $view->password = $_POST['password'] : $view->password = '';
+    isset(    $_POST['passwordconfirm'] ) ? $view->passwordconfirm = $_POST['passwordconfirm'] : $view->passwordconfirm = '';
+    isset(    $_POST['email'] ) ? $view->email = $_POST['email'] : $view->email = '';
+    isset(    $_POST['firstname'] ) ? $view->firstname = $_POST['firstname'] : $view->firstname = '';
+    isset(    $_POST['lastname'] ) ? $view->lastname = $_POST['lastname'] : $view->lastname = '';
     $this->response->body($view->render());
   }
 
@@ -61,15 +87,15 @@ Class LatticeAuth_Controller_Registration extends Controller_Layout {
       $user->status = 'INCOMPLETE';
       $user->username = $username;
       $user->password = $password;
-     // $user->firstname = $firstname;
-      //$user->lastname = $lastname;
+      $user->firstname = $firstname;
+      $user->lastname = $lastname;
       $user->email = $email;
       $user->save();
       $this->user_id = $user->id;
     }
    /**/ catch (Exception $e){
      $errors = array();
-      $modelErrors = $e->errors('validation');
+      $modelErrors = $e->errors('validation/user');
       if(isset($modelErrors['_external'])){
         $modelErrors = array_values($modelErrors['_external']);
       } 
