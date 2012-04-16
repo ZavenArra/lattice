@@ -110,4 +110,38 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
     $items = $items->find_all();
     $this->assertTrue(count($items)>0);
   }
+
+  public function testMove(){
+    $testParent = Graph::createObject('article', 'parent-orig');
+    $child = $testParent->addObject('article', array('slug'=>'the-child'));
+    $child = Graph::object($child);
+    $newParent = Graph::createObject('article', 'parent-new');
+    $child->move($newParent->id);
+
+
+    $found = false;
+    $children = $newParent->getLatticeChildren();
+    foreach($children as $testChild){
+      if($testChild->id == $child->id){
+        $found = true;
+        break;
+      } 
+    }
+    $this->assertTrue($found);
+
+    $moved = true;
+    $children = $testParent->getLatticeChildren();
+    foreach($children as $testChild){
+      if($testChild->id == $child->id){
+        $found = false;
+        break;
+      } 
+    }
+    $this->assertTrue($moved);
+
+    $child->delete();
+    $newParent->delete();
+    $testParent->delete();
+
+  }
 }
