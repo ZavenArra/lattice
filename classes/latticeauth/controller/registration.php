@@ -17,6 +17,7 @@ Class LatticeAuth_Controller_Registration extends Controller_Layout {
 
   public function action_create(){
     //run form validation
+
     $validation = Validation::factory($_POST)
       ->rule('password', 'not_empty')
       ->rule('password', 'min_length', array(':value', 8))
