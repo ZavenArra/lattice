@@ -95,7 +95,7 @@ Class LatticeAuth_Controller_Registration extends Controller_Layout {
     }
    /**/ catch (Exception $e){
      $errors = array();
-      $modelErrors = $e->errors('validation/user');
+      $modelErrors = $e->errors('validation');
       if(isset($modelErrors['_external'])){
         $modelErrors = array_values($modelErrors['_external']);
       } 
