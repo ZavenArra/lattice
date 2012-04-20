@@ -54,7 +54,7 @@ Route::set('cms', 'cms/<action>(/<param1>(/<param2>))', array(
 	));
 
 Route::set('associator', 'associator/<action>/<param1>/<param2>/<param3>', array(
-
+    'param3' => '[A-z0-9\s ]++',
 	)
 )
 ->defaults(
@@ -87,7 +87,7 @@ Route::set('graph', 'graph/<action>(/<param1>(/<param2>))', array( ))
 Route::set('ajax', 'ajax/(<action>)/(<uri>)', array(
 			'controller' => 'ajax',
 			'action' => '[A-z]+',
-			'uri' => '[A-z\/0-9\-]++',
+			'uri' => '[A-z\/0-9\- ]++',
 				)
 		)
 		->defaults(
