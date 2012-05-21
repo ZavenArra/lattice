@@ -13,7 +13,7 @@ $config['resources']['libraryjs'] = array(
 	'modules/lattice/resources/js/LatticeCore.js',
 	'modules/lattice/resources/js/LatticeUI.js',
 	'modules/lattice/resources/js/LatticeModules.js',
-	'modules/usermanagement/resources/usermanagement.js',
+	'modules/lattice/resources/usermanagement.js',
 );
 
 $config['layout'] = 'LayoutAdmin';
