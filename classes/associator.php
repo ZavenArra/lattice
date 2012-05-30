@@ -12,8 +12,9 @@ Class Associator {
 
   protected $label;
   protected $poolLabel;
-
-  private $maxPoolSize = 50;
+  //this is page size for paginator
+  private $maxPoolSize = 10;
+  private $pageNum = 1;
 
   public static function getFiltersFromDomNode($node){
     $filtersNodeList = lattice::config('objects', 'filter', $node);
@@ -97,7 +98,9 @@ Class Associator {
         $objects->where('objects.language_id', '=', Graph::defaultLanguage());
         $objects->publishedFilter();
         $objects->limit($this->maxPoolSize);
-
+        $this->pageNum = isset($_GET["page"]) ? $_GET["page"] : 0;
+        $objects->offset($this->pageNum * $this->maxPoolSize);
+        //check bounds for 0 return
         $results = $objects->find_all();
         foreach($results as $object){
           if(!$this->parent->checkLatticeRelationship($lattice, $object)){
@@ -112,6 +115,7 @@ Class Associator {
         ->where('objects.language_id', '=', Graph::defaultLanguage())
         ->publishedFilter()
         ->limit($this->maxPoolSize)
+        ->offset($this->pageNum * $this->maxPoolSize)
         ->find_all();
       $this->pool = $objects;
     }

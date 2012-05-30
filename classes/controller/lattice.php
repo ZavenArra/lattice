@@ -61,7 +61,6 @@ class Controller_Lattice extends Controller {
 			Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
 			exit;
 		}
-
 		if(is_array($roles)){
 			$accessGranted = false;
 			foreach($roles as $aRole){

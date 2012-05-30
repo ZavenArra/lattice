@@ -27,6 +27,11 @@ class Model_Object extends ORM implements arrayaccess {
       'through' => 'objects_roles',
       'foreign_key' => 'object_id',
     ),
+    'users' => array(
+      'model' => 'user',
+      'through' => 'objects_users',
+      'foreign_key' => 'object_id'
+    )
   );
   //cache
   private $latticeParents = array();
@@ -35,7 +40,9 @@ class Model_Object extends ORM implements arrayaccess {
 
   protected $messages = array();
 
-
+  private $itemsPerPage = 8;
+  private $pageNum = 0;
+  private $numPages = 1;
   public function __construct($id=NULL) {
 
 
@@ -54,7 +61,6 @@ class Model_Object extends ORM implements arrayaccess {
      $id = $result['id'];
     }
    }
-
    parent::__construct($id);
 
    if($this->loaded()){
@@ -704,8 +710,7 @@ class Model_Object extends ORM implements arrayaccess {
 
    public function getPublishedChildren($lattice = 'lattice') {
 
-      $children = Graph::object()
-       ->latticeChildrenFilter($this->id, $lattice)
+      $children = Graph::object()->latticeChildrenFilter($this->id, $lattice)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder')
@@ -714,7 +719,6 @@ class Model_Object extends ORM implements arrayaccess {
               ->find_all();
       return $children;
    }
-
    
    public function getLatticeChildren($lattice = 'lattice'){
       $children = Graph::object()
@@ -1142,14 +1146,29 @@ class Model_Object extends ORM implements arrayaccess {
    }
    
    public function latticeChildrenFilter($parentId, $lattice="lattice"){
+      $lattice_s = $lattice;
+     //run this query without limit to get a count
       $lattice = Graph::lattice($lattice);
-       
       $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
       $this->where('objectrelationships.lattice_id', '=', $lattice->id);
       $this->where('objectrelationships.object_id', '=', $parentId);
+      //twg added pagination here
+      $this->limit($this->itemsPerPage);
+      $this->offset($this->itemsPerPage * $this->pageNum);
+      $this->numPages  = $this->latticeChildrenCount($parentId, $lattice);
       return $this;
-
    }
+   
+   public function latticeChildrenCount($parentId, $lattice){
+     $children = Graph::object();
+     $children->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
+     $children->where('objectrelationships.lattice_id', '=', $lattice->id);
+     $children->where('objectrelationships.object_id', '=', $parentId);
+     $children->where('activity', 'IS', NULL);
+     $c = count( $children->find_all());
+    return  $c;
+   }
+   
    
    public function latticeChildrenQuery($lattice='lattice'){
       return Graph::instance()->latticeChildrenFilter($this->id, $lattice);
@@ -1742,6 +1761,26 @@ class Model_Object extends ORM implements arrayaccess {
    public function checkRoleAccess($role){
      return $this->has('roles', ORM::Factory('role', array('name'=>$role)));
    }
+   
+   /*twg - access for individual users (client-restricted reel) */
+   
+  public function addUserAccess($user){
+      $user = ORM::Factory('user', array('name'=>$user));
+      if($this->has('users', $user)){
+        return;
+      }
+      $this->add('users', $user );
+   }
+   public function removeUserAccess($user){
+      $this->remove('users', ORM::Factory('user', array('name'=>$user)));
+   }
+
+   public function checkUserAccess($user){
+     $users = ORM::Factory('user', array('username'=>$user));
+     return $this->has('users', $users);
+   }
+  
+   
 
    /*
     * Function: resetRoleAccess
