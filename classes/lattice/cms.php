@@ -187,7 +187,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
    $nodetitlehtml = $this->nodetitle->render();
    $moveNodeHtml = latticecms::moveNodeHtml($object);
-
+   $usersListHtml = latticecms::usersListHtml($object);
    $customView = 'lattice/objectTypes/'.$object->objecttype->objecttypename; //check for custom view for this objectType
 
    $htmlChunks = latticecms::buildUIHtmlChunksForObject($object, $languageCode);
@@ -206,7 +206,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
    } else {
      $html = $nodetitlehtml . $moveNodeHtml . implode($htmlChunks);
    }
-
+   $html .= $usersListHtml;
    $this->response->data($object->getPageContent()); 
    $this->response->body($html);
 

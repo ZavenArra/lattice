@@ -336,9 +336,30 @@ class latticecms {
     $view->potentialParents = $parentCandidates;
     $html = $view->render();
     return $html;
-
   }
 
+  //a list of users of $type
+  public static function usersListHtml($object){
+    //get all of the users of $type
+    $user = ORM::Factory('user');
+    $users = $user->find_all(); 
+    $usersList = array();
+    $checked = array();
+    $checked_users = $object->getUserObjects();
+    //now grab the users from this particular object and match those to be checked
+    foreach ($checked_users as $c_user){
+      $checked[] = $c_user->user_id;
+    }
+    foreach ($users as $user) {
+      $check = (in_array($user->id,$checked)) ? TRUE : FALSE;
+      $usersList[] = array("id"=>$user->id,"username"=>$user->username,"checked"=>$check);
+    }
+    //make a basic array of username, user display name, id
+    $view = new View('usersList');
+    $view->usersList = $usersList;
+    $html = $view->render();
+    return $html;
+  }
 }
 
 

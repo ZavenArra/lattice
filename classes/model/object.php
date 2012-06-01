@@ -636,6 +636,27 @@ class Model_Object extends ORM implements arrayaccess {
       }
       return $tags;
    }
+   
+   public function getUserObjects() {
+      $userObjects = ORM::Factory('objects_user')
+              ->select('*')
+              ->select('username')
+              ->where('object_id', '=', $this->id)
+              ->join('users')->on('user_id', '=', 'users.id')
+              ->find_all();
+      return $userObjects;
+   }
+
+   public function getUserStrings() {
+      $userObjects = $this->getUserStringsObjects();
+      $user = array();
+      foreach ($userObjects as $userObject) {
+         $users[] = $userObject->username;
+      }
+      return $users;
+   }
+
+   
 
    public function getContent() {
       return $this->getPageContent();
@@ -1155,7 +1176,7 @@ class Model_Object extends ORM implements arrayaccess {
       //twg added pagination here
       $this->limit($this->itemsPerPage);
       $this->offset($this->itemsPerPage * $this->pageNum);
-      $this->numPages  = $this->latticeChildrenCount($parentId, $lattice);
+      //$this->numPages  = $this->latticeChildrenCount($parentId, $lattice);
       return $this;
    }
    
@@ -1762,6 +1783,26 @@ class Model_Object extends ORM implements arrayaccess {
      return $this->has('roles', ORM::Factory('role', array('name'=>$role)));
    }
    
+   /*
+     * Function: resetRoleAccess
+     * Reset the access roles for this object to the defaults of it's objecttype
+        */
+    public function resetRoleAccess(){
+      $roles = $this->roles->find_all();
+      foreach($roles as $role){
+        $this->removeRoleAccess($role->name);
+      }
+
+      $defaultRoles = $this->objecttype->initialAccessRoles;
+      if($defaultRoles){
+        foreach($defaultRoles as $role){
+          $this->addRoleAccess($role);
+        }
+      }
+
+    }
+   
+   
    /*twg - access for individual users (client-restricted reel) */
    
   public function addUserAccess($user){
@@ -1781,26 +1822,16 @@ class Model_Object extends ORM implements arrayaccess {
    }
   
    
-
    /*
-    * Function: resetRoleAccess
-    * Reset the access roles for this object to the defaults of it's objecttype
-       */
-   public function resetRoleAccess(){
-     $roles = $this->roles->find_all();
-     foreach($roles as $role){
-       $this->removeRoleAccess($role->name);
-     }
+     * Function: resetUserAccess
+     clear all user access from object 
+        */
+    public function resetUserAccess(){
+      //delete from objects_users where object_id = $this->id
+      $this->remove('users',ORM::Factory('object_user',array('object_id'=>$this->id)));
+    }
 
-     $defaultRoles = $this->objecttype->initialAccessRoles;
-     if($defaultRoles){
-       foreach($defaultRoles as $role){
-         $this->addRoleAccess($role);
-       }
-     }
-
-   }
-
+ 
    public function getMetaObjectTypeName($lattice){
      $xPath = sprintf('//objectType[@name="%s"]/elements/associator[@lattice="%s"]', 
        $this->objecttype->objecttypename,
