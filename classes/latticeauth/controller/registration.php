@@ -85,7 +85,7 @@ Class LatticeAuth_Controller_Registration extends Controller_Layout {
 
     try {
       $user = ORM::factory('user');
-      $user->status = 'INCOMPLETE';
+      $user->status = 'NEEDSCONFIRMATION'; //TODO: This is the problem..
       $user->username = $username;
       $user->password = $password;
       $user->firstname = $firstname;
