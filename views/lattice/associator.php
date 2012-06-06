@@ -15,6 +15,17 @@
 			<input class="roundedInput" type="text" name="filter" value="Showing first fourty." id="<?=$lattice;?>SearchBox<?=$parentId;?>" />
 			<a href="#" class="filterButton button">Filter</a>
 		</label>
+		
+		<div class="pagination">
+
+			<ul>
+				<?foreach( $page as $key => $pages):?>
+				<li><a class="active" href="ajax/html/associator/getPage/<?=$parentId;?>/<?=$lattice;?>/<?=$key;?>"><?=$key;?></a></li>
+				<?endforeach;?>
+			</ul>
+
+		</div>
+
 
 	</div>
 
