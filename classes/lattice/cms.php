@@ -132,6 +132,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
    }
 
    self::$objectId = $id;
+   Kohana::$log->add(Log::ERROR,'top of action_getPage');
 
 
    /*
@@ -187,11 +188,10 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
    $nodetitlehtml = $this->nodetitle->render();
    $moveNodeHtml = latticecms::moveNodeHtml($object);
-   $usersListHtml = latticecms::usersListHtml($object);
+  // $usersListHtml = latticecms::usersListHtml($object);
    $customView = 'lattice/objectTypes/'.$object->objecttype->objecttypename; //check for custom view for this objectType
 
    $htmlChunks = latticecms::buildUIHtmlChunksForObject($object, $languageCode);
-
    if (Kohana::find_file('views', $customView)) {
      $html = $nodetitlehtml;
      $html .= $moveNodeHtml;
@@ -206,7 +206,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
    } else {
      $html = $nodetitlehtml . $moveNodeHtml . implode($htmlChunks);
    }
-   $html .= $usersListHtml;
+  // $html .= $usersListHtml;
    $this->response->data($object->getPageContent()); 
    $this->response->body($html);
 

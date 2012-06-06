@@ -1,13 +1,13 @@
 <div id="<?=$lattice;?><?=$parentId;?>" data-objectid="<?=$parentId;?>" data-lattice="<?=$lattice;?>" class="module associator classPath-lattice_modules_Associator clearfix">
 
 	<h4><?=$label;?></h4>
-
+<h4>Page Length<?=$pageLength?></h4>
 	<ul class="associated clearfix ">
 	<?foreach($associated as $view):?>
 	  <?=$view->render();?>
 	<?endforeach;?>
 	</ul>
-
+  
 	<div class="actuator clearFix">
 		<h4><?=$poolLabel;?></h4>		
 		<label for="<?=$lattice;?>SearchBox<?=$parentId;?>" class="filter hidden" >

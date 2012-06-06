@@ -12,7 +12,9 @@ Class Associator {
 
   protected $label;
   protected $poolLabel;
+  protected $pageLength;
   //this is page size for paginator
+  //this doesn't matter anymore because we're paginating
   private $maxPoolSize = 10;
   private $pageNum = 1;
 
@@ -98,8 +100,8 @@ Class Associator {
         $objects->where('objects.language_id', '=', Graph::defaultLanguage());
         $objects->publishedFilter();
         $objects->limit($this->maxPoolSize);
-        $this->pageNum = isset($_GET["page"]) ? $_GET["page"] : 0;
-        $objects->offset($this->pageNum * $this->maxPoolSize);
+      //  $this->pageNum = isset($_GET["page"]) ? $_GET["page"] : 0;
+      //  $objects->offset($this->pageNum * $this->maxPoolSize);
         //check bounds for 0 return
         $results = $objects->find_all();
         foreach($results as $object){
@@ -115,15 +117,20 @@ Class Associator {
         ->where('objects.language_id', '=', Graph::defaultLanguage())
         ->publishedFilter()
         ->limit($this->maxPoolSize)
-        ->offset($this->pageNum * $this->maxPoolSize)
+        //->offset($this->pageNum * $this->maxPoolSize)
         ->find_all();
       $this->pool = $objects;
+      echo "second";
+      var_dump($this->pool);
     }
 
   }
 
   public function setLabel($label){
     $this->label = $label;
+  }
+  public function setPageLength($pageLength){
+    $this->pageLength = $pageLength;
   }
 
   public function setPoolLabel($poolLabel){
@@ -146,9 +153,9 @@ Class Associator {
 
     $view->parentId = $this->parentId;
     $view->lattice = $this->lattice;
-
     $view->label = $this->label;
     $view->poolLabel = $this->poolLabel;
+    $view->pageLength = $this->pageLength;
     return $view->render();
   }
 

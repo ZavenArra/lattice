@@ -27,5 +27,6 @@ Class Controller_Graph extends Controller {
 		$tags = Graph::object($id)->getTagStrings();
 		$this->response->data(array('tags'=>$tags));
 	}
+	
 
 }

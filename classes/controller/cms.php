@@ -9,6 +9,7 @@ class Controller_CMS extends Lattice_CMS {
 
 	}
   
+  
    public function cms_addObject($parentId, $objectTypeId, $data) {
          
 		 $newId = Graph::object($parentId)->addObject($objectTypeId, $data);
@@ -32,5 +33,7 @@ class Controller_CMS extends Lattice_CMS {
 		 return $nodeView->render();
 
 	 }
+	 
+	 
 
 }

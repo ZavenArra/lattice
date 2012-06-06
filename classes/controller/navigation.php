@@ -108,6 +108,7 @@ class Controller_Navigation extends Controller_Lattice{
           $entry['nodeType'] = 'module';
           $entry['contentType'] = 'module';
           $entry['title'] = $m->getAttribute('label');
+          $entry['pageLength'] = $m->getAttribute('pageLength');
           $sendItemObjects[] = $entry;
         }
       }

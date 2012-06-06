@@ -39,7 +39,7 @@ class Model_Object extends ORM implements arrayaccess {
   protected $contentDriver = NULL;
 
   protected $messages = array();
-
+  //this needs to come from the associator pageLength in objects.xml
   private $itemsPerPage = 8;
   private $pageNum = 0;
   private $numPages = 1;
@@ -61,6 +61,7 @@ class Model_Object extends ORM implements arrayaccess {
      $id = $result['id'];
     }
    }
+   $this->itemsPerPage=Kohana::config('cms.associatorPageLength');
    parent::__construct($id);
 
    if($this->loaded()){
@@ -1167,7 +1168,6 @@ class Model_Object extends ORM implements arrayaccess {
    }
    
    public function latticeChildrenFilter($parentId, $lattice="lattice"){
-      $lattice_s = $lattice;
      //run this query without limit to get a count
       $lattice = Graph::lattice($lattice);
       $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
@@ -1176,9 +1176,24 @@ class Model_Object extends ORM implements arrayaccess {
       //twg added pagination here
       $this->limit($this->itemsPerPage);
       $this->offset($this->itemsPerPage * $this->pageNum);
-      //$this->numPages  = $this->latticeChildrenCount($parentId, $lattice);
       return $this;
    }
+   
+   public function latticeChildrenFilterPaged($parentId, $lattice="lattice") {
+     //twg
+     $this->numPages  = $this->latticeChildrenCount($parentId, $lattice);
+     return $this->latticeChildrenFilter($parentId, $lattice);
+   }
+   
+   public function setPageNum($num=0) {
+     $this->pageNum = $num;
+   }
+
+   public function setItemsPerPage($num=0) {
+     $this->itemsPerPage = $num;
+
+   }
+
    
    public function latticeChildrenCount($parentId, $lattice){
      $children = Graph::object();
@@ -1186,7 +1201,7 @@ class Model_Object extends ORM implements arrayaccess {
      $children->where('objectrelationships.lattice_id', '=', $lattice->id);
      $children->where('objectrelationships.object_id', '=', $parentId);
      $children->where('activity', 'IS', NULL);
-     $c = count( $children->find_all());
+     $c = count( $children->count_all());
     return  $c;
    }
    

@@ -27,5 +27,14 @@ Class Lattice_Controller_Associator extends Controller_Lattice {
     $a = new Associator($parentId, $element->getAttribute('lattice'), $modifiedFilters);
     $this->response->body($a->renderPoolItems());
   }
+  
+  public function action_filterPoolByTag($parentId, $name, $tag) {
+    $parent = Graph::object($parentId);
+     if(!$parent->loaded()){
+       throw new Kohana_Exception('Parent object not found, invalid parentId?');
+     }
+     
+  }
+
 
 }

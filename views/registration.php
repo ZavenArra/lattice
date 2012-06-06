@@ -12,35 +12,35 @@
 
     <label for="reg_username">
     User Name
-    <input type="text" name="username" id="reg_username" />
+    <input type="text" name="username" id="reg_username" value="<?echo  isset($username) ? $username : '';?>"  />
     </label>
 
     <label for="reg_password">
     Password
-    <input type="text" name="password" id="reg_password" />
+    <input type="text" name="password" id="reg_password" value="<?echo isset($password) ? $password : '';?>" />
     </label>
 
 
     <label for="reg_passwordconfirm">
     Confirm Password
-    <input type="text" name="passwordconfirm" id="reg_passwordconfirm" />
+    <input type="text" name="passwordconfirm" id="reg_passwordconfirm" value="<?echo isset($passwordconfirm) ? $passwordconfirm : '';?>" />
     </label>
 
     <label for="reg_firstname">
     First Name
-    <input type="text" name="firstname" id="reg_firstname" />
+    <input type="text" name="firstname" id="reg_firstname" value="<?echo isset($firstname) ? $firstname : '';?>" />
     </label>
 
 
     <label for="reg_lastname">
     Last Name
-    <input type="text" name="lastname" id="reg_lastname" />
+    <input type="text" name="lastname" id="reg_lastname" value="<?echo isset($lastname) ? $lastname : '';?>"  />
     </label>
 
 
     <label for="reg_email">
     Email 
-    <input type="text" name="email" id="reg_email" />
+    <input type="text" name="email" id="reg_email" value="<?echo isset($email) ? $email : '';?>" />
     </label>
 
 

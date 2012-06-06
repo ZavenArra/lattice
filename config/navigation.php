@@ -12,6 +12,7 @@ $config['navDataFields']['objectType'] = array(
 		'nodeType',
 		'contentType',
 		'allowDelete',
+		'pageLength',
 		'allowTogglePublish',
 		'allowChildSort',
 		'addableObjects',

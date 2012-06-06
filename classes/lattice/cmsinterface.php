@@ -285,7 +285,14 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
    protected function cms_addObject($parentId, $objectTypeId, $data) {
       
    }
-
+   
+   
+ 	 public function action_getChildrenPaged($id,$pageNum) {
+     $object = Graph::object($id);
+     $object->setPageNum($pageNum);
+//     $object->setItemsPerPage(2);
+     $ret = $object->latticeChildrenFilterPaged($id,"lattice");
+   }
 }
 
 ?>
