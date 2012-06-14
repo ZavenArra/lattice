@@ -4,7 +4,7 @@ $config = array(
 'default'=>array(),
 );
 $config['layout'] = 'LayoutLogin';
-$config['layoutActions'] = array('index');
+$config['layoutActions'] = array('index', 'create', 'confirmed');
 
 
 $config['resources']['css'] = array(
