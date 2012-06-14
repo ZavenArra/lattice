@@ -16,11 +16,17 @@ Class Associator {
 
   protected $label;
   protected $poolLabel;
+<<<<<<< HEAD
   protected $pageLength;
   //this is page size for paginator
   //this doesn't matter anymore because we're paginating
   private $maxPoolSize = 350;
   private $pageNum = 1;
+=======
+
+  private $maxPoolSize = 350;
+
+>>>>>>> 51399beea4565d4fb77b851918ff7592afe00101
   public static function getFiltersFromDomNode($node){
     $filtersNodeList = lattice::config('objects', 'filter', $node);
     $filters = array();

@@ -41,6 +41,7 @@ class latticecms {
 										
 										$clusterHtmlChunks = latticecms::buildUIHtmlChunksForObject($clusterObject);
 
+
 										$customview = 'lattice/objectTypes/' . $clusterObject->objecttype->objecttypename; //check for custom view for this objectType
 										$usecustomview = false;
 										if (Kohana::find_file('views', $customview)) {
@@ -51,11 +52,13 @@ class latticecms {
 												$view = new View('ui/clusters_wrapper');
 												$view->label = $element['label'];
 												$view->html = $html;
+												$view->objectTypeName = $clusterObject->objecttype->objecttypename;
 												$view->objectId = $clusterObject->id;
 												$html = $view->render();
 										} else {
 												$view = new View($customview);
 												$view->loadResources();
+												$view->objectTypeName = $clusterObject->objecttype->objecttypename;
 												foreach ($clusterHtmlChunks as $key => $value) {
 														$view->$key = $value;
 												}

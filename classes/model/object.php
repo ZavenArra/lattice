@@ -257,7 +257,9 @@ class Model_Object extends ORM implements arrayaccess {
       } else if ($column == 'roles'){
         return parent::__get('roles');
 
-      } 
+      } else if($column == 'sortorder'){
+        return parent::__get('sortorder');
+      }
      
       if(!$this->loaded()) {
         return NULL; 
@@ -859,7 +861,6 @@ class Model_Object extends ORM implements arrayaccess {
 
    public function saveUploadedImage($field, $filename, $type, $tmpName, $additionalResizes=array()) {
       $tmpName = $this->moveUploadedFileToTmpMedia($tmpName);
-      Kohana::$log->add(Log::INFO, 'clling save image' . $filename);
       $file = $this->saveImage($field, $filename, $type, $tmpName, $additionalResizes);
 
       return $file;
@@ -875,7 +876,7 @@ class Model_Object extends ORM implements arrayaccess {
          );
          return $result;
       }
-      Kohana::$log->add(Log::INFO, 'tmp moved file to ' . Graph::mediapath() . $saveName);
+      //Kohana::$log->add(Log::INFO, 'tmp moved file to ' . Graph::mediapath() . $saveName);
 
       return $saveName;
    }
@@ -953,7 +954,7 @@ class Model_Object extends ORM implements arrayaccess {
    public function verifyImage($field, $tmpName) {
       $origwidth = $size[0];
       $origheight = $size[1];
-      Kohana::$log->add(Log::INFO, var_export($parameters, true));
+      //Kohana::$log->add(Log::INFO, var_export($parameters, true));
       if (isset($parameters['minheight']) && $origheight < $parameters['minheight']) {
          $result = array(
              'result' => 'failed',
@@ -968,7 +969,6 @@ class Model_Object extends ORM implements arrayaccess {
          );
          return $result;
       }
-      Kohana::$log->add(Log::INFO, "passed min tests with {$origwidth} x {$origheight}");
    }
 
    public function saveImage($field, $filename, $type, $tmpName, $additionalResizes = array() ) {
@@ -1277,7 +1277,20 @@ class Model_Object extends ORM implements arrayaccess {
      return false;
    }
 
-   public function adjacentRecord($sortField, $direction, $currentId = NULL ){
+   public function getSortOrder($lattice, $currentId){
+      $lattice = Graph::lattice($lattice);
+      Kohana::$log->add(Kohana_Log::INFO, $lattice->id);
+      $sortOrderQuery = clone($this);
+      $sortOrderQuery->where('objects.id', '=', $currentId);
+      $sortOrderQuery->join( array('objectrelationships', 'objectrelationshipstosort') )->on('objects.id', '=', 'objectrelationshipstosort.connectedobject_id');
+      $sortOrderQuery->where('objectrelationshipstosort.lattice_id', '=', $lattice->id);
+      $sortOrderQuery->select(array('objectrelationshipstosort.sortorder', 'sortorder'));
+      $object = $sortOrderQuery->find();
+      Kohana::$log->add(Kohana_Log::INFO, $object->id . '{'.$object->sortorder);
+      return $object->sortorder;
+   }
+
+   public function adjacentRecord($sortField, $direction, $currentId = NULL, $lattice='lattice' ){
      $idInequalities = array('>', '<');
      switch($direction){
      case 'next':
@@ -1301,20 +1314,33 @@ class Model_Object extends ORM implements arrayaccess {
      } else {
        $current = $this;
      }
-     $sortValue = $current->$sortField;
 
      if($this->isTableColumn($sortField)){
+       $sortValue = $current->$sortField;
        $query->where($sortField, $inequality, $sortValue)
          ->order_by($sortField, $order);
-     } else {
-       //This assumes sortField is already mapped.. Fragile!
-       /// Here's the way to actually do it, with field translation handled somewhere
-       /*
-        * select id,field1 as orderfield from contents where id > 20 UNION select id, field3 as orderfield from contents where id <= 20;
-       */
+     } else if ($sortField == 'sortorder') {
+       if($lattice == NULL){
+          throw new Kohana_Exception('sortorder field requires lattice parameter');
+       }
+       //assume the default lattice
+      //  $query->join('objectrelationships')->on('objects.id', '=', 'objectrelationships.
+        //get current sort order
+       // get it!
+        //$query->join //join objectrelationships
+        //this assumes we've already joined objectrelatinpshios
+       $sortValue = $this->getSortOrder($lattice, $current->id);  //implement this function
+       $query->join( array('objectrelationships', 'objectrelationshipstosort') )->on('objects.id', '=', 'objectrelationshipstosort.connectedobject_id');
+       $query->where('objectrelationshipstosort.lattice_id', '=', Graph::lattice($lattice)->id);
+       $query->where('objectrelationshipstosort.'.$sortField, $inequality, $sortValue);
+       $query->order_by('objectrelationshipstosort.sortorder', $order);
+     } else  {
+       $sortValue = $current->$sortField;
        $query->contentFilter( array(array($sortField, $inequality, $sortValue)) )->order_by($sortField, $order);  
      }
 
+     /* TODO: Tiebreaker code is really problematic, since the DESC/ASC sortorder doesn't get applied by Kohana 
+      * disciminately to each sort field, i.e. it applies the same sortorder to both 
      $queryCopy = clone($query); //reclone so we can rerun if necessary
      //$query->where('objects.id', $idInequalities[$idInequality], $current->id)->order_by('id', $order)->limit(1);
      $query->where('objects.id', '!=', $current->id)->order_by('id', $order)->limit(1);
@@ -1328,16 +1354,20 @@ class Model_Object extends ORM implements arrayaccess {
        $queryCopy->where('objects.id', '!=', $current->id)->order_by('id', $order)->limit(1);
        $result = $queryCopy->find();
      }
+       */
+
+     $query->where('objects.id', '!=', $current->id)->limit(1);
+     $result = $query->find();
      return $result;
    } 
 
 
-   public function next($sortField, $currentId=NULL){
-     return $this->adjacentRecord($sortField, 'next', $currentId);
+   public function next($sortField, $currentId=NULL, $lattice=NULL){
+     return $this->adjacentRecord($sortField, 'next', $currentId, $lattice);
    }
 
-   public function prev($sortField, $currentId=NULL){
-     return $this->adjacentRecord($sortField, 'prev', $currentId);
+   public function prev($sortField, $currentId=NULL, $lattice=NULL){
+     return $this->adjacentRecord($sortField, 'prev', $currentId, $lattice);
    }
 
    public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
@@ -1547,11 +1577,11 @@ class Model_Object extends ORM implements arrayaccess {
             case 'image':
                //need to get the file out of the FILES array
 
-               Kohana::$log->add(Log::ERROR, var_export($_POST, true));
-               Kohana::$log->add(Log::ERROR, var_export($_FILES, true));
+              // Kohana::$log->add(Log::ERROR, var_export($_POST, true));
+              // Kohana::$log->add(Log::ERROR, var_export($_FILES, true));
 
                if (isset($_FILES[$field])) {
-                  Kohana::$log->add(Log::ERROR, 'Adding via post file');
+                  //Kohana::$log->add(Log::ERROR, 'Adding via post file');
                   $file = Model_Object::saveHttpPostFile($this->id, $field, $_FILES[$field]);
                } else {
                   $file = ORM::Factory('file');
