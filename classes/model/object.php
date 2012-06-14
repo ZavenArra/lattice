@@ -42,7 +42,6 @@ class Model_Object extends ORM implements arrayaccess {
   //this needs to come from the associator pageLength in objects.xml
   private $itemsPerPage = 8;
   private $pageNum = 0;
-  private $numPages = 1;
   public function __construct($id=NULL) {
 
 
@@ -1181,7 +1180,6 @@ class Model_Object extends ORM implements arrayaccess {
    
    public function latticeChildrenFilterPaged($parentId, $lattice="lattice") {
      //twg
-     $this->numPages  = $this->latticeChildrenCount($parentId, $lattice);
      return $this->latticeChildrenFilter($parentId, $lattice);
    }
    
@@ -1194,7 +1192,7 @@ class Model_Object extends ORM implements arrayaccess {
 
    }
 
-   
+  /* 
    public function latticeChildrenCount($parentId, $lattice){
      $children = Graph::object();
      $children->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
@@ -1204,7 +1202,7 @@ class Model_Object extends ORM implements arrayaccess {
      $c = count( $children->count_all());
     return  $c;
    }
-   
+   */
    
    public function latticeChildrenQuery($lattice='lattice'){
       return Graph::instance()->latticeChildrenFilter($this->id, $lattice);

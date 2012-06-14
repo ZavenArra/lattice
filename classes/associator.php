@@ -9,15 +9,18 @@ Class Associator {
   public $filters = NULL;
   public $pool = array();
   public $associated = array();
+  //set this as needed when calling paged resuls
+  //right now this is set on an instance, by actions that pre load $this->pool
+  public $numPages = 1;
+  
 
   protected $label;
   protected $poolLabel;
   protected $pageLength;
   //this is page size for paginator
   //this doesn't matter anymore because we're paginating
-  private $maxPoolSize = 10;
+  private $maxPoolSize = 350;
   private $pageNum = 1;
-
   public static function getFiltersFromDomNode($node){
     $filtersNodeList = lattice::config('objects', 'filter', $node);
     $filters = array();
@@ -100,9 +103,7 @@ Class Associator {
         $objects->where('objects.language_id', '=', Graph::defaultLanguage());
         $objects->publishedFilter();
         $objects->limit($this->maxPoolSize);
-      //  $this->pageNum = isset($_GET["page"]) ? $_GET["page"] : 0;
-      //  $objects->offset($this->pageNum * $this->maxPoolSize);
-        //check bounds for 0 return
+
         $results = $objects->find_all();
         foreach($results as $object){
           if(!$this->parent->checkLatticeRelationship($lattice, $object)){
@@ -117,7 +118,6 @@ Class Associator {
         ->where('objects.language_id', '=', Graph::defaultLanguage())
         ->publishedFilter()
         ->limit($this->maxPoolSize)
-        //->offset($this->pageNum * $this->maxPoolSize)
         ->find_all();
       $this->pool = $objects;
       echo "second";
@@ -156,6 +156,7 @@ Class Associator {
     $view->label = $this->label;
     $view->poolLabel = $this->poolLabel;
     $view->pageLength = $this->pageLength;
+    $view->numPages = $this->numPages;
     return $view->render();
   }
 
@@ -189,5 +190,7 @@ Class Associator {
     return $view;
 
   }
+
+
 
 }
