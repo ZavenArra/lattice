@@ -53,13 +53,8 @@ Route::set('cms', 'cms/<action>(/<param1>(/<param2>))', array(
 		'controller' => 'cms',
 	));
 
-<<<<<<< HEAD
 Route::set('associator', 'associator/<action>/<param1>/<param2>/<param3>(/<param4>)', array(
-
-=======
-Route::set('associator', 'associator/<action>/<param1>/<param2>/<param3>', array(
     'param3' => '[A-z0-9\s ]++',
->>>>>>> 51399beea4565d4fb77b851918ff7592afe00101
 	)
 )
 ->defaults(
