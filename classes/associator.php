@@ -107,7 +107,10 @@ Class Associator {
         //compact the array to remove redundant keys
         $res = array();
         foreach ($results as $id) {
-          $res[$id] = $id;
+          $object = Graph::object($id);
+          if(!$this->parent->checkLatticeRelationship($lattice, $object)){
+            $res[$id] = $id;
+          }
         }
         $results = $res;
         $this->numPages = ceil(count($results)/$this->pageLength);
@@ -115,9 +118,7 @@ Class Associator {
         $results = array_slice($results,0,$this->pageLength);
         foreach($results as $id){
           $object = Graph::object($id);
-//          if(!$this->parent->checkLatticeRelationship($lattice, $object)){
             $this->pool[$id] =$object;  
-//          }
         }
       }	
     } else if(!is_array($loadPool)) {

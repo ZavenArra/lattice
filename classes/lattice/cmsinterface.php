@@ -133,8 +133,6 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       $object->$field = $_POST['value'];
       $object->save();
 
-
-
       $returnData = array();
       if (count($object->getMessages())) {
          $returnData['messages'] = $object->getMessages();
@@ -150,9 +148,6 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       if ($_POST['field'] == 'title') {
          $returnData['slug'] = $object->slug;
       }
-
-
-
       $this->response->data($returnData);
    }
 
