@@ -11,7 +11,7 @@ Class Associator {
   public $associated = array();
   //set this as needed when calling paged resuls
   //right now this is set on an instance, by actions that pre load $this->pool
-  public $numPages = 1;
+  public $numPages = 2;
   
 
   protected $label;
@@ -19,7 +19,7 @@ Class Associator {
   protected $pageLength;
   //this is page size for paginator
   //this doesn't matter anymore because we're paginating
-  private $maxPoolSize = 350;
+  private $maxPoolSize = 80;
   private $pageNum = 1;
   public static function getFiltersFromDomNode($node){
     $filtersNodeList = lattice::config('objects', 'filter', $node);
@@ -48,7 +48,7 @@ Class Associator {
     $this->parent = Graph::object($this->parentId);
     $this->lattice = $lattice;
     $this->filters = $filters; 
-    
+    $this->pageLength = Kohana::config('cms.associatorPageLength');
     foreach($this->parent->getLatticeChildren($this->lattice) as $child){
       $this->associated[] = $child;
     }
@@ -56,7 +56,6 @@ Class Associator {
     if(is_array($loadPool)){
       $this->pool = $loadPool;
     }
-
     //load pool
     if($filters){
       foreach($filters as $filter){
@@ -102,13 +101,23 @@ Class Associator {
 
         $objects->where('objects.language_id', '=', Graph::defaultLanguage());
         $objects->publishedFilter();
-        $objects->limit($this->maxPoolSize);
-
-        $results = $objects->find_all();
-        foreach($results as $object){
-          if(!$this->parent->checkLatticeRelationship($lattice, $object)){
-            $this->pool[$object->id] = $object;  //scalability problem
-          }
+        //$objects->limit($this->maxPoolSize);
+        //just return an array of id's then load the pool object
+        $results = $objects->find_all()->as_array(NULL, 'id');
+        //compact the array to remove redundant keys
+        $res = array();
+        foreach ($results as $id) {
+          $res[$id] = $id;
+        }
+        $results = $res;
+        $this->numPages = ceil(count($results)/$this->pageLength);
+        //get slice the first page, then load the objects from their id's
+        $results = array_slice($results,0,$this->pageLength);
+        foreach($results as $id){
+          $object = Graph::object($id);
+//          if(!$this->parent->checkLatticeRelationship($lattice, $object)){
+            $this->pool[$id] =$object;  
+//          }
         }
       }	
     } else if(!is_array($loadPool)) {
@@ -120,8 +129,8 @@ Class Associator {
         ->limit($this->maxPoolSize)
         ->find_all();
       $this->pool = $objects;
-      echo "second";
-      var_dump($this->pool);
+      //echo "second";
+      //var_dump($this->pool);
     }
 
   }
@@ -157,6 +166,26 @@ Class Associator {
     $view->poolLabel = $this->poolLabel;
     $view->pageLength = $this->pageLength;
     $view->numPages = $this->numPages;
+
+    
+    
+    /*
+    paginator vars- probably should be its own func
+    these are messy too
+    
+    */
+    
+    $view->urlPrepend = "ajax/html";
+  //  echo strpos($original_uri,$action);
+      
+    //pass our paginator params to the view
+//    $view->controllerName = $this->request->controller();
+//    $view->action = $action;
+//    $view->params = $this->request->param();
+//    $view->currentPage = $view->params["param4"];
+    /* end paginator vars*/ 
+    
+    
     return $view->render();
   }
 

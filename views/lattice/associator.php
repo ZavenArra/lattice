@@ -7,7 +7,7 @@
 	  <?=$view->render();?>
 	<?endforeach;?>
 	</ul>
-  
+<?php if ($numPages>1):?>
 	<div class="actuator clearFix">
 		<h4><?=$poolLabel;?></h4>		
 		<label for="<?=$lattice;?>SearchBox<?=$parentId;?>" class="filter hidden" >
@@ -15,8 +15,29 @@
 			<input class="roundedInput" type="text" name="filter" value="Showing first fourty." id="<?=$lattice;?>SearchBox<?=$parentId;?>" />
 			<a href="#" class="filterButton button">Filter</a>
 		</label>
-
+    <div class="paginator">
+      <div class="numPages">
+        Total Pages: <?=$numPages?>
+      </div>
+      <div class="currentPage">
+        Current Page     
+      </div>
+      <ul class="pages">
+          <?php
+          if (!isset($searchTerm)) {
+            $searchTerm =null;
+          }
+          ?>
+          <?php for ($i = 0; $i < $numPages; $i++):?>
+          <li><a href="/ajax/html/associator/getPage/<?=$parentId?>/<?=$lattice?>/<?=($i+1)?>/<?=$searchTerm?> "><?=($i+1)?></a></li>
+        <?php endfor;?>
+      </ul>
+    </div>
 	</div>
+<?php endif;?>
+
+
+
 
 	<ul class="pool clearfix">
 	<?foreach($pool as $view):?>

@@ -102,7 +102,7 @@ class latticecms {
                   $associator = new Associator($object->id, $element['lattice'],$element['filters']);
                   $associator->setLabel($element['label']);
                   $associator->setPoolLabel($element['poolLabel']);
-                  $associator->setPageLength($element['pageLength']);
+                  $associator->setPageLength(Kohana::config('cms.associatorPageLength'));
                   $key = $element['type'] . '_' . $uiArguments['name'];
                   $htmlChunks[$key] = $associator->render($element['associatorType']);
                   break;
@@ -233,7 +233,7 @@ class latticecms {
 							 $entry['filters'] = Associator::getFiltersFromDomNode($element);
                $entry['poolLabel'] = $element->getAttribute('poolLabel');
                $entry['associatorType'] = $element->getAttribute('associatorType');
-               $entry['pageLength'] = $element->getAttribute('pageLength');
+               $entry['pageLength'] = Kohana::config('cms.associatorPageLength');;
 							 break;
 						case 'tags':
 							$entry['name'] = 'tags'; //this is a cludge

@@ -79,7 +79,7 @@
 	name         CDATA #REQUIRED
   lattice       CDATA #REQUIRED
   associatorType      CDATA #IMPLIED
-  pageLength      CDATA "16"
+  pageLength      CDATA "18"
   metaObjectTypeName  CDATA #IMPLIED
 >   
 
