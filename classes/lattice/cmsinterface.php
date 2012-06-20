@@ -280,7 +280,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
  			 $this->response->data(array('error'=>true,'message'=>'User does not exist'));
      } else {
        //if the toggle 
-      if ($toggleStage==0){
+      if ($toggleState==0){
         $o = ORM::factory('objects_user')
         ->where('object_id','=',$objectId)
         ->where('user_id','=',$userId);
@@ -315,7 +315,6 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
     } else {
       echo json_encode(FALSE);
     }
-
    }
 
 
