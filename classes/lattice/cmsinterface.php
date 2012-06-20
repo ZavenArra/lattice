@@ -277,7 +277,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
      //check user is valid or bail
      $userCheck =   ORM::factory('user',$userId);
      if (!$userCheck->loaded()){
- 			 $this->response->data( array('error'=>'User does not exist') );
+ 			 $this->response->data(array('error'=>true,'message'=>'User does not exist'));
      } else {
        //if the toggle 
       if ($toggleStage==0){
