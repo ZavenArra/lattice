@@ -9,11 +9,10 @@ Class Associator {
   public $filters = NULL;
   public $pool = array();
   public $associated = array();
-  //set this as needed when calling paged resuls
+  //set this as needed when calling paged results
   //right now this is set on an instance, by actions that pre load $this->pool
   public $numPages = 2;
   
-
   protected $label;
   protected $poolLabel;
   protected $pageLength;
@@ -49,6 +48,7 @@ Class Associator {
     $this->lattice = $lattice;
     $this->filters = $filters; 
     $this->pageLength = Kohana::config('cms.associatorPageLength');
+
     foreach($this->parent->getLatticeChildren($this->lattice) as $child){
       $this->associated[] = $child;
     }
