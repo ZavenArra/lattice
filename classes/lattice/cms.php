@@ -132,7 +132,6 @@ class Lattice_CMS extends Lattice_CMSInterface {
    }
 
    self::$objectId = $id;
-   //Kohana::$log->add(Log::ERROR,'top of action_getPage');
 
 
    /*
