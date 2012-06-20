@@ -269,6 +269,37 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
    public function action_disassociate($parentId, $objectId, $lattice){
       Graph::object($parentId)->removeLatticeRelationship($objectid, $lattice);
    }
+   
+   public function action_associateuser($userId, $objectId) {
+      //check 
+    $userCheck =   ORM::factory('user',$userId);
+    $existsCheck = ORM::factory('objects_user')
+    ->where('object_id','=',$objectId)
+    ->where('user_id','=',$userId)->find();
+    if ($userCheck->loaded() && (!$existsCheck->loaded())){
+      $o = ORM::factory('objects_user');
+      $o->user_id = $userId;
+      $o->object_id = $objectId;
+      $o->save();
+      echo json_encode(TRUE);
+    } else {
+      echo json_encode(FALSE);
+    }
+
+   }
+   public function action_dissociateuser($userId, $objectId) {
+     
+     $o = ORM::factory('objects_user')
+     ->where('object_id','=',$objectId)
+     ->where('user_id','=',$userId);
+     $results = $o->find_all();
+     foreach($results as $result) {
+       $result->delete();
+     }
+     echo json_encode(TRUE);
+     
+
+   }
 
 
    //abstract
