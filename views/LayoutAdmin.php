@@ -4,7 +4,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta http-equiv="content-script-type" content="text/javascript">
-	<title><?=Kohana::config('lattice.siteTitle');?> Lattice CMS &ldquo;It's Made of People!&rdquo; </title>
+	<title><?=Kohana::config('lattice.siteTitle');?></title>
 	<?=$stylesheet;?>
 	<?=$javascript;?>
 </head>
