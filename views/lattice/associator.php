@@ -14,20 +14,23 @@
 			<input class="roundedInput" type="text" name="filter" value="Showing first <?=$pageLength?>" id="<?=$lattice;?>SearchBox<?=$parentId;?>" />
 			<a href="#" class="filterButton button">Filter</a>
 		</label>
-		<div class="pagination">
+    <div class="paginator" data-numPages="<?=$numPages;?>" >
+      <ul class="pages">
+          <?php
+          if (!isset($searchTerm) ) $searchTerm =null;
+          ?>
+          <?php for ($i = 0; $i < $numPages; $i++):?>
+          <li>
+						<a href="/ajax/html/associator/getPage/<?=$parentId?>/<?=$lattice?>/<?=($i+1)?>/<?=$searchTerm?>" <?=($i==0)?'class="active"':''?>>
+							<?=($i+1)?>
+						</a>
+					</li>
+        <?php endfor;?>
+      </ul>
+    </div>
 
-			<ul>
-				<?foreach( $page as $key => $pages):?>
-				<li><a class="active" href="ajax/html/associator/getPage/<?=$parentId;?>/<?=$lattice;?>/<?=$key;?>"><?=$key;?></a></li>
-				<?endforeach;?>
-			</ul>
-
-		</div>
 	</div>
 <?php endif;?>
-
-
-
 
 	<ul class="pool clearfix">
 	<?foreach($pool as $view):?>
