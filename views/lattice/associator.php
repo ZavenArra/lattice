@@ -14,21 +14,17 @@
 			<input class="roundedInput" type="text" name="filter" value="Showing first <?=$pageLength?>" id="<?=$lattice;?>SearchBox<?=$parentId;?>" />
 			<a href="#" class="filterButton button">Filter</a>
 		</label>
-    <div class="paginator">
-      <div class="numPages">
-        Total Pages: <?=$numPages?>
-      </div>
-      <div class="currentPage">
-        Current Page     
-      </div>
+    <div class="paginator" data-numPages="<?=$numPages;?>" >
       <ul class="pages">
           <?php
-          if (!isset($searchTerm)) {
-            $searchTerm =null;
-          }
+          if (!isset($searchTerm) ) $searchTerm =null;
           ?>
           <?php for ($i = 0; $i < $numPages; $i++):?>
-          <li><a href="/ajax/html/associator/getPage/<?=$parentId?>/<?=$lattice?>/<?=($i+1)?>/<?=$searchTerm?> "><?=($i+1)?></a></li>
+          <li>
+						<a href="/ajax/html/associator/getPage/<?=$parentId?>/<?=$lattice?>/<?=($i+1)?>/<?=$searchTerm?>" <?=($i==0)?'class="active"':''?>>
+							<?=($i+1)?>
+						</a>
+					</li>
         <?php endfor;?>
       </ul>
     </div>
