@@ -56,10 +56,13 @@ Class Associator {
     if(is_array($loadPool)){
       $this->pool = $loadPool;
     }
+
     //load pool
     if($filters){
+
+      $objects = Graph::object();
+
       foreach($filters as $filter){
-        $objects = Graph::object();
 
         if(isset($filter['from']) && $filter['from']){
           $from = Graph::object($filter['from']);
@@ -70,8 +73,6 @@ Class Associator {
         if(isset($filter['tagged']) && $filter['tagged']){
           $objects->taggedFilter($filter['tagged']); 
         }
-
-
 
         if(isset($filter['objectTypeName']) && $filter['objectTypeName']){
           $t = ORM::Factory('objectType', $filter['objectTypeName']);
@@ -84,6 +85,7 @@ Class Associator {
           }
           $objects->where('objecttype_id', '=', $t->id);
         }
+
         if(isset($filter['match']) && $filter['match']){
           $matchFields = explode(',',$filter['matchFields']);
           $wheres = array();
@@ -96,14 +98,22 @@ Class Associator {
 
         if(isset($filter['function']) && $filter['function']){
           $callback = explode('::', $filter['function']);
-          $objects = call_user_func($callback, $objects, $parentId);
+          //$options is an arbitrary array of extra options
+          $options = null;
+         // Kohana::$log->add(Kohana_Log::INFO, print_r($callback,1));
+          $objects = call_user_func($callback, $objects, $parentId, $options);
         }
+
 
         $objects->where('objects.language_id', '=', Graph::defaultLanguage());
         $objects->publishedFilter();
         //$objects->limit($this->maxPoolSize);
         //just return an array of id's then load the pool object
         $results = $objects->find_all()->as_array(NULL, 'id');
+        //check our filtered objects are correct
+//        Kohana::$log->add(Kohana_Log::INFO,"filtered objects");
+
+//        Kohana::$log->add(Kohana_Log::INFO, print_r($results,1));
         //compact the array to remove redundant keys
         $res = array();
         foreach ($results as $id) {
@@ -113,14 +123,29 @@ Class Associator {
           }
         }
         $results = $res;
+
+        if ($lattice =="artistprojects"){
+          Kohana::$log->add(Kohana_Log::INFO, print_r($filter,1));
+          Kohana::$log->add(Kohana_Log::INFO, "results count ".count($results)." num pages ".$this->numPages )->write();
+          Kohana::$log->add(Kohana_Log::INFO, "results count ".count($results)." num pages ".$this->numPages )->write();
+          
+        }
+
+
         $this->numPages = ceil(count($results)/$this->pageLength);
+//        Kohana::$log->add(Log::INFO, $this->parentId);
+        
         //get slice the first page, then load the objects from their id's
         $results = array_slice($results,0,$this->pageLength);
         foreach($results as $id){
           $object = Graph::object($id);
-            $this->pool[$id] =$object;  
+          $this->pool[$id] =$object;  
+          if ($lattice =="artistprojects"){
+             Kohana::$log->add(Log::INFO,"what object type is this: ". $object->objecttypename)->write();
+          }
         }
       }	
+      
     } else if(!is_array($loadPool)) {
 
       $objects = Graph::object()
@@ -153,7 +178,8 @@ Class Associator {
     } else {
       $view = new View('lattice/associator');
     }
-
+    
+    
     $view->pool = $this->poolItemViews($viewName);
 
     $view->associated = array();
@@ -191,6 +217,7 @@ Class Associator {
   }
 
   public function renderPoolItems(){
+    
     return(implode("\n",$this->poolItemViews($this->lattice)));
   }
 

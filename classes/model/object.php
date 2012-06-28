@@ -1160,6 +1160,34 @@ class Model_Object extends ORM implements arrayaccess {
     return $this;   
    }
 
+   //filter objects based on related objects in our associator
+   public function associatorFilter($parentId,$objects) {
+     //$objects is id's of our objects that we want to match against
+     //we're joining via object relationships
+     //all object id's from objectrelationships
+     $o_ids = array();
+     foreach ($objects as $object) {
+       $o_ids[] = $object["id"];
+     }
+     if (count($o_ids)>0){
+       
+       /*return $this->join('objectrelationships')->on('objectrelationships.object_id','=','objects.id')
+          ->where('objectrelationships.connectedobject_id','IN',$o_ids);
+          */
+        Kohana::$log->add(Log::INFO,print_r($o_ids,1))->write();
+
+        $lattice = Graph::lattice('lattice');
+        $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
+        $this->where('objectrelationships.lattice_id', '=', $lattice->id);
+        $this->where('objectrelationships.object_id', 'IN', $o_ids);
+        return $this;
+     } else {
+       Kohana::$log->add(Log::INFO,"none")->write();
+       return $this;
+     }
+
+   }
+
    public function taggedFilter($tags) {
      return $this->join('objects_tags')->on('objects_tags.object_id', '=', 'objects.id')
        ->join('tags')->on('objects_tags.tag_id', '=', 'tags.id')
@@ -1847,7 +1875,6 @@ class Model_Object extends ORM implements arrayaccess {
    
    
    /*twg - access for individual users (client-restricted reel) */
-   
   public function addUserAccess($user){
       $user = ORM::Factory('user', array('name'=>$user));
       if($this->has('users', $user)){
@@ -1864,6 +1891,11 @@ class Model_Object extends ORM implements arrayaccess {
      return $this->has('users', $users);
    }
   
+   public function isAccessControlled(){
+     //if there's a match for this in the obj/rel table, then it is access controlled
+     $check = ORM::Factory('objectrelationship',$this->id);
+     return $this->loaded();
+   }
    
    /*
      * Function: resetUserAccess
