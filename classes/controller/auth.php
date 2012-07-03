@@ -85,8 +85,7 @@ class Controller_Auth extends Controller_Layout {
 		 */
 
 		$formValues = $_POST;
-
-		if (isset($formValues['submit']) )
+ 		if (isset($formValues['submit']) )
 		{
 			// Load the user
 			if (Auth::instance()->login($formValues['username'], $formValues['password']))
@@ -107,6 +106,9 @@ class Controller_Auth extends Controller_Layout {
 			}
 		}
 
+    if (isset($_GET["redirect"])){
+      $redirect = $_GET["redirect"];
+    }
 
 		$view = new View('auth/login');
 
@@ -123,7 +125,6 @@ class Controller_Auth extends Controller_Layout {
 				$redirect = $formValues['redirect'];
 			}
 		}
-
 		$view->redirect = $redirect;
 		$this->response->body($view->render());
 
