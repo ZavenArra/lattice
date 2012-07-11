@@ -14,6 +14,7 @@
 			<input class="roundedInput" type="text" name="filter" value="Showing first <?=$pageLength?>" id="<?=$lattice;?>SearchBox<?=$parentId;?>" />
 			<a href="#" class="filterButton button">Filter</a>
 		</label>
+		<?if( $numPages > 1 ):?>
     <div class="paginator" data-numPages="<?=$numPages;?>" >
       <ul class="pages">
           <?php
@@ -28,6 +29,7 @@
         <?php endfor;?>
       </ul>
     </div>
+		<?endif;?>
 
 	</div>
 <?php endif;?>

@@ -98,22 +98,16 @@ Class Associator {
 
         if(isset($filter['function']) && $filter['function']){
           $callback = explode('::', $filter['function']);
-          //$options is an arbitrary array of extra options
           $options = null;
-         // Kohana::$log->add(Kohana_Log::INFO, print_r($callback,1));
           $objects = call_user_func($callback, $objects, $parentId, $options);
         }
 
 
         $objects->where('objects.language_id', '=', Graph::defaultLanguage());
         $objects->publishedFilter();
-        //$objects->limit($this->maxPoolSize);
         //just return an array of id's then load the pool object
         $results = $objects->find_all()->as_array(NULL, 'id');
         //check our filtered objects are correct
-//        Kohana::$log->add(Kohana_Log::INFO,"filtered objects");
-
-//        Kohana::$log->add(Kohana_Log::INFO, print_r($results,1));
         //compact the array to remove redundant keys
         $res = array();
         foreach ($results as $id) {
@@ -123,26 +117,12 @@ Class Associator {
           }
         }
         $results = $res;
-
-        if ($lattice =="artistprojects"){
-          Kohana::$log->add(Kohana_Log::INFO, print_r($filter,1));
-          Kohana::$log->add(Kohana_Log::INFO, "results count ".count($results)." num pages ".$this->numPages )->write();
-          Kohana::$log->add(Kohana_Log::INFO, "results count ".count($results)." num pages ".$this->numPages )->write();
-          
-        }
-
-
         $this->numPages = ceil(count($results)/$this->pageLength);
-//        Kohana::$log->add(Log::INFO, $this->parentId);
-        
         //get slice the first page, then load the objects from their id's
         $results = array_slice($results,0,$this->pageLength);
         foreach($results as $id){
           $object = Graph::object($id);
           $this->pool[$id] =$object;  
-          if ($lattice =="artistprojects"){
-             Kohana::$log->add(Log::INFO,"what object type is this: ". $object->objecttypename)->write();
-          }
         }
       }	
       
@@ -155,8 +135,6 @@ Class Associator {
         ->limit($this->maxPoolSize)
         ->find_all();
       $this->pool = $objects;
-      //echo "second";
-      //var_dump($this->pool);
     }
 
   }
