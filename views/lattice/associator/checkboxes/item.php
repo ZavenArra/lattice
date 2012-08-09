@@ -1,4 +1,6 @@
+<div data-objectid="<?=$object->id;?>" class="item checkbox toggle <?=($selected)? 'selected"' : '';?>" >
 <label for="associatorCheckboxItem<?=$uniqueElementId;?>">
 	<?=$object->title;?>
-	<input type="checkbox" data-objectid="<?=$object->id?>" name="associatorCheckboxItem<?=$uniqueElementId;?>" <? echo $selected ? 'checked="checked"' : '';?>  />
+	<input type="checkbox" name="associatorCheckboxItem<?=$uniqueElementId;?>" <?=($selected)? 'checked="checked"' : '';?>  />
 </label>
+</div>
