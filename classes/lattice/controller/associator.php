@@ -28,7 +28,7 @@ Class Lattice_Controller_Associator extends Controller_Lattice {
     $this->response->body($a->renderPoolItems());
   }
 
-  public function action_filterPoolByWord($parentId, $name, $pageNum=0,$word){
+  public function action_filterPoolByWord($parentId, $name, $pageNum=0,$word=""){
     $parent = Graph::object($parentId);
     if(!$parent->loaded()){
       throw new Kohana_Exception('Parent object not found, invalid parentId?');
