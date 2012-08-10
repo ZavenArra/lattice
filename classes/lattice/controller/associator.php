@@ -10,7 +10,7 @@ Class Lattice_Controller_Associator extends Controller_Lattice {
     Graph::object($parentId)->removeLatticeRelationship($lattice, $objectId);
 	}
 
-  public function action_getPage($parentId, $name,$pageNum, $word=""){
+  public function action_getPage($parentId, $name, $pageNum=0, $word=""){
     $parent = Graph::object($parentId);
     if(!$parent->loaded()){
       throw new Kohana_Exception('Parent object not found, invalid parentId?');
@@ -28,7 +28,7 @@ Class Lattice_Controller_Associator extends Controller_Lattice {
     $this->response->body($a->renderPoolItems());
   }
 
-  public function action_filterPoolByWord($parentId, $name, $pageNum,$word){
+  public function action_filterPoolByWord($parentId, $name, $pageNum=0,$word=""){
     $parent = Graph::object($parentId);
     if(!$parent->loaded()){
       throw new Kohana_Exception('Parent object not found, invalid parentId?');
