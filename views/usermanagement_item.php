@@ -6,7 +6,7 @@
 		<?=latticeui::Text( 'firstname', "rows-1 validation-nonEmpty grid_2 alpha", "p", $data['firstname'], 'First Name' );?>
 		<?=latticeui::Text( 'lastname', "rows-1 validation-nonEmpty grid_2 alpha", "p", $data['lastname'], 'Last Name' );?>
 		<?=latticeui::Text( 'email', "rows-1 validation-email grid_3 omega", "p", $data['email'], 'Email' );?>
-		<?=latticeui::Password( 'password', "rows-1 validation-nonEmpty type-password grid_3 omega", "p", '', 'Reset and Mail Password' );?>
+		<?=latticeui::Password( 'password', "rows-1 validation-nonEmpty type-password grid_3 omega", "p", '', 'Password (8 Characters)' );?>
 	<?else:?>
 		<?=$data['username'];?>	
 	<?endif;?>

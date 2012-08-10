@@ -6,7 +6,7 @@
 	  <?=$view->render();?>
 	<?endforeach;?>
 	</ul>
-<?php if ($numPages>1||1):?>
+<?php if ($numPages > 1):?>
 	<div class="actuator clearFix">
 		<h4><?=$poolLabel;?></h4>		
 		<label for="<?=$lattice;?>SearchBox<?=$parentId;?>" class="filter" >
