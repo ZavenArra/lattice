@@ -109,6 +109,9 @@ class Controller_Lattice extends Controller {
 	}
 
   protected function loadResourcesForKey($key){
+
+  	Kohana::$log->add( Kohana_Log::INFO, "application/config/lattice_cms.php " . print_r( $config['resources']['libraryjs'], 1 ) );
+
     if(self::$topController == NULL){
       return;
       //self::$topController should not be NULL, in order to use loadResourcesForKey you must extend Controller_Lattice in the controller of your initial route 
@@ -124,7 +127,7 @@ class Controller_Lattice extends Controller {
 
 		$config = Kohana::config($key);
 		//look up all matching js and css configured in the config file
-		if(is_array(Kohana::config($key.'.resources') ) ){
+		if( is_array(Kohana::config($key)) && is_array(Kohana::config($key.'.resources') ) ){
 			foreach(Kohana::config($key.'.resources') as $key => $paths){
 				foreach($paths as $path){
 					$this->resources[$key][$path] = $path;
