@@ -96,13 +96,15 @@ class latticeview {
 		//This allos support for custom controllers.
 		$route = explode('/', $slug);
 		$slug = $route[0];
+		if( self::initialObject() ){
+			try {
+				$val = self::initialObject()->isWithinSubTree($slug);
+				return $val;
+			} catch( Exception $e ){
+				return false;
+			}
+		}
 
-		try {
-			$val = self::initialObject()->isWithinSubTree($slug);
-			return $val;
-		} catch( Exception $e ){
-			return false;
-		} 
    }
 
 	 public function __construct($objectIdOrSlug = null){
