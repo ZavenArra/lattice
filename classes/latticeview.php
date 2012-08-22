@@ -108,10 +108,16 @@ class latticeview {
    }
 
 	 public function __construct($objectIdOrSlug = null){
-		 if($objectIdOrSlug != NULL){
-			 $this->object = self::getGraphObject($objectIdOrSlug);
-		 }
-		 $this->createView($objectIdOrSlug);
+		 try{
+			 if($objectIdOrSlug != NULL){
+				 $this->object = self::getGraphObject($objectIdOrSlug);
+				 $this->createView($objectIdOrSlug);
+			 }		 	
+		 } catch ( Exception $e ){
+			 throw $e; //("There is no graph object with this object id or slug : " $objectIdOrSlug . ' in object ' .  $object->slug);
+		 	return false;
+		 } 
+
 	 }
 
 	 public function data(){
