@@ -81,7 +81,7 @@ class Model_Object extends ORM implements arrayaccess {
  public static function createSlug($titleOrSlug=NULL, $forPageId=NULL){
     //create slug
     if($titleOrSlug!=NULL){
-      
+      $titleOrSlug = str_replace('.', '-', $titleOrSlug);
       $slug = preg_replace('/[^a-z0-9\- ]/', '', strtolower($titleOrSlug));
       $slug = str_replace('.', '-', $slug);
       $slug = str_replace(' ', '-', $slug);
