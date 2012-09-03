@@ -50,7 +50,7 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
   public function testContentFilterResults(){
     $objects = Graph::object();
     $wheres = array();
-    $wheres[] = array('title', 'LIKE', '%House%'); //won't match anything
+    $wheres[] = array('title', 'LIKE', '%House%'); //aiwll match anything
     $results = $objects->contentFilter($wheres)->find_all();
     $this->assertTrue(count($results)>0);
   }

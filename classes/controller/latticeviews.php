@@ -23,6 +23,31 @@ Class Controller_LatticeViews extends Controller_Layout{
     parent::__construct($request, $response);
   }
 
+  /*
+   * Function: after
+   * Calculate layout wrapping for slug
+   * Setting latticeviews.layouts.$slug to a layout name will load slug within that layout
+   * if there is no view file available for that name, no wrapping occurs
+   */
+	public function after(){
+		if($this->request == Request::initial() ){
+      $layoutForSlug = Kohana::config('latticeviews.layouts.'.self::$slug);
+      $object = Graph::object(self::$slug);
+      $layoutForObjectType = Kohana::config('latticeviews.layoutsForObjectType.'.$object->objectTypeName);
+      if($layoutForSlug){
+        if(Kohana::find_file('views/', $layoutForSlug)){
+          $this->wrapWithLayout($layoutForSlug); 
+        }
+      } else if($layoutForObjectType){
+        if(Kohana::find_file('views/', $layoutForObjectType)){
+          $this->wrapWithLayout($layoutForObjectType); 
+        }
+      } else {
+        parent::after();
+      }
+		
+		}
+	}
 
 	/*
 	 * Function: index
