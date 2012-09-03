@@ -33,7 +33,7 @@ Class Controller_LatticeViews extends Controller_Layout{
 		if($this->request == Request::initial() ){
       $layoutForSlug = Kohana::config('latticeviews.layouts.'.self::$slug);
       $object = Graph::object(self::$slug);
-      $layoutForObjectType = Kohana::config('latticeviews.layoutsForObjectType.'.$object->objectTypeName);
+      $layoutForObjectType = Kohana::config('latticeviews.layoutsForObjectType.'.$object->objecttypename);
       if($layoutForSlug){
         if(Kohana::find_file('views/', $layoutForSlug)){
           $this->wrapWithLayout($layoutForSlug); 
