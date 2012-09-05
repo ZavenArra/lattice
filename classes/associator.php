@@ -56,6 +56,17 @@ Class Associator {
     if(is_array($loadPool)){
       $this->pool = $loadPool;
     }
+    $logPool = array();
+    
+    if (is_array($loadPool)){
+      foreach ($loadPool as $l){
+        $logPool[] = $l->id;
+      }
+      
+    }
+		Kohana::$log->add( Kohana_Log::INFO, print_r($logPool,1) )->write();
+		Kohana::$log->add( Kohana_Log::INFO, print_r($filters,1) )->write();
+		Kohana::$log->add( Kohana_Log::INFO, print_r($lattice,1) )->write();
 
     //load pool
     if($filters){
@@ -117,7 +128,7 @@ Class Associator {
           }
         }
         $results = $res;
-        $this->numPages = ceil(count($results)/$this->pageLength);
+        $this->numPages = floor(count($results)/$this->pageLength);
         //get slice the first page, then load the objects from their id's
         $results = array_slice($results,0,$this->pageLength);
         foreach($results as $id){
