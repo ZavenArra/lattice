@@ -2,7 +2,7 @@
 /* @package Lattice */
 
 Class Associator {
-
+//mainassociator
   public $parentId = NULL;
   public $parent = NULL;
   public $lattice = NULL;
@@ -109,10 +109,11 @@ Class Associator {
 
         if(isset($filter['function']) && $filter['function']){
           $callback = explode('::', $filter['function']);
+          
           $options = null;
           $objects = call_user_func($callback, $objects, $parentId, $options);
         }
-
+        
 
         $objects->where('objects.language_id', '=', Graph::defaultLanguage());
         $objects->publishedFilter();
@@ -130,7 +131,16 @@ Class Associator {
         $results = $res;
         $this->numPages = floor(count($results)/$this->pageLength);
         //get slice the first page, then load the objects from their id's
-        $results = array_slice($results,0,$this->pageLength);
+        $params = explode("/",$_SERVER["REQUEST_URI"]);
+        //print_r($params);
+        //@TODO this is a kludge.  Oh well.
+        if (isset($params[7]) && $params[6]=="postingVideosAssociator"){
+          //we're passing a page number - so slice the object ids
+          $results = array_slice($results,($params[7]-1)*16,16);
+        } else {
+          $results = array_slice($results,0,$this->pageLength);
+        }
+        
         foreach($results as $id){
           $object = Graph::object($id);
           $this->pool[$id] =$object;  

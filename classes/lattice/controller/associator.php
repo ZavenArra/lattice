@@ -43,6 +43,7 @@ Class Lattice_Controller_Associator extends Controller_Lattice {
       $modifiedFilters[] = $filter;
     }
     
+
     //paginate here
     $a = new Associator($parentId, $element->getAttribute('lattice'), $modifiedFilters);
     $this->response->body($a->renderPoolItems());
