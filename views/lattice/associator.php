@@ -22,7 +22,7 @@
           ?>
           <?php for ($i = 0; $i < $numPages; $i++):?>
           <li>
-						<a href="/ajax/html/associator/getPage/<?=$parentId?>/<?=$lattice?>/<?=($i+1)?>" <?=($i==0)?'class="active"':''?>>
+						<a href="/ajax/compound/associator/getPage/<?=$parentId?>/<?=$lattice?>/<?=$i?>" <?=($i==0)?'class="active"':''?>>
 							<?=($i+1)?>
 						</a>
 					</li>
