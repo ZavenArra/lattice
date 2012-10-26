@@ -129,7 +129,7 @@ Class Associator {
           }
         }
         $results = $res;
-        $this->numPages = floor(count($results)/$this->pageLength);
+        $this->numPages = ceil(count($results)/$this->pageLength);
         //get slice the first page, then load the objects from their id's
         $params = explode("/",$_SERVER["REQUEST_URI"]);
         //print_r($params);

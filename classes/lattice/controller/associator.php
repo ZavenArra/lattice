@@ -47,6 +47,8 @@ Class Lattice_Controller_Associator extends Controller_Lattice {
     //paginate here
     $a = new Associator($parentId, $element->getAttribute('lattice'), $modifiedFilters);
     $this->response->body($a->renderPoolItems());
+    $this->response->data(array("numPages"=>$a->numPages));
+    
   }
   
   public function action_filterPoolByTag($parentId, $name, $tag) {
