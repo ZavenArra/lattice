@@ -756,6 +756,16 @@ class Model_Object extends ORM implements arrayaccess {
    
    }
 
+   public function getLatticeChildrenPaged($lattice = 'lattice'){
+      $children = Graph::object()
+       ->latticeChildrenFilterPaged($this->id, $lattice)
+              ->where('activity', 'IS', NULL)
+              ->order_by('objectrelationships.sortorder')
+              ->find_all();
+      return $children;
+   
+   }
+
 
    public function getNextPublishedPeer() {
       $next = Graph::object()
@@ -1203,15 +1213,21 @@ class Model_Object extends ORM implements arrayaccess {
       $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
       $this->where('objectrelationships.lattice_id', '=', $lattice->id);
       $this->where('objectrelationships.object_id', '=', $parentId);
-      //twg added pagination here
-      $this->limit($this->itemsPerPage);
-      $this->offset($this->itemsPerPage * $this->pageNum);
       return $this;
    }
    
    public function latticeChildrenFilterPaged($parentId, $lattice="lattice") {
-     //twg
-     return $this->latticeChildrenFilter($parentId, $lattice);
+      //twg -> thiago removed call to latticeChildrenFilter and instead duplicated with pagination
+      //        tom added it to latticeChildrenFilter which was also paginating nav ages and lists...
+      //run this query without limit to get a count
+      $lattice = Graph::lattice($lattice);
+      $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
+      $this->where('objectrelationships.lattice_id', '=', $lattice->id);
+      $this->where('objectrelationships.object_id', '=', $parentId);
+      //twg added pagination here
+      $this->limit($this->itemsPerPage);
+      $this->offset($this->itemsPerPage * $this->pageNum);
+      return $this;
    }
    
    public function setPageNum($num=0) {

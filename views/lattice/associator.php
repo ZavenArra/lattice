@@ -17,6 +17,11 @@
 		<?if( $numPages > 1 ):?>
     <div class="paginator" data-numPages="<?=$numPages;?>" >
       <ul class="pages">
+      	
+          <li class="template hidden">
+						<a href="/ajax/compound/associator/getPage/<?=$parentId?>/<?=$lattice?>/{{page}}/{{filter}}">0</a>
+					</li>
+
           <?php
           if (!isset($searchTerm) ) $searchTerm =null;
           ?>

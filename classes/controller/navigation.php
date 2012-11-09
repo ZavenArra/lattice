@@ -37,8 +37,8 @@ class Controller_Navigation extends Controller_Lattice{
 
     $items = Graph::object($parent->id)
       ->latticeChildrenQuery()
-      ->activeFilter()
-      ->order_by('objectrelationships.sortorder', 'ASC');
+      ->activeFilter();
+      // ->order_by('objectrelationships.sortorder', 'ASC');
     $items = $items->find_all();
 
     if($items){

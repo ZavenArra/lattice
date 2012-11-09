@@ -49,7 +49,7 @@ Class Associator {
     $this->filters = $filters; 
     $this->pageLength = Kohana::config('cms.associatorPageLength');
 
-    foreach($this->parent->getLatticeChildren($this->lattice) as $child){
+    foreach($this->parent->getLatticeChildrenPaged($this->lattice) as $child){
       $this->associated[] = $child;
     }
 
@@ -64,9 +64,9 @@ Class Associator {
       }
       
     }
-		Kohana::$log->add( Kohana_Log::INFO, print_r($logPool,1) )->write();
-		Kohana::$log->add( Kohana_Log::INFO, print_r($filters,1) )->write();
-		Kohana::$log->add( Kohana_Log::INFO, print_r($lattice,1) )->write();
+		// Kohana::$log->add( Kohana_Log::INFO, print_r($logPool,1) )->write();
+		// Kohana::$log->add( Kohana_Log::INFO, print_r($filters,1) )->write();
+		// Kohana::$log->add( Kohana_Log::INFO, print_r($lattice,1) )->write();
 
     //load pool
     if($filters){
