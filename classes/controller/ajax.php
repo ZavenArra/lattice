@@ -73,7 +73,7 @@ class Controller_Ajax extends Controller_Lattice {
 
 	public function action_html($uri)
 	{
-		Kohana::$log->add(Log::INFO, 'Ajax html request begin');
+//		Kohana::$log->add(Log::INFO, 'Ajax html request begin');
 		$arguments = explode('/', $uri);
 
 		try {

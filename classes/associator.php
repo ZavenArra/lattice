@@ -150,12 +150,13 @@ Class Associator {
     } else if(!is_array($loadPool)) {
 
       $objects = Graph::object()
-        ->where('id', '!=', $parentId)
-        ->where('objects.language_id', '=', Graph::defaultLanguage())
+        ->where( 'id', '!=', $parentId )
+        ->where( 'objects.language_id', '=', Graph::defaultLanguage() )
         ->publishedFilter()
-        ->limit($this->maxPoolSize)
+        ->limit( $this->maxPoolSize )
         ->find_all();
       $this->pool = $objects;
+
     }
 
   }
@@ -203,21 +204,17 @@ Class Associator {
     
     $view->urlPrepend = "ajax/html";
   //  echo strpos($original_uri,$action);
-      
     //pass our paginator params to the view
 //    $view->controllerName = $this->request->controller();
 //    $view->action = $action;
 //    $view->params = $this->request->param();
 //    $view->currentPage = $view->params["param4"];
     /* end paginator vars*/ 
-    
-    
     return $view->render();
   }
 
   public function renderPoolItems(){
-    
-    return(implode("\n",$this->poolItemViews($this->lattice)));
+    return( implode("\n",$this->poolItemViews($this->lattice) ) );
   }
 
   private function poolItemViews($viewName = NULL){
