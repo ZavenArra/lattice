@@ -8,5 +8,6 @@ $config['defaultLanguage'] = 'en';
 $config['internationalization'] = true;
 $config['preview'] = true;
 $config['authrole'] = 'admin';
+$config['associatorPageLength'] = 20;
 
 return $config;
