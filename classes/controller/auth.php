@@ -85,16 +85,19 @@ class Controller_Auth extends Controller_Layout {
 		 */
 
 		$formValues = $_POST;
-
-		if (isset($formValues['submit']) )
+ 		if (isset($formValues['submit']) )
 		{
 			// Load the user
 			if (Auth::instance()->login($formValues['username'], $formValues['password']))
 			{
 				// Login successful, redirect
+				//somewhere in here we can hang extra values for user roles
+				//just override auth.redirect or something
+				$authredirect =  Kohana::config('auth.redirect');
+				
 				if($formValues['redirect']){
 					Request::current()->redirect(url::site($formValues['redirect'],Request::current()->protocol(),false));
-				} else if($redirect = Kohana::config('auth.redirect')){
+				} else if($redirect = $authredirect){
 					Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 				} else {
 					Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),false));
@@ -107,6 +110,9 @@ class Controller_Auth extends Controller_Layout {
 			}
 		}
 
+    if (isset($_GET["redirect"])){
+      $redirect = $_GET["redirect"];
+    }
 
 		$view = new View('auth/login');
 
@@ -123,7 +129,6 @@ class Controller_Auth extends Controller_Layout {
 				$redirect = $formValues['redirect'];
 			}
 		}
-
 		$view->redirect = $redirect;
 		$this->response->body($view->render());
 

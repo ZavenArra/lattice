@@ -2,19 +2,24 @@
 /* @package Lattice */
 
 Class Associator {
-
+//mainassociator
   public $parentId = NULL;
   public $parent = NULL;
   public $lattice = NULL;
   public $filters = NULL;
   public $pool = array();
   public $associated = array();
-
+  //set this as needed when calling paged results
+  //right now this is set on an instance, by actions that pre load $this->pool
+  public $numPages = 2;
+  
   protected $label;
   protected $poolLabel;
-
-  private $maxPoolSize = 350;
-
+  protected $pageLength;
+  //this is page size for paginator
+  //this doesn't matter anymore because we're paginating
+  private $maxPoolSize = 80;
+  private $pageNum = 1;
   public static function getFiltersFromDomNode($node){
     $filtersNodeList = lattice::config('objects', 'filter', $node);
     $filters = array();
@@ -42,19 +47,33 @@ Class Associator {
     $this->parent = Graph::object($this->parentId);
     $this->lattice = $lattice;
     $this->filters = $filters; 
-    
-    foreach($this->parent->getLatticeChildren($this->lattice) as $child){
+    $this->pageLength = Kohana::config('cms.associatorPageLength');
+
+    foreach($this->parent->getLatticeChildrenPaged($this->lattice) as $child){
       $this->associated[] = $child;
     }
 
     if(is_array($loadPool)){
       $this->pool = $loadPool;
     }
+    $logPool = array();
+    
+    if (is_array($loadPool)){
+      foreach ($loadPool as $l){
+        $logPool[] = $l->id;
+      }
+      
+    }
+		// Kohana::$log->add( Kohana_Log::INFO, print_r($logPool,1) )->write();
+		// Kohana::$log->add( Kohana_Log::INFO, print_r($filters,1) )->write();
+		// Kohana::$log->add( Kohana_Log::INFO, print_r($lattice,1) )->write();
 
     //load pool
     if($filters){
+
+      $objects = Graph::object();
+
       foreach($filters as $filter){
-        $objects = Graph::object();
 
         if(isset($filter['from']) && $filter['from']){
           $from = Graph::object($filter['from']);
@@ -65,8 +84,6 @@ Class Associator {
         if(isset($filter['tagged']) && $filter['tagged']){
           $objects->taggedFilter($filter['tagged']); 
         }
-
-
 
         if(isset($filter['objectTypeName']) && $filter['objectTypeName']){
           $t = ORM::Factory('objectType', $filter['objectTypeName']);
@@ -79,6 +96,7 @@ Class Associator {
           }
           $objects->where('objecttype_id', '=', $t->id);
         }
+
         if(isset($filter['match']) && $filter['match']){
           $matchFields = explode(',',$filter['matchFields']);
           $wheres = array();
@@ -91,35 +109,63 @@ Class Associator {
 
         if(isset($filter['function']) && $filter['function']){
           $callback = explode('::', $filter['function']);
-          $objects = call_user_func($callback, $objects, $parentId);
+          
+          $options = null;
+          $objects = call_user_func($callback, $objects, $parentId, $options);
         }
+        
 
         $objects->where('objects.language_id', '=', Graph::defaultLanguage());
         $objects->publishedFilter();
-        $objects->limit($this->maxPoolSize);
-
-        $results = $objects->find_all();
-        foreach($results as $object){
+        //just return an array of id's then load the pool object
+        $results = $objects->find_all()->as_array(NULL, 'id');
+        //check our filtered objects are correct
+        //compact the array to remove redundant keys
+        $res = array();
+        foreach ($results as $id) {
+          $object = Graph::object($id);
           if(!$this->parent->checkLatticeRelationship($lattice, $object)){
-            $this->pool[$object->id] = $object;  //scalability problem
+            $res[$id] = $id;
           }
         }
+        $results = $res;
+        $this->numPages = ceil(count($results)/$this->pageLength);
+        //get slice the first page, then load the objects from their id's
+        $params = explode("/",$_SERVER["REQUEST_URI"]);
+        //print_r($params);
+        //@TODO this is a kludge.  Oh well.
+        if (isset($params[7]) && $params[6]=="postingVideosAssociator"){
+          //we're passing a page number - so slice the object ids
+          $results = array_slice($results,($params[7]-1)*16,16);
+        } else {
+          $results = array_slice($results,0,$this->pageLength);
+        }
+        
+        foreach($results as $id){
+          $object = Graph::object($id);
+          $this->pool[$id] =$object;  
+        }
       }	
+      
     } else if(!is_array($loadPool)) {
 
       $objects = Graph::object()
-        ->where('id', '!=', $parentId)
-        ->where('objects.language_id', '=', Graph::defaultLanguage())
+        ->where( 'id', '!=', $parentId )
+        ->where( 'objects.language_id', '=', Graph::defaultLanguage() )
         ->publishedFilter()
-        ->limit($this->maxPoolSize)
+        ->limit( $this->maxPoolSize )
         ->find_all();
       $this->pool = $objects;
+
     }
 
   }
 
   public function setLabel($label){
     $this->label = $label;
+  }
+  public function setPageLength($pageLength){
+    $this->pageLength = $pageLength;
   }
 
   public function setPoolLabel($poolLabel){
@@ -132,7 +178,8 @@ Class Associator {
     } else {
       $view = new View('lattice/associator');
     }
-
+    
+    
     $view->pool = $this->poolItemViews($viewName);
 
     $view->associated = array();
@@ -142,14 +189,32 @@ Class Associator {
 
     $view->parentId = $this->parentId;
     $view->lattice = $this->lattice;
-
     $view->label = $this->label;
     $view->poolLabel = $this->poolLabel;
+    $view->pageLength = $this->pageLength;
+    $view->numPages = $this->numPages;
+
+    
+    
+    /*
+    paginator vars- probably should be its own func
+    these are messy too
+    
+    */
+    
+    $view->urlPrepend = "ajax/html";
+  //  echo strpos($original_uri,$action);
+    //pass our paginator params to the view
+//    $view->controllerName = $this->request->controller();
+//    $view->action = $action;
+//    $view->params = $this->request->param();
+//    $view->currentPage = $view->params["param4"];
+    /* end paginator vars*/ 
     return $view->render();
   }
 
   public function renderPoolItems(){
-    return(implode("\n",$this->poolItemViews($this->lattice)));
+    return( implode("\n",$this->poolItemViews($this->lattice) ) );
   }
 
   private function poolItemViews($viewName = NULL){
@@ -178,5 +243,7 @@ Class Associator {
     return $view;
 
   }
+
+
 
 }

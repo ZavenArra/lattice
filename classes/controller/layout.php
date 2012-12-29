@@ -1,6 +1,5 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-
 /*
  * Class: Controller_Layout
  * Extension of Controller_Lattice which handles automatic wrapping of the main request in header and footer layout.
@@ -20,7 +19,6 @@ class Controller_Layout extends Controller_Lattice {
 			if(in_array($this->request->action(), $this->_actionsThatGetLayout)){
 				$this->wrapWithLayout();
 			} 
-		
 		}
 	}
 	

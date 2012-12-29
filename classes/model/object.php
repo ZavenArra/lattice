@@ -27,6 +27,11 @@ class Model_Object extends ORM implements arrayaccess {
       'through' => 'objects_roles',
       'foreign_key' => 'object_id',
     ),
+    'users' => array(
+      'model' => 'user',
+      'through' => 'objects_users',
+      'foreign_key' => 'object_id'
+    )
   );
   //cache
   private $latticeParents = array();
@@ -34,8 +39,9 @@ class Model_Object extends ORM implements arrayaccess {
   protected $contentDriver = NULL;
 
   protected $messages = array();
-
-
+  //this needs to come from the associator pageLength in objects.xml
+  private $itemsPerPage = 8;
+  private $pageNum = 0;
   public function __construct($id=NULL) {
 
 
@@ -54,7 +60,7 @@ class Model_Object extends ORM implements arrayaccess {
      $id = $result['id'];
     }
    }
-
+   $this->itemsPerPage=Kohana::config('cms.associatorPageLength');
    parent::__construct($id);
 
    if($this->loaded()){
@@ -75,8 +81,11 @@ class Model_Object extends ORM implements arrayaccess {
  public static function createSlug($titleOrSlug=NULL, $forPageId=NULL){
     //create slug
     if($titleOrSlug!=NULL){
+      $titleOrSlug = str_replace('.', '-', $titleOrSlug);
       $slug = preg_replace('/[^a-z0-9\- ]/', '', strtolower($titleOrSlug));
+      $slug = str_replace('.', '-', $slug);
       $slug = str_replace(' ', '-', $slug);
+
       $slug = trim($slug);
       $slug = substr($slug, 0, 50);
 
@@ -632,6 +641,27 @@ class Model_Object extends ORM implements arrayaccess {
       }
       return $tags;
    }
+   
+   public function getUserObjects() {
+      $userObjects = ORM::Factory('objects_user')
+              ->select('*')
+              ->select('username')
+              ->where('object_id', '=', $this->id)
+              ->join('users')->on('user_id', '=', 'users.id')
+              ->find_all();
+      return $userObjects;
+   }
+
+   public function getUserStrings() {
+      $userObjects = $this->getUserStringsObjects();
+      $user = array();
+      foreach ($userObjects as $userObject) {
+         $users[] = $userObject->username;
+      }
+      return $users;
+   }
+
+   
 
    public function getContent() {
       return $this->getPageContent();
@@ -706,8 +736,7 @@ class Model_Object extends ORM implements arrayaccess {
 
    public function getPublishedChildren($lattice = 'lattice') {
 
-      $children = Graph::object()
-       ->latticeChildrenFilter($this->id, $lattice)
+      $children = Graph::object()->latticeChildrenFilter($this->id, $lattice)
               ->where('published', '=', 1)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder')
@@ -716,11 +745,20 @@ class Model_Object extends ORM implements arrayaccess {
               ->find_all();
       return $children;
    }
-
    
    public function getLatticeChildren($lattice = 'lattice'){
       $children = Graph::object()
        ->latticeChildrenFilter($this->id, $lattice)
+              ->where('activity', 'IS', NULL)
+              ->order_by('objectrelationships.sortorder')
+              ->find_all();
+      return $children;
+   
+   }
+
+   public function getLatticeChildrenPaged($lattice = 'lattice'){
+      $children = Graph::object()
+       ->latticeChildrenFilterPaged($this->id, $lattice)
               ->where('activity', 'IS', NULL)
               ->order_by('objectrelationships.sortorder')
               ->find_all();
@@ -1135,6 +1173,34 @@ class Model_Object extends ORM implements arrayaccess {
     return $this;   
    }
 
+   //filter objects based on related objects in our associator
+   public function associatorFilter($parentId,$objects) {
+     //$objects is id's of our objects that we want to match against
+     //we're joining via object relationships
+     //all object id's from objectrelationships
+     $o_ids = array();
+     foreach ($objects as $object) {
+       $o_ids[] = $object["id"];
+     }
+     if (count($o_ids)>0){
+       
+       /*return $this->join('objectrelationships')->on('objectrelationships.object_id','=','objects.id')
+          ->where('objectrelationships.connectedobject_id','IN',$o_ids);
+          */
+        Kohana::$log->add(Log::INFO,print_r($o_ids,1))->write();
+
+        $lattice = Graph::lattice('lattice');
+        $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
+        $this->where('objectrelationships.lattice_id', '=', $lattice->id);
+        $this->where('objectrelationships.object_id', 'IN', $o_ids);
+        return $this;
+     } else {
+       Kohana::$log->add(Log::INFO,"none")->write();
+       return $this;
+     }
+
+   }
+
    public function taggedFilter($tags) {
      return $this->join('objects_tags')->on('objects_tags.object_id', '=', 'objects.id')
        ->join('tags')->on('objects_tags.tag_id', '=', 'tags.id')
@@ -1142,14 +1208,48 @@ class Model_Object extends ORM implements arrayaccess {
    }
    
    public function latticeChildrenFilter($parentId, $lattice="lattice"){
+     //run this query without limit to get a count
       $lattice = Graph::lattice($lattice);
-       
       $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
       $this->where('objectrelationships.lattice_id', '=', $lattice->id);
       $this->where('objectrelationships.object_id', '=', $parentId);
       return $this;
+   }
+   
+   public function latticeChildrenFilterPaged($parentId, $lattice="lattice") {
+      //twg -> thiago removed call to latticeChildrenFilter and instead duplicated with pagination
+      //        tom added it to latticeChildrenFilter which was also paginating nav ages and lists...
+      //run this query without limit to get a count
+      $lattice = Graph::lattice($lattice);
+      $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
+      $this->where('objectrelationships.lattice_id', '=', $lattice->id);
+      $this->where('objectrelationships.object_id', '=', $parentId);
+      //twg added pagination here
+      $this->limit($this->itemsPerPage);
+      $this->offset($this->itemsPerPage * $this->pageNum);
+      return $this;
+   }
+   
+   public function setPageNum($num=0) {
+     $this->pageNum = $num;
+   }
+
+   public function setItemsPerPage($num=0) {
+     $this->itemsPerPage = $num;
 
    }
+
+  /* 
+   public function latticeChildrenCount($parentId, $lattice){
+     $children = Graph::object();
+     $children->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
+     $children->where('objectrelationships.lattice_id', '=', $lattice->id);
+     $children->where('objectrelationships.object_id', '=', $parentId);
+     $children->where('activity', 'IS', NULL);
+     $c = count( $children->count_all());
+    return  $c;
+   }
+   */
    
    public function latticeChildrenQuery($lattice='lattice'){
       return Graph::instance()->latticeChildrenFilter($this->id, $lattice);
@@ -1772,26 +1872,60 @@ class Model_Object extends ORM implements arrayaccess {
    public function checkRoleAccess($role){
      return $this->has('roles', ORM::Factory('role', array('name'=>$role)));
    }
-
+   
    /*
-    * Function: resetRoleAccess
-    * Reset the access roles for this object to the defaults of it's objecttype
-       */
-   public function resetRoleAccess(){
-     $roles = $this->roles->find_all();
-     foreach($roles as $role){
-       $this->removeRoleAccess($role->name);
-     }
+     * Function: resetRoleAccess
+     * Reset the access roles for this object to the defaults of it's objecttype
+        */
+    public function resetRoleAccess(){
+      $roles = $this->roles->find_all();
+      foreach($roles as $role){
+        $this->removeRoleAccess($role->name);
+      }
 
-     $defaultRoles = $this->objecttype->initialAccessRoles;
-     if($defaultRoles){
-       foreach($defaultRoles as $role){
-         $this->addRoleAccess($role);
-       }
-     }
+      $defaultRoles = $this->objecttype->initialAccessRoles;
+      if($defaultRoles){
+        foreach($defaultRoles as $role){
+          $this->addRoleAccess($role);
+        }
+      }
 
+    }
+   
+   
+   /*twg - access for individual users (client-restricted reel) */
+  public function addUserAccess($user){
+      $user = ORM::Factory('user', array('name'=>$user));
+      if($this->has('users', $user)){
+        return;
+      }
+      $this->add('users', $user );
+   }
+   public function removeUserAccess($user){
+      $this->remove('users', ORM::Factory('user', array('name'=>$user)));
    }
 
+   public function checkUserAccess($user){
+     $users = ORM::Factory('user', array('username'=>$user));
+     return $this->has('users', $users);
+   }
+  
+   public function isAccessControlled(){
+     //if there's a match for this in the obj/rel table, then it is access controlled
+     $check = ORM::Factory('objectrelationship',$this->id);
+     return $this->loaded();
+   }
+   
+   /*
+     * Function: resetUserAccess
+     clear all user access from object 
+        */
+    public function resetUserAccess(){
+      //delete from objects_users where object_id = $this->id
+      $this->remove('users',ORM::Factory('object_user',array('object_id'=>$this->id)));
+    }
+
+ 
    public function getMetaObjectTypeName($lattice){
      $xPath = sprintf('//objectType[@name="%s"]/elements/associator[@lattice="%s"]', 
        $this->objecttype->objecttypename,

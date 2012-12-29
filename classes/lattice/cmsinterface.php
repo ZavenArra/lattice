@@ -127,13 +127,11 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
       //$field = strtok($_POST['field'], '_');
       $field = $_POST['field'];
-
+      
 
       $object = Graph::object($id);
       $object->$field = $_POST['value'];
       $object->save();
-
-
 
       $returnData = array();
       if (count($object->getMessages())) {
@@ -150,9 +148,6 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       if ($_POST['field'] == 'title') {
          $returnData['slug'] = $object->slug;
       }
-
-
-
       $this->response->data($returnData);
    }
 
@@ -274,6 +269,54 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
    public function action_disassociate($parentId, $objectId, $lattice){
       Graph::object($parentId)->removeLatticeRelationship($objectid, $lattice);
    }
+   
+   public function action_toggleUserAssociation($objectId) {
+     //get user and object from post
+     $userId = $_POST["field"];
+     $toggleState = $_POST["value"];
+     //check user is valid or bail
+     $userCheck =   ORM::factory('user',$userId);
+     if (!$userCheck->loaded()){
+ 			 $this->response->data(array('error'=>true,'message'=>'User does not exist'));
+     } else {
+       //if the toggle 
+      if ($toggleState==0){
+        $o = ORM::factory('objects_user')
+        ->where('object_id','=',$objectId)
+        ->where('user_id','=',$userId);
+        $results = $o->find_all();
+        foreach($results as $result) {
+          $result->delete();
+        }
+  			$this->response->data( array('value'=>$_POST["value"]) );
+      } else {
+        //the association doesn't exist so create it  
+        $o = ORM::factory('objects_user');
+        $o->user_id = $userId;
+        $o->object_id = $objectId;
+        $o->save();
+  		  $this->response->data( array('value'=>$_POST["value"]) );
+      }  
+    }
+  }
+   
+   public function action_associateuser($userId, $objectId) {
+      //check 
+    $userCheck =   ORM::factory('user',$userId);
+    $existsCheck = ORM::factory('objects_user')
+    ->where('object_id','=',$objectId)
+    ->where('user_id','=',$userId)->find();
+    if ($userCheck->loaded() && (!$existsCheck->loaded())){
+      $o = ORM::factory('objects_user');
+      $o->user_id = $userId;
+      $o->object_id = $objectId;
+      $o->save();
+      echo json_encode(TRUE);
+    } else {
+      echo json_encode(FALSE);
+    }
+   }
+
 
 
    //abstract
@@ -285,7 +328,14 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
    protected function cms_addObject($parentId, $objectTypeId, $data) {
       
    }
-
+   
+   
+ 	 public function action_getChildrenPaged($id,$pageNum) {
+     $object = Graph::object($id);
+     $object->setPageNum($pageNum);
+//     $object->setItemsPerPage(2);
+     $ret = $object->latticeChildrenFilterPaged($id,"lattice");
+   }
 }
 
 ?>

@@ -102,9 +102,9 @@ class latticecms {
                   $associator = new Associator($object->id, $element['lattice'],$element['filters']);
                   $associator->setLabel($element['label']);
                   $associator->setPoolLabel($element['poolLabel']);
+                  $associator->setPageLength(Kohana::config('cms.associatorPageLength'));
                   $key = $element['type'] . '_' . $uiArguments['name'];
                   $htmlChunks[$key] = $associator->render($element['associatorType']);
-                  
                   break;
 
                case 'tags':
@@ -172,7 +172,6 @@ class latticecms {
       foreach ($elements as $element) {
 
         $entry = self::convertXmlElementToArray($object, $element);
-
         $elementsConfig[$entry['name']] = $entry;
       }
 			return latticecms::buildUIHtmlChunks($elementsConfig, $object);
@@ -191,7 +190,6 @@ class latticecms {
      //load defaults
      $entry['tag'] = $element->getAttribute('tag');
      $entry['isMultiline'] = ( $element->getAttribute('isMultiline') == 'true' )? true : false;
-
      //any special xml reading that is necessary
      switch ($entry['type']) {
      case 'file':
@@ -235,6 +233,7 @@ class latticecms {
 							 $entry['filters'] = Associator::getFiltersFromDomNode($element);
                $entry['poolLabel'] = $element->getAttribute('poolLabel');
                $entry['associatorType'] = $element->getAttribute('associatorType');
+               $entry['pageLength'] = Kohana::config('cms.associatorPageLength');;
 							 break;
 						case 'tags':
 							$entry['name'] = 'tags'; //this is a cludge
@@ -339,7 +338,29 @@ class latticecms {
     $view->potentialParents = $parentCandidates;
     $html = $view->render();
     return $html;
+  }
 
+  //a list of users of $type
+  public static function usersListHtml($object){
+    //get all of the users of $type
+    $user = ORM::Factory('user');
+    $users = $user->find_all(); 
+    $usersList = array();
+    $checked = array();
+    $checked_users = $object->getUserObjects();
+    //now grab the users from this particular object and match those to be checked
+    foreach ($checked_users as $c_user){
+      $checked[] = $c_user->user_id;
+    }
+    foreach ($users as $user) {
+      $check = (in_array($user->id,$checked)) ? TRUE : FALSE;
+      $usersList[] = array("id"=>$user->id,"username"=>$user->username,"checked"=>$check);
+    }
+    //make a basic array of username, user display name, id
+    $view = new View('usersList');
+    $view->usersList = $usersList;
+    $html = $view->render();
+    return $html;
   }
 
 }

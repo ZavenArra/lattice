@@ -27,6 +27,7 @@
 	allowChildSort		(true|false) "true"
 	sortDirection		(ASC|DESC)	"ASC"
 	allowTitleEdit  CDATA "true"
+	pageLength     CDATA "18"
   initialAccessRoles  CDATA #IMPLIED
 >
 
@@ -78,6 +79,7 @@
 	name         CDATA #REQUIRED
   lattice       CDATA #REQUIRED
   associatorType      CDATA #IMPLIED
+  pageLength      CDATA "18"
   metaObjectTypeName  CDATA #IMPLIED
 >   
 
