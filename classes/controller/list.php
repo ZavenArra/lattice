@@ -133,6 +133,7 @@ class Controller_List extends Lattice_CMSInterface {
 
       //actually we need to do an absolute path for local config
       $listConfig = $this->_listObject->getConfig();
+      $view->name = $listConfig->getAttribute('name');
       $view->label = $listConfig->getAttribute('label');
       $view->class = $listConfig->getAttribute('cssClasses');
       $view->class .= ' allowChildSort-' . $listConfig->getAttribute('allowChildSort');
