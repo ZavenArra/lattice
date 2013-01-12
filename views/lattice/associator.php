@@ -18,11 +18,13 @@
 		
 		<div class="pagination">
 
+			<?if( isset( $pages ) && count( $pages ) ):?>
 			<ul>
 				<?foreach( $page as $key => $pages):?>
 				<li><a class="active" href="ajax/html/associator/getPage/<?=$parentId;?>/<?=$lattice;?>/<?=$key;?>"><?=$key;?></a></li>
 				<?endforeach;?>
 			</ul>
+			<?endif;?>
 
 		</div>
 
