@@ -1,4 +1,12 @@
-<div class="ui-FileElement <?=$class;?>" data-field="<?=$name;?>" data-extensions="<?=$extensions;?>" data-maxlength="<?=$maxlength;?>">
+<?
+/*
+@todo, logic should live in controller/model
+str_replace in extensions, 
+Conditional for when title is set or not
+Consider adding 'populated' or '' to $class variable
+*/
+?>
+<div class="ui-FileElement <?=$class;?> <?=($value['filename'])?'':'empty'?>"  data-field="<?=$name;?>" data-extensions="<?=$extensions;?>" data-maxlength="<?=$maxlength;?>">
 	<label><?=(isset($label))?$label:"Image File";?></label>
 	<div class="wrapper">
 		<input type="file" class="hidden" />
@@ -14,7 +22,7 @@
 			<?endif;?>
 		</div>
 		<div class="status hidden">
-		<img src="<?=url::site('lattice/lattice/resources/images/bar.gif', null, false);?>" class="progress" />
+		<img src="<?=url::site('modules/lattice/resources/images/bar.gif', null, false);?>" class="progress" />
 			<span class="message hidden"></span>
 		</div>
 		<div class="controls clearFix">
