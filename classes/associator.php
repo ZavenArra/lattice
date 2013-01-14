@@ -137,7 +137,7 @@ Class Associator {
 
     $view->associated = array();
     foreach($this->associated as $associatedItem){
-      $view->associated[] = $this->getItemView($associatedItem, $viewName);
+      $view->associated[] = $this->getItemView($associatedItem, $viewName, true );
     }
 
     $view->parentId = $this->parentId;
@@ -155,12 +155,12 @@ Class Associator {
   private function poolItemViews($viewName = NULL){
     $poolItemViews = array();
     foreach($this->pool as $poolItem){
-      $poolItemViews[] = $this->getItemView($poolItem, $viewName);
+      $poolItemViews[] = $this->getItemView($poolItem, $viewName, false );
     }
     return $poolItemViews;
   }
 
-  private function getItemView($item, $viewName){
+  private function getItemView($item, $viewName, $associated ){
 
     if($viewName && $view = Kohana::find_file('views/lattice/associator/'.$viewName, $item->objecttype->objecttypename)){
       $view = new View('lattice/associator/'.$viewName.'/'.$item->objecttype->objecttypename);
@@ -173,7 +173,7 @@ Class Associator {
     }
     $view->object = $item;
 
-    $view->selected = false;
+    $view->associated = $associated;
 
     return $view;
 
