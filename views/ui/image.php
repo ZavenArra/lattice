@@ -6,7 +6,7 @@ Conditional for when title is set or not
 Consider adding 'populated' or '' to $class variable
 */
 ?>
-<div class="ui-FileElement <?=$class;?> <?=($value['filename'])?'':'empty'?>"  data-field="<?=$name;?>" data-extensions="<?=$extensions;?>" data-maxlength="<?=$maxlength;?>">
+<div class="ui-FileElement <?=$class;?> image <?=($value['filename'])?'':'empty'?>"  data-field="<?=$name;?>" data-extensions="<?=$extensions;?>" data-maxlength="<?=$maxlength;?>">
 	<label><?=(isset($label))?$label:"Image File";?></label>
 	<div class="wrapper">
 		<input type="file" class="hidden" />
