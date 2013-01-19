@@ -143,18 +143,42 @@ class Model_Object extends ORM implements arrayaccess {
                                      $forceDimension='width', $crop='false', $aspectFollowsOrientation='false'){
   //set up dimenion to key off of
   switch($forceDimension){
-  case 'width':
-   $keyDimension = Image::WIDTH;
-   break;
-  case 'height':
-   $keyDimension = Image::HEIGHT;
-   break;
-  default:
-   $keyDimension = Image::AUTO;
-   break;
+    case 'width':
+      $keyDimension = Image::WIDTH;
+    break;
+    case 'height':
+      $keyDimension = Image::HEIGHT;
+    break;
+    default:
+      $keyDimension = Image::AUTO;
+    break;
   }
 
   $image = Image::factory(Graph::mediapath().$originalFilename);
+
+  //just do the resample
+  //set up sizes
+  $resizeWidth = $width;
+  $resizeHeight = $height;
+
+  if($aspectFollowsOrientation == 'true' ){
+    $osize = getimagesize(Graph::mediapath().$originalFilename);
+    $horizontal = false;
+    if($osize[0] > $osize[1]){
+      //horizontal
+      $horizontal = true; 
+    }
+    $newsize = array($resizeWidth, $resizeHeight);
+    sort($newsize);
+    if($horizontal){
+      $resizeWidth = $newsize[1];
+      $resizeHeight = $newsize[0];
+    } else {
+      $resizeWidth = $newsize[0];
+      $resizeHeight = $newsize[1];
+    }
+  }
+
   if($crop=='true') {
    //resample with crop
    //set up sizes, and crop
@@ -165,41 +189,16 @@ class Model_Object extends ORM implements arrayaccess {
    }
    $image->resize($width, $height, $cropKeyDimension)->crop($width, $height);
    $image->save(Graph::mediapath().$newFilename);
-
-  } else {
-   //just do the resample
-   //set up sizes
-   $resizeWidth = $width;
-   $resizeHeight = $height;
-
-   if($aspectFollowsOrientation == 'true' ){
-    $osize = getimagesize(Graph::mediapath().$originalFilename);
-    $horizontal = false;
-    if($osize[0] > $osize[1]){
-     //horizontal
-     $horizontal = true; 
-    }
-    $newsize = array($resizeWidth, $resizeHeight);
-    sort($newsize);
-    if($horizontal){
-     $resizeWidth = $newsize[1];
-     $resizeHeight = $newsize[0];
-    } else {
-     $resizeWidth = $newsize[0];
-     $resizeHeight = $newsize[1];
-    }
-   }
-
-   //maintain aspect ratio
-   //use the forcing when it applied
-   //forcing with aspectfolloworientation is gonna give weird results!
-   $image->resize($resizeWidth, $resizeHeight, $keyDimension);
-
-   $image->save(Graph::mediapath() .$newFilename);
-
   }
 
- }
+  //maintain aspect ratio
+  //use the forcing when it applied
+  //forcing with aspectfolloworientation is gonna give weird results!
+  $image->resize($resizeWidth, $resizeHeight, $keyDimension);
+
+  $image->save(Graph::mediapath() .$newFilename);
+
+}
 
    
   protected function loadContentDriver(){
@@ -796,6 +795,8 @@ class Model_Object extends ORM implements arrayaccess {
 
       for ($i = 0; $i < count($order); $i++) {
          if (!is_numeric($order[$i])) {
+           return;
+            // this breaks frontend, but returning a typical lattice error would allow us to log it, or provide a less terrifying experience.
             throw new Kohana_Exception('bad sortorder string: >' . $order[$i] . '<');
          }
 
