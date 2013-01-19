@@ -1,5 +1,11 @@
 <div id="cms" class="module classPath-lattice_modules_CMS rootObjectId-<? echo Graph::getRootNode(Kohana::config('cms.graphRootNode'))->id; ?> navigation-navigation userLevel-<?=$userlevel;?>">
+
+<header>
+	<? echo Request::Factory('authstatus')->execute()->body() ;?>
+
 	<?=$navigation;?>
+
+</header>
 
 <?if(Kohana::config('latticecms.localization')):?>
 	<div class="localizationControls">
