@@ -112,8 +112,6 @@ class Lattice_CMS extends Lattice_CMSInterface {
    return self::$objectId;
  }
 
-
-
  /*
  Function: getPage(id)
  Builds the editing object for the object currenlty being edited
@@ -186,7 +184,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
    }
 
    $nodetitlehtml = $this->nodetitle->render();
-   $moveNodeHtml = latticecms::moveNodeHtml($object);
+//   $moveNodeHtml = latticecms::moveNodeHtml($object);
 
    $customView = 'lattice/objectTypes/'.$object->objecttype->objecttypename; //check for custom view for this objectType
 
@@ -194,7 +192,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
    if (Kohana::find_file('views', $customView)) {
      $html = $nodetitlehtml;
-     $html .= $moveNodeHtml;
+     //$html .= $moveNodeHtml;
      $view = new View($customView);
      $this->loadResourcesForKey($customView);
      foreach ($htmlChunks as $key => $value) {
@@ -204,7 +202,8 @@ class Lattice_CMS extends Lattice_CMSInterface {
      $view->objectId = $object->id;
      $html .= $view->render();
    } else {
-     $html = $nodetitlehtml . $moveNodeHtml . implode($htmlChunks);
+     $html = $nodetitlehtml . implode($htmlChunks); 
+     //$nodetitlehtml . $moveNodeHtml . implode($htmlChunks);
    }
 
    $this->response->data($object->getPageContent()); 
