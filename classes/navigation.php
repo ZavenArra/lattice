@@ -38,6 +38,11 @@ class Navigation {
 			$nodeInfo['title'] = $nodeInfo['slug'];
 		}
 
+    if(strlen($nodeInfo['title']) > 25) {
+      $nodeInfo['title'] = substr($nodeInfo['title'], 0, 23);
+      $nodeInfo['title'] .= '...';
+   }
+
 		return $nodeInfo;
 	}
    
