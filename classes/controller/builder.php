@@ -43,6 +43,9 @@ class Controller_Builder extends Controller {
       die('builder/initializeSite is disabled on sites marked live');
     }
 
+    //clean out media dir
+    $this->destroy('application/media/');
+
     $db = Database::instance();
     $db->query(Database::DELETE, 'delete from objects');
     $db->query(Database::UPDATE, 'alter table objects AUTO_INCREMENT = 1');
@@ -67,10 +70,7 @@ class Controller_Builder extends Controller {
     flush();
     ob_flush();
 
-    //clean out media dir
-    $this->destroy('application/media/');
-
-    //reinitialize the graph
+    //immediately reinitialize the graph
     Graph::configureObjectType($this->rootNodeObjectType, true);
     Graph::addRootNode($this->rootNodeObjectType);
 
