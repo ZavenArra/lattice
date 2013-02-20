@@ -1,4 +1,4 @@
-Requirments
+Requirements
 
 Kohana 3.1
 ORM, Database, Auth, and Image modules
