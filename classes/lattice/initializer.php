@@ -57,7 +57,7 @@ Class Lattice_Initializer {
        } 
      } 
      catch(Exception $e){
-       self::$problems = $e->getMessage() . Kohana_Exception::text($e);
+       self::$problems[] = $e->getMessage() . Kohana_Exception::text($e);
      }
       
       if(!count(self::$problems) && count(self::$messages)){
