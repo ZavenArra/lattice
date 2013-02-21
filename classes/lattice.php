@@ -68,50 +68,51 @@ Class lattice {
 			$dom->preserveWhiteSpace = false;
 			$dom = new MyDOMDocument($dom);
 
-			//check for arena mappings
-			if($customPath = Kohana::config('lattice.paths.'.$arena)){
-				$arenaPath = $customPath;
-			} else {
-            $arenaPath = $arena;
-         }
-      
-         
-         $request = NULL;
-         $response = NULL;
-         try{
-           $request = Request::Factory($arenaPath);
-           $response = $request->execute();
+      //check for arena mappings
+      if($customPath = Kohana::config('lattice.paths.'.$arena)){
+        $arenaPath = $customPath;
+      } else {
+        $arenaPath = $arena;
+      }
 
-         } catch(Exception $e){
-            //checking for existence of xml controller
-            if(get_class($e) != 'HTTP_Exception_404'){
-               throw $e;
-            }
-            //else continue on
-         }
 
-         if($response){
-            $dom->loadXML($response->body());
-           
-         } else {
+      $request = NULL;
+      $response = NULL;
+      try{
+        $request = Request::Factory($arenaPath);
+        $response = $request->execute();
 
-            if (file_exists($arenaPath)) {
-               //if the argument is actually a path to a file
-               $arenaPath = getcwd() . '/' . $arenaPath;
-            } else {
-               $arenaFilePath = Kohana::find_file('lattice', $arenaPath, 'xml', true);
-               if (!count($arenaFilePath)) {
-                  throw new Kohana_Exception('Could not locate xml :file', array(':file' => $arenaPath));
-               }
-               $arenaPath = $arenaFilePath[count($arenaFilePath) - 1];
-            }
-            $dom->load($arenaPath);
-         }
-         if (!$dom->validate()) {
-            echo('Validation failed on '.$arenaPath);
-				print_r($dom->errors);
-				die();
-			}
+      } catch(Exception $e){
+        //checking for existence of xml controller
+        if(get_class($e) != 'HTTP_Exception_404'){
+          throw $e;
+        }
+        //else continue on
+      }
+
+      if($response){
+        $dom->loadXML($response->body());
+
+      } else {
+
+        if (file_exists($arenaPath)) {
+          //if the argument is actually a path to a file
+          $arenaPath = getcwd() . '/' . $arenaPath;
+        } else {
+          $arenaFilePath = Kohana::find_file('lattice', $arenaPath, 'xml', true);
+          if (!count($arenaFilePath)) {
+            throw new Kohana_Exception('Could not locate xml :file', array(':file' => $arenaPath));
+          }
+          $arenaPath = $arenaFilePath[count($arenaFilePath) - 1];
+        }
+        $dom->load($arenaPath);
+      }
+      if (!$dom->validate()) {
+        throw new Kohana_Exception("Validation failed on :arenaPath. \n :xmlErrorTrace", array(
+          ':arenaPath' => $arenaPath,
+          ':xmlErrorTrace', var_export($dom->errors, true)
+        );
+      }
        
 			if($arena == 'objects'){
 				$clusters = new DOMDocument();
