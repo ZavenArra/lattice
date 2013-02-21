@@ -22,38 +22,43 @@ Class Lattice_Initializer {
          }
       }
 
-      foreach ($dependencies as $dependency) {
+     try {
+       foreach ($dependencies as $dependency) {
          $check = ORM::factory('initializedmodule')
-                 ->where('module', '=', $dependency)
-                 ->find();
+           ->where('module', '=', $dependency)
+           ->find();
          if (!$check->loaded() || $check->status != 'INITIALIZED') {
 
-            if (Kohana::find_file('classes/initializer', $dependency)) {
-              try {
+           if (Kohana::find_file('classes/initializer', $dependency)) {
+             try {
                $initializerClass = 'initializer_' . $dependency;
                $initializer = new $initializerClass();
                $problems = $initializer->initialize();
-              } catch (Exception $e){
-                throw $e;
-              }
-               if (count($problems) == 0) {
-                  if (!$check->loaded()) {
-                     $check = ORM::Factory('initializedmodule');
-                  }
-                  $check->module = $dependency;
-                  $check->status = 'INITIALIZED';
-                  $check->save();
-							 }
-            } else {
-                 if (!$check->loaded()) {
-                  $check = ORM::Factory('initializedmodule');
+             } catch (Exception $e){
+               throw $e;
+             }
+             if (count($problems) == 0) {
+               if (!$check->loaded()) {
+                 $check = ORM::Factory('initializedmodule');
                }
                $check->module = $dependency;
                $check->status = 'INITIALIZED';
                $check->save();
-            }
+             }
+           } else {
+             if (!$check->loaded()) {
+               $check = ORM::Factory('initializedmodule');
+             }
+             $check->module = $dependency;
+             $check->status = 'INITIALIZED';
+             $check->save();
+           }
          }
-      }
+       } 
+     } 
+     catch(Exception $e){
+       self::$problems = $e->getMessage() . Kohana_Exception::text($e);
+     }
       
       if(!count(self::$problems) && count(self::$messages)){
          $view = new View('initializationMessages');
