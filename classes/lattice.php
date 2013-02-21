@@ -111,7 +111,7 @@ Class lattice {
         throw new Kohana_Exception("Validation failed on :arenaPath. \n :xmlErrorTrace", array(
           ':arenaPath' => $arenaPath,
           ':xmlErrorTrace', var_export($dom->errors, true)
-        );
+        ));
       }
        
 			if($arena == 'objects'){
