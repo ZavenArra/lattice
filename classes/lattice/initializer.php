@@ -55,6 +55,13 @@ Class Lattice_Initializer {
          }
       }
       
+      if(!count(self::$problems) && count(self::$messages)){
+         $view = new View('initializationMessages');
+         $view->problems = self::$problems;
+         $view->messages = self::$messages;
+         echo $view->render();
+      }
+
       if(count(self::$problems) || count(self::$messages)){
          $view = new View('initializationproblems');
          $view->problems = self::$problems;
