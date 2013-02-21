@@ -108,9 +108,9 @@ Class lattice {
         $dom->load($arenaPath);
       }
       if (!$dom->validate()) {
-        throw new Kohana_Exception("Validation failed on :arenaPath. \n :xmlErrorTrace", array(
+        throw new Kohana_Exception("Validation failed on :arenaPath \n :xmlErrorTrace", array(
           ':arenaPath' => $arenaPath,
-          ':xmlErrorTrace', var_export($dom->errors, true)
+          ':xmlErrorTrace' =>  var_export($dom->errors, true)
         ));
       }
        
