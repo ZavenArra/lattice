@@ -852,7 +852,9 @@ lattice.modules.LatticeAssociator = new Class({
 
 		console.log( this.element )
 		this.searchInput = this.element.getElement( ".actuator input[name~='filter']" );	
-		this.searchInput.addEvent( 'click', function(e){ e.stop(); this.searchInput.select(); }.bindWithEvent( this ) );
+    if(this.searchInput){
+      this.searchInput.addEvent( 'click', function(e){ e.stop(); this.searchInput.select(); }.bindWithEvent( this ) );
+    }
 	},
 	
 	filterPoolByWord: function( e ){
