@@ -208,11 +208,11 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
    public function action_saveSortOrder($parentId, $lattice='lattice') {
 
-      $order = explode(',', $_POST['sortOrder']);
-      $object = ORM::Factory('object', $parentId);
-      $object->setSortOrder($order, $lattice);
-
-
+     if($_POST['sortOrder'){
+       $order = explode(',', $_POST['sortOrder']);
+       $object = ORM::Factory('object', $parentId);
+       $object->setSortOrder($order, $lattice);
+     }
 
       $this->response->data(array('saved' => true));
    }
