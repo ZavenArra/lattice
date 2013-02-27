@@ -57,9 +57,11 @@ class latticecms {
 												$html = $view->render();
 										} else {
 												$view = new View($customview);
-												$view->loadResources();
+												//$view->loadResources();
+                        $view->label = $element['label'];
 												$view->objectTypeName = $clusterObject->objecttype->objecttypename;
-												foreach ($clusterHtmlChunks as $key => $value) {
+                        $view->objectId = $clusterObject->id;
+                        foreach ($clusterHtmlChunks as $key => $value) {
 														$view->$key = $value;
 												}
 												$html = $view->render();
@@ -78,6 +80,8 @@ class latticecms {
             }
 
 				switch ($element['type']) {
+
+
                case 'element': //this should not be called 'element' as element has a different meaning
                   if (isset($element['arguments'])) {
                      $html = lattice::buildModule($element, $element['elementname'], $element['arguments']);
@@ -93,6 +97,7 @@ class latticecms {
                   $element['elementname'] = $element['name'];
                   $element['controllertype'] = 'list';
 
+/* HERE! */
 
                   $requestURI = 'list/getList/' . $object->id . '/' . $element['name'];
                   $htmlChunks[$element['name']] = Request::factory($requestURI)->execute()->body();
@@ -130,6 +135,8 @@ class latticecms {
             }
          }
       }
+
+
       //print_r($htmlChunks);
       return $htmlChunks;
    }

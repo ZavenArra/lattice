@@ -98,7 +98,7 @@ class Controller_Builder extends Controller {
     $endtime = $mtime;
     $totaltime = ($endtime - $starttime);
     echo '<!-- initializeSite took ' .$totaltime. ' seconds, and completed with memory usage of '.$memoryUseFollowingAction;
-    echo 'done';
+    echo 'Initialize Site Complete';
 
   }
 
@@ -182,7 +182,6 @@ class Controller_Builder extends Controller {
             $data['decoupleSlugTitle'] = 1;
             continue(2);
         }
-
 
         //need to look up field and switch on field type 
         $fieldInfo = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);

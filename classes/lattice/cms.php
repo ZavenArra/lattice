@@ -112,8 +112,6 @@ class Lattice_CMS extends Lattice_CMSInterface {
    return self::$objectId;
  }
 
-
-
  /*
  Function: getPage(id)
  Builds the editing object for the object currenlty being edited
@@ -187,7 +185,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
    $nodetitlehtml = $this->nodetitle->render();
    $moveNodeHtml = latticecms::moveNodeHtml($object);
-  // $usersListHtml = latticecms::usersListHtml($object);
+
    $customView = 'lattice/objectTypes/'.$object->objecttype->objecttypename; //check for custom view for this objectType
 
    $htmlChunks = latticecms::buildUIHtmlChunksForObject($object, $languageCode);
@@ -203,9 +201,10 @@ class Lattice_CMS extends Lattice_CMSInterface {
      $view->objectId = $object->id;
      $html .= $view->render();
    } else {
-     $html = $nodetitlehtml . $moveNodeHtml . implode($htmlChunks);
+     $html = $nodetitlehtml . implode($htmlChunks); 
+     $nodetitlehtml . $moveNodeHtml . implode($htmlChunks);
    }
-  // $html .= $usersListHtml;
+   // $html .= $usersListHtml;
    $this->response->data($object->getPageContent()); 
    $this->response->body($html);
 

@@ -4,7 +4,8 @@ $config['authrole'] = 'admin'; //access controlled by default for safety
 
 $config['resources']['librarycss'] = array(
 	'modules/lattice/resources/thirdparty/960Grid/reset.css',
-	'modules/lattice/resources/thirdparty/960Grid/960.css'
+	'modules/lattice/resources/thirdparty/960Grid/960.css',
+	'modules/lattice/resources/css/lattice_cms.css',
 );
 $config['resources']['libraryjs'] = array(
 	'modules/lattice/resources/thirdparty/mootools/mootools.js',
@@ -22,9 +23,7 @@ $config['layout'] = 'LayoutAdmin';
 /*
  * Config: ['resources']['css']
  */
-$config['resources']['css'] = array( 
-   	'modules/lattice/resources/css/lattice_cms.css'
-);
+$config['resources']['css'] = array( );
 
 /*
  * Config: ['resources']['js']

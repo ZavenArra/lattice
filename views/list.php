@@ -7,7 +7,7 @@
 		<a href="addObject/<?=$listObjectId;?>/<?=$addableObject['objectTypeId'];?>" class="addItem button"><?=$addableObject['objectTypeAddText'];?></a>
 		<?endforeach;?>
 	</div>	
-	<ul class="listing clearfix"><?=$items;?></ul>
+	<ul class="listing clearfix <?=$label;?>"><?=$items;?></ul>
 	<div class="listcontrol controls bottom clearfix">
 		<?foreach($addableObjects as $addableObject):?>
 		<a href="addObject/<?=$listObjectId;?>/<?=$addableObject['objectTypeId'];?>" class="addItem button"><?=$addableObject['objectTypeAddText'];?></a>	
