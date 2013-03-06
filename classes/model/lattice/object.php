@@ -137,7 +137,7 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 
     //Also need to check for file, but in 3.1 file will be an object itself and this will
     //not be necessary.
-    if (strstr($contentColumn, 'file') && !is_object($this->contenttable->$contentColumn)) {
+    if (strstr($contentColumn, 'file') AND !is_object($this->contenttable->$contentColumn)) {
       $file = ORM::Factory('file', $this->contenttable->$contentColumn);
       //file needs to know what module it's from if its going to check against valid resizes
       $this->contenttable->__set($contentColumn, $file);
@@ -188,10 +188,10 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 
    //TODO: This is a temporary stop gap to support title editing for objects that do not 
    //expose a title.  Handling of objects that don't expose a title (list items) needs further work
-   if($mappedColumn=='field1' && ($this->contenttable->title == $this->contenttable->field1)){
+   if($mappedColumn=='field1' AND ($this->contenttable->title == $this->contenttable->field1)){
      $this->contenttable->title = $value;
    }
-   if ($mappedColumn && !strstr($mappedColumn, 'object')) {
+   if ($mappedColumn AND !strstr($mappedColumn, 'object')) {
      $this->contenttable->$mappedColumn = $value;
      $this->contenttable->save();
      return;
@@ -235,7 +235,7 @@ class Model_Lattice_Object extends Model_Lattice_ContentDriver {
 
    //TODO: This is a temporary stop gap to support title editing for objects that do not 
    //expose a title.  Handling of objects that don't expose a title (list items) needs further work
-   if($mappedColumn=='field1' && ($this->contenttable->title == $this->contenttable->field1)){
+   if($mappedColumn=='field1' AND ($this->contenttable->title == $this->contenttable->field1)){
      $this->contenttable->title = $value;
    }
 

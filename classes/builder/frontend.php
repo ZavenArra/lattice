@@ -40,7 +40,7 @@ Class Builder_Frontend {
       flush();
 
       ob_start();
-      if(!$view ||  ($view && $view->getAttribute('loadPage')=='true')){
+      if(!$view OR  ($view AND $view->getAttribute('loadPage')=='true')){
         echo "<h1><?=\$content['main']['title'];?></h1>\n\n";
         //this also implies that name is a objecttypename
         foreach(lattice::config('objects', 
@@ -60,7 +60,7 @@ Class Builder_Frontend {
 
       }
 
-      if($view && $view->getAttribute('loadPage')=='true'){
+      if($view AND $view->getAttribute('loadPage')=='true'){
 
         //Now the includeData
         if($iDataNodes = lattice::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/includeData")){

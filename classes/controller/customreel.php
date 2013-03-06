@@ -38,7 +38,7 @@ Class Controller_CustomReel extends Controller_Layout {
 
 		$this->managedRoles = Kohana::config(strtolower($this->controllerName).'.managedRoles');
     if(Kohana::config(strtolower($this->controllerName).'.superuserEdit')
-      && latticeutil::checkRoleAccess('superuser')){
+      AND latticeutil::checkRoleAccess('superuser')){
       if(is_array($this->managedRoles)){
         $keys = array_keys($this->managedRoles);
         $vals = array_values($this->managedRoles);

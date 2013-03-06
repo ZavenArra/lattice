@@ -56,19 +56,19 @@ Class Associator_Checkboxes {
       foreach($filters as $filter){
         $objects = Graph::object();
 
-        if(isset($filter['from']) && $filter['from']){
+        if(isset($filter['from']) AND $filter['from']){
           $from = Graph::object($filter['from']);
           ($filter['lattice']) ? $lattice = $filter['lattice'] : $lattice = 'lattice';
           $objects = $from->latticeChildrenQuery($lattice);
         }
 
-        if(isset($filter['tagged']) && $filter['tagged']){
+        if(isset($filter['tagged']) AND $filter['tagged']){
           $objects->taggedFilter($filter['tagged']); 
         }
 
 
 
-        if(isset($filter['objectTypeName']) && $filter['objectTypeName']){
+        if(isset($filter['objectTypeName']) AND $filter['objectTypeName']){
           $t = ORM::Factory('objectType', $filter['objectTypeName']);
           if(!$t->loaded()){
             Graph::configureObjectType($filter['objectTypeName']);
@@ -79,7 +79,7 @@ Class Associator_Checkboxes {
           }
           $objects->where('objecttype_id', '=', $t->id);
         }
-        if(isset($filter['match']) && $filter['match']){
+        if(isset($filter['match']) AND $filter['match']){
           $matchFields = explode(',',$filter['matchFields']);
           $wheres = array();
           foreach($matchFields as $matchField){
@@ -89,7 +89,7 @@ Class Associator_Checkboxes {
 
         }
 
-        if(isset($filter['function']) && $filter['function']){
+        if(isset($filter['function']) AND $filter['function']){
           $callback = explode('::', $filter['function']);
           $objects = call_user_func($callback, $objects, $parentId);
         }
@@ -127,7 +127,7 @@ Class Associator_Checkboxes {
   }
 
   public function render($viewName = NULL){
-    if($viewName &&  ($view = Kohana::find_file('views', 'lattice/associator/'.$viewName) )){
+    if($viewName AND  ($view = Kohana::find_file('views', 'lattice/associator/'.$viewName) )){
       $view = new View('lattice/associator/'.$viewName);
     } else {
       $view = new View('lattice/associator');
@@ -162,10 +162,10 @@ Class Associator_Checkboxes {
 
   private function getItemView($item, $viewName){
 
-    if($viewName && $view = Kohana::find_file('views/lattice/associator/'.$viewName, $item->objecttype->objecttypename)){
+    if($viewName AND $view = Kohana::find_file('views/lattice/associator/'.$viewName, $item->objecttype->objecttypename)){
       $view = new View('lattice/associator/'.$viewName.'/'.$item->objecttype->objecttypename);
 //      Kohana::$log->add(Log::ERROR, "A")->write();
-    } else if($viewName && $view = Kohana::find_file('views/lattice/associator/'.$viewName, 'item')){ 
+    } else if($viewName AND $view = Kohana::find_file('views/lattice/associator/'.$viewName, 'item')){ 
       $view = new View('lattice/associator/'.$viewName.'/'.'item');
 //      Kohana::$log->add(Log::ERROR, "B")->write();
     } else if($view = Kohana::find_file('views/lattice/associator/', $item->objecttype->objecttypename)){ 

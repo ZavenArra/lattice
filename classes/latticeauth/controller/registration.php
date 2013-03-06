@@ -33,7 +33,7 @@ Class LatticeAuth_Controller_Registration extends Controller_Layout {
       ->rule('lastname', 'min_length', array(':value', 3));
 
    
-    if($validation->check() && !count($this->errors)){
+    if($validation->check() AND !count($this->errors)){
       $user = $this->createUser($_POST['username'], $_POST['password'], $_POST['firstname'], $_POST['lastname'], $_POST['email']);
     } else {
       $this->errors = array_merge($this->errors, $validation->errors('validation/registration'));

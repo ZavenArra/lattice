@@ -27,7 +27,7 @@ Class Lattice_Initializer {
          $check = ORM::factory('initializedmodule')
            ->where('module', '=', $dependency)
            ->find();
-         if (!$check->loaded() || $check->status != 'INITIALIZED') {
+         if (!$check->loaded() OR $check->status != 'INITIALIZED') {
 
            if (Kohana::find_file('classes/initializer', $dependency)) {
              try {
@@ -60,12 +60,12 @@ Class Lattice_Initializer {
        self::$problems[] = $e->getMessage() . Kohana_Exception::text($e);
      }
       
-      if(!count(self::$problems) && count(self::$messages)){
+      if(!count(self::$problems) AND count(self::$messages)){
          $view = new View('initializationMessages');
          $view->problems = self::$problems;
          $view->messages = self::$messages;
          echo $view->render();
-      } else if(count(self::$problems) || count(self::$messages)){
+      } else if(count(self::$problems) OR count(self::$messages)){
          $view = new View('initializationproblems');
          $view->problems = self::$problems;
          $view->messages = self::$messages;
@@ -86,7 +86,7 @@ Class Lattice_Initializer {
       $check->save();
       $allProblems = self::check(array($module));
 
-      if (count($allProblems) || count(self::$messages)) {
+      if (count($allProblems) OR count(self::$messages)) {
          $view = new View('initializationproblems');
          $view->problems = $allProblems;
          $view->messages = self::$messages;

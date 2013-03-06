@@ -238,7 +238,7 @@ class latticeview {
  
 	public function getViewContent($view, $slug=null) {
 
-		if((!$view || $view=='') && (!$slug || $slug=='')){
+		if((!$view OR $view=='') AND (!$slug || $slug=='')){
 			throw new Kohana_Exception('getViewContent called with null parameters');
 		}
 
@@ -297,7 +297,7 @@ class latticeview {
 				$label = $subview->getAttribute('label');
 				if (lattice::config('frontend', "//view[@name=\"$view\"]")) {
 
-					if ($view && $slug) {
+					if ($view AND $slug) {
 						$subViewContent = $this->getViewContent($view, $slug);
 					} else if ($slug) {
 						$object = Graph::object($slug);

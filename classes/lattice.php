@@ -53,7 +53,7 @@ Class lattice {
 		if($activeConfig = Kohana::config('lattice.activeConfiguration')){
 			if($configurations = Kohana::config('lattice.configurations')){
 				if($active = $configurations[$activeConfig]){
-					if(isset($active[$arena]) && $newName = $active[$arena]){
+					if(isset($active[$arena]) AND $newName = $active[$arena]){
 						$arena = $newName;
 					}
 				}

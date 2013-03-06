@@ -6,7 +6,7 @@ class Controller_Builder extends Controller {
 
   public function __construct(){
 
-    if(!latticeutil::checkRoleAccess('superuser') && PHP_SAPI != 'cli' ){
+    if(!latticeutil::checkRoleAccess('superuser') AND PHP_SAPI != 'cli' ){
       die('Only superuser can access builder tool');
     }
 
@@ -17,7 +17,7 @@ class Controller_Builder extends Controller {
   public function destroy($dir) {
     $mydir = opendir($dir);
     while(false !== ($file = readdir($mydir))) {
-      if($file != "." && $file != "..") {
+      if($file != "." AND $file != "..") {
         //   chmod($dir.$file, 0777);
         if(is_dir($dir.$file)) {
           chdir('.');
@@ -127,7 +127,7 @@ class Controller_Builder extends Controller {
 
   public function action_addData($xmlFile, $secondaryRootNodeObjectType=null){
 
-    if($secondaryRootNodeObjectType && !$parentId = Graph::getRootNode($secondaryRootNodeObjectType)){
+    if($secondaryRootNodeObjectType AND !$parentId = Graph::getRootNode($secondaryRootNodeObjectType)){
       Graph::configureObjectType($secondaryRootNodeObjectType);
       Graph::addRootNode($secondaryRootNodeObjectType);
       $parentObject = Graph::getRootNode($secondaryRootNodeObjectType);
@@ -230,7 +230,7 @@ class Controller_Builder extends Controller {
       //already added at the next level up, in this case we just
       //update the objects data
       $component = false;
-      if(isset($data['title']) && $data['title']){
+      if(isset($data['title']) AND $data['title']){
         $preexistingObject = Graph::object()
           ->latticeChildrenFilter($parentObject->id)
           ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
@@ -249,7 +249,7 @@ class Controller_Builder extends Controller {
           ->latticeChildrenFilter($parentObject->id)
           ->objectTypeFilter($listContainerType->getAttribute('name'))
           ->find();
-        if($preexistingObject->loaded() && $preexistingObject->objecttype->objecttypename == $item->getAttribute('objectTypeName') ){
+        if($preexistingObject->loaded() AND $preexistingObject->objecttype->objecttypename == $item->getAttribute('objectTypeName') ){
           //echo 'Found prexisting list container: '.$preexistingObject->objecttype->objecttypename .' '.$item->getAttribute('objectTypeName');
           $component = $preexistingObject;
         }

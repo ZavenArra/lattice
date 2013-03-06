@@ -14,11 +14,11 @@ Class Initializer_Lattice {
     }
 
     $problems=0;
-    if(! (file_exists('application/media') && is_writable('application/media'))){
+    if(! (file_exists('application/media') AND is_writable('application/media'))){
       Lattice_Initializer::addProblem('application/media must exist and be writable.  Use mkdir application/media; chmod 777 application/media'); 
       $problems++;
     }
-    if(! (file_exists('application/export') && is_writable('application/export'))){
+    if(! (file_exists('application/export') AND is_writable('application/export'))){
       Lattice_Initializer::addProblem('application/export must exist and be writable.  Use mkdir application/export; chmod 777 application/export'); 
       $problems++;
     }

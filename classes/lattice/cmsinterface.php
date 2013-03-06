@@ -79,7 +79,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
    public function action_clearField($objectId, $field) {
 
       $object = Graph::object($objectId);
-      if (Graph::isFileModel($object->$field) && $object->$field->loaded()) {
+      if (Graph::isFileModel($object->$field) AND $object->$field->loaded()) {
          $file = $object->$field;
          $file->delete();
       }
@@ -306,7 +306,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
     $existsCheck = ORM::factory('objects_user')
     ->where('object_id','=',$objectId)
     ->where('user_id','=',$userId)->find();
-    if ($userCheck->loaded() && (!$existsCheck->loaded())){
+    if ($userCheck->loaded() AND (!$existsCheck->loaded())){
       $o = ORM::factory('objects_user');
       $o->user_id = $userId;
       $o->object_id = $objectId;

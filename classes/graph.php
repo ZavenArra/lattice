@@ -47,7 +47,7 @@ class Graph {
     } else {
       $lattice = ORM::Factory('lattice')->where('name', '=', $latticeId)->find();
     }
-    if(isset($lattice) && !$lattice->loaded()){
+    if(isset($lattice) AND !$lattice->loaded()){
       $lattice = ORM::Factory('lattice');
       $lattice->name = $latticeId;
       $lattice->save();
@@ -104,7 +104,7 @@ class Graph {
     $languages = self::languages();
     foreach($languages as $language){
 
-      if($language->id == $id || $language->code == $id){
+      if($language->id == $id OR $language->code == $id){
         return $language;
       }
     }

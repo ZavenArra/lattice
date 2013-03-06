@@ -77,17 +77,17 @@ Class latticeui{
 				$fieldvalue['thumbSrc']=$thumbSrc;
 			
 			case 'file':
-				if(!isset($element['maxlength']) || !$element['maxlength']){
+				if(!isset($element['maxlength']) OR !$element['maxlength']){
 					$element['maxlength'] = 1523712; //12 MegaBytes 
 				}
 			break;
 
 			case 'dateRange':
 				if(!isset($element['empty'])){
-					if(!isset($element['startDate']) || strlen($element['startDate'])==0){
+					if(!isset($element['startDate']) OR strlen($element['startDate'])==0){
 						$element['startDate'] = date('Y/m/d');
 					}
-					if(!isset($element['endDate']) || strlen($element['endDate'])==0){
+					if(!isset($element['endDate']) OR strlen($element['endDate'])==0){
 						$element['endDate'] = date('Y/m/d');
 					}
 				} else {

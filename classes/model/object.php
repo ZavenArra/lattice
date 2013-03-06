@@ -249,7 +249,7 @@ class Model_Object extends ORM implements arrayaccess {
      } else if ($column == 'parent') {
        return $this->getLatticeParent(); 
 
-     } else if ($column == 'objecttype' || $column == 'objectType'){
+     } else if ($column == 'objecttype' OR $column == 'objectType'){
          $return = parent::__get('objecttype');
          return $return;
 
@@ -443,7 +443,7 @@ class Model_Object extends ORM implements arrayaccess {
          return;
       } else if (in_array($column, array('dateadded'))) {
          parent::__set($column, $value);
-      } else if ($this->_table_columns && in_array($column, array_keys($this->_table_columns))) {
+      } else if ($this->_table_columns AND in_array($column, array_keys($this->_table_columns))) {
          parent::__set($column, $value);
 
       //TODO: Change this to an objectTypeName match below
@@ -969,14 +969,14 @@ class Model_Object extends ORM implements arrayaccess {
       $origwidth = $size[0];
       $origheight = $size[1];
       //Kohana::$log->add(Log::INFO, var_export($parameters, true));
-      if (isset($parameters['minheight']) && $origheight < $parameters['minheight']) {
+      if (isset($parameters['minheight']) AND $origheight < $parameters['minheight']) {
          $result = array(
              'result' => 'failed',
              'error' => 'Image height less than minimum height',
          );
          return $result;
       }
-      if (isset($parameters['minwidth']) && $origwidth < $parameters['minwidth']) {
+      if (isset($parameters['minwidth']) AND $origwidth < $parameters['minwidth']) {
          $result = array(
              'result' => 'failed',
              'error' => 'Image width less than minimum width',
@@ -1042,7 +1042,7 @@ class Model_Object extends ORM implements arrayaccess {
          Model_Object::resizeImage($imagefilename, $newFilename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('forceDimension'), $resize->getAttribute('crop'), $resize->getAttribute('aspectFollowsOrientation')
          );
 
-         if (isset($oldfilename) && $newFilename != $prefix . $oldfilename) {
+         if (isset($oldfilename) AND $newFilename != $prefix . $oldfilename) {
             if (file_exists(Graph::mediapath() . $oldfilename)) {
                unlink(Graph::mediapath() . $oldfilename);
             }
@@ -1078,7 +1078,7 @@ class Model_Object extends ORM implements arrayaccess {
          $tIds = array();
          foreach ($tNames as $tname) {
             $result = DB::query("Select id from objecttypes where objecttypename = '$objectTypes'")->execute();
-            if(!$result->current->id && !Model_ObjectType::getConfig($tname)){
+            if(!$result->current->id AND !Model_ObjectType::getConfig($tname)){
              throw new Kohana_Exception('Invalid object type requested in objectTypeFilter '.$objectTypes);
             }
             $tIds[] = $result->current()->id;
@@ -1089,7 +1089,7 @@ class Model_Object extends ORM implements arrayaccess {
       } else {
          $objectType = $objectTypes; // argument is just a singluar string
          $result = DB::query(Database::SELECT, "Select id from objecttypes where objecttypename = '$objectType'")->execute()->current();
-          if(!$result['id'] && !Model_ObjectType::getConfig($objectType)){
+          if(!$result['id'] AND !Model_ObjectType::getConfig($objectType)){
              throw new Kohana_Exception('Invalid object type requested in objectTypeFilter '.$objectType);
           }
          $this->where('objecttype_id', '=', intval($result['id']));

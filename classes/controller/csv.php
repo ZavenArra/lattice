@@ -8,7 +8,7 @@ Class Controller_CSV extends Controller {
 
   public function __construct($request, $response){
    parent::__construct($request, $response);
-   if(!latticeutil::checkRoleAccess('superuser')  && PHP_SAPI != 'cli' ){
+   if(!latticeutil::checkRoleAccess('superuser')  AND PHP_SAPI != 'cli' ){
     die('Only superuser can access builder tool');
    }
   }
@@ -54,7 +54,7 @@ Class Controller_CSV extends Controller {
    private function csvWalkTree($parent, $example = false){
      $objects = $parent->getLatticeChildren();
 
-     if ($example || ($this->level > 0 && count($objects))) {
+     if ($example OR ($this->level > 0 AND count($objects))) {
        $childrenLine = array_pad(array('Children'), -1 - $this->level, '');
        $this->csvOutput .= latticeutil::arrayToCsv($childrenLine, ',');
        $this->csvOutput .= "\n";
@@ -161,7 +161,7 @@ Class Controller_CSV extends Controller {
        //get the elements line
        $this->advance();
        //check here for Elements in $this->column +1;
-       if(!(isset($this->line[$this->column+1])) || $this->line[$this->column+1] != 'Elements'){
+       if(!(isset($this->line[$this->column+1])) OR $this->line[$this->column+1] != 'Elements'){
          throw new Kohana_Exception("Didn't find expected Elements line at line ".$this->lineNumber);
        }
      }
@@ -171,9 +171,9 @@ Class Controller_CSV extends Controller {
      $this->advance(); 
      $data = array();
      while(isset($this->line[$this->column]) 
-       && $this->line[$this->column]=='' 
-       && $this->line[$this->column+1]!='' 
-       && $this->line[$this->column+1]!='Children'){
+       AND $this->line[$this->column]=='' 
+       AND $this->line[$this->column+1]!='' 
+       AND $this->line[$this->column+1]!='Children'){
          $fieldName = $this->line[$this->column+1]; 
          //echo "Reading $fieldName \n";
          if(isset($this->line[$this->column+2])){
@@ -256,7 +256,7 @@ Class Controller_CSV extends Controller {
      }
 
      //Check here for Children in $this->column +1
-     if(!isset($this->line[$this->column+1]) || $this->line[$this->column+1] != 'Children'){
+     if(!isset($this->line[$this->column+1]) OR $this->line[$this->column+1] != 'Children'){
        echo "No children found, returning from Walk ";//.implode(',', $this->line)."\n";
        return;
      }
@@ -264,8 +264,8 @@ Class Controller_CSV extends Controller {
      //Iterate through any children
      $this->advance();
      while(isset($this->line[$this->column]) 
-       && $this->line[$this->column]=='' 
-       && $this->line[$this->column+1]!=''){
+       AND $this->line[$this->column]=='' 
+       AND $this->line[$this->column+1]!=''){
          //echo "foudn Child\n";
          //echo $this->column;
          $childObjectTypeName = $this->line[$this->column+1]; 

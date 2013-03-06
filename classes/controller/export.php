@@ -52,19 +52,19 @@ class Controller_Export extends Controller {
       $nodes = array();
       $content = $object->getContent();
       foreach ($content as $key => $value) {
-         if ($key == 'objectTypeName' || $key == 'dateadded') {
+         if ($key == 'objectTypeName' OR $key == 'dateadded') {
             continue;
          }
-         if ($key == "slug" && $value == "") {
+         if ($key == "slug" AND $value == "") {
             continue;
          }
-         if ($key == "title" && $value == "") {
+         if ($key == "title" AND $value == "") {
             //$value = microtime();
          }
          if ($key == "id") {
             continue;
          }
-         if ($key != "tags" && is_array($value)) {
+         if ($key != "tags" AND is_array($value)) {
             //skipping container objects.
             continue;
          }
