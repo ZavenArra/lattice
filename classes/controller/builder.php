@@ -19,7 +19,7 @@ class Controller_Builder extends Controller {
   public function destroy($dir)
   {
     $mydir = opendir($dir);
-    while(false !== ($file = readdir($mydir)))
+    while(FALSE !== ($file = readdir($mydir)))
     {
       if ($file != "." AND $file != "..")
       {
@@ -79,7 +79,7 @@ class Controller_Builder extends Controller {
     ob_flush();
 
     //immediately reinitialize the graph
-    Graph::configure_object_type($this->root_node_object_type, true);
+    Graph::configure_object_type($this->root_node_object_type, TRUE);
     Graph::add_root_node($this->root_node_object_type);
 
     if ($xml_file != 'data')
@@ -99,7 +99,7 @@ class Controller_Builder extends Controller {
     $this->action_frontend();
 
 
-    $memory_use_following_action = memory_get_usage(true);
+    $memory_use_following_action = memory_get_usage(TRUE);
 
     $mtime = microtime();
     $mtime = explode(" ", $mtime);
@@ -256,7 +256,7 @@ class Controller_Builder extends Controller {
       //if there is a title collision, we assume that this is a component
       //already added at the next level up, in this case we just
       //update the objects data
-      $component = false;
+      $component = FALSE;
       if (isset($data['title']) AND $data['title'])
       {
         $preexisting_object = Graph::object()

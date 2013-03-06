@@ -41,7 +41,7 @@ class Model_Object_type extends ORM {
     {
       return $config->item(0);
     } else {
-      return false;
+      return FALSE;
     }
   }
 

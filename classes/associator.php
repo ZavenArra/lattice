@@ -213,7 +213,7 @@ Class Associator {
     $view->associated = array();
     foreach ($this->associated as $associated_item)
     {
-      $view->associated[] = $this->get_item_view($associated_item, $view_name, true );
+      $view->associated[] = $this->get_item_view($associated_item, $view_name, TRUE );
     }
 
     $view->parent_id = $this->parent_id;
@@ -252,7 +252,7 @@ Class Associator {
     $pool_item_views = array();
     foreach ($this->pool as $pool_item)
     {
-      $pool_item_views[] = $this->get_item_view($pool_item, $view_name, false );
+      $pool_item_views[] = $this->get_item_view($pool_item, $view_name, FALSE );
     }
     return $pool_item_views;
   }

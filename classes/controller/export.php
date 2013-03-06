@@ -231,7 +231,7 @@ class Controller_Export extends Controller {
 
     $this->doc->xml_version="1.0";
     $this->doc->encoding="UTF-8";
-    $this->doc->format_output = true;
+    $this->doc->format_output = TRUE;
 
     $data = $this->doc->create_element('data');
     $nodes = $this->doc->create_element('nodes');

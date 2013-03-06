@@ -214,7 +214,7 @@ Class Associator_Checkboxes {
     }
     $view->object = $item;
 
-    $view->selected = false;
+    $view->selected = FALSE;
 
     return $view;
 
@@ -235,7 +235,7 @@ Class Associator_Checkboxes {
     $pool_views = array_combine( array_map(array('Associator_Checkboxes','title_index'), $pool_views),  $pool_views);
     foreach ($associated_views as $key => $view)
 {
-      $view->selected = true;
+      $view->selected = TRUE;
       $pool_views[$key] = $view;
     }
 

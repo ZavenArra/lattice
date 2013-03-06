@@ -27,7 +27,7 @@ class frontend {
       echo $indent."<div type=\"checkbox_result\">\n";
       echo $indent." <label>".$element->get_attribute('label')."</label>\n";
       echo $indent." <input type=\"checkbox\" name=\"".$element->get_attribute('name')."\" ".
-        "<?phpecho ({$prefix}['$field'])?'checked=\"true\" ':'';?> disabled=\"disabled\" >\n";
+        "<?phpecho ({$prefix}['$field'])?'checked=\"TRUE\" ':'';?> disabled=\"disabled\" >\n";
       echo $indent."</div>\n\n";
       break;
     case 'tags':

@@ -49,10 +49,10 @@ class latticecms {
 
 
           $customview = 'lattice/object_types/' . $cluster_object->objecttype->objecttypename; //check for custom view for this object_type
-          $usecustomview = false;
+          $usecustomview = FALSE;
           if (Kohana::find_file('views', $customview))
           {
-            $usecustomview = true;
+            $usecustomview = TRUE;
           }
           if (!$usecustomview)
           {
@@ -219,7 +219,7 @@ class latticecms {
     }
     //load defaults
     $entry['tag'] = $element->get_attribute('tag');
-    $entry['is_multiline'] = ( $element->get_attribute('is_multiline') == 'true' )? true : false;
+    $entry['is_multiline'] = ( $element->get_attribute('is_multiline') == 'TRUE' )? true : FALSE;
     //any special xml reading that is necessary
     switch ($entry['type'])
     {

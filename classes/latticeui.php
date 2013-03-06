@@ -164,7 +164,7 @@ Class latticeui{
       return $object_type->render();
     } else {
       throw new Kohana_Exception('bad ui element request'. ' view: '.$view.' not found');
-      return false;
+      return FALSE;
     }
   }
 

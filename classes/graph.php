@@ -103,9 +103,9 @@ class Graph {
   {
     if (get_class($model) == 'Model_File')
     {
-      return true;
+      return TRUE;
     } else {
-      return false;
+      return FALSE;
     }
   }
 
@@ -162,7 +162,7 @@ class Graph {
   }
 
 
-  public static function configure_object_type($object_type_name, $force = false)
+  public static function configure_object_type($object_type_name, $force = FALSE)
   {
 
 

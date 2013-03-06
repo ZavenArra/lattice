@@ -79,7 +79,7 @@ class Model_Object extends ORM implements arrayaccess {
    * Creates a unique slug to identify a object
    * Parameters:
    * $title_or_slug - optional starting point for the slug
-   * $for_page_id - optionally indicate the id of the object this slug is for to avoid false positive slug collisions
+   * $for_page_id - optionally indicate the id of the object this slug is for to avoid FALSE positive slug collisions
    * Returns: The new, unique slug
    */
   public static function create_slug($title_or_slug=NULL, $for_page_id=NULL)
@@ -163,7 +163,7 @@ class Model_Object extends ORM implements arrayaccess {
    *
    */
   public static function resize_image($original_filename, $new_filename, $width, $height,
-    $force_dimension='width', $crop='false', $aspect_follows_orientation='false')
+    $force_dimension='width', $crop='FALSE', $aspect_follows_orientation='false')
   {
     //set up dimenion to key off of
     switch($force_dimension)
@@ -186,14 +186,14 @@ class Model_Object extends ORM implements arrayaccess {
     $resize_width = $width;
     $resize_height = $height;
 
-    if ($aspect_follows_orientation == 'true' )
+    if ($aspect_follows_orientation == 'TRUE' )
     {
       $osize = getimagesize(Graph::mediapath().$original_filename);
-      $horizontal = false;
+      $horizontal = FALSE;
       if ($osize[0] > $osize[1])
       {
         //horizontal
-        $horizontal = true; 
+        $horizontal = TRUE; 
       }
       $newsize = array($resize_width, $resize_height);
       sort($newsize);
@@ -207,7 +207,7 @@ class Model_Object extends ORM implements arrayaccess {
       }
     }
 
-    if ($crop=='true')
+    if ($crop=='TRUE')
     {
       //resample with crop
       //set up sizes, and crop
@@ -411,10 +411,10 @@ class Model_Object extends ORM implements arrayaccess {
      */
   private function _save()
   {
-    $inserting = false;
+    $inserting = FALSE;
     if ($this->loaded() == FALSE)
     {
-      $inserting = true;
+      $inserting = TRUE;
     }
 
     parent::save();
@@ -445,7 +445,7 @@ class Model_Object extends ORM implements arrayaccess {
     }
     //$this->content_driver->load_content_table($this);
     //$this->content_driver->set_content_column($this, 'object_id', $this->id);
-    $this->content_driver->save_content_table($this, true);
+    $this->content_driver->save_content_table($this, TRUE);
   }
 
   private function save_content_table()
@@ -554,7 +554,7 @@ class Model_Object extends ORM implements arrayaccess {
       {
         throw new Kohana_Exception("Trying to delete object that is not loaded");
       }
-      $this->cascade_delete(true);
+      $this->cascade_delete(TRUE);
     }
 
 
@@ -573,7 +573,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     }
 
-    private function cascade_delete($permanent=false)
+    private function cascade_delete($permanent=FALSE)
     {
       $this->activity = 'D';
       $this->slug = DB::expr('NULL');
@@ -1063,10 +1063,10 @@ class Model_Object extends ORM implements arrayaccess {
         $file = ORM::Factory('file', $this->__get($field));
       }
 
-      $replacing_empty_file = false;
+      $replacing_empty_file = FALSE;
       if (!$file->filename)
       {
-        $replacing_empty_file = true;
+        $replacing_empty_file = TRUE;
       }
 
       $file->unlink_old_file();
@@ -1112,7 +1112,7 @@ class Model_Object extends ORM implements arrayaccess {
     {
       $origwidth = $size[0];
       $origheight = $size[1];
-      //Kohana::$log->add(Log::INFO, var_export($parameters, true));
+      //Kohana::$log->add(Log::INFO, var_export($parameters, TRUE));
       if (isset($parameters['minheight']) AND $origheight < $parameters['minheight'])
       {
         $result = array(
@@ -1444,7 +1444,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     }
 
-    public function get_lattice_parents($lattice='lattice', $just_one = false)
+    public function get_lattice_parents($lattice='lattice', $just_one = FALSE)
     {
 
       $lattice_parents = $this->lattice_parents_query($lattice)->find_all();
@@ -1463,7 +1463,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function get_lattice_parent($lattice='lattice')
     {
-      return $this->get_lattice_parents($lattice, true);
+      return $this->get_lattice_parents($lattice, TRUE);
     }
 
     public function lattice_parents_filter($child_id, $lattice="lattice")
@@ -1486,7 +1486,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function get_published_parents($lattice='lattice')
     {
-      $this->get_lattice_parents($lattice, true);
+      $this->get_lattice_parents($lattice, TRUE);
     }
 
 
@@ -1520,9 +1520,9 @@ class Model_Object extends ORM implements arrayaccess {
     {
       if (in_array($column, array_keys($this->_table_columns)))
       {
-        return true;
+        return TRUE;
       }
-      return false;
+      return FALSE;
     }
 
     public function get_sort_order($lattice, $current_id)
@@ -1718,7 +1718,7 @@ class Model_Object extends ORM implements arrayaccess {
         //the item has already been added by the add_object recursion, but gets added again here
         //what to do about this??/on
 
-        $component_already_present = false;
+        $component_already_present = FALSE;
         if (isset($arguments['title']))
         {
           $check_for_preexisting_object = Graph::object()
@@ -1728,7 +1728,7 @@ class Model_Object extends ORM implements arrayaccess {
             ->find();
           if ($check_for_preexisting_object->loaded())
           {
-            $component_already_present = true;
+            $component_already_present = TRUE;
           }
         }
 
@@ -1772,7 +1772,7 @@ class Model_Object extends ORM implements arrayaccess {
       $this->published = 1;
       if ($t_settings)
       { //entry won't exist for Container objects
-        if ($t_settings->get_attribute('allow_toggle_publish') == 'true')
+        if ($t_settings->get_attribute('allow_toggle_publish') == 'TRUE')
         {
           $this->published = 0;
         }
@@ -1867,8 +1867,8 @@ class Model_Object extends ORM implements arrayaccess {
         case 'image':
           //need to get the file out of the FILES array
 
-          // Kohana::$log->add(Log::ERROR, var_export($_POST, true));
-          // Kohana::$log->add(Log::ERROR, var_export($_FILES, true));
+          // Kohana::$log->add(Log::ERROR, var_export($_POST, TRUE));
+          // Kohana::$log->add(Log::ERROR, var_export($_FILES, TRUE));
 
           if (isset($_FILES[$field]))
           {
@@ -2016,9 +2016,9 @@ class Model_Object extends ORM implements arrayaccess {
 
       if ($object_relationship->loaded())
       {
-        return true;
+        return TRUE;
       } else {
-        return false;
+        return FALSE;
       }
     }
 
@@ -2228,7 +2228,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function offset_exists ($offset )
     {
-      return true; // TODO: Fix this
+      return TRUE; // TODO: Fix this
     }
     public function offset_get ( $offset )
     {
@@ -2240,7 +2240,7 @@ class Model_Object extends ORM implements arrayaccess {
     }
     public function offset_unset ( $offset )
     {
-      return true; //can't unset in this class
+      return TRUE; //can't unset in this class
     }
 
 }

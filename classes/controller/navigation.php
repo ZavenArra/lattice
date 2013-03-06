@@ -31,7 +31,7 @@ class Controller_Navigation extends Controller_Lattice{
    * Override this function to use nav on other data sources
    *
    */
-  public function get_tier($parent_id, $deeplink_path=array(), &$follow=false)
+  public function get_tier($parent_id, $deeplink_path=array(), &$follow=FALSE)
   {
     $parent = Graph::object($parent_id);
     if (!$parent->loaded())
@@ -76,19 +76,19 @@ class Controller_Navigation extends Controller_Lattice{
         $send_item = Navigation::get_node_info($child);
 
         //implementation of deeplinking
-        $send_item['follow'] = false;
+        $send_item['follow'] = FALSE;
         if (in_array($child->id, $deeplink_path))
         {
-          $send_item['follow'] = true;
-          $follow = true;
+          $send_item['follow'] = TRUE;
+          $follow = TRUE;
 
           //and deeplinking for categories
-          $follow_tier = false;
+          $follow_tier = FALSE;
           $child_tier = $this->get_tier($child->id, $deeplink_path, $follow_tier);
-          if ($follow_tier == true)
+          if ($follow_tier == TRUE)
           {
-            $send_item['follow'] = true;
-            $follow = 'true';
+            $send_item['follow'] = TRUE;
+            $follow = 'TRUE';
           }
           $send_item['tier'] = $child_tier;
         }

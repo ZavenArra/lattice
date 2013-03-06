@@ -87,9 +87,9 @@ Class Lattice_Initializer {
     }
     if (count(self::$problems))
     {
-      return false;
+      return FALSE;
     } else {
-      return true;
+      return TRUE;
     }
   }
 

@@ -46,7 +46,7 @@ Class Controller_CSV extends Controller {
     header("Pragma: public");
     header("Expires: 0");
     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-    header("Cache-Control: private",false);
+    header("Cache-Control: private",FALSE);
     header("Content-Type: csv");
     header("Content-Disposition: attachment; filename=\"".$filename."\";");
     header("Content-Transfer-Encoding: binary");
@@ -56,7 +56,7 @@ Class Controller_CSV extends Controller {
     exit;
   }
 
-  private function csv_walk_tree($parent, $example = false)
+  private function csv_walk_tree($parent, $example = FALSE)
   {
     $objects = $parent->get_lattice_children();
 
@@ -79,7 +79,7 @@ Class Controller_CSV extends Controller {
       }
       $this->csv_output .= $csv_view->render();
       $this->level++;
-      $this->csv_walk_tree($object, false);  //false turning off example for now
+      $this->csv_walk_tree($object, FALSE);  //false turning off example for now
       //big problem with walking descedent objects since they don't exist
 
       if ($example)

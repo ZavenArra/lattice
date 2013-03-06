@@ -80,7 +80,7 @@ Class lattice {
     {
 
       $dom = new DOMDocument();
-      $dom->preserve_white_space = false;
+      $dom->preserve_white_space = FALSE;
       $dom = new MyDOMDocument($dom);
 
       //check for arena mappings
@@ -119,7 +119,7 @@ Class lattice {
           //if the argument is actually a path to a file
           $arena_path = getcwd() . '/' . $arena_path;
         } else {
-          $arena_file_path = Kohana::find_file('lattice', $arena_path, 'xml', true);
+          $arena_file_path = Kohana::find_file('lattice', $arena_path, 'xml', TRUE);
           if (!count($arena_file_path))
           {
             throw new Kohana_Exception('Could not locate xml :file', array(':file' => $arena_path));
@@ -132,7 +132,7 @@ Class lattice {
       {
         throw new Kohana_Exception("Validation failed on :arena_path \n :xml_error_trace", array(
           ':arena_path' => $arena_path,
-          ':xml_error_trace' =>  var_export($dom->errors, true)
+          ':xml_error_trace' =>  var_export($dom->errors, TRUE)
         ));
       }
 
@@ -140,7 +140,7 @@ Class lattice {
       {
         $clusters = new DOMDocument();
         $clusters = new MYDOMDocument($clusters);
-        $path = Kohana::find_file('lattice', 'clusters', 'xml', true);
+        $path = Kohana::find_file('lattice', 'clusters', 'xml', TRUE);
         if (!count($path))
         {
           throw new Kohana_Exception('Could not locate xml clusters');
@@ -151,7 +151,7 @@ Class lattice {
         $cluster_nodes = $clusters->evaluate('//object_type');
         foreach ($cluster_nodes as $node)
         {
-          $node = $dom->_delegate->import_node($node, true);
+          $node = $dom->_delegate->import_node($node, TRUE);
           $object_types_node = $dom->_delegate->get_elements_by_tag_name('object_types')->item(0);
           $object_types_node->append_child($node);
           //$dom->_delegate->insert_before($node, $ref_node);

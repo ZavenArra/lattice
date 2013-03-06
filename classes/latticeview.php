@@ -75,7 +75,7 @@ class latticeview {
 
   /*
    * public static function indicate_category($slug)
-   * Returns true/false depending on if the given slug is either
+   * Returns TRUE/FALSE depending on if the given slug is either
    * the slug of the initial view loaded or a child of that slug.
    */
   // public static function within_subtree($slug)
@@ -83,7 +83,7 @@ class latticeview {
     //   //Direct links are not within lattice
     //   if (strstr($slug, 'http'))
   {
-    //     return false;
+    //     return FALSE;
     //   }
     //   //Only check the first part of given route
     //   //This allos support for custom controllers.
@@ -100,7 +100,7 @@ class latticeview {
       //Direct links are not within lattice
       if (strstr($slug,'http'))
       {
-        return false;
+        return FALSE;
       }
       //Only check the first part of given route
       //This allos support for custom controllers.
@@ -113,7 +113,7 @@ class latticeview {
           return $val;
         } catch( Exception $e )
         {
-          return false;
+          return FALSE;
         }
       }
 
@@ -130,7 +130,7 @@ class latticeview {
       } catch ( Exception $e )
         {
           throw $e; //("There is no graph object with this object id or slug : " $object_id_or_slug . ' in object ' .  $object->slug);
-          return false;
+          return FALSE;
         } 
 
     }

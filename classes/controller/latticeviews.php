@@ -81,7 +81,7 @@ Class Controller_Lattice_views extends Controller_Layout{
     $access = Kohana::config('latticeviews.access.'.$object_id_or_slug);
     if (!latticeutil::check_access($access))
     {
-      Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
+      Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),FALSE).'/'.Request::initial()->uri());
     }
 
     self::$slug = $object_id_or_slug;

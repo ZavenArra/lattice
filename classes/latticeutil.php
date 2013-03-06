@@ -61,7 +61,7 @@ Class latticeutil {
    * Checks whether the currently logged in user has a certain role
    * Parameters: 
    * $role - the role to check against
-   * Returns: true or false
+   * Returns: TRUE or FALSE
    */
   public static function check_role_access($role)
   {
@@ -70,12 +70,12 @@ Class latticeutil {
     { //If auth module not installed, grant access
       if ($role AND !Auth::instance()->logged_in($role))
       {
-        return false;
+        return FALSE;
       } else {
-        return true;
+        return TRUE;
       }
     } else {
-      return true;
+      return TRUE;
     }
   }
 
@@ -86,7 +86,7 @@ Class latticeutil {
   {
     if (!$roles)
     {
-      return true;
+      return TRUE;
     }
     if (!is_array($roles))
     {
@@ -96,10 +96,10 @@ Class latticeutil {
     {
       if (latticeutil::check_role_access($role))
       {
-        return true;
+        return TRUE;
       }
     }
-    return false;
+    return FALSE;
 
   }
 
@@ -145,7 +145,7 @@ Class latticeutil {
    * Formats a line (passed as a fields  array) as CSV and returns the CSV as a string.
    * Adapted from http://us3.php.net/manual/en/function.fputcsv.php#87120
    */
-  public static function array_to_csv( array &$fields, $delimiter = ';', $enclosure = '"', $enclose_all = false, $NULL_to_mysql_NULL = false )
+  public static function array_to_csv( array &$fields, $delimiter = ';', $enclosure = '"', $enclose_all = FALSE, $NULL_to_mysql_NULL = false )
   {
     $delimiter_esc = preg_quote($delimiter, '/');
     $enclosure_esc = preg_quote($enclosure, '/');

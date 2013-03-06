@@ -64,12 +64,12 @@ class Controller_Lattice extends Controller {
     //checked if logged in
     if ($roles AND !Auth::instance()->logged_in())
     {
-      Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
+      Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),FALSE).'/'.Request::initial()->uri());
       exit;
     }
     if (is_array($roles))
     {
-      $access_granted = false;
+      $access_granted = FALSE;
       foreach ($roles as $a_role)
       {
         if ($a_role=='admin')
@@ -77,13 +77,13 @@ class Controller_Lattice extends Controller {
           if (Kohana::config('lattice.staging_enabled') AND !Kohana::config('lattice.staging'))
           {
             $redirect = 'staging/'. Router::$current_uri;
-            Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
+            Request::current()->redirect(url::site($redirect,Request::current()->protocol(),FALSE));
           }
         }
 
         if (latticeutil::check_role_access($a_role))
         {
-          $access_granted = true;
+          $access_granted = TRUE;
         }
       }
     } else {
@@ -92,7 +92,7 @@ class Controller_Lattice extends Controller {
         if (Kohana::config('lattice.staging_enabled') AND !Kohana::config('lattice.staging'))
         {
           $redirect = 'staging/'. Router::$current_uri;
-          Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
+          Request::current()->redirect(url::site($redirect,Request::current()->protocol(),FALSE));
         }
       }
 
@@ -102,7 +102,7 @@ class Controller_Lattice extends Controller {
     if (!$access_granted)
     {
       $redirect = 'accessdenied';
-      Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
+      Request::current()->redirect(url::site($redirect,Request::current()->protocol(),FALSE));
       exit;
     }
 

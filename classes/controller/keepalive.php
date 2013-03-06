@@ -6,9 +6,9 @@ class Keep_alive_Controller extends Controller {
   {
     if (Auth::instance()->logged_in())
     {
-      echo 'true';
+      echo 'TRUE';
     } else {
-      echo 'false';
+      echo 'FALSE';
     }
   }
 }

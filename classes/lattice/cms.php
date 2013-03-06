@@ -173,7 +173,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
    $this->nodetitle->slug = $object->slug;
    $this->nodetitle->id = $object->id;
    $this->nodetitle->allow_delete = $object->objecttype->allow_delete;
-   $this->nodetitle->allow_title_edit = ($object->objecttype->allow_title_edit == "true" ? true : false);
+   $this->nodetitle->allow_title_edit = ($object->objecttype->allow_title_edit == "TRUE" ? true : FALSE);
 
 
    $settings = Kohana::config('cms.defaultsettings');
@@ -246,8 +246,8 @@ class Lattice_CMS extends Lattice_CMSInterface {
 {
      $data[$fk] = NULL; 
    }
-   Kohana::$log->add(Log::INFO, var_export($data, true));
-   Kohana::$log->add(Log::INFO, var_export($_FILES, true));
+   Kohana::$log->add(Log::INFO, var_export($data, TRUE));
+   Kohana::$log->add(Log::INFO, var_export($_FILES, TRUE));
    $new_id = Graph::object($id)->add_object($objecttype_id, $data);
    $this->response->data($new_id);
  }

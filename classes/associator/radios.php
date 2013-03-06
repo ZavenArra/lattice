@@ -12,7 +12,7 @@ Class Associator_Radios {
     $pool_views = array_combine( array_map(array('Associator_Radios','title_index'), $pool_views),  $pool_views);
     foreach ($associated_views as $key => $view)
     {
-      $view->selected = true;
+      $view->selected = TRUE;
       $pool_views[$key] = $view;
     }
 

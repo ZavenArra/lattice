@@ -24,7 +24,7 @@ abstract class Model_Lattice_Content_driver {
 
   abstract public function set_content_column($object, $column, $value);
 
-  abstract public function save_content_table($object, $inserting=false);
+  abstract public function save_content_table($object, $inserting=FALSE);
 
   abstract public function delete();
 

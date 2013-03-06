@@ -55,7 +55,7 @@ Class Lattice_Controller_Associator extends Controller_Lattice {
       $modified_filters[] = $filter;
     }
 
-    Kohana::$log->add( Kohana_Log::INFO,"\tmodified Filters: " . print_r( $modified_filters, true ) )->write();
+    Kohana::$log->add( Kohana_Log::INFO,"\tmodified Filters: " . print_r( $modified_filters, TRUE ) )->write();
 
     //paginate here
     $a = new Associator($parent_id, $element->get_attribute('lattice'), $modified_filters);

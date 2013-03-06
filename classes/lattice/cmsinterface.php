@@ -93,7 +93,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       $file->delete();
     }
     $object->$field = NULL;
-    $return = array('cleared' => 'true');
+    $return = array('cleared' => 'TRUE');
     $this->response->data($return);
   }
 
@@ -194,7 +194,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
     $firstkey = array_keys($model_errors);
     $firstkey = $firstkey[0];
 
-    $return = $this->response->data(array('value' => NULL, 'error' => 'true', 'message' => $model_errors[$firstkey]));
+    $return = $this->response->data(array('value' => NULL, 'error' => 'TRUE', 'message' => $model_errors[$firstkey]));
   }
 
    /*
@@ -236,7 +236,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       $object->set_sort_order($order, $lattice);
     }
 
-    $this->response->data(array('saved' => true));
+    $this->response->data(array('saved' => TRUE));
   }
 
   public function action_add_tag($id)
@@ -271,7 +271,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
     $view = new View('lattice_cms_undelete');
     $view->id = $id;
     $this->response->body($view->render());
-    $this->response->data(array('deleted' => true));
+    $this->response->data(array('deleted' => TRUE));
   }
 
    /*
@@ -284,7 +284,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
   {
     $object = Graph::object($id);
     $object->reactivate($id);
-    $this->response->data(array('undeleted' => true));
+    $this->response->data(array('undeleted' => TRUE));
   }
 
   public function action_associate($parent_id, $object_id, $lattice)
@@ -308,7 +308,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
     $user_check =   ORM::factory('user',$user_id);
     if (!$user_check->loaded())
     {
-      $this->response->data(array('error'=>true,'message'=>'User does not exist'));
+      $this->response->data(array('error'=>TRUE,'message'=>'User does not exist'));
     } else {
       //if the toggle 
       if ($toggle_state==0)

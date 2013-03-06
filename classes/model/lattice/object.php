@@ -278,7 +278,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
   }
 
   //this could potentially go into the base class 100%
-  public function save_content_table($object, $inserting=false)
+  public function save_content_table($object, $inserting=FALSE)
   {
     if (!$this->contenttable)
     {

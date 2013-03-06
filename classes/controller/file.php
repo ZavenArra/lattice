@@ -32,7 +32,7 @@ class Controller_File extends Controller{
     header("Pragma: public");
     header("Expires: 0");
     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-    header("Cache-Control: private",false);
+    header("Cache-Control: private",FALSE);
     header("Content-Type: $ctype");
     header("Content-Disposition: attachment; filename=\"".basename($filename)."\";");
     header("Content-Transfer-Encoding: binary");
@@ -60,7 +60,7 @@ class Controller_File extends Controller{
 
     header("Expires: 0");
     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-    header("Cache-Control: private",false);
+    header("Cache-Control: private",FALSE);
     header("Content-Type: $ctype");
     header("Content-Transfer-Encoding: binary");
     header("Content-Length: ".@filesize($filename));

@@ -98,12 +98,12 @@ $this->view->content = $form->render();
 
         if ($form_values['redirect'])
         {
-          Request::current()->redirect(url::site($form_values['redirect'],Request::current()->protocol(),false));
+          Request::current()->redirect(url::site($form_values['redirect'],Request::current()->protocol(),FALSE));
         } elseif ($redirect = $authredirect)
         {
-          Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
+          Request::current()->redirect(url::site($redirect,Request::current()->protocol(),FALSE));
         } else {
-          Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),false));
+          Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),FALSE));
         }
         return;
       }
@@ -148,7 +148,7 @@ $this->view->content = $form->render();
     Auth::instance()->logout(TRUE);
 
     // Redirect back to the login object
-    Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),false));
+    Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),FALSE));
 
   }
 

@@ -47,7 +47,7 @@ Class Builder_Frontend {
         flush();
 
         ob_start();
-        if (!$view OR  ($view AND $view->get_attribute('load_page')=='true'))
+        if (!$view OR  ($view AND $view->get_attribute('load_page')=='TRUE'))
         {
           echo "<h1><?php=\$content['main']['title'];?></h1>\n\n";
           //this also implies that name is a objecttypename
@@ -70,7 +70,7 @@ Class Builder_Frontend {
 
           }
 
-          if ($view AND $view->get_attribute('load_page')=='true')
+          if ($view AND $view->get_attribute('load_page')=='TRUE')
           {
 
             //Now the include_data
@@ -264,12 +264,12 @@ Class Builder_Frontend {
     {
       echo $indent."<h2>$label</h2>\n\n";
       echo $indent."<ul id=\"$label\" >\n";
-      $do_switch = false;
+      $do_switch = FALSE;
 
 
       if (count($object_types)>1)
       {
-        $do_switch = true;
+        $do_switch = TRUE;
       }
 
       echo $indent."<?phpforeach ({$prefix}['$label'] as \${$label}Item):?>\n";

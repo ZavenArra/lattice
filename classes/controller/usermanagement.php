@@ -120,9 +120,9 @@ Class Controller_User_management extends Controller_Layout {
     $data['role'] = $this->get_active_managed_role($user);
     if ($user->has('roles', ORM::Factory('role')->where('name','=','superuser')->find()) )
     {
-      $data['superuser'] = true;
+      $data['superuser'] = TRUE;
     } else {
-      $data['superuser'] = false;
+      $data['superuser'] = FALSE;
     }
 
     return $data;
@@ -176,7 +176,7 @@ Class Controller_User_management extends Controller_Layout {
     $data['username'] = NULL;
     $data['password'] = NULL;
     $data['email'] = NULL;
-    $data['superuser'] = false;
+    $data['superuser'] = FALSE;
     $data['role'] = $this->get_active_managed_role($user);
     $data['site'] = NULL;
     $data['user_type'] = NULL;
@@ -356,7 +356,7 @@ Class Controller_User_management extends Controller_Layout {
         } else {
           $rval = $user->{$_POST['field']};
         }
-        $return = $this->response->data(array('value' => $rval, 'error' => 'true', 'message' => $errors[$firstkey]));
+        $return = $this->response->data(array('value' => $rval, 'error' => 'TRUE', 'message' => $errors[$firstkey]));
       }
       break;
     }

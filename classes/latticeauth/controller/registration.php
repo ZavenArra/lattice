@@ -112,7 +112,7 @@ Class Lattice_auth_Controller_Registration extends Controller_Layout {
       } 
       $this->user_id = NULL;
       $this->errors = array_merge($errors, $model_errors);
-      return false;
+      return FALSE;
     }
     /**/
 
