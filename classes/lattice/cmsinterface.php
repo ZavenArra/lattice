@@ -59,7 +59,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       );
 
       //if it's an image
-      $thumb_src = null;
+      $thumb_src = NULL;
       if ($file->uithumb->filename) {
          if (file_exists(Graph::mediapath() . $file->uithumb->filename)) {
             $resultpath = Graph::mediapath() . $file->uithumb->filename;
@@ -83,7 +83,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
          $file = $object->$field;
          $file->delete();
       }
-      $object->$field = null;
+      $object->$field = NULL;
       $return = array('cleared' => 'true');
       $this->response->data($return);
    }

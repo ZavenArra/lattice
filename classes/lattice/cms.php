@@ -119,7 +119,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
  id - the object id to be retrieved
  Returns: array('html'=>html, 'js'=>js, 'css'=>css)
   */
- public function action_get_page($id, $language_code = null){
+ public function action_get_page($id, $language_code = NULL){
 
 
 
@@ -222,7 +222,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
    //consider just combining POST and FILES here
    $file_keys = array_keys($_FILES);
    foreach ($file_keys as $fk){
-     $data[$fk] = null; 
+     $data[$fk] = NULL; 
    }
    Kohana::$log->add(Log::INFO, var_export($data, true));
    Kohana::$log->add(Log::INFO, var_export($_FILES, true));

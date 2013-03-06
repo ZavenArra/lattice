@@ -62,7 +62,7 @@ class View_Csv {
          if ($this->_object->loaded()){
             $data_item = $this->_object->$column_name;
          } else {
-            $data_item = null;  //this allow for objects to be used as empty templates 
+            $data_item = NULL;  //this allow for objects to be used as empty templates 
             //without being tied to database
             //potential refactor here, separating ideas of objecttype and object
             //a bit more

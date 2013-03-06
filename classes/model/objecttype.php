@@ -14,7 +14,7 @@ class Model_Object_type extends ORM {
 	 */
 	private $nonmappedfields = array('id', 'object_id', 'activity', 'loaded', 'objecttypename', 'node_type');
 
-	public function __construct($id=null){
+	public function __construct($id=NULL){
 
 		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id)) {
 			//it's the tmeplate identified, look up the integer primary key
@@ -162,7 +162,7 @@ class Model_Object_type extends ORM {
 	 * $limit - number of records to return
 	 * Returns: ORM Iterator of matching records
 	 */
-	public function get_published_members($limit=null){
+	public function get_published_members($limit=NULL){
 
 		$o = Graph::object()
 			->published_filter()
@@ -182,7 +182,7 @@ class Model_Object_type extends ORM {
 	 * $limit - number of records to return
 	 * Returns: ORM Iterator of matching records
 	 */
-	public function get_active_members($limit=null){
+	public function get_active_members($limit=NULL){
 
       if (!$this->loaded()){
          return array();

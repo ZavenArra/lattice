@@ -66,7 +66,7 @@ Class Builder_Frontend {
         if ($i_data_nodes = lattice::config('frontend',"//view[@name=\"".$view->get_attribute('name')."\"]/include_data")){
           foreach ($i_data_nodes as $i_data_config){
             $prefix = "\$content";
-            $this->make_include_data_html($i_data_config, $prefix, null);
+            $this->make_include_data_html($i_data_config, $prefix, NULL);
           }
         }
 
@@ -116,7 +116,7 @@ Class Builder_Frontend {
       if ($i_data_nodes = lattice::config('frontend',"//view[@name=\"".$view_name."\"]/include_data")){
         foreach ($i_data_nodes as $i_data_config){
           $prefix = "\$content";
-          $this->make_include_data_html($i_data_config, $prefix, null);
+          $this->make_include_data_html($i_data_config, $prefix, NULL);
         }
       }
 

@@ -52,8 +52,8 @@ class Controller_List extends Lattice_CMSInterface {
    }
    
    
-   protected function set_list_object($list_object_id_or_parent_id, $family=null) {
-      if ($family != null) {
+   protected function set_list_object($list_object_id_or_parent_id, $family=NULL) {
+      if ($family != NULL) {
 				$parent_id = $list_object_id_or_parent_id;
 
 				$list_container_object = Graph::object($parent_id)->$family;
@@ -83,13 +83,13 @@ class Controller_List extends Lattice_CMSInterface {
     * for looking in database and config
     */
    
-   public function action_get_list($list_object_id_or_parent_id, $family = null) {
+   public function action_get_list($list_object_id_or_parent_id, $family = NULL) {
       
       $this->set_list_object($list_object_id_or_parent_id, $family);
  
       //throw new Kohana_Exception('what');
 
-      $view = null;
+      $view = NULL;
 			$custom_list_view = 'lattice/object_types/'.$this->_list_object->objecttype->objecttypename;
       if (Kohana::find_file('views', $custom_list_view)) {
          $view = new View($custom_list_view);
@@ -105,7 +105,7 @@ class Controller_List extends Lattice_CMSInterface {
          $html_chunks = latticecms::buildUIHtml_chunks_for_object($object);
 
          $custom_item_view = 'lattice/object_types/' . $object->objecttype->objecttypename;
-         $item_view = null;
+         $item_view = NULL;
          if (Kohana::find_file('views', $custom_item_view)) {
             $item_view = new View($custom_item_view);
             $this->load_resources_for_key($custom_item_view);
@@ -156,7 +156,7 @@ class Controller_List extends Lattice_CMSInterface {
      the rendered object_type of the new item
     */
 
-   public function action_add_object($list_object_id, $object_type_id=null) {
+   public function action_add_object($list_object_id, $object_type_id=NULL) {
  
       
       $this->set_list_object($list_object_id);  //This function should be removed
@@ -167,7 +167,7 @@ class Controller_List extends Lattice_CMSInterface {
 
 
       //addable item should be specifid in the add_item call
-      if ($object_type_id == null){
+      if ($object_type_id == NULL){
    
         $addable_object_types = lattice::config('objects', sprintf('//list[@name="%s"]/addable_object', $list_object->objecttype->objecttypename));
         if (!$addable_object_types->length > 0) {
@@ -193,7 +193,7 @@ class Controller_List extends Lattice_CMSInterface {
       $html_chunks = latticecms::buildUIHtml_chunks_for_object($object);
 
 		$custom_item_view = 'lattice/object_types/' . $object->objecttype->objecttypename;
-      $item_view = null;
+      $item_view = NULL;
       if (Kohana::find_file('views', $custom_item_view)) {
          $item_view = new View($custom_item_view);
          foreach ($html_chunks as $key=>$value){

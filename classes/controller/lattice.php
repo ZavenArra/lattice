@@ -144,7 +144,7 @@ class Controller_Lattice extends Controller {
 
 	}
 
-	public function get_parents($class=null, $plist=array()) {
+	public function get_parents($class=NULL, $plist=array()) {
 		$class = $class ? $class : $this;
 		$parent = get_parent_class($class);
 		if ($parent) {

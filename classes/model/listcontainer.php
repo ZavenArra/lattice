@@ -16,10 +16,10 @@ class Model_List_container extends Model_Object {
        'objecttype' => array('foreign_key'=>'objecttype_id')
    );
    
-   private $_sort_direction = null;
+   private $_sort_direction = NULL;
    
    protected $_table_name = 'objects';
-   protected $_xml_config = null;
+   protected $_xml_config = NULL;
    
 	public function __construct($id){
 		parent::__construct($id);
@@ -48,7 +48,7 @@ class Model_List_container extends Model_Object {
    }
 
 	
-   public function add_object($object_type_name, $data = array(), $lattice = null, $rosetta_id = null, $language_id = null) {
+   public function add_object($object_type_name, $data = array(), $lattice = NULL, $rosetta_id = NULL, $language_id = NULL) {
       $data['published'] = 1;
       return parent::add_object($object_type_name, $data, $lattice, $rosetta_id, $language_id);
    }

@@ -16,11 +16,11 @@ class Graph_Object_query {
    
    
    public function init_with_array($attributes){
-      $this->attributes['label'] = null;
-      $this->attributes['object_type_filter'] = null;
-      $this->attributes['where'] = null;
-      $this->attributes['from'] = null;
-      $this->attributes['slug'] = null;
+      $this->attributes['label'] = NULL;
+      $this->attributes['object_type_filter'] = NULL;
+      $this->attributes['where'] = NULL;
+      $this->attributes['from'] = NULL;
+      $this->attributes['slug'] = NULL;
 
       foreach ($attributes as $key=>$value){
          $this->attributes[$key] = $value;
@@ -35,7 +35,7 @@ class Graph_Object_query {
       $this->attributes['slug'] = $xml->get_attribute('slug');
    }
    
-   public function run($parent_id = null){
+   public function run($parent_id = NULL){
           
      $objects = Graph::object();
 

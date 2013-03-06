@@ -18,7 +18,7 @@ Class latticeui{
 	 * $fieldvalue - the value to display
 	 * Example: build_text_element(array('type'=>'text', 'name'=>'fieldname', 'class'=>'class_name'), {Value})
 	 */
-	public static function buildUIElement($element, $fieldvalue=null){
+	public static function buildUIElement($element, $fieldvalue=NULL){
 		$view = 'ui/'.$element['type'];
 
 		//allow files to be passed either by id or as already quireid objects
@@ -31,7 +31,7 @@ Class latticeui{
 			if ($fieldvalue->_loaded){
 				$fieldvalue = $fieldvalue->as_array();
 			} else {
-				$fieldvalue = null;
+				$fieldvalue = NULL;
 			}
 		}
 
@@ -129,12 +129,12 @@ Class latticeui{
 			break;
 		}
 
-		if (!isset($element['class'])){ $element['class'] = null; }
+		if (!isset($element['class'])){ $element['class'] = NULL; }
 
 		if ($paths = Kohana::find_file('views', $view)){
 			$object_type = new View($view);
 			$object_type->id = $id;
-			$object_type->class = null;
+			$object_type->class = NULL;
 			foreach ($element as $key=>$value){
 				$object_type->$key = $value;
 			}
@@ -146,22 +146,22 @@ Class latticeui{
 		}
 	}
 
-	public static function Input( $field, $class, $tag, $field_value, $label=null, $size=32 ){
+	public static function Input( $field, $class, $tag, $field_value, $label=NULL, $size=32 ){
 		$element_array = array( 'type'=>'input', 'name'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "size"=>$size );
 		return latticeui::buildUIElement( $element_array, $field_value);
 	}
 
-	public static function text( $field, $class, $tag, $field_value, $label=null, $label_class=null ){
+	public static function text( $field, $class, $tag, $field_value, $label=NULL, $label_class=NULL ){
 		$element_array = array( 'type'=>'text', 'name'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "label_class"=>$label_class );
 		return latticeui::buildUIElement( $element_array, $field_value);
 	}
 
-	public static function password( $field, $class, $tag, $field_value, $label=null, $label_class=null ){
+	public static function password( $field, $class, $tag, $field_value, $label=NULL, $label_class=NULL ){
 		$element_array = array( 'type'=>'password', 'name'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "label_class"=>$label_class );
 		return latticeui::buildUIElement( $element_array, $field_value);		
 	}
 
-	public static function radio_group( $field, $class, $radios, $field_value, $label=null, $label_class=null ){
+	public static function radio_group( $field, $class, $radios, $field_value, $label=NULL, $label_class=NULL ){
 		$microtime = str_replace(array(' ', '.'), '', microtime());
 		$name =$field.latticeui::$unique++.$microtime;
 		$element_array = array( 'type'=>'radio_group', 'radioname'=>$name, 'class'=>$class, 'grouplabel'=>$label, 'name'=>$field, 'radios'=> $radios, "label_class"=>$label_class );
@@ -172,7 +172,7 @@ Class latticeui{
 		return latticeui::buildUIElement( array('type'=>'checkbox', 'name'=>$field, 'checkboxvalue'=>$checkboxvalue, 'label'=>$label, 'class'=>'checkbox'), $value);
 	}
 
-	public static function file($field, $extensions, $maxlength, $current_file=null ){
+	public static function file($field, $extensions, $maxlength, $current_file=NULL ){
 		return latticeui::buildUIElement( array('type'=>'file', 'name'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $current_file );
 	}
 
@@ -181,7 +181,7 @@ Class latticeui{
 	}
 
    // 0ak - revisit this function.  Needed?
-	public static function pulldown ( $field, $class, $options, $field_value, $label=null, $label_class=null ){
+	public static function pulldown ( $field, $class, $options, $field_value, $label=NULL, $label_class=NULL ){
 	  $element_array = array( 'type'=>'pulldown',  'class'=>$class, 'label'=>$label, 'name'=>$field, 'options'=> $options, "label_class"=>$label_class );
 	  return latticeui::buildUIElement( $element_array, $field_value );
 	}

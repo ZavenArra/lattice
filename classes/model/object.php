@@ -489,7 +489,7 @@ class Model_Object extends ORM implements arrayaccess {
   
 
    private function cascade_undelete(){
-     $this->activity = new Database_Expression(null);
+     $this->activity = new Database_Expression(NULL);
      $this->slug = Model_Object::create_slug($this->contenttable->title, $this->id);
      $this->contentdriver()->undelete();
      $this->_save();
@@ -778,7 +778,7 @@ class Model_Object extends ORM implements arrayaccess {
       if ($next->loaded()) {
          return $next;
       } else {
-         return null;
+         return NULL;
       }
    }
 
@@ -794,7 +794,7 @@ class Model_Object extends ORM implements arrayaccess {
       if ($next->loaded()) {
          return $next;
       } else {
-         return null;
+         return NULL;
       }
    }
 
@@ -809,7 +809,7 @@ class Model_Object extends ORM implements arrayaccess {
       if ($first->loaded()) {
          return $first;
       } else {
-         return null;
+         return NULL;
       }
    }
 
@@ -824,7 +824,7 @@ class Model_Object extends ORM implements arrayaccess {
       if ($last->loaded()) {
          return $last;
       } else {
-         return null;
+         return NULL;
       }
    }
    
@@ -897,7 +897,7 @@ class Model_Object extends ORM implements arrayaccess {
    
    public static function make_file_save_name($filename) {
    if (!$filename){
-    return null;
+    return NULL;
    }
       $filename = str_replace('&', '_', $filename);
       $xarray = explode('.', $filename);
@@ -1418,7 +1418,7 @@ class Model_Object extends ORM implements arrayaccess {
      return $this->adjacent_record($sort_field, 'prev', $current_id, $lattice);
    }
 
-   public function add_object($object_type_name, $data = array(), $lattice = null, $rosetta_id = null, $language_id = null) {
+   public function add_object($object_type_name, $data = array(), $lattice = NULL, $rosetta_id = NULL, $language_id = NULL) {
 
      $new_object_type = ORM::Factory('objecttype', $object_type_name);
 
@@ -1658,7 +1658,7 @@ class Model_Object extends ORM implements arrayaccess {
     * 
     */
    
-   public function add_element_object($object_type_name, $element_name, $data=array(), $rosetta_id = null, $language_id = null){
+   public function add_element_object($object_type_name, $element_name, $data=array(), $rosetta_id = NULL, $language_id = NULL){
       $new_object_type = ORM::Factory('objecttype', $object_type_name);
       
       $new_object = $this->_create_object($object_type_name, $rosetta_id, $language_id);
@@ -1783,7 +1783,7 @@ class Model_Object extends ORM implements arrayaccess {
    }
 
 
-   private function add_lattice_object($object_type_name, $lattice = null, $rosetta_id = null, $language_id = null){
+   private function add_lattice_object($object_type_name, $lattice = NULL, $rosetta_id = NULL, $language_id = NULL){
 
      $new_object = $this->_create_object($object_type_name, $rosetta_id, $language_id);
 
@@ -1824,7 +1824,7 @@ class Model_Object extends ORM implements arrayaccess {
    
     
    public function set_object_type($object_type_class_or_name) {
-      $object_type = null;
+      $object_type = NULL;
       if (!is_object($object_type_class_or_name)) {
          
          $object_type_name = $object_type_class_or_name;

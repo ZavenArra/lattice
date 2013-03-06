@@ -15,7 +15,7 @@ class Controller_Navigation extends Controller_Lattice{
   }
 
 
-  public function action_index($deeplink=null){
+  public function action_index($deeplink=NULL){
 
     //$this->view = new View(strtolower($this->controllername));
     ////this should check and extend
@@ -120,7 +120,7 @@ class Controller_Navigation extends Controller_Lattice{
       return $tier;
     }
 
-    return null;
+    return NULL;
 
   }
 

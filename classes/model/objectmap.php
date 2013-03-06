@@ -31,7 +31,7 @@ class Model_Objectmap extends ORM {
    }
 
    public static function field_type_forUI($ui_type) {
-      $index = null;
+      $index = NULL;
       switch ($ui_type) {
          case 'text':
          case 'radio_group':
@@ -58,7 +58,7 @@ class Model_Objectmap extends ORM {
             if (in_array($ui_type, $object_types)) {
                $index = 'object';
             } else {
-               return null;
+               return NULL;
             }
             break;
       }

@@ -125,7 +125,7 @@ class Controller_Builder extends Controller {
 
   }
 
-  public function action_add_data($xml_file, $secondary_root_node_object_type=null){
+  public function action_add_data($xml_file, $secondary_root_node_object_type=NULL){
 
     if ($secondary_root_node_object_type AND !$parent_id = Graph::get_root_node($secondary_root_node_object_type)){
       Graph::configure_object_type($secondary_root_node_object_type);
@@ -146,8 +146,8 @@ class Controller_Builder extends Controller {
 
 
 
-  public function insert_data($xml_file, $parent_id = null, $context=null){
-    if ($parent_id == null){
+  public function insert_data($xml_file, $parent_id = NULL, $context=NULL){
+    if ($parent_id == NULL){
       $parent_object = Graph::get_root_node($this->root_node_object_type);
     } else {
       $parent_object = Graph::object($parent_id);

@@ -28,19 +28,19 @@ Class latticeutil {
 	}
 
 	/*
-	 * Function:  img($file, $prefix, $alt,  $extra = null){
+	 * Function:  img($file, $prefix, $alt,  $extra = NULL){
 	 * Echos an image tag as built from a mop file object.  
 	 * Parameters: 
 	 * $file - mop file object
 	 * $prefix - the prefix to output
 	 * $alt - alt tag phrase
 	 * $extra - extra stuff to go inside the tag attributes area
-	 * Returns: if file exists, return the img src tag code, otherwise return null
+	 * Returns: if file exists, return the img src tag code, otherwise return NULL
 	 */
-	public static function img($file, $prefix, $alt,  $extra = null){
+	public static function img($file, $prefix, $alt,  $extra = NULL){
 		if (!$file->$prefix->fullpath 
 			OR !file_exists($file->$prefix->fullpath)){
-			return null;
+			return NULL;
 		}
 		$img = sprintf('<img src="%s" width="%s" height="%s" alt="%s" %s>',
 		 	$file->$prefix->fullpath, 
@@ -126,13 +126,13 @@ Class latticeutil {
 	 * Formats a line (passed as a fields  array) as CSV and returns the CSV as a string.
 	 * Adapted from http://us3.php.net/manual/en/function.fputcsv.php#87120
 	 */
-	public static function array_to_csv( array &$fields, $delimiter = ';', $enclosure = '"', $enclose_all = false, $null_to_mysql_null = false ) {
+	public static function array_to_csv( array &$fields, $delimiter = ';', $enclosure = '"', $enclose_all = false, $NULL_to_mysql_NULL = false ) {
 		$delimiter_esc = preg_quote($delimiter, '/');
 		$enclosure_esc = preg_quote($enclosure, '/');
 
 		$output = array();
 		foreach ( $fields as $field ) {
-			if ($field === null AND $null_to_mysql_null) {
+			if ($field === NULL AND $NULL_to_mysql_NULL) {
 				$output[] = 'NULL';
 				continue;
 			}

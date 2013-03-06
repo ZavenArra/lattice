@@ -128,7 +128,7 @@ Class Associator {
         {
           $callback = explode('::', $filter['function']);
 
-          $options = null;
+          $options = NULL;
           $objects = call_user_func($callback, $objects, $parent_id, $options);
         }
 

@@ -72,11 +72,11 @@ class Controller_Auth extends Controller_Layout {
 	}
 	 */
 
-	public function action_login($redirect = null)
+	public function action_login($redirect = NULL)
 	{
 
 
-		$error = null;
+		$error = NULL;
 
 		/*
 		 * Switch to validate library
@@ -118,7 +118,7 @@ class Controller_Auth extends Controller_Layout {
 
 		if ($redirect == 'reset_password_success'){
 			$view->message = I18n::get('reset_password_success');
-			$redirect = null;
+			$redirect = NULL;
 		} else if ($error){
 			$view->message = $error;
 		}

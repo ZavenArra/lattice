@@ -63,11 +63,11 @@ Class Controller_Lattice_views extends Controller_Layout{
 	 * By default called after a rewrite of routing by slugs hooks, gets all content
 	 * for an object and loads view
 	 * Parameters:
-	 * $object_id_or_slug - the id or slug of the object to display, null is allowed but causes exception
+	 * $object_id_or_slug - the id or slug of the object to display, NULL is allowed but causes exception
 	 * Returns: nothing, renders full webobject to browser or sents html if AJAX request
 	 */
 
-	public function action_get_view($object_id_or_slug=null) {
+	public function action_get_view($object_id_or_slug=NULL) {
 
 		$access = Kohana::config('latticeviews.access.'.$object_id_or_slug);
 		if (!latticeutil::check_access($access)){

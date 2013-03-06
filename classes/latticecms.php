@@ -21,7 +21,7 @@ class latticecms {
 	 * Returns: Associative array of html, one entry for each ui element
 	 */
 
-		public static function buildUIHtml_chunks($elements, $object = null) {
+		public static function buildUIHtml_chunks($elements, $object = NULL) {
 				$view = new View();
 				$html_chunks = array();
 				if (is_array($elements)) {
@@ -143,10 +143,10 @@ class latticecms {
    
    private static function buildUIElement($element, $ui_arguments, $value){
      
-      $html = null;
+      $html = NULL;
       if (!isset($element['name'])) {
          $element['name'] = LatticeCMS::unique_element_id();
-         $html = latticeui::buildUIElement($element, null);
+         $html = latticeui::buildUIElement($element, NULL);
       } else if (!$html = latticeui::buildUIElement($ui_arguments, $value)) {
          throw new Kohana_Exception('bad config in cms: bad ui element');
       }
@@ -171,7 +171,7 @@ class latticecms {
 
    }
 
-   public static function buildUIHtml_chunks_for_object($object, $translated_language_code = null) {
+   public static function buildUIHtml_chunks_for_object($object, $translated_language_code = NULL) {
       $elements = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $object->objecttype->objecttypename));
       // should be Model_object->get_elements();
       // this way a different driver could be created for non-xml config if desired

@@ -132,7 +132,7 @@ Class Controller_User_management extends Controller_Layout {
   }
 
   private function get_active_managed_role($user){
-    $active_role = null;
+    $active_role = NULL;
     foreach ($this->managed_roles as $label=>$role){
       if ($user->has('roles', ORM::Factory('role')->where('name','=',$role)->find()) ){
         $active_role = $role;
@@ -154,13 +154,13 @@ Class Controller_User_management extends Controller_Layout {
 		$data = $user->as_array();
 	
 		//set no managed_role
-		$data['username'] = null;
-		$data['password'] = null;
-		$data['email'] = null;
+		$data['username'] = NULL;
+		$data['password'] = NULL;
+		$data['email'] = NULL;
 		$data['superuser'] = false;
     $data['role'] = $this->get_active_managed_role($user);
-    $data['site'] = null;
-    $data['user_type'] = null;
+    $data['site'] = NULL;
+    $data['user_type'] = NULL;
 
     $view = new View($this->view_name.'_item');
 		$view->data = $data;
@@ -314,7 +314,7 @@ Class Controller_User_management extends Controller_Layout {
                $firstkey = array_keys($errors);
                $firstkey = $firstkey[0];
                if ($_POST['field'] == 'password') {
-                  $rval = null;
+                  $rval = NULL;
                } else {
                   $rval = $user->{$_POST['field']};
                }

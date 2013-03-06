@@ -17,10 +17,10 @@ class Graph {
     return  ORM::Factory('object');
   }
 
-  public static function object($object_id =null) {
+  public static function object($object_id =NULL) {
 
     //this will be implemented to support different drivers
-    if ($object_id == null) {
+    if ($object_id == NULL) {
       $object = ORM::Factory('object');
     } else {
       $object = ORM::Factory('object', $object_id);
@@ -59,9 +59,9 @@ class Graph {
     return ORM::Factory('lattice')->find_all();
   }
 
-  public static function file($file_id = null){
+  public static function file($file_id = NULL){
 
-    if ($file_id == null) {
+    if ($file_id == NULL) {
       return ORM::Factory('file');
     } else {
       return ORM::Factory('file', $file_id);

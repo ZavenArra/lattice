@@ -107,7 +107,7 @@ class latticeview {
 
    }
 
-	 public function __construct($object_id_or_slug = null){
+	 public function __construct($object_id_or_slug = NULL){
 		 try{
 			 if ($object_id_or_slug != NULL){
 				 $this->object = self::get_graph_object($object_id_or_slug);
@@ -154,7 +154,7 @@ class latticeview {
 		$this->data[$name] = $value;
 	 }
 
-   public function create_view($object_id_or_slug = null){
+   public function create_view($object_id_or_slug = NULL){
 
 		 if ($object_id_or_slug){
 			$this->object = $this->get_graph_object($object_id_or_slug);
@@ -165,8 +165,8 @@ class latticeview {
 		 }
 
 		 //some access control
-		 $view_name = null;
-		 $view = null;
+		 $view_name = NULL;
+		 $view = NULL;
 
 		 /*
 			* This logic needs to be cleaned up.  Does it really make sense to be calling
@@ -174,7 +174,7 @@ class latticeview {
 			* have view content, and could have view models, but no object
 			*/
 		 if ($this->object->loaded()) {
-			 if ($this->object->activity != null) {
+			 if ($this->object->activity != NULL) {
 				 throw new Kohana_User_Exception('Page not availabled', 'The object with identifier ' . $id . ' is does not exist or is not available');
 			 }
 			 //look for the object_type, if it's not there just print out all the data raw
@@ -236,16 +236,16 @@ class latticeview {
 
 	 }
  
-	public function get_view_content($view, $slug=null) {
+	public function get_view_content($view, $slug=NULL) {
 
 		if ((!$view OR $view=='') AND (!$slug || $slug=='')){
-			throw new Kohana_Exception('get_view_content called with null parameters');
+			throw new Kohana_Exception('get_view_content called with NULL parameters');
 		}
 
 		$data = array();
 
-		$object = null;
-		$object_id = null;
+		$object = NULL;
+		$object_id = NULL;
 		if  ($slug) {
 
 			if (!is_object($slug)) {

@@ -179,7 +179,7 @@ Class Controller_CSV extends Controller {
          if (isset($this->line[$this->column+2])){
            $value = $this->line[$this->column+2];
          } else {
-           $value = null;
+           $value = NULL;
          }
          $field = strtok($field_name, '_');
          $lang = strtok('_');

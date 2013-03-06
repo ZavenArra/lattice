@@ -34,7 +34,7 @@
       public function __set ($p_member_name, $p_value) {
         $this->_delegate->$p_member_name = $p_value;
       }
-      public function on_validate_error ($p_no, $p_string, $p_file = null, $p_line = null, $p_context = null) {
+      public function on_validate_error ($p_no, $p_string, $p_file = NULL, $p_line = NULL, $p_context = NULL) {
         $this->_validation_errors[] = preg_replace("/^.+: */", "", $p_string).$p_line;
       }
     }
@@ -45,7 +45,7 @@ Class lattice {
 	private static $config;
 
 
-	public static function config($arena, $xpath, $context_node=null){
+	public static function config($arena, $xpath, $context_node=NULL){
 		if (!is_array(self::$config)){
 			self::$config = array();
 		}
@@ -244,12 +244,12 @@ Class lattice {
 		}
 	}	
   
-	public static $web_root = null;
+	public static $web_root = NULL;
 
 	public static function convert_full_path_to_web_path($full_path){
 
 
-		if (self::$web_root == null){
+		if (self::$web_root == NULL){
 			self::$web_root  = getcwd().'/';
 		}
 		$webpath = str_replace(self::$web_root, '', $full_path);

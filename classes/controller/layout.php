@@ -26,8 +26,8 @@ class Controller_Layout extends Controller_Lattice {
  * Function: output_layout
  * Wrap the response in its configured layout
  */
-  public function wrap_with_layout($layout=null){
-    if ($layout==null){
+  public function wrap_with_layout($layout=NULL){
+    if ($layout==NULL){
       //set layout - read from config file
       $layout = Kohana::config(strtolower($this->request->controller()) . '.layout');
       if (!$layout){
