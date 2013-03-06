@@ -2,13 +2,13 @@
 /* @package Lattice */
 
 class frontend {
-	public static function makeHtmlElement($element, $prefix, $indent=''){
+	public static function make_html_element($element, $prefix, $indent=''){
 
-		$field = $element->getAttribute('name');
+		$field = $element->get_attribute('name');
 
-		switch($element->nodeName){
+		switch($element->node_name){
 		case 'image':
-			if(!($size=$element->getAttribute('size'))){
+			if(!($size=$element->get_attribute('size'))){
 				$size = 'original';	
 			}
 			echo $indent."<?if(is_object({$prefix}['$field'])):?>\n";
@@ -21,9 +21,9 @@ class frontend {
 			echo $indent."<?endif;?>\n\n";
 			break;
 		case 'checkbox':
-			echo $indent."<div type=\"checkboxResult\">\n";
-			echo $indent." <label>".$element->getAttribute('label')."</label>\n";
-			echo $indent." <input type=\"checkbox\" name=\"".$element->getAttribute('name')."\" ".
+			echo $indent."<div type=\"checkbox_result\">\n";
+			echo $indent." <label>".$element->get_attribute('label')."</label>\n";
+			echo $indent." <input type=\"checkbox\" name=\"".$element->get_attribute('name')."\" ".
 				"<?echo ({$prefix}['$field'])?'checked=\"true\" ':'';?> disabled=\"disabled\" >\n";
 			echo $indent."</div>\n\n";
 			break;

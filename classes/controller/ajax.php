@@ -7,17 +7,17 @@ class Controller_Ajax extends Controller_Lattice {
 		throw new HTTP_Exception_404('Ajax controller called without action. Check URL.');
 	}
    
-   private function handleException($e){
+   private function handle_exception($e){
       
       // Get the exception information
       $type    = get_class($e);
-      $code    = $e->getCode();
-      $message = $e->getMessage();
-      $file    = $e->getFile();
-      $line    = $e->getLine();
+      $code    = $e->get_code();
+      $message = $e->get_message();
+      $file    = $e->get_file();
+      $line    = $e->get_line();
 
       // Get the exception backtrace
-      $trace = $e->getTrace();
+      $trace = $e->get_trace();
       
       ob_start();
 
@@ -44,30 +44,30 @@ class Controller_Ajax extends Controller_Lattice {
 		$arguments = explode('/', $uri);
 
 		try {
-			$subRequest = Request::Factory($uri);
-			$data = $subRequest->execute()->data();
+			$sub_request = Request::Factory($uri);
+			$data = $sub_request->execute()->data();
 		} catch (Exception $e) {
 			//return HTML from exception
          
           // Start an output buffer
    
-			$ajaxResponse = array(
-				'returnValue' => FALSE,
-				'response' => $this->handleException($e),
+			$ajax_response = array(
+				'return_value' => FALSE,
+				'response' => $this->handle_exception($e),
 				'arguments'=>$arguments
 
 			);
 			$this->response->headers('Content-Type', 'application/json');
-			$this->response->body(json_encode($ajaxResponse));
+			$this->response->body(json_encode($ajax_response));
 			return;
 		}
-		$ajaxResponse = array(
-			'returnValue' => TRUE,
+		$ajax_response = array(
+			'return_value' => TRUE,
 			'response'=>$data,
 			'arguments'=>$arguments
 		);
 		$this->response->headers('Content-Type', 'application/json');
-		$this->response->body(json_encode($ajaxResponse));
+		$this->response->body(json_encode($ajax_response));
 		$this->response->body();
 	}
 
@@ -77,51 +77,51 @@ class Controller_Ajax extends Controller_Lattice {
 		$arguments = explode('/', $uri);
 
 		try {
-			$subRequest = Request::Factory($uri);
-			$html = $subRequest->execute()->body();
+			$sub_request = Request::Factory($uri);
+			$html = $sub_request->execute()->body();
 		} catch (Exception $e) {
 			//return HTML from exception
 
 			$message = $e;
-			$ajaxResponse = array(
-				'returnValue' => FALSE,
-				'response' => $this->handleException($e),
+			$ajax_response = array(
+				'return_value' => FALSE,
+				'response' => $this->handle_exception($e),
 				'arguments'=>$arguments
 
 			);
 			$this->response->headers('Content-Type', 'application/json');
-			$this->response->body(json_encode($ajaxResponse));
+			$this->response->body(json_encode($ajax_response));
 			return;
 		}
 
 
-		$cssResources = array();
+		$css_resources = array();
 		foreach($this->resources['librarycss'] as $css){
-			array_push($cssResources, $css);
+			array_push($css_resources, $css);
 		}
 		foreach($this->resources['css'] as $css){
-			array_push($cssResources, $css);
+			array_push($css_resources, $css);
 		}
 
-		$jsResources = array();
+		$js_resources = array();
 		foreach($this->resources['libraryjs'] as $js){
-			array_push($jsResources, $js);
+			array_push($js_resources, $js);
 		}
 		foreach($this->resources['js'] as $js){
-			array_push($jsResources, $js);
+			array_push($js_resources, $js);
 		}
 
-		$ajaxResponse = array(
+		$ajax_response = array(
 			'response'=>array(
 				'html'=>$html,
-				'js'=>$jsResources,
-				'css'=>$cssResources
+				'js'=>$js_resources,
+				'css'=>$css_resources
 			),
-			'returnValue' => TRUE,
+			'return_value' => TRUE,
 			'arguments'=>$arguments
 		);
 		$this->response->headers('Content-Type', 'application/json');
-		$this->response->body(json_encode($ajaxResponse));
+		$this->response->body(json_encode($ajax_response));
 	}
 
 	public function action_compound($uri)
@@ -129,52 +129,52 @@ class Controller_Ajax extends Controller_Lattice {
 		$arguments = explode('/', $uri);
 
 		try {
-   		$subRequest = Request::Factory($uri);
-			$requestResponse = $subRequest->execute();
+   		$sub_request = Request::Factory($uri);
+			$request_response = $sub_request->execute();
    	} catch (Exception $e) {
 			//return HTML from exception
 			$message = $e;
-			$ajaxResponse = array(
-				'returnValue' => FALSE,
-				'response' => $this->handleException($e),
+			$ajax_response = array(
+				'return_value' => FALSE,
+				'response' => $this->handle_exception($e),
 				'arguments'=>$arguments
 			);
 			$this->response->headers('Content-Type', 'application/json');
-			$this->response->body(json_encode($ajaxResponse));
+			$this->response->body(json_encode($ajax_response));
 			return;
 		}
 
 
-		$cssResources = array();
+		$css_resources = array();
 		foreach($this->resources['librarycss'] as $css){
-			array_push($cssResources, $css);
+			array_push($css_resources, $css);
 		}
 		foreach($this->resources['css'] as $css){
-			array_push($cssResources, $css);
+			array_push($css_resources, $css);
 		}
 
-		$jsResources = array();
+		$js_resources = array();
 		foreach($this->resources['libraryjs'] as $js){
-			array_push($jsResources, $js);
+			array_push($js_resources, $js);
 		}
 		foreach($this->resources['js'] as $js){
-			array_push($jsResources, $js);
+			array_push($js_resources, $js);
 		}
 
 
-		$compoundResponse = array(
-			'data' => $requestResponse->data(),
-			'html' => $requestResponse->body(),
-			'css' => $cssResources,
-			'js' => $jsResources,
+		$compound_response = array(
+			'data' => $request_response->data(),
+			'html' => $request_response->body(),
+			'css' => $css_resources,
+			'js' => $js_resources,
 		);
-		$ajaxResponse = array(
-			'returnValue' => TRUE,
-			'response'=>$compoundResponse,
+		$ajax_response = array(
+			'return_value' => TRUE,
+			'response'=>$compound_response,
 			'arguments'=>$arguments
 		);
 		$this->response->headers('Content-Type', 'application/json');
-		$this->response->body(json_encode($ajaxResponse));
+		$this->response->body(json_encode($ajax_response));
 	}
 
 } // End Welcome

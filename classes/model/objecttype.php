@@ -1,9 +1,9 @@
 <?
 
 /*
- * Class: Model_ObjectType
+ * Class: Model_Object_type
  */
-class Model_ObjectType extends ORM {
+class Model_Object_type extends ORM {
 
 	protected $_has_many = array('object'=>array());
 	protected $_belongs_to = array('object'=>array());
@@ -12,7 +12,7 @@ class Model_ObjectType extends ORM {
 	 * Variable: nonmappedfield
 	 * Array of fields to not pass through to the content field mapping logic
 	 */
-	private $nonmappedfields = array('id', 'object_id', 'activity', 'loaded', 'objecttypename', 'nodeType');
+	private $nonmappedfields = array('id', 'object_id', 'activity', 'loaded', 'objecttypename', 'node_type');
 
 	public function __construct($id=null){
 
@@ -26,13 +26,13 @@ class Model_ObjectType extends ORM {
 
 	}
    
-   public static function getConfig($objectTypeName){
-     $config = lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName));
+   public static function get_config($object_type_name){
+     $config = lattice::config('objects', sprintf('//object_type[@name="%s"]', $object_type_name));
      if($config->length){
         return $config->item(0);
      }
 
-     $config = lattice::config('objects', sprintf('//list[@name="%s"]', $objectTypeName));
+     $config = lattice::config('objects', sprintf('//list[@name="%s"]', $object_type_name));
      if($config->length){
         return $config->item(0);
      } else {
@@ -40,13 +40,13 @@ class Model_ObjectType extends ORM {
      }
    }
 
-  public static function getElements($objectTypeName){
-    $config = Model_ObjectType::getConfig($objectTypeName);
+  public static function get_elements($object_type_name){
+    $config = Model_Object_type::get_config($object_type_name);
     $elements = lattice::config('objects', 'elements/*', $config);
     return $elements;
   }
 
-  public static function getElementConfig($objectTypeName, $elementName){
+  public static function get_element_config($object_type_name, $element_name){
     throw new Kohana_Expection("Not Implemented");
   }
 
@@ -65,48 +65,48 @@ class Model_ObjectType extends ORM {
 			return parent::__get($column);
 		}
 
-		if(parent::__get('nodeType')=='container'){
+		if(parent::__get('node_type')=='container'){
 			//For lists, values will be on the 2nd level 
-				$xQuery =  sprintf('//list[@name="%s"]', parent::__get('objecttypename'));
+				$x_query =  sprintf('//list[@name="%s"]', parent::__get('objecttypename'));
 			} else {
 				//everything else is a normal lookup
-				$xQuery =  sprintf('//objectType[@name="%s"]', parent::__get('objecttypename'));
+				$x_query =  sprintf('//object_type[@name="%s"]', parent::__get('objecttypename'));
 			}
 
-			$valueFromConfig=NULL;
-			if($column == 'addableObjects'){
-				$xQuery .= '/addableObject';
-				$nodes = lattice::config('objects', $xQuery);
-				$valueFromConfig = array();
+			$value_from_config=NULL;
+			if($column == 'addable_objects'){
+				$x_query .= '/addable_object';
+				$nodes = lattice::config('objects', $x_query);
+				$value_from_config = array();
 				foreach($nodes as $node){
 					$entry = array();
-					$entry['objectTypeId'] = $node->getAttribute('objectTypeName');
-					$entry['objectTypeAddText'] = $node->getAttribute('addText');
-					$tConfig = lattice::config('objects', sprintf('//objectType[@name="%s"]', $entry['objectTypeId'] ))->item(0);
-          if(!count($tConfig)){
-            throw new Kohana_Exception('No object type definition by name: '.$entry['objectTypeId']);
+					$entry['object_type_id'] = $node->get_attribute('object_type_name');
+					$entry['object_type_add_text'] = $node->get_attribute('add_text');
+					$t_config = lattice::config('objects', sprintf('//object_type[@name="%s"]', $entry['object_type_id'] ))->item(0);
+          if(!count($t_config)){
+            throw new Kohana_Exception('No object type definition by name: '.$entry['object_type_id']);
           }
-					$entry['nodeType'] = $tConfig->getAttribute('nodeType');
-					$entry['contentType'] = $tConfig->getAttribute('contentType');
-					$valueFromConfig[] = $entry;
+					$entry['node_type'] = $t_config->get_attribute('node_type');
+					$entry['content_type'] = $t_config->get_attribute('content_type');
+					$value_from_config[] = $entry;
 				}
 			} else {
-				$node = lattice::config('objects', $xQuery)->item(0);
+				$node = lattice::config('objects', $x_query)->item(0);
 				if($node)
-					$valueFromConfig = $node->getAttribute($column);
+					$value_from_config = $node->get_attribute($column);
 
         switch($column){
-        case 'initialAccessRoles':
-          if($valueFromConfig){
-            $valueFromConfig = explode(',',$valueFromConfig);
+        case 'initial_access_roles':
+          if($value_from_config){
+            $value_from_config = explode(',',$value_from_config);
           } else {
-            $valueFromConfig = array();
+            $value_from_config = array();
           }
           break;
         }
       }
 
-      return $valueFromConfig;	
+      return $value_from_config;	
   }
 
 
@@ -133,20 +133,20 @@ class Model_ObjectType extends ORM {
      * Get default values for insert
      */
     public function defaults(){
-      $elements = Model_ObjectType::getElements($this->objecttypename);
+      $elements = Model_Object_type::get_elements($this->objecttypename);
       $defaults = array();
       foreach($elements as $element){
-        $default = $element->getAttribute('default');
+        $default = $element->get_attribute('default');
         switch($default){
         case 'now':
-          $defaults[$element->getAttribute('name')] = date('Y/m/d H:i:s ');
+          $defaults[$element->get_attribute('name')] = date('Y/m/d H:i:s ');
           break;
         case 'none':
           break;
 
         default:
           if($default){
-            $defaults[$element->getAttribute('name')] = $default; 
+            $defaults[$element->get_attribute('name')] = $default; 
           }
 
         }
@@ -156,17 +156,17 @@ class Model_ObjectType extends ORM {
     }
 
 	/*
-	 * Function: getPublishedMembers($limit)
-	 * This function queries all objects that use the current initialized objectType model object as thier objectType.
+	 * Function: get_published_members($limit)
+	 * This function queries all objects that use the current initialized object_type model object as thier object_type.
 	 * Parameters:
 	 * $limit - number of records to return
 	 * Returns: ORM Iterator of matching records
 	 */
-	public function getPublishedMembers($limit=null){
+	public function get_published_members($limit=null){
 
 		$o = Graph::object()
-			->publishedFilter()
-			->objectTypeFilter($this->objectTypeName);
+			->published_filter()
+			->object_type_filter($this->object_type_name);
 		if($limit){
 			$o->limit($limit);
 		}
@@ -176,21 +176,21 @@ class Model_ObjectType extends ORM {
 	}
 
 	/*
-	 * Function: getActiveMembers($limit)
-	 * This function queries all objects that use the current initialized objectType model object as thier objectType.
+	 * Function: get_active_members($limit)
+	 * This function queries all objects that use the current initialized object_type model object as thier object_type.
 	 * Parameters:
 	 * $limit - number of records to return
 	 * Returns: ORM Iterator of matching records
 	 */
-	public function getActiveMembers($limit=null){
+	public function get_active_members($limit=null){
 
       if(!$this->loaded()){
          return array();
       }
       
 		$o = Graph::object()
-              ->activeFilter()
-              ->objectTypeFilter($this->objecttypename);
+              ->active_filter()
+              ->object_type_filter($this->objecttypename);
 		if($limit){
 			$o->limit($limit);
 		}
@@ -202,19 +202,19 @@ class Model_ObjectType extends ORM {
    
    
     
-	public function configureElement($item){
+	public function configure_element($item){
 
-		switch($item->tagName){
+		switch($item->tag_name){
 
 		case 'list':
-			$ltRecord = ORM::Factory('objectType');
-			$ltRecord->objecttypename = $item->getAttribute('name');
-			$ltRecord->nodeType = 'container';
-			$ltRecord->save();
+			$lt_record = ORM::Factory('object_type');
+			$lt_record->objecttypename = $item->get_attribute('name');
+			$lt_record->node_type = 'container';
+			$lt_record->save();
 			break;
 
 		default:
-			Model_Objectmap::configureNewField($this->id, $item->getAttribute('name'), $item->tagName );
+			Model_Objectmap::configure_new_field($this->id, $item->get_attribute('name'), $item->tag_name );
 			break;
 
 		}

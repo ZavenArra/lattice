@@ -3,30 +3,30 @@
 /*
  * Class: Controller_Layout
  * Extension of Controller_Lattice which handles automatic wrapping of the main request in header and footer layout.
- * Extend this class and set $_aactionsThatGetLayout with actions that should always be wraped with the layout specified in their config.
+ * Extend this class and set $_aactions_that_get_layout with actions that should always be wraped with the layout specified in their config.
  * In the future, config could have a mapping of actions to layouts, if necessary.
  * Auto wrapping can be manually bypassed by calling the html action as html/controller/action/etc.
  */
 
 class Controller_Layout extends Controller_Lattice {
 	
-	protected $_actionsThatGetLayout = array();
+	protected $_actions_that_get_layout = array();
 	
-	protected $subRequest;
+	protected $sub_request;
 	
 	public function after(){
 		if($this->request == Request::initial() ){
-			if(in_array($this->request->action(), $this->_actionsThatGetLayout)){
-				$this->wrapWithLayout();
+			if(in_array($this->request->action(), $this->_actions_that_get_layout)){
+				$this->wrap_with_layout();
 			} 
 		}
 	}
 	
 /*
- * Function: outputLayout
+ * Function: output_layout
  * Wrap the response in its configured layout
  */
-  public function wrapWithLayout($layout=null){
+  public function wrap_with_layout($layout=null){
     if($layout==null){
       //set layout - read from config file
       $layout = Kohana::config(strtolower($this->request->controller()) . '.layout');
@@ -39,7 +39,7 @@ class Controller_Layout extends Controller_Lattice {
 
       }
     }
-		$layoutView = View::Factory($layout);
+		$layout_view = View::Factory($layout);
 
     if(is_array(Kohana::config($layout.'.resources') ) ){
       foreach(Kohana::config($layout.'.resources') as $key => $paths){
@@ -57,7 +57,7 @@ class Controller_Layout extends Controller_Lattice {
 		foreach($this->resources['css'] as $css){
 			$stylesheet .=	HTML::style($css)."\n       ";
 		}
-		$layoutView->stylesheet = $stylesheet;
+		$layout_view->stylesheet = $stylesheet;
 
 		$javascript = '';
 		foreach($this->resources['libraryjs'] as $js){
@@ -66,10 +66,10 @@ class Controller_Layout extends Controller_Lattice {
 		foreach($this->resources['js'] as $js){
 			$javascript .= HTML::script($js)."\n        ";		
 		}
-		$layoutView->javascript = $javascript;
+		$layout_view->javascript = $javascript;
 
-		$layoutView->body = $this->response->body();
-		$this->response->body($layoutView->render());
+		$layout_view->body = $this->response->body();
+		$this->response->body($layout_view->render());
 	}
 
 

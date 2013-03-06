@@ -7,8 +7,8 @@
 
 class Controller_Navigation extends Controller_Lattice{
 
-  private $defaultAddCategoryText = '';
-  private $defaultAddLeafText = '';
+  private $default_add_category_text = '';
+  private $default_add_leaf_text = '';
 
   public function __construct($request, $response){
     parent::__construct($request, $response);
@@ -29,33 +29,33 @@ class Controller_Navigation extends Controller_Lattice{
    * Override this function to use nav on other data sources
    *
    */
-  public function getTier($parentId, $deeplinkPath=array(), &$follow=false){
-    $parent = Graph::object($parentId);
+  public function get_tier($parent_id, $deeplink_path=array(), &$follow=false){
+    $parent = Graph::object($parent_id);
     if(!$parent->loaded()){
-      throw new Kohana_Exception('Invalid object id sent to getTier');
+      throw new Kohana_Exception('Invalid object id sent to get_tier');
     }
 
     $items = Graph::object($parent->id)
-      ->latticeChildrenQuery()
-      ->activeFilter();
+      ->lattice_children_query()
+      ->active_filter();
       // ->order_by('objectrelationships.sortorder', 'ASC');
     $items = $items->find_all();
 
     if($items){
-      $sendItemContainers = array(); //these will go first
-      $sendItemObjects = array();
+      $send_item_containers = array(); //these will go first
+      $send_item_objects = array();
       foreach($items as $child){
 
         //Check for Access to this object
         $roles = $child->roles->find_all();
         foreach($roles as $role){
-          if(!latticeutil::checkAccess($role->name)){
+          if(!latticeutil::check_access($role->name)){
             continue (2);
           } 
         }
 
         //Containers should be skipped
-        if(strtolower($child->objecttype->nodeType) == 'container'){
+        if(strtolower($child->objecttype->node_type) == 'container'){
           //we might be skipping this node
           $display = $child->objecttype->display;
 
@@ -63,58 +63,58 @@ class Controller_Navigation extends Controller_Lattice{
             continue;
           }
         }
-        $sendItem = Navigation::getNodeInfo($child);
+        $send_item = Navigation::get_node_info($child);
 
         //implementation of deeplinking
-        $sendItem['follow'] = false;
-        if (in_array($child->id, $deeplinkPath)) {
-          $sendItem['follow'] = true;
+        $send_item['follow'] = false;
+        if (in_array($child->id, $deeplink_path)) {
+          $send_item['follow'] = true;
           $follow = true;
 
           //and deeplinking for categories
           $follow_tier = false;
-          $childTier = $this->getTier($child->id, $deeplinkPath, $follow_tier);
+          $child_tier = $this->get_tier($child->id, $deeplink_path, $follow_tier);
           if ($follow_tier == true) {
-            $sendItem['follow'] = true;
+            $send_item['follow'] = true;
             $follow = 'true';
           }
-          $sendItem['tier'] = $childTier;
+          $send_item['tier'] = $child_tier;
         }
 
-            if(strtolower($child->objecttype->nodeType)=='container'){
-          $sendItemContainers[] = $sendItem;
+            if(strtolower($child->objecttype->node_type)=='container'){
+          $send_item_containers[] = $send_item;
         } else {
-          $sendItemObjects[] = $sendItem;
+          $send_item_objects[] = $send_item;
         }
       }
       //this puts the folders first
-      $sendItemObjects = array_merge($sendItemContainers, $sendItemObjects);
+      $send_item_objects = array_merge($send_item_containers, $send_item_objects);
 
 
       //add in any modules
-      if($parent->id == Graph::getRootNode(Kohana::config('cms.graphRootNode'))->id ){
-        $cmsModules = lattice::config('cmsModules', '//module');
-        foreach($cmsModules as $m){
-          $controller = $m->getAttribute('controller');
+      if($parent->id == Graph::get_root_node(Kohana::config('cms.graph_root_node'))->id ){
+        $cms_modules = lattice::config('cms_modules', '//module');
+        foreach($cms_modules as $m){
+          $controller = $m->get_attribute('controller');
           $roles = Kohana::config(strtolower($controller).'.authrole', FALSE, FALSE); 
-          $accessGranted = latticeutil::checkAccess($roles);
-          if(!$accessGranted){
+          $access_granted = latticeutil::check_access($roles);
+          if(!$access_granted){
             continue;
           }
 
           $entry = array();
-          $entry['id'] = $m->getAttribute('controller');
-          $entry['slug'] = $m->getAttribute('controller');
-          $entry['nodeType'] = 'module';
-          $entry['contentType'] = 'module';
-          $entry['title'] = $m->getAttribute('label');
-          $entry['pageLength'] = Kohana::config('cms.associatorPageLength');;
-          $sendItemObjects[] = $entry;
+          $entry['id'] = $m->get_attribute('controller');
+          $entry['slug'] = $m->get_attribute('controller');
+          $entry['node_type'] = 'module';
+          $entry['content_type'] = 'module';
+          $entry['title'] = $m->get_attribute('label');
+          $entry['page_length'] = Kohana::config('cms.associator_page_length');;
+          $send_item_objects[] = $entry;
         }
       }
-      $html = $this->renderTierView($parent, $sendItemObjects);
+      $html = $this->render_tier_view($parent, $send_item_objects);
       $tier = array(
-        'nodes' => $sendItemObjects,
+        'nodes' => $send_item_objects,
         'html' => $html
       );
       return $tier;
@@ -124,80 +124,80 @@ class Controller_Navigation extends Controller_Lattice{
 
   }
 
-  public function action_getTier($parentId, $deeplink=NULL){
+  public function action_get_tier($parent_id, $deeplink=NULL){
 
     //plan all parents for following deeplink
-    $deeplinkPath = array();
+    $deeplink_path = array();
 
     if($deeplink){
-      $objectId = $deeplink;
-      while($objectId){
-        $object = Graph::object($objectId);
-        $deeplinkPath[] = $object->id;
-        $parent = $object->getLatticeParent();
+      $object_id = $deeplink;
+      while($object_id){
+        $object = Graph::object($object_id);
+        $deeplink_path[] = $object->id;
+        $parent = $object->get_lattice_parent();
         if($parent){
-          $objectId = $parent->id;
+          $object_id = $parent->id;
         } else {
-          $objectId = NULL;
+          $object_id = NULL;
         } 
       }
-      $deeplinkPath = array_reverse($deeplinkPath);
+      $deeplink_path = array_reverse($deeplink_path);
 
     }
 
     //this database call happens twice, should be a class variable?
-    $parent = Graph::object($parentId);
+    $parent = Graph::object($parent_id);
 
 
-    $tier = $this->getTier($parentId, $deeplinkPath);
+    $tier = $this->get_tier($parent_id, $deeplink_path);
 
 
     $this->response->data(array('tier' => $tier));
 
   }
 
-  private function renderTierView($parent, $nodes){
+  private function render_tier_view($parent, $nodes){
 
-    $tierView = new View('navigationTier');
-    $nodesHtml = array();
+    $tier_view = new View('navigation_tier');
+    $nodes_html = array();
     foreach($nodes as $node){
-      $nodeView = new View('navigationNode');
-      $nodeView->content = $node; 
-      $nodesHtml[] = $nodeView->render();
+      $node_view = new View('navigation_node');
+      $node_view->content = $node; 
+      $nodes_html[] = $node_view->render();
     }
-    $tierView->nodes = $nodesHtml;
+    $tier_view->nodes = $nodes_html;
 
-    $tierMethodsDrawer = new View('tierMethodsDrawer');
-    $addableObjects = $parent->objecttype->addableObjects;
+    $tier_methods_drawer = new View('tier_methods_drawer');
+    $addable_objects = $parent->objecttype->addable_objects;
 
-    if(latticeutil::checkAccess('superuser')){
-      foreach($this->getObjectTypes() as $objectType){
-        $addableObject = array();
-        $addableObject['objectTypeId'] = $objectType['objectTypeName'];
-        $addableObject['objectTypeAddText'] = "Add a ".$objectType['objectTypeName'];
-        $addableObject['nodeType'] = $objectType['nodeType'];
-        $addableObject['contentType'] = $objectType['contentType'];
-        $addableObjects[] = $addableObject;
+    if(latticeutil::check_access('superuser')){
+      foreach($this->get_object_types() as $object_type){
+        $addable_object = array();
+        $addable_object['object_type_id'] = $object_type['object_type_name'];
+        $addable_object['object_type_add_text'] = "Add a ".$object_type['object_type_name'];
+        $addable_object['node_type'] = $object_type['node_type'];
+        $addable_object['content_type'] = $object_type['content_type'];
+        $addable_objects[] = $addable_object;
       }
     }
-    $tierMethodsDrawer->addableObjects = $addableObjects;
+    $tier_methods_drawer->addable_objects = $addable_objects;
 
-    $tierView->tierMethodsDrawer = $tierMethodsDrawer->render();
-    return $tierView->render();
+    $tier_view->tier_methods_drawer = $tier_methods_drawer->render();
+    return $tier_view->render();
 
   }
 
-  public function getObjectTypes(){
-    $objectTypes = array();
-    foreach(lattice::config('objects', '//objectType') as $objectType){
+  public function get_object_types(){
+    $object_types = array();
+    foreach(lattice::config('objects', '//object_type') as $object_type){
       $entry = array();
-      $entry['objectTypeName'] = $objectType->getAttribute('name'); 
-      $entry['label'] = $objectType->getAttribute('name').' label'; 
-      $entry['nodeType'] = $objectType->getAttribute('nodeType'); 
-      $entry['contentType'] = $objectType->getAttribute('contentType'); 
-      $objectTypes[] = $entry;
+      $entry['object_type_name'] = $object_type->get_attribute('name'); 
+      $entry['label'] = $object_type->get_attribute('name').' label'; 
+      $entry['node_type'] = $object_type->get_attribute('node_type'); 
+      $entry['content_type'] = $object_type->get_attribute('content_type'); 
+      $object_types[] = $entry;
     }
-    return $objectTypes;
+    return $object_types;
   }
 
 }

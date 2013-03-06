@@ -4,10 +4,10 @@ Class Initializer_Cms {
 
 	public function initialize() {
 		
-      Graph::configureObjectType(Kohana::config('cms.graphRootNode'), true);
-      Graph::addRootNode(Kohana::config('cms.graphRootNode'));
+      Graph::configure_object_type(Kohana::config('cms.graph_root_node'), true);
+      Graph::add_root_node(Kohana::config('cms.graph_root_node'));
       
-      Lattice_Initializer::addMessage('configured graph root node');
+      Lattice_Initializer::add_message('configured graph root node');
 
 	}
 

@@ -1,8 +1,8 @@
 <?php
 
 /*
- * To change this objectType, choose Tools | Templates
- * and open the objectType in the editor.
+ * To change this object_type, choose Tools | Templates
+ * and open the object_type in the editor.
  */
 
 /**
@@ -10,16 +10,16 @@
  *
  * @author deepwinter1
  */
-class Model_ListContainer extends Model_Object {
+class Model_List_container extends Model_Object {
 
    protected $_has_one = array(
        'objecttype' => array('foreign_key'=>'objecttype_id')
    );
    
-   private $_sortDirection = null;
+   private $_sort_direction = null;
    
    protected $_table_name = 'objects';
-   protected $_xmlConfig = null;
+   protected $_xml_config = null;
    
 	public function __construct($id){
 		parent::__construct($id);
@@ -27,30 +27,30 @@ class Model_ListContainer extends Model_Object {
 
 	}
 
-   public function getSortDirection(){
+   public function get_sort_direction(){
       
-      if(!$this->_sortDirection){
-          $this->_sortDirection = lattice::config('objects', sprintf('//list[@name="%s"]', $this->objecttype->objecttypename))->item(0)->getAttribute('sortDirection');   
+      if(!$this->_sort_direction){
+          $this->_sort_direction = lattice::config('objects', sprintf('//list[@name="%s"]', $this->objecttype->objecttypename))->item(0)->get_attribute('sort_direction');   
       }
       
-      return $this->_sortDirection;
+      return $this->_sort_direction;
    }
    
-   public function getConfig(){
-      if(!$this->_xmlConfig) {
-         $xPathLookup = sprintf('//list[@name="%s"]', $this->objecttype->objecttypename);
-         $this->_xmlConfig = lattice::config('objects', $xPathLookup)->item(0);
-         if (!$this->_xmlConfig) {
-            throw new Kohana_Exception('Failed to find xPath config in objects.xml :lookup', array(':lookup' => $xPathLookup));
+   public function get_config(){
+      if(!$this->_xml_config) {
+         $x_path_lookup = sprintf('//list[@name="%s"]', $this->objecttype->objecttypename);
+         $this->_xml_config = lattice::config('objects', $x_path_lookup)->item(0);
+         if (!$this->_xml_config) {
+            throw new Kohana_Exception('Failed to find x_path config in objects.xml :lookup', array(':lookup' => $x_path_lookup));
          }
       }
-      return $this->_xmlConfig;
+      return $this->_xml_config;
    }
 
 	
-   public function addObject($objectTypeName, $data = array(), $lattice = null, $rosettaId = null, $languageId = null) {
+   public function add_object($object_type_name, $data = array(), $lattice = null, $rosetta_id = null, $language_id = null) {
       $data['published'] = 1;
-      return parent::addObject($objectTypeName, $data, $lattice, $rosettaId, $languageId);
+      return parent::add_object($object_type_name, $data, $lattice, $rosetta_id, $language_id);
    }
 
 }

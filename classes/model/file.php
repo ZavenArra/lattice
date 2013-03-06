@@ -61,7 +61,7 @@ class Model_File extends ORM {
 
 		//create image info object
 		if(!isset($this->imageinfo[$prefix])){
-			$this->imageinfo[$prefix] = new Model_FileImage(parent::__get('filename'), $prefix);
+			$this->imageinfo[$prefix] = new Model_File_image(parent::__get('filename'), $prefix);
 		}
 
 		//return image info so that it's __get can be called
@@ -71,7 +71,7 @@ class Model_File extends ORM {
 
 	//this could also just move the file out of the way
 	//and complete the unlinking on destroy
-	public function unlinkOldFile(){
+	public function unlink_old_file(){
 		$oldfilename = parent::__get('filename');
 		if($oldfilename AND file_exists(Graph::mediapath().$oldfilename)){
 			unlink(Graph::mediapath().$oldfilename);

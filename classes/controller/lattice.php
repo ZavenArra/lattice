@@ -2,7 +2,7 @@
 
 class Controller_Lattice extends Controller {
 
-	public static $topController;
+	public static $top_controller;
 
 	public $resources = array(
 		'js'=>array(),
@@ -11,7 +11,7 @@ class Controller_Lattice extends Controller {
 		'librarycss'=>array(),
 	);
 
-	public $controllerName;
+	public $controller_name;
 
 
 	//constructor
@@ -20,41 +20,41 @@ class Controller_Lattice extends Controller {
 
 		//set the language requirements
 		
-		$languageCode = NULL;
-		if( ! Session::instance()->get('languageCode') ){
-			$languageCode = Kohana::config('lattice.defaultLanguage');
-			Session::instance()->set('languageCode', $languageCode );
+		$language_code = NULL;
+		if( ! Session::instance()->get('language_code') ){
+			$language_code = Kohana::config('lattice.default_language');
+			Session::instance()->set('language_code', $language_code );
 		}else{
-			$languageCode = Session::instance()->get('languageCode');
+			$language_code = Session::instance()->get('language_code');
 		}
-		if(!$languageCode){
+		if(!$language_code){
 			throw new Kohana_Exception('No language code found');
 		}
-		i18n::lang( $languageCode );
+		i18n::lang( $language_code );
 
 
-		$this->controllerName = strtolower(substr(get_class($this), 11));
-		$this->checkAccess();
+		$this->controller_name = strtolower(substr(get_class($this), 11));
+		$this->check_access();
 
 		if($request->is_initial()){
-		 self::$topController = $this;
+		 self::$top_controller = $this;
     }
 		//look up all matching js and css based off controller name
 
-		$this->loadResources();
+		$this->load_resources();
 
 	}
 
 	/*
-	 * Function: checkAccess()
+	 * Function: check_access()
 	 * Default function for acccess checking for a controller.  Can be overridden in child classes
 	 * Checks logged in user against authrole array in config file for controller
 	 * Parameters:nothing, except config file
 	 * Returns: nothing
 	 */
-	public function checkAccess(){
+	public function check_access(){
 		//Authentication check
-		$roles = Kohana::config(strtolower($this->controllerName).'.authrole', FALSE, FALSE);
+		$roles = Kohana::config(strtolower($this->controller_name).'.authrole', FALSE, FALSE);
 
 		//checked if logged in
 		if($roles AND !Auth::instance()->logged_in()){
@@ -62,17 +62,17 @@ class Controller_Lattice extends Controller {
 			exit;
 		}
 		if(is_array($roles)){
-			$accessGranted = false;
-			foreach($roles as $aRole){
-				if($aRole=='admin'){
+			$access_granted = false;
+			foreach($roles as $a_role){
+				if($a_role=='admin'){
 					if(Kohana::config('lattice.staging_enabled') AND !Kohana::config('lattice.staging')){
 						$redirect = 'staging/'. Router::$current_uri;
 						Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 					}
 				}
 
-				if(latticeutil::checkRoleAccess($aRole)){
-					$accessGranted = true;
+				if(latticeutil::check_role_access($a_role)){
+					$access_granted = true;
 				}
 			}
 		} else {
@@ -83,10 +83,10 @@ class Controller_Lattice extends Controller {
 				}
 			}
 
-			$accessGranted = latticeutil::checkRoleAccess($roles);
+			$access_granted = latticeutil::check_role_access($roles);
 		}
 
-		if(!$accessGranted){
+		if(!$access_granted){
 			$redirect = 'accessdenied';
 			Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 			exit;
@@ -94,35 +94,35 @@ class Controller_Lattice extends Controller {
 
 	}
 
-	protected function loadResources(){
-		$this->loadResourcesForKey(strtolower($this->controllerName));
+	protected function load_resources(){
+		$this->load_resources_for_key(strtolower($this->controller_name));
 
-		$parents = array_reverse($this->getParents());
+		$parents = array_reverse($this->get_parents());
 		foreach($parents as $parent){
 			if(strpos($parent, 'Controller')===0){
-				$parentKey = substr($parent, 11);
+				$parent_key = substr($parent, 11);
 			} else {
-				$parentKey = $parent;
+				$parent_key = $parent;
 			}
-			$this->loadResourcesForKey(strtolower($parentKey));
+			$this->load_resources_for_key(strtolower($parent_key));
 		}	
 	}
 
-  protected function loadResourcesForKey($key){
+  protected function load_resources_for_key($key){
 
  // 	Kohana::$log->add( Kohana_Log::INFO, "application/config/lattice_cms.php " . print_r( $config['resources']['libraryjs'], 1 ) );
 
-    if(self::$topController == NULL){
+    if(self::$top_controller == NULL){
       return;
-      //self::$topController should not be NULL, in order to use loadResourcesForKey you must extend Controller_Lattice in the controller of your initial route 
+      //self::$top_controller should not be NULL, in order to use load_resources_for_key you must extend Controller_Lattice in the controller of your initial route 
     }
 
-		//should add to self, then merge into topController
+		//should add to self, then merge into top_controller
 		if($css = Kohana::find_file('resources', 'css/'.$key, 'css')){
-			$this->resources['css'][$css] = lattice::convertFullPathToWebPath($css);
+			$this->resources['css'][$css] = lattice::convert_full_path_to_web_path($css);
 		}
 		if($js = Kohana::find_file('resources', 'js/'.$key, 'js')){
-			$this->resources['js'][$js] = lattice::convertFullPathToWebPath($js);
+			$this->resources['js'][$js] = lattice::convert_full_path_to_web_path($js);
 		}
 
 		$config = Kohana::config($key);
@@ -136,22 +136,22 @@ class Controller_Lattice extends Controller {
 		}
 
 		//and merge into the top controller
-		if($this != self::$topController){
+		if($this != self::$top_controller){
 			foreach(array_keys($this->resources) as $key){
-				self::$topController->resources[$key] = array_merge(self::$topController->resources[$key], $this->resources[$key]);
+				self::$top_controller->resources[$key] = array_merge(self::$top_controller->resources[$key], $this->resources[$key]);
 			}
 		}
 
 	}
 
-	public function getParents($class=null, $plist=array()) {
+	public function get_parents($class=null, $plist=array()) {
 		$class = $class ? $class : $this;
 		$parent = get_parent_class($class);
 		if($parent) {
 			$plist[] = $parent;
 			/*Do not use $this. Use 'self' here instead, or you
 			 *        * will get an infinite loop. */
-			$plist = self::getParents($parent, $plist);
+			$plist = self::get_parents($parent, $plist);
 		}
 		return $plist;
 	}

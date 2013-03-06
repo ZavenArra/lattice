@@ -1,13 +1,13 @@
 <?
 /* @package usermanagement
- * Class: UserManagement_Controllers
+ * Class: User_management_Controllers
  * Controller for usermangement module within LatticeCMS, allows for settings up users
  * and passwords.  Can be configured deal with roles using the managedroles variables.
  */
 
-Class Controller_UserManagement extends Controller_Layout {
+Class Controller_User_management extends Controller_Layout {
 
-   protected $_actionsThatGetLayout = array('index');
+   protected $_actions_that_get_layout = array('index');
 
    
    
@@ -18,40 +18,40 @@ Class Controller_UserManagement extends Controller_Layout {
 	protected $table = 'user'; 
 
 	/*
-	 * Variable: viewName 
+	 * Variable: view_name 
 	 * Name of the main view to load, also used for javascript class and instance.
 	 */
-	protected $viewName = 'usermanagement';
+	protected $view_name = 'usermanagement';
 
 	/*
-	 * Variable: managedRoles
+	 * Variable: managed_roles
 	 * Roles set up in the config file are loaded into this class variable
 	 */
-	protected $managedRoles;
+	protected $managed_roles;
 
 	/*
 	 * Function: __construct()
-	 * Loads managedRoles and calls the parent constructor
+	 * Loads managed_roles and calls the parent constructor
 	 */
 	public function __construct($request, $response){
 		parent::__construct($request, $response);
 
-		$this->managedRoles = Kohana::config(strtolower($this->controllerName).'.managedRoles');
-    if(Kohana::config(strtolower($this->controllerName).'.superuserEdit')
-      AND latticeutil::checkRoleAccess('superuser')){
-      if(is_array($this->managedRoles)){
-        $keys = array_keys($this->managedRoles);
-        $vals = array_values($this->managedRoles);
+		$this->managed_roles = Kohana::config(strtolower($this->controller_name).'.managed_roles');
+    if(Kohana::config(strtolower($this->controller_name).'.superuser_edit')
+      AND latticeutil::check_role_access('superuser')){
+      if(is_array($this->managed_roles)){
+        $keys = array_keys($this->managed_roles);
+        $vals = array_values($this->managed_roles);
         array_unshift($keys,'Superuser');
         array_unshift($vals,'superuser');
-        $this->managedRoles = array_combine($keys, $vals);
+        $this->managed_roles = array_combine($keys, $vals);
       }
 		}
 		
 	}
 
 	/*
-	 * Function: createIndexView()
+	 * Function: create_index_view()
 	 * Subclassed function to build the top view
 	 * Parameters: none
 	 * Returns: nothing, sets up view to render in this->view
@@ -63,24 +63,24 @@ Class Controller_UserManagement extends Controller_Layout {
 			$incomplete->delete();
 		}
 
-		$this->view = new View($this->viewName);
-		$this->view->instance = $this->viewName;
-		$this->view->class = strtolower($this->controllerName);
+		$this->view = new View($this->view_name);
+		$this->view->instance = $this->view_name;
+		$this->view->class = strtolower($this->controller_name);
 
     $users = ORM::Factory($this->table)->find_all();
-    $managedUsers = array();
+    $managed_users = array();
     foreach($users as $user){
-      foreach($this->managedRoles as $role){
+      foreach($this->managed_roles as $role){
         if($user->has('roles', ORM::Factory('role', array('name'=>$role)))){
-          $managedUsers[] = $user;
+          $managed_users[] = $user;
           continue (2);
         }
       }
     }
 		$html = '';
-		foreach($managedUsers as $user){
-      $userItemView = $this->createUserItemView($user);	
-			$html .= $userItemView->render();
+		foreach($managed_users as $user){
+      $user_item_view = $this->create_user_item_view($user);	
+			$html .= $user_item_view->render();
 		}
 
 		$this->view->items = $html;
@@ -88,7 +88,7 @@ Class Controller_UserManagement extends Controller_Layout {
 
 	}	
 
-  protected function getUserData($user){
+  protected function get_user_data($user){
     $data['id'] = $user->id;
     $data['username'] = $user->username;
     $data['firstname'] = $user->firstname;
@@ -105,7 +105,7 @@ Class Controller_UserManagement extends Controller_Layout {
       $data['password'] = '';
     }
 
-    $data['role'] = $this->getActiveManagedRole($user);
+    $data['role'] = $this->get_active_managed_role($user);
     if($user->has('roles', ORM::Factory('role')->where('name','=','superuser')->find()) ){
       $data['superuser'] = true;
     } else {
@@ -115,79 +115,79 @@ Class Controller_UserManagement extends Controller_Layout {
     return $data;
   }
 
-  protected function createUserItemView($user){
-    $userItemView = new View($this->viewName.'_item');
-    $userItemView->data = $this->getUserData($user);
-    $userItemView->managedRoles = $this->managedRoles;
-    $userItemView->viewData = $this->getUserViewData();
-    return $userItemView;
+  protected function create_user_item_view($user){
+    $user_item_view = new View($this->view_name.'_item');
+    $user_item_view->data = $this->get_user_data($user);
+    $user_item_view->managed_roles = $this->managed_roles;
+    $user_item_view->view_data = $this->get_user_view_data();
+    return $user_item_view;
   }
 
   /*
-   * Function getViewData()
+   * Function get_view_data()
    * Get data specific for the item view
    */
-  protected function getUserViewData(){
+  protected function get_user_view_data(){
     return array();
   }
 
-  private function getActiveManagedRole($user){
-    $activeRole = null;
-    foreach($this->managedRoles as $label=>$role){
+  private function get_active_managed_role($user){
+    $active_role = null;
+    foreach($this->managed_roles as $label=>$role){
       if($user->has('roles', ORM::Factory('role')->where('name','=',$role)->find()) ){
-        $activeRole = $role;
+        $active_role = $role;
         break;
       }
     }
-    return $activeRole;
+    return $active_role;
   }
 
 	/*
-	 * Function: addItem($objectid)
+	 * Function: add_item($objectid)
 	 * Ajax interface to add a new user object to the users table.
 	 * Parameters:
 	 * $objectid - unused variable, interface needs to be updated
 	 * Returns: Rendered html editing object for new user object
 	 */
-	public function action_addObject(){
-		$user = $this->createUser();
+	public function action_add_object(){
+		$user = $this->create_user();
 		$data = $user->as_array();
 	
-		//set no managedRole
+		//set no managed_role
 		$data['username'] = null;
 		$data['password'] = null;
 		$data['email'] = null;
 		$data['superuser'] = false;
-    $data['role'] = $this->getActiveManagedRole($user);
+    $data['role'] = $this->get_active_managed_role($user);
     $data['site'] = null;
-    $data['userType'] = null;
+    $data['user_type'] = null;
 
-    $view = new View($this->viewName.'_item');
+    $view = new View($this->view_name.'_item');
 		$view->data = $data;
-		$view->managedRoles = $this->managedRoles;
-    $view->viewData = $this->getUserViewData();
+		$view->managed_roles = $this->managed_roles;
+    $view->view_data = $this->get_user_view_data();
 		$this->response->body( $view->render() );
 	}
 
 	/*
-	 * Function: createUser()
+	 * Function: create_user()
 	 * Utility function to create an empty user object in the database, with status INCOMPLETE
 	 * and placeholder content for username and email
 	 * Parameters: none
 	 * Returns: User ORM Object, pre-saved
 	 */
-	protected function createUser(){
+	protected function create_user(){
 		$user = ORM::factory($this->table);
 		$user->status = 'INCOMPLETE';
-		$user->username = 'PLACEHOLDER_'.Utility_Auth::randomPassword();;
-		$user->password = Utility_Auth::randomPassword();
-		$user->email = 'PLACEHOLDER'.Utility_Auth::randomPassword().'@madeofpeople.org';
+		$user->username = 'PLACEHOLDER_'.Utility_Auth::random_password();;
+		$user->password = Utility_Auth::random_password();
+		$user->email = 'PLACEHOLDER'.Utility_Auth::random_password().'@madeofpeople.org';
 		$user->save();
 
 		//add the login role
 		$user->add('roles', ORM::Factory('role', array('name'=>'login')));
     //add the default role
-    $user->add('roles', ORM::Factory('role', array('name'=>Kohana::config(strtolower($this->controllerName).'.defaultRoles') ) ) );
+    $user->add('roles', ORM::Factory('role', array('name'=>Kohana::config(strtolower($this->controller_name).'.default_roles') ) ) );
 		$user->save();
 
 		return $user;
@@ -195,20 +195,20 @@ Class Controller_UserManagement extends Controller_Layout {
 	}
 
 	/*
-	 * Function: deleteItem($id)
+	 * Function: delete_item($id)
 	 * Deletes a user from the database
 	 * Parameters:
 	 * $id - the unique key id of the record to delete
 	 * Returns: nothing
 	 */
-	public function action_removeObject($id){
+	public function action_remove_object($id){
 		$user = ORM::factory($this->table, $id);
 		$user->delete($id);
 
 	}
 
 	/*
-	 * Function: saveField($id)
+	 * Function: save_field($id)
 	 * Ajax interface to update a field in the database table with a new value
 	 * Parameters:
 	 * $id - the unique key id of the record to update
@@ -216,9 +216,9 @@ Class Controller_UserManagement extends Controller_Layout {
 	 * $_POST['value'] - the new value to save
 	 * Returns: array('value'=>{value})
 	 */ 
-	public function action_saveField($id){
+	public function action_save_field($id){
 
-		if(!latticeutil::checkRoleAccess('admin')){
+		if(!latticeutil::check_role_access('admin')){
 			throw new Kohana_Exception('Only Admin has access to User Management');
 		}
 
@@ -231,16 +231,16 @@ Class Controller_UserManagement extends Controller_Layout {
 		case 'role':
 
 			if($user->has('roles', ORM::Factory('role')->where('name', '=' ,'superuser')->find() )){
-				if(!latticeutil::checkRoleAccess('superuser')){
+				if(!latticeutil::check_role_access('superuser')){
 					throw new Kohana_Exception('Only superuser can change superuser');
 				}
 			}
 
-			//first remove other managedRoles
-			foreach($this->managedRoles as $label => $role){
-				$roleObj = ORM::Factory('role')->where('name','=',$role)->find();
-				if($user->has('roles',$roleObj)){
-					$user->remove('roles', $roleObj);
+			//first remove other managed_roles
+			foreach($this->managed_roles as $label => $role){
+				$role_obj = ORM::Factory('role')->where('name','=',$role)->find();
+				if($user->has('roles',$role_obj)){
+					$user->remove('roles', $role_obj);
           $user->save();
 				}
 			}
@@ -253,7 +253,7 @@ Class Controller_UserManagement extends Controller_Layout {
 
 			if($value=='superuser'){
 
-				if(!latticeutil::checkRoleAccess('superuser')){
+				if(!latticeutil::check_role_access('superuser')){
 					throw new Kohana_Exception('Updating to superuser not allowed for non-superuser');
 				}
 
@@ -271,7 +271,7 @@ Class Controller_UserManagement extends Controller_Layout {
 
 		default:
 
-			//$errors = $user->checkValue($_POST['field'], $_POST['value']);
+			//$errors = $user->check_value($_POST['field'], $_POST['value']);
          $errors  = array();
          
 			if (!count($errors)) {
@@ -282,7 +282,7 @@ Class Controller_UserManagement extends Controller_Layout {
 
                   //this might be the first edit on a new record
                   //so set the record to active status
-                  $this->activateRecord($user);
+                  $this->activate_record($user);
 
 
                   if ($_POST['field'] == 'password') {
@@ -290,10 +290,10 @@ Class Controller_UserManagement extends Controller_Layout {
                      $body->username = $user->username;
                      $body->password = $_POST['value'];
 
-										 $headers = 'From: '.Kohana::config('usermanagement.passwordChangeEmail.from'). "\r\n" .
+										 $headers = 'From: '.Kohana::config('usermanagement.password_change_email.from'). "\r\n" .
 													     'X-Mailer: PHP/' . phpversion();
 										 mail($user->email, 
-											 Kohana::config('usermanagement.passwordChangeEmail.subject'),
+											 Kohana::config('usermanagement.password_change_email.subject'),
                        $body->render(),
                        $headers);
                      $this->response->data(array('value' => '**********'));
@@ -303,11 +303,11 @@ Class Controller_UserManagement extends Controller_Layout {
                      $this->response->data(array('value' => $value));
                   }
                } catch (Exception $e) {
-                  $modelErrors = $e->errors('validation');
-									if(isset($modelErrors['_external'])){
-										$modelErrors = array_values($modelErrors['_external']);
+                  $model_errors = $e->errors('validation');
+									if(isset($model_errors['_external'])){
+										$model_errors = array_values($model_errors['_external']);
 									} 
-                  $errors = array_merge($errors, $modelErrors);
+                  $errors = array_merge($errors, $model_errors);
                }
          }
          if($errors) {
@@ -326,13 +326,13 @@ Class Controller_UserManagement extends Controller_Layout {
 	}
 
 	/*
-	 * Function: activateRecord(& $user)
+	 * Function: activate_record(& $user)
 	 * Switches a user record from status INCOMPLETE to status ACTIVE
 	 * Parameters: 
 	 * $user - an ORM object to update
 	 * Returns: nothing
 	 */
-	protected function activateRecord(& $user){
+	protected function activate_record(& $user){
 		if($user->status != 'ACTIVE'){
 			$user->status = 'ACTIVE';
 			$user->save();

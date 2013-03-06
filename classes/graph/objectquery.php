@@ -1,8 +1,8 @@
 <?php
 
 /*
- * To change this objectType, choose Tools | Templates
- * and open the objectType in the editor.
+ * To change this object_type, choose Tools | Templates
+ * and open the object_type in the editor.
  */
 
 /**
@@ -10,14 +10,14 @@
  *
  * @author deepwinter1
  */
-class Graph_ObjectQuery {
+class Graph_Object_query {
 
    public $attributes;
    
    
-   public function initWithArray($attributes){
+   public function init_with_array($attributes){
       $this->attributes['label'] = null;
-      $this->attributes['objectTypeFilter'] = null;
+      $this->attributes['object_type_filter'] = null;
       $this->attributes['where'] = null;
       $this->attributes['from'] = null;
       $this->attributes['slug'] = null;
@@ -27,15 +27,15 @@ class Graph_ObjectQuery {
       }
    }
    
-   public function initWithXml($xml) {
-      $this->attributes['label'] = $xml->getAttribute('label');
-      $this->attributes['objectTypeFilter'] = $xml->getAttribute('objectTypeFilter');
-      $this->attributes['where'] = $xml->getAttribute('where');
-      $this->attributes['from'] = $xml->getAttribute('from');
-      $this->attributes['slug'] = $xml->getAttribute('slug');
+   public function init_with_xml($xml) {
+      $this->attributes['label'] = $xml->get_attribute('label');
+      $this->attributes['object_type_filter'] = $xml->get_attribute('object_type_filter');
+      $this->attributes['where'] = $xml->get_attribute('where');
+      $this->attributes['from'] = $xml->get_attribute('from');
+      $this->attributes['slug'] = $xml->get_attribute('slug');
    }
    
-   public function run($parentId = null){
+   public function run($parent_id = null){
           
      $objects = Graph::object();
 
@@ -48,17 +48,17 @@ class Graph_ObjectQuery {
       if ($from = $this->attributes['from'] ) { //
 				if($from != 'all'){
 					if ($from == 'parent') {
-						$objects->latticeChildrenFilter($parentId);
+						$objects->lattice_children_filter($parent_id);
 					} else {
 						$from = Graph::object($from);
-						$objects->latticeChildrenFilter($from->id);
+						$objects->lattice_children_filter($from->id);
 					}
 					$objects->order_by('objectrelationships.sortorder');
 				}
       }
 
-      //apply optional objectType filter
-      $objects = $objects->objectTypeFilter($this->attributes['objectTypeFilter']); 
+      //apply optional object_type filter
+      $objects = $objects->object_type_filter($this->attributes['object_type_filter']); 
 
       //apply optional SQL where filter
       if ($where = $this->attributes['where']) { //
@@ -66,13 +66,13 @@ class Graph_ObjectQuery {
       }
 
 	
-      $objects->publishedFilter();
+      $objects->published_filter();
       $objects = $objects->find_all();
   
       $items = array();
-      foreach ($objects as $includeObject) {
-         $itemsData = $includeObject->getContent();
-         $items[] = $itemsData;
+      foreach ($objects as $include_object) {
+         $items_data = $include_object->get_content();
+         $items[] = $items_data;
       }
       return $items;
       

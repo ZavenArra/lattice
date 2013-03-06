@@ -1,8 +1,8 @@
 <?php
 
 /*
- * To change this objectType, choose Tools | Templates
- * and open the objectType in the editor.
+ * To change this object_type, choose Tools | Templates
+ * and open the object_type in the editor.
  */
 
 /**
@@ -19,7 +19,7 @@ function make_seed() {
       
 class Utility_Auth {
    
-   public static function randomPassword(){
+   public static function random_password(){
 		$password_length = 12;
 
 		

@@ -2,7 +2,7 @@
 
 Class Association_Model extends ORM_Model {
 	
-	public function getAssociationId($parent_id, $name){
+	public function get_association_id($parent_id, $name){
 
 	}
 }

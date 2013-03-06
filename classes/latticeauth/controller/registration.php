@@ -1,8 +1,8 @@
 <?
 
-Class LatticeAuth_Controller_Registration extends Controller_Layout {
+Class Lattice_auth_Controller_Registration extends Controller_Layout {
 
-  protected $_actionsThatGetLayout = array(
+  protected $_actions_that_get_layout = array(
     'index',
     'create',
     'confirmed',
@@ -12,7 +12,7 @@ Class LatticeAuth_Controller_Registration extends Controller_Layout {
   protected $user_id = NULL;
 
   public function action_index(){
-    $this->registrationView();
+    $this->registration_view();
   }
 
   public function action_create(){
@@ -34,14 +34,14 @@ Class LatticeAuth_Controller_Registration extends Controller_Layout {
 
    
     if($validation->check() AND !count($this->errors)){
-      $user = $this->createUser($_POST['username'], $_POST['password'], $_POST['firstname'], $_POST['lastname'], $_POST['email']);
+      $user = $this->create_user($_POST['username'], $_POST['password'], $_POST['firstname'], $_POST['lastname'], $_POST['email']);
     } else {
       $this->errors = array_merge($this->errors, $validation->errors('validation/registration'));
     }
 
 
     if(count($this->errors)){
-      $this->registrationView($this->errors);
+      $this->registration_view($this->errors);
     } else {
       $confirmation = new Confirmation('registration'
         , $_POST['email'],
@@ -51,7 +51,7 @@ Class LatticeAuth_Controller_Registration extends Controller_Layout {
       );
       $confirmation->send();
 
-      $view = new View('confirmationRequired');
+      $view = new View('confirmation_required');
       $this->response->body($view->render());
     }
   } 
@@ -65,11 +65,11 @@ Class LatticeAuth_Controller_Registration extends Controller_Layout {
     $user->status = 'ACTIVE';
     $user->save();
 
-    $view = new View('registrationConfirmed');
+    $view = new View('registration_confirmed');
     $this->response->body($view->render());
   }
 
-  protected function registrationView($errors=NULL){
+  protected function registration_view($errors=NULL){
     $view = new View('registration');
     $view->errors = $this->errors;
     isset(    $_POST['username'] ) ? $view->username = $_POST['username'] : $view->username = '';
@@ -81,7 +81,7 @@ Class LatticeAuth_Controller_Registration extends Controller_Layout {
     $this->response->body($view->render());
   }
 
-  protected function createUser($username, $password, $firstname, $lastname, $email){
+  protected function create_user($username, $password, $firstname, $lastname, $email){
 
     try {
       $user = ORM::factory('user');
@@ -96,12 +96,12 @@ Class LatticeAuth_Controller_Registration extends Controller_Layout {
     }
    /**/ catch (Exception $e){
      $errors = array();
-      $modelErrors = $e->errors('validation');
-      if(isset($modelErrors['_external'])){
-        $modelErrors = array_values($modelErrors['_external']);
+      $model_errors = $e->errors('validation');
+      if(isset($model_errors['_external'])){
+        $model_errors = array_values($model_errors['_external']);
       } 
       $this->user_id = NULL;
-      $this->errors = array_merge($errors, $modelErrors);
+      $this->errors = array_merge($errors, $model_errors);
       return false;
    }
     /**/

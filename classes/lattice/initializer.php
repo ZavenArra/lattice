@@ -14,10 +14,10 @@ Class Lattice_Initializer {
       try {
          ORM::Factory('initializedmodule');
       } catch (Exception $e) {
-         if ($e->getCode() == 1146) { //code for table doesn't exist
+         if ($e->get_code() == 1146) { //code for table doesn't exist
             //install the initializedmodules table
-            $sqlFile = Kohana::find_file('sql', 'initializedmodules', $ext = 'sql');
-            $sql = file_get_contents($sqlFile);
+            $sql_file = Kohana::find_file('sql', 'initializedmodules', $ext = 'sql');
+            $sql = file_get_contents($sql_file);
             mysql_query($sql);
          }
       }
@@ -31,8 +31,8 @@ Class Lattice_Initializer {
 
            if (Kohana::find_file('classes/initializer', $dependency)) {
              try {
-               $initializerClass = 'initializer_' . $dependency;
-               $initializer = new $initializerClass();
+               $initializer_class = 'initializer_' . $dependency;
+               $initializer = new $initializer_class();
                $problems = $initializer->initialize();
              } catch (Exception $e){
                throw $e;
@@ -57,11 +57,11 @@ Class Lattice_Initializer {
        } 
      } 
      catch(Exception $e){
-       self::$problems[] = $e->getMessage() . Kohana_Exception::text($e);
+       self::$problems[] = $e->get_message() . Kohana_Exception::text($e);
      }
       
       if(!count(self::$problems) AND count(self::$messages)){
-         $view = new View('initializationMessages');
+         $view = new View('initialization_messages');
          $view->problems = self::$problems;
          $view->messages = self::$messages;
          echo $view->render();
@@ -84,11 +84,11 @@ Class Lattice_Initializer {
               ->find();
       $check->status = 'NOTINITIALIZED';
       $check->save();
-      $allProblems = self::check(array($module));
+      $all_problems = self::check(array($module));
 
-      if (count($allProblems) OR count(self::$messages)) {
+      if (count($all_problems) OR count(self::$messages)) {
          $view = new View('initializationproblems');
-         $view->problems = $allProblems;
+         $view->problems = $all_problems;
          $view->messages = self::$messages;
          echo $view->render();
          exit;
@@ -96,13 +96,13 @@ Class Lattice_Initializer {
    }
    
   
-   public static function addProblem($message){
+   public static function add_problem($message){
       self::$problems[] = $message;
       
    }
 
    
-   public static function addMessage($message){
+   public static function add_message($message){
       self::$messages[] = $message;
       
    }

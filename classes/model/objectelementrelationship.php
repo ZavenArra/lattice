@@ -10,7 +10,7 @@
  *
  * @author deepwinter1
  */
-class Model_ObjectElementRelationship extends ORM {
+class Model_Object_element_relationship extends ORM {
 //put your code here
 }
 ?>

@@ -6,25 +6,25 @@ Class Controller_Graph extends Controller {
 		echo 'this is the graph';
 	}
 
-	public function action_addObject($parentId, $objectTypeId) {
+	public function action_add_object($parent_id, $object_type_id) {
 		$data = $_POST;
-		$newId = Graph::object($parentId)->addObject($objectTypeId, $data);
-		return $newId;
+		$new_id = Graph::object($parent_id)->add_object($object_type_id, $data);
+		return $new_id;
 
 	}
 
-	public function action_addTag($id){
+	public function action_add_tag($id){
 		$object = Graph::object($id);
-		$object->addTag($_POST['tag']);
+		$object->add_tag($_POST['tag']);
 	}
 
-	public function action_removeTag($id){
+	public function action_remove_tag($id){
 		$object = Graph::object($id);
-		$object->removeTag($_POST['tag']);
+		$object->remove_tag($_POST['tag']);
 	}
 
-	public function action_getTags($id){
-		$tags = Graph::object($id)->getTagStrings();
+	public function action_get_tags($id){
+		$tags = Graph::object($id)->get_tag_strings();
 		$this->response->data(array('tags'=>$tags));
 	}
 	

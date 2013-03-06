@@ -1,11 +1,11 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * @package    LatticeAuth
+ * @package    Lattice_auth
  * @author     Deepwinter
  */
 class Controller_Auth extends Controller_Layout {
 
-	protected $_actionsThatGetLayout = array(
+	protected $_actions_that_get_layout = array(
                                          'index',
                                          'login',
                                          'logout',
@@ -14,8 +14,8 @@ class Controller_Auth extends Controller_Layout {
        );
 
 
-	// Use the default Kohana objectType
-	public $defaultobjectType = 'auth/objectType';
+	// Use the default Kohana object_type
+	public $defaultobject_type = 'auth/object_type';
 
 	public $message = '';
 
@@ -84,19 +84,19 @@ class Controller_Auth extends Controller_Layout {
 		$form->password('password')->label(TRUE)->rules('required|length[5,40]');
 		 */
 
-		$formValues = $_POST;
- 		if (isset($formValues['submit']) )
+		$form_values = $_POST;
+ 		if (isset($form_values['submit']) )
 		{
 			// Load the user
-			if (Auth::instance()->login($formValues['username'], $formValues['password']))
+			if (Auth::instance()->login($form_values['username'], $form_values['password']))
 			{
 				// Login successful, redirect
 				//somewhere in here we can hang extra values for user roles
 				//just override auth.redirect or something
 				$authredirect =  Kohana::config('auth.redirect');
 				
-				if($formValues['redirect']){
-					Request::current()->redirect(url::site($formValues['redirect'],Request::current()->protocol(),false));
+				if($form_values['redirect']){
+					Request::current()->redirect(url::site($form_values['redirect'],Request::current()->protocol(),false));
 				} else if($redirect = $authredirect){
 					Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 				} else {
@@ -116,8 +116,8 @@ class Controller_Auth extends Controller_Layout {
 
 		$view = new View('auth/login');
 
-		if($redirect == 'resetPasswordSuccess'){
-			$view->message = I18n::get('resetPasswordSuccess');
+		if($redirect == 'reset_password_success'){
+			$view->message = I18n::get('reset_password_success');
 			$redirect = null;
 		} else if($error){
 			$view->message = $error;
@@ -125,8 +125,8 @@ class Controller_Auth extends Controller_Layout {
 		$view->title = 'User Login';
 
 		if(!$redirect){
-			if(isset($formValues['redirect'])){
-				$redirect = $formValues['redirect'];
+			if(isset($form_values['redirect'])){
+				$redirect = $form_values['redirect'];
 			}
 		}
 		$view->redirect = $redirect;
@@ -153,19 +153,19 @@ class Controller_Auth extends Controller_Layout {
 		if(isset($_POST['email'])){
 			$user = ORM::Factory('user')->where('email', '=', $_POST['email'])->find();
 			if($user->loaded() ){
-				$password = Utility_Auth::randomPassword();
+				$password = Utility_Auth::random_password();
 				$user->password = $password;
 				$user->save();
-				$body = I18n::get('forgotPasswordEmailBody');
+				$body = I18n::get('forgot_password_email_body');
 				$body = str_replace('___Lattice___username___Lattice___', $user->username, $body);
 				$body = str_replace('___Lattice___password___Lattice___', $password, $body);
 
-				mail($user->email, I18n::get('forgotPasswordEmailSubject'), $body);
-				Request::current()->redirect('auth/login/resetPasswordSuccess');
+				mail($user->email, I18n::get('forgot_password_email_subject'), $body);
+				Request::current()->redirect('auth/login/reset_password_success');
 				
 			} else {
 				$view = new View('auth/forgot');
-				$view->message = I18n::get('resetPasswordFailed');
+				$view->message = I18n::get('reset_password_failed');
 
 			}
 		} else {

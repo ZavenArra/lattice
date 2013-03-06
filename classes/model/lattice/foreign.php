@@ -10,14 +10,14 @@
  *
  * @author deepwinter1
  */
-abstract class Model_Lattice_Foreign extends Model_Lattice_ContentDriver {
+abstract class Model_Lattice_Foreign extends Model_Lattice_Content_driver {
    
    protected $contenttable;
 
-   abstract public function foreignTableName();
+   abstract public function foreign_table_name();
    
-   public function loadContentTable($object) {
-      $this->contenttable = ORM::Factory(inflector::singular($this->foreignTableName()));
+   public function load_content_table($object) {
+      $this->contenttable = ORM::Factory(inflector::singular($this->foreign_table_name()));
       $this->contenttable->where('object_id', '=', $object->id)->find();
      
       if(!$this->contenttable->loaded()){
@@ -31,30 +31,30 @@ abstract class Model_Lattice_Foreign extends Model_Lattice_ContentDriver {
      
          throw new Kohana_Exception('Failed to load content table :tablename for object :id',
                  array(
-                     ':tablename'=>$this->foreignTableName(),
+                     ':tablename'=>$this->foreign_table_name(),
                  ":id"=>$object->id));
         */
       
-         $this->contenttable = ORM::Factory(inflector::singular($this->foreignTableName())); 
+         $this->contenttable = ORM::Factory(inflector::singular($this->foreign_table_name())); 
        }
      
    }
 /*
-   abstract public function getTitle();
+   abstract public function get_title();
 
-   abstract public function setTitle();
+   abstract public function set_title();
 */
-   public function getContentColumn($object, $column) {
+   public function get_content_column($object, $column) {
       return $this->contenttable->$column;
    }
 
-   public function setContentColumn($object, $column, $value) {
+   public function set_content_column($object, $column, $value) {
       $this->contenttable->$column = $value;
    }
 
-   public function saveContentTable($object, $inserting=FALSE) {
+   public function save_content_table($object, $inserting=FALSE) {
       if($inserting){
-         $this->contenttable = ORM::Factory(inflector::singular($this->foreignTableName()));
+         $this->contenttable = ORM::Factory(inflector::singular($this->foreign_table_name()));
          $this->contenttable->object_id = $object->id;
       }
       

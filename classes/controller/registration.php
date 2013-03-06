@@ -1,5 +1,5 @@
 <?
 
-Class Controller_Registration extends LatticeAuth_Controller_Registration {
+Class Controller_Registration extends Lattice_auth_Controller_Registration {
 
 }

@@ -8,22 +8,22 @@
 Class latticeutil {
 
 	/*
-	 * Function: getMicroSeconds()
+	 * Function: get_micro_seconds()
 	 * Returns a microseconds of current time as a 3 place float
 	 * Returns: Microseconds
 	 */
-	public static function getMicroSeconds(){
+	public static function get_micro_seconds(){
 		list($usec, $sec) = explode(" ", microtime());
 		return number_format((float)$usec, 3);
 	}
 
 	/*
-	 * Function getMicroTimestamp()
+	 * Function get_micro_timestamp()
 	 * Creates a timestamp including microseconds
 	 * Returns: Microsecond timestamp
 	 */
-	public static function getMicroTimestamp(){
-		$timestamp = date('YmdHis') . substr(latticeutil::getMicroSeconds(), 1) ;
+	public static function get_micro_timestamp(){
+		$timestamp = date('Ymd_his') . substr(latticeutil::get_micro_seconds(), 1) ;
 		return $timestamp;
 	}
 
@@ -52,13 +52,13 @@ Class latticeutil {
 	}
 
 	/*
-	 * Function: checkRoleAccess($role)
+	 * Function: check_role_access($role)
 	 * Checks whether the currently logged in user has a certain role
 	 * Parameters: 
 	 * $role - the role to check against
 	 * Returns: true or false
 	 */
-	public static function checkRoleAccess($role){
+	public static function check_role_access($role){
 
     if(class_exists('Auth')){ //If auth module not installed, grant access
       if($role AND !Auth::instance()->logged_in($role)){
@@ -74,7 +74,7 @@ Class latticeutil {
    /*
     * Check for role access when an array of roles have access
     */
-   public static function checkAccess($roles){
+   public static function check_access($roles){
       if(!$roles){
          return true;
       }
@@ -82,7 +82,7 @@ Class latticeutil {
          $roles = array($roles);
       }
       foreach($roles as $role){
-         if(latticeutil::checkRoleAccess($role)){
+         if(latticeutil::check_role_access($role)){
             return true;
          }
       }
@@ -106,9 +106,9 @@ Class latticeutil {
 	}
 
 	public static $modulos;
-	public static $modulosOptionsCount;
+	public static $modulos_options_count;
 	public static function modulo($identifier, $options){
-		self::$modulosOptionsCount = count( $options );
+		self::$modulos_options_count = count( $options );
 		if(!is_array(self::$modulos)){
 			self::$modulos = array();
 		}
@@ -117,7 +117,7 @@ Class latticeutil {
 		}
 		$index = self::$modulos[$identifier];
 		self::$modulos[$identifier]++;
-		return $options[$index%self::$modulosOptionsCount];
+		return $options[$index%self::$modulos_options_count];
 
 	}
 
@@ -126,19 +126,19 @@ Class latticeutil {
 	 * Formats a line (passed as a fields  array) as CSV and returns the CSV as a string.
 	 * Adapted from http://us3.php.net/manual/en/function.fputcsv.php#87120
 	 */
-	public static function arrayToCsv( array &$fields, $delimiter = ';', $enclosure = '"', $encloseAll = false, $nullToMysqlNull = false ) {
+	public static function array_to_csv( array &$fields, $delimiter = ';', $enclosure = '"', $enclose_all = false, $null_to_mysql_null = false ) {
 		$delimiter_esc = preg_quote($delimiter, '/');
 		$enclosure_esc = preg_quote($enclosure, '/');
 
 		$output = array();
 		foreach ( $fields as $field ) {
-			if ($field === null AND $nullToMysqlNull) {
+			if ($field === null AND $null_to_mysql_null) {
 				$output[] = 'NULL';
 				continue;
 			}
 
 			// Enclose fields containing $delimiter, $enclosure or whitespace
-			if ( $encloseAll OR preg_match( "/(?:${delimiter_esc}|${enclosure_esc}|\s)/", $field ) ) {
+			if ( $enclose_all OR preg_match( "/(?:${delimiter_esc}|${enclosure_esc}|\s)/", $field ) ) {
 				$output[] = $enclosure . str_replace($enclosure, $enclosure . $enclosure, $field) . $enclosure;
 			}
 			else {

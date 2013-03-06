@@ -2,15 +2,15 @@
 
 class Controller_Builder extends Controller {
 
-  private $newObjectIds = array();
+  private $new_object_ids = array();
 
   public function __construct(){
 
-    if(!latticeutil::checkRoleAccess('superuser') AND PHP_SAPI != 'cli' ){
+    if(!latticeutil::check_role_access('superuser') AND PHP_SAPI != 'cli' ){
       die('Only superuser can access builder tool');
     }
 
-    $this->rootNodeObjectType = Kohana::config('cms.graphRootNode');
+    $this->root_node_object_type = Kohana::config('cms.graph_root_node');
 
   }
 
@@ -31,7 +31,7 @@ class Controller_Builder extends Controller {
     closedir($mydir);
   }
 
-  public function action_initializeSite($xmlFile='data'){
+  public function action_initialize_site($xml_file='data'){
 
     $mtime = microtime();
     $mtime = explode(' ', $mtime);
@@ -40,7 +40,7 @@ class Controller_Builder extends Controller {
 
 
     if(Kohana::config('lattice.live')){
-      die('builder/initializeSite is disabled on sites marked live');
+      die('builder/initialize_site is disabled on sites marked live');
     }
 
     //clean out media dir
@@ -71,48 +71,48 @@ class Controller_Builder extends Controller {
     ob_flush();
 
     //immediately reinitialize the graph
-    Graph::configureObjectType($this->rootNodeObjectType, true);
-    Graph::addRootNode($this->rootNodeObjectType);
+    Graph::configure_object_type($this->root_node_object_type, true);
+    Graph::add_root_node($this->root_node_object_type);
 
-    if($xmlFile != 'data'){
+    if($xml_file != 'data'){
       //then we are loading an export
-      $xmlFile = 'application/export/'.$xmlFile.'/'.$xmlFile.'.xml';
+      $xml_file = 'application/export/'.$xml_file.'/'.$xml_file.'.xml';
     }
-    echo "\nInserting Data\n";
-    $this->insertData($xmlFile, NULL, lattice::config($xmlFile, 'nodes')->item(0) );
+    echo "\n_inserting Data\n";
+    $this->insert_data($xml_file, NULL, lattice::config($xml_file, 'nodes')->item(0) );
 
-    latticecms::regenerateImages();
+    latticecms::regenerate_images();
 
-    $this->insertRelationships($xmlFile);
+    $this->insert_relationships($xml_file);
 
     //and run frontend
     echo "\n Regenerating Frontend";
     $this->action_frontend();
 
 
-    $memoryUseFollowingAction = memory_get_usage(true);
+    $memory_use_following_action = memory_get_usage(true);
 
     $mtime = microtime();
     $mtime = explode(" ", $mtime);
     $mtime = $mtime[1] + $mtime[0];
     $endtime = $mtime;
     $totaltime = ($endtime - $starttime);
-    echo '<!-- initializeSite took ' .$totaltime. ' seconds, and completed with memory usage of '.$memoryUseFollowingAction;
+    echo '<!-- initialize_site took ' .$totaltime. ' seconds, and completed with memory usage of '.$memory_use_following_action;
     echo 'Initialize Site Complete';
 
   }
 
-  public function insertRelationships($xmlFile){
+  public function insert_relationships($xml_file){
 
-    $lattices = lattice::config($xmlFile, 'relationships/lattice');
+    $lattices = lattice::config($xml_file, 'relationships/lattice');
     foreach($lattices as $latticeDOM){
-      $lattice = Graph::lattice($latticeDOM->getAttribute('name'));
-      $relationships = lattice::config($xmlFile, 'relationship', $latticeDOM);
+      $lattice = Graph::lattice($latticeDOM->get_attribute('name'));
+      $relationships = lattice::config($xml_file, 'relationship', $latticeDOM);
       foreach($relationships as $relationship){
-        $parentSlug = $relationship->getAttribute('parent');  
-        $childSlug = $relationship->getAttribute('child');  
+        $parent_slug = $relationship->get_attribute('parent');  
+        $child_slug = $relationship->get_attribute('child');  
         //echo 'Adding lattice relationship';
-        $parent = Graph::object($parentSlug)->addLatticeRelationship($lattice, $childSlug);
+        $parent = Graph::object($parent_slug)->add_lattice_relationship($lattice, $child_slug);
       }
       unset($relationships);
     }
@@ -125,79 +125,79 @@ class Controller_Builder extends Controller {
 
   }
 
-  public function action_addData($xmlFile, $secondaryRootNodeObjectType=null){
+  public function action_add_data($xml_file, $secondary_root_node_object_type=null){
 
-    if($secondaryRootNodeObjectType AND !$parentId = Graph::getRootNode($secondaryRootNodeObjectType)){
-      Graph::configureObjectType($secondaryRootNodeObjectType);
-      Graph::addRootNode($secondaryRootNodeObjectType);
-      $parentObject = Graph::getRootNode($secondaryRootNodeObjectType);
+    if($secondary_root_node_object_type AND !$parent_id = Graph::get_root_node($secondary_root_node_object_type)){
+      Graph::configure_object_type($secondary_root_node_object_type);
+      Graph::add_root_node($secondary_root_node_object_type);
+      $parent_object = Graph::get_root_node($secondary_root_node_object_type);
     } else {
-      $parentObject = Graph::getRootNode($this->rootNodeObjectType);
+      $parent_object = Graph::get_root_node($this->root_node_object_type);
     }
 
-    $xmlFile = 'application/export/'.$xmlFile.'/'.$xmlFile.'.xml';
+    $xml_file = 'application/export/'.$xml_file.'/'.$xml_file.'.xml';
 
-    $this->insertData($xmlFile, $parentObject->id, lattice::config($xmlFile, 'nodes')->item(0) ); 
+    $this->insert_data($xml_file, $parent_object->id, lattice::config($xml_file, 'nodes')->item(0) ); 
 
-    $this->insertRelationships($xmlFile);
+    $this->insert_relationships($xml_file);
 
-    latticecms::generateNewImages($this->newObjectIds);
+    latticecms::generate_new_images($this->new_object_ids);
   }
 
 
 
-  public function insertData($xmlFile, $parentId = null, $context=null){
-    if($parentId == null){
-      $parentObject = Graph::getRootNode($this->rootNodeObjectType);
+  public function insert_data($xml_file, $parent_id = null, $context=null){
+    if($parent_id == null){
+      $parent_object = Graph::get_root_node($this->root_node_object_type);
     } else {
-      $parentObject = Graph::object($parentId);
+      $parent_object = Graph::object($parent_id);
     }
 
 
-    $items = lattice::config($xmlFile, 'item', $context);
+    $items = lattice::config($xml_file, 'item', $context);
     foreach($items as $item){
 
-      if(!$item->getAttribute('objectTypeName')){
-        //echo $item->tagName;
-        throw new Kohana_Exception("No objecttypename specified for Item " . $item->tagName);
+      if(!$item->get_attribute('object_type_name')){
+        //echo $item->tag_name;
+        throw new Kohana_Exception("No objecttypename specified for Item " . $item->tag_name);
       }
 
 
       $object = Graph::instance();
-      $objectType = ORM::Factory('objecttype', $item->getAttribute('objectTypeName'));
+      $object_type = ORM::Factory('objecttype', $item->get_attribute('object_type_name'));
 
       $data = array();
-      $clustersData = array();
-      $fields = lattice::config($xmlFile, 'field', $item );
+      $clusters_data = array();
+      $fields = lattice::config($xml_file, 'field', $item );
       foreach($fields as $content){
-        $field = $content->getAttribute('name');
+        $field = $content->get_attribute('name');
 
         switch ($field) {
         case 'title':
           case 'published':
-            $data[$field] = $content->nodeValue;
+            $data[$field] = $content->node_value;
             continue(2);
           case 'slug':
-            $data[$field] = $content->nodeValue;
-            $data['decoupleSlugTitle'] = 1;
+            $data[$field] = $content->node_value;
+            $data['decouple_slug_title'] = 1;
             continue(2);
         }
 
         //need to look up field and switch on field type 
-        $fieldInfo = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
-        if (!$fieldInfo) {
-          throw new Kohana_Exception("Bad field in data/objects!\n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
+        $field_info = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('object_type_name'), $content->get_attribute('name')))->item(0);
+        if (!$field_info) {
+          throw new Kohana_Exception("Bad field in data/objects!\n" . sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('object_type_name'), $content->get_attribute('name')));
         }
 
         //if an element is actually an object, prepare it for insert/update
-        if (lattice::config('objects', sprintf('//objectType[@name="%s"]', $fieldInfo->tagName))->length > 0) {
+        if (lattice::config('objects', sprintf('//object_type[@name="%s"]', $field_info->tag_name))->length > 0) {
           //we have a cluster..               
-          $clusterData = array();
-          foreach (lattice::config($xmlFile, 'field', $content) as $clusterField) {
-            $clusterData[$clusterField->getAttribute('name')] = $clusterField->nodeValue;
+          $cluster_data = array();
+          foreach (lattice::config($xml_file, 'field', $content) as $cluster_field) {
+            $cluster_data[$cluster_field->get_attribute('name')] = $cluster_field->node_value;
           }
 
-          $clustersData[$field] = $clusterData;
+          $clusters_data[$field] = $cluster_data;
           //have to wait until object is inserted to respect translations
           //echo 'continuing';
           continue;
@@ -205,22 +205,22 @@ class Controller_Builder extends Controller {
 
 
         //special setup based on field type
-        switch ($fieldInfo->tagName) {
+        switch ($field_info->tag_name) {
         case 'file':
           case 'image':
-            $path_parts = pathinfo($content->nodeValue);
-            $savename = Model_Object::makeFileSaveName($path_parts['basename']);
-            if (file_exists($content->nodeValue)) {
-              copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $content->nodeValue, Graph::mediapath($savename) . $savename);
+            $path_parts = pathinfo($content->node_value);
+            $savename = Model_Object::make_file_save_name($path_parts['basename']);
+            if (file_exists($content->node_value)) {
+              copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $content->node_value, Graph::mediapath($savename) . $savename);
               $data[$field] = $savename;
             } else {
-              if($content->nodeValue){
-                throw new Kohana_Exception( "File does not exist {$content->nodeValue} ");
+              if($content->node_value){
+                throw new Kohana_Exception( "File does not exist {$content->node_value} ");
               }
             }
             break;
           default:
-            $data[$field] = $content->nodeValue;
+            $data[$field] = $content->node_value;
             break;
         }
 
@@ -231,27 +231,27 @@ class Controller_Builder extends Controller {
       //update the objects data
       $component = false;
       if(isset($data['title']) AND $data['title']){
-        $preexistingObject = Graph::object()
-          ->latticeChildrenFilter($parentObject->id)
+        $preexisting_object = Graph::object()
+          ->lattice_children_filter($parent_object->id)
           ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
           ->where('title', '=', $data['title'])
           ->find();
-        if($preexistingObject->loaded()){
-          $component = $preexistingObject;
-          //echo 'Found prexisting component: '.$preexistingObject->objecttype->objecttypename;
+        if($preexisting_object->loaded()){
+          $component = $preexisting_object;
+          //echo 'Found prexisting component: '.$preexisting_object->objecttype->objecttypename;
         }
       }
 
       //check for pre-existing object as list container
-      //echo sprintf('//objectType[@name="%s"]/elements/list', $parentObject->objecttype->objecttypename);
-      foreach(lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $parentObject->objecttype->objecttypename)) as $listContainerType){
-        $preexistingObject = Graph::object()
-          ->latticeChildrenFilter($parentObject->id)
-          ->objectTypeFilter($listContainerType->getAttribute('name'))
+      //echo sprintf('//object_type[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename);
+      foreach(lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename)) as $list_container_type){
+        $preexisting_object = Graph::object()
+          ->lattice_children_filter($parent_object->id)
+          ->object_type_filter($list_container_type->get_attribute('name'))
           ->find();
-        if($preexistingObject->loaded() AND $preexistingObject->objecttype->objecttypename == $item->getAttribute('objectTypeName') ){
-          //echo 'Found prexisting list container: '.$preexistingObject->objecttype->objecttypename .' '.$item->getAttribute('objectTypeName');
-          $component = $preexistingObject;
+        if($preexisting_object->loaded() AND $preexisting_object->objecttype->objecttypename == $item->get_attribute('object_type_name') ){
+          //echo 'Found prexisting list container: '.$preexisting_object->objecttype->objecttypename .' '.$item->get_attribute('object_type_name');
+          $component = $preexisting_object;
         }
       }
 
@@ -259,39 +259,39 @@ class Controller_Builder extends Controller {
       if($component){
         //echo 'Updating Object '.$component->objecttype->objecttypename."\n";
         //print_r($data);
-        $component->updateWithArray($data);
-        $objectId = $component->id;
+        $component->update_with_array($data);
+        $object_id = $component->id;
       } else {
         //actually add the object
-        //echo 'Adding Object '.$item->getAttribute('objectTypeName')."\n";
+        //echo 'Adding Object '.$item->get_attribute('object_type_name')."\n";
         //print_r($data);
-        $objectId = $parentObject->addObject($item->getAttribute('objectTypeName'), $data);
-        $this->newObjectIds[] = $objectId;
+        $object_id = $parent_object->add_object($item->get_attribute('object_type_name'), $data);
+        $this->new_object_ids[] = $object_id;
       }
 
-      //and now update with elementObjects;
-      if(count($clustersData)){
-        $object = Graph::object($objectId);
+      //and now update with element_objects;
+      if(count($clusters_data)){
+        $object = Graph::object($object_id);
         //echo "Updating clusters\n";
-        $object->updateWithArray($clustersData);
+        $object->update_with_array($clusters_data);
       }
 
 
       //do recursive if it has children
-      if(lattice::config($xmlFile, 'item', $item)->length ){
-        $this->insertData($xmlFile, $objectId,  $item);
+      if(lattice::config($xml_file, 'item', $item)->length ){
+        $this->insert_data($xml_file, $object_id,  $item);
       }
 
-      $lists = lattice::config($xmlFile, 'list', $item);
+      $lists = lattice::config($xml_file, 'list', $item);
       foreach($lists as $list){
         //find the container
         $container = Graph::object()
-          ->latticeChildrenFilter($objectId)
-          ->objectTypeFilter($list->getAttribute('name'))
+          ->lattice_children_filter($object_id)
+          ->object_type_filter($list->get_attribute('name'))
           ->find();
 
         //jump down a level to add object
-        $this->insertData($xmlFile, $container->id, $list);
+        $this->insert_data($xml_file, $container->id, $list);
       }
       unset($lists);
 
@@ -301,11 +301,11 @@ class Controller_Builder extends Controller {
   }
 
 
-  public function action_regenerateImages(){
+  public function action_regenerate_images(){
     try {
-      latticecms::regenerateImages();
+      latticecms::regenerate_images();
     } catch(Exception $e){
-      print_r($e->getMessage() . $e->getTrace());
+      print_r($e->get_message() . $e->get_trace());
     }
     echo 'Done';
     flush();

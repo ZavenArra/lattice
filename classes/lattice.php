@@ -3,16 +3,16 @@
 
     class MyDOMDocument {
       public $_delegate;
-      private $_validationErrors;
+      private $_validation_errors;
 
-      public function __construct (DOMDocument $pDocument) {
-        $this->_delegate = $pDocument;
-        $this->_validationErrors = array();
+      public function __construct (DOMDocument $p_document) {
+        $this->_delegate = $p_document;
+        $this->_validation_errors = array();
       }
 
-      public function __call ($pMethodName, $pArgs) {
-        if ($pMethodName == "validate") {
-          $eh = set_error_handler(array($this, "onValidateError"));
+      public function __call ($p_method_name, $p_args) {
+        if ($p_method_name == "validate") {
+          $eh = set_error_handler(array($this, "on_validate_error"));
           $rv = $this->_delegate->validate();
           if ($eh) {
             set_error_handler($eh);
@@ -20,22 +20,22 @@
           return $rv;
         }
         else {
-          return call_user_func_array(array($this->_delegate, $pMethodName), $pArgs);
+          return call_user_func_array(array($this->_delegate, $p_method_name), $p_args);
         }
       }
-      public function __get ($pMemberName) {
-        if ($pMemberName == "errors") {
-          return $this->_validationErrors;
+      public function __get ($p_member_name) {
+        if ($p_member_name == "errors") {
+          return $this->_validation_errors;
         }
         else {
-          return $this->_delegate->$pMemberName;
+          return $this->_delegate->$p_member_name;
         }
       }
-      public function __set ($pMemberName, $pValue) {
-        $this->_delegate->$pMemberName = $pValue;
+      public function __set ($p_member_name, $p_value) {
+        $this->_delegate->$p_member_name = $p_value;
       }
-      public function onValidateError ($pNo, $pString, $pFile = null, $pLine = null, $pContext = null) {
-        $this->_validationErrors[] = preg_replace("/^.+: */", "", $pString).$pLine;
+      public function on_validate_error ($p_no, $p_string, $p_file = null, $p_line = null, $p_context = null) {
+        $this->_validation_errors[] = preg_replace("/^.+: */", "", $p_string).$p_line;
       }
     }
     
@@ -45,16 +45,16 @@ Class lattice {
 	private static $config;
 
 
-	public static function config($arena, $xpath, $contextNode=null){
+	public static function config($arena, $xpath, $context_node=null){
 		if(!is_array(self::$config)){
 			self::$config = array();
 		}
 
-		if($activeConfig = Kohana::config('lattice.activeConfiguration')){
+		if($active_config = Kohana::config('lattice.active_configuration')){
 			if($configurations = Kohana::config('lattice.configurations')){
-				if($active = $configurations[$activeConfig]){
-					if(isset($active[$arena]) AND $newName = $active[$arena]){
-						$arena = $newName;
+				if($active = $configurations[$active_config]){
+					if(isset($active[$arena]) AND $new_name = $active[$arena]){
+						$arena = $new_name;
 					}
 				}
 			}
@@ -65,21 +65,21 @@ Class lattice {
 		if(!isset(self::$config[$arena])){
 
 			$dom = new DOMDocument();
-			$dom->preserveWhiteSpace = false;
+			$dom->preserve_white_space = false;
 			$dom = new MyDOMDocument($dom);
 
       //check for arena mappings
-      if($customPath = Kohana::config('lattice.paths.'.$arena)){
-        $arenaPath = $customPath;
+      if($custom_path = Kohana::config('lattice.paths.'.$arena)){
+        $arena_path = $custom_path;
       } else {
-        $arenaPath = $arena;
+        $arena_path = $arena;
       }
 
 
       $request = NULL;
       $response = NULL;
       try{
-        $request = Request::Factory($arenaPath);
+        $request = Request::Factory($arena_path);
         $response = $request->execute();
 
       } catch(Exception $e){
@@ -95,22 +95,22 @@ Class lattice {
 
       } else {
 
-        if (file_exists($arenaPath)) {
+        if (file_exists($arena_path)) {
           //if the argument is actually a path to a file
-          $arenaPath = getcwd() . '/' . $arenaPath;
+          $arena_path = getcwd() . '/' . $arena_path;
         } else {
-          $arenaFilePath = Kohana::find_file('lattice', $arenaPath, 'xml', true);
-          if (!count($arenaFilePath)) {
-            throw new Kohana_Exception('Could not locate xml :file', array(':file' => $arenaPath));
+          $arena_file_path = Kohana::find_file('lattice', $arena_path, 'xml', true);
+          if (!count($arena_file_path)) {
+            throw new Kohana_Exception('Could not locate xml :file', array(':file' => $arena_path));
           }
-          $arenaPath = $arenaFilePath[count($arenaFilePath) - 1];
+          $arena_path = $arena_file_path[count($arena_file_path) - 1];
         }
-        $dom->load($arenaPath);
+        $dom->load($arena_path);
       }
       if (!$dom->validate()) {
-        throw new Kohana_Exception("Validation failed on :arenaPath \n :xmlErrorTrace", array(
-          ':arenaPath' => $arenaPath,
-          ':xmlErrorTrace' =>  var_export($dom->errors, true)
+        throw new Kohana_Exception("Validation failed on :arena_path \n :xml_error_trace", array(
+          ':arena_path' => $arena_path,
+          ':xml_error_trace' =>  var_export($dom->errors, true)
         ));
       }
        
@@ -124,40 +124,40 @@ Class lattice {
 				$clusters->load( $path[0] );
 				//echo $clusters->_delegate->saveXML();
 				$clusters = new DOMXPath($clusters->_delegate);
-				$clusterNodes = $clusters->evaluate('//objectType');
-				foreach($clusterNodes as $node){
-					$node = $dom->_delegate->importNode($node, true);
-					$objectTypesNode = $dom->_delegate->getElementsByTagName('objectTypes')->item(0);
-					$objectTypesNode->appendChild($node);
-					//$dom->_delegate->insertBefore($node, $refNode);
+				$cluster_nodes = $clusters->evaluate('//object_type');
+				foreach($cluster_nodes as $node){
+					$node = $dom->_delegate->import_node($node, true);
+					$object_types_node = $dom->_delegate->get_elements_by_tag_name('object_types')->item(0);
+					$object_types_node->append_child($node);
+					//$dom->_delegate->insert_before($node, $ref_node);
 				}
 				//recreate Xpath object
-				//$dom->formatOutput;
+				//$dom->format_output;
 				//echo $dom->_delegate->saveXML();
 			}
 
-			$xpathObject = new DOMXPath($dom->_delegate);
+			$xpath_object = new DOMXPath($dom->_delegate);
 
 
-			self::$config[$arena] = $xpathObject;
+			self::$config[$arena] = $xpath_object;
 		}
-		if($contextNode){
-			$xmlNodes = self::$config[$arena]->evaluate($xpath, $contextNode);
+		if($context_node){
+			$xml_nodes = self::$config[$arena]->evaluate($xpath, $context_node);
 		} else {
-			$xmlNodes = self::$config[$arena]->evaluate($xpath);
+			$xml_nodes = self::$config[$arena]->evaluate($xpath);
 		}
-		return $xmlNodes;
+		return $xml_nodes;
 	}
 
 	/*
-	 * Function: buildModule
+	 * Function: build_module
 	 This is the same function as in Display_Controller..
 	 Obviously these classes should share a parent class or this is a static helper
 	 Parameters:
 	 $module - module configuration parameters
-	 $constructorArguments - module arguments to constructor
+	 $constructor_arguments - module arguments to constructor
 	 */
-	public static function buildModule($module, $constructorArguments=array() ){
+	public static function build_module($module, $constructor_arguments=array() ){
 		//need to look into this, these should be converged or interoperable
 		if(isset($module['elementname'])){
 			$module['modulename'] = $module['elementname'];
@@ -168,7 +168,7 @@ Class lattice {
 				$view = new View($module['modulename']);
 				$object = Graph::object($module['modulename']);
         if($object->loaded()){ // in this case it's a slug for a specific object
-					foreach(latticeviews::getViewContent($object->id, $object->objecttype->objecttypename) as $key=>$content){
+					foreach(latticeviews::get_view_content($object->id, $object->objecttype->objecttypename) as $key=>$content){
 						$view->$key = $content;
 					}
 				}
@@ -186,18 +186,18 @@ Class lattice {
 
 		$fullname = $module['modulename'].'_Controller';
 		$module = new $fullname; //this needs to be called with fargs
-		call_user_func_array(array($module, '__construct'), $constructorArguments);
+		call_user_func_array(array($module, '__construct'), $constructor_arguments);
 
-		$module->createIndexView();
-		$module->view->loadResources();
+		$module->create_index_view();
+		$module->view->load_resources();
 
 		//and load resources for it's possible parents
 		$parentclass = get_parent_class($module);
 		$parentname = str_replace('_Controller', '', $parentclass);
-		$module->view->loadResources(strtolower($parentname));
+		$module->view->load_resources(strtolower($parentname));
 
 		//build submodules of this module (if any)
-		$module->buildModules();
+		$module->build_modules();
 
 		return $module->view->render();
 
@@ -205,36 +205,36 @@ Class lattice {
 		//
 		//BELOW HERE NEEDS TO BE FIXED IN ALL CHILDREN OF Lattice_CONTROLLER
 		//CONTROLERS SHOULD JUST ASSIGN TEMPLATE VARS THEN AND THERE
-		if($objectTypevar==NULL){
+		if($object_typevar==NULL){
 			$this->view->$module['modulename'] = $module->view->render();
 		} else {
-			$this->view->$objectTypevar = $module->view->render();
+			$this->view->$object_typevar = $module->view->render();
 		}
 	}
 
-	public static function setCurrentLanguage($languageCode){
-		Session::instance()->set('languageCode', $languageCode);
+	public static function set_current_language($language_code){
+		Session::instance()->set('language_code', $language_code);
 	}
 
-	public static function getCurrentLanguage(){
-		$languageCode = Session::instance()->get('languageCode');
-		if(!$languageCode){
-			$languageCode = Kohana::config('lattice.defaultLanguage');
+	public static function get_current_language(){
+		$language_code = Session::instance()->get('language_code');
+		if(!$language_code){
+			$language_code = Kohana::config('lattice.default_language');
 		}
-		return $languageCode;
+		return $language_code;
 	}
 
 	//takes Exception as argument
-	public static function getOneLineErrorReport(Exception $e){
+	public static function get_one_line_error_report(Exception $e){
 		switch(get_class($e)){
-			case 'Lattice_ApiException':
+			case 'Lattice_Api_exception':
            // echo get_class($e);
            // die();
-				return $e->getOneLineErrorReport();
+				return $e->get_one_line_error_report();
 				break;
 			default:
-				$message = $e->getMessage();
-				foreach( $e->getTrace() as $trace){
+				$message = $e->get_message();
+				foreach( $e->get_trace() as $trace){
 					if(isset($trace['file'])){
 						$message .= " ::::: ".$trace['file'].':'.$trace['line']."\n;";
 					}
@@ -244,15 +244,15 @@ Class lattice {
 		}
 	}	
   
-	public static $webRoot = null;
+	public static $web_root = null;
 
-	public static function convertFullPathToWebPath($fullPath){
+	public static function convert_full_path_to_web_path($full_path){
 
 
-		if(self::$webRoot == null){
-			self::$webRoot  = getcwd().'/';
+		if(self::$web_root == null){
+			self::$web_root  = getcwd().'/';
 		}
-		$webpath = str_replace(self::$webRoot, '', $fullPath);
+		$webpath = str_replace(self::$web_root, '', $full_path);
 		
 		return $webpath;
 	}

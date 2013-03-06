@@ -9,51 +9,51 @@ class Navigation {
 
 	
 	/*
-		Function:getNodeInfo
+		Function:get_node_info
 		Utility function to get one node
 	*/
-	public static function getNodeInfo(& $object){
+	public static function get_node_info(& $object){
 		if(!strstr('Lattice_Object', get_class($object))){
 			$object = Graph::object($object);
 		}
 
-		$nodeInfo = array();
-		foreach(Kohana::config('navigation.navDataFields.object') as $send=>$field){
-			$nodeInfo[$send] = $object->$field;
+		$node_info = array();
+		foreach(Kohana::config('navigation.nav_data_fields.object') as $send=>$field){
+			$node_info[$send] = $object->$field;
 		}
-		foreach(Kohana::config('navigation.navDataFields.objectType') as $field){
-			$nodeInfo[$field] = $object->objecttype->$field;
+		foreach(Kohana::config('navigation.nav_data_fields.object_type') as $field){
+			$node_info[$field] = $object->objecttype->$field;
 		}
-		if(!count($nodeInfo['addableObjects'])){
-			unset($nodeInfo['addableObjects']);
+		if(!count($node_info['addable_objects'])){
+			unset($node_info['addable_objects']);
 		}
 
 		
-		foreach(Kohana::config('navigation.navDataFields.content') as $send=>$field){
-			$nodeInfo[$send] = $object->$field;
+		foreach(Kohana::config('navigation.nav_data_fields.content') as $send=>$field){
+			$node_info[$send] = $object->$field;
       }
 		
       
-		if(!$nodeInfo['title']){
-			$nodeInfo['title'] = $nodeInfo['slug'];
+		if(!$node_info['title']){
+			$node_info['title'] = $node_info['slug'];
 		}
 
-    if(strlen($nodeInfo['title']) > 25) {
-      $nodeInfo['title'] = substr($nodeInfo['title'], 0, 23);
-      $nodeInfo['title'] .= '...';
+    if(strlen($node_info['title']) > 25) {
+      $node_info['title'] = substr($node_info['title'], 0, 23);
+      $node_info['title'] .= '...';
    }
 
-		return $nodeInfo;
+		return $node_info;
 	}
    
    /*
-		Function:getNodeInfo
+		Function:get_node_info
 		Utility function to get one node
 	*/
-	public static function getNodeInfoById($id){
+	public static function get_node_info_by_id($id){
 		$object = Graph::object($id);
-		$nodeInfo = Navigation::getNodeInfo($object);
-		return $nodeInfo;
+		$node_info = Navigation::get_node_info($object);
+		return $node_info;
 	}
 		
 }

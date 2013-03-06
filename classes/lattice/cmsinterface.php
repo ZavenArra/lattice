@@ -15,7 +15,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
 
    /*
-    * Function:  saveFile($objectId)
+    * Function:  save_file($object_id)
     * Function called on file upload
     * Parameters:
     * objectid  - the object id of the object currently being edited
@@ -30,26 +30,26 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
      );
     */
 
-   public function action_savefile($objectId) {
+   public function action_savefile($object_id) {
 
       try {
 
-         $this->savefile($objectId);
+         $this->savefile($object_id);
 
       } catch (Exception $e) {
 
          //return the model errors gracecully;
 
-         $this->handleDataException($e);
+         $this->handle_data_exception($e);
 
       }
    }
 
-   public function savefile($objectId) {
+   public function savefile($object_id) {
 
       $field = strtok($_POST['field'], '_');
 
-      $file = latticecms::saveHttpPostFile($objectId, $field, $_FILES['Filedata']);
+      $file = latticecms::save_http_post_file($object_id, $field, $_FILES['Filedata']);
       $result = array(
           'id' => $file->id,
           'src' => $file->original->fullpath,
@@ -59,27 +59,27 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       );
 
       //if it's an image
-      $thumbSrc = null;
+      $thumb_src = null;
       if ($file->uithumb->filename) {
          if (file_exists(Graph::mediapath() . $file->uithumb->filename)) {
             $resultpath = Graph::mediapath() . $file->uithumb->filename;
-            $thumbSrc = $resultpath; //Kohana::config('cms.basemediapath') . $file->uithumb->fullpath;
+            $thumb_src = $resultpath; //Kohana::config('cms.basemediapath') . $file->uithumb->fullpath;
          }
       }
-      if ($thumbSrc) {
+      if ($thumb_src) {
          $size = getimagesize($resultpath);
          $result['width'] = $size[0];
          $result['height'] = $size[1];
-         $result['thumbSrc'] = $thumbSrc;
+         $result['thumb_src'] = $thumb_src;
       }
 
       $this->response->data($result);
    }
 
-   public function action_clearField($objectId, $field) {
+   public function action_clear_field($object_id, $field) {
 
-      $object = Graph::object($objectId);
-      if (Graph::isFileModel($object->$field) AND $object->$field->loaded()) {
+      $object = Graph::object($object_id);
+      if (Graph::is_file_model($object->$field) AND $object->$field->loaded()) {
          $file = $object->$field;
          $file->delete();
       }
@@ -108,7 +108,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
          //return the model errors gracecully;
 
-         $this->handleDataException($e);
+         $this->handle_data_exception($e);
       }
    }
 
@@ -133,61 +133,61 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       $object->$field = $_POST['value'];
       $object->save();
 
-      $returnData = array();
-      if (count($object->getMessages())) {
-         $returnData['messages'] = $object->getMessages();
+      $return_data = array();
+      if (count($object->get_messages())) {
+         $return_data['messages'] = $object->get_messages();
       }
 
       $object = Graph::object($id);
       $value = $object->$field;
 
-      $config = $object->getElementConfig($field);
+      $config = $object->get_element_config($field);
 
-			$returnData['value'] = $value;
+			$return_data['value'] = $value;
 
       if ($_POST['field'] == 'title') {
-         $returnData['slug'] = $object->slug;
+         $return_data['slug'] = $object->slug;
       }
-      $this->response->data($returnData);
+      $this->response->data($return_data);
    }
 
-   public function action_move($objectId, $newParentId, $lattice='lattice', $oldParentId=NULL){
-      $object = Graph::object($objectId);
-      $object->move($newParentId, $lattice, $oldParentId);
-      $this->response->data(array('newParentId', $object->getLatticeParent($lattice)->id));
+   public function action_move($object_id, $new_parent_id, $lattice='lattice', $old_parent_id=NULL){
+      $object = Graph::object($object_id);
+      $object->move($new_parent_id, $lattice, $old_parent_id);
+      $this->response->data(array('new_parent_id', $object->get_lattice_parent($lattice)->id));
    }
 
 
    /*
-    * Function: handleDataException();
+    * Function: handle_data_exception();
     */
 
-   protected function handleDataException($e) {
+   protected function handle_data_exception($e) {
 
 			if(get_class($e) != 'ORM_Validation_Exception'){
 				throw $e;
 			}
-      $modelErrors = $e->errors('validation');
+      $model_errors = $e->errors('validation');
 
-      if (isset($modelErrors['_external'])) {
-         $modelErrors = array_values($modelErrors['_external']);
+      if (isset($model_errors['_external'])) {
+         $model_errors = array_values($model_errors['_external']);
       }
 
-      $firstkey = array_keys($modelErrors);
+      $firstkey = array_keys($model_errors);
       $firstkey = $firstkey[0];
 
-      $return = $this->response->data(array('value' => NULL, 'error' => 'true', 'message' => $modelErrors[$firstkey]));
+      $return = $this->response->data(array('value' => NULL, 'error' => 'true', 'message' => $model_errors[$firstkey]));
    }
 
    /*
-     Function: togglePublish
-     Toggles published / unpublished status via ajax. Call as cms/ajax/togglePublish/{id}/
+     Function: toggle_publish
+     Toggles published / unpublished status via ajax. Call as cms/ajax/toggle_publish/{id}/
      Parameters:
      id - the id to toggle
      Returns: Published status (0 or 1)
     */
 
-   public function action_togglePublish($id) {
+   public function action_toggle_publish($id) {
       $object = Graph::object($id);
       if ($object->published == 0) {
          $object->published = 1;
@@ -200,36 +200,36 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
    }
 
    /*
-     Function: saveSortOrder
+     Function: save_sort_order
      Saves sort order of some ids
      Parameters:
-     $_POST['sortOrder'] - array of object ids in their new sort order
+     $_POST['sort_order'] - array of object ids in their new sort order
     */
 
-   public function action_saveSortOrder($parentId, $lattice='lattice') {
+   public function action_save_sort_order($parent_id, $lattice='lattice') {
 
-     if($_POST['sortOrder']){
-       $order = explode(',', $_POST['sortOrder']);
-       $object = ORM::Factory('object', $parentId);
-       $object->setSortOrder($order, $lattice);
+     if($_POST['sort_order']){
+       $order = explode(',', $_POST['sort_order']);
+       $object = ORM::Factory('object', $parent_id);
+       $object->set_sort_order($order, $lattice);
      }
 
       $this->response->data(array('saved' => true));
    }
 
-   public function action_addTag($id) {
+   public function action_add_tag($id) {
       $object = Graph::object($id);
-      $object->addTag($_POST['tag']);
+      $object->add_tag($_POST['tag']);
    }
 
-   public function action_removeTag($id) {
+   public function action_remove_tag($id) {
       $object = Graph::object($id);
-      $object->removeTag($_POST['tag']);
+      $object->remove_tag($_POST['tag']);
    }
 
-   public function action_getTags($id) {
+   public function action_get_tags($id) {
 
-      $tags = Graph::object($id)->getTagStrings();
+      $tags = Graph::object($id)->get_tag_strings();
       $this->response->data(array('tags' => $tags));
    }
 
@@ -238,7 +238,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
      deletes a object/category and all categories and leaves underneath
      Returns: returns html for undelete pane
     */
-   public function action_removeObject($id) {
+   public function action_remove_object($id) {
      $object = Graph::object($id);
      $object->deactivate($id);
 
@@ -260,30 +260,30 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
      $this->response->data(array('undeleted' => true));
    }
 
-   public function action_associate($parentId, $objectId, $lattice){
-     $parent = Graph::object($parentId);
-     $parent->addLatticeRelationship($objectid, $lattice);
-     $metaObjectType = $parent->getMetaObjectType($lattice);
+   public function action_associate($parent_id, $object_id, $lattice){
+     $parent = Graph::object($parent_id);
+     $parent->add_lattice_relationship($objectid, $lattice);
+     $meta_object_type = $parent->get_meta_object_type($lattice);
    }
 
-   public function action_disassociate($parentId, $objectId, $lattice){
-      Graph::object($parentId)->removeLatticeRelationship($objectid, $lattice);
+   public function action_disassociate($parent_id, $object_id, $lattice){
+      Graph::object($parent_id)->remove_lattice_relationship($objectid, $lattice);
    }
    
-   public function action_toggleUserAssociation($objectId) {
+   public function action_toggle_user_association($object_id) {
      //get user and object from post
-     $userId = $_POST["field"];
-     $toggleState = $_POST["value"];
+     $user_id = $_POST["field"];
+     $toggle_state = $_POST["value"];
      //check user is valid or bail
-     $userCheck =   ORM::factory('user',$userId);
-     if (!$userCheck->loaded()){
+     $user_check =   ORM::factory('user',$user_id);
+     if (!$user_check->loaded()){
  			 $this->response->data(array('error'=>true,'message'=>'User does not exist'));
      } else {
        //if the toggle 
-      if ($toggleState==0){
+      if ($toggle_state==0){
         $o = ORM::factory('objects_user')
-        ->where('object_id','=',$objectId)
-        ->where('user_id','=',$userId);
+        ->where('object_id','=',$object_id)
+        ->where('user_id','=',$user_id);
         $results = $o->find_all();
         foreach($results as $result) {
           $result->delete();
@@ -292,24 +292,24 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       } else {
         //the association doesn't exist so create it  
         $o = ORM::factory('objects_user');
-        $o->user_id = $userId;
-        $o->object_id = $objectId;
+        $o->user_id = $user_id;
+        $o->object_id = $object_id;
         $o->save();
   		  $this->response->data( array('value'=>$_POST["value"]) );
       }  
     }
   }
    
-   public function action_associateuser($userId, $objectId) {
+   public function action_associateuser($user_id, $object_id) {
       //check 
-    $userCheck =   ORM::factory('user',$userId);
-    $existsCheck = ORM::factory('objects_user')
-    ->where('object_id','=',$objectId)
-    ->where('user_id','=',$userId)->find();
-    if ($userCheck->loaded() AND (!$existsCheck->loaded())){
+    $user_check =   ORM::factory('user',$user_id);
+    $exists_check = ORM::factory('objects_user')
+    ->where('object_id','=',$object_id)
+    ->where('user_id','=',$user_id)->find();
+    if ($user_check->loaded() AND (!$exists_check->loaded())){
       $o = ORM::factory('objects_user');
-      $o->user_id = $userId;
-      $o->object_id = $objectId;
+      $o->user_id = $user_id;
+      $o->object_id = $object_id;
       $o->save();
       echo json_encode(TRUE);
     } else {
@@ -320,21 +320,21 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
 
    //abstract
-   protected function cms_getNode($id) {
+   protected function cms_get_node($id) {
       
    }
 
    //abstract
-   protected function cms_addObject($parentId, $objectTypeId, $data) {
+   protected function cms_add_object($parent_id, $object_type_id, $data) {
       
    }
    
    
- 	 public function action_getChildrenPaged($id,$pageNum) {
+ 	 public function action_get_children_paged($id,$page_num) {
      $object = Graph::object($id);
-     $object->setPageNum($pageNum);
-//     $object->setItemsPerPage(2);
-     $ret = $object->latticeChildrenFilterPaged($id,"lattice");
+     $object->set_page_num($page_num);
+//     $object->set_items_per_page(2);
+     $ret = $object->lattice_children_filter_paged($id,"lattice");
    }
 }
 

@@ -1,11 +1,11 @@
 <?
 /*
- * Class: FileImage_Model
+ * Class: File_image_Model
  * Class to keep track of image properties for specific resizes.  This model does not wrap a database table, 
  * instead functioning as a cache for manually reading file size and other info.
  */
 
-class Model_FileImage {
+class Model_File_image {
 
 
 	/*

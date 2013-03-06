@@ -3,10 +3,10 @@
  * Class: Lattice_Auth_Controller
  * Reponsible for the 'logged in as' object on the MOP backend objects
  */
-class Controller_AuthStatus extends Controller {
+class Controller_Auth_status extends Controller {
 
 	/*
-	 * Function: createIndexView()
+	 * Function: create_index_view()
 	 * Implements abstract function in base assigning the main view 
 	 */
 	public function action_index(){

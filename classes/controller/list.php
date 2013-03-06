@@ -8,7 +8,7 @@
 
 
 /*
-  Class: ListModule_Controller
+  Class: List_module_Controller
 
  */
 
@@ -16,7 +16,7 @@ class Controller_List extends Lattice_CMSInterface {
    /*
     *  Variable: object_id
     *  static int the global object id when operating within the CMS submodules get the object id
-    *  we could just reference the primaryId attribute of Display as well...
+    *  we could just reference the primary_id attribute of Display as well...
     */
 
    private static $object_id = NULL;
@@ -29,14 +29,14 @@ class Controller_List extends Lattice_CMSInterface {
    protected $model = 'object';
 
    /*
-    * Variable: containerObject
+    * Variable: container_object
     * The parent object of the lists children
     */
-   protected $_containerObject;
+   protected $_container_object;
    protected $_family;
 
    
-   protected $_listObject;
+   protected $_list_object;
    
    
    
@@ -52,25 +52,25 @@ class Controller_List extends Lattice_CMSInterface {
    }
    
    
-   protected function setListObject($listObjectIdOrParentId, $family=null) {
+   protected function set_list_object($list_object_id_or_parent_id, $family=null) {
       if ($family != null) {
-				$parentId = $listObjectIdOrParentId;
+				$parent_id = $list_object_id_or_parent_id;
 
-				$listContainerObject = Graph::object($parentId)->$family;
+				$list_container_object = Graph::object($parent_id)->$family;
 
 
-         if (!$listContainerObject->loaded()) {
+         if (!$list_container_object->loaded()) {
             throw new Kohana_Exception('Did not find list container List object is missing container: :id', array(':id' => $lt->id));
          }
 
-         $this->_listObject = $listContainerObject;
+         $this->_list_object = $list_container_object;
 
       } else {
 
-         $this->_listObject = ORM::Factory('listcontainer', $listObjectIdOrParentId);
+         $this->_list_object = ORM::Factory('listcontainer', $list_object_id_or_parent_id);
       }
       
-      if(!$this->_listObject->loaded()){
+      if(!$this->_list_object->loaded()){
          throw new Kohana_Exception('Failed to load list object');
       }
       
@@ -78,70 +78,70 @@ class Controller_List extends Lattice_CMSInterface {
    
    
    /*
-    * Function: action_getList
-    * Supports either calling with list object id directly, or with parentId and family 
+    * Function: action_get_list
+    * Supports either calling with list object id directly, or with parent_id and family 
     * for looking in database and config
     */
    
-   public function action_getList($listObjectIdOrParentId, $family = null) {
+   public function action_get_list($list_object_id_or_parent_id, $family = null) {
       
-      $this->setListObject($listObjectIdOrParentId, $family);
+      $this->set_list_object($list_object_id_or_parent_id, $family);
  
       //throw new Kohana_Exception('what');
 
       $view = null;
-			$customListView = 'lattice/objectTypes/'.$this->_listObject->objecttype->objecttypename;
-      if (Kohana::find_file('views', $customListView)) {
-         $view = new View($customListView);
+			$custom_list_view = 'lattice/object_types/'.$this->_list_object->objecttype->objecttypename;
+      if (Kohana::find_file('views', $custom_list_view)) {
+         $view = new View($custom_list_view);
       } else {
          $view = new View('list');
       }
 
-      $listMembers = $this->_listObject->getLatticeChildren();
+      $list_members = $this->_list_object->get_lattice_children();
 
       $html = '';
-      foreach ($listMembers as $object) {
+      foreach ($list_members as $object) {
 
-         $htmlChunks = latticecms::buildUIHtmlChunksForObject($object);
+         $html_chunks = latticecms::buildUIHtml_chunks_for_object($object);
 
-         $customItemView = 'lattice/objectTypes/' . $object->objecttype->objecttypename;
-         $itemView = null;
-         if (Kohana::find_file('views', $customItemView)) {
-            $itemView = new View($customItemView);
-            $this->loadResourcesForKey($customItemView);
-            foreach($htmlChunks as $key=>$value){
-               $itemView->$key = $value;
+         $custom_item_view = 'lattice/object_types/' . $object->objecttype->objecttypename;
+         $item_view = null;
+         if (Kohana::find_file('views', $custom_item_view)) {
+            $item_view = new View($custom_item_view);
+            $this->load_resources_for_key($custom_item_view);
+            foreach($html_chunks as $key=>$value){
+               $item_view->$key = $value;
             }
-            $itemView->object = $object;
+            $item_view->object = $object;
 
          } else {
-            $itemView = new View('list_item');
+            $item_view = new View('list_item');
          }
 
 
-         $itemView->uiElements = $htmlChunks;
+         $item_view->ui_elements = $html_chunks;
 
          $data = array();
          $data['id'] = $object->id;
-         $data['object_id'] = $this->_listObject->id;
-         $data['instance'] = $this->_listObject->objecttype->templatname;
-         $itemView->data = $data;
+         $data['object_id'] = $this->_list_object->id;
+         $data['instance'] = $this->_list_object->objecttype->templatname;
+         $item_view->data = $data;
 
-         $html.=$itemView->render();
+         $html.=$item_view->render();
       }
       
 
       //actually we need to do an absolute path for local config
-      $listConfig = $this->_listObject->getConfig();
-      $view->name = $listConfig->getAttribute('name');
-      $view->label = $listConfig->getAttribute('label');
-      $view->class = $listConfig->getAttribute('cssClasses');
-      $view->class .= ' allowChildSort-' . $listConfig->getAttribute('allowChildSort');
-      $view->class .= ' sortDirection-' . $this->_listObject->getSortDirection();
+      $list_config = $this->_list_object->get_config();
+      $view->name = $list_config->get_attribute('name');
+      $view->label = $list_config->get_attribute('label');
+      $view->class = $list_config->get_attribute('css_classes');
+      $view->class .= ' allow_child_sort-' . $list_config->get_attribute('allow_child_sort');
+      $view->class .= ' sort_direction-' . $this->_list_object->get_sort_direction();
       $view->items = $html;
-      $view->instance = $this->_listObject->objecttype->templatname;
-		$view->addableObjects = $this->_listObject->objecttype->addableObjects;
-      $view->listObjectId = $this->_listObject->id;
+      $view->instance = $this->_list_object->objecttype->templatname;
+		$view->addable_objects = $this->_list_object->objecttype->addable_objects;
+      $view->list_object_id = $this->_list_object->id;
 
 
       $this->response->body($view->render());
@@ -149,40 +149,40 @@ class Controller_List extends Lattice_CMSInterface {
 
 
    /*
-     Function: addItem()
+     Function: add_item()
      Adds a list item
 
      Returns:
-     the rendered objectType of the new item
+     the rendered object_type of the new item
     */
 
-   public function action_addObject($listObjectId, $objectTypeId=null) {
+   public function action_add_object($list_object_id, $object_type_id=null) {
  
       
-      $this->setListObject($listObjectId);  //This function should be removed
+      $this->set_list_object($list_object_id);  //This function should be removed
                                                      //and all functionality simply moved to the model.
 
            
-      $listObject = ORM::Factory('listcontainer', $listObjectId);
+      $list_object = ORM::Factory('listcontainer', $list_object_id);
 
 
-      //addable item should be specifid in the addItem call
-      if($objectTypeId == null){
+      //addable item should be specifid in the add_item call
+      if($object_type_id == null){
    
-        $addableObjectTypes = lattice::config('objects', sprintf('//list[@name="%s"]/addableObject', $listObject->objecttype->objecttypename));
-        if (!$addableObjectTypes->length > 0) {
+        $addable_object_types = lattice::config('objects', sprintf('//list[@name="%s"]/addable_object', $list_object->objecttype->objecttypename));
+        if (!$addable_object_types->length > 0) {
            throw new Kohana_Exception('No Addable Objects ' .' Count not locate configuration in objects.xml for ' . sprintf('//list[@name="%s"]/addableobject', $this->_family));
         }
-        $objectTypeId = $addableObjectTypes->item(0)->getAttribute('objectTypeName');
+        $object_type_id = $addable_object_types->item(0)->get_attribute('object_type_name');
       } 
  
-      $newId = $listObject->addObject($objectTypeId);
+      $new_id = $list_object->add_object($object_type_id);
       
-       //$this->response->data( $this->cms_getNodeInfo($newId) );	
-      //$this->response->body( $this->cms_getNodeHtml($newId));
+       //$this->response->data( $this->cms_get_node_info($new_id) );	
+      //$this->response->body( $this->cms_get_node_html($new_id));
       
       
-      $object = Graph::object($newId);
+      $object = Graph::object($new_id);
       
       /*Cludge to bypass echoing placeholders necessary to pass validation*/
      // $item->username = NULL;
@@ -190,35 +190,35 @@ class Controller_List extends Lattice_CMSInterface {
      // $item->email = NULL;
       /*End cludge*/
       
-      $htmlChunks = latticecms::buildUIHtmlChunksForObject($object);
+      $html_chunks = latticecms::buildUIHtml_chunks_for_object($object);
 
-		$customItemView = 'lattice/objectTypes/' . $object->objecttype->objecttypename;
-      $itemView = null;
-      if (Kohana::find_file('views', $customItemView)) {
-         $itemView = new View($customItemView);
-         foreach($htmlChunks as $key=>$value){
-				$itemView->$key = $value;
+		$custom_item_view = 'lattice/object_types/' . $object->objecttype->objecttypename;
+      $item_view = null;
+      if (Kohana::find_file('views', $custom_item_view)) {
+         $item_view = new View($custom_item_view);
+         foreach($html_chunks as $key=>$value){
+				$item_view->$key = $value;
 			}
-         $itemView->object = $object;
+         $item_view->object = $object;
 
       } else {
-         $itemView = new View('list_item');
-         $itemView->uiElements = $htmlChunks;
+         $item_view = new View('list_item');
+         $item_view->ui_elements = $html_chunks;
 
       }
 
 
 
       $data = array();
-      $data['id'] = $newId;
-      $data['object_id'] = $listObjectId;
+      $data['id'] = $new_id;
+      $data['object_id'] = $list_object_id;
       ;
-      $data['instance'] = $this->_listObject->objecttype->objecttypename;
+      $data['instance'] = $this->_list_object->objecttype->objecttypename;
 
 
-      $itemView->data = $data;
+      $item_view->data = $data;
 
-      $html = $itemView->render();
+      $html = $item_view->render();
 
       $this->response->body($html);
     }

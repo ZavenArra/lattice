@@ -3,7 +3,7 @@
 
 Class Associator_Checkboxes {
 
-  public $parentId = NULL;
+  public $parent_id = NULL;
   public $parent = NULL;
   public $lattice = NULL;
   public $filters = NULL;
@@ -11,19 +11,19 @@ Class Associator_Checkboxes {
   public $associated = array();
 
   protected $label;
-  protected $poolLabel;
+  protected $pool_label;
 
-  private $maxPoolSize = 350;
+  private $max_pool_size = 350;
 
-  public static function getFiltersFromDomNode($node){
-    $filtersNodeList = lattice::config('objects', 'filter', $node);
+  public static function get_filters_from_dom_node($node){
+    $filters_node_list = lattice::config('objects', 'filter', $node);
     $filters = array();
-    foreach($filtersNodeList as $filter){
+    foreach($filters_node_list as $filter){
       $setting = array();
-      $setting['from'] = $filter->getAttribute('from');
-      $setting['objectTypeName'] = $filter->getAttribute('objectTypeName');
-      $setting['tagged'] = $filter->getAttribute('tagged');
-      $setting['function'] = $filter->getAttribute('function');
+      $setting['from'] = $filter->get_attribute('from');
+      $setting['object_type_name'] = $filter->get_attribute('object_type_name');
+      $setting['tagged'] = $filter->get_attribute('tagged');
+      $setting['function'] = $filter->get_attribute('function');
       $filters[] = $setting;
     }
     return $filters;
@@ -32,23 +32,23 @@ Class Associator_Checkboxes {
 
 
   //TODO
-  public function setViewName($viewName){throw new Kohana_Exception('Not Implemented');} //to support multi-lattice single custom view
-  public function setAssociatorName($associatorName){throw new Kohana_Exception('Not Implemented');} //to support mutli-instance single lattice
+  public function set_view_name($view_name){throw new Kohana_Exception('Not Implemented');} //to support multi-lattice single custom view
+  public function set_associator_name($associator_name){throw new Kohana_Exception('Not Implemented');} //to support mutli-instance single lattice
 
 
 
-  public function __construct($parentId, $lattice, $filters=NULL, $loadPool=NULL){
-    $this->parentId = $parentId;
-    $this->parent = Graph::object($this->parentId);
+  public function __construct($parent_id, $lattice, $filters=NULL, $load_pool=NULL){
+    $this->parent_id = $parent_id;
+    $this->parent = Graph::object($this->parent_id);
     $this->lattice = $lattice;
     $this->filters = $filters; 
     
-    foreach($this->parent->getLatticeChildren($this->lattice) as $child){
+    foreach($this->parent->get_lattice_children($this->lattice) as $child){
       $this->associated[] = $child;
     }
 
-    if(is_array($loadPool)){
-      $this->pool = $loadPool;
+    if(is_array($load_pool)){
+      $this->pool = $load_pool;
     }
 
     //load pool
@@ -59,120 +59,120 @@ Class Associator_Checkboxes {
         if(isset($filter['from']) AND $filter['from']){
           $from = Graph::object($filter['from']);
           ($filter['lattice']) ? $lattice = $filter['lattice'] : $lattice = 'lattice';
-          $objects = $from->latticeChildrenQuery($lattice);
+          $objects = $from->lattice_children_query($lattice);
         }
 
         if(isset($filter['tagged']) AND $filter['tagged']){
-          $objects->taggedFilter($filter['tagged']); 
+          $objects->tagged_filter($filter['tagged']); 
         }
 
 
 
-        if(isset($filter['objectTypeName']) AND $filter['objectTypeName']){
-          $t = ORM::Factory('objectType', $filter['objectTypeName']);
+        if(isset($filter['object_type_name']) AND $filter['object_type_name']){
+          $t = ORM::Factory('object_type', $filter['object_type_name']);
           if(!$t->loaded()){
-            Graph::configureObjectType($filter['objectTypeName']);
-            $t = ORM::Factory('objecttype', $filter['objectTypeName']);
+            Graph::configure_object_type($filter['object_type_name']);
+            $t = ORM::Factory('objecttype', $filter['object_type_name']);
             if(!$t->loaded()){
-              throw new Kohana_Exception($filter['objectTypeName'] .' Not Found');
+              throw new Kohana_Exception($filter['object_type_name'] .' Not Found');
             }
           }
           $objects->where('objecttype_id', '=', $t->id);
         }
         if(isset($filter['match']) AND $filter['match']){
-          $matchFields = explode(',',$filter['matchFields']);
+          $match_fields = explode(',',$filter['match_fields']);
           $wheres = array();
-          foreach($matchFields as $matchField){
-            $wheres[] = array($matchField, 'LIKE', '%'.$filter['match'].'%'); 
+          foreach($match_fields as $match_field){
+            $wheres[] = array($match_field, 'LIKE', '%'.$filter['match'].'%'); 
           }
-          $objects->contentFilter($wheres);
+          $objects->content_filter($wheres);
 
         }
 
         if(isset($filter['function']) AND $filter['function']){
           $callback = explode('::', $filter['function']);
-          $objects = call_user_func($callback, $objects, $parentId);
+          $objects = call_user_func($callback, $objects, $parent_id);
         }
 
-        $objects->where('objects.language_id', '=', Graph::defaultLanguage());
-        $objects->publishedFilter();
-        $objects->limit($this->maxPoolSize);
+        $objects->where('objects.language_id', '=', Graph::default_language());
+        $objects->published_filter();
+        $objects->limit($this->max_pool_size);
 
         $results = $objects->find_all();
         foreach($results as $object){
-          if(!$this->parent->checkLatticeRelationship($lattice, $object)){
+          if(!$this->parent->check_lattice_relationship($lattice, $object)){
             $this->pool[$object->id] = $object;  //scalability problem
           }
         }
       } 
-    } else if(!is_array($loadPool)) {
+    } else if(!is_array($load_pool)) {
 
       $objects = Graph::object()
-        ->where('id', '!=', $parentId)
-        ->where('objects.language_id', '=', Graph::defaultLanguage())
-        ->publishedFilter()
-        ->limit($this->maxPoolSize)
+        ->where('id', '!=', $parent_id)
+        ->where('objects.language_id', '=', Graph::default_language())
+        ->published_filter()
+        ->limit($this->max_pool_size)
         ->find_all();
       $this->pool = $objects;
     }
 
   }
 
-  public function setLabel($label){
+  public function set_label($label){
     $this->label = $label;
   }
 
-  public function setPoolLabel($poolLabel){
-    $this->poolLabel = $poolLabel;
+  public function set_pool_label($pool_label){
+    $this->pool_label = $pool_label;
   }
 
-  public function render($viewName = NULL){
-    if($viewName AND  ($view = Kohana::find_file('views', 'lattice/associator/'.$viewName) )){
-      $view = new View('lattice/associator/'.$viewName);
+  public function render($view_name = NULL){
+    if($view_name AND  ($view = Kohana::find_file('views', 'lattice/associator/'.$view_name) )){
+      $view = new View('lattice/associator/'.$view_name);
     } else {
       $view = new View('lattice/associator');
     }
 
-    $view->pool = $this->poolItemViews($viewName);
+    $view->pool = $this->pool_item_views($view_name);
 
     $view->associated = array();
-    foreach($this->associated as $associatedItem){
-      $view->associated[] = $this->getItemView($associatedItem, $viewName);
+    foreach($this->associated as $associated_item){
+      $view->associated[] = $this->get_item_view($associated_item, $view_name);
     }
 
-    $view->parentId = $this->parentId;
+    $view->parent_id = $this->parent_id;
     $view->lattice = $this->lattice;
 
     $view->label = $this->label;
-    $view->poolLabel = $this->poolLabel;
+    $view->pool_label = $this->pool_label;
     return $view->render();
   }
 
-  public function renderPoolItems(){
-    return(implode("\n",$this->poolItemViews($this->lattice)));
+  public function render_pool_items(){
+    return(implode("\n",$this->pool_item_views($this->lattice)));
   }
 
-  private function poolItemViews($viewName = NULL){
-    $poolItemViews = array();
-    foreach($this->pool as $poolItem){
-      $poolItemViews[] = $this->getItemView($poolItem, $viewName);
+  private function pool_item_views($view_name = NULL){
+    $pool_item_views = array();
+    foreach($this->pool as $pool_item){
+      $pool_item_views[] = $this->get_item_view($pool_item, $view_name);
     }
-    return $poolItemViews;
+    return $pool_item_views;
   }
 
-  private function getItemView($item, $viewName){
+  private function get_item_view($item, $view_name){
 
-    if($viewName AND $view = Kohana::find_file('views/lattice/associator/'.$viewName, $item->objecttype->objecttypename)){
-      $view = new View('lattice/associator/'.$viewName.'/'.$item->objecttype->objecttypename);
+    if($view_name AND $view = Kohana::find_file('views/lattice/associator/'.$view_name, $item->objecttype->objecttypename)){
+      $view = new View('lattice/associator/'.$view_name.'/'.$item->objecttype->objecttypename);
 //      Kohana::$log->add(Log::ERROR, "A")->write();
-    } else if($viewName AND $view = Kohana::find_file('views/lattice/associator/'.$viewName, 'item')){ 
-      $view = new View('lattice/associator/'.$viewName.'/'.'item');
+    } else if($view_name AND $view = Kohana::find_file('views/lattice/associator/'.$view_name, 'item')){ 
+      $view = new View('lattice/associator/'.$view_name.'/'.'item');
 //      Kohana::$log->add(Log::ERROR, "B")->write();
     } else if($view = Kohana::find_file('views/lattice/associator/', $item->objecttype->objecttypename)){ 
       $view = new View('lattice/associator/'.$item->objecttype->objecttypename);
-//      Kohana::$log->add(Log::ERROR, "C " . $item . ", " . $viewName )->write();
+//      Kohana::$log->add(Log::ERROR, "C " . $item . ", " . $view_name )->write();
     } else  {
-//      Kohana::$log->add(Log::ERROR, "D " . $item . ", " . $viewName )->write();
+//      Kohana::$log->add(Log::ERROR, "D " . $item . ", " . $view_name )->write();
       $view = new View('lattice/associator/item');
     }
     $view->object = $item;
@@ -188,30 +188,30 @@ Class Associator_Checkboxes {
 /*
 Class Associator_Checkboxes {
 
-  public static function makePool($associatedViews, $poolViews){
-    if(count($associatedViews)){
-      $keys = array_map(array('Associator_Checkboxes','titleIndex'), $associatedViews);
-      $associatedViews = array_combine($keys, $associatedViews);
+  public static function make_pool($associated_views, $pool_views){
+    if(count($associated_views)){
+      $keys = array_map(array('Associator_Checkboxes','title_index'), $associated_views);
+      $associated_views = array_combine($keys, $associated_views);
     }
-    $poolViews = array_combine( array_map(array('Associator_Checkboxes','titleIndex'), $poolViews),  $poolViews);
-    foreach($associatedViews as $key => $view){
+    $pool_views = array_combine( array_map(array('Associator_Checkboxes','title_index'), $pool_views),  $pool_views);
+    foreach($associated_views as $key => $view){
       $view->selected = true;
-      $poolViews[$key] = $view;
+      $pool_views[$key] = $view;
     }
 
-    array_walk($poolViews, array('Associator_Checkboxes', 'setUniqueElementId'));
+    array_walk($pool_views, array('Associator_Checkboxes', 'set_unique_element_id'));
 
-    ksort($poolViews);
+    ksort($pool_views);
 
-    return $poolViews;
+    return $pool_views;
   }
 
-  private static function titleIndex($view){
+  private static function title_index($view){
     return $view->object->title;
   }
 
-  private static function setUniqueElementId($view){
-    $view->uniqueElementId = LatticeCms::uniqueElementId();
+  private static function set_unique_element_id($view){
+    $view->unique_element_id = Lattice_cms::unique_element_id();
   }
 
 }*/

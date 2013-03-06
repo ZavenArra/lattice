@@ -1,8 +1,8 @@
 <?php
 
 /*
- * To change this objectType, choose Tools | Templates
- * and open the objectType in the editor.
+ * To change this object_type, choose Tools | Templates
+ * and open the object_type in the editor.
  */
 
 /**
@@ -17,11 +17,11 @@ class Initializer_Latticeauth {
 		 try {
 			 ORM::Factory('user');
 		 } catch (Exception $e) {
-			 if ($e->getCode() == 1146) { //code for table doesn't exist
+			 if ($e->get_code() == 1146) { //code for table doesn't exist
 				 //install the initializedmodules table
-				 $sqlFile = Kohana::find_file('sql', 'auth-schema-mysql', $ext = 'sql');
+				 $sql_file = Kohana::find_file('sql', 'auth-schema-mysql', $ext = 'sql');
 
-				 $sql = file_get_contents( $sqlFile);
+				 $sql = file_get_contents( $sql_file);
          $rval = mysql_multiquery($sql);
 			 }
 		 }
@@ -37,7 +37,7 @@ class Initializer_Latticeauth {
          $user->username = 'admin';
          $user->firstname = 'Admin';
          $user->lastname = 'Admin';
-         $password = Utility_Auth::randomPassword(); 
+         $password = Utility_Auth::random_password(); 
          $user->password = $password;
          $user->email = 'PLACEHOLDER_' . rand() . '@placeholder.com';
          $user->save();
@@ -49,7 +49,7 @@ class Initializer_Latticeauth {
          //$user->add(ORM::Factory('role', 'staging'));
          $user->save();
          
-         Lattice_Initializer::addMessage('Created admin user with password '.$password);
+         Lattice_Initializer::add_message('Created admin user with password '.$password);
       }
    }
 }

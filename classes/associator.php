@@ -17,19 +17,19 @@ Class Associator {
   protected $page_length;
   // this is page size for paginator
   // this doesn't matter anymore because we're paginating
-  private $maxPoolSize = 80;
-  private $pageNum = 1;
-  public static function getFiltersFromDomNode($node)
+  private $max_pool_size = 80;
+  private $page_num = 1;
+  public static function get_filters_from_dom_node($node)
   {
-    $filtersNodeList = lattice::config('objects', 'filter', $node);
+    $filters_node_list = lattice::config('objects', 'filter', $node);
     $filters = array();
-    foreach($filtersNodeList as $filter)
+    foreach($filters_node_list as $filter)
     {
       $setting = array();
-      $setting['from'] = $filter->getAttribute('from');
-      $setting['objectTypeName'] = $filter->getAttribute('objectTypeName');
-      $setting['tagged'] = $filter->getAttribute('tagged');
-      $setting['function'] = $filter->getAttribute('function');
+      $setting['from'] = $filter->get_attribute('from');
+      $setting['object_type_name'] = $filter->get_attribute('object_type_name');
+      $setting['tagged'] = $filter->get_attribute('tagged');
+      $setting['function'] = $filter->get_attribute('function');
       $filters[] = $setting;
     }
     return $filters;
@@ -38,26 +38,26 @@ Class Associator {
 
   // TODO
   // to support multi-lattice single custom view
-  public function setViewName($view_name)
+  public function set_view_name($view_name)
   { 
     throw new Kohana_Exception('Not Implemented');
   } 
 
   // to support mutli-instance single lattice
-  public function setAssociatorName($associatorName)
+  public function set_associator_name($associator_name)
   {
     throw new Kohana_Exception('Not Implemented');
   } 
 
   public function __construct($parent_id, $lattice, $filters=NULL, $load_pool=NULL)
   {
-    $this->parentId = $parent_id;
-    $this->parent = Graph::object($this->parentId);
+    $this->parent_id = $parent_id;
+    $this->parent = Graph::object($this->parent_id);
     $this->lattice = $lattice;
     $this->filters = $filters; 
-    $this->pageLength = Kohana::config('cms.associatorPageLength');
+    $this->page_length = Kohana::config('cms.associator_page_length');
 
-    foreach($this->parent->getLatticeChildrenPaged($this->lattice) as $child)
+    foreach($this->parent->get_lattice_children_paged($this->lattice) as $child)
     {
       $this->associated[] = $child;
     }
@@ -89,24 +89,24 @@ Class Associator {
         {
           $from = Graph::object($filter['from']);
           ($filter['lattice']) ? $lattice = $filter['lattice'] : ( $lattice = 'lattice' );
-          $objects = $from->latticeChildrenQuery($lattice);
+          $objects = $from->lattice_children_query($lattice);
         }
 
         if(isset($filter['tagged']) AND $filter['tagged'])
         {
-          $objects->taggedFilter($filter['tagged']); 
+          $objects->tagged_filter($filter['tagged']); 
         }
 
-        if(isset($filter['objectTypeName']) AND $filter['objectTypeName'])
+        if(isset($filter['object_type_name']) AND $filter['object_type_name'])
         {
-          $t = ORM::Factory('objectType', $filter['objectTypeName']);
+          $t = ORM::Factory('object_type', $filter['object_type_name']);
           if(!$t->loaded())
           {
-            Graph::configureObjectType($filter['objectTypeName']);
-            $t = ORM::Factory('objecttype', $filter['objectTypeName']);
+            Graph::configure_object_type($filter['object_type_name']);
+            $t = ORM::Factory('objecttype', $filter['object_type_name']);
             if(!$t->loaded())
             {
-              throw new Kohana_Exception($filter['objectTypeName'] .' Not Found');
+              throw new Kohana_Exception($filter['object_type_name'] .' Not Found');
             }
           }
           $objects->where('objecttype_id', '=', $t->id);
@@ -114,13 +114,13 @@ Class Associator {
 
         if(isset($filter['match']) AND $filter['match'])
         {
-          $matchFields = explode(',',$filter['matchFields']);
+          $match_fields = explode(',',$filter['match_fields']);
           $wheres = array();
-          foreach($matchFields as $matchField)
+          foreach($match_fields as $match_field)
           {
-            $wheres[] = array($matchField, 'LIKE', '%'.$filter['match'].'%'); 
+            $wheres[] = array($match_field, 'LIKE', '%'.$filter['match'].'%'); 
           }
-          $objects->contentFilter($wheres);
+          $objects->content_filter($wheres);
 
         }
 
@@ -133,8 +133,8 @@ Class Associator {
         }
 
 
-        $objects->where('objects.language_id', '=', Graph::defaultLanguage());
-        $objects->publishedFilter();
+        $objects->where('objects.language_id', '=', Graph::default_language());
+        $objects->published_filter();
         //just return an array of id's then load the pool object
         $results = $objects->find_all()->as_array(NULL, 'id');
         //check our filtered objects are correct
@@ -142,23 +142,23 @@ Class Associator {
         $res = array();
         foreach ($results as $id) {
           $object = Graph::object($id);
-          if(!$this->parent->checkLatticeRelationship($lattice, $object))
+          if(!$this->parent->check_lattice_relationship($lattice, $object))
           {
             $res[$id] = $id;
           }
         }
         $results = $res;
-        $this->numPages = ceil(count($results)/$this->pageLength);
+        $this->num_pages = ceil(count($results)/$this->page_length);
         //get slice the first page, then load the objects from their id's
         $params = explode("/",$_SERVER["REQUEST_URI"]);
         //print_r($params);
         //@TODO this is a kludge.  Oh well.
-        if (isset($params[7]) AND $params[6]=="postingVideosAssociator")
+        if (isset($params[7]) AND $params[6]=="posting_videos_associator")
         {
           //we're passing a page number - so slice the object ids
           $results = array_slice($results,($params[7]-1)*16,16);
         } else {
-          $results = array_slice($results,0,$this->pageLength);
+          $results = array_slice($results,0,$this->page_length);
         }
 
         foreach($results as $id)
@@ -172,9 +172,9 @@ Class Associator {
 
       $objects = Graph::object()
         ->where( 'id', '!=', $parent_id )
-        ->where( 'objects.language_id', '=', Graph::defaultLanguage() )
-        ->publishedFilter()
-        ->limit( $this->maxPoolSize )
+        ->where( 'objects.language_id', '=', Graph::default_language() )
+        ->published_filter()
+        ->limit( $this->max_pool_size )
         ->find_all();
       $this->pool = $objects;
 
@@ -182,18 +182,18 @@ Class Associator {
 
   }
 
-  public function setLabel($label)
+  public function set_label($label)
   {
     $this->label = $label;
   }
-  public function setPageLength($page_length)
+  public function set_page_length($page_length)
   {
-    $this->pageLength = $page_length;
+    $this->page_length = $page_length;
   }
 
-  public function setPoolLabel($pool_label)
+  public function set_pool_label($pool_label)
   {
-    $this->poolLabel = $pool_label;
+    $this->pool_label = $pool_label;
   }
 
   public function render($view_name = NULL)
@@ -206,56 +206,56 @@ Class Associator {
     }
 
 
-    $view->pool = $this->poolItemViews($view_name);
+    $view->pool = $this->pool_item_views($view_name);
 
     $view->associated = array();
-    foreach($this->associated as $associatedItem)
+    foreach($this->associated as $associated_item)
     {
-      $view->associated[] = $this->getItemView($associatedItem, $view_name, true );
+      $view->associated[] = $this->get_item_view($associated_item, $view_name, true );
     }
 
-    $view->parentId = $this->parentId;
+    $view->parent_id = $this->parent_id;
     $view->lattice = $this->lattice;
     $view->label = $this->label;
-    $view->poolLabel = $this->poolLabel;
-    $view->pageLength = $this->pageLength;
-    $view->numPages = $this->numPages;
-
+    $view->pool_label = $this->pool_label;
+    $view->page_length = $this->page_length;
+    $view->num_pages = $this->num_pages;
 
 
     /*
-    paginator vars- probably should be its own func
-    these are messy too
+      paginator vars- probably should be its own func
+      these are messy too
 
      */
 
-    $view->urlPrepend = "ajax/html";
-    //  echo strpos($original_uri,$action);
-    //pass our paginator params to the view
-    //    $view->controllerName = $this->request->controller();
-    //    $view->action = $action;
-    //    $view->params = $this->request->param();
-    //    $view->currentPage = $view->params["param4"];
+    $view->url_prepend = "ajax/html";
+    // echo strpos($original_uri,$action);
+    // pass our paginator params to the view
+    // $view->controller_name = $this->request->controller();
+    // $view->action = $action;
+    // $view->params = $this->request->param();
+    // $view->current_page = $view->params["param4"];
+    
     /* end paginator vars*/ 
     return $view->render();
   }
 
-  public function renderPoolItems()
+  public function render_pool_items()
   {
-    return( implode("\n",$this->poolItemViews($this->lattice) ) );
+    return( implode("\n",$this->pool_item_views($this->lattice) ) );
   }
 
-  private function poolItemViews($view_name = NULL)
+  private function pool_item_views($view_name = NULL)
   {
-    $poolItemViews = array();
-    foreach($this->pool as $poolItem)
+    $pool_item_views = array();
+    foreach($this->pool as $pool_item)
     {
-      $poolItemViews[] = $this->getItemView($poolItem, $view_name, false );
+      $pool_item_views[] = $this->get_item_view($pool_item, $view_name, false );
     }
-    return $poolItemViews;
+    return $pool_item_views;
   }
 
-  private function getItemView($item, $view_name, $associated )
+  private function get_item_view($item, $view_name, $associated )
   {
 
     if($view_name AND $view = Kohana::find_file('views/lattice/associator/'.$view_name, $item->objecttype->objecttypename))

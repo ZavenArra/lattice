@@ -10,7 +10,7 @@
 class Lattice_CMS extends Lattice_CMSInterface {
 
   
- protected $_actionsThatGetLayout = array(
+ protected $_actions_that_get_layout = array(
   'index',
  );
 
@@ -18,9 +18,9 @@ class Lattice_CMS extends Lattice_CMSInterface {
   /*
  *  Variable: object_id
  *  static int the global object id when operating within the CMS submodules get the object id
- *  we could just reference the primaryId attribute of Display as well...
+ *  we could just reference the primary_id attribute of Display as well...
  */
- private static $objectId = NULL;
+ private static $object_id = NULL;
 
 
  /*
@@ -42,25 +42,25 @@ class Lattice_CMS extends Lattice_CMSInterface {
  *
  */
 
- protected $defaultobjectType='lattice_cms';
+ protected $defaultobject_type='lattice_cms';
 
  /*
   Function: __constructor
-  Loads subModules to build from config 
+  Loads sub_modules to build from config 
  */
  public function __construct($request, $response){
   parent::__construct($request, $response);
      
-  $this->modules = Kohana::config('cms.subModules');
+  $this->modules = Kohana::config('cms.sub_modules');
 
-  $this->loadResources('lattice_cms');
+  $this->load_resources('lattice_cms');
 
-  lattice::config('objects', 'objectTypes');
+  lattice::config('objects', 'object_types');
 
  }
 
- public function getRootNode(){
-  throw new Kohana_Exception('Child class must implement getRootNode()');
+ public function get_root_node(){
+  throw new Kohana_Exception('Child class must implement get_root_node()');
  }
 
  public function action_index(){
@@ -74,13 +74,13 @@ class Lattice_CMS extends Lattice_CMSInterface {
       
   //get the root noode
 
-  $rootObject = $this->getRootObject();
-  $this->view->rootObjectId = $rootObject->id;
+  $root_object = $this->get_root_object();
+  $this->view->root_object_id = $root_object->id;
       
   
   //basically this is an issue with wanting to have multiple things going on
   //with the same controller as a parent at runtime
-  $this->view->navigation = Request::factory(Kohana::config($this->controllerName.'.navigationRequest'))->execute()->body();
+  $this->view->navigation = Request::factory(Kohana::config($this->controller_name.'.navigation_request'))->execute()->body();
 
   //get all the languages
   $languages = ORM::Factory('language')->find_all();
@@ -90,53 +90,53 @@ class Lattice_CMS extends Lattice_CMSInterface {
  }
 
  /*
-  * Function: setPageId($object_id)
+  * Function: set_page_id($object_id)
   * Sets the object id of the object currently being edited
   * Parameters:
   * object_id  - the object id
   * Returns: nothing 
   */
- private function setPageId($object_id){
-  if(self::$objectId == NULL){
-   self::$objectId = $object_id;
+ private function set_page_id($object_id){
+  if(self::$object_id == NULL){
+   self::$object_id = $object_id;
   }
  }
 
  /*
-  * Function: getPageId() 
+  * Function: get_page_id() 
   * Returns the object id of the object currently being edited
   * Parameters: none
   * Returns: object id
   */
- public static function getPageId(){
-   return self::$objectId;
+ public static function get_page_id(){
+   return self::$object_id;
  }
 
  /*
- Function: getPage(id)
+ Function: get_page(id)
  Builds the editing object for the object currenlty being edited
  Parameters: 
  id - the object id to be retrieved
  Returns: array('html'=>html, 'js'=>js, 'css'=>css)
   */
- public function action_getPage($id, $languageCode = null){
+ public function action_get_page($id, $language_code = null){
 
 
 
-   if(!$languageCode){
+   if(!$language_code){
      $object = Graph::object($id);
    } else {
-     $object = Graph::object($id)->translate($languageCode);
+     $object = Graph::object($id)->translate($language_code);
    }
 
-   self::$objectId = $id;
+   self::$object_id = $id;
 
 
    /*
     * If the request is actually for a module, instead of a object, build
     * the subrequest and set the response body to the request.
     * This should probably be re-engineered to be handled by the navi
-    * module only, and cmsModules.xml should also be a navi thing
+    * module only, and cms_modules.xml should also be a navi thing
     * since only the navi needs to know about the modules being loaded as long
     * as the reciever (CMS in this case) has an appropriate container.
     */
@@ -160,8 +160,8 @@ class Lattice_CMS extends Lattice_CMSInterface {
    $this->nodetitle->title = $object->title; //this should change to object table
    $this->nodetitle->slug = $object->slug;
    $this->nodetitle->id = $object->id;
-   $this->nodetitle->allowDelete = $object->objecttype->allowDelete;
-   $this->nodetitle->allowTitleEdit = ($object->objecttype->allowTitleEdit == "true" ? true : false);
+   $this->nodetitle->allow_delete = $object->objecttype->allow_delete;
+   $this->nodetitle->allow_title_edit = ($object->objecttype->allow_title_edit == "true" ? true : false);
 
 
    $settings = Kohana::config('cms.defaultsettings');
@@ -170,49 +170,49 @@ class Lattice_CMS extends Lattice_CMSInterface {
        $this->nodetitle->$key = $value;
      }
    }
-   //and get settings for specific objectType
+   //and get settings for specific object_type
    $settings = Kohana::config('cms.'.$object->objecttype->objecttypename.'.defaultsettings');
    if(is_array($settings)){
      foreach($settings as $key=>$value){
        $this->nodetitle->$key = $value;
      }
    }
-   if($languageCode){
-     $this->nodetitle->translationModifier = '_'.$languageCode;
+   if($language_code){
+     $this->nodetitle->translation_modifier = '_'.$language_code;
    } else {
-     $this->nodetitle->translationModifier = '';
+     $this->nodetitle->translation_modifier = '';
    }
 
    $nodetitlehtml = $this->nodetitle->render();
-   $moveNodeHtml = latticecms::moveNodeHtml($object);
+   $move_node_html = latticecms::move_node_html($object);
 
-   $customView = 'lattice/objectTypes/'.$object->objecttype->objecttypename; //check for custom view for this objectType
+   $custom_view = 'lattice/object_types/'.$object->objecttype->objecttypename; //check for custom view for this object_type
 
-   $htmlChunks = latticecms::buildUIHtmlChunksForObject($object, $languageCode);
-   if (Kohana::find_file('views', $customView)) {
+   $html_chunks = latticecms::buildUIHtml_chunks_for_object($object, $language_code);
+   if (Kohana::find_file('views', $custom_view)) {
      $html = $nodetitlehtml;
-     $html .= $moveNodeHtml;
-     $view = new View($customView);
-     $this->loadResourcesForKey($customView);
-     foreach ($htmlChunks as $key => $value) {
+     $html .= $move_node_html;
+     $view = new View($custom_view);
+     $this->load_resources_for_key($custom_view);
+     foreach ($html_chunks as $key => $value) {
        $view->$key = $value;
      }
      $view->object = $object;
-     $view->objectId = $object->id;
+     $view->object_id = $object->id;
      $html .= $view->render();
    } else {
-     $html = $nodetitlehtml . implode($htmlChunks); 
-     $nodetitlehtml . $moveNodeHtml . implode($htmlChunks);
+     $html = $nodetitlehtml . implode($html_chunks); 
+     $nodetitlehtml . $move_node_html . implode($html_chunks);
    }
-   // $html .= $usersListHtml;
-   $this->response->data($object->getPageContent()); 
+   // $html .= $users_list_html;
+   $this->response->data($object->get_page_content()); 
    $this->response->body($html);
 
  }
 
 
- public function action_getTranslatedPage($objectId, $languageCode){
-   return $this->action_getPage($objectId, $languageCode);
+ public function action_get_translated_page($object_id, $language_code){
+   return $this->action_get_page($object_id, $language_code);
  }
 
  public function action_addchild($id, $objecttype_id){
@@ -220,18 +220,18 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
    //add the file keys in so that we can look them up in the FILES array laster
    //consider just combining POST and FILES here
-   $fileKeys = array_keys($_FILES);
-   foreach($fileKeys as $fk){
+   $file_keys = array_keys($_FILES);
+   foreach($file_keys as $fk){
      $data[$fk] = null; 
    }
    Kohana::$log->add(Log::INFO, var_export($data, true));
    Kohana::$log->add(Log::INFO, var_export($_FILES, true));
-   $newId = Graph::object($id)->addObject($objecttype_id, $data);
-   $this->response->data($newId);
+   $new_id = Graph::object($id)->add_object($objecttype_id, $data);
+   $this->response->data($new_id);
  }
 
  /*
- Function: action_addObject($id)
+ Function: action_add_object($id)
  Public interface for adding an object to the cms data
  Parameters:
  id - the id of the parent category
@@ -240,14 +240,14 @@ class Lattice_CMS extends Lattice_CMSInterface {
  $_POST - possible array of keys and values to initialize with
  Returns: nav controller node object
   */
- public function action_addObject($parentId, $objectTypeId){      
-   $newId = $this->cms_addObject($parentId, $objectTypeId, $_POST);
-   $this->response->data( $this->cms_getNodeInfo($newId) ); 
-   $this->response->body( $this->cms_getNodeHtml($newId));
+ public function action_add_object($parent_id, $object_type_id){      
+   $new_id = $this->cms_add_object($parent_id, $object_type_id, $_POST);
+   $this->response->data( $this->cms_get_node_info($new_id) ); 
+   $this->response->body( $this->cms_get_node_html($new_id));
 
  }
 
- public function assignObjectId(){
+ public function assign_object_id(){
 
    }
 

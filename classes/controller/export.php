@@ -2,7 +2,7 @@
 
 class Controller_Export extends Controller {
 
-   public $outputDir;
+   public $output_dir;
 
    public function __construct() {
       if (!is_writable('application/views/xmldumps/')) {
@@ -10,17 +10,17 @@ class Controller_Export extends Controller {
       }
    }
 //all this logic should be moved to the export MODEL
-   private function getObjectFields($object) {
+   private function get_object_fields($object) {
       $nodes = array();
-      $content = $object->getContent();
+      $content = $object->get_content();
       foreach ($content as $key => $value) {
-         if ($key == 'objectTypeName') {
+         if ($key == 'object_type_name') {
             continue;
          }
          if ($key == 'id') {
             //continue;
          }
-         $node = $this->doc->createElement($key);
+         $node = $this->doc->create_element($key);
          if (is_array($value)) {
             
          } else if (is_object($value)) {
@@ -28,31 +28,31 @@ class Controller_Export extends Controller {
                case 'Model_File':
                   //or copy to directory and just use filename
                   if ($value->filename) {
-										$targetPath = $this->outputDir . $value->filename;
-										if(file_exists($targetPath)){
-											$node->appendChild($this->doc->createTextNode($targetPath));
+										$target_path = $this->output_dir . $value->filename;
+										if(file_exists($target_path)){
+											$node->append_child($this->doc->create_text_node($target_path));
 										}
                   }
                   break;
                case 'Model_Page':
-                  foreach ($this->getObjectFields($value) as $subField) {
-                     $node->appendChild($subField);
+                  foreach ($this->get_object_fields($value) as $sub_field) {
+                     $node->append_child($sub_field);
                   }
                   break;
             }
          } else {
-            $node->appendChild($this->doc->createTextNode($value));
+            $node->append_child($this->doc->create_text_node($value));
          }
          $nodes[] = $node;
       }
       return $nodes;
    }
 
-   private function getObjectFieldsLatticeFormat($object) {
+   private function get_object_fields_lattice_format($object) {
       $nodes = array();
-      $content = $object->getContent();
+      $content = $object->get_content();
       foreach ($content as $key => $value) {
-         if ($key == 'objectTypeName' OR $key == 'dateadded') {
+         if ($key == 'object_type_name' OR $key == 'dateadded') {
             continue;
          }
          if ($key == "slug" AND $value == "") {
@@ -69,11 +69,11 @@ class Controller_Export extends Controller {
             continue;
          }
     
-         $node = $this->doc->createElement('field');
-         $nodeAttr = $this->doc->createAttribute('name');
-         $nodeValue = $this->doc->createTextNode($key);
-         $nodeAttr->appendChild($nodeValue);
-         $node->appendChild($nodeAttr);
+         $node = $this->doc->create_element('field');
+         $node_attr = $this->doc->create_attribute('name');
+         $node_value = $this->doc->create_text_node($key);
+         $node_attr->append_child($node_value);
+         $node->append_child($node_attr);
 
          if (is_object($value)) {
 
@@ -81,53 +81,53 @@ class Controller_Export extends Controller {
            case 'Model_File':
              //or copy to directory and just use filename
              if ($value->filename) {
-               $targetPath = $this->outputDir . $value->filename;
-										 if(file_exists($targetPath)){
-											 $node->appendChild($this->doc->createTextNode($targetPath));
+               $target_path = $this->output_dir . $value->filename;
+										 if(file_exists($target_path)){
+											 $node->append_child($this->doc->create_text_node($target_path));
 										 }
                   }
                   break;
                case 'Model_Object':
-                  foreach ($this->getObjectFieldsLatticeFormat($value) as $subElement) {
-										$node->appendChild($subElement);
+                  foreach ($this->get_object_fields_lattice_format($value) as $sub_element) {
+										$node->append_child($sub_element);
                   }
                   break;
             }
          } else if($key == "tags") {
 
-            $node->appendChild($this->doc->createTextNode(implode(',',$value)));
+            $node->append_child($this->doc->create_text_node(implode(',',$value)));
 
          } else {
 
-            $node->appendChild($this->doc->createTextNode($value));
+            $node->append_child($this->doc->create_text_node($value));
          }
          $nodes[] = $node;
 			}
-      $node = $this->doc->createElement('field');
-      $nodeAttr = $this->doc->createAttribute('name');
-      $nodeValue = $this->doc->createTextNode('published');
-      $nodeAttr->appendChild($nodeValue);
-      $node->appendChild($nodeAttr);
-      $node->appendChild($this->doc->createTextNode($object->published));
+      $node = $this->doc->create_element('field');
+      $node_attr = $this->doc->create_attribute('name');
+      $node_value = $this->doc->create_text_node('published');
+      $node_attr->append_child($node_value);
+      $node->append_child($node_attr);
+      $node->append_child($this->doc->create_text_node($object->published));
 			$nodes[] = $node;
       return $nodes;
    }
 
-   private function exportTier($objects) {
+   private function export_tier($objects) {
 
       $nodes = array();
       foreach ($objects as $object) {
-         $item = $this->doc->createElement($object->objecttype->objecttypename);
+         $item = $this->doc->create_element($object->objecttype->objecttypename);
 
-         foreach ($this->getObjectFields($object) as $field) {
-            $item->appendChild($field);
+         foreach ($this->get_object_fields($object) as $field) {
+            $item->append_child($field);
          }
 
          //and get the children
-         $childObjects = $object->getLatticeChildren();
+         $child_objects = $object->get_lattice_children();
 
-         foreach ($this->exportTier($childObjects) as $childItem) {
-            $item->appendChild($childItem);
+         foreach ($this->export_tier($child_objects) as $child_item) {
+            $item->append_child($child_item);
          }
          $nodes[] = $item;
       }
@@ -135,24 +135,24 @@ class Controller_Export extends Controller {
       return $nodes;
    }
 
-   private function exportTierLatticeFormat($objects) {
+   private function export_tier_lattice_format($objects) {
 
       $nodes = array();
       foreach ($objects as $object) {
-         $item = $this->doc->createElement('item');
-         $objectTypeAttr = $this->doc->createAttribute('objectTypeName');
-         $objectTypeValue = $this->doc->createTextNode($object->objecttype->objecttypename);
-         $objectTypeAttr->appendChild($objectTypeValue);
-         $item->appendChild($objectTypeAttr);
+         $item = $this->doc->create_element('item');
+         $object_type_attr = $this->doc->create_attribute('object_type_name');
+         $object_type_value = $this->doc->create_text_node($object->objecttype->objecttypename);
+         $object_type_attr->append_child($object_type_value);
+         $item->append_child($object_type_attr);
 
-         foreach ($this->getObjectFieldsLatticeFormat($object) as $field) {
-            $item->appendChild($field);
+         foreach ($this->get_object_fields_lattice_format($object) as $field) {
+            $item->append_child($field);
          }
 
          //and get the children
-         $childObjects = $object->getLatticeChildren();
-         foreach ($this->exportTierLatticeFormat($childObjects) as $childItem) {
-            $item->appendChild($childItem);
+         $child_objects = $object->get_lattice_children();
+         foreach ($this->export_tier_lattice_format($child_objects) as $child_item) {
+            $item->append_child($child_item);
          }
          $nodes[] = $item;
       }
@@ -163,7 +163,7 @@ class Controller_Export extends Controller {
    //this should call action_export and then convert with xslt
    public function action_lattice($outputfilename='export') {
 
-     $this->export('LatticeFormat', $outputfilename);
+     $this->export('Lattice_format', $outputfilename);
 
    } 
 
@@ -175,85 +175,85 @@ class Controller_Export extends Controller {
 
    public function export($format, $outputfilename){
 
-		 $this->outputDir = 'application/export/' . $outputfilename . '/';
+		 $this->output_dir = 'application/export/' . $outputfilename . '/';
 
 		 try {
-		 mkdir($this->outputDir, 777);
+		 mkdir($this->output_dir, 777);
 		 } catch ( Exception $e){
 
 		 }
-		 chmod(getcwd() . '/' . $this->outputDir, 0777);
-		 system('cp -Rp application/media/* ' . $this->outputDir);
+		 chmod(getcwd() . '/' . $this->output_dir, 0777);
+		 system('cp -Rp application/media/* ' . $this->output_dir);
 
      $XML = new DOMDocument();
      $implementation = new DOMImplementation();
-     $dtd = $implementation->createDocumentType('data',
+     $dtd = $implementation->create_document_type('data',
        '-//WINTERROOT//DTD Data//EN',
         '../../../modules/lattice/lattice/data.dtd');
-      $this->doc = $implementation->createDocument('', '', $dtd);
+      $this->doc = $implementation->create_document('', '', $dtd);
    
-      $this->doc->xmlVersion="1.0";
+      $this->doc->xml_version="1.0";
       $this->doc->encoding="UTF-8";
-      $this->doc->formatOutput = true;
+      $this->doc->format_output = true;
     
-      $data = $this->doc->createElement('data');
-      $nodes = $this->doc->createElement('nodes');
+      $data = $this->doc->create_element('data');
+      $nodes = $this->doc->create_element('nodes');
 
-      $object = Graph::getRootNode('cmsRootNode');
-      $objects = $object->getLatticeChildren();
+      $object = Graph::get_root_node('cms_root_node');
+      $objects = $object->get_lattice_children();
 
-      $exportFunction = NULL;
+      $export_function = NULL;
       switch($format){
-      case 'LatticeFormat':
-        $exportFunction = 'exportTierLatticeFormat';
+      case 'Lattice_format':
+        $export_function = 'export_tier_lattice_format';
         break;
       case 'XMLFormat':
-        $exportFunction = 'exportTier';
+        $export_function = 'export_tier';
          break;
       }
 
-      foreach ($this->$exportFunction($objects) as $item) {
-        $nodes->appendChild($item);
+      foreach ($this->$export_function($objects) as $item) {
+        $nodes->append_child($item);
       }
-      $data->appendChild($nodes);
+      $data->append_child($nodes);
 
 
-      $relationships = $this->doc->createElement('relationships');
+      $relationships = $this->doc->create_element('relationships');
 
       $lattices = Graph::lattices();
       foreach($lattices as $lattice){
         if($lattice->name == 'lattice'){
           continue;
         }
-        $l = $this->doc->createElement('lattice');
-        $nameAttr = $this->doc->createAttribute('name');
-        $nameValue = $this->doc->createTextNode($lattice->name);
-        $nameAttr->appendChild($nameValue);
-        $l->appendChild($nameAttr);
+        $l = $this->doc->create_element('lattice');
+        $name_attr = $this->doc->create_attribute('name');
+        $name_value = $this->doc->create_text_node($lattice->name);
+        $name_attr->append_child($name_value);
+        $l->append_child($name_attr);
 
-        foreach($lattice->getRelationships() as $relationship){
-          $r = $this->doc->createElement('relationship');
-          $parentSlug = $this->doc->createTextNode(Graph::object($relationship->object_id)->slug);
-          $parent = $this->doc->createAttribute('parent');
-          $parent->appendChild($parentSlug);
-          $childSlug = $this->doc->createTextNode(Graph::object($relationship->connectedobject_id)->slug);
-          $child = $this->doc->createAttribute('child');
-          $child->appendChild($childSlug);
-          $r->appendChild($parent);
-          $r->appendChild($child);
-          $l->appendChild($r);
+        foreach($lattice->get_relationships() as $relationship){
+          $r = $this->doc->create_element('relationship');
+          $parent_slug = $this->doc->create_text_node(Graph::object($relationship->object_id)->slug);
+          $parent = $this->doc->create_attribute('parent');
+          $parent->append_child($parent_slug);
+          $child_slug = $this->doc->create_text_node(Graph::object($relationship->connectedobject_id)->slug);
+          $child = $this->doc->create_attribute('child');
+          $child->append_child($child_slug);
+          $r->append_child($parent);
+          $r->append_child($child);
+          $l->append_child($r);
         }
-        $relationships->appendChild($l);
+        $relationships->append_child($l);
       }
 
-      $data->appendChild($relationships);
+      $data->append_child($relationships);
 
-      $this->doc->appendChild($data);
+      $this->doc->append_child($data);
 
-      echo getcwd() . '/' . $this->outputDir;
+      echo getcwd() . '/' . $this->output_dir;
       flush();
       ob_flush();
-      $this->doc->save($this->outputDir . '/' . $outputfilename . '.xml');
+      $this->doc->save($this->output_dir . '/' . $outputfilename . '.xml');
       echo 'done';
    }
 

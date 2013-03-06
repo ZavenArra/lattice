@@ -1,8 +1,8 @@
 <?php
 
 /*
- * To change this objectType, choose Tools | Templates
- * and open the objectType in the editor.
+ * To change this object_type, choose Tools | Templates
+ * and open the object_type in the editor.
  */
 
 /**
@@ -10,7 +10,7 @@
  *
  * @author deepwinter1
  */
-class Model_ObjectRelationship extends ORM {
+class Model_Object_relationship extends ORM {
 //put your code here
 }
 

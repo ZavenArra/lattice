@@ -8,37 +8,37 @@
 
 class Model_Objectmap extends ORM {
 
-   public static function configureNewField($objectTypeId, $fieldName, $uiType) {
-      $mapEntry = ORM::Factory('objectmap');
-      $mapEntry->objecttype_id = $objectTypeId;
-      $mapEntry->type = self::fieldTypeForUI($uiType);
-      $mapEntry->column = $fieldName;
-      $mapEntry->index = self::nextIndex($objectTypeId, $mapEntry->type);
-      $mapEntry->save();
+   public static function configure_new_field($object_type_id, $field_name, $ui_type) {
+      $map_entry = ORM::Factory('objectmap');
+      $map_entry->objecttype_id = $object_type_id;
+      $map_entry->type = self::field_type_forUI($ui_type);
+      $map_entry->column = $field_name;
+      $map_entry->index = self::next_index($object_type_id, $map_entry->type);
+      $map_entry->save();
    }
 
-   private static function nextIndex($objectTypeId, $fieldType) {
+   private static function next_index($object_type_id, $field_type) {
       
-		$result = DB::select(array('index', 'maxIndex'))
+		$result = DB::select(array('index', 'max_index'))
               ->from('objectmaps')
-              ->where('objecttype_id', '=', $objectTypeId)
-              ->where('type', '=', $fieldType)
+              ->where('objecttype_id', '=', $object_type_id)
+              ->where('type', '=', $field_type)
               ->order_by('index', 'DESC')
               ->limit(1, 0)
               ->execute()
               ->current();
-      return $result['maxIndex'] + 1;
+      return $result['max_index'] + 1;
    }
 
-   public static function fieldTypeForUI($uiType) {
+   public static function field_type_forUI($ui_type) {
       $index = null;
-      switch ($uiType) {
+      switch ($ui_type) {
          case 'text':
-         case 'radioGroup':
+         case 'radio_group':
          case 'pulldown':
          case 'time':
          case 'date':
-         case 'multiSelect':
+         case 'multi_select':
             $index = 'field';
             break;
          case 'image':
@@ -49,13 +49,13 @@ class Model_Objectmap extends ORM {
             $index = 'flag';
             break;
          default:
-            $tConfigs = lattice::config('objects', '//objectType');
-            $objectTypes = array();
-            foreach ($tConfigs as $objectType) {
-               $objectTypes[] = $objectType->getAttribute('name');
+            $t_configs = lattice::config('objects', '//object_type');
+            $object_types = array();
+            foreach ($t_configs as $object_type) {
+               $object_types[] = $object_type->get_attribute('name');
             }
-            //print_r($objectTypes);
-            if (in_array($uiType, $objectTypes)) {
+            //print_r($object_types);
+            if (in_array($ui_type, $object_types)) {
                $index = 'object';
             } else {
                return null;
