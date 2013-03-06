@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  *
  * This class simulates the views directory, to allow loading of dynamic js while

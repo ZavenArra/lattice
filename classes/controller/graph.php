@@ -1,4 +1,4 @@
-<?
+<?php
 
 Class Controller_Graph extends Controller {
 

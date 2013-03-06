@@ -1,4 +1,4 @@
-<?
+<?php
 
 class Controller_CMS extends Lattice_CMS {
 

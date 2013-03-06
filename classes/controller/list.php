@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
  * This class should have it's API changed to respect calling via the Container object Id

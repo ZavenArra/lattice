@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * Class: File_Model
  * ORM Class implementing files table

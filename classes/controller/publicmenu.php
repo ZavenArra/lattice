@@ -1,4 +1,4 @@
-<?
+<?php
 
 Class Controller_Public_menu extends Controller_Lattice {
 

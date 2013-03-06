@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Class: CMS_Controller
  * The main CMS class, handling add, delete, and retrieval of objects

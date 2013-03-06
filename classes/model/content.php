@@ -1,4 +1,4 @@
-<?
+<?php
 /*
 * Class: Model for Content_Small
 */

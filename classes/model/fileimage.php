@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * Class: File_image_Model
  * Class to keep track of image properties for specific resizes.  This model does not wrap a database table, 

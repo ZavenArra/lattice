@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
  * Class: Model_Object_type

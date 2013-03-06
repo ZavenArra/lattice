@@ -1,4 +1,4 @@
-<?
+<?php
 
 Class Lattice_Controller_Associator extends Controller_Lattice {
 

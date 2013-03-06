@@ -1,4 +1,4 @@
-<?
+<?php
 
 Class Builder_Frontend {
 
@@ -41,7 +41,7 @@ Class Builder_Frontend {
 
       ob_start();
       if(!$view OR  ($view AND $view->get_attribute('load_page')=='true')){
-        echo "<h1><?=\$content['main']['title'];?></h1>\n\n";
+        echo "<h1><?php=\$content['main']['title'];?></h1>\n\n";
         //this also implies that name is a objecttypename
         foreach(lattice::config('objects', 
           sprintf('//object_type[@name="%s"]/elements/*', $view_name )) as $element){
@@ -72,7 +72,7 @@ Class Builder_Frontend {
 
         if($subviews = lattice::config('frontend',"//view[@name=\"".$view->get_attribute('name')."\"]/subview")){
           foreach($subviews as $subview_config){
-            echo "\n<?=\$".$subview_config->get_attribute('label').";?>\n";
+            echo "\n<?php=\$".$subview_config->get_attribute('label').";?>\n";
           }
         }
 
@@ -122,7 +122,7 @@ Class Builder_Frontend {
 
       if($subviews = lattice::config('frontend',"//view[@name=\"".$view_name."\"]/subview")){
         foreach($subviews as $subview_config){
-          echo "\n<?=\$".$subview_config->get_attribute('label').";?>\n";
+          echo "\n<?php=\$".$subview_config->get_attribute('label').";?>\n";
         }
       }
 
@@ -234,13 +234,13 @@ Class Builder_Frontend {
 			$do_switch = true;
 		}
 
-		echo $indent."<?foreach({$prefix}['$label'] as \${$label}Item):?>\n";
+		echo $indent."<?phpforeach({$prefix}['$label'] as \${$label}Item):?>\n";
 		if($do_switch){
-			echo $indent." <?switch(\${$label}Item['object_type_name']){\n";
+			echo $indent." <?phpswitch(\${$label}Item['object_type_name']){\n";
 		}
 
     if(count($object_types) == 0){
-        echo $indent." <?=latticeview::Factory(\${$label}Item)->view()->render();?>\n";
+        echo $indent." <?php=latticeview::Factory(\${$label}Item)->view()->render();?>\n";
     }
 
       $i=0;
@@ -250,10 +250,10 @@ Class Builder_Frontend {
             if($i==0)
                echo "    case '$object_type_name':?>\n";
             else 
-               echo " <? case '$object_type_name':?>\n";
+               echo " <?php case '$object_type_name':?>\n";
          }
          echo $indent . "  <li class=\"$object_type_name\">\n";
-         echo $indent . "   " . "<h2><?=\${$label}Item['title'];?></h2>\n\n";
+         echo $indent . "   " . "<h2><?php=\${$label}Item['title'];?></h2>\n\n";
          foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $object_type_name)) as $element) {
            switch($element->tag_name){
            case 'list':
@@ -277,16 +277,16 @@ Class Builder_Frontend {
 
          echo $indent . "  </li>\n";
          if ($do_switch) {
-            echo $indent . " <?  break;?>\n";
+            echo $indent . " <?php  break;?>\n";
          }
          $i++;
       }
       if ($do_switch) {
-         echo $indent . "<? }?>\n";
+         echo $indent . "<?php }?>\n";
       }
 
 
-      echo $indent . "<?endforeach;?>\n" .
+      echo $indent . "<?phpendforeach;?>\n" .
       $indent . "</ul>\n\n";
    }
 

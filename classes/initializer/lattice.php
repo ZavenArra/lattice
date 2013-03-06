@@ -1,4 +1,4 @@
-<?
+<?php
 
 Class Initializer_Lattice {
 

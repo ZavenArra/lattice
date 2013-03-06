@@ -1,4 +1,4 @@
-<?
+<?php
 
 class Keep_alive_Controller extends Controller {
 

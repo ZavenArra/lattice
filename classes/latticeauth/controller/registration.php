@@ -1,4 +1,4 @@
-<?
+<?php
 
 Class Lattice_auth_Controller_Registration extends Controller_Layout {
 

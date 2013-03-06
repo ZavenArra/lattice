@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * Class: Site_Controller
  * Responsible for handing default behaviour of CMS driven sites,

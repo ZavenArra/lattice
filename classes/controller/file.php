@@ -1,4 +1,4 @@
-<?
+<?php
 class Controller_File extends Controller{
 
 	public function __construct($request, $response){

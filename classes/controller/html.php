@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * Class: Controller_HTML
  * This controller provides a simple manual override to the auto layout wrapping

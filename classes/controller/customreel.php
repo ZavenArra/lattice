@@ -1,4 +1,4 @@
-<?
+<?php
 /* @package usermanagement
  * Class: User_management_Controllers
  * Controller for usermangement module within LatticeCMS, allows for settings up users

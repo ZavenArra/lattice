@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * Class: Lattice_Auth_Controller
  * Reponsible for the 'logged in as' object on the MOP backend objects

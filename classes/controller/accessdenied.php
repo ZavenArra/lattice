@@ -1,4 +1,4 @@
-<?
+<?php
 
 Class Controller_Access_denied extends Controller_Layout {
 

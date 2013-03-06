@@ -1,4 +1,4 @@
-<?
+<?php
 
 Class Association_Model extends ORM_Model {
 	

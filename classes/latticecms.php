@@ -1,4 +1,4 @@
-<?
+<?php
 
 /* Class: CMS helper
  * Contains utility function for CMS

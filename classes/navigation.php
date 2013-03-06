@@ -1,4 +1,4 @@
-<?
+<?php
 /**
 * Class: Navigation_Controller 
 *

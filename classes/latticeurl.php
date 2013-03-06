@@ -1,4 +1,4 @@
-<?
+<?php
 /* @package Lattice */
 
 Class Lattice_url {

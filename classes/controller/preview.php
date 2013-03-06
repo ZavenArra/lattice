@@ -1,4 +1,4 @@
-<?
+<?php
 
 Class Controller_Preview extends Controller_Lattice {
 
