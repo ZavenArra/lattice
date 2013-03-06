@@ -52,15 +52,20 @@ class Model_File_image {
 	 * $prefix - the prefixed filename that this object holds data for
 	 * Returns: nothing
 	 */
-	public function __construct($filename, $prefix){
-		if ($prefix != 'original'){
+	public function __construct($filename, $prefix)
+{
+		if ($prefix != 'original')
+{
 			$this->prefix = $prefix.'_';
 		}
-		if ($filename){
+		if ($filename)
+{
 			$this->filename = $this->prefix.$filename;
-			if ($prefix == 'uithumb'){
+			if ($prefix == 'uithumb')
+{
 				$ext = substr(strrchr($filename, '.'), 1);
-				switch($ext){
+				switch($ext)
+{
 				case 'tiff':
 					case 'tif':
 						case 'TIFF':
@@ -73,10 +78,12 @@ class Model_File_image {
 
 			$this->urlfilename = rawurlencode($this->filename);
 			$dirprefix = '';
-			if (Kohana::config('lattice.staging')){
+			if (Kohana::config('lattice.staging'))
+{
 				$dirprefix = 'staging/';
 			}
-			if (file_exists($dirprefix.'application/media/'.$this->filename)){
+			if (file_exists($dirprefix.'application/media/'.$this->filename))
+{
 				$size = getimagesize($dirprefix.'application/media/'.$this->filename);
 				$this->width = $size[0];
 				$this->height = $size[1];
@@ -92,7 +99,8 @@ class Model_File_image {
 	 * $column - class variable to return
 	 * Returns: value
 	 */
-	public function __get($column){
+	public function __get($column)
+{
 		return $this->$column;
 	}
 

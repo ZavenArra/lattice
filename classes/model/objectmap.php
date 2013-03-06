@@ -8,7 +8,8 @@
 
 class Model_Objectmap extends ORM {
 
-   public static function configure_new_field($object_type_id, $field_name, $ui_type) {
+   public static function configure_new_field($object_type_id, $field_name, $ui_type)
+{
       $map_entry = ORM::Factory('objectmap');
       $map_entry->objecttype_id = $object_type_id;
       $map_entry->type = self::field_type_forUI($ui_type);
@@ -17,7 +18,8 @@ class Model_Objectmap extends ORM {
       $map_entry->save();
    }
 
-   private static function next_index($object_type_id, $field_type) {
+   private static function next_index($object_type_id, $field_type)
+{
       
 		$result = DB::select(array('index', 'max_index'))
               ->from('objectmaps')
@@ -30,9 +32,11 @@ class Model_Objectmap extends ORM {
       return $result['max_index'] + 1;
    }
 
-   public static function field_type_forUI($ui_type) {
+   public static function field_type_forUI($ui_type)
+{
       $index = NULL;
-      switch ($ui_type) {
+      switch ($ui_type)
+{
          case 'text':
          case 'radio_group':
          case 'pulldown':
@@ -51,11 +55,13 @@ class Model_Objectmap extends ORM {
          default:
             $t_configs = lattice::config('objects', '//object_type');
             $object_types = array();
-            foreach ($t_configs as $object_type) {
+            foreach ($t_configs as $object_type)
+{
                $object_types[] = $object_type->get_attribute('name');
             }
             //print_r($object_types);
-            if (in_array($ui_type, $object_types)) {
+            if (in_array($ui_type, $object_types))
+{
                $index = 'object';
             } else {
                return NULL;

@@ -33,13 +33,16 @@ Class Controller_Custom_reel extends Controller_Layout {
 	 * Function: __construct()
 	 * Loads managed_roles and calls the parent constructor
 	 */
-	public function __construct($request, $response){
+	public function __construct($request, $response)
+{
 		parent::__construct($request, $response);
 
 		$this->managed_roles = Kohana::config(strtolower($this->controller_name).'.managed_roles');
     if (Kohana::config(strtolower($this->controller_name).'.superuser_edit')
-      AND latticeutil::check_role_access('superuser')){
-      if (is_array($this->managed_roles)){
+      AND latticeutil::check_role_access('superuser'))
+{
+      if (is_array($this->managed_roles))
+{
         $keys = array_keys($this->managed_roles);
         $vals = array_values($this->managed_roles);
         array_unshift($keys,'Superuser');
@@ -56,10 +59,12 @@ Class Controller_Custom_reel extends Controller_Layout {
 	 * Parameters: none
 	 * Returns: nothing, sets up view to render in this->view
 	 */
-	public function action_index(){
+	public function action_index()
+{
 		//cleanup on an initial load
 		$incompletes = ORM::Factory($this->table)->where('status', '=', 'INCOMPLETE')->find_all();
-		foreach ($incompletes as $incomplete){
+		foreach ($incompletes as $incomplete)
+{
 			$incomplete->delete();
 		}
 
@@ -69,16 +74,20 @@ Class Controller_Custom_reel extends Controller_Layout {
 
     $users = ORM::Factory($this->table)->find_all();
     $managed_users = array();
-    foreach ($users as $user){
-      foreach ($this->managed_roles as $role){
-        if ($user->has('roles', ORM::Factory('role', array('name'=>$role)))){
+    foreach ($users as $user)
+{
+      foreach ($this->managed_roles as $role)
+{
+        if ($user->has('roles', ORM::Factory('role', array('name'=>$role))))
+{
           $managed_users[] = $user;
           continue (2);
         }
       }
     }
 		$html = '';
-		foreach ($managed_users as $user){
+		foreach ($managed_users as $user)
+{
       $user_item_view = $this->create_user_item_view($user);	
 			$html .= $user_item_view->render();
 		}
@@ -89,25 +98,29 @@ Class Controller_Custom_reel extends Controller_Layout {
 
 	}	
 
-  protected function get_user_data($user){
+  protected function get_user_data($user)
+{
     $data['id'] = $user->id;
     $data['username'] = $user->username;
     $data['firstname'] = $user->firstname;
     $data['lastname'] = $user->lastname;
     $data['email'] = $user->email;
 
-    if (strstr($data['email'], 'PLACEHOLDER')){
+    if (strstr($data['email'], 'PLACEHOLDER'))
+{
       $data['email'] = '';
     }
 
-    if (strlen($user->password)){
+    if (strlen($user->password))
+{
       $data['password'] = '******';
     } else {
       $data['password'] = '';
     }
 
     $data['role'] = $this->get_active_managed_role($user);
-    if ($user->has('roles', ORM::Factory('role')->where('name','=','superuser')->find()) ){
+    if ($user->has('roles', ORM::Factory('role')->where('name','=','superuser')->find()) )
+{
       $data['superuser'] = true;
     } else {
       $data['superuser'] = false;
@@ -116,7 +129,8 @@ Class Controller_Custom_reel extends Controller_Layout {
     return $data;
   }
 
-  protected function create_user_item_view($user){
+  protected function create_user_item_view($user)
+{
     $user_item_view = new View($this->view_name.'_item');
     $user_item_view->data = $this->get_user_data($user);
     $user_item_view->managed_roles = $this->managed_roles;
@@ -128,14 +142,18 @@ Class Controller_Custom_reel extends Controller_Layout {
    * Function get_view_data()
    * Get data specific for the item view
    */
-  protected function get_user_view_data(){
+  protected function get_user_view_data()
+{
     return array();
   }
 
-  private function get_active_managed_role($user){
+  private function get_active_managed_role($user)
+{
     $active_role = NULL;
-    foreach ($this->managed_roles as $label=>$role){
-      if ($user->has('roles', ORM::Factory('role')->where('name','=',$role)->find()) ){
+    foreach ($this->managed_roles as $label=>$role)
+{
+      if ($user->has('roles', ORM::Factory('role')->where('name','=',$role)->find()) )
+{
         $active_role = $role;
         break;
       }
@@ -150,7 +168,8 @@ Class Controller_Custom_reel extends Controller_Layout {
 	 * $objectid - unused variable, interface needs to be updated
 	 * Returns: Rendered html editing object for new user object
 	 */
-	public function action_add_object(){
+	public function action_add_object()
+{
 		$user = $this->create_user();
 		$data = $user->as_array();
 	
@@ -177,7 +196,8 @@ Class Controller_Custom_reel extends Controller_Layout {
 	 * Parameters: none
 	 * Returns: User ORM Object, pre-saved
 	 */
-	protected function create_user(){
+	protected function create_user()
+{
 		$user = ORM::factory($this->table);
 		$user->status = 'INCOMPLETE';
 		$user->username = 'PLACEHOLDER_'.Utility_Auth::random_password();;
@@ -202,7 +222,8 @@ Class Controller_Custom_reel extends Controller_Layout {
 	 * $id - the unique key id of the record to delete
 	 * Returns: nothing
 	 */
-	public function action_remove_object($id){
+	public function action_remove_object($id)
+{
 		$user = ORM::factory($this->table, $id);
 		$user->delete($id);
 
@@ -217,9 +238,11 @@ Class Controller_Custom_reel extends Controller_Layout {
 	 * $_POST['value'] - the new value to save
 	 * Returns: array('value'=>{value})
 	 */ 
-	public function action_save_field($id){
+	public function action_save_field($id)
+{
 
-		if (!latticeutil::check_role_access('admin')){
+		if (!latticeutil::check_role_access('admin'))
+{
 			throw new Kohana_Exception('Only Admin has access to User Management');
 		}
 
@@ -228,38 +251,47 @@ Class Controller_Custom_reel extends Controller_Layout {
 		$field = $_POST['field'];
 		$value = $_POST['value'];
 
-		switch($field){
+		switch($field)
+{
 		case 'role':
 
-			if ($user->has('roles', ORM::Factory('role')->where('name', '=' ,'superuser')->find() )){
-				if (!latticeutil::check_role_access('superuser')){
+			if ($user->has('roles', ORM::Factory('role')->where('name', '=' ,'superuser')->find() ))
+{
+				if (!latticeutil::check_role_access('superuser'))
+{
 					throw new Kohana_Exception('Only superuser can change superuser');
 				}
 			}
 
 			//first remove other managed_roles
-			foreach ($this->managed_roles as $label => $role){
+			foreach ($this->managed_roles as $label => $role)
+{
 				$role_obj = ORM::Factory('role')->where('name','=',$role)->find();
-				if ($user->has('roles',$role_obj)){
+				if ($user->has('roles',$role_obj))
+{
 					$user->remove('roles', $role_obj);
           $user->save();
 				}
 			}
 			$role = ORM::Factory('role')->where('name','=',$value)->find();
-			if (!$role->loaded()){
+			if (!$role->loaded())
+{
 				throw new Kohana_Exception('Role :role not found in database.  Update aborted', array(':role'=>$value));
 			}
 			$user->add('roles', $role);	
 			$user->save();
 
-			if ($value=='superuser'){
+			if ($value=='superuser')
+{
 
-				if (!latticeutil::check_role_access('superuser')){
+				if (!latticeutil::check_role_access('superuser'))
+{
 					throw new Kohana_Exception('Updating to superuser not allowed for non-superuser');
 				}
 
 				$role = ORM::Factory('role')->where('name','=','admin')->find();
-				if (!$role->loaded()){
+				if (!$role->loaded())
+{
 					throw new Kohana_Exception('Role :role not found in database.  Update aborted', array(':role'=>'admin'));
 				}
 				$user->add('roles', $role);	
@@ -275,7 +307,8 @@ Class Controller_Custom_reel extends Controller_Layout {
 			//$errors = $user->check_value($_POST['field'], $_POST['value']);
          $errors  = array();
          
-			if (!count($errors)) {
+			if (!count($errors))
+{
 
                try {
                   $user->update_user(array($field => $value), array($field))->save();
@@ -286,7 +319,8 @@ Class Controller_Custom_reel extends Controller_Layout {
                   $this->activate_record($user);
 
 
-                  if ($_POST['field'] == 'password') {
+                  if ($_POST['field'] == 'password')
+{
                      $body = new View('usermanagement_passwordchangeemail');
                      $body->username = $user->username;
                      $body->password = $_POST['value'];
@@ -303,18 +337,22 @@ Class Controller_Custom_reel extends Controller_Layout {
                      $value = $user->{$_POST['field']};
                      $this->response->data(array('value' => $value));
                   }
-               } catch (Exception $e) {
+               } catch (Exception $e)
+{
                   $model_errors = $e->errors('validation');
-									if (isset($model_errors['_external'])){
+									if (isset($model_errors['_external']))
+{
 										$model_errors = array_values($model_errors['_external']);
 									} 
                   $errors = array_merge($errors, $model_errors);
                }
          }
-         if ($errors) {
+         if ($errors)
+{
                $firstkey = array_keys($errors);
                $firstkey = $firstkey[0];
-               if ($_POST['field'] == 'password') {
+               if ($_POST['field'] == 'password')
+{
                   $rval = NULL;
                } else {
                   $rval = $user->{$_POST['field']};
@@ -333,8 +371,10 @@ Class Controller_Custom_reel extends Controller_Layout {
 	 * $user - an ORM object to update
 	 * Returns: nothing
 	 */
-	protected function activate_record(& $user){
-		if ($user->status != 'ACTIVE'){
+	protected function activate_record(& $user)
+{
+		if ($user->status != 'ACTIVE')
+{
 			$user->status = 'ACTIVE';
 			$user->save();
 		}

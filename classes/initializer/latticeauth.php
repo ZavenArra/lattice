@@ -12,12 +12,15 @@
  */
 class Initializer_Latticeauth {
    
-   public function initialize() {
+   public function initialize()
+{
 
 		 try {
 			 ORM::Factory('user');
-		 } catch (Exception $e) {
-			 if ($e->get_code() == 1146) { //code for table doesn't exist
+		 } catch (Exception $e)
+{
+			 if ($e->get_code() == 1146)
+{ //code for table doesn't exist
 				 //install the initializedmodules table
 				 $sql_file = Kohana::find_file('sql', 'auth-schema-mysql', $ext = 'sql');
 
@@ -28,10 +31,12 @@ class Initializer_Latticeauth {
 
 
 		 $admin = ORM::Factory('user')->where('username', '=', 'admin')->find();
-		 if ($admin->loaded()){
+		 if ($admin->loaded())
+{
 			 $admin->delete();
 		 }
-      if (!ORM::Factory('user')->where('username', '=', 'admin')->find()->loaded()) {
+      if (!ORM::Factory('user')->where('username', '=', 'admin')->find()->loaded())
+{
          $user = ORM::factory('user');
          $user->status = 'ACTIVE';
          $user->username = 'admin';

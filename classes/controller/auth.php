@@ -19,7 +19,8 @@ class Controller_Auth extends Controller_Layout {
 
 	public $message = '';
 
-	public function __construct($request, $response){
+	public function __construct($request, $response)
+{
 		parent::__construct($request, $response);
 
 		I18n::lang('en');
@@ -95,9 +96,11 @@ class Controller_Auth extends Controller_Layout {
 				//just override auth.redirect or something
 				$authredirect =  Kohana::config('auth.redirect');
 				
-				if ($form_values['redirect']){
+				if ($form_values['redirect'])
+{
 					Request::current()->redirect(url::site($form_values['redirect'],Request::current()->protocol(),false));
-				} else if ($redirect = $authredirect){
+				} else if ($redirect = $authredirect)
+{
 					Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 				} else {
 					Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),false));
@@ -110,22 +113,27 @@ class Controller_Auth extends Controller_Layout {
 			}
 		}
 
-    if (isset($_GET["redirect"])){
+    if (isset($_GET["redirect"]))
+{
       $redirect = $_GET["redirect"];
     }
 
 		$view = new View('auth/login');
 
-		if ($redirect == 'reset_password_success'){
+		if ($redirect == 'reset_password_success')
+{
 			$view->message = I18n::get('reset_password_success');
 			$redirect = NULL;
-		} else if ($error){
+		} else if ($error)
+{
 			$view->message = $error;
 		}
 		$view->title = 'User Login';
 
-		if (!$redirect){
-			if (isset($form_values['redirect'])){
+		if (!$redirect)
+{
+			if (isset($form_values['redirect']))
+{
 				$redirect = $form_values['redirect'];
 			}
 		}
@@ -144,15 +152,19 @@ class Controller_Auth extends Controller_Layout {
 
 	}
 
-	public function action_noaccess($controller = NULL){
+	public function action_noaccess($controller = NULL)
+{
 		$this->message = 'You do not have access to the requested object';
 		$this->login($controller);
 	}
 
-	public function action_forgot(){
-		if (isset($_POST['email'])){
+	public function action_forgot()
+{
+		if (isset($_POST['email']))
+{
 			$user = ORM::Factory('user')->where('email', '=', $_POST['email'])->find();
-			if ($user->loaded() ){
+			if ($user->loaded() )
+{
 				$password = Utility_Auth::random_password();
 				$user->password = $password;
 				$user->save();

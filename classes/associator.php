@@ -140,7 +140,8 @@ Class Associator {
         //check our filtered objects are correct
         //compact the array to remove redundant keys
         $res = array();
-        foreach ($results as $id) {
+        foreach ($results as $id)
+{
           $object = Graph::object($id);
           if (!$this->parent->check_lattice_relationship($lattice, $object))
           {
@@ -168,7 +169,8 @@ Class Associator {
         }
       }	
 
-    } else if (!is_array($load_pool)) {
+    } else if (!is_array($load_pool))
+{
 
       $objects = Graph::object()
         ->where( 'id', '!=', $parent_id )

@@ -11,7 +11,8 @@
  * @author deepwinter
  */
 
-function make_seed() {
+function make_seed()
+{
 			list($usec, $sec) = explode(' ', microtime());
 			return (float) $sec + ((float) $usec * 100000);
 }
@@ -19,7 +20,8 @@ function make_seed() {
       
 class Utility_Auth {
    
-   public static function random_password(){
+   public static function random_password()
+{
 		$password_length = 12;
 
 		
@@ -28,7 +30,8 @@ class Utility_Auth {
 
 		$alfa = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
 		$token = "";
-		for($i = 0; $i < $password_length; $i ++) {
+		for($i = 0; $i < $password_length; $i ++)
+{
 			$token .= $alfa[mt_rand(0, strlen($alfa)-1)];
 		}    
       

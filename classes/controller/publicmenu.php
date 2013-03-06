@@ -3,7 +3,8 @@
 Class Controller_Public_menu extends Controller_Lattice {
 
 
-	public function action_index(){
+	public function action_index()
+{
 		$this->view = new View('publicnav');
 
       $top_level = Graph::get_root_node('cms_root_node')
@@ -14,7 +15,8 @@ Class Controller_Public_menu extends Controller_Lattice {
 
 
 		$navi = array();
-		foreach ($top_level as $object){
+		foreach ($top_level as $object)
+{
 			$entry = array();
 			$entry['title'] = $object->title;
 			$entry['slug'] = $object->slug;
@@ -24,16 +26,19 @@ Class Controller_Public_menu extends Controller_Lattice {
 		}
 
 		//check for children
-		foreach ($navi as $slug => $entry){
+		foreach ($navi as $slug => $entry)
+{
 
          $children = Graph::object($slug)
             ->lattice_children_query($object->id)
  				->published_filter()
 				->no_container_objects()
 				->find_all();
-			if (count($children)){
+			if (count($children))
+{
 				$entry['children'] = array();
-				foreach ($children as $child){
+				foreach ($children as $child)
+{
 					$child_entry = array();
 					$child_entry['title'] = $child->title;
 					$child_entry['slug'] = $child->slug;
@@ -44,7 +49,8 @@ Class Controller_Public_menu extends Controller_Lattice {
 						->published_filter()
 						->no_container_objects()
 						->find_all();
-					foreach ($children2 as $child2){
+					foreach ($children2 as $child2)
+{
 						$child_entry2 = array();
 						$child_entry2['title'] = $child2->title;
 						$child_entry2['slug'] = $child2->slug;

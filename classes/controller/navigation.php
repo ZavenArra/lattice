@@ -10,12 +10,14 @@ class Controller_Navigation extends Controller_Lattice{
   private $default_add_category_text = '';
   private $default_add_leaf_text = '';
 
-  public function __construct($request, $response){
+  public function __construct($request, $response)
+{
     parent::__construct($request, $response);
   }
 
 
-  public function action_index($deeplink=NULL){
+  public function action_index($deeplink=NULL)
+{
 
     //$this->view = new View(strtolower($this->controllername));
     ////this should check and extend
@@ -29,9 +31,11 @@ class Controller_Navigation extends Controller_Lattice{
    * Override this function to use nav on other data sources
    *
    */
-  public function get_tier($parent_id, $deeplink_path=array(), &$follow=false){
+  public function get_tier($parent_id, $deeplink_path=array(), &$follow=false)
+{
     $parent = Graph::object($parent_id);
-    if (!$parent->loaded()){
+    if (!$parent->loaded())
+{
       throw new Kohana_Exception('Invalid object id sent to get_tier');
     }
 
@@ -41,25 +45,31 @@ class Controller_Navigation extends Controller_Lattice{
       // ->order_by('objectrelationships.sortorder', 'ASC');
     $items = $items->find_all();
 
-    if ($items){
+    if ($items)
+{
       $send_item_containers = array(); //these will go first
       $send_item_objects = array();
-      foreach ($items as $child){
+      foreach ($items as $child)
+{
 
         //Check for Access to this object
         $roles = $child->roles->find_all();
-        foreach ($roles as $role){
-          if (!latticeutil::check_access($role->name)){
+        foreach ($roles as $role)
+{
+          if (!latticeutil::check_access($role->name))
+{
             continue (2);
           } 
         }
 
         //Containers should be skipped
-        if (strtolower($child->objecttype->node_type) == 'container'){
+        if (strtolower($child->objecttype->node_type) == 'container')
+{
           //we might be skipping this node
           $display = $child->objecttype->display;
 
-          if ($display == 'inline'){
+          if ($display == 'inline')
+{
             continue;
           }
         }
@@ -67,21 +77,24 @@ class Controller_Navigation extends Controller_Lattice{
 
         //implementation of deeplinking
         $send_item['follow'] = false;
-        if (in_array($child->id, $deeplink_path)) {
+        if (in_array($child->id, $deeplink_path))
+{
           $send_item['follow'] = true;
           $follow = true;
 
           //and deeplinking for categories
           $follow_tier = false;
           $child_tier = $this->get_tier($child->id, $deeplink_path, $follow_tier);
-          if ($follow_tier == true) {
+          if ($follow_tier == true)
+{
             $send_item['follow'] = true;
             $follow = 'true';
           }
           $send_item['tier'] = $child_tier;
         }
 
-            if (strtolower($child->objecttype->node_type)=='container'){
+            if (strtolower($child->objecttype->node_type)=='container')
+{
           $send_item_containers[] = $send_item;
         } else {
           $send_item_objects[] = $send_item;
@@ -92,13 +105,16 @@ class Controller_Navigation extends Controller_Lattice{
 
 
       //add in any modules
-      if ($parent->id == Graph::get_root_node(Kohana::config('cms.graph_root_node'))->id ){
+      if ($parent->id == Graph::get_root_node(Kohana::config('cms.graph_root_node'))->id )
+{
         $cms_modules = lattice::config('cms_modules', '//module');
-        foreach ($cms_modules as $m){
+        foreach ($cms_modules as $m)
+{
           $controller = $m->get_attribute('controller');
           $roles = Kohana::config(strtolower($controller).'.authrole', FALSE, FALSE); 
           $access_granted = latticeutil::check_access($roles);
-          if (!$access_granted){
+          if (!$access_granted)
+{
             continue;
           }
 
@@ -124,18 +140,22 @@ class Controller_Navigation extends Controller_Lattice{
 
   }
 
-  public function action_get_tier($parent_id, $deeplink=NULL){
+  public function action_get_tier($parent_id, $deeplink=NULL)
+{
 
     //plan all parents for following deeplink
     $deeplink_path = array();
 
-    if ($deeplink){
+    if ($deeplink)
+{
       $object_id = $deeplink;
-      while($object_id){
+      while($object_id)
+{
         $object = Graph::object($object_id);
         $deeplink_path[] = $object->id;
         $parent = $object->get_lattice_parent();
-        if ($parent){
+        if ($parent)
+{
           $object_id = $parent->id;
         } else {
           $object_id = NULL;
@@ -156,11 +176,13 @@ class Controller_Navigation extends Controller_Lattice{
 
   }
 
-  private function render_tier_view($parent, $nodes){
+  private function render_tier_view($parent, $nodes)
+{
 
     $tier_view = new View('navigation_tier');
     $nodes_html = array();
-    foreach ($nodes as $node){
+    foreach ($nodes as $node)
+{
       $node_view = new View('navigation_node');
       $node_view->content = $node; 
       $nodes_html[] = $node_view->render();
@@ -170,8 +192,10 @@ class Controller_Navigation extends Controller_Lattice{
     $tier_methods_drawer = new View('tier_methods_drawer');
     $addable_objects = $parent->objecttype->addable_objects;
 
-    if (latticeutil::check_access('superuser')){
-      foreach ($this->get_object_types() as $object_type){
+    if (latticeutil::check_access('superuser'))
+{
+      foreach ($this->get_object_types() as $object_type)
+{
         $addable_object = array();
         $addable_object['object_type_id'] = $object_type['object_type_name'];
         $addable_object['object_type_add_text'] = "Add a ".$object_type['object_type_name'];
@@ -187,9 +211,11 @@ class Controller_Navigation extends Controller_Lattice{
 
   }
 
-  public function get_object_types(){
+  public function get_object_types()
+{
     $object_types = array();
-    foreach (lattice::config('objects', '//object_type') as $object_type){
+    foreach (lattice::config('objects', '//object_type') as $object_type)
+{
       $entry = array();
       $entry['object_type_name'] = $object_type->get_attribute('name'); 
       $entry['label'] = $object_type->get_attribute('name').' label'; 

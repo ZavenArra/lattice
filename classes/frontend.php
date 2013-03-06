@@ -2,13 +2,16 @@
 /* @package Lattice */
 
 class frontend {
-	public static function make_html_element($element, $prefix, $indent=''){
+	public static function make_html_element($element, $prefix, $indent='')
+{
 
 		$field = $element->get_attribute('name');
 
-		switch($element->node_name){
+		switch($element->node_name)
+{
 		case 'image':
-			if (!($size=$element->get_attribute('size'))){
+			if (!($size=$element->get_attribute('size')))
+{
 				$size = 'original';	
 			}
 			echo $indent."<?phpif (is_object({$prefix}['$field'])):?>\n";

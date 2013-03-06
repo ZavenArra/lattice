@@ -2,7 +2,8 @@
 
 Class Controller_Preview extends Controller_Lattice {
 
-	public function preview($slug){
+	public function preview($slug)
+{
 		
 	}
 }

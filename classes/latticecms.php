@@ -9,7 +9,8 @@ class latticecms {
 
   private static $unique = 0;
 
-  public static function unique_element_id(){
+  public static function unique_element_id()
+{
     return self::$unique++;
   }
 
@@ -21,21 +22,26 @@ class latticecms {
 	 * Returns: Associative array of html, one entry for each ui element
 	 */
 
-		public static function buildUIHtml_chunks($elements, $object = NULL) {
+		public static function buildUIHtml_chunks($elements, $object = NULL)
+{
 				$view = new View();
 				$html_chunks = array();
-				if (is_array($elements)) {
-						foreach ($elements as $element) {
+				if (is_array($elements))
+{
+						foreach ($elements as $element)
+{
 
 								//check if this element type is in fact a object_type
                 $x_path =  sprintf('//object_type[@name="%s"]', $element['type']);
 								$t_config = lattice::config('objects', $x_path)->item(0);
 
-								if ($t_config) {
+								if ($t_config)
+{
 
 										$field = $element['name'];
 										$cluster_object = $object->$field;
-                    if (!$cluster_object){
+                    if (!$cluster_object)
+{
                       throw new Kohana_Exception('Cluster Object did not load for '.$object->id.': '.$field);
                     }
 										
@@ -44,10 +50,12 @@ class latticecms {
 
 										$customview = 'lattice/object_types/' . $cluster_object->objecttype->objecttypename; //check for custom view for this object_type
 										$usecustomview = false;
-										if (Kohana::find_file('views', $customview)) {
+										if (Kohana::find_file('views', $customview))
+{
 												$usecustomview = true;
 										}
-										if (!$usecustomview) {
+										if (!$usecustomview)
+{
 												$html = implode($cluster_html_chunks);
 												$view = new View('ui/clusters_wrapper');
 												$view->label = $element['label'];
@@ -61,7 +69,8 @@ class latticecms {
                         $view->label = $element['label'];
 												$view->object_type_name = $cluster_object->objecttype->objecttypename;
                         $view->object_id = $cluster_object->id;
-                        foreach ($cluster_html_chunks as $key => $value) {
+                        foreach ($cluster_html_chunks as $key => $value)
+{
 														$view->$key = $value;
 												}
 												$html = $view->render();
@@ -75,15 +84,18 @@ class latticecms {
              * multiple items being displayed have the same field names
              */
             $ui_arguments = $element;
-            if (isset($element['field_id'])){
+            if (isset($element['field_id']))
+{
                $ui_arguments['name'] = $element['field_id'];
             }
 
-				switch ($element['type']) {
+				switch ($element['type'])
+{
 
 
                case 'element': //this should not be called 'element' as element has a different meaning
-                  if (isset($element['arguments'])) {
+                  if (isset($element['arguments']))
+{
                      $html = lattice::build_module($element, $element['elementname'], $element['arguments']);
                   } else {
                      $html = lattice::build_module($element, $element['elementname']);
@@ -91,7 +103,8 @@ class latticecms {
                   $html_chunks[$element['modulename']] = $html;
                   break;
                case 'list':
-                  if (isset($element['display']) AND $element['display'] != 'inline') {
+                  if (isset($element['display']) AND $element['display'] != 'inline')
+{
                      break; //element is being displayed via navi, skip
                   }
                   $element['elementname'] = $element['name'];
@@ -141,42 +154,50 @@ class latticecms {
       return $html_chunks;
    }
    
-   private static function buildUIElement($element, $ui_arguments, $value){
+   private static function buildUIElement($element, $ui_arguments, $value)
+{
      
       $html = NULL;
-      if (!isset($element['name'])) {
+      if (!isset($element['name']))
+{
          $element['name'] = LatticeCMS::unique_element_id();
          $html = latticeui::buildUIElement($element, NULL);
-      } else if (!$html = latticeui::buildUIElement($ui_arguments, $value)) {
+      } else if (!$html = latticeui::buildUIElement($ui_arguments, $value))
+{
          throw new Kohana_Exception('bad config in cms: bad ui element');
       }
       return $html;
    }
 
-   public static function get_element_config($object, $element_name){
+   public static function get_element_config($object, $element_name)
+{
      latticecms::get_element_dom_node($object, $element_name);
      return self::convertXMLElement_to_array($object, $element->item(0));
    }
 
-   public static function get_element_dom_node($object, $element_name){
+   public static function get_element_dom_node($object, $element_name)
+{
      $x_path = sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]',
        $object->objecttype->objecttypename,
        $element_name
      );
      $element = lattice::config('objects', $x_path);
-     if (!$element OR !$element->length ){
+     if (!$element OR !$element->length )
+{
        throw new Kohana_Exception('x_path returned no results: '. $x_path);
      }
      return $element->item(0);
 
    }
 
-   public static function buildUIHtml_chunks_for_object($object, $translated_language_code = NULL) {
+   public static function buildUIHtml_chunks_for_object($object, $translated_language_code = NULL)
+{
       $elements = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $object->objecttype->objecttypename));
       // should be Model_object->get_elements();
       // this way a different driver could be created for non-xml config if desired
       $elements_config = array();
-      foreach ($elements as $element) {
+      foreach ($elements as $element)
+{
 
         $entry = self::convert_xml_element_to_array($object, $element);
         $elements_config[$entry['name']] = $entry;
@@ -184,27 +205,32 @@ class latticecms {
 			return latticecms::buildUIHtml_chunks($elements_config, $object);
 	 }
 
-   public static function convertXMLElement_to_array($object, $element){
+   public static function convertXMLElement_to_array($object, $element)
+{
      $entry = array();
      //$entry should become an object, that contains configuration logic for each  view
      //or better yet, each mopui view should have it's own view object
      //which translates the configuration into the view display
 
      $entry['type'] = $element->tag_name;
-     for ($i = 0; $i < $element->attributes->length; $i++) {
+     for ($i = 0; $i < $element->attributes->length; $i++)
+{
        $entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
      }
      //load defaults
      $entry['tag'] = $element->get_attribute('tag');
      $entry['is_multiline'] = ( $element->get_attribute('is_multiline') == 'true' )? true : false;
      //any special xml reading that is necessary
-     switch ($entry['type']) {
+     switch ($entry['type'])
+{
      case 'file':
        case 'image':
          $ext = array();
          $children = lattice::config('objects', 'ext', $element);
-         foreach ($children as $child) {
-           if ($child->tag_name == 'ext') {
+         foreach ($children as $child)
+{
+           if ($child->tag_name == 'ext')
+{
              $ext[] = $child->node_value;
            }
          }
@@ -213,7 +239,8 @@ class latticecms {
        case 'radio_group':
          $children = lattice::config('objects', 'radio', $element);
          $radios = array();
-         foreach ($children as $child) {
+         foreach ($children as $child)
+{
            $label = $child->get_attribute('label');
            $value = $child->get_attribute('value');
            $radios[$label] = $value;
@@ -225,7 +252,8 @@ class latticecms {
              case 'pulldown':
                $children = lattice::config('objects', 'option', $element); //$element['type']);
                $options  = array();
-               foreach ($children as $child) {
+               foreach ($children as $child)
+{
                   $label = $child->get_attribute('label');
                   $value = $child->get_attribute('value');
                   $options[$value] = $label;
@@ -253,15 +281,21 @@ class latticecms {
 
    }
 
-	public static function regenerate_images(){
+	public static function regenerate_images()
+{
 		//find all images
-		foreach (lattice::config('objects', '//object_type') as $object_type){
-			foreach (lattice::config('objects', 'elements/*', $object_type) as $element){
-				if ($element->tag_name == 'image'){
+		foreach (lattice::config('objects', '//object_type') as $object_type)
+{
+			foreach (lattice::config('objects', 'elements/*', $object_type) as $element)
+{
+				if ($element->tag_name == 'image')
+{
 					$objects = ORM::Factory('object_type', $object_type->get_attribute('name'))->get_active_members();
 					$fieldname = $element->get_attribute('name');
-					foreach ($objects as $object){
-           	if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename)){
+					foreach ($objects as $object)
+{
+           	if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename))
+{
 							$uiresizes = Kohana::config('lattice_cms.uiresizes');
 							$object->process_image($object->$fieldname->filename, $fieldname, $uiresizes);
 						}
@@ -271,13 +305,18 @@ class latticecms {
 		}
 	}
 
-	public static function generate_new_images($object_ids){
-		foreach ($object_ids as $id){
+	public static function generate_new_images($object_ids)
+{
+		foreach ($object_ids as $id)
+{
 			$object = Graph::object($id);
-      foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element){
-				if ($element->tag_name == 'image'){
+      foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element)
+{
+				if ($element->tag_name == 'image')
+{
 					$fieldname = $element->get_attribute('name');
-					if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename)){
+					if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename))
+{
 						$uiresizes = Kohana::config('lattice_cms.uiresizes');
 						$object->process_image($object->$fieldname->filename, $fieldname, $uiresizes);
 					}
@@ -288,13 +327,15 @@ class latticecms {
 
 
 
-   public static function save_http_post_file($objectid, $field, $post_file_vars) {
+   public static function save_http_post_file($objectid, $field, $post_file_vars)
+{
       Kohana::$log->add(Log::ERROR, 'save uploaded');
       $object = Graph::object($objectid);
       //check the file extension
       $filename = $post_file_vars['name'];
       $ext = substr(strrchr($filename, '.'), 1);
-      switch ($ext) {
+      switch ($ext)
+{
          case 'jpeg':
          case 'jpg':
          case 'gif':
@@ -317,23 +358,28 @@ class latticecms {
       }
    }
 
-  public static function move_node_html($object){
+  public static function move_node_html($object)
+{
     $object_type_name = $object->objecttypename;
     $x_path = sprintf('//object_type[addable_object[@object_type_name="%s"]]', $object_type_name);
     $object_types_result = lattice::config('objects', $x_path);
     
     $object_types = array();
-    foreach ($object_types_result as $object_type){
+    foreach ($object_types_result as $object_type)
+{
       $object_type = $object_type->get_attribute('name');
       $object_types[$object_type] = $object_type; 
     }
 
     $parent_candidates = array();
-    foreach ($object_types as $object_type){
+    foreach ($object_types as $object_type)
+{
       $objects = Graph::object()->object_type_filter($object_type)->active_filter()->find_all();
-      foreach ($objects as $object){
+      foreach ($objects as $object)
+{
         $title = $object->title;
-        if (!$title){
+        if (!$title)
+{
           $title = $object->slug;
         }
         $parent_candidates[$object->id] = $title;
@@ -348,7 +394,8 @@ class latticecms {
   }
 
   //a list of users of $type
-  public static function users_list_html($object){
+  public static function users_list_html($object)
+{
     //get all of the users of $type
     $user = ORM::Factory('user');
     $users = $user->find_all(); 
@@ -356,10 +403,12 @@ class latticecms {
     $checked = array();
     $checked_users = $object->get_user_objects();
     //now grab the users from this particular object and match those to be checked
-    foreach ($checked_users as $c_user){
+    foreach ($checked_users as $c_user)
+{
       $checked[] = $c_user->user_id;
     }
-    foreach ($users as $user) {
+    foreach ($users as $user)
+{
       $check = (in_array($user->id,$checked)) ? TRUE : FALSE;
       $users_list[] = array("id"=>$user->id,"username"=>$user->username,"checked"=>$check);
     }

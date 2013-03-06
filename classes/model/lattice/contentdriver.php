@@ -31,7 +31,8 @@ abstract class Model_Lattice_Content_driver {
    /*
     * Returns info about the driver.
     */
-   public function driver_info(){
+   public function driver_info()
+{
     return array(
       'driver'=>'mysql',
       'table_name'=>$this->contenttable,

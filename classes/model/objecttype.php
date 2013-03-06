@@ -14,9 +14,11 @@ class Model_Object_type extends ORM {
 	 */
 	private $nonmappedfields = array('id', 'object_id', 'activity', 'loaded', 'objecttypename', 'node_type');
 
-	public function __construct($id=NULL){
+	public function __construct($id=NULL)
+{
 
-		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id)) {
+		if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id))
+{
 			//it's the tmeplate identified, look up the integer primary key
 			$result = DB::select('id')->from('objecttypes')->where('objecttypename', '=', $id)->execute()->current();
 			$id = $result['id'];
@@ -26,27 +28,32 @@ class Model_Object_type extends ORM {
 
 	}
    
-   public static function get_config($object_type_name){
+   public static function get_config($object_type_name)
+{
      $config = lattice::config('objects', sprintf('//object_type[@name="%s"]', $object_type_name));
-     if ($config->length){
+     if ($config->length)
+{
         return $config->item(0);
      }
 
      $config = lattice::config('objects', sprintf('//list[@name="%s"]', $object_type_name));
-     if ($config->length){
+     if ($config->length)
+{
         return $config->item(0);
      } else {
         return false;
      }
    }
 
-  public static function get_elements($object_type_name){
+  public static function get_elements($object_type_name)
+{
     $config = Model_Object_type::get_config($object_type_name);
     $elements = lattice::config('objects', 'elements/*', $config);
     return $elements;
   }
 
-  public static function get_element_config($object_type_name, $element_name){
+  public static function get_element_config($object_type_name, $element_name)
+{
     throw new Kohana_Expection("Not Implemented");
   }
 
@@ -57,15 +64,18 @@ class Model_Object_type extends ORM {
 	 * $column  - the column to get
 	 * Returns: The value
 	 */
-	public function __get($column) {
+	public function __get($column)
+{
 
 		//check if this value is set in config files
 
-		if (in_array($column, $this->nonmappedfields)){
+		if (in_array($column, $this->nonmappedfields))
+{
 			return parent::__get($column);
 		}
 
-		if (parent::__get('node_type')=='container'){
+		if (parent::__get('node_type')=='container')
+{
 			//For lists, values will be on the 2nd level 
 				$x_query =  sprintf('//list[@name="%s"]', parent::__get('objecttypename'));
 			} else {
@@ -74,16 +84,19 @@ class Model_Object_type extends ORM {
 			}
 
 			$value_from_config=NULL;
-			if ($column == 'addable_objects'){
+			if ($column == 'addable_objects')
+{
 				$x_query .= '/addable_object';
 				$nodes = lattice::config('objects', $x_query);
 				$value_from_config = array();
-				foreach ($nodes as $node){
+				foreach ($nodes as $node)
+{
 					$entry = array();
 					$entry['object_type_id'] = $node->get_attribute('object_type_name');
 					$entry['object_type_add_text'] = $node->get_attribute('add_text');
 					$t_config = lattice::config('objects', sprintf('//object_type[@name="%s"]', $entry['object_type_id'] ))->item(0);
-          if (!count($t_config)){
+          if (!count($t_config))
+{
             throw new Kohana_Exception('No object type definition by name: '.$entry['object_type_id']);
           }
 					$entry['node_type'] = $t_config->get_attribute('node_type');
@@ -95,9 +108,11 @@ class Model_Object_type extends ORM {
 				if ($node)
 					$value_from_config = $node->get_attribute($column);
 
-        switch($column){
+        switch($column)
+{
         case 'initial_access_roles':
-          if ($value_from_config){
+          if ($value_from_config)
+{
             $value_from_config = explode(',',$value_from_config);
           } else {
             $value_from_config = array();
@@ -132,12 +147,15 @@ class Model_Object_type extends ORM {
      * Function: defaults()
      * Get default values for insert
      */
-    public function defaults(){
+    public function defaults()
+{
       $elements = Model_Object_type::get_elements($this->objecttypename);
       $defaults = array();
-      foreach ($elements as $element){
+      foreach ($elements as $element)
+{
         $default = $element->get_attribute('default');
-        switch($default){
+        switch($default)
+{
         case 'now':
           $defaults[$element->get_attribute('name')] = date('Y/m/d H:i:s ');
           break;
@@ -145,7 +163,8 @@ class Model_Object_type extends ORM {
           break;
 
         default:
-          if ($default){
+          if ($default)
+{
             $defaults[$element->get_attribute('name')] = $default; 
           }
 
@@ -162,12 +181,14 @@ class Model_Object_type extends ORM {
 	 * $limit - number of records to return
 	 * Returns: ORM Iterator of matching records
 	 */
-	public function get_published_members($limit=NULL){
+	public function get_published_members($limit=NULL)
+{
 
 		$o = Graph::object()
 			->published_filter()
 			->object_type_filter($this->object_type_name);
-		if ($limit){
+		if ($limit)
+{
 			$o->limit($limit);
 		}
 		$o = $o->find_all();
@@ -182,16 +203,19 @@ class Model_Object_type extends ORM {
 	 * $limit - number of records to return
 	 * Returns: ORM Iterator of matching records
 	 */
-	public function get_active_members($limit=NULL){
+	public function get_active_members($limit=NULL)
+{
 
-      if (!$this->loaded()){
+      if (!$this->loaded())
+{
          return array();
       }
       
 		$o = Graph::object()
               ->active_filter()
               ->object_type_filter($this->objecttypename);
-		if ($limit){
+		if ($limit)
+{
 			$o->limit($limit);
 		}
 		$o = $o->find_all();
@@ -202,9 +226,11 @@ class Model_Object_type extends ORM {
    
    
     
-	public function configure_element($item){
+	public function configure_element($item)
+{
 
-		switch($item->tag_name){
+		switch($item->tag_name)
+{
 
 		case 'list':
 			$lt_record = ORM::Factory('object_type');

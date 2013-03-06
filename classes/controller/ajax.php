@@ -7,7 +7,8 @@ class Controller_Ajax extends Controller_Lattice {
 		throw new HTTP_Exception_404('Ajax controller called without action. Check URL.');
 	}
    
-   private function handle_exception($e){
+   private function handle_exception($e)
+{
       
       // Get the exception information
       $type    = get_class($e);
@@ -46,7 +47,8 @@ class Controller_Ajax extends Controller_Lattice {
 		try {
 			$sub_request = Request::Factory($uri);
 			$data = $sub_request->execute()->data();
-		} catch (Exception $e) {
+		} catch (Exception $e)
+{
 			//return HTML from exception
          
           // Start an output buffer
@@ -79,7 +81,8 @@ class Controller_Ajax extends Controller_Lattice {
 		try {
 			$sub_request = Request::Factory($uri);
 			$html = $sub_request->execute()->body();
-		} catch (Exception $e) {
+		} catch (Exception $e)
+{
 			//return HTML from exception
 
 			$message = $e;
@@ -96,18 +99,22 @@ class Controller_Ajax extends Controller_Lattice {
 
 
 		$css_resources = array();
-		foreach ($this->resources['librarycss'] as $css){
+		foreach ($this->resources['librarycss'] as $css)
+{
 			array_push($css_resources, $css);
 		}
-		foreach ($this->resources['css'] as $css){
+		foreach ($this->resources['css'] as $css)
+{
 			array_push($css_resources, $css);
 		}
 
 		$js_resources = array();
-		foreach ($this->resources['libraryjs'] as $js){
+		foreach ($this->resources['libraryjs'] as $js)
+{
 			array_push($js_resources, $js);
 		}
-		foreach ($this->resources['js'] as $js){
+		foreach ($this->resources['js'] as $js)
+{
 			array_push($js_resources, $js);
 		}
 
@@ -131,7 +138,8 @@ class Controller_Ajax extends Controller_Lattice {
 		try {
    		$sub_request = Request::Factory($uri);
 			$request_response = $sub_request->execute();
-   	} catch (Exception $e) {
+   	} catch (Exception $e)
+{
 			//return HTML from exception
 			$message = $e;
 			$ajax_response = array(
@@ -146,18 +154,22 @@ class Controller_Ajax extends Controller_Lattice {
 
 
 		$css_resources = array();
-		foreach ($this->resources['librarycss'] as $css){
+		foreach ($this->resources['librarycss'] as $css)
+{
 			array_push($css_resources, $css);
 		}
-		foreach ($this->resources['css'] as $css){
+		foreach ($this->resources['css'] as $css)
+{
 			array_push($css_resources, $css);
 		}
 
 		$js_resources = array();
-		foreach ($this->resources['libraryjs'] as $js){
+		foreach ($this->resources['libraryjs'] as $js)
+{
 			array_push($js_resources, $js);
 		}
-		foreach ($this->resources['js'] as $js){
+		foreach ($this->resources['js'] as $js)
+{
 			array_push($js_resources, $js);
 		}
 

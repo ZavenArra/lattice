@@ -16,11 +16,13 @@ abstract class Model_Lattice_Foreign extends Model_Lattice_Content_driver {
 
    abstract public function foreign_table_name();
    
-   public function load_content_table($object) {
+   public function load_content_table($object)
+{
       $this->contenttable = ORM::Factory(inflector::singular($this->foreign_table_name()));
       $this->contenttable->where('object_id', '=', $object->id)->find();
      
-      if (!$this->contenttable->loaded()){
+      if (!$this->contenttable->loaded())
+{
          /* 
        * 
        * 
@@ -44,16 +46,20 @@ abstract class Model_Lattice_Foreign extends Model_Lattice_Content_driver {
 
    abstract public function set_title();
 */
-   public function get_content_column($object, $column) {
+   public function get_content_column($object, $column)
+{
       return $this->contenttable->$column;
    }
 
-   public function set_content_column($object, $column, $value) {
+   public function set_content_column($object, $column, $value)
+{
       $this->contenttable->$column = $value;
    }
 
-   public function save_content_table($object, $inserting=FALSE) {
-      if ($inserting){
+   public function save_content_table($object, $inserting=FALSE)
+{
+      if ($inserting)
+{
          $this->contenttable = ORM::Factory(inflector::singular($this->foreign_table_name()));
          $this->contenttable->object_id = $object->id;
       }
