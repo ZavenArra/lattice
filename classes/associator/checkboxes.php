@@ -129,7 +129,7 @@ Class Associator_Checkboxes {
           }
         }
       } 
-    } else if (!is_array($load_pool))
+    } elseif (!is_array($load_pool))
     {
 
       $objects = Graph::object()
@@ -200,11 +200,11 @@ Class Associator_Checkboxes {
     {
       $view = new View('lattice/associator/'.$view_name.'/'.$item->objecttype->objecttypename);
       //      Kohana::$log->add(Log::ERROR, "A")->write();
-    } else if ($view_name AND $view = Kohana::find_file('views/lattice/associator/'.$view_name, 'item'))
+    } elseif ($view_name AND $view = Kohana::find_file('views/lattice/associator/'.$view_name, 'item'))
     { 
       $view = new View('lattice/associator/'.$view_name.'/'.'item');
       //      Kohana::$log->add(Log::ERROR, "B")->write();
-    } else if ($view = Kohana::find_file('views/lattice/associator/', $item->objecttype->objecttypename))
+    } elseif ($view = Kohana::find_file('views/lattice/associator/', $item->objecttype->objecttypename))
     { 
       $view = new View('lattice/associator/'.$item->objecttype->objecttypename);
       //      Kohana::$log->add(Log::ERROR, "C " . $item . ", " . $view_name )->write();

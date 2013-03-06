@@ -162,7 +162,7 @@ class latticecms {
     {
       $element['name'] = LatticeCMS::unique_element_id();
       $html = latticeui::buildUIElement($element, NULL);
-    } else if (!$html = latticeui::buildUIElement($ui_arguments, $value))
+    } elseif (!$html = latticeui::buildUIElement($ui_arguments, $value))
     {
       throw new Kohana_Exception('bad config in cms: bad ui element');
     }

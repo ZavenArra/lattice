@@ -30,7 +30,7 @@ class Controller_Export extends Controller {
       if (is_array($value))
       {
 
-      } else if (is_object($value))
+      } elseif (is_object($value))
       {
         switch (get_class($value))
         {
@@ -117,7 +117,7 @@ class Controller_Export extends Controller {
           }
           break;
         }
-      } else if ($key == "tags")
+      } elseif ($key == "tags")
       {
 
         $node->append_child($this->doc->create_text_node(implode(',',$value)));

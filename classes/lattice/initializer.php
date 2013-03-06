@@ -78,7 +78,7 @@ Class Lattice_Initializer {
       $view->problems = self::$problems;
       $view->messages = self::$messages;
       echo $view->render();
-    } else if (count(self::$problems) OR count(self::$messages))
+    } elseif (count(self::$problems) OR count(self::$messages))
     {
       $view = new View('initializationproblems');
       $view->problems = self::$problems;

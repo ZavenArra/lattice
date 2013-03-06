@@ -274,24 +274,24 @@ class Model_Object extends ORM implements arrayaccess {
       //this catches the configured colums for this table
       return parent::__get($column);
 
-    } else if ($column == 'parent')
+    } elseif ($column == 'parent')
     {
       return $this->get_lattice_parent(); 
 
-    } else if ($column == 'objecttype' OR $column == 'object_type')
+    } elseif ($column == 'objecttype' OR $column == 'object_type')
     {
       $return = parent::__get('objecttype');
       return $return;
 
-    } else if (in_array($column, array_keys($this->__get('objecttype')->_table_columns)))
+    } elseif (in_array($column, array_keys($this->__get('objecttype')->_table_columns)))
     {
       return $this->__get('objecttype')->$column; 
 
-    } else if ($column == 'roles')
+    } elseif ($column == 'roles')
     {
       return parent::__get('roles');
 
-    } else if ($column == 'sortorder')
+    } elseif ($column == 'sortorder')
     {
       return parent::__get('sortorder');
     }
@@ -493,7 +493,7 @@ class Model_Object extends ORM implements arrayaccess {
         parent::__set('slug', Model_Object::create_slug($value, $this->id));
         parent::__set('decouple_slug_title', 1);
         return;
-      } else if ($column == 'title')
+      } elseif ($column == 'title')
       {
         if (!$this->decouple_slug_title)
         {
@@ -501,22 +501,22 @@ class Model_Object extends ORM implements arrayaccess {
         }
         $this->content_driver()->set_title($this, $value);
         return;
-      } else if (in_array($column, array('dateadded')))
+      } elseif (in_array($column, array('dateadded')))
       {
         parent::__set($column, $value);
-      } else if ($this->_table_columns AND in_array($column, array_keys($this->_table_columns)))
+      } elseif ($this->_table_columns AND in_array($column, array_keys($this->_table_columns)))
       {
         parent::__set($column, $value);
 
         //TODO: Change this to an object_type_name match below
-      } else if ($column == 'tags')
+      } elseif ($column == 'tags')
       {
         $tags = explode(',', $value);
         foreach ($tags as $tag_name)
         {
           $this->add_tag($tag_name);
         }
-      } else if ($column)
+      } elseif ($column)
       {
         $o = $this->_object;
         $objecttype_id = $o['objecttype_id'];
@@ -1231,7 +1231,7 @@ class Model_Object extends ORM implements arrayaccess {
       if (is_numeric($object_types))
       {
         $this->where('objecttype_id', '=', $object_types);
-      } else if (strpos(',', $object_types))
+      } elseif (strpos(',', $object_types))
       {
         $t_names = explode(',', $object_types);
         $t_ids = array();
@@ -1245,7 +1245,7 @@ class Model_Object extends ORM implements arrayaccess {
           $t_ids[] = $result->current()->id;
         }
         $this->in('objecttype_id', $t_ids);
-      } else if ($object_types == 'all')
+      } elseif ($object_types == 'all')
       {
         //set no filter
       } else {
@@ -1572,7 +1572,7 @@ class Model_Object extends ORM implements arrayaccess {
         $sort_value = $current->$sort_field;
         $query->where($sort_field, $inequality, $sort_value)
           ->order_by($sort_field, $order);
-      } else if ($sort_field == 'sortorder')
+      } elseif ($sort_field == 'sortorder')
       {
         if ($lattice == NULL)
         {
@@ -2110,7 +2110,7 @@ class Model_Object extends ORM implements arrayaccess {
             //go ahead and configure it
             Graph::configure_object_type($object_type_name);
             $object_type = ORM::Factory('objecttype', $object_type_name);
-          } else if ($object_type_config = lattice::config('objects', $x_path_list)->item(0))
+          } elseif ($object_type_config = lattice::config('objects', $x_path_list)->item(0))
           { 
             Graph::configure_object_type($object_type_name);
             $object_type = ORM::Factory('objecttype', $object_type_name);

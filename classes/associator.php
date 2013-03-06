@@ -169,7 +169,7 @@ Class Associator {
         }
       }	
 
-    } else if (!is_array($load_pool))
+    } elseif (!is_array($load_pool))
     {
 
       $objects = Graph::object()
@@ -263,10 +263,10 @@ Class Associator {
     if ($view_name AND $view = Kohana::find_file('views/lattice/associator/'.$view_name, $item->objecttype->objecttypename))
     {
       $view = new View('lattice/associator/'.$view_name.'/'.$item->objecttype->objecttypename);
-    } else if ($view_name AND $view = Kohana::find_file('views/lattice/associator/'.$view_name, 'item'))
+    } elseif ($view_name AND $view = Kohana::find_file('views/lattice/associator/'.$view_name, 'item'))
     { 
       $view = new View('lattice/associator/'.$view_name.'/'.'item');
-    } else if ($view = Kohana::find_file('views/lattice/associator/', $item->objecttype->objecttypename))
+    } elseif ($view = Kohana::find_file('views/lattice/associator/', $item->objecttype->objecttypename))
     { 
       $view = new View('lattice/associator/'.$item->objecttype->objecttypename);
     } else  {

@@ -209,7 +209,7 @@ class latticeview {
         if (file_exists('application/views/frontend/' . $view_name . '.php'))
         {
           $view_path = 'frontend/'.$view_name;
-        } else if (file_exists('application/views/generated/' . $view_name . '.php'))
+        } elseif (file_exists('application/views/generated/' . $view_name . '.php'))
         {
           $view_path = 'generated/'.$view_name;
         } else {
@@ -251,7 +251,7 @@ class latticeview {
       if (file_exists('application/views/frontend/' . $view_name . '.php'))
       {
         $view_path = 'frontend/'.$view_name;
-      } else if (file_exists('application/views/generated/' . $view_name . '.php'))
+      } elseif (file_exists('application/views/generated/' . $view_name . '.php'))
       {
         $view_path = 'generated/'.$view_name;
       } else {
@@ -350,12 +350,12 @@ class latticeview {
             if ($view AND $slug)
             {
               $sub_view_content = $this->get_view_content($view, $slug);
-            } else if ($slug)
+            } elseif ($slug)
             {
               $object = Graph::object($slug);
               $view = $object->objecttype->objecttypename;
               $sub_view_content = $this->get_view_content($view, $slug);
-            } else if ($view)
+            } elseif ($view)
             {
               $sub_view_content = $this->get_view_content($view);
             } else {

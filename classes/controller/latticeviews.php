@@ -43,7 +43,7 @@ Class Controller_Lattice_views extends Controller_Layout{
         {
           $this->wrap_with_layout($layout_for_slug); 
         }
-      } else if ($layout_for_object_type)
+      } elseif ($layout_for_object_type)
       {
         if (Kohana::find_file('views/', $layout_for_object_type))
         {

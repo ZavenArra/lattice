@@ -51,10 +51,10 @@ class Model_File extends ORM {
     if ($column == 'urlfilename')
     {
       return rawurlencode(parent::__get('filename'));
-    } else if ($column == 'fullpath')
+    } elseif ($column == 'fullpath')
     {
       return Graph::mediapath().parent::__get('filename');
-    } else if ($column == 'ext')
+    } elseif ($column == 'ext')
     {
       $chunks = explode('.', parent::__get('filename'));
       return $chunks[count($chunks)-1];

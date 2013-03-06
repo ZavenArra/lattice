@@ -99,7 +99,7 @@ $this->view->content = $form->render();
         if ($form_values['redirect'])
         {
           Request::current()->redirect(url::site($form_values['redirect'],Request::current()->protocol(),false));
-        } else if ($redirect = $authredirect)
+        } elseif ($redirect = $authredirect)
         {
           Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
         } else {
@@ -124,7 +124,7 @@ $this->view->content = $form->render();
     {
       $view->message = I18n::get('reset_password_success');
       $redirect = NULL;
-    } else if ($error)
+    } elseif ($error)
     {
       $view->message = $error;
     }
