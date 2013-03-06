@@ -55,7 +55,7 @@ class Graph {
     } else {
       $lattice = ORM::Factory('lattice')->where('name', '=', $lattice_id)->find();
     }
-    if (isset($lattice) AND !$lattice->loaded())
+    if (isset($lattice) AND ! $lattice->loaded())
     {
       $lattice = ORM::Factory('lattice');
       $lattice->name = $lattice_id;
@@ -111,7 +111,7 @@ class Graph {
 
   public static function languages()
   {
-    if (!self::$_languages)
+    if ( ! self::$_languages)
     {
       self::$_languages =  ORM::Factory('language')->where('activity', 'is', NULL)->find_all();
     }
@@ -170,14 +170,14 @@ class Graph {
     // 
     // check objects.xml for configuration
 
-    if (!$force)
+    if ( ! $force)
     {
       $object_type_config = NULL;
       $x_path =  sprintf('// object_type[@name="%s"]', $object_type_name);
       $x_path_list =  sprintf('// list[@name="%s"]', $object_type_name);
-      if (!$object_type_config = lattice::config('objects', $x_path)->item(0))
+      if ( ! $object_type_config = lattice::config('objects', $x_path)->item(0))
       { 
-        if (!$object_type_config = lattice::config('objects', $x_path_list)->item(0))
+        if ( ! $object_type_config = lattice::config('objects', $x_path_list)->item(0))
         {
           throw new Kohana_Exception("Object type '".$object_type_name."' does not exist in objects.xml"); 
         }
@@ -195,7 +195,7 @@ class Graph {
 
     // find or create object_type record
     $t_record = ORM::Factory('objecttype', $object_type_name );
-    if (!$t_record->loaded())
+    if ( ! $t_record->loaded())
     {
       $t_record = ORM::Factory('objecttype');
       $t_record->objecttypename = $object_type_name;
@@ -224,7 +224,7 @@ class Graph {
     // $this->driver->get_object_type_object($roo_node_object_type)
     $object_type = ORM::Factory('object_type')->where('objecttypename', '=', $root_node_object_type)->find();
     $object =  Graph::object()->object_type_filter($object_type->objecttypename)->find();
-    if (!$object->loaded())
+    if ( ! $object->loaded())
     {
       throw new Kohana_Exception('Root node not found: '.$root_node_object_type);
     }
@@ -244,7 +244,7 @@ class Graph {
       ->where('language_id', '=', $language->id)
       ->find();
     $root = ORM::Factory('object', $object_relationship->id);
-    if (!$root->loaded())
+    if ( ! $root->loaded())
     {
       throw new Kohana_Exception('Root object not found');
     }

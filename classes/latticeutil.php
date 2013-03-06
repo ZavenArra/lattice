@@ -42,8 +42,8 @@ Class latticeutil {
    */
   public static function img($file, $prefix, $alt,  $extra = NULL)
   {
-    if (!$file->$prefix->fullpath 
-      OR !file_exists($file->$prefix->fullpath))
+    if ( ! $file->$prefix->fullpath 
+      OR ! file_exists($file->$prefix->fullpath))
     {
       return NULL;
     }
@@ -68,7 +68,7 @@ Class latticeutil {
 
     if (class_exists('Auth'))
     { // If auth module not installed, grant access
-      if ($role AND !Auth::instance()->logged_in($role))
+      if ($role AND ! Auth::instance()->logged_in($role))
       {
         return FALSE;
       } else {
@@ -84,11 +84,11 @@ Class latticeutil {
    */
   public static function check_access($roles)
   {
-    if (!$roles)
+    if ( ! $roles)
     {
       return TRUE;
     }
-    if (!is_array($roles))
+    if ( ! is_array($roles))
     {
       $roles = array($roles);
     }
@@ -109,7 +109,7 @@ Class latticeutil {
   private static function decode_recurse($value)
   {
     // handle object?
-    if (!is_array($value))
+    if ( ! is_array($value))
     {
       return html_entity_decode($value);
     } else {
@@ -126,11 +126,11 @@ Class latticeutil {
   public static function modulo($identifier, $options)
   {
     self::$modulos_options_count = count( $options );
-    if (!is_array(self::$modulos))
+    if ( ! is_array(self::$modulos))
     {
       self::$modulos = array();
     }
-    if (!isset(self::$modulos[$identifier]))
+    if ( ! isset(self::$modulos[$identifier]))
     {
       self::$modulos[$identifier] = 0;
     }

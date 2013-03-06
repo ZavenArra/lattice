@@ -46,7 +46,7 @@ class Model_Object extends ORM implements arrayaccess {
   {
 
 
-    if (!empty($id) AND is_string($id) AND !ctype_digit($id))
+    if ( ! empty($id) AND is_string($id) AND !ctype_digit($id))
     {
 
       // check for translation reference
@@ -103,7 +103,7 @@ class Model_Object extends ORM implements arrayaccess {
         $check_slug->where('id', '!=', $for_page_id);
       }
       $check_slug->find();
-      if (!$check_slug->loaded())
+      if ( ! $check_slug->loaded())
       {
         return $slug;
       }
@@ -223,7 +223,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     // maintain aspect ratio
     // use the forcing when it applied
-    // forcing with aspectfolloworientation is gonna give weird results!
+    // forcing with aspectfolloworientation is gonna give weird results! 
     $image->resize($resize_width, $resize_height, $key_dimension);
 
     $image->save(Graph::mediapath() .$new_filename);
@@ -249,7 +249,7 @@ class Model_Object extends ORM implements arrayaccess {
       {
         $this->content_driver->load_content_table($this);
       }
-      if (!$this->content_driver)
+      if ( ! $this->content_driver)
       {
         throw new Kohana_Exception('Content Driver did not load for '.$this->id);
       }
@@ -296,7 +296,7 @@ class Model_Object extends ORM implements arrayaccess {
       return parent::__get('sortorder');
     }
 
-    if (!$this->loaded())
+    if ( ! $this->loaded())
     {
       return NULL; 
     }
@@ -321,7 +321,7 @@ class Model_Object extends ORM implements arrayaccess {
       $family = $column;
 
       $list_object_type = ORM::Factory('objecttype', $family);
-      if (!$list_object_type->id)
+      if ( ! $list_object_type->id)
       {
         $this->objecttype->configure_element($list_config->item(0));
         $list_object_type = ORM::Factory('objecttype', $family);
@@ -336,7 +336,7 @@ class Model_Object extends ORM implements arrayaccess {
       // or listcontainer could be refactored as a storage class of object
       // Lattice_Model_...
       $list_container_object = ORM::Factory('listcontainer', $list_container_object->id);
-      if (!$list_container_object->id)
+      if ( ! $list_container_object->id)
       {
         $list_container_object_id = $this->add_object($family);
         $list_container_object = ORM::Factory('listcontainer', $list_container_object_id);
@@ -354,7 +354,7 @@ class Model_Object extends ORM implements arrayaccess {
   // be other reasons that justify this.
   public function content_driver()
   {
-    if (!$this->content_driver)
+    if ( ! $this->content_driver)
     {
 
       $object_type_name = $this->objecttype->objecttypename;
@@ -376,7 +376,7 @@ class Model_Object extends ORM implements arrayaccess {
       }
 
     }
-    if (!$this->content_driver)
+    if ( ! $this->content_driver)
     {
       throw new Kohana_Exception('Content Driver did not load for object id '.$this->id);
     }
@@ -391,7 +391,7 @@ class Model_Object extends ORM implements arrayaccess {
    */
   public function save(Validation $validation = NULL)
   {
-    if (!$this->loaded())
+    if ( ! $this->loaded())
     {
       throw new Kohana_Exception('Calling save on object which is not loaded.  Use create_object to insert a new object');
     }
@@ -421,7 +421,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     // Postpone adding record to content table until after lattice point
     // is set.
-    if (!$inserting)
+    if ( ! $inserting)
     {
       $this->save_content_table($this);
     }
@@ -476,13 +476,13 @@ class Model_Object extends ORM implements arrayaccess {
     public function __set($column, $value)
     {
 
-      if (!$this->_loaded)
+      if ( ! $this->_loaded)
       {
         // Bypass special logic when just loading the object
         return parent::__set($column, $value);
       }
 
-      if (!is_object($value))
+      if ( ! is_object($value))
       {
         $value = Model_Object::convert_newlines($value);
       }
@@ -495,7 +495,7 @@ class Model_Object extends ORM implements arrayaccess {
         return;
       } elseif ($column == 'title')
       {
-        if (!$this->decouple_slug_title)
+        if ( ! $this->decouple_slug_title)
         {
           $this->slug = Model_Object::create_slug($value, $this->id);
         }
@@ -525,7 +525,7 @@ class Model_Object extends ORM implements arrayaccess {
 
         $xpath = sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]', $object_type->objecttypename, $column);
         $field_info = lattice::config('objects', $xpath)->item(0);
-        if (!$field_info)
+        if ( ! $field_info)
         {
           throw new Kohana_Exception('Invalid field for object_type, using XPath : :xpath', array(':xpath' => $xpath));
         }
@@ -550,7 +550,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function delete()
     {
-      if (!$this->loaded())
+      if ( ! $this->loaded())
       {
         throw new Kohana_Exception("Trying to delete object that is not loaded");
       }
@@ -608,13 +608,13 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function translate($language_code)
     {
-      if (!$this->loaded())
+      if ( ! $this->loaded())
       {
         return $this;
       }
 
       $rosetta_id = $this->rosetta_id;
-      if (!$rosetta_id)
+      if ( ! $rosetta_id)
       {
         throw new Kohana_Exception('No Rosetta ID found for object during translation with object_id :object_id',
           array(':object_id'=>$rosetta_id)
@@ -627,7 +627,7 @@ class Model_Object extends ORM implements arrayaccess {
         // this could just ask the graph, to avoid going to database again
         $language_id = ORM::Factory('language', $language_code)->id;
       }
-      if (!$language_id)
+      if ( ! $language_id)
       {
         throw new Kohana_Exception('Invalid language code :code', array(':code'=>$language_code));
       }
@@ -636,7 +636,7 @@ class Model_Object extends ORM implements arrayaccess {
         ->where('rosetta_id', '=', $rosetta_id)
         ->where('objects.language_id', '=', $language_id)
         ->find();
-      if (!$translated_object->loaded())
+      if ( ! $translated_object->loaded())
       {
         throw new Kohana_Exception('No translated object available for object_id :id with language :language',
           array(':id'=>$object_id,
@@ -691,14 +691,14 @@ class Model_Object extends ORM implements arrayaccess {
     {
       $tag_name = trim($tag_name);
       $tag = ORM::Factory('tag')->where('tag', '=', $tag_name)->find();
-      if (!$tag->loaded())
+      if ( ! $tag->loaded())
       {
         $tag = ORM::Factory('tag');
         $tag->tag = $tag_name;
         $tag->language_id = $this->language_id;
         $tag->save();
       }
-      if (!$this->has('tag', $tag))
+      if ( ! $this->has('tag', $tag))
       {
         $this->add('tag', $tag);
       }
@@ -708,7 +708,7 @@ class Model_Object extends ORM implements arrayaccess {
     public function remove_tag($tag_name)
     {
       $tag = ORM::Factory('tag')->where('tag', '=', $tag_name)->find();
-      if (!$tag->loaded())
+      if ( ! $tag->loaded())
       {
         throw new Kohana_Exception("Tag :tag_name does not exist in the database.", array(':tag_name' => $tag_name));
       }
@@ -956,7 +956,7 @@ class Model_Object extends ORM implements arrayaccess {
 
       for ($i = 0; $i < count($order); $i++)
       {
-        if (!is_numeric($order[$i]))
+        if ( ! is_numeric($order[$i]))
         {
           return;
           //  this breaks frontend, but returning a typical lattice error would allow us to log it, or provide a less terrifying experience.
@@ -968,7 +968,7 @@ class Model_Object extends ORM implements arrayaccess {
           ->where('lattice_id', '=', $lattice->id)
           ->where('connectedobject_id', '=', $order[$i])
           ->find();
-        if (!$object_relationship->loaded())
+        if ( ! $object_relationship->loaded())
         {
           throw new Kohana_Exception('No object relationship found matching sort order object_id :object_id, lattice_id :lattice_id, connectedobject_id :connectedobject_id',
             array(':object_id' => $this->id,
@@ -1013,7 +1013,7 @@ class Model_Object extends ORM implements arrayaccess {
     {
       $save_name = Model_Object::make_file_save_name('tmp') . microtime();
 
-      if (!move_uploaded_file($tmp_name, Graph::mediapath() . $save_name))
+      if ( ! move_uploaded_file($tmp_name, Graph::mediapath() . $save_name))
       {
         $result = array(
           'result' => 'failed',
@@ -1028,7 +1028,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public static function make_file_save_name($filename)
     {
-      if (!$filename)
+      if ( ! $filename)
       {
         return NULL;
       }
@@ -1039,7 +1039,7 @@ class Model_Object extends ORM implements arrayaccess {
       $name = array_slice($xarray, 0, $nr - 1);
       $name = implode('.', $name);
       $i = 1;
-      if (!file_exists(Graph::mediapath() . "$name" . '.' . $ext))
+      if ( ! file_exists(Graph::mediapath() . "$name" . '.' . $ext))
       {
         $i = '';
       } else {
@@ -1058,13 +1058,13 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function save_file($field, $filename, $type, $tmp_name)
     {
-      if (!is_object($file = $this->__get($field)))
+      if ( ! is_object($file = $this->__get($field)))
       {
         $file = ORM::Factory('file', $this->__get($field));
       }
 
       $replacing_empty_file = FALSE;
-      if (!$file->filename)
+      if ( ! $file->filename)
       {
         $replacing_empty_file = TRUE;
       }
@@ -1072,7 +1072,7 @@ class Model_Object extends ORM implements arrayaccess {
       $file->unlink_old_file();
       $save_name = Model_Object::make_file_save_name($filename);
 
-      if (!copy(Graph::mediapath() . $tmp_name, Graph::mediapath() . $save_name))
+      if ( ! copy(Graph::mediapath() . $tmp_name, Graph::mediapath() . $save_name))
       {
         throw new Lattice_Exception('this is a MOP Exception');
       }
@@ -1223,7 +1223,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function object_type_filter($object_types)
     {
-      if (!$object_types)
+      if ( ! $object_types)
       {
         return $this;
       }
@@ -1238,7 +1238,7 @@ class Model_Object extends ORM implements arrayaccess {
         foreach ($t_names as $tname)
         {
           $result = DB::query("Select id from objecttypes where objecttypename = '$object_types'")->execute();
-          if (!$result->current->id AND !Model_Object_type::get_config($tname))
+          if ( ! $result->current->id AND !Model_Object_type::get_config($tname))
           {
             throw new Kohana_Exception('Invalid object type requested in object_type_filter '.$object_types);
           }
@@ -1251,7 +1251,7 @@ class Model_Object extends ORM implements arrayaccess {
       } else {
         $object_type = $object_types; //  argument is just a singluar string
         $result = DB::query(Database::SELECT, "Select id from objecttypes where objecttypename = '$object_type'")->execute()->current();
-        if (!$result['id'] AND !Model_Object_type::get_config($object_type))
+        if ( ! $result['id'] AND !Model_Object_type::get_config($object_type))
         {
           throw new Kohana_Exception('Invalid object type requested in object_type_filter '.$object_type);
         }
@@ -1298,7 +1298,7 @@ class Model_Object extends ORM implements arrayaccess {
         foreach ($map as $object_type_config)
         {
           $object_type = ORM::Factory('objecttype', $object_type_config->get_attribute('name')); 
-          if (!$object_type->loaded())
+          if ( ! $object_type->loaded())
           {
             continue;
             // Continue here because the object type might not be lazy-configured yet 
@@ -1309,7 +1309,7 @@ class Model_Object extends ORM implements arrayaccess {
         }
 
       }
-      if (!count($map_query))
+      if ( ! count($map_query))
       {
         throw new Kohana_Exception('Content Column: '.$column.' not specifid for any objects');
       }
@@ -1494,13 +1494,13 @@ class Model_Object extends ORM implements arrayaccess {
     public function is_within_sub_tree($object_id, $lattice='lattice')
     {
       $sub_tree_object = NULL;
-      if (!is_object($object_id))
+      if ( ! is_object($object_id))
       {
         $sub_tree_object = Graph::object($object_id);
       } else {
         $sub_tree_object = $object_id;
       }
-      if (!$sub_tree_object->loaded())
+      if ( ! $sub_tree_object->loaded())
       {
         throw new Kohana_Exception('Checking for object subtree of object that is not in database: :objectid',
           array(':objectid'=>$object_id));
@@ -1581,7 +1581,7 @@ class Model_Object extends ORM implements arrayaccess {
         // assume the default lattice
         //   $query->join('objectrelationships')->on('objects.id', '=', 'objectrelationships.
         // get current sort order
-        //  get it!
+        //  get it! 
         // $query->join //join objectrelationships
         // this assumes we've already joined objectrelatinpshios
         $sort_value = $this->get_sort_order($lattice, $current->id);  // implement this function
@@ -1600,7 +1600,7 @@ class Model_Object extends ORM implements arrayaccess {
       // $query->where('objects.id', $id_inequalities[$id_inequality], $current->id)->order_by('id', $order)->limit(1);
       $query->where('objects.id', '!=', $current->id)->order_by('id', $order)->limit(1);
       $result = $query->find();
-      if (!$result->loaded())
+      if ( ! $result->loaded())
       {
         // id inequality (tiebreaker) is backwards, flip it and rerun the query
         $id_inequality += 1;
@@ -1639,7 +1639,7 @@ class Model_Object extends ORM implements arrayaccess {
       /*
        * Set up any translated peer objects
      */
-    if (!$rosetta_id)
+    if ( ! $rosetta_id)
     {
       $languages = Graph::languages();
       foreach ($languages as $translation_language)
@@ -1689,7 +1689,7 @@ class Model_Object extends ORM implements arrayaccess {
       foreach ($containers as $c)
       {
         $arguments['title'] = $c->get_attribute('label');
-        if (! ORM::Factory('objecttype', $c->get_attribute('name'))->loaded())
+        if ( ! ORM::Factory('objecttype', $c->get_attribute('name'))->loaded())
         {
           $this->objecttype->configure_element($c);
         }
@@ -1732,7 +1732,7 @@ class Model_Object extends ORM implements arrayaccess {
           }
         }
 
-        if (!$component_already_present)
+        if ( ! $component_already_present)
         {
           $this->add_object($c->get_attribute('object_type_name'), $arguments);
         }
@@ -1748,12 +1748,12 @@ class Model_Object extends ORM implements arrayaccess {
       {
         throw new Kohana_Exception('Create cannot be called on a loaded object');
       } 
-      if (!$object_type_name)
+      if ( ! $object_type_name)
       {
         throw new Kohana_Exception('Create cannot be called without a valid object_type_name: '.$object_type_name );
       }
 
-      !$rosetta_id ?  $translation_rosetta_id = Graph::new_rosetta() : $translation_rosetta_id = $rosetta_id;
+      ! $rosetta_id ?  $translation_rosetta_id = Graph::new_rosetta() : $translation_rosetta_id = $rosetta_id;
 
       if ($language_id == NULL)
       {
@@ -1810,14 +1810,14 @@ class Model_Object extends ORM implements arrayaccess {
       // load defaults for this object type
       foreach ($this->objecttype->defaults() as $field => $default)
       {
-        if (!isset($data[$field]))
+        if ( ! isset($data[$field]))
         {
           $data[$field] = $default;
         }
       }
 
 
-      if (!count($data))
+      if ( ! count($data))
       {
         return $this;
       }
@@ -1856,7 +1856,7 @@ class Model_Object extends ORM implements arrayaccess {
 
         $field_infoXPath = sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field);
         $field_info = lattice::config('objects', $field_infoXPath)->item(0);
-        if (!$field_info)
+        if ( ! $field_info)
         {
           throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath' => $field_infoXPath));
         }
@@ -1923,7 +1923,7 @@ class Model_Object extends ORM implements arrayaccess {
       /*
        * Set up any translated peer objects
      */
-    if (!$rosetta_id)
+    if ( ! $rosetta_id)
     {
       $languages = Graph::languages();
       foreach ($languages as $translation_language)
@@ -1969,7 +1969,7 @@ class Model_Object extends ORM implements arrayaccess {
     public function add_lattice_relationship($lattice, $new_object_id)
     {
 
-      if (!is_numeric($new_object_id))
+      if ( ! is_numeric($new_object_id))
       {
         $new_object_id = Graph::object($new_object_id);
       }
@@ -1979,7 +1979,7 @@ class Model_Object extends ORM implements arrayaccess {
         return;
       }
 
-      if (!is_object($lattice))
+      if ( ! is_object($lattice))
       {
         $lattice = Graph::lattice($lattice);
       }
@@ -2003,7 +2003,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function check_lattice_relationship($lattice, $new_object_id)
     {
-      if (!is_object($lattice))
+      if ( ! is_object($lattice))
       {
         $lattice = Graph::lattice($lattice);
       }
@@ -2024,7 +2024,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function remove_lattice_relationship($lattice, $remove_object_id)
     {
-      if (!is_object($lattice))
+      if ( ! is_object($lattice))
       {
         $lattice = Graph::lattice($lattice);
       }
@@ -2060,7 +2060,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function clear_lattice_connections($lattice)
     {
-      if (!is_object($lattice))
+      if ( ! is_object($lattice))
       {
         $lattice = Graph::lattice($lattice);
       }
@@ -2075,7 +2075,7 @@ class Model_Object extends ORM implements arrayaccess {
         ->where('rosetta_id', '=', $this->rosetta_id)
         ->where('objects.language_id', '=', $language_id)
         ->find();
-      if (!$translated_object->loaded())
+      if ( ! $translated_object->loaded())
       {
         throw new Kohana_Exception('No matching translated object for rosetta :rosetta and language :language',
           array(':rosetta'=>$this->rosetta_id,
@@ -2090,14 +2090,14 @@ class Model_Object extends ORM implements arrayaccess {
     public function set_object_type($object_type_class_or_name)
     {
       $object_type = NULL;
-      if (!is_object($object_type_class_or_name))
+      if ( ! is_object($object_type_class_or_name))
       {
 
         $object_type_name = $object_type_class_or_name;
 
         $object_type = ORM::Factory('objecttype', $object_type_name);
 
-        if (!$object_type->id)
+        if ( ! $object_type->id)
         {
 
 
@@ -2218,7 +2218,7 @@ class Model_Object extends ORM implements arrayaccess {
       // echo $x_path;
 
       $config = lattice::config('objects', $x_path); 
-      if (!$config->item(0))
+      if ( ! $config->item(0))
       {
         return NULL;
       }

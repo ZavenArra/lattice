@@ -14,7 +14,7 @@ class Model_Lattice extends ORM {
 
   public function get_relationships()
   {
-    if (!$this->loaded())
+    if ( ! $this->loaded())
     {
       throw new Kohana_Exception('Model is not loaded');
     }

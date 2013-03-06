@@ -130,7 +130,7 @@ $this->view->content = $form->render();
     }
     $view->title = 'User Login';
 
-    if (!$redirect)
+    if ( ! $redirect)
     {
       if (isset($form_values['redirect']))
       {

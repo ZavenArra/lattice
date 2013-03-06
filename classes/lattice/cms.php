@@ -131,7 +131,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
 
 
-   if (!$language_code)
+   if ( ! $language_code)
 {
      $object = Graph::object($id);
    } else {
@@ -149,7 +149,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
     * since only the navi needs to know about the modules being loaded as long
     * as the reciever (CMS in this case) has an appropriate container.
     */
-   if (!$object->loaded())
+   if ( ! $object->loaded())
 {
      $controller = $id;
      if (Kohana::find_file('classes/controller', $controller))

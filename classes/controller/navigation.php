@@ -34,7 +34,7 @@ class Controller_Navigation extends Controller_Lattice{
   public function get_tier($parent_id, $deeplink_path=array(), &$follow=FALSE)
   {
     $parent = Graph::object($parent_id);
-    if (!$parent->loaded())
+    if ( ! $parent->loaded())
     {
       throw new Kohana_Exception('Invalid object id sent to get_tier');
     }
@@ -56,7 +56,7 @@ class Controller_Navigation extends Controller_Lattice{
         $roles = $child->roles->find_all();
         foreach ($roles as $role)
         {
-          if (!latticeutil::check_access($role->name))
+          if ( ! latticeutil::check_access($role->name))
           {
             continue (2);
           } 
@@ -113,7 +113,7 @@ class Controller_Navigation extends Controller_Lattice{
           $controller = $m->get_attribute('controller');
           $roles = Kohana::config(strtolower($controller).'.authrole', FALSE, FALSE); 
           $access_granted = latticeutil::check_access($roles);
-          if (!$access_granted)
+          if ( ! $access_granted)
           {
             continue;
           }

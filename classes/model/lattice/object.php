@@ -27,11 +27,11 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
     $objecttype = ORM::Factory('objecttype', $objecttype_id);
     $objecttype_id = $objecttype->id;
 
-    if (!isset(self::$dbmaps[$objecttype_id]))
+    if ( ! isset(self::$dbmaps[$objecttype_id]))
     {
       self::load_dbmap_for_object_type($objecttype_id);
     }
-    if (!isset($column))
+    if ( ! isset($column))
     {
       return self::$dbmaps[$objecttype_id];
     } else {
@@ -42,7 +42,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
         // Attempt lazy configuration
         $xpath = sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]', $objecttype->objecttypename, $column);
         $element = lattice::config('objects', $xpath)->item(0);
-        if (!count($element))
+        if ( ! count($element))
         {
           throw new Kohana_Exception('DBMap column not found or configured: '.$column);
         }
@@ -74,7 +74,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
 
     $content = ORM::factory(inflector::singular('contents'));
     $this->contenttable = $content->where('object_id', '=', $object->id)->find();
-    if (!$this->contenttable->loaded())
+    if ( ! $this->contenttable->loaded())
     {
       // we are going to allow no content object
       // in order to support having empty objects
@@ -87,7 +87,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
   public function get_title($object)
   {
     $title = $this->contenttable->title; 
-    if (!$title)
+    if ( ! $title)
     {
       return $this->contenttable->field1;
     }
@@ -104,7 +104,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
     $content_column = self::dbmap($object->objecttype_id, $column);       
 
     // No column mapping set up, attempt to run setup if it's configured.
-    if (!$content_column)
+    if ( ! $content_column)
     {
 
       // this column isn't mapped, check to see if it's in the xml
@@ -144,7 +144,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
     }
 
 
-    if (!$content_column)
+    if ( ! $content_column)
     {
       throw new Kohana_Exception('Column :column not found in content model', array(':column' => $column));
     }
@@ -157,7 +157,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
 
     // Also need to check for file, but in 3.1 file will be an object itself and this will
     // not be necessary.
-    if (strstr($content_column, 'file') AND !is_object($this->contenttable->$content_column))
+    if (strstr($content_column, 'file') AND ! is_object($this->contenttable->$content_column))
     {
       $file = ORM::Factory('file', $this->contenttable->$content_column);
       // file needs to know what module it's from if its going to check against valid resizes
@@ -175,7 +175,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
       ->find();
     $object_element = Graph::object($object_element_relationship->elementobject_id);
 
-    if (!$object_element->loaded())
+    if ( ! $object_element->loaded())
     {
       // 
       //  it may make sense for the objecttype model to return the config info for itself
@@ -218,7 +218,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
     {
       $this->contenttable->title = $value;
     }
-    if ($mapped_column AND !strstr($mapped_column, 'object'))
+    if ($mapped_column AND ! strstr($mapped_column, 'object'))
     {
       $this->contenttable->$mapped_column = $value;
       $this->contenttable->save();
@@ -280,7 +280,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
   // this could potentially go into the base class 100%
   public function save_content_table($object, $inserting=FALSE)
   {
-    if (!$this->contenttable)
+    if ( ! $this->contenttable)
     {
       $this->load_content_table($object);
     }

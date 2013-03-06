@@ -35,7 +35,7 @@ Class Lattice_auth_Controller_Registration extends Controller_Layout {
       ->rule('lastname', 'min_length', array(':value', 3));
 
 
-    if ($validation->check() AND !count($this->errors))
+    if ($validation->check() AND ! count($this->errors))
     {
       $user = $this->create_user($_POST['username'], $_POST['password'], $_POST['firstname'], $_POST['lastname'], $_POST['email']);
     } else {
@@ -63,7 +63,7 @@ Class Lattice_auth_Controller_Registration extends Controller_Layout {
   public function action_confirmed($user_id)
   {
     $user = ORM::Factory('user',$user_id);
-    if (!$user->loaded())
+    if ( ! $user->loaded())
     {
       $this->response->body('Invalid Confirmation - User Does Not Exist');
       return;

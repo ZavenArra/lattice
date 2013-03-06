@@ -100,11 +100,11 @@ Class Associator {
         if (isset($filter['object_type_name']) AND $filter['object_type_name'])
         {
           $t = ORM::Factory('object_type', $filter['object_type_name']);
-          if (!$t->loaded())
+          if ( ! $t->loaded())
           {
             Graph::configure_object_type($filter['object_type_name']);
             $t = ORM::Factory('objecttype', $filter['object_type_name']);
-            if (!$t->loaded())
+            if ( ! $t->loaded())
             {
               throw new Kohana_Exception($filter['object_type_name'] .' Not Found');
             }
@@ -143,7 +143,7 @@ Class Associator {
         foreach ($results as $id)
         {
           $object = Graph::object($id);
-          if (!$this->parent->check_lattice_relationship($lattice, $object))
+          if ( ! $this->parent->check_lattice_relationship($lattice, $object))
           {
             $res[$id] = $id;
           }
@@ -169,7 +169,7 @@ Class Associator {
         }
       }	
 
-    } elseif (!is_array($load_pool))
+    } elseif ( ! is_array($load_pool))
     {
 
       $objects = Graph::object()

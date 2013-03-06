@@ -95,7 +95,7 @@ class Model_Object_type extends ORM {
           $entry['object_type_id'] = $node->get_attribute('object_type_name');
           $entry['object_type_add_text'] = $node->get_attribute('add_text');
           $t_config = lattice::config('objects', sprintf('// object_type[@name="%s"]', $entry['object_type_id'] ))->item(0);
-          if (!count($t_config))
+          if ( ! count($t_config))
           {
             throw new Kohana_Exception('No object type definition by name: '.$entry['object_type_id']);
           }
@@ -206,7 +206,7 @@ class Model_Object_type extends ORM {
     public function get_active_members($limit=NULL)
     {
 
-      if (!$this->loaded())
+      if ( ! $this->loaded())
       {
         return array();
       }

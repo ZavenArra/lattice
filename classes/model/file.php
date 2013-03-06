@@ -66,7 +66,7 @@ class Model_File extends ORM {
     $prefix = $column; // for code clarity
 
     // create image info object
-    if (!isset($this->imageinfo[$prefix]))
+    if ( ! isset($this->imageinfo[$prefix]))
     {
       $this->imageinfo[$prefix] = new Model_File_image(parent::__get('filename'), $prefix);
     }

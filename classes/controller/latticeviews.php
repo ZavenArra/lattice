@@ -79,7 +79,7 @@ Class Controller_Lattice_views extends Controller_Layout{
   {
 
     $access = Kohana::config('latticeviews.access.'.$object_id_or_slug);
-    if (!latticeutil::check_access($access))
+    if ( ! latticeutil::check_access($access))
     {
       Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),FALSE).'/'.Request::initial()->uri());
     }
@@ -89,9 +89,9 @@ Class Controller_Lattice_views extends Controller_Layout{
     if (Session::instance()->get('language_code'))
     {
       $object = Graph::object($object_id_or_slug);
-      if (!$object->loaded())
+      if ( ! $object->loaded())
       {
-        if (!$object_id_or_slug)
+        if ( ! $object_id_or_slug)
         {
           $object_id_or_slug = 'No object id or slug specified';
         }

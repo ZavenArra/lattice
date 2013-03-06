@@ -55,7 +55,7 @@ Class lattice {
 
   public static function config($arena, $xpath, $context_node=NULL)
   {
-    if (!is_array(self::$config))
+    if ( ! is_array(self::$config))
     {
       self::$config = array();
     }
@@ -76,7 +76,7 @@ Class lattice {
 
 
 
-    if (!isset(self::$config[$arena]))
+    if ( ! isset(self::$config[$arena]))
     {
 
       $dom = new DOMDocument();
@@ -120,7 +120,7 @@ Class lattice {
           $arena_path = getcwd() . '/' . $arena_path;
         } else {
           $arena_file_path = Kohana::find_file('lattice', $arena_path, 'xml', TRUE);
-          if (!count($arena_file_path))
+          if ( ! count($arena_file_path))
           {
             throw new Kohana_Exception('Could not locate xml :file', array(':file' => $arena_path));
           }
@@ -128,7 +128,7 @@ Class lattice {
         }
         $dom->load($arena_path);
       }
-      if (!$dom->validate())
+      if ( ! $dom->validate())
       {
         throw new Kohana_Exception("Validation failed on :arena_path \n :xml_error_trace", array(
           ':arena_path' => $arena_path,
@@ -141,7 +141,7 @@ Class lattice {
         $clusters = new DOMDocument();
         $clusters = new MYDOMDocument($clusters);
         $path = Kohana::find_file('lattice', 'clusters', 'xml', TRUE);
-        if (!count($path))
+        if ( ! count($path))
         {
           throw new Kohana_Exception('Could not locate xml clusters');
         }
@@ -191,9 +191,9 @@ Class lattice {
       $module['modulename'] = $module['elementname'];
     }
 
-    if (!Kohana::find_file('controllers', $module['modulename'] ) )
+    if ( ! Kohana::find_file('controllers', $module['modulename'] ) )
     {
-      if (!isset($module['controllertype']))
+      if ( ! isset($module['controllertype']))
       {
         $view = new View($module['modulename']);
         $object = Graph::object($module['modulename']);
@@ -207,7 +207,7 @@ Class lattice {
         return $view->render();
       }
       try {
-        if (!class_exists($module['modulename'].'_Controller'))
+        if ( ! class_exists($module['modulename'].'_Controller'))
         {
           $includeclass = 'class '.$module['modulename'].'_Controller extends '.$module['controllertype'].'_Controller { } ';
           eval($includeclass);
@@ -255,7 +255,7 @@ Class lattice {
   public static function get_current_language()
   {
     $language_code = Session::instance()->get('language_code');
-    if (!$language_code)
+    if ( ! $language_code)
     {
       $language_code = Kohana::config('lattice.default_language');
     }

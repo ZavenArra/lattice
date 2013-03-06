@@ -24,7 +24,7 @@ class Controller_File extends Controller{
     $filename = Graph::media_path().$file->filename;
     $ctype = $file->mime;
 
-    if (!file_exists($filename))
+    if ( ! file_exists($filename))
     {
       throw new Kohana_Exception("NO FILE HERE");
     }
@@ -38,7 +38,7 @@ class Controller_File extends Controller{
     header("Content-Transfer-Encoding: binary");
     header("Content-Length: ".@filesize($filename));
     set_time_limit(0);
-    if (! @readfile("$filename") )
+    if ( ! @readfile("$filename") )
     {
       throw new Kohana_Exception("File not found.");	
     }
@@ -53,7 +53,7 @@ class Controller_File extends Controller{
     $filename = Graph::media_path().$file->filename;
     $ctype = $file->mime;
 
-    if (!file_exists($filename))
+    if ( ! file_exists($filename))
     {
       throw new Kohana_Exception("NO FILE HERE");
     }
@@ -66,7 +66,7 @@ class Controller_File extends Controller{
     header("Content-Length: ".@filesize($filename));
     header("Content-Disposition: inline;  filename=\"".basename($filename)."\";");
     set_time_limit(0);
-    if (! @readfile("$filename") )
+    if ( ! @readfile("$filename") )
     {
       throw new Kohana_Exception("File not found.");	
     }

@@ -87,11 +87,11 @@ Class Associator_Checkboxes {
         if (isset($filter['object_type_name']) AND $filter['object_type_name'])
         {
           $t = ORM::Factory('object_type', $filter['object_type_name']);
-          if (!$t->loaded())
+          if ( ! $t->loaded())
           {
             Graph::configure_object_type($filter['object_type_name']);
             $t = ORM::Factory('objecttype', $filter['object_type_name']);
-            if (!$t->loaded())
+            if ( ! $t->loaded())
             {
               throw new Kohana_Exception($filter['object_type_name'] .' Not Found');
             }
@@ -123,13 +123,13 @@ Class Associator_Checkboxes {
         $results = $objects->find_all();
         foreach ($results as $object)
         {
-          if (!$this->parent->check_lattice_relationship($lattice, $object))
+          if ( ! $this->parent->check_lattice_relationship($lattice, $object))
           {
             $this->pool[$object->id] = $object;  // scalability problem
           }
         }
       } 
-    } elseif (!is_array($load_pool))
+    } elseif ( ! is_array($load_pool))
     {
 
       $objects = Graph::object()

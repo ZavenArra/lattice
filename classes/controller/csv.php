@@ -9,7 +9,7 @@ Class Controller_CSV extends Controller {
   public function __construct($request, $response)
   {
     parent::__construct($request, $response);
-    if (!latticeutil::check_role_access('superuser')  AND PHP_SAPI != 'cli' )
+    if ( ! latticeutil::check_role_access('superuser')  AND PHP_SAPI != 'cli' )
     {
       die('Only superuser can access builder tool');
     }
@@ -145,7 +145,7 @@ Class Controller_CSV extends Controller {
     while($this->line)
     {
       $object_type_name = $this->line[$this->column];
-      if (!$object_type_name)
+      if ( ! $object_type_name)
       {
         throw new Kohana_Exception("Expecting object_type at column :column, but none found :line",
           array(
@@ -156,7 +156,7 @@ Class Controller_CSV extends Controller {
 
       // check if this object type is valid for the current objects.xml
       $object_config = lattice::config('objects', sprintf('// object_type[@name="%s"]', $object_type_name));
-      if (!$object_config->item(0))
+      if ( ! $object_config->item(0))
       {
         throw new Kohana_Exception("No object type configured in objects.xml for ".$object_type_name); 
       }
@@ -182,7 +182,7 @@ Class Controller_CSV extends Controller {
       // get the elements line
       $this->advance();
       // check here for Elements in $this->column +1;
-      if (!(isset($this->line[$this->column+1])) OR $this->line[$this->column+1] != 'Elements')
+      if ( ! (isset($this->line[$this->column+1])) OR $this->line[$this->column+1] != 'Elements')
       {
         throw new Kohana_Exception("Didn't find expected Elements line at line ".$this->line_number);
       }
@@ -207,7 +207,7 @@ Class Controller_CSV extends Controller {
       }
       $field = strtok($field_name, '_');
       $lang = strtok('_');
-      if (!isset($data[$lang]))
+      if ( ! isset($data[$lang]))
       {
         $data[$lang] = array();
       }
@@ -249,9 +249,9 @@ Class Controller_CSV extends Controller {
         // need to look up field and switch on field type 
         $field_info = lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]',$object->objecttype->objecttypename, $field));
         $field_info = $field_info->item(0);
-        if (!$field_info)
+        if ( ! $field_info)
         {
-          throw new Kohana_Exception("Bad field in data/objects!\n" . sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]', $object->objecttype->objecttypename, $field));
+          throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]', $object->objecttype->objecttypename, $field));
         }
 
 
@@ -291,7 +291,7 @@ Class Controller_CSV extends Controller {
     }
 
     // Check here for Children in $this->column +1
-    if (!isset($this->line[$this->column+1]) OR $this->line[$this->column+1] != 'Children')
+    if ( ! isset($this->line[$this->column+1]) OR $this->line[$this->column+1] != 'Children')
     {
       echo "No children found, returning from Walk ";// .implode(',', $this->line)."\n";
       return;

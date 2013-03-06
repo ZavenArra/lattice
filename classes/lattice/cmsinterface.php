@@ -306,7 +306,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
     $toggle_state = $_POST["value"];
     // check user is valid or bail
     $user_check =   ORM::factory('user',$user_id);
-    if (!$user_check->loaded())
+    if ( ! $user_check->loaded())
     {
       $this->response->data(array('error'=>TRUE,'message'=>'User does not exist'));
     } else {
@@ -340,7 +340,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
     $exists_check = ORM::factory('objects_user')
       ->where('object_id','=',$object_id)
       ->where('user_id','=',$user_id)->find();
-    if ($user_check->loaded() AND (!$exists_check->loaded()))
+    if ($user_check->loaded() AND ( ! $exists_check->loaded()))
     {
       $o = ORM::factory('objects_user');
       $o->user_id = $user_id;

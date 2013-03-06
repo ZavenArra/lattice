@@ -29,7 +29,7 @@ class Controller_Lattice extends Controller {
     }else{
       $language_code = Session::instance()->get('language_code');
     }
-    if (!$language_code)
+    if ( ! $language_code)
     {
       throw new Kohana_Exception('No language code found');
     }
@@ -62,7 +62,7 @@ class Controller_Lattice extends Controller {
     $roles = Kohana::config(strtolower($this->controller_name).'.authrole', FALSE, FALSE);
 
     // checked if logged in
-    if ($roles AND !Auth::instance()->logged_in())
+    if ($roles AND ! Auth::instance()->logged_in())
     {
       Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),FALSE).'/'.Request::initial()->uri());
       exit;
@@ -74,7 +74,7 @@ class Controller_Lattice extends Controller {
       {
         if ($a_role=='admin')
         {
-          if (Kohana::config('lattice.staging_enabled') AND !Kohana::config('lattice.staging'))
+          if (Kohana::config('lattice.staging_enabled') AND ! Kohana::config('lattice.staging'))
           {
             $redirect = 'staging/'. Router::$current_uri;
             Request::current()->redirect(url::site($redirect,Request::current()->protocol(),FALSE));
@@ -89,7 +89,7 @@ class Controller_Lattice extends Controller {
     } else {
       if ($roles=='admin')
       {
-        if (Kohana::config('lattice.staging_enabled') AND !Kohana::config('lattice.staging'))
+        if (Kohana::config('lattice.staging_enabled') AND ! Kohana::config('lattice.staging'))
         {
           $redirect = 'staging/'. Router::$current_uri;
           Request::current()->redirect(url::site($redirect,Request::current()->protocol(),FALSE));
@@ -99,7 +99,7 @@ class Controller_Lattice extends Controller {
       $access_granted = latticeutil::check_role_access($roles);
     }
 
-    if (!$access_granted)
+    if ( ! $access_granted)
     {
       $redirect = 'accessdenied';
       Request::current()->redirect(url::site($redirect,Request::current()->protocol(),FALSE));

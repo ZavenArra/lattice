@@ -26,7 +26,7 @@ Class latticeui{
     if ( in_array($element['type'], array('file', 'image')))
     {
 
-      if (!is_object($fieldvalue) )
+      if ( ! is_object($fieldvalue) )
       {
         $fieldvalue = ORM::Factory('file', $fieldvalue);
       }
@@ -86,20 +86,20 @@ Class latticeui{
       $fieldvalue['thumb_src']=$thumb_src;
 
     case 'file':
-      if (!isset($element['maxlength']) OR !$element['maxlength'])
+      if ( ! isset($element['maxlength']) OR !$element['maxlength'])
       {
         $element['maxlength'] = 1523712; // 12 Mega_bytes 
       }
       break;
 
     case 'date_range':
-      if (!isset($element['empty']))
+      if ( ! isset($element['empty']))
       {
-        if (!isset($element['start_date']) OR strlen($element['start_date'])==0)
+        if ( ! isset($element['start_date']) OR strlen($element['start_date'])==0)
         {
           $element['start_date'] = date('Y/m/d');
         }
-        if (!isset($element['end_date']) OR strlen($element['end_date'])==0)
+        if ( ! isset($element['end_date']) OR strlen($element['end_date'])==0)
         {
           $element['end_date'] = date('Y/m/d');
         }
@@ -148,7 +148,7 @@ Class latticeui{
       break;
     }
 
-    if (!isset($element['class']))
+    if ( ! isset($element['class']))
     { $element['class'] = NULL; }
 
     if ($paths = Kohana::find_file('views', $view))

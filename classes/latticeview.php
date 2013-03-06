@@ -45,7 +45,7 @@ class latticeview {
 
     // look in the cache
     $language_code = Session::instance()->get('language_code');
-    if (!$language_code)
+    if ( ! $language_code)
     {
       return $slug_or_object_id;
     }
@@ -151,13 +151,13 @@ class latticeview {
 
     private static function get_graph_object($object_id_or_slug)
     {
-      if (!is_object($object_id_or_slug))
+      if ( ! is_object($object_id_or_slug))
       {
         $object = Graph::object($object_id_or_slug);
       } else {
         $object = $object_id_or_slug;
       }
-      if (!$object->loaded())
+      if ( ! $object->loaded())
       {
         throw new Kohana_Exception("Trying to create view, but object is not loaded: $object_id_or_slug ".$object->slug);
       }
@@ -167,7 +167,7 @@ class latticeview {
 
     public function set_var($name, $value)
     {
-      if (!$this->view)
+      if ( ! $this->view)
       {
         throw new Kohana_Exception('set_var called but no local variable view has not been set');
       }
@@ -184,7 +184,7 @@ class latticeview {
         $this->object = $this->get_graph_object($object_id_or_slug);
       }
 
-      if (!self::$initial_object)
+      if ( ! self::$initial_object)
       {
         self::$initial_object = $this->object;
       }
@@ -274,7 +274,7 @@ class latticeview {
     public function get_view_content($view, $slug=NULL)
     {
 
-      if ((!$view OR $view=='') AND (!$slug || $slug==''))
+      if (( ! $view OR $view=='') AND (!$slug || $slug==''))
       {
         throw new Kohana_Exception('get_view_content called with NULL parameters');
       }
@@ -286,7 +286,7 @@ class latticeview {
       if  ($slug)
       {
 
-        if (!is_object($slug))
+        if ( ! is_object($slug))
         {
           $object = Graph::object($slug);
         } else {
@@ -300,7 +300,7 @@ class latticeview {
 
       if ($view == 'default')
       {
-        if (!$object->loaded())
+        if ( ! $object->loaded())
         {
           throw new Kohana_Exception('latticeviews::get_view_content : Default view callled with no slug');
         }
@@ -309,7 +309,7 @@ class latticeview {
       }
 
       $view_config = lattice::config('frontend', "// view[@name=\"$view\"]")->item(0);
-      if (!$view_config)
+      if ( ! $view_config)
       {
         //  throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
         //  we are allowing this so that objects automatically can have basic views

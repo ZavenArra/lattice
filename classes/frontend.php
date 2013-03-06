@@ -10,7 +10,7 @@ class frontend {
     switch($element->node_name)
     {
     case 'image':
-      if (!($size=$element->get_attribute('size')))
+      if ( ! ($size=$element->get_attribute('size')))
       {
         $size = 'original';	
       }

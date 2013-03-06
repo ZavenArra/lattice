@@ -6,7 +6,7 @@ Class Builder_Frontend {
 
   public function __construct()
   {
-    if (!is_writable($this->base_path))
+    if ( ! is_writable($this->base_path))
     {
       die($this->base_path.' must be writable');
     }
@@ -47,7 +47,7 @@ Class Builder_Frontend {
         flush();
 
         ob_start();
-        if (!$view OR  ($view AND $view->get_attribute('load_page')=='TRUE'))
+        if ( ! $view OR  ($view AND $view->get_attribute('load_page')=='TRUE'))
         {
           echo "<h1><?php=\$content['main']['title'];?></h1>\n\n";
           // this also implies that name is a objecttypename
@@ -201,14 +201,14 @@ Class Builder_Frontend {
       if ($slug = $i_data_config->get_attribute('slug'))
       {
         $object = Graph::object($slug);
-        if (!$object->loaded())
+        if ( ! $object->loaded())
         {
           // error out,
           // object must be loaded from data.xml for this type of include conf
         }
         $object_types[] = $object->objecttype->objecttypename;
       }
-      if (!count($object_types))
+      if ( ! count($object_types))
       {
         $object_types = $i_data_config->get_attribute('object_type_filter');
         if ($object_types!='all')
@@ -219,7 +219,7 @@ Class Builder_Frontend {
         }
       }
 
-      if (!count($object_types))
+      if ( ! count($object_types))
       {
         // no where for object_types
         // assume that we'll have to make a good guess based off 'from' parent

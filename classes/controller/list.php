@@ -62,7 +62,7 @@ class Controller_List extends Lattice_CMSInterface {
       $list_container_object = Graph::object($parent_id)->$family;
 
 
-      if (!$list_container_object->loaded())
+      if ( ! $list_container_object->loaded())
       {
         throw new Kohana_Exception('Did not find list container List object is missing container: :id', array(':id' => $lt->id));
       }
@@ -74,7 +74,7 @@ class Controller_List extends Lattice_CMSInterface {
       $this->_list_object = ORM::Factory('listcontainer', $list_object_id_or_parent_id);
     }
 
-    if (!$this->_list_object->loaded())
+    if ( ! $this->_list_object->loaded())
     {
       throw new Kohana_Exception('Failed to load list object');
     }
@@ -182,7 +182,7 @@ class Controller_List extends Lattice_CMSInterface {
     {
 
       $addable_object_types = lattice::config('objects', sprintf('// list[@name="%s"]/addable_object', $list_object->objecttype->objecttypename));
-      if (!$addable_object_types->length > 0)
+      if ( ! $addable_object_types->length > 0)
       {
         throw new Kohana_Exception('No Addable Objects ' .' Count not locate configuration in objects.xml for ' . sprintf('// list[@name="%s"]/addableobject', $this->_family));
       }

@@ -241,7 +241,7 @@ Class Controller_Custom_reel extends Controller_Layout {
   public function action_save_field($id)
   {
 
-    if (!latticeutil::check_role_access('admin'))
+    if ( ! latticeutil::check_role_access('admin'))
     {
       throw new Kohana_Exception('Only Admin has access to User Management');
     }
@@ -257,7 +257,7 @@ Class Controller_Custom_reel extends Controller_Layout {
 
       if ($user->has('roles', ORM::Factory('role')->where('name', '=' ,'superuser')->find() ))
       {
-        if (!latticeutil::check_role_access('superuser'))
+        if ( ! latticeutil::check_role_access('superuser'))
         {
           throw new Kohana_Exception('Only superuser can change superuser');
         }
@@ -274,7 +274,7 @@ Class Controller_Custom_reel extends Controller_Layout {
         }
       }
       $role = ORM::Factory('role')->where('name','=',$value)->find();
-      if (!$role->loaded())
+      if ( ! $role->loaded())
       {
         throw new Kohana_Exception('Role :role not found in database.  Update aborted', array(':role'=>$value));
       }
@@ -284,13 +284,13 @@ Class Controller_Custom_reel extends Controller_Layout {
       if ($value=='superuser')
       {
 
-        if (!latticeutil::check_role_access('superuser'))
+        if ( ! latticeutil::check_role_access('superuser'))
         {
           throw new Kohana_Exception('Updating to superuser not allowed for non-superuser');
         }
 
         $role = ORM::Factory('role')->where('name','=','admin')->find();
-        if (!$role->loaded())
+        if ( ! $role->loaded())
         {
           throw new Kohana_Exception('Role :role not found in database.  Update aborted', array(':role'=>'admin'));
         }
@@ -307,7 +307,7 @@ Class Controller_Custom_reel extends Controller_Layout {
       // $errors = $user->check_value($_POST['field'], $_POST['value']);
       $errors  = array();
 
-      if (!count($errors))
+      if ( ! count($errors))
       {
 
         try {

@@ -7,7 +7,7 @@ class Controller_Builder extends Controller {
   public function __construct()
   {
 
-    if (!latticeutil::check_role_access('superuser') AND PHP_SAPI != 'cli' )
+    if ( ! latticeutil::check_role_access('superuser') AND PHP_SAPI != 'cli' )
     {
       die('Only superuser can access builder tool');
     }
@@ -106,7 +106,7 @@ class Controller_Builder extends Controller {
     $mtime = $mtime[1] + $mtime[0];
     $endtime = $mtime;
     $totaltime = ($endtime - $starttime);
-    echo '<!-- initialize_site took ' .$totaltime. ' seconds, and completed with memory usage of '.$memory_use_following_action;
+    echo '<! -- initialize_site took ' .$totaltime. ' seconds, and completed with memory usage of '.$memory_use_following_action;
     echo 'Initialize Site Complete';
 
   }
@@ -141,7 +141,7 @@ class Controller_Builder extends Controller {
   public function action_add_data($xml_file, $secondary_root_node_object_type=NULL)
   {
 
-    if ($secondary_root_node_object_type AND !$parent_id = Graph::get_root_node($secondary_root_node_object_type))
+    if ($secondary_root_node_object_type AND ! $parent_id = Graph::get_root_node($secondary_root_node_object_type))
     {
       Graph::configure_object_type($secondary_root_node_object_type);
       Graph::add_root_node($secondary_root_node_object_type);
@@ -175,7 +175,7 @@ class Controller_Builder extends Controller {
     foreach ($items as $item)
     {
 
-      if (!$item->get_attribute('object_type_name'))
+      if ( ! $item->get_attribute('object_type_name'))
       {
         // echo $item->tag_name;
         throw new Kohana_Exception("No objecttypename specified for Item " . $item->tag_name);
@@ -206,9 +206,9 @@ class Controller_Builder extends Controller {
 
         // need to look up field and switch on field type 
         $field_info = lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('object_type_name'), $content->get_attribute('name')))->item(0);
-        if (!$field_info)
+        if ( ! $field_info)
         {
-          throw new Kohana_Exception("Bad field in data/objects!\n" . sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('object_type_name'), $content->get_attribute('name')));
+          throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('object_type_name'), $content->get_attribute('name')));
         }
 
         // if an element is actually an object, prepare it for insert/update

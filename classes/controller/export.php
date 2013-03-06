@@ -6,7 +6,7 @@ class Controller_Export extends Controller {
 
   public function __construct()
   {
-    if (!is_writable('application/views/xmldumps/'))
+    if ( ! is_writable('application/views/xmldumps/'))
     {
       // 	die('application/views/xmldumps/ must be writable');
     }

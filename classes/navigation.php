@@ -14,7 +14,7 @@ class Navigation {
    */
   public static function get_node_info(& $object)
   {
-    if (!strstr('Lattice_Object', get_class($object)))
+    if ( ! strstr('Lattice_Object', get_class($object)))
     {
       $object = Graph::object($object);
     }
@@ -28,7 +28,7 @@ class Navigation {
     {
       $node_info[$field] = $object->objecttype->$field;
     }
-    if (!count($node_info['addable_objects']))
+    if ( ! count($node_info['addable_objects']))
     {
       unset($node_info['addable_objects']);
     }
@@ -40,7 +40,7 @@ class Navigation {
     }
 
 
-    if (!$node_info['title'])
+    if ( ! $node_info['title'])
     {
       $node_info['title'] = $node_info['slug'];
     }

@@ -40,7 +40,7 @@ class latticecms {
 
           $field = $element['name'];
           $cluster_object = $object->$field;
-          if (!$cluster_object)
+          if ( ! $cluster_object)
           {
             throw new Kohana_Exception('Cluster Object did not load for '.$object->id.': '.$field);
           }
@@ -54,7 +54,7 @@ class latticecms {
           {
             $usecustomview = TRUE;
           }
-          if (!$usecustomview)
+          if ( ! $usecustomview)
           {
             $html = implode($cluster_html_chunks);
             $view = new View('ui/clusters_wrapper');
@@ -158,11 +158,11 @@ class latticecms {
   {
 
     $html = NULL;
-    if (!isset($element['name']))
+    if ( ! isset($element['name']))
     {
       $element['name'] = LatticeCMS::unique_element_id();
       $html = latticeui::buildUIElement($element, NULL);
-    } elseif (!$html = latticeui::buildUIElement($ui_arguments, $value))
+    } elseif ( ! $html = latticeui::buildUIElement($ui_arguments, $value))
     {
       throw new Kohana_Exception('bad config in cms: bad ui element');
     }
@@ -182,7 +182,7 @@ class latticecms {
       $element_name
     );
     $element = lattice::config('objects', $x_path);
-    if (!$element OR !$element->length )
+    if ( ! $element OR !$element->length )
     {
       throw new Kohana_Exception('x_path returned no results: '. $x_path);
     }
@@ -378,7 +378,7 @@ class latticecms {
       foreach ($objects as $object)
       {
         $title = $object->title;
-        if (!$title)
+        if ( ! $title)
         {
           $title = $object->slug;
         }
