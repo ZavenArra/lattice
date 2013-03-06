@@ -12,22 +12,22 @@ Class Csv_imports_Controller extends Controller {
 
     $outputCSV = fopen('application/media/'.$view.'.csv', 'w');
 
-    //print_r($data);
-    //safely compute fields
+    // print_r($data);
+    // safely compute fields
     $columns = array();
     foreach ($data['content']['csv'] as $item)
     {
       foreach ($item as $field => $value)
       {
-        //	$label = mop::config('objects', 
+        // 	$label = mop::config('objects', 
         $columns[$field] = $field;
       }	
     }
     fputcsv($outputCSV, $columns);
 
-    //		print_r($columns);
+    // 		print_r($columns);
 
-    //output the file
+    // output the file
     foreach ($data['content']['csv'] as $item)
     {
       $output = array();
@@ -40,7 +40,7 @@ Class Csv_imports_Controller extends Controller {
           $output[] = '';
         }
       }
-      //			print_r($output);
+      // 			print_r($output);
       fputcsv($outputCSV, $output);
     }
 

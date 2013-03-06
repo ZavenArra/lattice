@@ -17,19 +17,19 @@ Class Builder_Frontend {
     echo "Configuring Frontend\n";
     echo "Reading application/config/frontend.xml\n";
 
-    lattice::config('objects', '//object_types');
+    lattice::config('objects', '// object_types');
 
     flush();
     ob_flush();
     flush();
 
     $created_views = array();
-    //	foreach (lattice::config('frontend', '//view') as $view )
+    // 	foreach (lattice::config('frontend', '//view') as $view )
     {
-      //	//this has removed the ability to build virtual views
-      foreach (lattice::config('objects', '//object_type') as $object_type)
+      // 	//this has removed the ability to build virtual views
+      foreach (lattice::config('objects', '// object_type') as $object_type)
       {
-        $view = lattice::config('frontend', '//view[@name="'.$object_type->get_attribute('name').'"]');
+        $view = lattice::config('frontend', '// view[@name="'.$object_type->get_attribute('name').'"]');
         if (count($view))
         {
           $view = $view->item(0);
@@ -50,9 +50,9 @@ Class Builder_Frontend {
         if (!$view OR  ($view AND $view->get_attribute('load_page')=='TRUE'))
         {
           echo "<h1><?php=\$content['main']['title'];?></h1>\n\n";
-          //this also implies that name is a objecttypename
+          // this also implies that name is a objecttypename
           foreach (lattice::config('objects', 
-            sprintf('//object_type[@name="%s"]/elements/*', $view_name )) as $element)
+            sprintf('// object_type[@name="%s"]/elements/*', $view_name )) as $element)
           {
 
             switch($element->tag_name)
@@ -73,8 +73,8 @@ Class Builder_Frontend {
           if ($view AND $view->get_attribute('load_page')=='TRUE')
           {
 
-            //Now the include_data
-            if ($i_data_nodes = lattice::config('frontend',"//view[@name=\"".$view->get_attribute('name')."\"]/include_data"))
+            // Now the include_data
+            if ($i_data_nodes = lattice::config('frontend',"// view[@name=\"".$view->get_attribute('name')."\"]/include_data"))
             {
               foreach ($i_data_nodes as $i_data_config)
               {
@@ -83,7 +83,7 @@ Class Builder_Frontend {
               }
             }
 
-            if ($subviews = lattice::config('frontend',"//view[@name=\"".$view->get_attribute('name')."\"]/subview"))
+            if ($subviews = lattice::config('frontend',"// view[@name=\"".$view->get_attribute('name')."\"]/subview"))
             {
               foreach ($subviews as $subview_config)
               {
@@ -110,8 +110,8 @@ Class Builder_Frontend {
       ob_flush();
       flush();
 
-      //and any virtual views
-      foreach (lattice::config('frontend', '//view') as $view_config)
+      // and any virtual views
+      foreach (lattice::config('frontend', '// view') as $view_config)
       {
         $view_name = $view_config->get_attribute('name');
 
@@ -128,9 +128,9 @@ Class Builder_Frontend {
         touch($this->base_path.$view_name.'.php');
 
         ob_start();
-        //Now the include_data
+        // Now the include_data
 
-        if ($i_data_nodes = lattice::config('frontend',"//view[@name=\"".$view_name."\"]/include_data"))
+        if ($i_data_nodes = lattice::config('frontend',"// view[@name=\"".$view_name."\"]/include_data"))
         {
           foreach ($i_data_nodes as $i_data_config)
           {
@@ -139,7 +139,7 @@ Class Builder_Frontend {
           }
         }
 
-        if ($subviews = lattice::config('frontend',"//view[@name=\"".$view_name."\"]/subview"))
+        if ($subviews = lattice::config('frontend',"// view[@name=\"".$view_name."\"]/subview"))
         {
           foreach ($subviews as $subview_config)
           {
@@ -173,8 +173,8 @@ Class Builder_Frontend {
 
     }
 
-    //TODO: This doesn't currently support filter types that don't declare objec_type_names or 
-    //nor with multiple object_type_names per filter
+    // TODO: This doesn't currently support filter types that don't declare objec_type_names or 
+    // nor with multiple object_type_names per filter
     public function make_associator_data_html($associator_data_config, $prefix, $indent = '')
     {
       $object_types = array();
@@ -197,14 +197,14 @@ Class Builder_Frontend {
 
 
       $object_types = array();
-      //if slug defined, get object_type from slug
+      // if slug defined, get object_type from slug
       if ($slug = $i_data_config->get_attribute('slug'))
       {
         $object = Graph::object($slug);
         if (!$object->loaded())
         {
-          //error out,
-          //object must be loaded from data.xml for this type of include conf
+          // error out,
+          // object must be loaded from data.xml for this type of include conf
         }
         $object_types[] = $object->objecttype->objecttypename;
       }
@@ -221,20 +221,20 @@ Class Builder_Frontend {
 
       if (!count($object_types))
       {
-        //no where for object_types
-        //assume that we'll have to make a good guess based off 'from' parent
+        // no where for object_types
+        // assume that we'll have to make a good guess based off 'from' parent
         $from=$i_data_config->get_attribute('from');
         if ($from=="parent")
         {
 
-          //get the info from addable_objects of the current
-          foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/addable_object', $parent_template)) as $addable)
+          // get the info from addable_objects of the current
+          foreach (lattice::config('objects', sprintf('// object_type[@name="%s"]/addable_object', $parent_template)) as $addable)
           {
             $object_type_name = $addable->get_attribute('object_type_name');
             $object_types[$object_type_name] = $object_type_name;
           }
 
-          //and we can also check all the existing data to see if it has any other object_types
+          // and we can also check all the existing data to see if it has any other object_types
           $parent_objects = Graph::object()->objecttype_filter($parent_template)->published_filter()->find_all();
           foreach ($parent_objects as $parent)
           {
@@ -246,7 +246,7 @@ Class Builder_Frontend {
             }
           }
         } else {
-          //see if from is a slug
+          // see if from is a slug
           $object_types_from_parent = $this->get_children_object_types(Graph::object($from));
           $object_types = array_merge($object_types, $object_types_from_parent);
 
@@ -254,7 +254,7 @@ Class Builder_Frontend {
         }
       }	
 
-      // now $object_types contains all the needed object_types in the view
+      //  now $object_types contains all the needed object_types in the view
 
 
       $this->make_multi_object_type_loop($object_types, $label, $prefix, $indent, $i_data_config);
@@ -297,7 +297,7 @@ Class Builder_Frontend {
         }
         echo $indent . "  <li class=\"$object_type_name\">\n";
         echo $indent . "   " . "<h2><?php=\${$label}Item['title'];?></h2>\n\n";
-        foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $object_type_name)) as $element)
+        foreach (lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/*', $object_type_name)) as $element)
         {
           switch($element->tag_name)
           {
@@ -313,7 +313,7 @@ Class Builder_Frontend {
           }
         }
 
-        //handle lower levels
+        // handle lower levels
         if ($frontend_node)
         {
           foreach (lattice::config('frontend', 'include_data', $frontend_node) as $next_level)
@@ -344,13 +344,13 @@ Class Builder_Frontend {
       $object_types = array();
       if ($object->loaded())
       {
-        //find its addable objects
-        foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/addable_object', $object->objecttype->objecttypename)) as $addable)
+        // find its addable objects
+        foreach (lattice::config('objects', sprintf('// object_type[@name="%s"]/addable_object', $object->objecttype->objecttypename)) as $addable)
         {
           $object_type_name = $addable->get_attribute('object_type_name');
           $object_types[$object_type_name] = $object_type_name;
         }
-        //and follow up with any existing data
+        // and follow up with any existing data
         $children = $object->get_published_children();
         foreach ($children as $child)
         {

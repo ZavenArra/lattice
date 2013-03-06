@@ -8,10 +8,10 @@ class Controller_Export extends Controller {
   {
     if (!is_writable('application/views/xmldumps/'))
     {
-      //	die('application/views/xmldumps/ must be writable');
+      // 	die('application/views/xmldumps/ must be writable');
     }
   }
-  //all this logic should be moved to the export MODEL
+  // all this logic should be moved to the export MODEL
   private function get_object_fields($object)
   {
     $nodes = array();
@@ -24,7 +24,7 @@ class Controller_Export extends Controller {
       }
       if ($key == 'id')
       {
-        //continue;
+        // continue;
       }
       $node = $this->doc->create_element($key);
       if (is_array($value))
@@ -35,7 +35,7 @@ class Controller_Export extends Controller {
         switch (get_class($value))
         {
         case 'Model_File':
-          //or copy to directory and just use filename
+          // or copy to directory and just use filename
           if ($value->filename)
           {
             $target_path = $this->output_dir . $value->filename;
@@ -76,7 +76,7 @@ class Controller_Export extends Controller {
       }
       if ($key == "title" AND $value == "")
       {
-        //$value = microtime();
+        // $value = microtime();
       }
       if ($key == "id")
       {
@@ -84,7 +84,7 @@ class Controller_Export extends Controller {
       }
       if ($key != "tags" AND is_array($value))
       {
-        //skipping container objects.
+        // skipping container objects.
         continue;
       }
 
@@ -100,7 +100,7 @@ class Controller_Export extends Controller {
         switch (get_class($value))
         {
         case 'Model_File':
-          //or copy to directory and just use filename
+          // or copy to directory and just use filename
           if ($value->filename)
           {
             $target_path = $this->output_dir . $value->filename;
@@ -151,7 +151,7 @@ class Controller_Export extends Controller {
         $item->append_child($field);
       }
 
-      //and get the children
+      // and get the children
       $child_objects = $object->get_lattice_children();
 
       foreach ($this->export_tier($child_objects) as $child_item)
@@ -181,7 +181,7 @@ class Controller_Export extends Controller {
         $item->append_child($field);
       }
 
-      //and get the children
+      // and get the children
       $child_objects = $object->get_lattice_children();
       foreach ($this->export_tier_lattice_format($child_objects) as $child_item)
       {
@@ -193,7 +193,7 @@ class Controller_Export extends Controller {
     return $nodes;
   }
 
-  //this should call action_export and then convert with xslt
+  // this should call action_export and then convert with xslt
   public function action_lattice($outputfilename='export')
   {
 

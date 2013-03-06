@@ -9,4 +9,4 @@ class Controller_Footer extends Controller {
     $this->response->body($view->render());
   }
 
-} // End Welcome
+} //  End Welcome

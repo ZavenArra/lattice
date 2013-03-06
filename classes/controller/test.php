@@ -5,9 +5,9 @@ class Controller_Test extends Controller_Lattice {
   public function action_index()
   {
     $this->response->body('this is the outpu');
-    //print_r(self::$top_controller->resources['js']);
+    // print_r(self::$top_controller->resources['js']);
     $this->response->body($this->output_layout());
   }
 
 
-} // End Welcome
+} //  End Welcome

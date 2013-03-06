@@ -11,5 +11,5 @@
  * @author deepwinter1
  */
 class Model_Object_element_relationship extends ORM {
-//put your code here
+// put your code here
 }

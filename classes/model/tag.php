@@ -5,6 +5,6 @@
  * @author deepwinter1
  */
 class Model_Tag extends ORM {
-  //put your code here
+  // put your code here
 }
 

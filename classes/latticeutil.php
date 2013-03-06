@@ -67,7 +67,7 @@ Class latticeutil {
   {
 
     if (class_exists('Auth'))
-    { //If auth module not installed, grant access
+    { // If auth module not installed, grant access
       if ($role AND !Auth::instance()->logged_in($role))
       {
         return FALSE;
@@ -108,7 +108,7 @@ Class latticeutil {
    */
   private static function decode_recurse($value)
   {
-    //handle object?
+    // handle object?
     if (!is_array($value))
     {
       return html_entity_decode($value);
@@ -143,7 +143,7 @@ Class latticeutil {
 
   /**
    * Formats a line (passed as a fields  array) as CSV and returns the CSV as a string.
-   * Adapted from http://us3.php.net/manual/en/function.fputcsv.php#87120
+   * Adapted from http:// us3.php.net/manual/en/function.fputcsv.php#87120
    */
   public static function array_to_csv( array &$fields, $delimiter = ';', $enclosure = '"', $enclose_all = FALSE, $NULL_to_mysql_NULL = false )
   {
@@ -159,7 +159,7 @@ Class latticeutil {
         continue;
       }
 
-      // Enclose fields containing $delimiter, $enclosure or whitespace
+      //  Enclose fields containing $delimiter, $enclosure or whitespace
       if ( $enclose_all OR preg_match( "/(?:${delimiter_esc}|${enclosure_esc}|\s)/", $field ) )
       {
         $output[] = $enclosure . str_replace($enclosure, $enclosure . $enclosure, $field) . $enclosure;

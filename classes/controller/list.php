@@ -93,7 +93,7 @@ class Controller_List extends Lattice_CMSInterface {
 
     $this->set_list_object($list_object_id_or_parent_id, $family);
 
-    //throw new Kohana_Exception('what');
+    // throw new Kohana_Exception('what');
 
     $view = NULL;
     $custom_list_view = 'lattice/object_types/'.$this->_list_object->objecttype->objecttypename;
@@ -141,7 +141,7 @@ class Controller_List extends Lattice_CMSInterface {
     }
 
 
-    //actually we need to do an absolute path for local config
+    // actually we need to do an absolute path for local config
     $list_config = $this->_list_object->get_config();
     $view->name = $list_config->get_attribute('name');
     $view->label = $list_config->get_attribute('label');
@@ -170,37 +170,37 @@ class Controller_List extends Lattice_CMSInterface {
   {
 
 
-    $this->set_list_object($list_object_id);  //This function should be removed
-    //and all functionality simply moved to the model.
+    $this->set_list_object($list_object_id);  // This function should be removed
+    // and all functionality simply moved to the model.
 
 
     $list_object = ORM::Factory('listcontainer', $list_object_id);
 
 
-    //addable item should be specifid in the add_item call
+    // addable item should be specifid in the add_item call
     if ($object_type_id == NULL)
     {
 
-      $addable_object_types = lattice::config('objects', sprintf('//list[@name="%s"]/addable_object', $list_object->objecttype->objecttypename));
+      $addable_object_types = lattice::config('objects', sprintf('// list[@name="%s"]/addable_object', $list_object->objecttype->objecttypename));
       if (!$addable_object_types->length > 0)
       {
-        throw new Kohana_Exception('No Addable Objects ' .' Count not locate configuration in objects.xml for ' . sprintf('//list[@name="%s"]/addableobject', $this->_family));
+        throw new Kohana_Exception('No Addable Objects ' .' Count not locate configuration in objects.xml for ' . sprintf('// list[@name="%s"]/addableobject', $this->_family));
       }
       $object_type_id = $addable_object_types->item(0)->get_attribute('object_type_name');
     } 
 
     $new_id = $list_object->add_object($object_type_id);
 
-    //$this->response->data( $this->cms_get_node_info($new_id) );	
-    //$this->response->body( $this->cms_get_node_html($new_id));
+    // $this->response->data( $this->cms_get_node_info($new_id) );	
+    // $this->response->body( $this->cms_get_node_html($new_id));
 
 
     $object = Graph::object($new_id);
 
     /*Cludge to bypass echoing placeholders necessary to pass validation*/
-    // $item->username = NULL;
-    // $item->password = NULL;
-    // $item->email = NULL;
+    //  $item->username = NULL;
+    //  $item->password = NULL;
+    //  $item->email = NULL;
     /*End cludge*/
 
     $html_chunks = latticecms::buildUIHtml_chunks_for_object($object);

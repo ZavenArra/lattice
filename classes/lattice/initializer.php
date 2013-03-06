@@ -3,7 +3,7 @@
 Class Lattice_Initializer {
 
   protected static $messages = array();
-  protected static $problems = array(); //not yet implemented
+  protected static $problems = array(); // not yet implemented
 
   public static function check($dependencies)
   {
@@ -18,8 +18,8 @@ Class Lattice_Initializer {
     } catch (Exception $e)
     {
       if ($e->get_code() == 1146)
-      { //code for table doesn't exist
-        //install the initializedmodules table
+      { // code for table doesn't exist
+        // install the initializedmodules table
         $sql_file = Kohana::find_file('sql', 'initializedmodules', $ext = 'sql');
         $sql = file_get_contents($sql_file);
         mysql_query($sql);

@@ -20,8 +20,8 @@ class Initializer_Latticeauth {
     } catch (Exception $e)
     {
       if ($e->get_code() == 1146)
-      { //code for table doesn't exist
-        //install the initializedmodules table
+      { // code for table doesn't exist
+        // install the initializedmodules table
         $sql_file = Kohana::find_file('sql', 'auth-schema-mysql', $ext = 'sql');
 
         $sql = file_get_contents( $sql_file);
@@ -47,11 +47,11 @@ class Initializer_Latticeauth {
       $user->email = 'PLACEHOLDER_' . rand() . '@placeholder.com';
       $user->save();
 
-      //add the login role
+      // add the login role
       $user->add('roles', ORM::Factory('role', array('name' => 'login')));
       $user->add('roles', ORM::Factory('role', array('name' => 'admin')));
       $user->add('roles', ORM::Factory('role', array('name' => 'superuser')));
-      //$user->add(ORM::Factory('role', 'staging'));
+      // $user->add(ORM::Factory('role', 'staging'));
       $user->save();
 
       Lattice_Initializer::add_message('Created admin user with password '.$password);

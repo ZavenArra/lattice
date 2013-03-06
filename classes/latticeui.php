@@ -22,7 +22,7 @@ Class latticeui{
   {
     $view = 'ui/'.$element['type'];
 
-    //allow files to be passed either by id or as already quireid objects
+    // allow files to be passed either by id or as already quireid objects
     if ( in_array($element['type'], array('file', 'image')))
     {
 
@@ -39,11 +39,11 @@ Class latticeui{
       }
     }
 
-    //provide a unique id always
+    // provide a unique id always
     $microtime = str_replace(array(' ', '.'), '', microtime());
     if (isset($element['name']))
     {
-      //	$object_type->id =$element['name'].str_replace(array(' ', '.'), '', microtime());
+      // 	$object_type->id =$element['name'].str_replace(array(' ', '.'), '', microtime());
       $id =$element['name'].latticeui::$unique++.$microtime;
     } else {
       $id ='name'.latticeui::$unique++.$microtime;
@@ -88,7 +88,7 @@ Class latticeui{
     case 'file':
       if (!isset($element['maxlength']) OR !$element['maxlength'])
       {
-        $element['maxlength'] = 1523712; //12 Mega_bytes 
+        $element['maxlength'] = 1523712; // 12 Mega_bytes 
       }
       break;
 
@@ -209,7 +209,7 @@ Class latticeui{
     return latticeui::buildUIElement(array('type'=>'fieldmap', 'values'=>$values, 'options'=>$options) );
   }
 
-  // 0ak - revisit this function.  Needed?
+  //  0ak - revisit this function.  Needed?
   public static function pulldown ( $field, $class, $options, $field_value, $label=NULL, $label_class=NULL )
   {
     $element_array = array( 'type'=>'pulldown',  'class'=>$class, 'label'=>$label, 'name'=>$field, 'options'=> $options, "label_class"=>$label_class );

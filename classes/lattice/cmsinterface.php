@@ -41,7 +41,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
     } catch (Exception $e)
     {
 
-      //return the model errors gracecully;
+      // return the model errors gracecully;
 
       $this->handle_data_exception($e);
 
@@ -62,14 +62,14 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
       'result' => 'success',
     );
 
-    //if it's an image
+    // if it's an image
     $thumb_src = NULL;
     if ($file->uithumb->filename)
     {
       if (file_exists(Graph::mediapath() . $file->uithumb->filename))
       {
         $resultpath = Graph::mediapath() . $file->uithumb->filename;
-        $thumb_src = $resultpath; //Kohana::config('cms.basemediapath') . $file->uithumb->fullpath;
+        $thumb_src = $resultpath; // Kohana::config('cms.basemediapath') . $file->uithumb->fullpath;
       }
     }
     if ($thumb_src)
@@ -117,7 +117,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
     } catch (Exception $e)
     {
 
-      //return the model errors gracecully;
+      // return the model errors gracecully;
 
       $this->handle_data_exception($e);
     }
@@ -137,7 +137,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
   public function savefield($id)
   {
 
-    //$field = strtok($_POST['field'], '_');
+    // $field = strtok($_POST['field'], '_');
     $field = $_POST['field'];
 
 
@@ -301,16 +301,16 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
   public function action_toggle_user_association($object_id)
   {
-    //get user and object from post
+    // get user and object from post
     $user_id = $_POST["field"];
     $toggle_state = $_POST["value"];
-    //check user is valid or bail
+    // check user is valid or bail
     $user_check =   ORM::factory('user',$user_id);
     if (!$user_check->loaded())
     {
       $this->response->data(array('error'=>TRUE,'message'=>'User does not exist'));
     } else {
-      //if the toggle 
+      // if the toggle 
       if ($toggle_state==0)
       {
         $o = ORM::factory('objects_user')
@@ -323,7 +323,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
         }
         $this->response->data( array('value'=>$_POST["value"]) );
       } else {
-        //the association doesn't exist so create it  
+        // the association doesn't exist so create it  
         $o = ORM::factory('objects_user');
         $o->user_id = $user_id;
         $o->object_id = $object_id;
@@ -335,7 +335,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
   public function action_associateuser($user_id, $object_id)
   {
-    //check 
+    // check 
     $user_check =   ORM::factory('user',$user_id);
     $exists_check = ORM::factory('objects_user')
       ->where('object_id','=',$object_id)
@@ -354,13 +354,13 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
 
 
-  //abstract
+  // abstract
   protected function cms_get_node($id)
   {
 
   }
 
-  //abstract
+  // abstract
   protected function cms_add_object($parent_id, $object_type_id, $data)
   {
 
@@ -371,7 +371,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
   {
     $object = Graph::object($id);
     $object->set_page_num($page_num);
-    //     $object->set_items_per_page(2);
+    //      $object->set_items_per_page(2);
     $ret = $object->lattice_children_filter_paged($id,"lattice");
   }
 }

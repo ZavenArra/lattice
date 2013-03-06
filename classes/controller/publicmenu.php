@@ -25,7 +25,7 @@ Class Controller_Public_menu extends Controller_Lattice {
       $navi[$object->slug] = $entry;
     }
 
-    //check for children
+    // check for children
     foreach ($navi as $slug => $entry)
     {
 

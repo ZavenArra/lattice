@@ -14,7 +14,7 @@ class Controller_Auth extends Controller_Layout {
   );
 
 
-  // Use the default Kohana object_type
+  //  Use the default Kohana object_type
   public $defaultobject_type = 'auth/object_type';
 
   public $message = '';
@@ -45,14 +45,14 @@ class Controller_Auth extends Controller_Layout {
 
      if ($form->validate())
      {
-       // Create new user
+       //  Create new user
        $user = ORM::factory('user');
 
        if ( ! $user->username_exists($form->username->value))
        {
          foreach ($form->as_array() as $key => $val)
          {
-           // Set user data
+           //  Set user data
            $user->$key = $val;
 }
 
@@ -60,7 +60,7 @@ if ($user->save() AND $user->add(ORM::factory('role', 'login')))
 {
   Auth::instance()->login($user, $form->password->value);
 
-  // Redirect to the login object
+  //  Redirect to the login object
   Request::current()->redirect('auth/login');
 } 
 
@@ -88,12 +88,12 @@ $this->view->content = $form->render();
     $form_values = $_POST;
     if (isset($form_values['submit']) )
     {
-      // Load the user
+      //  Load the user
       if (Auth::instance()->login($form_values['username'], $form_values['password']))
       {
-        // Login successful, redirect
-        //somewhere in here we can hang extra values for user roles
-        //just override auth.redirect or something
+        //  Login successful, redirect
+        // somewhere in here we can hang extra values for user roles
+        // just override auth.redirect or something
         $authredirect =  Kohana::config('auth.redirect');
 
         if ($form_values['redirect'])
@@ -144,10 +144,10 @@ $this->view->content = $form->render();
 
   public function action_logout()
   {
-    // Force a complete logout
+    //  Force a complete logout
     Auth::instance()->logout(TRUE);
 
-    // Redirect back to the login object
+    //  Redirect back to the login object
     Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),FALSE));
 
   }
@@ -188,4 +188,4 @@ $this->view->content = $form->render();
 
 
 
-} // End Auth Controller
+} //  End Auth Controller

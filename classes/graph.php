@@ -10,7 +10,7 @@ class Graph {
 
   public static $mediapath; 
 
-  //cache vars
+  // cache vars
   private static $_languages;
 
   public static function instance()
@@ -21,7 +21,7 @@ class Graph {
   public static function object($object_id =NULL)
   {
 
-    //this will be implemented to support different drivers
+    // this will be implemented to support different drivers
     if ($object_id == NULL)
     {
       $object = ORM::Factory('object');
@@ -166,15 +166,15 @@ class Graph {
   {
 
 
-    //validation
-    //
-    //check objects.xml for configuration
+    // validation
+    // 
+    // check objects.xml for configuration
 
     if (!$force)
     {
       $object_type_config = NULL;
-      $x_path =  sprintf('//object_type[@name="%s"]', $object_type_name);
-      $x_path_list =  sprintf('//list[@name="%s"]', $object_type_name);
+      $x_path =  sprintf('// object_type[@name="%s"]', $object_type_name);
+      $x_path_list =  sprintf('// list[@name="%s"]', $object_type_name);
       if (!$object_type_config = lattice::config('objects', $x_path)->item(0))
       { 
         if (!$object_type_config = lattice::config('objects', $x_path_list)->item(0))
@@ -193,7 +193,7 @@ class Graph {
 
     }
 
-    //find or create object_type record
+    // find or create object_type record
     $t_record = ORM::Factory('objecttype', $object_type_name );
     if (!$t_record->loaded())
     {
@@ -205,23 +205,23 @@ class Graph {
 
     /*
      * This can just happen on the fly - lazy configure
-     foreach ( lattice::config('objects', '//object_type[@name="'.$object_type_name.'"]/elements/*') as $item)
+     foreach ( lattice::config('objects', '// object_type[@name="'.$object_type_name.'"]/elements/*') as $item)
      {
        $t_record->configure_element($item);
   }
-  Model_Object::reinit_dbmap($t_record->id); // Rethink this.
+  Model_Object::reinit_dbmap($t_record->id); //  Rethink this.
        */
   }
 
   public static function add_root_node($root_node_object_type)
   {
-    //$this->driver->get_object_type_object($roo_node_object_type)
+    // $this->driver->get_object_type_object($roo_node_object_type)
     Graph::object()->add_object($root_node_object_type);
   }
 
   public static function get_root_node($root_node_object_type)
   {
-    //$this->driver->get_object_type_object($roo_node_object_type)
+    // $this->driver->get_object_type_object($roo_node_object_type)
     $object_type = ORM::Factory('object_type')->where('objecttypename', '=', $root_node_object_type)->find();
     $object =  Graph::object()->object_type_filter($object_type->objecttypename)->find();
     if (!$object->loaded())

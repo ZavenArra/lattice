@@ -61,7 +61,7 @@ Class Controller_Custom_reel extends Controller_Layout {
    */
   public function action_index()
   {
-    //cleanup on an initial load
+    // cleanup on an initial load
     $incompletes = ORM::Factory($this->table)->where('status', '=', 'INCOMPLETE')->find_all();
     foreach ($incompletes as $incomplete)
     {
@@ -173,7 +173,7 @@ Class Controller_Custom_reel extends Controller_Layout {
     $user = $this->create_user();
     $data = $user->as_array();
 
-    //set no managed_role
+    // set no managed_role
     $data['username'] = NULL;
     $data['password'] = NULL;
     $data['email'] = NULL;
@@ -205,9 +205,9 @@ Class Controller_Custom_reel extends Controller_Layout {
     $user->email = 'PLACEHOLDER'.Utility_Auth::random_password().'@madeofpeople.org';
     $user->save();
 
-    //add the login role
+    // add the login role
     $user->add('roles', ORM::Factory('role', array('name'=>'login')));
-    //add the default role
+    // add the default role
     $user->add('roles', ORM::Factory('role', array('name'=>Kohana::config(strtolower($this->controller_name).'.default_roles') ) ) );
     $user->save();
 
@@ -263,7 +263,7 @@ Class Controller_Custom_reel extends Controller_Layout {
         }
       }
 
-      //first remove other managed_roles
+      // first remove other managed_roles
       foreach ($this->managed_roles as $label => $role)
       {
         $role_obj = ORM::Factory('role')->where('name','=',$role)->find();
@@ -304,7 +304,7 @@ Class Controller_Custom_reel extends Controller_Layout {
 
     default:
 
-      //$errors = $user->check_value($_POST['field'], $_POST['value']);
+      // $errors = $user->check_value($_POST['field'], $_POST['value']);
       $errors  = array();
 
       if (!count($errors))
@@ -314,8 +314,8 @@ Class Controller_Custom_reel extends Controller_Layout {
           $user->update_user(array($field => $value), array($field))->save();
 
 
-          //this might be the first edit on a new record
-          //so set the record to active status
+          // this might be the first edit on a new record
+          // so set the record to active status
           $this->activate_record($user);
 
 

@@ -57,7 +57,7 @@ Class Lattice_Controller_Associator extends Controller_Lattice {
 
     Kohana::$log->add( Kohana_Log::INFO,"\tmodified Filters: " . print_r( $modified_filters, TRUE ) )->write();
 
-    //paginate here
+    // paginate here
     $a = new Associator($parent_id, $element->get_attribute('lattice'), $modified_filters);
     $this->response->body($a->render_pool_items());
     $this->response->data(array("num_pages"=>$a->num_pages));

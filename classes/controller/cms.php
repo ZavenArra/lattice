@@ -22,7 +22,7 @@ class Controller_CMS extends Lattice_CMS {
   public function cms_get_node_info($id)
   {
 
-    //Dial up associated navi and ask for details
+    // Dial up associated navi and ask for details
     return Navigation::get_node_info_by_id($id);
 
   }
@@ -30,7 +30,7 @@ class Controller_CMS extends Lattice_CMS {
   public function cms_get_node_html($id)
   {
 
-    //Dial up associated navi and ask for details
+    // Dial up associated navi and ask for details
     $item = Navigation::get_node_info_by_id($id);
     $node_view = new View('navigation_node');
     $node_view->content = $item;

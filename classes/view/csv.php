@@ -61,38 +61,38 @@ class View_Csv {
         continue;
       }         
 
-      //cycle through all languages for each field
+      // cycle through all languages for each field
 
-      //$languages = Graph::languages();
-      //foreach ($languages as $translation_language)
+      // $languages = Graph::languages();
+      // foreach ($languages as $translation_language)
       {
 
         if ($this->_object->loaded())
         {
           $data_item = $this->_object->$column_name;
         } else {
-          $data_item = NULL;  //this allow for objects to be used as empty templates 
-          //without being tied to database
-          //potential refactor here, separating ideas of objecttype and object
-          //a bit more
+          $data_item = NULL;  // this allow for objects to be used as empty templates 
+          // without being tied to database
+          // potential refactor here, separating ideas of objecttype and object
+          // a bit more
         }
 
 
         if (is_object($data_item))
         {
 
-          //        if (is_subclass_of($data_item, 'Model_File'))
+          //         if (is_subclass_of($data_item, 'Model_File'))
         {
-          // This is a special case, once Files are compound objects only
-          // they will be subclass of Model_Object, and filename will be only
-          // a text field, with file linked to object via  objectelementsrelationships.
+          //  This is a special case, once Files are compound objects only
+          //  they will be subclass of Model_Object, and filename will be only
+          //  a text field, with file linked to object via  objectelementsrelationships.
           if (get_class($data_item) == 'Model_File')
           {
 
             $data_item_line = array_pad(array($column_name, $data_item->filename), - 2 - $this->_indent - 1, '');
             $csv .= latticeutil::array_to_csv($data_item_line, ',');
             $csv .= "\n";
-            //and do the other languages
+            // and do the other languages
             foreach ($languages as $language)
             {
               $data_item = $il8n_objects[$language->code]->$column_name;
@@ -111,7 +111,7 @@ class View_Csv {
             }
           } else {
 
-            //skip if it's a container
+            // skip if it's a container
             if ($data_item->objecttype->node_type == 'container')
             {
               continue;

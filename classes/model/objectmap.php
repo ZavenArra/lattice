@@ -53,13 +53,13 @@ class Model_Objectmap extends ORM {
       $index = 'flag';
       break;
     default:
-      $t_configs = lattice::config('objects', '//object_type');
+      $t_configs = lattice::config('objects', '// object_type');
       $object_types = array();
       foreach ($t_configs as $object_type)
       {
         $object_types[] = $object_type->get_attribute('name');
       }
-      //print_r($object_types);
+      // print_r($object_types);
       if (in_array($ui_type, $object_types))
       {
         $index = 'object';

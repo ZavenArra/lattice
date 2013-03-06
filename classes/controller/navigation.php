@@ -19,8 +19,8 @@ class Controller_Navigation extends Controller_Lattice{
   public function action_index($deeplink=NULL)
   {
 
-    //$this->view = new View(strtolower($this->controllername));
-    ////this should check and extend
+    // $this->view = new View(strtolower($this->controllername));
+    // //this should check and extend
     $this->view = new View('navigation');
     $this->response->body($this->view->render());
 
@@ -42,17 +42,17 @@ class Controller_Navigation extends Controller_Lattice{
     $items = Graph::object($parent->id)
       ->lattice_children_query()
       ->active_filter();
-    // ->order_by('objectrelationships.sortorder', 'ASC');
+    //  ->order_by('objectrelationships.sortorder', 'ASC');
     $items = $items->find_all();
 
     if ($items)
     {
-      $send_item_containers = array(); //these will go first
+      $send_item_containers = array(); // these will go first
       $send_item_objects = array();
       foreach ($items as $child)
       {
 
-        //Check for Access to this object
+        // Check for Access to this object
         $roles = $child->roles->find_all();
         foreach ($roles as $role)
         {
@@ -62,10 +62,10 @@ class Controller_Navigation extends Controller_Lattice{
           } 
         }
 
-        //Containers should be skipped
+        // Containers should be skipped
         if (strtolower($child->objecttype->node_type) == 'container')
         {
-          //we might be skipping this node
+          // we might be skipping this node
           $display = $child->objecttype->display;
 
           if ($display == 'inline')
@@ -75,14 +75,14 @@ class Controller_Navigation extends Controller_Lattice{
         }
         $send_item = Navigation::get_node_info($child);
 
-        //implementation of deeplinking
+        // implementation of deeplinking
         $send_item['follow'] = FALSE;
         if (in_array($child->id, $deeplink_path))
         {
           $send_item['follow'] = TRUE;
           $follow = TRUE;
 
-          //and deeplinking for categories
+          // and deeplinking for categories
           $follow_tier = FALSE;
           $child_tier = $this->get_tier($child->id, $deeplink_path, $follow_tier);
           if ($follow_tier == TRUE)
@@ -100,14 +100,14 @@ class Controller_Navigation extends Controller_Lattice{
           $send_item_objects[] = $send_item;
         }
       }
-      //this puts the folders first
+      // this puts the folders first
       $send_item_objects = array_merge($send_item_containers, $send_item_objects);
 
 
-      //add in any modules
+      // add in any modules
       if ($parent->id == Graph::get_root_node(Kohana::config('cms.graph_root_node'))->id )
       {
-        $cms_modules = lattice::config('cms_modules', '//module');
+        $cms_modules = lattice::config('cms_modules', '// module');
         foreach ($cms_modules as $m)
         {
           $controller = $m->get_attribute('controller');
@@ -143,7 +143,7 @@ class Controller_Navigation extends Controller_Lattice{
   public function action_get_tier($parent_id, $deeplink=NULL)
   {
 
-    //plan all parents for following deeplink
+    // plan all parents for following deeplink
     $deeplink_path = array();
 
     if ($deeplink)
@@ -165,7 +165,7 @@ class Controller_Navigation extends Controller_Lattice{
 
     }
 
-    //this database call happens twice, should be a class variable?
+    // this database call happens twice, should be a class variable?
     $parent = Graph::object($parent_id);
 
 
@@ -214,7 +214,7 @@ class Controller_Navigation extends Controller_Lattice{
   public function get_object_types()
   {
     $object_types = array();
-    foreach (lattice::config('objects', '//object_type') as $object_type)
+    foreach (lattice::config('objects', '// object_type') as $object_type)
     {
       $entry = array();
       $entry['object_type_name'] = $object_type->get_attribute('name'); 

@@ -43,15 +43,15 @@ class Graph_Object_query {
 
     $objects = Graph::object();
 
-    //apply slug filter
+    // apply slug filter
     if ($this->attributes['slug'])
     {
       $objects->where('slug', '=', $this->attributes['slug']);
     }
 
-    //apply optional parent filter
+    // apply optional parent filter
     if ($from = $this->attributes['from'] )
-    { //
+    { // 
       if ($from != 'all')
       {
         if ($from == 'parent')
@@ -65,12 +65,12 @@ class Graph_Object_query {
       }
     }
 
-    //apply optional object_type filter
+    // apply optional object_type filter
     $objects = $objects->object_type_filter($this->attributes['object_type_filter']); 
 
-    //apply optional SQL where filter
+    // apply optional SQL where filter
     if ($where = $this->attributes['where'])
-    { //
+    { // 
       $objects->where($where);
     }
 

@@ -8,15 +8,15 @@ Class Associator {
   public $filters = NULL;
   public $pool = array();
   public $associated = array();
-  // set this as needed when calling paged results
-  // right now this is set on an instance, by actions that pre load $this->pool
+  //  set this as needed when calling paged results
+  //  right now this is set on an instance, by actions that pre load $this->pool
   public $num_pages = 2;
 
   protected $label;
   protected $pool_label;
   protected $page_length;
-  // this is page size for paginator
-  // this doesn't matter anymore because we're paginating
+  //  this is page size for paginator
+  //  this doesn't matter anymore because we're paginating
   private $max_pool_size = 80;
   private $page_num = 1;
   public static function get_filters_from_dom_node($node)
@@ -36,14 +36,14 @@ Class Associator {
 
   }
 
-  // TODO
-  // to support multi-lattice single custom view
+  //  TODO
+  //  to support multi-lattice single custom view
   public function set_view_name($view_name)
   { 
     throw new Kohana_Exception('Not Implemented');
   } 
 
-  // to support mutli-instance single lattice
+  //  to support mutli-instance single lattice
   public function set_associator_name($associator_name)
   {
     throw new Kohana_Exception('Not Implemented');
@@ -76,7 +76,7 @@ Class Associator {
       }
 
     }
-    // load pool
+    //  load pool
     if ($filters)
     {
 
@@ -135,10 +135,10 @@ Class Associator {
 
         $objects->where('objects.language_id', '=', Graph::default_language());
         $objects->published_filter();
-        //just return an array of id's then load the pool object
+        // just return an array of id's then load the pool object
         $results = $objects->find_all()->as_array(NULL, 'id');
-        //check our filtered objects are correct
-        //compact the array to remove redundant keys
+        // check our filtered objects are correct
+        // compact the array to remove redundant keys
         $res = array();
         foreach ($results as $id)
         {
@@ -150,13 +150,13 @@ Class Associator {
         }
         $results = $res;
         $this->num_pages = ceil(count($results)/$this->page_length);
-        //get slice the first page, then load the objects from their id's
+        // get slice the first page, then load the objects from their id's
         $params = explode("/",$_SERVER["REQUEST_URI"]);
-        //print_r($params);
-        //@TODO this is a kludge.  Oh well.
+        // print_r($params);
+        // @TODO this is a kludge.  Oh well.
         if (isset($params[7]) AND $params[6]=="posting_videos_associator")
         {
-          //we're passing a page number - so slice the object ids
+          // we're passing a page number - so slice the object ids
           $results = array_slice($results,($params[7]-1)*16,16);
         } else {
           $results = array_slice($results,0,$this->page_length);
@@ -231,12 +231,12 @@ Class Associator {
      */
 
     $view->url_prepend = "ajax/html";
-    // echo strpos($original_uri,$action);
-    // pass our paginator params to the view
-    // $view->controller_name = $this->request->controller();
-    // $view->action = $action;
-    // $view->params = $this->request->param();
-    // $view->current_page = $view->params["param4"];
+    //  echo strpos($original_uri,$action);
+    //  pass our paginator params to the view
+    //  $view->controller_name = $this->request->controller();
+    //  $view->action = $action;
+    //  $view->params = $this->request->param();
+    //  $view->current_page = $view->params["param4"];
 
     /* end paginator vars*/ 
     return $view->render();

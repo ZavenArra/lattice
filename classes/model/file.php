@@ -41,7 +41,7 @@ class Model_File extends ORM {
    */
   public function __get($column)
   {
-    //if it's a column in the table just return it
+    // if it's a column in the table just return it
 
     if (in_array($column, $this->object_fields ))
     {
@@ -60,24 +60,24 @@ class Model_File extends ORM {
       return $chunks[count($chunks)-1];
     }
 
-    //otherwise check if it's a valid resize prefix
+    // otherwise check if it's a valid resize prefix
 
 
-    $prefix = $column; //for code clarity
+    $prefix = $column; // for code clarity
 
-    //create image info object
+    // create image info object
     if (!isset($this->imageinfo[$prefix]))
     {
       $this->imageinfo[$prefix] = new Model_File_image(parent::__get('filename'), $prefix);
     }
 
-    //return image info so that it's __get can be called
+    // return image info so that it's __get can be called
     return $this->imageinfo[$prefix];
 
   }
 
-  //this could also just move the file out of the way
-  //and complete the unlinking on destroy
+  // this could also just move the file out of the way
+  // and complete the unlinking on destroy
   public function unlink_old_file()
   {
     $oldfilename = parent::__get('filename');

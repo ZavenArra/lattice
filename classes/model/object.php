@@ -33,13 +33,13 @@ class Model_Object extends ORM implements arrayaccess {
       'foreign_key' => 'object_id'
     )
   );
-  //cache
+  // cache
   private $lattice_parents = array();
 
   protected $content_driver = NULL;
 
   protected $messages = array();
-  //this needs to come from the associator page_length in objects.xml
+  // this needs to come from the associator page_length in objects.xml
   private $items_per_page = 8;
   private $page_num = 0;
   public function __construct($id=NULL)
@@ -49,7 +49,7 @@ class Model_Object extends ORM implements arrayaccess {
     if (!empty($id) AND is_string($id) AND !ctype_digit($id))
     {
 
-      //check for translation reference
+      // check for translation reference
       if (strpos('_', $id))
       {
         $slug = strtok($id, '_');
@@ -84,7 +84,7 @@ class Model_Object extends ORM implements arrayaccess {
    */
   public static function create_slug($title_or_slug=NULL, $for_page_id=NULL)
   {
-    //create slug
+    // create slug
     if ($title_or_slug!=NULL)
     {
       $title_or_slug = str_replace('.', '-', $title_or_slug);
@@ -141,7 +141,7 @@ class Model_Object extends ORM implements arrayaccess {
       }
       return $slug;
     } else {
-      return self::create_slug('slug'.str_replace(' ', '',microtime())); //try something else
+      return self::create_slug('slug'.str_replace(' ', '',microtime())); // try something else
     }
   }
 
@@ -165,7 +165,7 @@ class Model_Object extends ORM implements arrayaccess {
   public static function resize_image($original_filename, $new_filename, $width, $height,
     $force_dimension='width', $crop='FALSE', $aspect_follows_orientation='false')
   {
-    //set up dimenion to key off of
+    // set up dimenion to key off of
     switch($force_dimension)
     {
     case 'width':
@@ -181,8 +181,8 @@ class Model_Object extends ORM implements arrayaccess {
 
     $image = Image::factory(Graph::mediapath().$original_filename);
 
-    //just do the resample
-    //set up sizes
+    // just do the resample
+    // set up sizes
     $resize_width = $width;
     $resize_height = $height;
 
@@ -192,7 +192,7 @@ class Model_Object extends ORM implements arrayaccess {
       $horizontal = FALSE;
       if ($osize[0] > $osize[1])
       {
-        //horizontal
+        // horizontal
         $horizontal = TRUE; 
       }
       $newsize = array($resize_width, $resize_height);
@@ -209,8 +209,8 @@ class Model_Object extends ORM implements arrayaccess {
 
     if ($crop=='TRUE')
     {
-      //resample with crop
-      //set up sizes, and crop
+      // resample with crop
+      // set up sizes, and crop
       if ( ($image->width / $image->height) > ($image->height / $image->width) )
       {
         $crop_key_dimension = Image::HEIGHT;
@@ -221,9 +221,9 @@ class Model_Object extends ORM implements arrayaccess {
       $image->save(Graph::mediapath().$new_filename);
     }
 
-    //maintain aspect ratio
-    //use the forcing when it applied
-    //forcing with aspectfolloworientation is gonna give weird results!
+    // maintain aspect ratio
+    // use the forcing when it applied
+    // forcing with aspectfolloworientation is gonna give weird results!
     $image->resize($resize_width, $resize_height, $key_dimension);
 
     $image->save(Graph::mediapath() .$new_filename);
@@ -271,7 +271,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     if (in_array($column, array_keys($this->_table_columns)))
     {
-      //this catches the configured colums for this table
+      // this catches the configured colums for this table
       return parent::__get($column);
 
     } elseif ($column == 'parent')
@@ -312,12 +312,12 @@ class Model_Object extends ORM implements arrayaccess {
     }
 
 
-    //check if this is a list container
-    $list_config = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/list[@name="%s"]', $this->objecttype->objecttypename, $column));
+    // check if this is a list container
+    $list_config = lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/list[@name="%s"]', $this->objecttype->objecttypename, $column));
     if ($list_config->length)
     {
 
-      //look up the object type
+      // look up the object type
       $family = $column;
 
       $list_object_type = ORM::Factory('objecttype', $family);
@@ -332,9 +332,9 @@ class Model_Object extends ORM implements arrayaccess {
         ->object_type_filter($list_object_type->id)
         ->active_filter()
         ->find();
-      //The next line is either necessary to correctly initialize the model
-      //or listcontainer could be refactored as a storage class of object
-      //Lattice_Model_...
+      // The next line is either necessary to correctly initialize the model
+      // or listcontainer could be refactored as a storage class of object
+      // Lattice_Model_...
       $list_container_object = ORM::Factory('listcontainer', $list_container_object->id);
       if (!$list_container_object->id)
       {
@@ -349,9 +349,9 @@ class Model_Object extends ORM implements arrayaccess {
   }
 
 
-  //Providing access to content_driver as a quick fix for 
-  //needing the id of the content table, plus there could
-  //be other reasons that justify this.
+  // Providing access to content_driver as a quick fix for 
+  // needing the id of the content table, plus there could
+  // be other reasons that justify this.
   public function content_driver()
   {
     if (!$this->content_driver)
@@ -419,8 +419,8 @@ class Model_Object extends ORM implements arrayaccess {
 
     parent::save();
 
-    //Postpone adding record to content table until after lattice point
-    //is set.
+    // Postpone adding record to content table until after lattice point
+    // is set.
     if (!$inserting)
     {
       $this->save_content_table($this);
@@ -433,7 +433,7 @@ class Model_Object extends ORM implements arrayaccess {
   private function insert_content_record()
   {
 
-    //create the content driver table
+    // create the content driver table
     $object_type_name = $this->objecttype->objecttypename;
     if (Kohana::find_file('classes','model/lattice/'.strtolower($object_type_name)))
     {
@@ -443,8 +443,8 @@ class Model_Object extends ORM implements arrayaccess {
     } else {
       $this->content_driver = new Model_Lattice_Object();
     }
-    //$this->content_driver->load_content_table($this);
-    //$this->content_driver->set_content_column($this, 'object_id', $this->id);
+    // $this->content_driver->load_content_table($this);
+    // $this->content_driver->set_content_column($this, 'object_id', $this->id);
     $this->content_driver->save_content_table($this, TRUE);
   }
 
@@ -458,11 +458,11 @@ class Model_Object extends ORM implements arrayaccess {
 
     if ($this->__get('objecttype')->node_type == 'container')
     {
-      //For lists, values will be on the 2nd level 
-      $x_path = sprintf('//list[@name="%s"]', $this->__get('objecttype')->objecttypename);
+      // For lists, values will be on the 2nd level 
+      $x_path = sprintf('// list[@name="%s"]', $this->__get('objecttype')->objecttypename);
     } else {
-      //everything else is a normal lookup
-      $x_path = sprintf('//object_type[@name="%s"]', $this->__get('objecttype')->objecttypename);
+      // everything else is a normal lookup
+      $x_path = sprintf('// object_type[@name="%s"]', $this->__get('objecttype')->objecttypename);
     }
     $field_config = lattice::config('objects', $x_path . sprintf('/elements/*[@name="%s"]', $element_name));
     return $field_config;
@@ -478,7 +478,7 @@ class Model_Object extends ORM implements arrayaccess {
 
       if (!$this->_loaded)
       {
-        //Bypass special logic when just loading the object
+        // Bypass special logic when just loading the object
         return parent::__set($column, $value);
       }
 
@@ -508,7 +508,7 @@ class Model_Object extends ORM implements arrayaccess {
       {
         parent::__set($column, $value);
 
-        //TODO: Change this to an object_type_name match below
+        // TODO: Change this to an object_type_name match below
       } elseif ($column == 'tags')
       {
         $tags = explode(',', $value);
@@ -523,7 +523,7 @@ class Model_Object extends ORM implements arrayaccess {
 
         $object_type = ORM::Factory('objecttype', $objecttype_id);
 
-        $xpath = sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $object_type->objecttypename, $column);
+        $xpath = sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]', $object_type->objecttypename, $column);
         $field_info = lattice::config('objects', $xpath)->item(0);
         if (!$field_info)
         {
@@ -624,7 +624,7 @@ class Model_Object extends ORM implements arrayaccess {
       {
         $language_id = intval($language_code);
       } else {
-        //this could just ask the graph, to avoid going to database again
+        // this could just ask the graph, to avoid going to database again
         $language_id = ORM::Factory('language', $language_code)->id;
       }
       if (!$language_id)
@@ -776,7 +776,7 @@ class Model_Object extends ORM implements arrayaccess {
       $content['dateadded'] = $this->dateadded;
       $content['object_type_name'] = $this->objecttype->objecttypename;
 
-      $fields = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $this->objecttype->objecttypename));
+      $fields = lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/*', $this->objecttype->objecttypename));
 
       foreach ($fields as $field_info)
       {
@@ -784,15 +784,15 @@ class Model_Object extends ORM implements arrayaccess {
         $content[$field] = $this->__get($field);
       }
 
-      //find any lists
-      foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
+      // find any lists
+      foreach (lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
       {
         $name = $list->get_attribute('name');
         $content[$name] = $this->get_list_content_as_array($name);
       }
 
-      //find any associators
-      foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/associator', $this->objecttype->objecttypename)) as $list)
+      // find any associators
+      foreach (lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/associator', $this->objecttype->objecttypename)) as $list)
       {
         $name = $list->get_attribute('name');
         $content[$name] = $this->get_lattice_children($list->get_attribute('name'));;
@@ -804,13 +804,13 @@ class Model_Object extends ORM implements arrayaccess {
     {
       $fields = array('id', 'title', 'slug', 'dateadded', 'objecttypename');
 
-      $object_fields = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $this->objecttype->objecttypename));
+      $object_fields = lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/*', $this->objecttype->objecttypename));
       foreach ($object_fields as $field_info)
       {
         $fields[] = $field_info->get_attribute('name');   
       }
 
-      foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
+      foreach (lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
       {
         $family = $list->get_attribute('name');
         $fields[] = $family;
@@ -833,7 +833,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function get_list_content($family)
     {
-      //get container
+      // get container
       $c_template = ORM::Factory('objecttype', $family);
       $container = Graph::object()
         ->lattice_children_filter($this->id)
@@ -959,7 +959,7 @@ class Model_Object extends ORM implements arrayaccess {
         if (!is_numeric($order[$i]))
         {
           return;
-          // this breaks frontend, but returning a typical lattice error would allow us to log it, or provide a less terrifying experience.
+          //  this breaks frontend, but returning a typical lattice error would allow us to log it, or provide a less terrifying experience.
           throw new Kohana_Exception('bad sortorder string: >' . $order[$i] . '<');
         }
 
@@ -1021,7 +1021,7 @@ class Model_Object extends ORM implements arrayaccess {
         );
         return $result;
       }
-      //Kohana::$log->add(Log::INFO, 'tmp moved file to ' . Graph::mediapath() . $save_name);
+      // Kohana::$log->add(Log::INFO, 'tmp moved file to ' . Graph::mediapath() . $save_name);
 
       return $save_name;
     }
@@ -1047,7 +1047,7 @@ class Model_Object extends ORM implements arrayaccess {
         {     
         }
       }
-      //clean up extension
+      // clean up extension
       $ext = strtolower($ext);
       if ($ext == 'jpeg')
       {
@@ -1080,12 +1080,12 @@ class Model_Object extends ORM implements arrayaccess {
 
       $file->filename = $save_name;
       $file->mime = $type;
-      $file->save(); //inserts or updates depending on if it got loaded above
+      $file->save(); // inserts or updates depending on if it got loaded above
 
       $this->$field = $file->id;
       $this->_save();
 
-      //Handle localized object linked via rosetta
+      // Handle localized object linked via rosetta
       if ($replacing_empty_file)
       {
 
@@ -1112,7 +1112,7 @@ class Model_Object extends ORM implements arrayaccess {
     {
       $origwidth = $size[0];
       $origheight = $size[1];
-      //Kohana::$log->add(Log::INFO, var_export($parameters, TRUE));
+      // Kohana::$log->add(Log::INFO, var_export($parameters, TRUE));
       if (isset($parameters['minheight']) AND $origheight < $parameters['minheight'])
       {
         $result = array(
@@ -1133,7 +1133,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function save_image($field, $filename, $type, $tmp_name, $additional_resizes = array() )
     {
-      //do the saving of the file
+      // do the saving of the file
       $file = $this->save_file($field, $filename, $type, $tmp_name);
       $imagefilename = $this->process_image($file->filename, $field, $additional_resizes );
 
@@ -1148,7 +1148,7 @@ class Model_Object extends ORM implements arrayaccess {
     public function process_image($filename, $field, $additional_resizes = array())
     {
 
-      //First check for tiff, and convert if necessary
+      // First check for tiff, and convert if necessary
       $ext = substr(strrchr($filename, '.'), 1);
       switch ($ext)
       {
@@ -1156,11 +1156,11 @@ class Model_Object extends ORM implements arrayaccess {
       case 'tif':
       case 'TIFF':
       case 'TIF':
-        //  Kohana::$log->add(Log::INFO, 'Converting TIFF image to JPG for resize');
+        //   Kohana::$log->add(Log::INFO, 'Converting TIFF image to JPG for resize');
 
         $imagefilename = $filename . '_converted.jpg';
         $command = sprintf('convert %s %s', addcslashes(Graph::mediapath() . $filename, "'\"\\ "), addcslashes(Graph::mediapath() . $imagefilename, "'\"\\ "));
-        //   Kohana::$log->add(Log::INFO, $command);
+        //    Kohana::$log->add(Log::INFO, $command);
         system(sprintf('convert %s %s', addcslashes(Graph::mediapath() . $filename, "'\"\\ "), addcslashes(Graph::mediapath() . $imagefilename, "'\"\\ ")));
         break;
       default:
@@ -1168,9 +1168,9 @@ class Model_Object extends ORM implements arrayaccess {
         break;
       }
 
-      //do the resizing
+      // do the resizing
       $objecttypename = $this->objecttype->objecttypename;
-      $resizes = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]/resize', $objecttypename, $field
+      $resizes = lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]/resize', $objecttypename, $field
       )
     );
       foreach ($resizes as $resize)
@@ -1188,8 +1188,8 @@ class Model_Object extends ORM implements arrayaccess {
         }
         $save_name = Graph::mediapath() . $new_filename;
 
-        //This dependency should be moved out of latticecms
-        //Rootgraph should never require latticecms
+        // This dependency should be moved out of latticecms
+        // Rootgraph should never require latticecms
         Model_Object::resize_image($imagefilename, $new_filename, $resize->get_attribute('width'), $resize->get_attribute('height'), $resize->get_attribute('force_dimension'), $resize->get_attribute('crop'), $resize->get_attribute('aspect_follows_orientation')
         );
 
@@ -1207,7 +1207,7 @@ class Model_Object extends ORM implements arrayaccess {
         }
       }
 
-      //And process resizes passed in from caller
+      // And process resizes passed in from caller
       foreach ($additional_resizes as $uiresize)
       {
         Model_Object::resize_image($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['force_dimension'], $uiresize['crop'], $uiresize['aspect_follows_orientation'] 
@@ -1247,9 +1247,9 @@ class Model_Object extends ORM implements arrayaccess {
         $this->in('objecttype_id', $t_ids);
       } elseif ($object_types == 'all')
       {
-        //set no filter
+        // set no filter
       } else {
-        $object_type = $object_types; // argument is just a singluar string
+        $object_type = $object_types; //  argument is just a singluar string
         $result = DB::query(Database::SELECT, "Select id from objecttypes where objecttypename = '$object_type'")->execute()->current();
         if (!$result['id'] AND !Model_Object_type::get_config($object_type))
         {
@@ -1262,8 +1262,8 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function content_filter($wheres)
     {
-      //  $driver_info = $this->content_driver()->driver_info();
-      //Extension point for implementing support for content_filter with other drivers
+      //   $driver_info = $this->content_driver()->driver_info();
+      // Extension point for implementing support for content_filter with other drivers
       $driver_info = array(
         'driver' => 'mysql', 
         'table_name' => 'contents',
@@ -1291,7 +1291,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function join_content_column($column)
     {
-      $map = lattice::config('objects', '//object_type[elements/*/@name="'.$column.'"]'); 
+      $map = lattice::config('objects', '// object_type[elements/*/@name="'.$column.'"]'); 
       $map_query = array();
       if ($map->length)
       {
@@ -1301,7 +1301,7 @@ class Model_Object extends ORM implements arrayaccess {
           if (!$object_type->loaded())
           {
             continue;
-            //Continue here because the object type might not be lazy-configured yet 
+            // Continue here because the object type might not be lazy-configured yet 
           }
           $mapped_column = Model_Lattice_Object::dbmap($object_type->id, $column);
           $map_query[] = 'select object_id, '.$mapped_column.' as '.$column
@@ -1351,12 +1351,12 @@ class Model_Object extends ORM implements arrayaccess {
       return $this;   
     }
 
-    //filter objects based on related objects in our associator
+    // filter objects based on related objects in our associator
     public function associator_filter($parent_id,$objects)
     {
-      //$objects is id's of our objects that we want to match against
-      //we're joining via object relationships
-      //all object id's from objectrelationships
+      // $objects is id's of our objects that we want to match against
+      // we're joining via object relationships
+      // all object id's from objectrelationships
       $o_ids = array();
       foreach ($objects as $object)
       {
@@ -1391,7 +1391,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function lattice_children_filter($parent_id, $lattice="lattice")
     {
-      //run this query without limit to get a count
+      // run this query without limit to get a count
       $lattice = Graph::lattice($lattice);
       $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
       $this->where('objectrelationships.lattice_id', '=', $lattice->id);
@@ -1401,14 +1401,14 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function lattice_children_filter_paged($parent_id, $lattice="lattice")
     {
-      //twg -> thiago removed call to lattice_children_filter and instead duplicated with pagination
-      //        tom added it to lattice_children_filter which was also paginating nav ages and lists...
-      //run this query without limit to get a count
+      // twg -> thiago removed call to lattice_children_filter and instead duplicated with pagination
+      //         tom added it to lattice_children_filter which was also paginating nav ages and lists...
+      // run this query without limit to get a count
       $lattice = Graph::lattice($lattice);
       $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
       $this->where('objectrelationships.lattice_id', '=', $lattice->id);
       $this->where('objectrelationships.object_id', '=', $parent_id);
-      //twg added pagination here
+      // twg added pagination here
       $this->limit($this->items_per_page);
       $this->offset($this->items_per_page * $this->page_num);
       return $this;
@@ -1578,13 +1578,13 @@ class Model_Object extends ORM implements arrayaccess {
         {
           throw new Kohana_Exception('sortorder field requires lattice parameter');
         }
-        //assume the default lattice
-        //  $query->join('objectrelationships')->on('objects.id', '=', 'objectrelationships.
-        //get current sort order
-        // get it!
-        //$query->join //join objectrelationships
-        //this assumes we've already joined objectrelatinpshios
-        $sort_value = $this->get_sort_order($lattice, $current->id);  //implement this function
+        // assume the default lattice
+        //   $query->join('objectrelationships')->on('objects.id', '=', 'objectrelationships.
+        // get current sort order
+        //  get it!
+        // $query->join //join objectrelationships
+        // this assumes we've already joined objectrelatinpshios
+        $sort_value = $this->get_sort_order($lattice, $current->id);  // implement this function
         $query->join( array('objectrelationships', 'objectrelationshipstosort') )->on('objects.id', '=', 'objectrelationshipstosort.connectedobject_id');
         $query->where('objectrelationshipstosort.lattice_id', '=', Graph::lattice($lattice)->id);
         $query->where('objectrelationshipstosort.'.$sort_field, $inequality, $sort_value);
@@ -1596,17 +1596,17 @@ class Model_Object extends ORM implements arrayaccess {
 
       /* TODO: Tiebreaker code is really problematic, since the DESC/ASC sortorder doesn't get applied by Kohana 
        * disciminately to each sort field, i.e. it applies the same sortorder to both 
-       $query_copy = clone($query); //reclone so we can rerun if necessary
-      //$query->where('objects.id', $id_inequalities[$id_inequality], $current->id)->order_by('id', $order)->limit(1);
+       $query_copy = clone($query); // reclone so we can rerun if necessary
+      // $query->where('objects.id', $id_inequalities[$id_inequality], $current->id)->order_by('id', $order)->limit(1);
       $query->where('objects.id', '!=', $current->id)->order_by('id', $order)->limit(1);
       $result = $query->find();
       if (!$result->loaded())
       {
-        //id inequality (tiebreaker) is backwards, flip it and rerun the query
+        // id inequality (tiebreaker) is backwards, flip it and rerun the query
         $id_inequality += 1;
         $id_inequality %= 2;
 
-        //$query_copy->where('objects.id', $id_inequalities[$id_inequality], $current->id)->order_by('id', $order)->limit(1);
+        // $query_copy->where('objects.id', $id_inequalities[$id_inequality], $current->id)->order_by('id', $order)->limit(1);
         $query_copy->where('objects.id', '!=', $current->id)->order_by('id', $order)->limit(1);
         $result = $query_copy->find();
     }
@@ -1684,8 +1684,8 @@ class Model_Object extends ORM implements arrayaccess {
     {
 
 
-      //chain problem
-      $containers = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/list', $this->objecttype->objecttypename));
+      // chain problem
+      $containers = lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/list', $this->objecttype->objecttypename));
       foreach ($containers as $c)
       {
         $arguments['title'] = $c->get_attribute('label');
@@ -1696,9 +1696,9 @@ class Model_Object extends ORM implements arrayaccess {
         $this->add_object($c->get_attribute('name'), $arguments);
       }
 
-      //look up any components and add them as well
-      //configured components
-      $components = lattice::config('objects', sprintf('//object_type[@name="%s"]/components/component', $this->objecttype->objecttypename));
+      // look up any components and add them as well
+      // configured components
+      $components = lattice::config('objects', sprintf('// object_type[@name="%s"]/components/component', $this->objecttype->objecttypename));
       foreach ($components as $c)
       {
         $arguments = array();
@@ -1713,10 +1713,10 @@ class Model_Object extends ORM implements arrayaccess {
             $arguments[$data->tag_name] = $data->value;
           }
         }
-        //We have a problem here
-        //with data.xml populated components
-        //the item has already been added by the add_object recursion, but gets added again here
-        //what to do about this??/on
+        // We have a problem here
+        // with data.xml populated components
+        // the item has already been added by the add_object recursion, but gets added again here
+        // what to do about this??/on
 
         $component_already_present = FALSE;
         if (isset($arguments['title']))
@@ -1765,13 +1765,13 @@ class Model_Object extends ORM implements arrayaccess {
       $this->rosetta_id = $translation_rosetta_id;
       $this->slug = self::create_slug();
 
-      //check for enabled publish/unpublish. 
-      //if not enabled, insert as published
-      $t_settings = lattice::config('objects', sprintf('//object_type[@name="%s"]', $this->objecttype->objecttypename));
+      // check for enabled publish/unpublish. 
+      // if not enabled, insert as published
+      $t_settings = lattice::config('objects', sprintf('// object_type[@name="%s"]', $this->objecttype->objecttypename));
       $t_settings = $t_settings->item(0);
       $this->published = 1;
       if ($t_settings)
-      { //entry won't exist for Container objects
+      { // entry won't exist for Container objects
         if ($t_settings->get_attribute('allow_toggle_publish') == 'TRUE')
         {
           $this->published = 0;
@@ -1807,7 +1807,7 @@ class Model_Object extends ORM implements arrayaccess {
     private function update_content_data($data)
     {
 
-      //load defaults for this object type
+      // load defaults for this object type
       foreach ($this->objecttype->defaults() as $field => $default)
       {
         if (!isset($data[$field]))
@@ -1830,17 +1830,17 @@ class Model_Object extends ORM implements arrayaccess {
 
 
 
-      $lookup_templates = lattice::config('objects', '//object_type');
+      $lookup_templates = lattice::config('objects', '// object_type');
       $object_types = array();
       foreach ($lookup_templates as $t_config)
       {
         $object_types[] = $t_config->get_attribute('name');
       }
-      //add submitted data to content table
+      // add submitted data to content table
       foreach ($data as $field => $value)
       {
 
-        //need to switch here on type of field
+        // need to switch here on type of field
         switch ($field)
         {
         case 'slug':
@@ -1852,9 +1852,9 @@ class Model_Object extends ORM implements arrayaccess {
           continue(2);
         }
 
-        //$field_info = Model_Object_type::get_field_info_for_object_type($this->objectttype->objecttypename, $field)
+        // $field_info = Model_Object_type::get_field_info_for_object_type($this->objectttype->objecttypename, $field)
 
-        $field_infoXPath = sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field);
+        $field_infoXPath = sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field);
         $field_info = lattice::config('objects', $field_infoXPath)->item(0);
         if (!$field_info)
         {
@@ -1865,14 +1865,14 @@ class Model_Object extends ORM implements arrayaccess {
         {
         case 'file':
         case 'image':
-          //need to get the file out of the FILES array
+          // need to get the file out of the FILES array
 
-          // Kohana::$log->add(Log::ERROR, var_export($_POST, TRUE));
-          // Kohana::$log->add(Log::ERROR, var_export($_FILES, TRUE));
+          //  Kohana::$log->add(Log::ERROR, var_export($_POST, TRUE));
+          //  Kohana::$log->add(Log::ERROR, var_export($_FILES, TRUE));
 
           if (isset($_FILES[$field]))
           {
-            //Kohana::$log->add(Log::ERROR, 'Adding via post file');
+            // Kohana::$log->add(Log::ERROR, 'Adding via post file');
             $file = Model_Object::save_http_post_file($this->id, $field, $_FILES[$field]);
           } else {
             $file = ORM::Factory('file');
@@ -1908,15 +1908,15 @@ class Model_Object extends ORM implements arrayaccess {
       $new_object = $this->_create_object($object_type_name, $rosetta_id, $language_id);
 
 
-      //and set up the element relationship
+      // and set up the element relationship
       $element_relationship = ORM::Factory('objectelementrelationship');
       $element_relationship->object_id = $this->id;
       $element_relationship->elementobject_id = $new_object->id;
       $element_relationship->name = $element_name;
       $element_relationship->save();
 
-      //Postpone dealing with content record until after lattice point is set
-      //in case content table logic depends on lattice point.
+      // Postpone dealing with content record until after lattice point is set
+      // in case content table logic depends on lattice point.
       $new_object->insert_content_record();
       $new_object->update_content_data($data);
 
@@ -1990,7 +1990,7 @@ class Model_Object extends ORM implements arrayaccess {
       $object_relationship->connectedobject_id = $new_object_id;
       $object_relationship->save();
 
-      //calculate sort order
+      // calculate sort order
       $sort = DB::select('sortorder')->from('objectrelationships')
         ->where('lattice_id', '=', $lattice->id)
         ->where('object_id', '=', $this->id)
@@ -2047,7 +2047,7 @@ class Model_Object extends ORM implements arrayaccess {
 
       $new_object = $this->_create_object($object_type_name, $rosetta_id, $language_id);
 
-      //The objet has been built, now set it's lattice point
+      // The objet has been built, now set it's lattice point
       $lattice = Graph::lattice();
       $this->add_lattice_relationship($lattice->id, $new_object->id);
 
@@ -2101,13 +2101,13 @@ class Model_Object extends ORM implements arrayaccess {
         {
 
 
-          //check objects.xml for configuration
-          $x_path =  sprintf('//object_type[@name="%s"]', $object_type_name);
-          $x_path_list =  sprintf('//list[@name="%s"]', $object_type_name);
+          // check objects.xml for configuration
+          $x_path =  sprintf('// object_type[@name="%s"]', $object_type_name);
+          $x_path_list =  sprintf('// list[@name="%s"]', $object_type_name);
           if ($object_type_config = lattice::config('objects', $x_path)->item(0))
           {
-            //there's a config for this object_type
-            //go ahead and configure it
+            // there's a config for this object_type
+            // go ahead and configure it
             Graph::configure_object_type($object_type_name);
             $object_type = ORM::Factory('objecttype', $object_type_name);
           } elseif ($object_type_config = lattice::config('objects', $x_path_list)->item(0))
@@ -2124,7 +2124,7 @@ class Model_Object extends ORM implements arrayaccess {
       $this->objecttype_id = $object_type->id;
       $this->__set('objecttype', $object_type);
 
-      return $this; //chainable
+      return $this; // chainable
     }
 
     public function add_role_access($role)
@@ -2194,7 +2194,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function is_access_controlled()
     {
-      //if there's a match for this in the obj/rel table, then it is access controlled
+      // if there's a match for this in the obj/rel table, then it is access controlled
       $check = ORM::Factory('objectrelationship',$this->id);
       return $this->loaded();
     }
@@ -2205,17 +2205,17 @@ class Model_Object extends ORM implements arrayaccess {
      */
     public function reset_user_access()
     {
-      //delete from objects_users where object_id = $this->id
+      // delete from objects_users where object_id = $this->id
       $this->remove('users',ORM::Factory('object_user',array('object_id'=>$this->id)));
     }
 
 
     public function get_meta_object_type_name($lattice)
     {
-      $x_path = sprintf('//object_type[@name="%s"]/elements/associator[@lattice="%s"]', 
+      $x_path = sprintf('// object_type[@name="%s"]/elements/associator[@lattice="%s"]', 
         $this->objecttype->objecttypename,
         $lattice);
-      //echo $x_path;
+      // echo $x_path;
 
       $config = lattice::config('objects', $x_path); 
       if (!$config->item(0))
@@ -2228,7 +2228,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function offset_exists ($offset )
     {
-      return TRUE; // TODO: Fix this
+      return TRUE; //  TODO: Fix this
     }
     public function offset_get ( $offset )
     {
@@ -2240,7 +2240,7 @@ class Model_Object extends ORM implements arrayaccess {
     }
     public function offset_unset ( $offset )
     {
-      return TRUE; //can't unset in this class
+      return TRUE; // can't unset in this class
     }
 
 }

@@ -10,19 +10,19 @@ class Controller_Ajax extends Controller_Lattice {
   private function handle_exception($e)
   {
 
-    // Get the exception information
+    //  Get the exception information
     $type    = get_class($e);
     $code    = $e->get_code();
     $message = $e->get_message();
     $file    = $e->get_file();
     $line    = $e->get_line();
 
-    // Get the exception backtrace
+    //  Get the exception backtrace
     $trace = $e->get_trace();
 
     ob_start();
 
-    // Include the exception HTML
+    //  Include the exception HTML
     if ($view_file = Kohana::find_file('views', Kohana_Exception::$error_view))
     {
       include $view_file;
@@ -34,14 +34,14 @@ class Controller_Ajax extends Controller_Lattice {
       ));
     }
 
-    // Display the contents of the output buffer
+    //  Display the contents of the output buffer
     $message = ob_get_clean();
     return $message;
   }
 
   public function action_data($uri)
   {
-    //request to child, just data
+    // request to child, just data
     $arguments = explode('/', $uri);
 
     try {
@@ -49,9 +49,9 @@ class Controller_Ajax extends Controller_Lattice {
       $data = $sub_request->execute()->data();
     } catch (Exception $e)
     {
-      //return HTML from exception
+      // return HTML from exception
 
-      // Start an output buffer
+      //  Start an output buffer
 
       $ajax_response = array(
         'return_value' => FALSE,
@@ -75,7 +75,7 @@ class Controller_Ajax extends Controller_Lattice {
 
   public function action_html($uri)
   {
-    //		Kohana::$log->add(Log::INFO, 'Ajax html request begin');
+    // 		Kohana::$log->add(Log::INFO, 'Ajax html request begin');
     $arguments = explode('/', $uri);
 
     try {
@@ -83,7 +83,7 @@ class Controller_Ajax extends Controller_Lattice {
       $html = $sub_request->execute()->body();
     } catch (Exception $e)
     {
-      //return HTML from exception
+      // return HTML from exception
 
       $message = $e;
       $ajax_response = array(
@@ -140,7 +140,7 @@ class Controller_Ajax extends Controller_Lattice {
       $request_response = $sub_request->execute();
     } catch (Exception $e)
     {
-      //return HTML from exception
+      // return HTML from exception
       $message = $e;
       $ajax_response = array(
         'return_value' => FALSE,
@@ -189,4 +189,4 @@ class Controller_Ajax extends Controller_Lattice {
     $this->response->body(json_encode($ajax_response));
   }
 
-} // End Welcome
+} //  End Welcome

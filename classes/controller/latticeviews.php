@@ -103,7 +103,7 @@ Class Controller_Lattice_views extends Controller_Layout{
 
     $this->view_model = latticeview::Factory($object_id_or_slug);
 
-    //possible hook for processing content	
+    // possible hook for processing content	
 
     $this->response->body($this->view_model->view()->render());
     $this->response->data($this->view_model->data());
@@ -117,7 +117,7 @@ Class Controller_Lattice_views extends Controller_Layout{
 
     $this->view = new latticeview($view_name);
 
-    //possible hook for processing content	
+    // possible hook for processing content	
 
     $this->response->body($this->view->render());
 

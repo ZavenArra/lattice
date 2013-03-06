@@ -14,12 +14,12 @@ class Controller_Lattice extends Controller {
   public $controller_name;
 
 
-  //constructor
+  // constructor
   public function __construct($request, $response)
   {
     parent::__construct($request, $response);
 
-    //set the language requirements
+    // set the language requirements
 
     $language_code = NULL;
     if ( ! Session::instance()->get('language_code') )
@@ -43,7 +43,7 @@ class Controller_Lattice extends Controller {
     {
       self::$top_controller = $this;
     }
-    //look up all matching js and css based off controller name
+    // look up all matching js and css based off controller name
 
     $this->load_resources();
 
@@ -58,10 +58,10 @@ class Controller_Lattice extends Controller {
    */
   public function check_access()
   {
-    //Authentication check
+    // Authentication check
     $roles = Kohana::config(strtolower($this->controller_name).'.authrole', FALSE, FALSE);
 
-    //checked if logged in
+    // checked if logged in
     if ($roles AND !Auth::instance()->logged_in())
     {
       Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),FALSE).'/'.Request::initial()->uri());
@@ -128,15 +128,15 @@ class Controller_Lattice extends Controller {
   protected function load_resources_for_key($key)
   {
 
-    // 	Kohana::$log->add( Kohana_Log::INFO, "application/config/lattice_cms.php " . print_r( $config['resources']['libraryjs'], 1 ) );
+    //  	Kohana::$log->add( Kohana_Log::INFO, "application/config/lattice_cms.php " . print_r( $config['resources']['libraryjs'], 1 ) );
 
     if (self::$top_controller == NULL)
     {
       return;
-      //self::$top_controller should not be NULL, in order to use load_resources_for_key you must extend Controller_Lattice in the controller of your initial route 
+      // self::$top_controller should not be NULL, in order to use load_resources_for_key you must extend Controller_Lattice in the controller of your initial route 
     }
 
-    //should add to self, then merge into top_controller
+    // should add to self, then merge into top_controller
     if ($css = Kohana::find_file('resources', 'css/'.$key, 'css'))
     {
       $this->resources['css'][$css] = lattice::convert_full_path_to_web_path($css);
@@ -147,7 +147,7 @@ class Controller_Lattice extends Controller {
     }
 
     $config = Kohana::config($key);
-    //look up all matching js and css configured in the config file
+    // look up all matching js and css configured in the config file
     if ( is_array(Kohana::config($key.'.resources') ) )
     {
       foreach (Kohana::config($key.'.resources') as $key => $paths)
@@ -159,7 +159,7 @@ class Controller_Lattice extends Controller {
       }
     }
 
-    //and merge into the top controller
+    // and merge into the top controller
     if ($this != self::$top_controller)
     {
       foreach (array_keys($this->resources) as $key)

@@ -33,16 +33,16 @@ Class Associator_Checkboxes {
   }
 
 
-  //TODO
+  // TODO
   public function set_view_name($view_name)
   {
     throw new Kohana_Exception('Not Implemented');
-  } //to support multi-lattice single custom view
+  } // to support multi-lattice single custom view
 
   public function set_associator_name($associator_name)
   {
     throw new Kohana_Exception('Not Implemented');
-  } //to support mutli-instance single lattice
+  } // to support mutli-instance single lattice
 
 
 
@@ -63,7 +63,7 @@ Class Associator_Checkboxes {
       $this->pool = $load_pool;
     }
 
-    //load pool
+    // load pool
     if ($filters)
     {
       foreach ($filters as $filter)
@@ -125,7 +125,7 @@ Class Associator_Checkboxes {
         {
           if (!$this->parent->check_lattice_relationship($lattice, $object))
           {
-            $this->pool[$object->id] = $object;  //scalability problem
+            $this->pool[$object->id] = $object;  // scalability problem
           }
         }
       } 
@@ -199,17 +199,17 @@ Class Associator_Checkboxes {
     if ($view_name AND $view = Kohana::find_file('views/lattice/associator/'.$view_name, $item->objecttype->objecttypename))
     {
       $view = new View('lattice/associator/'.$view_name.'/'.$item->objecttype->objecttypename);
-      //      Kohana::$log->add(Log::ERROR, "A")->write();
+      //       Kohana::$log->add(Log::ERROR, "A")->write();
     } elseif ($view_name AND $view = Kohana::find_file('views/lattice/associator/'.$view_name, 'item'))
     { 
       $view = new View('lattice/associator/'.$view_name.'/'.'item');
-      //      Kohana::$log->add(Log::ERROR, "B")->write();
+      //       Kohana::$log->add(Log::ERROR, "B")->write();
     } elseif ($view = Kohana::find_file('views/lattice/associator/', $item->objecttype->objecttypename))
     { 
       $view = new View('lattice/associator/'.$item->objecttype->objecttypename);
-      //      Kohana::$log->add(Log::ERROR, "C " . $item . ", " . $view_name )->write();
+      //       Kohana::$log->add(Log::ERROR, "C " . $item . ", " . $view_name )->write();
     } else  {
-      //      Kohana::$log->add(Log::ERROR, "D " . $item . ", " . $view_name )->write();
+      //       Kohana::$log->add(Log::ERROR, "D " . $item . ", " . $view_name )->write();
       $view = new View('lattice/associator/item');
     }
     $view->object = $item;

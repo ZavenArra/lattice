@@ -83,7 +83,7 @@ Class lattice {
       $dom->preserve_white_space = FALSE;
       $dom = new MyDOMDocument($dom);
 
-      //check for arena mappings
+      // check for arena mappings
       if ($custom_path = Kohana::config('lattice.paths.'.$arena))
       {
         $arena_path = $custom_path;
@@ -100,12 +100,12 @@ Class lattice {
 
       } catch(Exception $e)
       {
-        //checking for existence of xml controller
+        // checking for existence of xml controller
         if (get_class($e) != 'HTTP_Exception_404')
         {
           throw $e;
         }
-        //else continue on
+        // else continue on
       }
 
       if ($response)
@@ -116,7 +116,7 @@ Class lattice {
 
         if (file_exists($arena_path))
         {
-          //if the argument is actually a path to a file
+          // if the argument is actually a path to a file
           $arena_path = getcwd() . '/' . $arena_path;
         } else {
           $arena_file_path = Kohana::find_file('lattice', $arena_path, 'xml', TRUE);
@@ -146,19 +146,19 @@ Class lattice {
           throw new Kohana_Exception('Could not locate xml clusters');
         }
         $clusters->load( $path[0] );
-        //echo $clusters->_delegate->saveXML();
+        // echo $clusters->_delegate->saveXML();
         $clusters = new DOMXPath($clusters->_delegate);
-        $cluster_nodes = $clusters->evaluate('//object_type');
+        $cluster_nodes = $clusters->evaluate('// object_type');
         foreach ($cluster_nodes as $node)
         {
           $node = $dom->_delegate->import_node($node, TRUE);
           $object_types_node = $dom->_delegate->get_elements_by_tag_name('object_types')->item(0);
           $object_types_node->append_child($node);
-          //$dom->_delegate->insert_before($node, $ref_node);
+          // $dom->_delegate->insert_before($node, $ref_node);
         }
-        //recreate Xpath object
-        //$dom->format_output;
-        //echo $dom->_delegate->saveXML();
+        // recreate Xpath object
+        // $dom->format_output;
+        // echo $dom->_delegate->saveXML();
       }
 
       $xpath_object = new DOMXPath($dom->_delegate);
@@ -185,7 +185,7 @@ Class lattice {
    */
   public static function build_module($module, $constructor_arguments=array() )
   {
-    //need to look into this, these should be converged or interoperable
+    // need to look into this, these should be converged or interoperable
     if (isset($module['elementname']))
     {
       $module['modulename'] = $module['elementname'];
@@ -198,7 +198,7 @@ Class lattice {
         $view = new View($module['modulename']);
         $object = Graph::object($module['modulename']);
         if ($object->loaded())
-        { // in this case it's a slug for a specific object
+        { //  in this case it's a slug for a specific object
           foreach (latticeviews::get_view_content($object->id, $object->objecttype->objecttypename) as $key=>$content)
           {
             $view->$key = $content;
@@ -219,26 +219,26 @@ Class lattice {
     }
 
     $fullname = $module['modulename'].'_Controller';
-    $module = new $fullname; //this needs to be called with fargs
+    $module = new $fullname; // this needs to be called with fargs
     call_user_func_array(array($module, '__construct'), $constructor_arguments);
 
     $module->create_index_view();
     $module->view->load_resources();
 
-    //and load resources for it's possible parents
+    // and load resources for it's possible parents
     $parentclass = get_parent_class($module);
     $parentname = str_replace('_Controller', '', $parentclass);
     $module->view->load_resources(strtolower($parentname));
 
-    //build submodules of this module (if any)
+    // build submodules of this module (if any)
     $module->build_modules();
 
     return $module->view->render();
 
-    //render some html
-    //
-    //BELOW HERE NEEDS TO BE FIXED IN ALL CHILDREN OF Lattice_CONTROLLER
-    //CONTROLERS SHOULD JUST ASSIGN TEMPLATE VARS THEN AND THERE
+    // render some html
+    // 
+    // BELOW HERE NEEDS TO BE FIXED IN ALL CHILDREN OF Lattice_CONTROLLER
+    // CONTROLERS SHOULD JUST ASSIGN TEMPLATE VARS THEN AND THERE
     if ($object_typevar==NULL)
     {
       $this->view->$module['modulename'] = $module->view->render();
@@ -262,14 +262,14 @@ Class lattice {
     return $language_code;
   }
 
-  //takes Exception as argument
+  // takes Exception as argument
   public static function get_one_line_error_report(Exception $e)
   {
     switch(get_class($e))
     {
     case 'Lattice_Api_exception':
-      // echo get_class($e);
-      // die();
+      //  echo get_class($e);
+      //  die();
       return $e->get_one_line_error_report();
       break;
     default:

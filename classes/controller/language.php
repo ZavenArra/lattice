@@ -8,8 +8,8 @@ Class Controller_Language extends Controller {
     lattice::set_current_language($language_code);
     if ($redirect_object_id)
     {
-      //process redirect with new language_code
-      //this is actually the latticeview::get_language_aware_slug call
+      // process redirect with new language_code
+      // this is actually the latticeview::get_language_aware_slug call
       $this->request->redirect(latticeview::slug($redirect_object_id));
     }
   }

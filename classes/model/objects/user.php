@@ -4,5 +4,5 @@
  *
  */
 class Model_Objects_User extends ORM {
-  //put your code here
+  // put your code here
 }

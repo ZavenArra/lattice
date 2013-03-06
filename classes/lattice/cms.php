@@ -76,17 +76,17 @@ class Lattice_CMS extends Lattice_CMSInterface {
   } 
       
       
-  //get the root noode
+  // get the root noode
 
   $root_object = $this->get_root_object();
   $this->view->root_object_id = $root_object->id;
       
   
-  //basically this is an issue with wanting to have multiple things going on
-  //with the same controller as a parent at runtime
+  // basically this is an issue with wanting to have multiple things going on
+  // with the same controller as a parent at runtime
   $this->view->navigation = Request::factory(Kohana::config($this->controller_name.'.navigation_request'))->execute()->body();
 
-  //get all the languages
+  // get all the languages
   $languages = ORM::Factory('language')->find_all();
   $this->view->languages = $languages;
   
@@ -166,10 +166,10 @@ class Lattice_CMS extends Lattice_CMSInterface {
      throw new Kohana_Exception('Invalid Page Id '.$id);
    }
 
-   //new generation of object
-   //1 grap cms_nodetitle
+   // new generation of object
+   // 1 grap cms_nodetitle
    $this->nodetitle = new View('lattice_cms_nodetitle');
-   $this->nodetitle->title = $object->title; //this should change to object table
+   $this->nodetitle->title = $object->title; // this should change to object table
    $this->nodetitle->slug = $object->slug;
    $this->nodetitle->id = $object->id;
    $this->nodetitle->allow_delete = $object->objecttype->allow_delete;
@@ -184,7 +184,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
        $this->nodetitle->$key = $value;
      }
    }
-   //and get settings for specific object_type
+   // and get settings for specific object_type
    $settings = Kohana::config('cms.'.$object->objecttype->objecttypename.'.defaultsettings');
    if (is_array($settings))
 {
@@ -203,7 +203,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
    $nodetitlehtml = $this->nodetitle->render();
    $move_node_html = latticecms::move_node_html($object);
 
-   $custom_view = 'lattice/object_types/'.$object->objecttype->objecttypename; //check for custom view for this object_type
+   $custom_view = 'lattice/object_types/'.$object->objecttype->objecttypename; // check for custom view for this object_type
 
    $html_chunks = latticecms::buildUIHtml_chunks_for_object($object, $language_code);
    if (Kohana::find_file('views', $custom_view))
@@ -223,7 +223,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
      $html = $nodetitlehtml . implode($html_chunks); 
      $nodetitlehtml . $move_node_html . implode($html_chunks);
    }
-   // $html .= $users_list_html;
+   //  $html .= $users_list_html;
    $this->response->data($object->get_page_content()); 
    $this->response->body($html);
 
@@ -239,8 +239,8 @@ class Lattice_CMS extends Lattice_CMSInterface {
 {
    $data = $_POST;
 
-   //add the file keys in so that we can look them up in the FILES array laster
-   //consider just combining POST and FILES here
+   // add the file keys in so that we can look them up in the FILES array laster
+   // consider just combining POST and FILES here
    $file_keys = array_keys($_FILES);
    foreach ($file_keys as $fk)
 {

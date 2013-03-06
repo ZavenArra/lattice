@@ -18,7 +18,7 @@ Class Lattice_auth_Controller_Registration extends Controller_Layout {
 
   public function action_create()
   {
-    //run form validation
+    // run form validation
 
     $validation = Validation::factory($_POST)
       ->rule('password', 'not_empty')
@@ -93,7 +93,7 @@ Class Lattice_auth_Controller_Registration extends Controller_Layout {
 
     try {
       $user = ORM::factory('user');
-      $user->status = 'NEEDSCONFIRMATION'; //TODO: This is the problem..
+      $user->status = 'NEEDSCONFIRMATION'; // TODO: This is the problem..
       $user->username = $username;
       $user->password = $password;
       $user->firstname = $firstname;
@@ -116,7 +116,7 @@ Class Lattice_auth_Controller_Registration extends Controller_Layout {
     }
     /**/
 
-    //add the login role
+    // add the login role
     $user->add('roles', ORM::Factory('role', array('name'=>'login')));
     if (is_array(Kohana::config('registration.default.roles')))
     {
@@ -125,7 +125,7 @@ Class Lattice_auth_Controller_Registration extends Controller_Layout {
         $user->add('roles', ORM::Factory('role', array('name'=>$role)));
       }
     }
-    // //Other roles from config
+    //  //Other roles from config
     $user->save();
 
     return $user;

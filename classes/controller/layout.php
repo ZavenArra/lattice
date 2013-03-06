@@ -33,7 +33,7 @@ class Controller_Layout extends Controller_Lattice {
   {
     if ($layout==NULL)
     {
-      //set layout - read from config file
+      // set layout - read from config file
       $layout = Kohana::config(strtolower($this->request->controller()) . '.layout');
       if (!$layout)
       {
@@ -58,7 +58,7 @@ class Controller_Layout extends Controller_Lattice {
       }
     }
 
-    //build js and css
+    // build js and css
     $stylesheet = '';
     foreach ($this->resources['librarycss'] as $css)
     {
@@ -86,4 +86,4 @@ class Controller_Layout extends Controller_Lattice {
   }
 
 
-} // End Welcome
+} //  End Welcome

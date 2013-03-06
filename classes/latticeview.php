@@ -43,7 +43,7 @@ class latticeview {
   public static function slug($slug_or_object_id)
   {
 
-    //look in the cache
+    // look in the cache
     $language_code = Session::instance()->get('language_code');
     if (!$language_code)
     {
@@ -78,32 +78,32 @@ class latticeview {
    * Returns TRUE/FALSE depending on if the given slug is either
    * the slug of the initial view loaded or a child of that slug.
    */
-  // public static function within_subtree($slug)
+  //  public static function within_subtree($slug)
   {
-    //   //Direct links are not within lattice
-    //   if (strstr($slug, 'http'))
+    //    //Direct links are not within lattice
+    //    if (strstr($slug, 'http'))
   {
-    //     return FALSE;
-    //   }
-    //   //Only check the first part of given route
-    //   //This allos support for custom controllers.
-    //   $route = explode('/', $slug);
-    //   $slug = $route[0];
-    // 
-    // 
-    //   return self::initial_object()->is_within_sub_tree($slug);
-    // 
-    // }
+    //      return FALSE;
+    //    }
+    //    //Only check the first part of given route
+    //    //This allos support for custom controllers.
+    //    $route = explode('/', $slug);
+    //    $slug = $route[0];
+    //  
+    //  
+    //    return self::initial_object()->is_within_sub_tree($slug);
+    //  
+    //  }
 
     public static function within_subtree($slug)
     {
-      //Direct links are not within lattice
+      // Direct links are not within lattice
       if (strstr($slug,'http'))
       {
         return FALSE;
       }
-      //Only check the first part of given route
-      //This allos support for custom controllers.
+      // Only check the first part of given route
+      // This allos support for custom controllers.
       $route = explode('/', $slug);
       $slug = $route[0];
       if ( self::initial_object() )
@@ -129,7 +129,7 @@ class latticeview {
         }		 	
       } catch ( Exception $e )
         {
-          throw $e; //("There is no graph object with this object id or slug : " $object_id_or_slug . ' in object ' .  $object->slug);
+          throw $e; // ("There is no graph object with this object id or slug : " $object_id_or_slug . ' in object ' .  $object->slug);
           return FALSE;
         } 
 
@@ -189,7 +189,7 @@ class latticeview {
         self::$initial_object = $this->object;
       }
 
-      //some access control
+      // some access control
       $view_name = NULL;
       $view = NULL;
 
@@ -204,7 +204,7 @@ class latticeview {
         {
           throw new Kohana_User_Exception('Page not availabled', 'The object with identifier ' . $id . ' is does not exist or is not available');
         }
-        //look for the object_type, if it's not there just print out all the data raw
+        // look for the object_type, if it's not there just print out all the data raw
         $view_name = $this->object->objecttype->objecttypename;
         if (file_exists('application/views/frontend/' . $view_name . '.php'))
         {
@@ -218,8 +218,8 @@ class latticeview {
         $view = new View($view_path);
       }
 
-      //call this->view load data
-      //get all the data for the object
+      // call this->view load data
+      // get all the data for the object
       $view_content = $this->get_view_content($view_name, $this->object);
 
       $this->data = $view_content;
@@ -245,8 +245,8 @@ class latticeview {
     public function create_virtual_view($view_name)
     {
 
-      //check for a virtual object specified in frontend.xml
-      //a virtual object will be one that does not match a object_type
+      // check for a virtual object specified in frontend.xml
+      // a virtual object will be one that does not match a object_type
 
       if (file_exists('application/views/frontend/' . $view_name . '.php'))
       {
@@ -259,8 +259,8 @@ class latticeview {
       }
       $view = new View($view_path);
 
-      //call this->view load data
-      //get all the data for the object
+      // call this->view load data
+      // get all the data for the object
       $view_content = $this->get_view_content($view_name);
       foreach ($view_content as $key => $value)
       {
@@ -308,11 +308,11 @@ class latticeview {
         return $data;
       }
 
-      $view_config = lattice::config('frontend', "//view[@name=\"$view\"]")->item(0);
+      $view_config = lattice::config('frontend', "// view[@name=\"$view\"]")->item(0);
       if (!$view_config)
       {
-        // throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
-        // we are allowing this so that objects automatically can have basic views
+        //  throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
+        //  we are allowing this so that objects automatically can have basic views
       }
       $loaded =  $object->loaded();
       if ($slug)
@@ -344,7 +344,7 @@ class latticeview {
           $view = $subview->get_attribute('view');
           $slug = $subview->get_attribute('slug');
           $label = $subview->get_attribute('label');
-          if (lattice::config('frontend', "//view[@name=\"$view\"]"))
+          if (lattice::config('frontend', "// view[@name=\"$view\"]"))
           {
 
             if ($view AND $slug)
@@ -369,7 +369,7 @@ class latticeview {
             }
             $data[$label] = $sub_view->render();
           } else {
-            //assume it's a module
+            // assume it's a module
             $data[$label] = lattice::build_module(array('modulename' => $view/* , 'controllertype'=>'object' */), $subview->get_attribute('label'));
           }
         }
