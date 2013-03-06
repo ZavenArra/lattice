@@ -91,7 +91,7 @@ class latticecms {
                   $htmlChunks[$element['modulename']] = $html;
                   break;
                case 'list':
-                  if (isset($element['display']) && $element['display'] != 'inline') {
+                  if (isset($element['display']) AND $element['display'] != 'inline') {
                      break; //element is being displayed via navi, skip
                   }
                   $element['elementname'] = $element['name'];
@@ -164,7 +164,7 @@ class latticecms {
        $elementName
      );
      $element = lattice::config('objects', $xPath);
-     if(!$element || !$element->length ){
+     if(!$element OR !$element->length ){
        throw new Kohana_Exception('xPath returned no results: '. $xPath);
      }
      return $element->item(0);
@@ -261,7 +261,7 @@ class latticecms {
 					$objects = ORM::Factory('objectType', $objectType->getAttribute('name'))->getActiveMembers();
 					$fieldname = $element->getAttribute('name');
 					foreach($objects as $object){
-           	if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
+           	if(is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename)){
 							$uiresizes = Kohana::config('lattice_cms.uiresizes');
 							$object->processImage($object->$fieldname->filename, $fieldname, $uiresizes);
 						}
@@ -277,7 +277,7 @@ class latticecms {
       foreach(lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element){
 				if($element->tagName == 'image'){
 					$fieldname = $element->getAttribute('name');
-					if(is_object($object->$fieldname) && $object->$fieldname->filename && file_exists(Graph::mediapath() . $object->$fieldname->filename)){
+					if(is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename)){
 						$uiresizes = Kohana::config('lattice_cms.uiresizes');
 						$object->processImage($object->$fieldname->filename, $fieldname, $uiresizes);
 					}

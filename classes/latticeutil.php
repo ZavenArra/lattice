@@ -39,7 +39,7 @@ Class latticeutil {
 	 */
 	public static function img($file, $prefix, $alt,  $extra = null){
 		if(!$file->$prefix->fullpath 
-			|| !file_exists($file->$prefix->fullpath)){
+			OR !file_exists($file->$prefix->fullpath)){
 			return null;
 		}
 		$img = sprintf('<img src="%s" width="%s" height="%s" alt="%s" %s>',
@@ -61,7 +61,7 @@ Class latticeutil {
 	public static function checkRoleAccess($role){
 
     if(class_exists('Auth')){ //If auth module not installed, grant access
-      if($role && !Auth::instance()->logged_in($role)){
+      if($role AND !Auth::instance()->logged_in($role)){
         return false;
       } else {
         return true;
@@ -132,13 +132,13 @@ Class latticeutil {
 
 		$output = array();
 		foreach ( $fields as $field ) {
-			if ($field === null && $nullToMysqlNull) {
+			if ($field === null AND $nullToMysqlNull) {
 				$output[] = 'NULL';
 				continue;
 			}
 
 			// Enclose fields containing $delimiter, $enclosure or whitespace
-			if ( $encloseAll || preg_match( "/(?:${delimiter_esc}|${enclosure_esc}|\s)/", $field ) ) {
+			if ( $encloseAll OR preg_match( "/(?:${delimiter_esc}|${enclosure_esc}|\s)/", $field ) ) {
 				$output[] = $enclosure . str_replace($enclosure, $enclosure . $enclosure, $field) . $enclosure;
 			}
 			else {

@@ -1,29 +1,30 @@
-<?
+<?php
 /* @package Lattice */
 
 Class Associator {
-//mainassociator
-  public $parentId = NULL;
+  public $parent_id = NULL;
   public $parent = NULL;
   public $lattice = NULL;
   public $filters = NULL;
   public $pool = array();
   public $associated = array();
-  //set this as needed when calling paged results
-  //right now this is set on an instance, by actions that pre load $this->pool
-  public $numPages = 2;
-  
+  // set this as needed when calling paged results
+  // right now this is set on an instance, by actions that pre load $this->pool
+  public $num_pages = 2;
+
   protected $label;
-  protected $poolLabel;
-  protected $pageLength;
-  //this is page size for paginator
-  //this doesn't matter anymore because we're paginating
+  protected $pool_label;
+  protected $page_length;
+  // this is page size for paginator
+  // this doesn't matter anymore because we're paginating
   private $maxPoolSize = 80;
   private $pageNum = 1;
-  public static function getFiltersFromDomNode($node){
+  public static function getFiltersFromDomNode($node)
+  {
     $filtersNodeList = lattice::config('objects', 'filter', $node);
     $filters = array();
-    foreach($filtersNodeList as $filter){
+    foreach($filtersNodeList as $filter)
+    {
       $setting = array();
       $setting['from'] = $filter->getAttribute('from');
       $setting['objectTypeName'] = $filter->getAttribute('objectTypeName');
@@ -35,85 +36,102 @@ Class Associator {
 
   }
 
+  // TODO
+  // to support multi-lattice single custom view
+  public function setViewName($view_name)
+  { 
+    throw new Kohana_Exception('Not Implemented');
+  } 
 
-  //TODO
-  public function setViewName($viewName){throw new Kohana_Exception('Not Implemented');} //to support multi-lattice single custom view
-  public function setAssociatorName($associatorName){throw new Kohana_Exception('Not Implemented');} //to support mutli-instance single lattice
+  // to support mutli-instance single lattice
+  public function setAssociatorName($associatorName)
+  {
+    throw new Kohana_Exception('Not Implemented');
+  } 
 
-
-
-  public function __construct($parentId, $lattice, $filters=NULL, $loadPool=NULL){
-    $this->parentId = $parentId;
+  public function __construct($parent_id, $lattice, $filters=NULL, $load_pool=NULL)
+  {
+    $this->parentId = $parent_id;
     $this->parent = Graph::object($this->parentId);
     $this->lattice = $lattice;
     $this->filters = $filters; 
     $this->pageLength = Kohana::config('cms.associatorPageLength');
 
-    foreach($this->parent->getLatticeChildrenPaged($this->lattice) as $child){
+    foreach($this->parent->getLatticeChildrenPaged($this->lattice) as $child)
+    {
       $this->associated[] = $child;
     }
 
-    if(is_array($loadPool)){
-      $this->pool = $loadPool;
+    if(is_array($load_pool))
+    {
+      $this->pool = $load_pool;
     }
-    $logPool = array();
-    
-    if (is_array($loadPool)){
-      foreach ($loadPool as $l){
-        $logPool[] = $l->id;
-      }
-      
-    }
-		// Kohana::$log->add( Kohana_Log::INFO, print_r($logPool,1) )->write();
-		// Kohana::$log->add( Kohana_Log::INFO, print_r($filters,1) )->write();
-		// Kohana::$log->add( Kohana_Log::INFO, print_r($lattice,1) )->write();
+    $load_pool = array();
 
-    //load pool
-    if($filters){
+    if (is_array($load_pool))
+    {
+      foreach ($load_pool as $l)
+      {
+        $load_pool[] = $l->id;
+      }
+
+    }
+    // load pool
+    if($filters)
+    {
 
       $objects = Graph::object();
 
-      foreach($filters as $filter){
+      foreach($filters as $filter)
+      {
 
-        if(isset($filter['from']) && $filter['from']){
+        if(isset($filter['from']) AND $filter['from'])
+        {
           $from = Graph::object($filter['from']);
-          ($filter['lattice']) ? $lattice = $filter['lattice'] : $lattice = 'lattice';
+          ($filter['lattice']) ? $lattice = $filter['lattice'] : ( $lattice = 'lattice' );
           $objects = $from->latticeChildrenQuery($lattice);
         }
 
-        if(isset($filter['tagged']) && $filter['tagged']){
+        if(isset($filter['tagged']) AND $filter['tagged'])
+        {
           $objects->taggedFilter($filter['tagged']); 
         }
 
-        if(isset($filter['objectTypeName']) && $filter['objectTypeName']){
+        if(isset($filter['objectTypeName']) AND $filter['objectTypeName'])
+        {
           $t = ORM::Factory('objectType', $filter['objectTypeName']);
-          if(!$t->loaded()){
+          if(!$t->loaded())
+          {
             Graph::configureObjectType($filter['objectTypeName']);
             $t = ORM::Factory('objecttype', $filter['objectTypeName']);
-            if(!$t->loaded()){
+            if(!$t->loaded())
+            {
               throw new Kohana_Exception($filter['objectTypeName'] .' Not Found');
             }
           }
           $objects->where('objecttype_id', '=', $t->id);
         }
 
-        if(isset($filter['match']) && $filter['match']){
+        if(isset($filter['match']) AND $filter['match'])
+        {
           $matchFields = explode(',',$filter['matchFields']);
           $wheres = array();
-          foreach($matchFields as $matchField){
+          foreach($matchFields as $matchField)
+          {
             $wheres[] = array($matchField, 'LIKE', '%'.$filter['match'].'%'); 
           }
           $objects->contentFilter($wheres);
 
         }
 
-        if(isset($filter['function']) && $filter['function']){
+        if(isset($filter['function']) AND $filter['function'])
+        {
           $callback = explode('::', $filter['function']);
-          
+
           $options = null;
-          $objects = call_user_func($callback, $objects, $parentId, $options);
+          $objects = call_user_func($callback, $objects, $parent_id, $options);
         }
-        
+
 
         $objects->where('objects.language_id', '=', Graph::defaultLanguage());
         $objects->publishedFilter();
@@ -124,7 +142,8 @@ Class Associator {
         $res = array();
         foreach ($results as $id) {
           $object = Graph::object($id);
-          if(!$this->parent->checkLatticeRelationship($lattice, $object)){
+          if(!$this->parent->checkLatticeRelationship($lattice, $object))
+          {
             $res[$id] = $id;
           }
         }
@@ -134,23 +153,25 @@ Class Associator {
         $params = explode("/",$_SERVER["REQUEST_URI"]);
         //print_r($params);
         //@TODO this is a kludge.  Oh well.
-        if (isset($params[7]) && $params[6]=="postingVideosAssociator"){
+        if (isset($params[7]) AND $params[6]=="postingVideosAssociator")
+        {
           //we're passing a page number - so slice the object ids
           $results = array_slice($results,($params[7]-1)*16,16);
         } else {
           $results = array_slice($results,0,$this->pageLength);
         }
-        
-        foreach($results as $id){
+
+        foreach($results as $id)
+        {
           $object = Graph::object($id);
           $this->pool[$id] =$object;  
         }
       }	
-      
-    } else if(!is_array($loadPool)) {
+
+    } else if(!is_array($load_pool)) {
 
       $objects = Graph::object()
-        ->where( 'id', '!=', $parentId )
+        ->where( 'id', '!=', $parent_id )
         ->where( 'objects.language_id', '=', Graph::defaultLanguage() )
         ->publishedFilter()
         ->limit( $this->maxPoolSize )
@@ -161,30 +182,36 @@ Class Associator {
 
   }
 
-  public function setLabel($label){
+  public function setLabel($label)
+  {
     $this->label = $label;
   }
-  public function setPageLength($pageLength){
-    $this->pageLength = $pageLength;
+  public function setPageLength($page_length)
+  {
+    $this->pageLength = $page_length;
   }
 
-  public function setPoolLabel($poolLabel){
-    $this->poolLabel = $poolLabel;
+  public function setPoolLabel($pool_label)
+  {
+    $this->poolLabel = $pool_label;
   }
 
-  public function render($viewName = NULL){
-    if($viewName &&  ($view = Kohana::find_file('views', 'lattice/associator/'.$viewName) )){
-      $view = new View('lattice/associator/'.$viewName);
+  public function render($view_name = NULL)
+  {
+    if($view_name AND  ($view = Kohana::find_file('views', 'lattice/associator/'.$view_name) ))
+    {
+      $view = new View('lattice/associator/'.$view_name);
     } else {
       $view = new View('lattice/associator');
     }
-    
-    
-    $view->pool = $this->poolItemViews($viewName);
+
+
+    $view->pool = $this->poolItemViews($view_name);
 
     $view->associated = array();
-    foreach($this->associated as $associatedItem){
-      $view->associated[] = $this->getItemView($associatedItem, $viewName, true );
+    foreach($this->associated as $associatedItem)
+    {
+      $view->associated[] = $this->getItemView($associatedItem, $view_name, true );
     }
 
     $view->parentId = $this->parentId;
@@ -194,44 +221,51 @@ Class Associator {
     $view->pageLength = $this->pageLength;
     $view->numPages = $this->numPages;
 
-    
-    
+
+
     /*
     paginator vars- probably should be its own func
     these are messy too
-    
-    */
-    
+
+     */
+
     $view->urlPrepend = "ajax/html";
-  //  echo strpos($original_uri,$action);
+    //  echo strpos($original_uri,$action);
     //pass our paginator params to the view
-//    $view->controllerName = $this->request->controller();
-//    $view->action = $action;
-//    $view->params = $this->request->param();
-//    $view->currentPage = $view->params["param4"];
+    //    $view->controllerName = $this->request->controller();
+    //    $view->action = $action;
+    //    $view->params = $this->request->param();
+    //    $view->currentPage = $view->params["param4"];
     /* end paginator vars*/ 
     return $view->render();
   }
 
-  public function renderPoolItems(){
+  public function renderPoolItems()
+  {
     return( implode("\n",$this->poolItemViews($this->lattice) ) );
   }
 
-  private function poolItemViews($viewName = NULL){
+  private function poolItemViews($view_name = NULL)
+  {
     $poolItemViews = array();
-    foreach($this->pool as $poolItem){
-      $poolItemViews[] = $this->getItemView($poolItem, $viewName, false );
+    foreach($this->pool as $poolItem)
+    {
+      $poolItemViews[] = $this->getItemView($poolItem, $view_name, false );
     }
     return $poolItemViews;
   }
 
-  private function getItemView($item, $viewName, $associated ){
+  private function getItemView($item, $view_name, $associated )
+  {
 
-    if($viewName && $view = Kohana::find_file('views/lattice/associator/'.$viewName, $item->objecttype->objecttypename)){
-      $view = new View('lattice/associator/'.$viewName.'/'.$item->objecttype->objecttypename);
-    } else if($viewName && $view = Kohana::find_file('views/lattice/associator/'.$viewName, 'item')){ 
-      $view = new View('lattice/associator/'.$viewName.'/'.'item');
-    } else if($view = Kohana::find_file('views/lattice/associator/', $item->objecttype->objecttypename)){ 
+    if($view_name AND $view = Kohana::find_file('views/lattice/associator/'.$view_name, $item->objecttype->objecttypename))
+    {
+      $view = new View('lattice/associator/'.$view_name.'/'.$item->objecttype->objecttypename);
+    } else if($view_name AND $view = Kohana::find_file('views/lattice/associator/'.$view_name, 'item'))
+    { 
+      $view = new View('lattice/associator/'.$view_name.'/'.'item');
+    } else if($view = Kohana::find_file('views/lattice/associator/', $item->objecttype->objecttypename))
+    { 
       $view = new View('lattice/associator/'.$item->objecttype->objecttypename);
     } else  {
       $view = new View('lattice/associator/item');
