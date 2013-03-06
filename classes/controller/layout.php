@@ -15,8 +15,8 @@ class Controller_Layout extends Controller_Lattice {
 	protected $sub_request;
 	
 	public function after(){
-		if($this->request == Request::initial() ){
-			if(in_array($this->request->action(), $this->_actions_that_get_layout)){
+		if ($this->request == Request::initial() ){
+			if (in_array($this->request->action(), $this->_actions_that_get_layout)){
 				$this->wrap_with_layout();
 			} 
 		}
@@ -27,10 +27,10 @@ class Controller_Layout extends Controller_Lattice {
  * Wrap the response in its configured layout
  */
   public function wrap_with_layout($layout=null){
-    if($layout==null){
+    if ($layout==null){
       //set layout - read from config file
       $layout = Kohana::config(strtolower($this->request->controller()) . '.layout');
-      if(!$layout){
+      if (!$layout){
         throw new Kohana_Exception("Layout controller subclass :controller configured to layout action :action, but no layout set in configuration",
           array(
             ':controller'=>$this->request->controller(),
@@ -41,7 +41,7 @@ class Controller_Layout extends Controller_Lattice {
     }
 		$layout_view = View::Factory($layout);
 
-    if(is_array(Kohana::config($layout.'.resources') ) ){
+    if (is_array(Kohana::config($layout.'.resources') ) ){
       foreach(Kohana::config($layout.'.resources') as $key => $paths){
         foreach($paths as $path){
           $this->resources[$key][$path] = $path;

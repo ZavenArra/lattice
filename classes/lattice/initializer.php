@@ -7,7 +7,7 @@ Class Lattice_Initializer {
 
    public static function check($dependencies) {
 
-		 if(!$dependencies){
+		 if (!$dependencies){
 			return;
 		 }
       
@@ -60,18 +60,18 @@ Class Lattice_Initializer {
        self::$problems[] = $e->get_message() . Kohana_Exception::text($e);
      }
       
-      if(!count(self::$problems) AND count(self::$messages)){
+      if (!count(self::$problems) AND count(self::$messages)){
          $view = new View('initialization_messages');
          $view->problems = self::$problems;
          $view->messages = self::$messages;
          echo $view->render();
-      } else if(count(self::$problems) OR count(self::$messages)){
+      } else if (count(self::$problems) OR count(self::$messages)){
          $view = new View('initializationproblems');
          $view->problems = self::$problems;
          $view->messages = self::$messages;
          echo $view->render();
       }
-      if(count(self::$problems)){
+      if (count(self::$problems)){
         return false;
       } else {
         return true;

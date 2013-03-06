@@ -41,15 +41,15 @@ class Model_File extends ORM {
 	public function __get($column) {
 		//if it's a column in the table just return it
 		
-		if(in_array($column, $this->object_fields )){
+		if (in_array($column, $this->object_fields )){
 			return parent::__get($column);
 		}
 
-		if($column == 'urlfilename'){
+		if ($column == 'urlfilename'){
 			return rawurlencode(parent::__get('filename'));
 		} else if ($column == 'fullpath'){
 			return Graph::mediapath().parent::__get('filename');
-		} else if($column == 'ext'){
+		} else if ($column == 'ext'){
          $chunks = explode('.', parent::__get('filename'));
          return $chunks[count($chunks)-1];
       }
@@ -60,7 +60,7 @@ class Model_File extends ORM {
 		$prefix = $column; //for code clarity
 
 		//create image info object
-		if(!isset($this->imageinfo[$prefix])){
+		if (!isset($this->imageinfo[$prefix])){
 			$this->imageinfo[$prefix] = new Model_File_image(parent::__get('filename'), $prefix);
 		}
 
@@ -73,7 +73,7 @@ class Model_File extends ORM {
 	//and complete the unlinking on destroy
 	public function unlink_old_file(){
 		$oldfilename = parent::__get('filename');
-		if($oldfilename AND file_exists(Graph::mediapath().$oldfilename)){
+		if ($oldfilename AND file_exists(Graph::mediapath().$oldfilename)){
 			unlink(Graph::mediapath().$oldfilename);
 		}
 	}

@@ -21,13 +21,13 @@ class Controller_Lattice extends Controller {
 		//set the language requirements
 		
 		$language_code = NULL;
-		if( ! Session::instance()->get('language_code') ){
+		if ( ! Session::instance()->get('language_code') ){
 			$language_code = Kohana::config('lattice.default_language');
 			Session::instance()->set('language_code', $language_code );
 		}else{
 			$language_code = Session::instance()->get('language_code');
 		}
-		if(!$language_code){
+		if (!$language_code){
 			throw new Kohana_Exception('No language code found');
 		}
 		i18n::lang( $language_code );
@@ -36,7 +36,7 @@ class Controller_Lattice extends Controller {
 		$this->controller_name = strtolower(substr(get_class($this), 11));
 		$this->check_access();
 
-		if($request->is_initial()){
+		if ($request->is_initial()){
 		 self::$top_controller = $this;
     }
 		//look up all matching js and css based off controller name
@@ -57,27 +57,27 @@ class Controller_Lattice extends Controller {
 		$roles = Kohana::config(strtolower($this->controller_name).'.authrole', FALSE, FALSE);
 
 		//checked if logged in
-		if($roles AND !Auth::instance()->logged_in()){
+		if ($roles AND !Auth::instance()->logged_in()){
 			Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
 			exit;
 		}
-		if(is_array($roles)){
+		if (is_array($roles)){
 			$access_granted = false;
 			foreach($roles as $a_role){
-				if($a_role=='admin'){
-					if(Kohana::config('lattice.staging_enabled') AND !Kohana::config('lattice.staging')){
+				if ($a_role=='admin'){
+					if (Kohana::config('lattice.staging_enabled') AND !Kohana::config('lattice.staging')){
 						$redirect = 'staging/'. Router::$current_uri;
 						Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 					}
 				}
 
-				if(latticeutil::check_role_access($a_role)){
+				if (latticeutil::check_role_access($a_role)){
 					$access_granted = true;
 				}
 			}
 		} else {
-			if($roles=='admin'){
-				if(Kohana::config('lattice.staging_enabled') AND !Kohana::config('lattice.staging')){
+			if ($roles=='admin'){
+				if (Kohana::config('lattice.staging_enabled') AND !Kohana::config('lattice.staging')){
 					$redirect = 'staging/'. Router::$current_uri;
 					Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 				}
@@ -86,7 +86,7 @@ class Controller_Lattice extends Controller {
 			$access_granted = latticeutil::check_role_access($roles);
 		}
 
-		if(!$access_granted){
+		if (!$access_granted){
 			$redirect = 'accessdenied';
 			Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 			exit;
@@ -99,7 +99,7 @@ class Controller_Lattice extends Controller {
 
 		$parents = array_reverse($this->get_parents());
 		foreach($parents as $parent){
-			if(strpos($parent, 'Controller')===0){
+			if (strpos($parent, 'Controller')===0){
 				$parent_key = substr($parent, 11);
 			} else {
 				$parent_key = $parent;
@@ -112,22 +112,22 @@ class Controller_Lattice extends Controller {
 
  // 	Kohana::$log->add( Kohana_Log::INFO, "application/config/lattice_cms.php " . print_r( $config['resources']['libraryjs'], 1 ) );
 
-    if(self::$top_controller == NULL){
+    if (self::$top_controller == NULL){
       return;
       //self::$top_controller should not be NULL, in order to use load_resources_for_key you must extend Controller_Lattice in the controller of your initial route 
     }
 
 		//should add to self, then merge into top_controller
-		if($css = Kohana::find_file('resources', 'css/'.$key, 'css')){
+		if ($css = Kohana::find_file('resources', 'css/'.$key, 'css')){
 			$this->resources['css'][$css] = lattice::convert_full_path_to_web_path($css);
 		}
-		if($js = Kohana::find_file('resources', 'js/'.$key, 'js')){
+		if ($js = Kohana::find_file('resources', 'js/'.$key, 'js')){
 			$this->resources['js'][$js] = lattice::convert_full_path_to_web_path($js);
 		}
 
 		$config = Kohana::config($key);
 		//look up all matching js and css configured in the config file
-		if( is_array(Kohana::config($key.'.resources') ) ){
+		if ( is_array(Kohana::config($key.'.resources') ) ){
 			foreach(Kohana::config($key.'.resources') as $key => $paths){
 				foreach($paths as $path){
 					$this->resources[$key][$path] = $path;
@@ -136,7 +136,7 @@ class Controller_Lattice extends Controller {
 		}
 
 		//and merge into the top controller
-		if($this != self::$top_controller){
+		if ($this != self::$top_controller){
 			foreach(array_keys($this->resources) as $key){
 				self::$top_controller->resources[$key] = array_merge(self::$top_controller->resources[$key], $this->resources[$key]);
 			}
@@ -147,7 +147,7 @@ class Controller_Lattice extends Controller {
 	public function get_parents($class=null, $plist=array()) {
 		$class = $class ? $class : $this;
 		$parent = get_parent_class($class);
-		if($parent) {
+		if ($parent) {
 			$plist[] = $parent;
 			/*Do not use $this. Use 'self' here instead, or you
 			 *        * will get an infinite loop. */

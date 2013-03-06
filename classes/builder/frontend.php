@@ -5,7 +5,7 @@ Class Builder_Frontend {
 	private $base_path = 'application/views/generated/';
 
 	public function __construct(){
-		if(!is_writable($this->base_path)){
+		if (!is_writable($this->base_path)){
 			die($this->base_path.' must be writable');
 		}
 	}
@@ -25,10 +25,10 @@ Class Builder_Frontend {
     //	//this has removed the ability to build virtual views
     foreach(lattice::config('objects', '//object_type') as $object_type){
       $view = lattice::config('frontend', '//view[@name="'.$object_type->get_attribute('name').'"]');
-      if(count($view)){
+      if (count($view)){
         $view = $view->item(0);
       }
-      if($view){
+      if ($view){
         $view_name = $view->get_attribute('name');
       } else {
         $view_name = $object_type->get_attribute('name');
@@ -40,7 +40,7 @@ Class Builder_Frontend {
       flush();
 
       ob_start();
-      if(!$view OR  ($view AND $view->get_attribute('load_page')=='true')){
+      if (!$view OR  ($view AND $view->get_attribute('load_page')=='true')){
         echo "<h1><?php=\$content['main']['title'];?></h1>\n\n";
         //this also implies that name is a objecttypename
         foreach(lattice::config('objects', 
@@ -60,17 +60,17 @@ Class Builder_Frontend {
 
       }
 
-      if($view AND $view->get_attribute('load_page')=='true'){
+      if ($view AND $view->get_attribute('load_page')=='true'){
 
         //Now the include_data
-        if($i_data_nodes = lattice::config('frontend',"//view[@name=\"".$view->get_attribute('name')."\"]/include_data")){
+        if ($i_data_nodes = lattice::config('frontend',"//view[@name=\"".$view->get_attribute('name')."\"]/include_data")){
           foreach($i_data_nodes as $i_data_config){
             $prefix = "\$content";
             $this->make_include_data_html($i_data_config, $prefix, null);
           }
         }
 
-        if($subviews = lattice::config('frontend',"//view[@name=\"".$view->get_attribute('name')."\"]/subview")){
+        if ($subviews = lattice::config('frontend',"//view[@name=\"".$view->get_attribute('name')."\"]/subview")){
           foreach($subviews as $subview_config){
             echo "\n<?php=\$".$subview_config->get_attribute('label').";?>\n";
           }
@@ -99,7 +99,7 @@ Class Builder_Frontend {
     foreach(lattice::config('frontend', '//view') as $view_config){
       $view_name = $view_config->get_attribute('name');
 
-      if( in_array($view_name, $created_views)){
+      if ( in_array($view_name, $created_views)){
         continue;
       }
       echo 'Virtual View: '.$view_name . "\n";
@@ -113,14 +113,14 @@ Class Builder_Frontend {
       ob_start();
       //Now the include_data
 
-      if($i_data_nodes = lattice::config('frontend',"//view[@name=\"".$view_name."\"]/include_data")){
+      if ($i_data_nodes = lattice::config('frontend',"//view[@name=\"".$view_name."\"]/include_data")){
         foreach($i_data_nodes as $i_data_config){
           $prefix = "\$content";
           $this->make_include_data_html($i_data_config, $prefix, null);
         }
       }
 
-      if($subviews = lattice::config('frontend',"//view[@name=\"".$view_name."\"]/subview")){
+      if ($subviews = lattice::config('frontend',"//view[@name=\"".$view_name."\"]/subview")){
         foreach($subviews as $subview_config){
           echo "\n<?php=\$".$subview_config->get_attribute('label').";?>\n";
         }
@@ -156,7 +156,7 @@ Class Builder_Frontend {
     $object_types = array();
     $filters = lattice::config('objects', 'filter', $associator_data_config);
     foreach($filters as $filter){
-      if($filter->get_attribute('object_type_name')){
+      if ($filter->get_attribute('object_type_name')){
         $object_types[] = $filter->get_attribute('object_type_name');
       }
     }
@@ -171,28 +171,28 @@ Class Builder_Frontend {
       
 		$object_types = array();
 		//if slug defined, get object_type from slug
-		if($slug = $i_data_config->get_attribute('slug')){
+		if ($slug = $i_data_config->get_attribute('slug')){
 			$object = Graph::object($slug);
-			if(!$object->loaded()){
+			if (!$object->loaded()){
 				//error out,
 				//object must be loaded from data.xml for this type of include conf
 			}
 			$object_types[] = $object->objecttype->objecttypename;
 		}
-		if(!count($object_types)){
+		if (!count($object_types)){
 			$object_types = $i_data_config->get_attribute('object_type_filter');
-			if($object_types!='all'){
+			if ($object_types!='all'){
 				$object_types = explode(',', $object_types);
 			} else {
 				$object_types = array();
 			}
 		}
 
-		if(!count($object_types)){
+		if (!count($object_types)){
 			//no where for object_types
 			//assume that we'll have to make a good guess based off 'from' parent
 			$from=$i_data_config->get_attribute('from');
-			if($from=="parent"){
+			if ($from=="parent"){
 
 				//get the info from addable_objects of the current
 				foreach(lattice::config('objects', sprintf('//object_type[@name="%s"]/addable_object', $parent_template)) as $addable){
@@ -230,16 +230,16 @@ Class Builder_Frontend {
 		$do_switch = false;
 
 
-		if(count($object_types)>1){
+		if (count($object_types)>1){
 			$do_switch = true;
 		}
 
 		echo $indent."<?phpforeach({$prefix}['$label'] as \${$label}Item):?>\n";
-		if($do_switch){
+		if ($do_switch){
 			echo $indent." <?phpswitch(\${$label}Item['object_type_name']){\n";
 		}
 
-    if(count($object_types) == 0){
+    if (count($object_types) == 0){
         echo $indent." <?php=latticeview::Factory(\${$label}Item)->view()->render();?>\n";
     }
 
@@ -247,7 +247,7 @@ Class Builder_Frontend {
 		foreach ($object_types as $object_type_name) {
          if ($do_switch) {
             echo $indent;
-            if($i==0)
+            if ($i==0)
                echo "    case '$object_type_name':?>\n";
             else 
                echo " <?php case '$object_type_name':?>\n";

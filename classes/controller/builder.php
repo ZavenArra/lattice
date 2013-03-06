@@ -6,7 +6,7 @@ class Controller_Builder extends Controller {
 
   public function __construct(){
 
-    if(!latticeutil::check_role_access('superuser') AND PHP_SAPI != 'cli' ){
+    if (!latticeutil::check_role_access('superuser') AND PHP_SAPI != 'cli' ){
       die('Only superuser can access builder tool');
     }
 
@@ -17,9 +17,9 @@ class Controller_Builder extends Controller {
   public function destroy($dir) {
     $mydir = opendir($dir);
     while(false !== ($file = readdir($mydir))) {
-      if($file != "." AND $file != "..") {
+      if ($file != "." AND $file != "..") {
         //   chmod($dir.$file, 0777);
-        if(is_dir($dir.$file)) {
+        if (is_dir($dir.$file)) {
           chdir('.');
           destroy($dir.$file.'/');
           rmdir($dir.$file) or DIE("couldn't delete $dir$file<br />");
@@ -39,7 +39,7 @@ class Controller_Builder extends Controller {
     $starttime = $mtime;
 
 
-    if(Kohana::config('lattice.live')){
+    if (Kohana::config('lattice.live')){
       die('builder/initialize_site is disabled on sites marked live');
     }
 
@@ -74,7 +74,7 @@ class Controller_Builder extends Controller {
     Graph::configure_object_type($this->root_node_object_type, true);
     Graph::add_root_node($this->root_node_object_type);
 
-    if($xml_file != 'data'){
+    if ($xml_file != 'data'){
       //then we are loading an export
       $xml_file = 'application/export/'.$xml_file.'/'.$xml_file.'.xml';
     }
@@ -127,7 +127,7 @@ class Controller_Builder extends Controller {
 
   public function action_add_data($xml_file, $secondary_root_node_object_type=null){
 
-    if($secondary_root_node_object_type AND !$parent_id = Graph::get_root_node($secondary_root_node_object_type)){
+    if ($secondary_root_node_object_type AND !$parent_id = Graph::get_root_node($secondary_root_node_object_type)){
       Graph::configure_object_type($secondary_root_node_object_type);
       Graph::add_root_node($secondary_root_node_object_type);
       $parent_object = Graph::get_root_node($secondary_root_node_object_type);
@@ -147,7 +147,7 @@ class Controller_Builder extends Controller {
 
 
   public function insert_data($xml_file, $parent_id = null, $context=null){
-    if($parent_id == null){
+    if ($parent_id == null){
       $parent_object = Graph::get_root_node($this->root_node_object_type);
     } else {
       $parent_object = Graph::object($parent_id);
@@ -157,7 +157,7 @@ class Controller_Builder extends Controller {
     $items = lattice::config($xml_file, 'item', $context);
     foreach($items as $item){
 
-      if(!$item->get_attribute('object_type_name')){
+      if (!$item->get_attribute('object_type_name')){
         //echo $item->tag_name;
         throw new Kohana_Exception("No objecttypename specified for Item " . $item->tag_name);
       }
@@ -214,7 +214,7 @@ class Controller_Builder extends Controller {
               copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $content->node_value, Graph::mediapath($savename) . $savename);
               $data[$field] = $savename;
             } else {
-              if($content->node_value){
+              if ($content->node_value){
                 throw new Kohana_Exception( "File does not exist {$content->node_value} ");
               }
             }
@@ -230,13 +230,13 @@ class Controller_Builder extends Controller {
       //already added at the next level up, in this case we just
       //update the objects data
       $component = false;
-      if(isset($data['title']) AND $data['title']){
+      if (isset($data['title']) AND $data['title']){
         $preexisting_object = Graph::object()
           ->lattice_children_filter($parent_object->id)
           ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
           ->where('title', '=', $data['title'])
           ->find();
-        if($preexisting_object->loaded()){
+        if ($preexisting_object->loaded()){
           $component = $preexisting_object;
           //echo 'Found prexisting component: '.$preexisting_object->objecttype->objecttypename;
         }
@@ -249,14 +249,14 @@ class Controller_Builder extends Controller {
           ->lattice_children_filter($parent_object->id)
           ->object_type_filter($list_container_type->get_attribute('name'))
           ->find();
-        if($preexisting_object->loaded() AND $preexisting_object->objecttype->objecttypename == $item->get_attribute('object_type_name') ){
+        if ($preexisting_object->loaded() AND $preexisting_object->objecttype->objecttypename == $item->get_attribute('object_type_name') ){
           //echo 'Found prexisting list container: '.$preexisting_object->objecttype->objecttypename .' '.$item->get_attribute('object_type_name');
           $component = $preexisting_object;
         }
       }
 
 
-      if($component){
+      if ($component){
         //echo 'Updating Object '.$component->objecttype->objecttypename."\n";
         //print_r($data);
         $component->update_with_array($data);
@@ -270,7 +270,7 @@ class Controller_Builder extends Controller {
       }
 
       //and now update with element_objects;
-      if(count($clusters_data)){
+      if (count($clusters_data)){
         $object = Graph::object($object_id);
         //echo "Updating clusters\n";
         $object->update_with_array($clusters_data);
@@ -278,7 +278,7 @@ class Controller_Builder extends Controller {
 
 
       //do recursive if it has children
-      if(lattice::config($xml_file, 'item', $item)->length ){
+      if (lattice::config($xml_file, 'item', $item)->length ){
         $this->insert_data($xml_file, $object_id,  $item);
       }
 

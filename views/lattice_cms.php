@@ -7,7 +7,7 @@
 
 </header>
 
-<?if(Kohana::config('latticecms.localization')):?>
+<?if (Kohana::config('latticecms.localization')):?>
 	<div class="localizationControls">
 		<div class="localizationControls container_12">
 			<ul class="clearFix">

@@ -1,4 +1,4 @@
-<?if( count( $addableObjects ) ):?>
+<?if ( count( $addableObjects ) ):?>
 <div class="tierMethodsDrawer">
 	<div class="titleBar clearFix">
 		<h5 class="title">Add an Item to this tier.</h5>

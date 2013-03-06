@@ -31,7 +31,7 @@ Class Controller_Public_menu extends Controller_Lattice {
  				->published_filter()
 				->no_container_objects()
 				->find_all();
-			if(count($children)){
+			if (count($children)){
 				$entry['children'] = array();
 				foreach($children as $child){
 					$child_entry = array();

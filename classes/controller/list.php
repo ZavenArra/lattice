@@ -70,7 +70,7 @@ class Controller_List extends Lattice_CMSInterface {
          $this->_list_object = ORM::Factory('listcontainer', $list_object_id_or_parent_id);
       }
       
-      if(!$this->_list_object->loaded()){
+      if (!$this->_list_object->loaded()){
          throw new Kohana_Exception('Failed to load list object');
       }
       
@@ -167,7 +167,7 @@ class Controller_List extends Lattice_CMSInterface {
 
 
       //addable item should be specifid in the add_item call
-      if($object_type_id == null){
+      if ($object_type_id == null){
    
         $addable_object_types = lattice::config('objects', sprintf('//list[@name="%s"]/addable_object', $list_object->objecttype->objecttypename));
         if (!$addable_object_types->length > 0) {

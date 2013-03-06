@@ -26,19 +26,19 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
     $objecttype = ORM::Factory('objecttype', $objecttype_id);
     $objecttype_id = $objecttype->id;
 
-    if(!isset(self::$dbmaps[$objecttype_id])){
+    if (!isset(self::$dbmaps[$objecttype_id])){
       self::load_dbmap_for_object_type($objecttype_id);
     }
-    if(!isset($column)){
+    if (!isset($column)){
       return self::$dbmaps[$objecttype_id];
     } else {
-      if(isset(self::$dbmaps[$objecttype_id][$column])){
+      if (isset(self::$dbmaps[$objecttype_id][$column])){
         return self::$dbmaps[$objecttype_id][$column];
       } else {
         //Attempt lazy configuration
         $xpath = sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $objecttype->objecttypename, $column);
         $element = lattice::config('objects', $xpath)->item(0);
-        if(!count($element)){
+        if (!count($element)){
           throw new Kohana_Exception('DBMap column not found or configured: '.$column);
         }
         $objecttype->configure_element($element);
@@ -76,7 +76,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
 
   public function get_title($object){
     $title = $this->contenttable->title; 
-    if(!$title){
+    if (!$title){
       return $this->contenttable->field1;
     }
     return $title;
@@ -188,7 +188,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
 
    //TODO: This is a temporary stop gap to support title editing for objects that do not 
    //expose a title.  Handling of objects that don't expose a title (list items) needs further work
-   if($mapped_column=='field1' AND ($this->contenttable->title == $this->contenttable->field1)){
+   if ($mapped_column=='field1' AND ($this->contenttable->title == $this->contenttable->field1)){
      $this->contenttable->title = $value;
    }
    if ($mapped_column AND !strstr($mapped_column, 'object')) {
@@ -235,7 +235,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
 
    //TODO: This is a temporary stop gap to support title editing for objects that do not 
    //expose a title.  Handling of objects that don't expose a title (list items) needs further work
-   if($mapped_column=='field1' AND ($this->contenttable->title == $this->contenttable->field1)){
+   if ($mapped_column=='field1' AND ($this->contenttable->title == $this->contenttable->field1)){
      $this->contenttable->title = $value;
    }
 
@@ -245,10 +245,10 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
 
   //this could potentially go into the base class 100%
   public function save_content_table($object, $inserting=false){
-    if(!$this->contenttable){
+    if (!$this->contenttable){
       $this->load_content_table($object);
     }
-    if($inserting){
+    if ($inserting){
       $this->contenttable->object_id = $object->id;
     }
     $this->contenttable->save();

@@ -29,7 +29,7 @@ class Controller_Export extends Controller {
                   //or copy to directory and just use filename
                   if ($value->filename) {
 										$target_path = $this->output_dir . $value->filename;
-										if(file_exists($target_path)){
+										if (file_exists($target_path)){
 											$node->append_child($this->doc->create_text_node($target_path));
 										}
                   }
@@ -82,7 +82,7 @@ class Controller_Export extends Controller {
              //or copy to directory and just use filename
              if ($value->filename) {
                $target_path = $this->output_dir . $value->filename;
-										 if(file_exists($target_path)){
+										 if (file_exists($target_path)){
 											 $node->append_child($this->doc->create_text_node($target_path));
 										 }
                   }
@@ -93,7 +93,7 @@ class Controller_Export extends Controller {
                   }
                   break;
             }
-         } else if($key == "tags") {
+         } else if ($key == "tags") {
 
             $node->append_child($this->doc->create_text_node(implode(',',$value)));
 
@@ -222,7 +222,7 @@ class Controller_Export extends Controller {
 
       $lattices = Graph::lattices();
       foreach($lattices as $lattice){
-        if($lattice->name == 'lattice'){
+        if ($lattice->name == 'lattice'){
           continue;
         }
         $l = $this->doc->create_element('lattice');

@@ -12,7 +12,7 @@ Class Lattice_Controller_Associator extends Controller_Lattice {
 
   public function action_get_page($parent_id, $name, $page_num=0, $word=""){
     $parent = Graph::object($parent_id);
-    if(!$parent->loaded()){
+    if (!$parent->loaded()){
       throw new Kohana_Exception('Parent object not found, invalid parent_id?');
     }
 
@@ -34,7 +34,7 @@ Class Lattice_Controller_Associator extends Controller_Lattice {
 
     $parent = Graph::object($parent_id);
 
-    if(!$parent->loaded()){
+    if (!$parent->loaded()){
       throw new Kohana_Exception('Parent object not found, invalid parent_id?');
     }
 
@@ -59,7 +59,7 @@ Class Lattice_Controller_Associator extends Controller_Lattice {
 
   public function action_filter_pool_by_tag($parent_id, $name, $tag) {
     $parent = Graph::object($parent_id);
-     if(!$parent->loaded()){
+     if (!$parent->loaded()){
        throw new Kohana_Exception('Parent object not found, invalid parent_id?');
      }
      

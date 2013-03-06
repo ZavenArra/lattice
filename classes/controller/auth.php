@@ -95,9 +95,9 @@ class Controller_Auth extends Controller_Layout {
 				//just override auth.redirect or something
 				$authredirect =  Kohana::config('auth.redirect');
 				
-				if($form_values['redirect']){
+				if ($form_values['redirect']){
 					Request::current()->redirect(url::site($form_values['redirect'],Request::current()->protocol(),false));
-				} else if($redirect = $authredirect){
+				} else if ($redirect = $authredirect){
 					Request::current()->redirect(url::site($redirect,Request::current()->protocol(),false));
 				} else {
 					Request::current()->redirect(url::site('auth/login',Request::current()->protocol(),false));
@@ -116,16 +116,16 @@ class Controller_Auth extends Controller_Layout {
 
 		$view = new View('auth/login');
 
-		if($redirect == 'reset_password_success'){
+		if ($redirect == 'reset_password_success'){
 			$view->message = I18n::get('reset_password_success');
 			$redirect = null;
-		} else if($error){
+		} else if ($error){
 			$view->message = $error;
 		}
 		$view->title = 'User Login';
 
-		if(!$redirect){
-			if(isset($form_values['redirect'])){
+		if (!$redirect){
+			if (isset($form_values['redirect'])){
 				$redirect = $form_values['redirect'];
 			}
 		}
@@ -150,9 +150,9 @@ class Controller_Auth extends Controller_Layout {
 	}
 
 	public function action_forgot(){
-		if(isset($_POST['email'])){
+		if (isset($_POST['email'])){
 			$user = ORM::Factory('user')->where('email', '=', $_POST['email'])->find();
-			if($user->loaded() ){
+			if ($user->loaded() ){
 				$password = Utility_Auth::random_password();
 				$user->password = $password;
 				$user->save();

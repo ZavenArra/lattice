@@ -28,7 +28,7 @@ Class Csv_imports_Controller extends Controller {
 			foreach($data['content']['csv'] as $item){
 				$output = array();
 				foreach($columns as $column => $label){
-					if(isset($item[$column])){
+					if (isset($item[$column])){
 						$output[] = $item[$column];
 					} else {
 						$output[] = '';

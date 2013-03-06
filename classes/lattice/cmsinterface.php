@@ -164,7 +164,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
    protected function handle_data_exception($e) {
 
-			if(get_class($e) != 'ORM_Validation_Exception'){
+			if (get_class($e) != 'ORM_Validation_Exception'){
 				throw $e;
 			}
       $model_errors = $e->errors('validation');
@@ -208,7 +208,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
    public function action_save_sort_order($parent_id, $lattice='lattice') {
 
-     if($_POST['sort_order']){
+     if ($_POST['sort_order']){
        $order = explode(',', $_POST['sort_order']);
        $object = ORM::Factory('object', $parent_id);
        $object->set_sort_order($order, $lattice);

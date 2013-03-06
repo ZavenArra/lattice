@@ -40,13 +40,13 @@ class Graph_Object_query {
      $objects = Graph::object();
 
 			//apply slug filter
-			if($this->attributes['slug']){
+			if ($this->attributes['slug']){
 				$objects->where('slug', '=', $this->attributes['slug']);
 			}
 
       //apply optional parent filter
       if ($from = $this->attributes['from'] ) { //
-				if($from != 'all'){
+				if ($from != 'all'){
 					if ($from == 'parent') {
 						$objects->lattice_children_filter($parent_id);
 					} else {

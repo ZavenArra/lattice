@@ -28,7 +28,7 @@ class Initializer_Latticeauth {
 
 
 		 $admin = ORM::Factory('user')->where('username', '=', 'admin')->find();
-		 if($admin->loaded()){
+		 if ($admin->loaded()){
 			 $admin->delete();
 		 }
       if (!ORM::Factory('user')->where('username', '=', 'admin')->find()->loaded()) {

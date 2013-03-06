@@ -33,14 +33,14 @@ Class Lattice_auth_Controller_Registration extends Controller_Layout {
       ->rule('lastname', 'min_length', array(':value', 3));
 
    
-    if($validation->check() AND !count($this->errors)){
+    if ($validation->check() AND !count($this->errors)){
       $user = $this->create_user($_POST['username'], $_POST['password'], $_POST['firstname'], $_POST['lastname'], $_POST['email']);
     } else {
       $this->errors = array_merge($this->errors, $validation->errors('validation/registration'));
     }
 
 
-    if(count($this->errors)){
+    if (count($this->errors)){
       $this->registration_view($this->errors);
     } else {
       $confirmation = new Confirmation('registration'
@@ -58,7 +58,7 @@ Class Lattice_auth_Controller_Registration extends Controller_Layout {
 
   public function action_confirmed($user_id){
     $user = ORM::Factory('user',$user_id);
-    if(!$user->loaded()){
+    if (!$user->loaded()){
       $this->response->body('Invalid Confirmation - User Does Not Exist');
       return;
     }
@@ -97,7 +97,7 @@ Class Lattice_auth_Controller_Registration extends Controller_Layout {
    /**/ catch (Exception $e){
      $errors = array();
       $model_errors = $e->errors('validation');
-      if(isset($model_errors['_external'])){
+      if (isset($model_errors['_external'])){
         $model_errors = array_values($model_errors['_external']);
       } 
       $this->user_id = NULL;
@@ -108,7 +108,7 @@ Class Lattice_auth_Controller_Registration extends Controller_Layout {
 
     //add the login role
     $user->add('roles', ORM::Factory('role', array('name'=>'login')));
-    if(is_array(Kohana::config('registration.default.roles'))){
+    if (is_array(Kohana::config('registration.default.roles'))){
       foreach(Kohana::config('registration.default.roles') as $role){
         $user->add('roles', ORM::Factory('role', array('name'=>$role)));
       }

@@ -3,7 +3,7 @@
 Class Associator_Radios {
 
   public static function make_pool($associated_views, $pool_views){
-    if(count($associated_views)){
+    if (count($associated_views)){
       $keys = array_map(array('Associator_Radios','title_index'), $associated_views);
       $associated_views = array_combine($keys, $associated_views);
     }

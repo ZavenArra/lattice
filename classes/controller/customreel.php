@@ -37,9 +37,9 @@ Class Controller_Custom_reel extends Controller_Layout {
 		parent::__construct($request, $response);
 
 		$this->managed_roles = Kohana::config(strtolower($this->controller_name).'.managed_roles');
-    if(Kohana::config(strtolower($this->controller_name).'.superuser_edit')
+    if (Kohana::config(strtolower($this->controller_name).'.superuser_edit')
       AND latticeutil::check_role_access('superuser')){
-      if(is_array($this->managed_roles)){
+      if (is_array($this->managed_roles)){
         $keys = array_keys($this->managed_roles);
         $vals = array_values($this->managed_roles);
         array_unshift($keys,'Superuser');
@@ -71,7 +71,7 @@ Class Controller_Custom_reel extends Controller_Layout {
     $managed_users = array();
     foreach($users as $user){
       foreach($this->managed_roles as $role){
-        if($user->has('roles', ORM::Factory('role', array('name'=>$role)))){
+        if ($user->has('roles', ORM::Factory('role', array('name'=>$role)))){
           $managed_users[] = $user;
           continue (2);
         }
@@ -96,18 +96,18 @@ Class Controller_Custom_reel extends Controller_Layout {
     $data['lastname'] = $user->lastname;
     $data['email'] = $user->email;
 
-    if(strstr($data['email'], 'PLACEHOLDER')){
+    if (strstr($data['email'], 'PLACEHOLDER')){
       $data['email'] = '';
     }
 
-    if(strlen($user->password)){
+    if (strlen($user->password)){
       $data['password'] = '******';
     } else {
       $data['password'] = '';
     }
 
     $data['role'] = $this->get_active_managed_role($user);
-    if($user->has('roles', ORM::Factory('role')->where('name','=','superuser')->find()) ){
+    if ($user->has('roles', ORM::Factory('role')->where('name','=','superuser')->find()) ){
       $data['superuser'] = true;
     } else {
       $data['superuser'] = false;
@@ -135,7 +135,7 @@ Class Controller_Custom_reel extends Controller_Layout {
   private function get_active_managed_role($user){
     $active_role = null;
     foreach($this->managed_roles as $label=>$role){
-      if($user->has('roles', ORM::Factory('role')->where('name','=',$role)->find()) ){
+      if ($user->has('roles', ORM::Factory('role')->where('name','=',$role)->find()) ){
         $active_role = $role;
         break;
       }
@@ -219,7 +219,7 @@ Class Controller_Custom_reel extends Controller_Layout {
 	 */ 
 	public function action_save_field($id){
 
-		if(!latticeutil::check_role_access('admin')){
+		if (!latticeutil::check_role_access('admin')){
 			throw new Kohana_Exception('Only Admin has access to User Management');
 		}
 
@@ -231,8 +231,8 @@ Class Controller_Custom_reel extends Controller_Layout {
 		switch($field){
 		case 'role':
 
-			if($user->has('roles', ORM::Factory('role')->where('name', '=' ,'superuser')->find() )){
-				if(!latticeutil::check_role_access('superuser')){
+			if ($user->has('roles', ORM::Factory('role')->where('name', '=' ,'superuser')->find() )){
+				if (!latticeutil::check_role_access('superuser')){
 					throw new Kohana_Exception('Only superuser can change superuser');
 				}
 			}
@@ -240,26 +240,26 @@ Class Controller_Custom_reel extends Controller_Layout {
 			//first remove other managed_roles
 			foreach($this->managed_roles as $label => $role){
 				$role_obj = ORM::Factory('role')->where('name','=',$role)->find();
-				if($user->has('roles',$role_obj)){
+				if ($user->has('roles',$role_obj)){
 					$user->remove('roles', $role_obj);
           $user->save();
 				}
 			}
 			$role = ORM::Factory('role')->where('name','=',$value)->find();
-			if(!$role->loaded()){
+			if (!$role->loaded()){
 				throw new Kohana_Exception('Role :role not found in database.  Update aborted', array(':role'=>$value));
 			}
 			$user->add('roles', $role);	
 			$user->save();
 
-			if($value=='superuser'){
+			if ($value=='superuser'){
 
-				if(!latticeutil::check_role_access('superuser')){
+				if (!latticeutil::check_role_access('superuser')){
 					throw new Kohana_Exception('Updating to superuser not allowed for non-superuser');
 				}
 
 				$role = ORM::Factory('role')->where('name','=','admin')->find();
-				if(!$role->loaded()){
+				if (!$role->loaded()){
 					throw new Kohana_Exception('Role :role not found in database.  Update aborted', array(':role'=>'admin'));
 				}
 				$user->add('roles', $role);	
@@ -305,13 +305,13 @@ Class Controller_Custom_reel extends Controller_Layout {
                   }
                } catch (Exception $e) {
                   $model_errors = $e->errors('validation');
-									if(isset($model_errors['_external'])){
+									if (isset($model_errors['_external'])){
 										$model_errors = array_values($model_errors['_external']);
 									} 
                   $errors = array_merge($errors, $model_errors);
                }
          }
-         if($errors) {
+         if ($errors) {
                $firstkey = array_keys($errors);
                $firstkey = $firstkey[0];
                if ($_POST['field'] == 'password') {
@@ -334,7 +334,7 @@ Class Controller_Custom_reel extends Controller_Layout {
 	 * Returns: nothing
 	 */
 	protected function activate_record(& $user){
-		if($user->status != 'ACTIVE'){
+		if ($user->status != 'ACTIVE'){
 			$user->status = 'ACTIVE';
 			$user->save();
 		}

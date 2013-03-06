@@ -6,7 +6,7 @@ class Response extends Kohana_Response {
 	protected $_data;
 
 	public function data($value=null){
-		if($value){
+		if ($value){
 			$this->_data = $value;
 		}	
 		return $this->_data;

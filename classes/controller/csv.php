@@ -8,7 +8,7 @@ Class Controller_CSV extends Controller {
 
   public function __construct($request, $response){
    parent::__construct($request, $response);
-   if(!latticeutil::check_role_access('superuser')  AND PHP_SAPI != 'cli' ){
+   if (!latticeutil::check_role_access('superuser')  AND PHP_SAPI != 'cli' ){
     die('Only superuser can access builder tool');
    }
   }
@@ -63,7 +63,7 @@ Class Controller_CSV extends Controller {
      foreach($objects as $object){
 
        $csv_view = NULL;
-       if($object->objecttype->node_type != 'container'){
+       if ($object->objecttype->node_type != 'container'){
          $csv_view = new View_CSV($this->level, $object);
        } else {
          $csv_view = new View_CSVContainer($this->level, $object);
@@ -73,7 +73,7 @@ Class Controller_CSV extends Controller {
        $this->csv_walk_tree($object, false);  //false turning off example for now
        //big problem with walking descedent objects since they don't exist
 
-       if($example){
+       if ($example){
          //And now append one example object of each addable object
          foreach ($object->objecttype->addable_objects as $addable_object_type) {
            $object = Graph::object()->set_object_type($addable_object_type['object_type_id']);
@@ -104,7 +104,7 @@ Class Controller_CSV extends Controller {
      $max_execution_time = ini_get("max_execution_time");
      $memory_limit = ini_get("memory_limit");
 
-     if($csv_file_name == NULL){
+     if ($csv_file_name == NULL){
        $this->csv_file = fopen($_FILES['upload']['tmp_name'], 'r');
      } else {
        $this->csv_file = fopen($csv_file_name, 'r');
@@ -128,7 +128,7 @@ Class Controller_CSV extends Controller {
      $this->advance();
      while($this->line){
        $object_type_name = $this->line[$this->column];
-       if(!$object_type_name){
+       if (!$object_type_name){
          throw new Kohana_Exception("Expecting object_type at column :column, but none found :line",
            array(
              ':column'=>$this->column,
@@ -138,7 +138,7 @@ Class Controller_CSV extends Controller {
 
        //check if this object type is valid for the current objects.xml
        $object_config = lattice::config('objects', sprintf('//object_type[@name="%s"]', $object_type_name));
-       if(!$object_config->item(0)){
+       if (!$object_config->item(0)){
          throw new Kohana_Exception("No object type configured in objects.xml for ".$object_type_name); 
        }
 
@@ -157,11 +157,11 @@ Class Controller_CSV extends Controller {
    protected function walkCSVElements($object){
      echo "Walking\n";
 
-     if($object->objecttype->node_type != 'container'){ 
+     if ($object->objecttype->node_type != 'container'){ 
        //get the elements line
        $this->advance();
        //check here for Elements in $this->column +1;
-       if(!(isset($this->line[$this->column+1])) OR $this->line[$this->column+1] != 'Elements'){
+       if (!(isset($this->line[$this->column+1])) OR $this->line[$this->column+1] != 'Elements'){
          throw new Kohana_Exception("Didn't find expected Elements line at line ".$this->line_number);
        }
      }
@@ -176,14 +176,14 @@ Class Controller_CSV extends Controller {
        AND $this->line[$this->column+1]!='Children'){
          $field_name = $this->line[$this->column+1]; 
          //echo "Reading $field_name \n";
-         if(isset($this->line[$this->column+2])){
+         if (isset($this->line[$this->column+2])){
            $value = $this->line[$this->column+2];
          } else {
            $value = null;
          }
          $field = strtok($field_name, '_');
          $lang = strtok('_');
-         if(!isset($data[$lang])){
+         if (!isset($data[$lang])){
            $data[$lang] = array();
          }
          $data[$lang][$field] = $value;
@@ -199,8 +199,8 @@ Class Controller_CSV extends Controller {
        $object_to_update = $object->get_translated_object(Graph::language($lang));
        foreach($lang_data as $field => $value){
 
-         if($field=='tags'){
-           if($value){
+         if ($field=='tags'){
+           if ($value){
              $tags = explode(',',$value); 
              foreach($tags as $tag){
                 $object_to_update->add_tag($tag);
@@ -211,7 +211,7 @@ Class Controller_CSV extends Controller {
 
          $object_to_update->$field = $value;
 
-         if(in_array($field, array('title', 'slug', 'published', 'dateadded'))){
+         if (in_array($field, array('title', 'slug', 'published', 'dateadded'))){
            continue;
          }
 
@@ -240,7 +240,7 @@ Class Controller_CSV extends Controller {
                $file->save();
                $object_to_update->$field = $file->id;
              } else {
-               if($value){
+               if ($value){
                  echo "file does not exist";
                  //throw new Kohana_Exception( "File does not exist {$value} ");
                }
@@ -256,7 +256,7 @@ Class Controller_CSV extends Controller {
      }
 
      //Check here for Children in $this->column +1
-     if(!isset($this->line[$this->column+1]) OR $this->line[$this->column+1] != 'Children'){
+     if (!isset($this->line[$this->column+1]) OR $this->line[$this->column+1] != 'Children'){
        echo "No children found, returning from Walk ";//.implode(',', $this->line)."\n";
        return;
      }

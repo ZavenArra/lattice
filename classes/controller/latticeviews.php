@@ -30,16 +30,16 @@ Class Controller_Lattice_views extends Controller_Layout{
    * if there is no view file available for that name, no wrapping occurs
    */
 	public function after(){
-		if($this->request == Request::initial() ){
+		if ($this->request == Request::initial() ){
       $layout_for_slug = Kohana::config('latticeviews.layouts.'.self::$slug);
       $object = Graph::object(self::$slug);
       $layout_for_object_type = Kohana::config('latticeviews.layouts_for_object_type.'.$object->objecttypename);
-      if($layout_for_slug){
-        if(Kohana::find_file('views/', $layout_for_slug)){
+      if ($layout_for_slug){
+        if (Kohana::find_file('views/', $layout_for_slug)){
           $this->wrap_with_layout($layout_for_slug); 
         }
-      } else if($layout_for_object_type){
-        if(Kohana::find_file('views/', $layout_for_object_type)){
+      } else if ($layout_for_object_type){
+        if (Kohana::find_file('views/', $layout_for_object_type)){
           $this->wrap_with_layout($layout_for_object_type); 
         }
       } else {
@@ -70,16 +70,16 @@ Class Controller_Lattice_views extends Controller_Layout{
 	public function action_get_view($object_id_or_slug=null) {
 
 		$access = Kohana::config('latticeviews.access.'.$object_id_or_slug);
-		if(!latticeutil::check_access($access)){
+		if (!latticeutil::check_access($access)){
 			Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),false).'/'.Request::initial()->uri());
 		}
 
 		self::$slug = $object_id_or_slug;
 
-		if(Session::instance()->get('language_code')){
+		if (Session::instance()->get('language_code')){
 			$object = Graph::object($object_id_or_slug);
-			if(!$object->loaded()){
-				if(!$object_id_or_slug){
+			if (!$object->loaded()){
+				if (!$object_id_or_slug){
 					$object_id_or_slug = 'No object id or slug specified';
 				}
 				throw new Kohana_Exception('No object found for id: '.$object_id_or_slug);

@@ -28,12 +28,12 @@ class Model_Object_type extends ORM {
    
    public static function get_config($object_type_name){
      $config = lattice::config('objects', sprintf('//object_type[@name="%s"]', $object_type_name));
-     if($config->length){
+     if ($config->length){
         return $config->item(0);
      }
 
      $config = lattice::config('objects', sprintf('//list[@name="%s"]', $object_type_name));
-     if($config->length){
+     if ($config->length){
         return $config->item(0);
      } else {
         return false;
@@ -61,11 +61,11 @@ class Model_Object_type extends ORM {
 
 		//check if this value is set in config files
 
-		if(in_array($column, $this->nonmappedfields)){
+		if (in_array($column, $this->nonmappedfields)){
 			return parent::__get($column);
 		}
 
-		if(parent::__get('node_type')=='container'){
+		if (parent::__get('node_type')=='container'){
 			//For lists, values will be on the 2nd level 
 				$x_query =  sprintf('//list[@name="%s"]', parent::__get('objecttypename'));
 			} else {
@@ -74,7 +74,7 @@ class Model_Object_type extends ORM {
 			}
 
 			$value_from_config=NULL;
-			if($column == 'addable_objects'){
+			if ($column == 'addable_objects'){
 				$x_query .= '/addable_object';
 				$nodes = lattice::config('objects', $x_query);
 				$value_from_config = array();
@@ -83,7 +83,7 @@ class Model_Object_type extends ORM {
 					$entry['object_type_id'] = $node->get_attribute('object_type_name');
 					$entry['object_type_add_text'] = $node->get_attribute('add_text');
 					$t_config = lattice::config('objects', sprintf('//object_type[@name="%s"]', $entry['object_type_id'] ))->item(0);
-          if(!count($t_config)){
+          if (!count($t_config)){
             throw new Kohana_Exception('No object type definition by name: '.$entry['object_type_id']);
           }
 					$entry['node_type'] = $t_config->get_attribute('node_type');
@@ -92,12 +92,12 @@ class Model_Object_type extends ORM {
 				}
 			} else {
 				$node = lattice::config('objects', $x_query)->item(0);
-				if($node)
+				if ($node)
 					$value_from_config = $node->get_attribute($column);
 
         switch($column){
         case 'initial_access_roles':
-          if($value_from_config){
+          if ($value_from_config){
             $value_from_config = explode(',',$value_from_config);
           } else {
             $value_from_config = array();
@@ -145,7 +145,7 @@ class Model_Object_type extends ORM {
           break;
 
         default:
-          if($default){
+          if ($default){
             $defaults[$element->get_attribute('name')] = $default; 
           }
 
@@ -167,7 +167,7 @@ class Model_Object_type extends ORM {
 		$o = Graph::object()
 			->published_filter()
 			->object_type_filter($this->object_type_name);
-		if($limit){
+		if ($limit){
 			$o->limit($limit);
 		}
 		$o = $o->find_all();
@@ -184,14 +184,14 @@ class Model_Object_type extends ORM {
 	 */
 	public function get_active_members($limit=null){
 
-      if(!$this->loaded()){
+      if (!$this->loaded()){
          return array();
       }
       
 		$o = Graph::object()
               ->active_filter()
               ->object_type_filter($this->objecttypename);
-		if($limit){
+		if ($limit){
 			$o->limit($limit);
 		}
 		$o = $o->find_all();

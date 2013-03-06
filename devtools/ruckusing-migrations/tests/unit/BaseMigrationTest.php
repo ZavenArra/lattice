@@ -1,5 +1,5 @@
 <?php
-if(!defined('BASE')) {
+if (!defined('BASE')) {
   define('BASE', dirname(__FILE__) . '/..');
 }
 require_once BASE  . '/test_helper.php';
@@ -19,7 +19,7 @@ class BaseMigrationTest extends PHPUnit_Framework_TestCase {
 		protected function setUp() {
 			require RUCKUSING_BASE . '/config/database.inc.php';
 
-			if( !is_array($ruckusing_db_config) || !array_key_exists("test", $ruckusing_db_config)) {
+			if ( !is_array($ruckusing_db_config) || !array_key_exists("test", $ruckusing_db_config)) {
 				die("\n'test' DB is not defined in config/database.inc.php\n\n");
 			}
 
@@ -35,11 +35,11 @@ class BaseMigrationTest extends PHPUnit_Framework_TestCase {
 		
 		protected function tearDown() {			
 			//delete any tables we created
-			if($this->adapter->has_table('users',true)) {
+			if ($this->adapter->has_table('users',true)) {
 				$this->adapter->drop_table('users');
 			}
 
-			if($this->adapter->has_table(RUCKUSING_TS_SCHEMA_TBL_NAME,true)) {
+			if ($this->adapter->has_table(RUCKUSING_TS_SCHEMA_TBL_NAME,true)) {
 				$this->adapter->drop_table(RUCKUSING_TS_SCHEMA_TBL_NAME);
 			}
 		}

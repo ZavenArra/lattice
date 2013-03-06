@@ -22,13 +22,13 @@ Class latticeui{
 		$view = 'ui/'.$element['type'];
 
 		//allow files to be passed either by id or as already quireid objects
-		if( in_array($element['type'], array('file', 'image'))){
+		if ( in_array($element['type'], array('file', 'image'))){
 
-			if(!is_object($fieldvalue) ){
+			if (!is_object($fieldvalue) ){
 				$fieldvalue = ORM::Factory('file', $fieldvalue);
 			}
 
-			if($fieldvalue->_loaded){
+			if ($fieldvalue->_loaded){
 				$fieldvalue = $fieldvalue->as_array();
 			} else {
 				$fieldvalue = null;
@@ -37,7 +37,7 @@ Class latticeui{
 
 		//provide a unique id always
 		$microtime = str_replace(array(' ', '.'), '', microtime());
-		if(isset($element['name'])){
+		if (isset($element['name'])){
 			//	$object_type->id =$element['name'].str_replace(array(' ', '.'), '', microtime());
 			$id =$element['name'].latticeui::$unique++.$microtime;
 		} else {
@@ -63,10 +63,10 @@ Class latticeui{
 
 				$site_path = '';
 				
-				if(Kohana::config('lattice.staging')){
+				if (Kohana::config('lattice.staging')){
 					$site_path = 'staging/';
 				}
-				if(file_exists($site_path.'application/media/'.$thumb_src)){
+				if (file_exists($site_path.'application/media/'.$thumb_src)){
 					$size = getimagesize($site_path.'application/media/'.$thumb_src);	
 					$fieldvalue['width'] = $size[0];
 					$fieldvalue['height'] = $size[1];
@@ -77,17 +77,17 @@ Class latticeui{
 				$fieldvalue['thumb_src']=$thumb_src;
 			
 			case 'file':
-				if(!isset($element['maxlength']) OR !$element['maxlength']){
+				if (!isset($element['maxlength']) OR !$element['maxlength']){
 					$element['maxlength'] = 1523712; //12 Mega_bytes 
 				}
 			break;
 
 			case 'date_range':
-				if(!isset($element['empty'])){
-					if(!isset($element['start_date']) OR strlen($element['start_date'])==0){
+				if (!isset($element['empty'])){
+					if (!isset($element['start_date']) OR strlen($element['start_date'])==0){
 						$element['start_date'] = date('Y/m/d');
 					}
-					if(!isset($element['end_date']) OR strlen($element['end_date'])==0){
+					if (!isset($element['end_date']) OR strlen($element['end_date'])==0){
 						$element['end_date'] = date('Y/m/d');
 					}
 				} else {
@@ -108,19 +108,19 @@ Class latticeui{
 			break;
 
 			case 'multi_select':
-				if(isset($element['object'])){
+				if (isset($element['object'])){
 					$object = Kohana::config('cms.object_types.'.$element['object']);
 					$element['options'] = array();
 					foreach($object as $field){
-						if($field['type'] == 'checkbox'){
+						if ($field['type'] == 'checkbox'){
 							$element['options'][$field['name']] = $field['label'];
 						}
 					}
 				}	
-				if($fieldvalue){
+				if ($fieldvalue){
 					$prep_field_value = array();
 					foreach($fieldvalue as $name => $selected){
-						if($selected){
+						if ($selected){
 							$prep_field_value[] = $name;
 						}
 					}
@@ -129,9 +129,9 @@ Class latticeui{
 			break;
 		}
 
-		if(!isset($element['class'])){ $element['class'] = null; }
+		if (!isset($element['class'])){ $element['class'] = null; }
 
-		if($paths = Kohana::find_file('views', $view)){
+		if ($paths = Kohana::find_file('views', $view)){
 			$object_type = new View($view);
 			$object_type->id = $id;
 			$object_type->class = null;

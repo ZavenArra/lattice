@@ -8,15 +8,15 @@ class frontend {
 
 		switch($element->node_name){
 		case 'image':
-			if(!($size=$element->get_attribute('size'))){
+			if (!($size=$element->get_attribute('size'))){
 				$size = 'original';	
 			}
-			echo $indent."<?phpif(is_object({$prefix}['$field'])):?>\n";
+			echo $indent."<?phpif (is_object({$prefix}['$field'])):?>\n";
 			echo $indent." <img id=\"$field\" src=\"<?php=latticeurl::site({$prefix}['$field']->{$size}->fullpath);?>\" width=\"<?php={$prefix}['$field']->{$size}->width;?>\" height=\"<?php={$prefix}['$field']->{$size}->height;?>\" alt=\"<?php={$prefix}['$field']->{$size}->filename;?>\" />\n";
 			echo $indent."<?phpendif;?>\n\n";
 			break;
 		case 'file':
-			echo $indent."<?phpif(is_object({$prefix}['$field'])):?>\n";
+			echo $indent."<?phpif (is_object({$prefix}['$field'])):?>\n";
 			echo $indent."<a href=\"<?php={$prefix}['$field']->fullpath;?>\"><?php={$prefix}['$field']->filename;?></a>\n\n";
 			echo $indent."<?phpendif;?>\n\n";
 			break;

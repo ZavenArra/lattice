@@ -46,14 +46,14 @@ Class lattice {
 
 
 	public static function config($arena, $xpath, $context_node=null){
-		if(!is_array(self::$config)){
+		if (!is_array(self::$config)){
 			self::$config = array();
 		}
 
-		if($active_config = Kohana::config('lattice.active_configuration')){
-			if($configurations = Kohana::config('lattice.configurations')){
-				if($active = $configurations[$active_config]){
-					if(isset($active[$arena]) AND $new_name = $active[$arena]){
+		if ($active_config = Kohana::config('lattice.active_configuration')){
+			if ($configurations = Kohana::config('lattice.configurations')){
+				if ($active = $configurations[$active_config]){
+					if (isset($active[$arena]) AND $new_name = $active[$arena]){
 						$arena = $new_name;
 					}
 				}
@@ -62,14 +62,14 @@ Class lattice {
 
 
 
-		if(!isset(self::$config[$arena])){
+		if (!isset(self::$config[$arena])){
 
 			$dom = new DOMDocument();
 			$dom->preserve_white_space = false;
 			$dom = new MyDOMDocument($dom);
 
       //check for arena mappings
-      if($custom_path = Kohana::config('lattice.paths.'.$arena)){
+      if ($custom_path = Kohana::config('lattice.paths.'.$arena)){
         $arena_path = $custom_path;
       } else {
         $arena_path = $arena;
@@ -84,13 +84,13 @@ Class lattice {
 
       } catch(Exception $e){
         //checking for existence of xml controller
-        if(get_class($e) != 'HTTP_Exception_404'){
+        if (get_class($e) != 'HTTP_Exception_404'){
           throw $e;
         }
         //else continue on
       }
 
-      if($response){
+      if ($response){
         $dom->loadXML($response->body());
 
       } else {
@@ -114,11 +114,11 @@ Class lattice {
         ));
       }
        
-			if($arena == 'objects'){
+			if ($arena == 'objects'){
 				$clusters = new DOMDocument();
 				$clusters = new MYDOMDocument($clusters);
 				$path = Kohana::find_file('lattice', 'clusters', 'xml', true);
-				if(!count($path)){
+				if (!count($path)){
 					throw new Kohana_Exception('Could not locate xml clusters');
 				}
 				$clusters->load( $path[0] );
@@ -141,7 +141,7 @@ Class lattice {
 
 			self::$config[$arena] = $xpath_object;
 		}
-		if($context_node){
+		if ($context_node){
 			$xml_nodes = self::$config[$arena]->evaluate($xpath, $context_node);
 		} else {
 			$xml_nodes = self::$config[$arena]->evaluate($xpath);
@@ -159,15 +159,15 @@ Class lattice {
 	 */
 	public static function build_module($module, $constructor_arguments=array() ){
 		//need to look into this, these should be converged or interoperable
-		if(isset($module['elementname'])){
+		if (isset($module['elementname'])){
 			$module['modulename'] = $module['elementname'];
 		}
 
-		if(!Kohana::find_file('controllers', $module['modulename'] ) ){
-			if(!isset($module['controllertype'])){
+		if (!Kohana::find_file('controllers', $module['modulename'] ) ){
+			if (!isset($module['controllertype'])){
 				$view = new View($module['modulename']);
 				$object = Graph::object($module['modulename']);
-        if($object->loaded()){ // in this case it's a slug for a specific object
+        if ($object->loaded()){ // in this case it's a slug for a specific object
 					foreach(latticeviews::get_view_content($object->id, $object->objecttype->objecttypename) as $key=>$content){
 						$view->$key = $content;
 					}
@@ -175,7 +175,7 @@ Class lattice {
 				return $view->render();
 			}
       try {
-        if(!class_exists($module['modulename'].'_Controller')){
+        if (!class_exists($module['modulename'].'_Controller')){
           $includeclass = 'class '.$module['modulename'].'_Controller extends '.$module['controllertype'].'_Controller { } ';
           eval($includeclass);
         }
@@ -205,7 +205,7 @@ Class lattice {
 		//
 		//BELOW HERE NEEDS TO BE FIXED IN ALL CHILDREN OF Lattice_CONTROLLER
 		//CONTROLERS SHOULD JUST ASSIGN TEMPLATE VARS THEN AND THERE
-		if($object_typevar==NULL){
+		if ($object_typevar==NULL){
 			$this->view->$module['modulename'] = $module->view->render();
 		} else {
 			$this->view->$object_typevar = $module->view->render();
@@ -218,7 +218,7 @@ Class lattice {
 
 	public static function get_current_language(){
 		$language_code = Session::instance()->get('language_code');
-		if(!$language_code){
+		if (!$language_code){
 			$language_code = Kohana::config('lattice.default_language');
 		}
 		return $language_code;
@@ -235,7 +235,7 @@ Class lattice {
 			default:
 				$message = $e->get_message();
 				foreach( $e->get_trace() as $trace){
-					if(isset($trace['file'])){
+					if (isset($trace['file'])){
 						$message .= " ::::: ".$trace['file'].':'.$trace['line']."\n;";
 					}
 				}
@@ -249,7 +249,7 @@ Class lattice {
 	public static function convert_full_path_to_web_path($full_path){
 
 
-		if(self::$web_root == null){
+		if (self::$web_root == null){
 			self::$web_root  = getcwd().'/';
 		}
 		$webpath = str_replace(self::$web_root, '', $full_path);

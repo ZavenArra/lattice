@@ -94,7 +94,7 @@ Class AssociatorTest extends Kohana_UnitTest_TestCase {
 
   private function resultContainsObjectWithId($result, $id){
     foreach($result as $row){
-      if($row->id == $id){
+      if ($row->id == $id){
         return true;
       }
     }

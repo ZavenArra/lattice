@@ -13,7 +13,7 @@ class Navigation {
 		Utility function to get one node
 	*/
 	public static function get_node_info(& $object){
-		if(!strstr('Lattice_Object', get_class($object))){
+		if (!strstr('Lattice_Object', get_class($object))){
 			$object = Graph::object($object);
 		}
 
@@ -24,7 +24,7 @@ class Navigation {
 		foreach(Kohana::config('navigation.nav_data_fields.object_type') as $field){
 			$node_info[$field] = $object->objecttype->$field;
 		}
-		if(!count($node_info['addable_objects'])){
+		if (!count($node_info['addable_objects'])){
 			unset($node_info['addable_objects']);
 		}
 
@@ -34,11 +34,11 @@ class Navigation {
       }
 		
       
-		if(!$node_info['title']){
+		if (!$node_info['title']){
 			$node_info['title'] = $node_info['slug'];
 		}
 
-    if(strlen($node_info['title']) > 25) {
+    if (strlen($node_info['title']) > 25) {
       $node_info['title'] = substr($node_info['title'], 0, 23);
       $node_info['title'] .= '...';
    }

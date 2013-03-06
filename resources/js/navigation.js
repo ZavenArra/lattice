@@ -1,4 +1,4 @@
-if( !lattice.modules.navigation ) lattice.modules.navigation = {};
+if ( !lattice.modules.navigation ) lattice.modules.navigation = {};
 
 lattice.modules.navigation.Navigation = new Class({
 
@@ -16,7 +16,7 @@ lattice.modules.navigation.Navigation = new Class({
 
 	getNodeIdFromElement: function( anElement ){ 
 		var id;
-		if( anElement.get( 'id' ) && anElement.get( 'id' ).split( '_' ) ){
+		if ( anElement.get( 'id' ) && anElement.get( 'id' ).split( '_' ) ){
 			id = anElement.get("id").split( "_" )[ anElement.get("id").split( "_" ).length - 1 ];
 		}else{
 			id = null;
@@ -30,7 +30,7 @@ lattice.modules.navigation.Navigation = new Class({
 	},
 	getNodeTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].nodeType; },
 	getContentTypeFromId: function( nodeId ){ return this.nodeData[ nodeId ].contentType; },
-	getNodeTitleFromId: function( nodeId ){ if( this.nodeData[ nodeId ] ){ return this.nodeData[ nodeId ].title; }else{ return null; } },
+	getNodeTitleFromId: function( nodeId ){ if ( this.nodeData[ nodeId ] ){ return this.nodeData[ nodeId ].title; }else{ return null; } },
 	getSlugFromId: function( nodeId ){ return this.nodeData[ nodeId ].slug; },
 	getNodeById: function( nodeId ){ return this.nodeData[ nodeId ]; },
 	getUserLevel: function(){ return this.userLevel; },
@@ -49,7 +49,7 @@ lattice.modules.navigation.Navigation = new Class({
 	},
 
 	onObjectNameChanged: function( objId, response ){
-		if( this.nodeData[ objId ] ){
+		if ( this.nodeData[ objId ] ){
 			this.nodeData[ objId ].title = name;
 			$( 'node_' + objId ).getElement( "h5" ).set( 'text', response.value );
 		}
@@ -66,7 +66,7 @@ lattice.modules.navigation.Navigation = new Class({
 		this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
 		
 		this.marshal.onNodeSelected( nodeId );
-		if( this.getNodeTypeFromId( nodeId ) == 'object' ) this.requestTier( nodeId, tier );
+		if ( this.getNodeTypeFromId( nodeId ) == 'object' ) this.requestTier( nodeId, tier );
 	},
 	
 	onCrumbClicked: function( crumbData ){
@@ -78,17 +78,17 @@ lattice.modules.navigation.Navigation = new Class({
 		//console.log( "prepareTier ", tier, paneIndex, node );
 		this.detachTiers( paneIndex + 1 );
 		this.removeCrumbs( paneIndex + 1 );
-		if( node ){
+		if ( node ){
 			this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
 			//console.log( "onCrumbClicked", node, node.id, tier );
-			if( node.objectType == 'object' ) this.requestTier( node.id, tier );
-			if( this.getNodeTypeFromId( node.id ) == 'object' ){ 
+			if ( node.objectType == 'object' ) this.requestTier( node.id, tier );
+			if ( this.getNodeTypeFromId( node.id ) == 'object' ){ 
 				this.marshal.onNodeSelected( node.id );
 			}else{
 				this.slideToCurrentTier( null );
 				this.marshal.clearPage();				
 			}
-			if( this.getNodeTypeFromId( node.id ) == 'object' ) this.requestTier( node.id, tier );
+			if ( this.getNodeTypeFromId( node.id ) == 'object' ) this.requestTier( node.id, tier );
 		}else{
 			this.slideToCurrentTier( null );
 			this.getVisibleTiers().each( function( pane ){
@@ -99,7 +99,7 @@ lattice.modules.navigation.Navigation = new Class({
 	},
 	
 	clearPendingTierRequest: function(){
-		if( this.pendingPane ){
+		if ( this.pendingPane ){
 			this.pendingPane.get('spinner').hide();
 			this.pendingPane.destroy();
 		}
@@ -109,7 +109,7 @@ lattice.modules.navigation.Navigation = new Class({
 	requestTier: function( nodeId, parentTier, deepLink ){
 		//console.log( 'requestTier', nodeId, parentTier, deepLink );
 		cached = ( this.tiers[ nodeId ] && !deepLink )? true : false;
-		if( cached ){
+		if ( cached ){
 <<<<<<< HEAD
 =======
 			console.group();
@@ -148,11 +148,11 @@ lattice.modules.navigation.Navigation = new Class({
 		var deepLink = ( lattice.historyManager.getAppState().slug )? lattice.historyManager.getAppState().slug : null;
 		this.breadCrumbs.addCrumb( { label: '/' } );		
 		this.requestTier( this.rootId, null, deepLink );
-		if( deepLink ) this.marshal.onNodeSelected( deepLink );
+		if ( deepLink ) this.marshal.onNodeSelected( deepLink );
 <<<<<<< HEAD
 
 		this.slideToggle = this.element.getElement('.slideToggle');
-		if( this.slideToggle ){
+		if ( this.slideToggle ){
 			console.log( ">>>>>", this.element, lattice.pointerEnterEvent );
 			this.element.addEvent( lattice.pointerEnterEvent, this.showFixedNav.bindWithEvent( this ) );
 			this.element.addEvent( lattice.pointerLeaveEvent, this.hideFixedNav.bindWithEvent( this ) );	
@@ -172,13 +172,13 @@ lattice.modules.navigation.Navigation = new Class({
 					//setStyle('padding-top', navelementheight + 'px' );
 				},
 				onLeave: function(position,leaves) {
-					if( position.y < navelementheight){
+					if ( position.y < navelementheight){
 						lattice.CMS.element.removeClass('fixednav');						
 					}
 //					console.log( 'onLeave' );
 				},
 				onTick: function(position,state,enters,leaves) {
-	//				if(console) { console.log('Tick  [' + enters + ', ' + leaves + '] at: ' + position.x + ' / ' + position.y + " : " + lattice.ss.min + " : " + navelementheight ); }
+	//				if (console) { console.log('Tick  [' + enters + ', ' + leaves + '] at: ' + position.x + ' / ' + position.y + " : " + lattice.ss.min + " : " + navelementheight ); }
 				},
 				container: window
 			});
@@ -219,7 +219,7 @@ lattice.modules.navigation.Navigation = new Class({
 	processNodeData: function( nodes, html, tierId, containerPane ){   
 		nodes.each( function( node ){
 			this.nodeData[ node.id ] = node;
-			if( node.tier ){
+			if ( node.tier ){
 				this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
 				this.processNodeData( node.tier.nodes, node.tier.html, node.id, this.addPane() );
 			}
@@ -232,7 +232,7 @@ lattice.modules.navigation.Navigation = new Class({
 
 	renderPane: function( aTier, newPane ){
 		var nodeId, navSlideFx, nodeTitle;
-		if( !newPane ) newPane = this.addPane();
+		if ( !newPane ) newPane = this.addPane();
 		newPane.unspin();
 		aTier.attachToPane( newPane );			
 		aTier.render();
@@ -240,7 +240,7 @@ lattice.modules.navigation.Navigation = new Class({
 	},
 	
 	slideToCurrentTier: function( target ){
-		if( !target || this.getPanes().indexOf( target ) < this.numberOfVisiblePanes ){
+		if ( !target || this.getPanes().indexOf( target ) < this.numberOfVisiblePanes ){
 			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toLeft();
 		}else{
 <<<<<<< HEAD
@@ -256,10 +256,10 @@ lattice.modules.navigation.Navigation = new Class({
 	detachTiers: function( startIndex, endIndex ){
 		var visibleTiers, tiersToDetach;
 		visibleTiers = this.getVisibleTiers();
-		if( startIndex < 0 ) startIndex = 0;
-		if( !endIndex ) endIndex = visibleTiers.length;		
+		if ( startIndex < 0 ) startIndex = 0;
+		if ( !endIndex ) endIndex = visibleTiers.length;		
 		var tiersToDetach = visibleTiers.filter( function( aTier, i ){
-			if( i >= startIndex && i < endIndex ) return aTier;
+			if ( i >= startIndex && i < endIndex ) return aTier;
 		});
 		tiersToDetach.each( function( aTier ){ aTier.detach(); });
 	},
@@ -267,10 +267,10 @@ lattice.modules.navigation.Navigation = new Class({
 	removeCrumbs: function( startIndex, endIndex ){
 		var crumbs, crumbsToRemove;
 		crumbs = this.breadCrumbs.getCrumbs();
-		if( startIndex < 0 ) startIndex = 0;
-		if( !endIndex ) endIndex = crumbs.length;		
+		if ( startIndex < 0 ) startIndex = 0;
+		if ( !endIndex ) endIndex = crumbs.length;		
 		var crumbsToRemove = crumbs.filter( function( aCrumb, i ){
-			if( i >= startIndex && i < endIndex ) return aCrumb;
+			if ( i >= startIndex && i < endIndex ) return aCrumb;
 		});
 		this.breadCrumbs.removeCrumbs( crumbsToRemove );		
 	},
@@ -295,7 +295,7 @@ lattice.modules.navigation.Navigation = new Class({
 		delete this.nodeData[ nodeId ];
 		this.dataSource.removeObjectRequest( nodeId );
 		console.log( "removeObject", nodeId, this.toString() );
-		if( nodeId == this.dataSource.getObjectId() ){			
+		if ( nodeId == this.dataSource.getObjectId() ){			
 			lattice.historyManager.changeState( "slug", null );
 			// this.breadCrumbs.removeCrumbByLabel( title );			
 			paneIndex = this.getVisibleTiers().indexOf( tier );		
@@ -332,8 +332,8 @@ lattice.modules.navigation.Tier = new Class({
 	getActiveNode: function(){ return this.activeNode; },
 	
 	setActiveNode: function( el ){
-		if( this.activeNode )this.deindicateNode( this.activeNode );
-		if( el ){
+		if ( this.activeNode )this.deindicateNode( this.activeNode );
+		if ( el ){
 			this.activeNode = el;
 			this.indicateNode( el );
 		}
@@ -364,18 +364,18 @@ lattice.modules.navigation.Tier = new Class({
 	render: function( e ){
 		lattice.util.stopEvent( e );
 <<<<<<< HEAD
-//		if( this.boundOnKeyPress ) this.element.removeEvent( 'keydown', this.boundOnKeyPress );
+//		if ( this.boundOnKeyPress ) this.element.removeEvent( 'keydown', this.boundOnKeyPress );
 =======
 >>>>>>> master
-		if( this.element.get('html') != this.html ) this.element.set( 'html', this.html );
+		if ( this.element.get('html') != this.html ) this.element.set( 'html', this.html );
 		this.nodeElement = this.element.getElement( ".nodes" );
-		if( this.options.allowChildSort ) this.makeSortable();
+		if ( this.options.allowChildSort ) this.makeSortable();
 		this.nodes = this.element.getElements(".node");
 		this.nodes.each( function( aNodeElement ){ 
 			this.initNode( aNodeElement );
 		}, this );
 		this.drawer = this.element.getElement( '.tierMethodsDrawer' );
- 		if( this.drawer ){
+ 		if ( this.drawer ){
 <<<<<<< HEAD
 =======
 			this.drawer.set( "morph", {
@@ -386,7 +386,7 @@ lattice.modules.navigation.Tier = new Class({
 			this.drawer.setStyle( 'height', 'auto' );
 			this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', 'auto' );
 			this.drawer.getElement( '.close' ).addEvent( 'click', this.render.bindWithEvent( this ) );
-			if( !this.drawer.retrieve( 'initTop' ) ) this.drawer.store( "initTop", this.drawer.getStyle( "top" ) );	
+			if ( !this.drawer.retrieve( 'initTop' ) ) this.drawer.store( "initTop", this.drawer.getStyle( "top" ) );	
 			this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
 >>>>>>> master
 			var addObjectLinks = this.drawer.getElements( "li" );
@@ -400,13 +400,13 @@ lattice.modules.navigation.Tier = new Class({
 	
 	onKeyPress: function( e ){
 		console.log( "onKeyPress", e.key );
-		if( e.key == 'esc'){
+		if ( e.key == 'esc'){
 			this.cancel();
 		}
 	},
 
 =======
-			if( this.marshal.getUserLevel() == 'superuser' && addObjectLinks.length > 5  ){
+			if ( this.marshal.getUserLevel() == 'superuser' && addObjectLinks.length > 5  ){
 				// this.element.removeClass( "dark" );
 				this.drawer.getElement( ".close" ).addClass("hidden");
 			 	this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
@@ -416,7 +416,7 @@ lattice.modules.navigation.Tier = new Class({
 				this.drawer.addEvent( 'mouseleave', this.onDrawerMouseLeave.bindWithEvent( this ) );
 			}
 			// make nodes element shorter by the height of the addableObjects title height
-			// if( this.nodeElement.getDimensions().height >= this.element.getDimensions().height ){
+			// if ( this.nodeElement.getDimensions().height >= this.element.getDimensions().height ){
 			// 	this.nodeElement.setStyle( 'height', this.element.getSize().y - this.drawer.getElement( "div.titleBar" ).getDimensions().height );
 			// }
 		}
@@ -441,10 +441,10 @@ lattice.modules.navigation.Tier = new Class({
 	},
 		
 	adoptNode: function( newNode ){
-		if( this.options.addPosition == "top" ){
+		if ( this.options.addPosition == "top" ){
 			this.nodeElement.grab( newNode, 'top' );			
 		}else{
-			if( this.nodeElement.getElement( ".module" ) ){
+			if ( this.nodeElement.getElement( ".module" ) ){
 				this.nodeElement.getElement( ".module" ).grab( newNode, 'before' );
 			}else{
 				this.nodeElement.grab( newNode, 'bottom' );				
@@ -461,11 +461,11 @@ lattice.modules.navigation.Tier = new Class({
 		removeNodeElement = aNodeElement.getElement(".removeNode");
 		aNodeElement.store( "options", aNodeElement.getOptionsFromClassName() );
 		aNodeElement.addEvent( "click", this.onNodeClicked.bindWithEvent( this, aNodeElement ) );
-		if( togglePublishedStatusElement ) togglePublishedStatusElement.addEvent( "click", this.onTogglePublishedStatusClicked.bindWithEvent( this, aNodeElement ) );
+		if ( togglePublishedStatusElement ) togglePublishedStatusElement.addEvent( "click", this.onTogglePublishedStatusClicked.bindWithEvent( this, aNodeElement ) );
 
-		if( node && node.tier ){ this.setActiveNode( aNodeElement ) }
+		if ( node && node.tier ){ this.setActiveNode( aNodeElement ) }
 
-		if( removeNodeElement ) removeNodeElement.addEvent( "click", this.onRemoveNodeClicked.bindWithEvent( this, aNodeElement ) );
+		if ( removeNodeElement ) removeNodeElement.addEvent( "click", this.onRemoveNodeClicked.bindWithEvent( this, aNodeElement ) );
 	},
 
 	indicateNode: function( nodeElement ){
@@ -485,7 +485,7 @@ lattice.modules.navigation.Tier = new Class({
 
 	onMouseLeave: function( e, nodeElement ){
 		lattice.util.stopEvent( e );
-		if( this.activeNode != nodeElement ) this.deindicateNode( nodeElement );
+		if ( this.activeNode != nodeElement ) this.deindicateNode( nodeElement );
 	},
 
 	onNodeClicked: function( e, el ){
@@ -505,7 +505,7 @@ lattice.modules.navigation.Tier = new Class({
 	onRemoveNodeClicked: function( e, nodeElement ){
 		lattice.util.stopEvent( e );
 		var confirmation = confirm( "Are you sure you want to remove " + nodeElement.getElement("h5").get("text") + " ?" );
-		if( !confirmation ) return; 
+		if ( !confirmation ) return; 
 		var nodeId = this.marshal.getNodeIdFromElement( nodeElement );
 		nodeElement.destroy();
 		nodeElement = null;
@@ -524,7 +524,7 @@ lattice.modules.navigation.Tier = new Class({
 		var nodeId, togglePublishedStatusLink;
 		nodeId = this.marshal.getNodeIdFromElement( nodeElement );
 		togglePublishedStatusLink = nodeElement.getElement( ".togglePublishedStatus" );
-		if( togglePublishedStatusLink.hasClass( "published" ) ){
+		if ( togglePublishedStatusLink.hasClass( "published" ) ){
 			togglePublishedStatusLink.removeClass( "published" );
 			togglePublishedStatusLink.set( 'title', 'publish' );
 		}else{
@@ -549,7 +549,7 @@ lattice.modules.navigation.Tier = new Class({
 		var templateId = lattice.util.getValueFromClassName( "objectTypeId", addObjectButton.get("class") );
 		var addText = addObjectButton.get( 'text' );
 		var nodeTitle = prompt( "What would you like to name this" + addText.substr( addText.lastIndexOf( " " ), addText.length ).toLowerCase() );
-		if( !nodeTitle ) return;
+		if ( !nodeTitle ) return;
 		this.spinner.show( true );
 		this.render();
 		this.marshal.addObject( this.id, templateId, { title: nodeTitle }, this );
@@ -557,7 +557,7 @@ lattice.modules.navigation.Tier = new Class({
 
 	onObjectAdded: function( aNode ){
 		console.log( "onObjectAdded", aNode );
-		if( this.options.allowChildSort && this.sortableList ){
+		if ( this.options.allowChildSort && this.sortableList ){
 //			console.log( "onObjectAdded", this.options.allowChildSort, this.sortableList, this.sortableListElement, aNode )
 			this.sortableList.addItems( aNode ); 
 		}
@@ -566,7 +566,7 @@ lattice.modules.navigation.Tier = new Class({
 
 	makeSortable: function(){	
 		this.sortableListElement = this.nodeElement;
-		if( this.sortableList) this.removeSortable( this.sortableList );
+		if ( this.sortableList) this.removeSortable( this.sortableList );
 		this.sortableList = null;
 		this.sortableList = new lattice.ui.Sortable( this.sortableListElement, this, this.sortableListElement  );
 		this.oldSort = this.serialize();
@@ -586,7 +586,7 @@ lattice.modules.navigation.Tier = new Class({
 	},
 
 	submitSortOrder: function( newOrder ){
-		if( this.options.allowChildSort && this.oldSort != newOrder ){
+		if ( this.options.allowChildSort && this.oldSort != newOrder ){
 			clearInterval( this.submitDelay );
 			this.submitDelay = null;
 			this.marshal.saveTierSort( newOrder, this.id );
@@ -600,7 +600,7 @@ lattice.modules.navigation.Tier = new Class({
 		children = this.sortableListElement.getChildren("li");
 		children.each( function ( anItem ){
 				nodeId = this.marshal.getNodeIdFromElement( anItem );
-				if( nodeId && nodeId.isNumeric() ){
+				if ( nodeId && nodeId.isNumeric() ){
 					sortArray.push( nodeId );
 				}
 		}, this );

@@ -35,7 +35,7 @@ class latticecms {
 
 										$field = $element['name'];
 										$cluster_object = $object->$field;
-                    if(!$cluster_object){
+                    if (!$cluster_object){
                       throw new Kohana_Exception('Cluster Object did not load for '.$object->id.': '.$field);
                     }
 										
@@ -75,7 +75,7 @@ class latticecms {
              * multiple items being displayed have the same field names
              */
             $ui_arguments = $element;
-            if(isset($element['field_id'])){
+            if (isset($element['field_id'])){
                $ui_arguments['name'] = $element['field_id'];
             }
 
@@ -164,7 +164,7 @@ class latticecms {
        $element_name
      );
      $element = lattice::config('objects', $x_path);
-     if(!$element OR !$element->length ){
+     if (!$element OR !$element->length ){
        throw new Kohana_Exception('x_path returned no results: '. $x_path);
      }
      return $element->item(0);
@@ -257,11 +257,11 @@ class latticecms {
 		//find all images
 		foreach(lattice::config('objects', '//object_type') as $object_type){
 			foreach(lattice::config('objects', 'elements/*', $object_type) as $element){
-				if($element->tag_name == 'image'){
+				if ($element->tag_name == 'image'){
 					$objects = ORM::Factory('object_type', $object_type->get_attribute('name'))->get_active_members();
 					$fieldname = $element->get_attribute('name');
 					foreach($objects as $object){
-           	if(is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename)){
+           	if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename)){
 							$uiresizes = Kohana::config('lattice_cms.uiresizes');
 							$object->process_image($object->$fieldname->filename, $fieldname, $uiresizes);
 						}
@@ -275,9 +275,9 @@ class latticecms {
 		foreach($object_ids as $id){
 			$object = Graph::object($id);
       foreach(lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element){
-				if($element->tag_name == 'image'){
+				if ($element->tag_name == 'image'){
 					$fieldname = $element->get_attribute('name');
-					if(is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename)){
+					if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename)){
 						$uiresizes = Kohana::config('lattice_cms.uiresizes');
 						$object->process_image($object->$fieldname->filename, $fieldname, $uiresizes);
 					}
@@ -333,7 +333,7 @@ class latticecms {
       $objects = Graph::object()->object_type_filter($object_type)->active_filter()->find_all();
       foreach($objects as $object){
         $title = $object->title;
-        if(!$title){
+        if (!$title){
           $title = $object->slug;
         }
         $parent_candidates[$object->id] = $title;

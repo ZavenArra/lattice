@@ -53,12 +53,12 @@ class Model_File_image {
 	 * Returns: nothing
 	 */
 	public function __construct($filename, $prefix){
-		if($prefix != 'original'){
+		if ($prefix != 'original'){
 			$this->prefix = $prefix.'_';
 		}
-		if($filename){
+		if ($filename){
 			$this->filename = $this->prefix.$filename;
-			if($prefix == 'uithumb'){
+			if ($prefix == 'uithumb'){
 				$ext = substr(strrchr($filename, '.'), 1);
 				switch($ext){
 				case 'tiff':
@@ -73,10 +73,10 @@ class Model_File_image {
 
 			$this->urlfilename = rawurlencode($this->filename);
 			$dirprefix = '';
-			if(Kohana::config('lattice.staging')){
+			if (Kohana::config('lattice.staging')){
 				$dirprefix = 'staging/';
 			}
-			if(file_exists($dirprefix.'application/media/'.$this->filename)){
+			if (file_exists($dirprefix.'application/media/'.$this->filename)){
 				$size = getimagesize($dirprefix.'application/media/'.$this->filename);
 				$this->width = $size[0];
 				$this->height = $size[1];

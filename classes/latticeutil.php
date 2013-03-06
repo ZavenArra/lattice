@@ -38,7 +38,7 @@ Class latticeutil {
 	 * Returns: if file exists, return the img src tag code, otherwise return null
 	 */
 	public static function img($file, $prefix, $alt,  $extra = null){
-		if(!$file->$prefix->fullpath 
+		if (!$file->$prefix->fullpath 
 			OR !file_exists($file->$prefix->fullpath)){
 			return null;
 		}
@@ -60,8 +60,8 @@ Class latticeutil {
 	 */
 	public static function check_role_access($role){
 
-    if(class_exists('Auth')){ //If auth module not installed, grant access
-      if($role AND !Auth::instance()->logged_in($role)){
+    if (class_exists('Auth')){ //If auth module not installed, grant access
+      if ($role AND !Auth::instance()->logged_in($role)){
         return false;
       } else {
         return true;
@@ -75,14 +75,14 @@ Class latticeutil {
     * Check for role access when an array of roles have access
     */
    public static function check_access($roles){
-      if(!$roles){
+      if (!$roles){
          return true;
       }
-      if(!is_array($roles)){
+      if (!is_array($roles)){
          $roles = array($roles);
       }
       foreach($roles as $role){
-         if(latticeutil::check_role_access($role)){
+         if (latticeutil::check_role_access($role)){
             return true;
          }
       }
@@ -95,7 +95,7 @@ Class latticeutil {
 	 */
 	private static function decode_recurse($value){
 		//handle object?
-		if(!is_array($value)){
+		if (!is_array($value)){
 			return html_entity_decode($value);
 		} else {
 			for($i=0, $keys=array_keys($value), $count=count($value); $i<$count; $i++){
@@ -109,10 +109,10 @@ Class latticeutil {
 	public static $modulos_options_count;
 	public static function modulo($identifier, $options){
 		self::$modulos_options_count = count( $options );
-		if(!is_array(self::$modulos)){
+		if (!is_array(self::$modulos)){
 			self::$modulos = array();
 		}
-		if(!isset(self::$modulos[$identifier])){
+		if (!isset(self::$modulos[$identifier])){
 			self::$modulos[$identifier] = 0;
 		}
 		$index = self::$modulos[$identifier];

@@ -24,8 +24,8 @@ class Graph {
       $object = ORM::Factory('object');
     } else {
       $object = ORM::Factory('object', $object_id);
-      if(Kohana::find_file('classes/model/', $object->objecttype->objecttypename)){
-        if( is_subclass_of('Model_'.$object->objecttype->objecttypename, 'Model_Object')){
+      if (Kohana::find_file('classes/model/', $object->objecttype->objecttypename)){
+        if ( is_subclass_of('Model_'.$object->objecttype->objecttypename, 'Model_Object')){
           $object = ORM::Factory($object->objecttype->objecttypename, $object_id);
         } 
       }
@@ -42,12 +42,12 @@ class Graph {
 
 
   public static function lattice($lattice_id = 'lattice'){
-    if(is_numeric($lattice_id)){
+    if (is_numeric($lattice_id)){
       return ORM::Factory('lattice', $lattice_id);
     } else {
       $lattice = ORM::Factory('lattice')->where('name', '=', $lattice_id)->find();
     }
-    if(isset($lattice) AND !$lattice->loaded()){
+    if (isset($lattice) AND !$lattice->loaded()){
       $lattice = ORM::Factory('lattice');
       $lattice->name = $lattice_id;
       $lattice->save();
@@ -86,7 +86,7 @@ class Graph {
   }
 
   public static function is_file_model($model){
-    if(get_class($model) == 'Model_File'){
+    if (get_class($model) == 'Model_File'){
       return true;
     } else {
       return false;
@@ -94,7 +94,7 @@ class Graph {
   }
 
   public static function languages(){
-    if(!self::$_languages){
+    if (!self::$_languages){
       self::$_languages =  ORM::Factory('language')->where('activity', 'is', NULL)->find_all();
     }
     return self::$_languages;
@@ -104,7 +104,7 @@ class Graph {
     $languages = self::languages();
     foreach($languages as $language){
 
-      if($language->id == $id OR $language->code == $id){
+      if ($language->id == $id OR $language->code == $id){
         return $language;
       }
     }
@@ -124,10 +124,10 @@ class Graph {
   }
 
   public static function mediapath(){
-    if(self::$mediapath){
+    if (self::$mediapath){
       return self::$mediapath;
     }
-    if(Kohana::config('lattice.staging')){
+    if (Kohana::config('lattice.staging')){
       self::$mediapath = Kohana::config('lattice_cms.stagingmediapath');
     } else {
       self::$mediapath = Kohana::config('lattice_cms.basemediapath');
@@ -143,18 +143,18 @@ class Graph {
     //
     //check objects.xml for configuration
 
-    if(!$force){
+    if (!$force){
       $object_type_config = NULL;
       $x_path =  sprintf('//object_type[@name="%s"]', $object_type_name);
       $x_path_list =  sprintf('//list[@name="%s"]', $object_type_name);
       if (!$object_type_config = lattice::config('objects', $x_path)->item(0)) { 
-        if(!$object_type_config = lattice::config('objects', $x_path_list)->item(0)) {
+        if (!$object_type_config = lattice::config('objects', $x_path_list)->item(0)) {
           throw new Kohana_Exception("Object type '".$object_type_name."' does not exist in objects.xml"); 
         }
       }
 
       foreach(lattice::config('objects', 'elements/*', $object_type_config) as $item){
-        if($item->get_attribute('name')=='title'){
+        if ($item->get_attribute('name')=='title'){
           throw new Kohana_Exception('Title is a reserved field name');
         }
       }
@@ -163,7 +163,7 @@ class Graph {
 
     //find or create object_type record
     $t_record = ORM::Factory('objecttype', $object_type_name );
-    if(!$t_record->loaded()){
+    if (!$t_record->loaded()){
       $t_record = ORM::Factory('objecttype');
       $t_record->objecttypename = $object_type_name;
       $t_record->node_type = 'object';
@@ -188,7 +188,7 @@ class Graph {
     //$this->driver->get_object_type_object($roo_node_object_type)
     $object_type = ORM::Factory('object_type')->where('objecttypename', '=', $root_node_object_type)->find();
     $object =  Graph::object()->object_type_filter($object_type->objecttypename)->find();
-    if(!$object->loaded()){
+    if (!$object->loaded()){
       throw new Kohana_Exception('Root node not found: '.$root_node_object_type);
     }
     return $object;
@@ -206,7 +206,7 @@ class Graph {
       ->where('language_id', '=', $language->id)
       ->find();
     $root = ORM::Factory('object', $object_relationship->id);
-    if(!$root->loaded()){
+    if (!$root->loaded()){
       throw new Kohana_Exception('Root object not found');
     }
     return $root;

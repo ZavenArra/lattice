@@ -29,7 +29,7 @@ class Ruckusing_NamingUtil {
 
 	public static function task_to_class_name($task) {
 		$parts = explode(":", $task);
-		if(count($parts) < 2) {
+		if (count($parts) < 2) {
 			throw new Exception("Task name invalid: $task");
 		}
 		return self::class_ns_prefix . strtoupper($parts[0]) . '_' . ucfirst($parts[1]);
@@ -38,12 +38,12 @@ class Ruckusing_NamingUtil {
 	public static function class_from_file_name($file_name) {
 		//we could be given either a string or an absolute path
 		//deal with it appropriately
-		if(is_file($file_name)) {
+		if (is_file($file_name)) {
 			$file_name = basename($file_name);
 		}
 		$regex = '/^class\.(\w+)\.php$/';	
-		if(preg_match($regex, $file_name, $matches)) {
-			if(count($matches) == 2) {
+		if (preg_match($regex, $file_name, $matches)) {
+			if (count($matches) == 2) {
 				return $matches[1];
 			}
 		}
@@ -51,8 +51,8 @@ class Ruckusing_NamingUtil {
 	}
 	
 	public static function class_from_migration_file($file_name) {
-		if(preg_match('/^(\d+)_(.*)\.php$/', $file_name, $matches)) {
-			if( count($matches) == 3) {
+		if (preg_match('/^(\d+)_(.*)\.php$/', $file_name, $matches)) {
+			if ( count($matches) == 3) {
 				return $matches[2];
 			}
 		}//if-preg-match
@@ -63,7 +63,7 @@ class Ruckusing_NamingUtil {
     $parts = explode("_", $str);
     //if there were no spaces in the input string
     //then assume its already camel-cased
-    if(count($parts) == 0) { return $str; }
+    if (count($parts) == 0) { return $str; }
     $cleaned = "";
     foreach($parts as $word) {
       $cleaned .= ucfirst($word);
@@ -75,7 +75,7 @@ class Ruckusing_NamingUtil {
 		$name = sprintf("idx_%s", self::underscore($table_name));
 		//if the column parameter is an array then the user wants to create a multi-column
 		//index
-		if(is_array($column_name)) {
+		if (is_array($column_name)) {
 			$column_str = join("_and_", $column_name);
 		} else {
 			$column_str = $column_name;

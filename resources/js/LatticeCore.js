@@ -1,7 +1,7 @@
 // Section: Setting up environment for LatticeCore.
 
 //	Redirects ie 6 to a landing page for that browser
-if( Browser.ie && Browser.version < 8 ) window.location.href = $(document).getElement("head").getElement("base").get("href") + "msielanding";
+if ( Browser.ie && Browser.version < 8 ) window.location.href = $(document).getElement("head").getElement("base").get("href") + "msielanding";
 
 /*
 Quick hack to prevent browsers w/o a console, or firebug from generating errors when console functions are called.
@@ -120,7 +120,7 @@ String.implement({
 	entityEncode: function(){
 		var matches = this.match(/&#\d+;?/g);
 		var returnString = this;
-		if( matches ){
+		if ( matches ){
 			for(var i = 0; i < matches.length; i++){
 				var replacement = String.fromCharCode((matches[i]).replace(/\D/g,""));
 				returnString = this.replace(/&#\d+;?/,replacement);
@@ -185,11 +185,11 @@ Element.implement({
    },
 
 	getValueFromClassName: function( key ){
-		if(!this.get("class")) return false;
+		if (!this.get("class")) return false;
 		var classes = this.get("class").split(" ");
 		var result;
 		classes.each( function( className ){
-		  if( className.indexOf( key ) == 0 ) result = className.split("-")[1];
+		  if ( className.indexOf( key ) == 0 ) result = className.split("-")[1];
 		});
 		return result;
 	},
@@ -199,13 +199,13 @@ Element.implement({
 		Loops through a classes className, splits it by 
 	*/
 	getOptionsFromClassName: function(){
-		if(!this.get('class')) return false;
+		if (!this.get('class')) return false;
 		var classes = this.get('class').split(' ');
 		var opts = {};
 		classes.each( function( className ){
-			if( className.indexOf( '-' ) > -1 ){
+			if ( className.indexOf( '-' ) > -1 ){
 				var opt = className.split( '-' );
-				if( opt[1].split( '_' ).length > 1 ){
+				if ( opt[1].split( '_' ).length > 1 ){
 					opts[ opt[0] ] = opt[1].split('_');
 				}else{
 					opts[ opt[0] ] = opt[1];					
@@ -277,8 +277,8 @@ Request.JSON.implement({
 		}
 		if ( json == null ){
 			this.onFailure();
-		} else if( !json.returnValue ){
-			if( json.response && json.response.error ){
+		} else if ( !json.returnValue ){
+			if ( json.response && json.response.error ){
 				throw json.response.error;						
 			}else{
 				throw 'response to JSON request has eiter no returnValue, or no response. '
@@ -294,7 +294,7 @@ Request.JSON.implement({
 	Section: Lattice Package
 	Mop is a namespace, quick definition of namespace, more useful for documentation than anything else.
 */
-if( !lattice ) var lattice = {};
+if ( !lattice ) var lattice = {};
 
 
 /*
@@ -361,9 +361,9 @@ lattice.util.loadJS = function( jsURL, options ){
 	But this will serve as a nice shortcut given the verbosity needed to deal with some IE's ( the whole return value conditional )
 */
 lattice.util.stopEvent = function( e ){
-	if( e && e.stop ){
+	if ( e && e.stop ){
 		e.stop();
-	}else if( e ){
+	}else if ( e ){
 		e.returnValue = false;
 	}
 }
@@ -374,9 +374,9 @@ lattice.util.stopEvent = function( e ){
 	This will serve as a nice shortcut given the verbosity needed to deal with IE's ( the whole return value conditional )
 */
 lattice.util.preventDefault = function( e ){
-	if( e && e.preventDefault ){
+	if ( e && e.preventDefault ){
 		e.preventDefault();
-	}else if( e ){
+	}else if ( e ){
 		e.returnValue = false;
 	}	
 }
@@ -402,11 +402,11 @@ lattice.util.getBaseURL = function(){
 	Returns: {String} value
 */
 lattice.util.getValueFromClassName = function( key, aClassName ){
-	if(!aClassName) return false;
+	if (!aClassName) return false;
 	var classNames = aClassName.split( " " );
 	var result = null;
 	classNames.each( function( className ){
-		if( className.indexOf( key ) == 0 ) result = className.split("-")[1];
+		if ( className.indexOf( key ) == 0 ) result = className.split("-")[1];
 	});
 	return result;
 }
@@ -447,7 +447,7 @@ lattice.LatticeObject = new Class({
 	},	
 	
 	destroy: function(){
-		if( this.element ) this.element.destroy();
+		if ( this.element ) this.element.destroy();
 		this.options = this.element = this.elementClass = this.marshal = null 
 	}
 
@@ -463,11 +463,11 @@ lattice.util.Broadcaster = new Class({
 	},
 
 	removeListener: function( aListener ){
-		if( this.listeners.contains( aListener ) ) this.listeners.erase( aListener );
+		if ( this.listeners.contains( aListener ) ) this.listeners.erase( aListener );
 	},
 
 	broadcastMessage: function( eventToFire, args ){
-		if( typeof args == 'array' ){
+		if ( typeof args == 'array' ){
 			args = args.slice(1);
 		}
 		var response = Array.from( arguments )[1];
@@ -499,7 +499,7 @@ lattice.util.HistoryManager = new Class({
 	},
 
 	setAppState: function(){
-		if( !this.currentHash ) return;
+		if ( !this.currentHash ) return;
 		this.appState = {};
 		this.appState = Object.merge( this.appState, this.getStrippedHash().parseQueryString() );
 	},
@@ -514,7 +514,7 @@ lattice.util.HistoryManager = new Class({
 	},
 
 	instance: function(){
-		if( !this._instance ){ this._instance = new lattice.util.HistoryManager(); }
+		if ( !this._instance ){ this._instance = new lattice.util.HistoryManager(); }
 		return this._instance;
 	},
 
@@ -526,7 +526,7 @@ lattice.util.HistoryManager = new Class({
 
 	checkLocation: function(){
 		var hash = this.getStrippedHash();
-		if( hash != this.currentHash ){
+		if ( hash != this.currentHash ){
 			this.currentHash = hash;
 			this.setAppState();
 			this.broadcastMessage( "appstatechanged", this.appState );
@@ -535,9 +535,9 @@ lattice.util.HistoryManager = new Class({
 	},
 
 	changeState: function( key, value ){
-		if( key && value ){
+		if ( key && value ){
 			this.appState[ key ] = value;
-		}else if( key ){
+		}else if ( key ){
 			this.appState[key] = null;
 			delete this.appState[key];
 		}else{
@@ -569,7 +569,7 @@ lattice.util.LoginMonitor = new Class({
 	
 	initialize: function(){
 		window.addEvent( "mousemove", this.onMouseMove.bind( this ) );
-		if( lattice.loginTimeout ) this.millisecondsOfInactivityUntilPrompt = Number( lattice.loginTimeout ) * 1000;
+		if ( lattice.loginTimeout ) this.millisecondsOfInactivityUntilPrompt = Number( lattice.loginTimeout ) * 1000;
 		this.inactivityTimeout = this.onInactivity.periodical( this.millisecondsOfInactivityUntilPrompt, this );
 		this.status = "pending";
 		this.inactivityMessage = 'You have been inactive for {inactiveMins} minutes. If your dont respond to this message you will be automatically logged out in <b>{minutes} minutes and {seconds} seconds</b>. Would you like to stay logged in?';
@@ -577,7 +577,7 @@ lattice.util.LoginMonitor = new Class({
 
 	onMouseMove: function(){
 		clearInterval( this.inactivityTimeout );
-		if( this.status == "pending" ) this.inactivityTimeout = this.onInactivity.periodical( this.millisecondsOfInactivityUntilPrompt, this );
+		if ( this.status == "pending" ) this.inactivityTimeout = this.onInactivity.periodical( this.millisecondsOfInactivityUntilPrompt, this );
 	},
 
 	onInactivity: function(){
@@ -591,7 +591,7 @@ lattice.util.LoginMonitor = new Class({
 			confirmText: "Stay logged in",
 			cancelText: "Logout"
 		}
-		if( !this.dialogue ) this.dialogue = new lattice.ui.InactivityDialogue( this, opts );
+		if ( !this.dialogue ) this.dialogue = new lattice.ui.InactivityDialogue( this, opts );
 		this.dialogue.setTitle( "Login Timeout" );
 		this.logoutTimeout = this.logoutCountDown.periodical( 1000, this );
 		this.logoutCountDown();
@@ -603,7 +603,7 @@ lattice.util.LoginMonitor = new Class({
 		var secondsLeft, minutesLeft, msg;
 		secondsLeft = this.millisecondsUntilLogout*.001 - this.secondsIdle;
 		minutesLeft = Math.floor( secondsLeft/60 );
-		if( secondsLeft == 0 ){ this.logout(); return; }
+		if ( secondsLeft == 0 ){ this.logout(); return; }
 		secondsLeft = secondsLeft - ( minutesLeft * 60 );
  		msg = this.inactivityMessage.substitute( { inactiveMins: this.millisecondsOfInactivityUntilPrompt/this.millisecondsInAMinute, minutes: minutesLeft, seconds: secondsLeft } ) 
 		this.dialogue.setMessage( msg );
@@ -732,7 +732,7 @@ lattice.util.MD5 = function (string) {
 			if (c < 128) {
 				utftext += String.fromCharCode(c);
 			}
-			else if((c > 127) && (c < 2048)) {
+			else if ((c > 127) && (c < 2048)) {
 				utftext += String.fromCharCode((c >> 6) | 192);
 				utftext += String.fromCharCode((c & 63) | 128);
 			}

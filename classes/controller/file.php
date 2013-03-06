@@ -4,7 +4,7 @@ class Controller_File extends Controller{
 	public function __construct($request, $response){
 		parent::__construct($request, $response);
 		/*
-		if(Kohana::config('lattice.staging')){
+		if (Kohana::config('lattice.staging')){
 			$this->mediapath = Kohana::config('lattice.stagingmediapath');
 		} else {
 			$this->mediapath = Kohana::config('lattice.mediapath');
@@ -34,7 +34,7 @@ class Controller_File extends Controller{
 		header("Content-Transfer-Encoding: binary");
 		header("Content-Length: ".@filesize($filename));
 		set_time_limit(0);
-    if(! @readfile("$filename") ) {
+    if (! @readfile("$filename") ) {
       throw new Kohana_Exception("File not found.");	
     }
 		exit;
@@ -59,7 +59,7 @@ class Controller_File extends Controller{
 		header("Content-Length: ".@filesize($filename));
 		header("Content-Disposition: inline;  filename=\"".basename($filename)."\";");
 		set_time_limit(0);
-    if(! @readfile("$filename") ) {
+    if (! @readfile("$filename") ) {
       throw new Kohana_Exception("File not found.");	
     }
 		exit;

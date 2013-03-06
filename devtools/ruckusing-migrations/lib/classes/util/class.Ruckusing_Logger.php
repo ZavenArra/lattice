@@ -12,7 +12,7 @@ class Ruckusing_Logger {
   
   public static function instance($logfile) {
     static $instance;
-    if($instance !== NULL) {
+    if ($instance !== NULL) {
       return $instance;
     }
     $instance = new Ruckusing_Logger($logfile);
@@ -20,7 +20,7 @@ class Ruckusing_Logger {
   }
   
   public function log($msg) {
-    if($this->fp) {
+    if ($this->fp) {
       $ts = date('M d H:i:s', time());
       $line = sprintf("%s [info] %s\n", $ts, $msg); 
       fwrite($this->fp, $line);
@@ -31,7 +31,7 @@ class Ruckusing_Logger {
   }
   
   public function close() {
-    if($this->fp) {
+    if ($this->fp) {
       fclose($this->fp);
     } 
   }

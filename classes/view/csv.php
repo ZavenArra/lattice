@@ -50,7 +50,7 @@ class View_Csv {
       
       foreach ($this->_object->get_fields() as $column_name) {
                   
-         if(in_array($column_name, $this->skip_fields)){
+         if (in_array($column_name, $this->skip_fields)){
             continue;
          }         
          
@@ -59,7 +59,7 @@ class View_Csv {
          //$languages = Graph::languages();
          //foreach ($languages as $translation_language) {
          
-         if($this->_object->loaded()){
+         if ($this->_object->loaded()){
             $data_item = $this->_object->$column_name;
          } else {
             $data_item = null;  //this allow for objects to be used as empty templates 
@@ -84,7 +84,7 @@ class View_Csv {
                foreach ($languages as $language) {
                   $data_item = $il8n_objects[$language->code]->$column_name;
 
-                  if(count($language)>1){
+                  if (count($language)>1){
                     $suffix =  '_' . $language->code;
                   } else {
                     $suffix = '';
@@ -114,7 +114,7 @@ class View_Csv {
                   $data_item = implode($data_item, ',');
                }
 
-               if(count($language)>1){
+               if (count($language)>1){
                  $suffix =  '_' . $language->code;
                } else {
                  $suffix = '';

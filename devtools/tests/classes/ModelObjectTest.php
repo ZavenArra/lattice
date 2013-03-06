@@ -122,7 +122,7 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
     $found = false;
     $children = $newParent->getLatticeChildren();
     foreach($children as $testChild){
-      if($testChild->id == $child->id){
+      if ($testChild->id == $child->id){
         $found = true;
         break;
       } 
@@ -132,7 +132,7 @@ Class ModelObjectTest extends Kohana_UnitTest_TestCase {
     $moved = true;
     $children = $testParent->getLatticeChildren();
     foreach($children as $testChild){
-      if($testChild->id == $child->id){
+      if ($testChild->id == $child->id){
         $found = false;
         break;
       } 

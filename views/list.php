@@ -1,5 +1,5 @@
 <div id="list_<?=$listObjectId;?>" data-objectid="<?=$listObjectId;?>" class="module <?=$class;?> classPath-lattice_modules_List clearFix">
-	<?if(isset($label) && $label):?>
+	<?if (isset($label) && $label):?>
 	<label class='listLabel'><?=$label;?></label>
 	<?endif;?>
 	<div class="listcontrol controls top clearfix">

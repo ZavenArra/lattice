@@ -25,7 +25,7 @@ class latticeview {
 
 			$object = self::get_graph_object($object_id_or_slug);
 			$object_type_name = $object->objecttype->objecttypename;
-			if(Kohana::find_file('classes', 'viewmodel/'.strtolower($object_type_name))){
+			if (Kohana::find_file('classes', 'viewmodel/'.strtolower($object_type_name))){
 				$class_name = 'View_model_'.$object_type_name;
 				$view_model = new $class_name($object_id_or_slug);
 			} else {
@@ -42,7 +42,7 @@ class latticeview {
 
 		 //look in the cache
 		 $language_code = Session::instance()->get('language_code');
-		 if(!$language_code){
+		 if (!$language_code){
 			return $slug_or_object_id;
 		 }
 		 $object = Graph::object($slug_or_object_id);
@@ -51,7 +51,7 @@ class latticeview {
 		 $redirect_slug = $translated_object->slug;
 
 
-		 if(preg_match("/{$original_slug_base}[0-9]+/", $redirect_slug)){
+		 if (preg_match("/{$original_slug_base}[0-9]+/", $redirect_slug)){
 			 return $original_slug_base.'_'.$language_code;
 		 } else {	
 			 return $redirect_slug;
@@ -74,7 +74,7 @@ class latticeview {
 		*/
    // public static function within_subtree($slug){
    //   //Direct links are not within lattice
-   //   if(strstr($slug, 'http')){
+   //   if (strstr($slug, 'http')){
    //     return false;
    //   }
    //   //Only check the first part of given route
@@ -89,14 +89,14 @@ class latticeview {
 
 	public static function within_subtree($slug){
 		//Direct links are not within lattice
-		if(strstr($slug,'http')){
+		if (strstr($slug,'http')){
 			return false;
 		}
 		//Only check the first part of given route
 		//This allos support for custom controllers.
 		$route = explode('/', $slug);
 		$slug = $route[0];
-		if( self::initial_object() ){
+		if ( self::initial_object() ){
 			try {
 				$val = self::initial_object()->is_within_sub_tree($slug);
 				return $val;
@@ -109,7 +109,7 @@ class latticeview {
 
 	 public function __construct($object_id_or_slug = null){
 		 try{
-			 if($object_id_or_slug != NULL){
+			 if ($object_id_or_slug != NULL){
 				 $this->object = self::get_graph_object($object_id_or_slug);
 				 $this->create_view($object_id_or_slug);
 			 }		 	
@@ -133,12 +133,12 @@ class latticeview {
 	 }
 
 	 private static function get_graph_object($object_id_or_slug){
-		 if(!is_object($object_id_or_slug)){
+		 if (!is_object($object_id_or_slug)){
 			 $object = Graph::object($object_id_or_slug);
 		 } else {
 			 $object = $object_id_or_slug;
 		 }
-		 if(!$object->loaded()){
+		 if (!$object->loaded()){
 			 throw new Kohana_Exception("Trying to create view, but object is not loaded: $object_id_or_slug ".$object->slug);
 		 }
 		 return $object;
@@ -146,7 +146,7 @@ class latticeview {
 	 }
 
 	 public function set_var($name, $value){
-		if(!$this->view){
+		if (!$this->view){
 			throw new Kohana_Exception('set_var called but no local variable view has not been set');
 		}
 
@@ -156,11 +156,11 @@ class latticeview {
 
    public function create_view($object_id_or_slug = null){
 
-		 if($object_id_or_slug){
+		 if ($object_id_or_slug){
 			$this->object = $this->get_graph_object($object_id_or_slug);
 		 }
 
-		 if(!self::$initial_object){
+		 if (!self::$initial_object){
 			 self::$initial_object = $this->object;
 		 }
 
@@ -181,7 +181,7 @@ class latticeview {
 			 $view_name = $this->object->objecttype->objecttypename;
 			 if (file_exists('application/views/frontend/' . $view_name . '.php')) {
 				 $view_path = 'frontend/'.$view_name;
-			 } else if(file_exists('application/views/generated/' . $view_name . '.php')) {
+			 } else if (file_exists('application/views/generated/' . $view_name . '.php')) {
 				 $view_path = 'generated/'.$view_name;
 			 } else {
 				 $view_path = 'default';
@@ -218,7 +218,7 @@ class latticeview {
 
 			if (file_exists('application/views/frontend/' . $view_name . '.php')) {
 				$view_path = 'frontend/'.$view_name;
-			} else if(file_exists('application/views/generated/' . $view_name . '.php')) {
+			} else if (file_exists('application/views/generated/' . $view_name . '.php')) {
 				$view_path = 'generated/'.$view_name;
 			} else {
 				$view_path = 'default';
@@ -238,7 +238,7 @@ class latticeview {
  
 	public function get_view_content($view, $slug=null) {
 
-		if((!$view OR $view=='') AND (!$slug || $slug=='')){
+		if ((!$view OR $view=='') AND (!$slug || $slug=='')){
 			throw new Kohana_Exception('get_view_content called with null parameters');
 		}
 
@@ -254,7 +254,7 @@ class latticeview {
 				$object = $slug;
 			}
 		}
-		if($object){
+		if ($object){
 			$object_id = $object->id;
 		}
 
@@ -273,7 +273,7 @@ class latticeview {
 		}
 		$loaded =  $object->loaded();
 		if ($slug) {
-			if($object->loaded() != 1) {
+			if ($object->loaded() != 1) {
 				throw new Kohana_Exception('latticeviews::get_view_content : view called with slug: :slug, but no object to load',
 					array(
 						':slug'=>$slug,
@@ -281,7 +281,7 @@ class latticeview {
 				);
 			}
 		}
-		if($object){
+		if ($object){
 			$data['content']['main'] = $object->get_page_content();
 		}
 
@@ -326,7 +326,7 @@ class latticeview {
 
 	public function get_include_content($include_tier, $parent_id){
     $content = array();
-    if($include_content_queries = lattice::config('frontend', 'include_data', $include_tier)) {
+    if ($include_content_queries = lattice::config('frontend', 'include_data', $include_tier)) {
          foreach ($include_content_queries as $include_content_query_params) {
             $query = new Graph_Object_query();
             $query->init_with_xml($include_content_query_params);
@@ -339,7 +339,7 @@ class latticeview {
             $content[$query->attributes['label']] = $include_content;
 
             /*
-            if($sort_by = $include_content_query_params->get_attribute('sort_by')){
+            if ($sort_by = $include_content_query_params->get_attribute('sort_by')){
               $sort_function = function($a, $b) use ($sort_by){
                 $a = $a[$sort_by];
                 $b = $b[$sort_by];

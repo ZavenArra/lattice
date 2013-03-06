@@ -65,7 +65,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
  public function action_index(){
   $this->view = new View('lattice_cms');
-  if(Auth::instance()->logged_in('superuser')){
+  if (Auth::instance()->logged_in('superuser')){
    $this->view->userlevel = 'superuser';
   } else {
    $this->view->userlevel = 'basic';
@@ -97,7 +97,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
   * Returns: nothing 
   */
  private function set_page_id($object_id){
-  if(self::$object_id == NULL){
+  if (self::$object_id == NULL){
    self::$object_id = $object_id;
   }
  }
@@ -123,7 +123,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
 
 
-   if(!$language_code){
+   if (!$language_code){
      $object = Graph::object($id);
    } else {
      $object = Graph::object($id)->translate($language_code);
@@ -150,7 +150,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
    }
 
 
-   if($object->id == 0){
+   if ($object->id == 0){
      throw new Kohana_Exception('Invalid Page Id '.$id);
    }
 
@@ -165,19 +165,19 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
 
    $settings = Kohana::config('cms.defaultsettings');
-   if(is_array($settings)){
+   if (is_array($settings)){
      foreach($settings as $key=>$value){
        $this->nodetitle->$key = $value;
      }
    }
    //and get settings for specific object_type
    $settings = Kohana::config('cms.'.$object->objecttype->objecttypename.'.defaultsettings');
-   if(is_array($settings)){
+   if (is_array($settings)){
      foreach($settings as $key=>$value){
        $this->nodetitle->$key = $value;
      }
    }
-   if($language_code){
+   if ($language_code){
      $this->nodetitle->translation_modifier = '_'.$language_code;
    } else {
      $this->nodetitle->translation_modifier = '';

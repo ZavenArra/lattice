@@ -1,5 +1,5 @@
 <div class="ui-RadioGroup <?=$class;?>" data-field="<?=$name;?>">
-	<?if(isset($groupLabel)):?>
+	<?if (isset($groupLabel)):?>
 		<label class="groupLabel"><?=$groupLabel;  $name; $label;?></label>
 	<?endif;?>
 	<fieldset>

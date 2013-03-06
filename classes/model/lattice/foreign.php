@@ -20,7 +20,7 @@ abstract class Model_Lattice_Foreign extends Model_Lattice_Content_driver {
       $this->contenttable = ORM::Factory(inflector::singular($this->foreign_table_name()));
       $this->contenttable->where('object_id', '=', $object->id)->find();
      
-      if(!$this->contenttable->loaded()){
+      if (!$this->contenttable->loaded()){
          /* 
        * 
        * 
@@ -53,7 +53,7 @@ abstract class Model_Lattice_Foreign extends Model_Lattice_Content_driver {
    }
 
    public function save_content_table($object, $inserting=FALSE) {
-      if($inserting){
+      if ($inserting){
          $this->contenttable = ORM::Factory(inflector::singular($this->foreign_table_name()));
          $this->contenttable->object_id = $object->id;
       }

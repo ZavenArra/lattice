@@ -31,7 +31,7 @@ class Controller_Navigation extends Controller_Lattice{
    */
   public function get_tier($parent_id, $deeplink_path=array(), &$follow=false){
     $parent = Graph::object($parent_id);
-    if(!$parent->loaded()){
+    if (!$parent->loaded()){
       throw new Kohana_Exception('Invalid object id sent to get_tier');
     }
 
@@ -41,7 +41,7 @@ class Controller_Navigation extends Controller_Lattice{
       // ->order_by('objectrelationships.sortorder', 'ASC');
     $items = $items->find_all();
 
-    if($items){
+    if ($items){
       $send_item_containers = array(); //these will go first
       $send_item_objects = array();
       foreach($items as $child){
@@ -49,17 +49,17 @@ class Controller_Navigation extends Controller_Lattice{
         //Check for Access to this object
         $roles = $child->roles->find_all();
         foreach($roles as $role){
-          if(!latticeutil::check_access($role->name)){
+          if (!latticeutil::check_access($role->name)){
             continue (2);
           } 
         }
 
         //Containers should be skipped
-        if(strtolower($child->objecttype->node_type) == 'container'){
+        if (strtolower($child->objecttype->node_type) == 'container'){
           //we might be skipping this node
           $display = $child->objecttype->display;
 
-          if($display == 'inline'){
+          if ($display == 'inline'){
             continue;
           }
         }
@@ -81,7 +81,7 @@ class Controller_Navigation extends Controller_Lattice{
           $send_item['tier'] = $child_tier;
         }
 
-            if(strtolower($child->objecttype->node_type)=='container'){
+            if (strtolower($child->objecttype->node_type)=='container'){
           $send_item_containers[] = $send_item;
         } else {
           $send_item_objects[] = $send_item;
@@ -92,13 +92,13 @@ class Controller_Navigation extends Controller_Lattice{
 
 
       //add in any modules
-      if($parent->id == Graph::get_root_node(Kohana::config('cms.graph_root_node'))->id ){
+      if ($parent->id == Graph::get_root_node(Kohana::config('cms.graph_root_node'))->id ){
         $cms_modules = lattice::config('cms_modules', '//module');
         foreach($cms_modules as $m){
           $controller = $m->get_attribute('controller');
           $roles = Kohana::config(strtolower($controller).'.authrole', FALSE, FALSE); 
           $access_granted = latticeutil::check_access($roles);
-          if(!$access_granted){
+          if (!$access_granted){
             continue;
           }
 
@@ -129,13 +129,13 @@ class Controller_Navigation extends Controller_Lattice{
     //plan all parents for following deeplink
     $deeplink_path = array();
 
-    if($deeplink){
+    if ($deeplink){
       $object_id = $deeplink;
       while($object_id){
         $object = Graph::object($object_id);
         $deeplink_path[] = $object->id;
         $parent = $object->get_lattice_parent();
-        if($parent){
+        if ($parent){
           $object_id = $parent->id;
         } else {
           $object_id = NULL;
@@ -170,7 +170,7 @@ class Controller_Navigation extends Controller_Lattice{
     $tier_methods_drawer = new View('tier_methods_drawer');
     $addable_objects = $parent->objecttype->addable_objects;
 
-    if(latticeutil::check_access('superuser')){
+    if (latticeutil::check_access('superuser')){
       foreach($this->get_object_types() as $object_type){
         $addable_object = array();
         $addable_object['object_type_id'] = $object_type['object_type_name'];

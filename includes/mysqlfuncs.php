@@ -10,7 +10,7 @@ function mysql_multiquery($sql){
 	//echo "\n\n";
 	foreach ($sql as $key => $val) {
 		$rval = mysql_query($val);
-		if(!$rval){
+		if (!$rval){
 			echo mysql_error();
 		}
 	}
