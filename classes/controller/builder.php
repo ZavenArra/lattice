@@ -105,10 +105,10 @@ class Controller_Builder extends Controller {
   public function insert_relationships($xml_file){
 
     $lattices = lattice::config($xml_file, 'relationships/lattice');
-    foreach($lattices as $latticeDOM){
+    foreach ($lattices as $latticeDOM){
       $lattice = Graph::lattice($latticeDOM->get_attribute('name'));
       $relationships = lattice::config($xml_file, 'relationship', $latticeDOM);
-      foreach($relationships as $relationship){
+      foreach ($relationships as $relationship){
         $parent_slug = $relationship->get_attribute('parent');  
         $child_slug = $relationship->get_attribute('child');  
         //echo 'Adding lattice relationship';
@@ -155,7 +155,7 @@ class Controller_Builder extends Controller {
 
 
     $items = lattice::config($xml_file, 'item', $context);
-    foreach($items as $item){
+    foreach ($items as $item){
 
       if (!$item->get_attribute('object_type_name')){
         //echo $item->tag_name;
@@ -169,7 +169,7 @@ class Controller_Builder extends Controller {
       $data = array();
       $clusters_data = array();
       $fields = lattice::config($xml_file, 'field', $item );
-      foreach($fields as $content){
+      foreach ($fields as $content){
         $field = $content->get_attribute('name');
 
         switch ($field) {
@@ -244,7 +244,7 @@ class Controller_Builder extends Controller {
 
       //check for pre-existing object as list container
       //echo sprintf('//object_type[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename);
-      foreach(lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename)) as $list_container_type){
+      foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename)) as $list_container_type){
         $preexisting_object = Graph::object()
           ->lattice_children_filter($parent_object->id)
           ->object_type_filter($list_container_type->get_attribute('name'))
@@ -283,7 +283,7 @@ class Controller_Builder extends Controller {
       }
 
       $lists = lattice::config($xml_file, 'list', $item);
-      foreach($lists as $list){
+      foreach ($lists as $list){
         //find the container
         $container = Graph::object()
           ->lattice_children_filter($object_id)

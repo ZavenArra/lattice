@@ -255,12 +255,12 @@ class latticecms {
 
 	public static function regenerate_images(){
 		//find all images
-		foreach(lattice::config('objects', '//object_type') as $object_type){
-			foreach(lattice::config('objects', 'elements/*', $object_type) as $element){
+		foreach (lattice::config('objects', '//object_type') as $object_type){
+			foreach (lattice::config('objects', 'elements/*', $object_type) as $element){
 				if ($element->tag_name == 'image'){
 					$objects = ORM::Factory('object_type', $object_type->get_attribute('name'))->get_active_members();
 					$fieldname = $element->get_attribute('name');
-					foreach($objects as $object){
+					foreach ($objects as $object){
            	if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename)){
 							$uiresizes = Kohana::config('lattice_cms.uiresizes');
 							$object->process_image($object->$fieldname->filename, $fieldname, $uiresizes);
@@ -272,9 +272,9 @@ class latticecms {
 	}
 
 	public static function generate_new_images($object_ids){
-		foreach($object_ids as $id){
+		foreach ($object_ids as $id){
 			$object = Graph::object($id);
-      foreach(lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element){
+      foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element){
 				if ($element->tag_name == 'image'){
 					$fieldname = $element->get_attribute('name');
 					if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename)){
@@ -323,15 +323,15 @@ class latticecms {
     $object_types_result = lattice::config('objects', $x_path);
     
     $object_types = array();
-    foreach($object_types_result as $object_type){
+    foreach ($object_types_result as $object_type){
       $object_type = $object_type->get_attribute('name');
       $object_types[$object_type] = $object_type; 
     }
 
     $parent_candidates = array();
-    foreach($object_types as $object_type){
+    foreach ($object_types as $object_type){
       $objects = Graph::object()->object_type_filter($object_type)->active_filter()->find_all();
-      foreach($objects as $object){
+      foreach ($objects as $object){
         $title = $object->title;
         if (!$title){
           $title = $object->slug;

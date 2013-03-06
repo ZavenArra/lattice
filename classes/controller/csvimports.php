@@ -14,8 +14,8 @@ Class Csv_imports_Controller extends Controller {
 			//print_r($data);
 			//safely compute fields
 			$columns = array();
-			foreach($data['content']['csv'] as $item){
-					foreach($item as $field => $value){
+			foreach ($data['content']['csv'] as $item){
+					foreach ($item as $field => $value){
 					//	$label = mop::config('objects', 
 						$columns[$field] = $field;
 					}	
@@ -25,9 +25,9 @@ Class Csv_imports_Controller extends Controller {
 	//		print_r($columns);
 
 			//output the file
-			foreach($data['content']['csv'] as $item){
+			foreach ($data['content']['csv'] as $item){
 				$output = array();
-				foreach($columns as $column => $label){
+				foreach ($columns as $column => $label){
 					if (isset($item[$column])){
 						$output[] = $item[$column];
 					} else {

@@ -23,7 +23,7 @@ Class Associator {
   {
     $filters_node_list = lattice::config('objects', 'filter', $node);
     $filters = array();
-    foreach($filters_node_list as $filter)
+    foreach ($filters_node_list as $filter)
     {
       $setting = array();
       $setting['from'] = $filter->get_attribute('from');
@@ -57,7 +57,7 @@ Class Associator {
     $this->filters = $filters; 
     $this->page_length = Kohana::config('cms.associator_page_length');
 
-    foreach($this->parent->get_lattice_children_paged($this->lattice) as $child)
+    foreach ($this->parent->get_lattice_children_paged($this->lattice) as $child)
     {
       $this->associated[] = $child;
     }
@@ -82,7 +82,7 @@ Class Associator {
 
       $objects = Graph::object();
 
-      foreach($filters as $filter)
+      foreach ($filters as $filter)
       {
 
         if (isset($filter['from']) AND $filter['from'])
@@ -116,7 +116,7 @@ Class Associator {
         {
           $match_fields = explode(',',$filter['match_fields']);
           $wheres = array();
-          foreach($match_fields as $match_field)
+          foreach ($match_fields as $match_field)
           {
             $wheres[] = array($match_field, 'LIKE', '%'.$filter['match'].'%'); 
           }
@@ -161,7 +161,7 @@ Class Associator {
           $results = array_slice($results,0,$this->page_length);
         }
 
-        foreach($results as $id)
+        foreach ($results as $id)
         {
           $object = Graph::object($id);
           $this->pool[$id] =$object;  
@@ -209,7 +209,7 @@ Class Associator {
     $view->pool = $this->pool_item_views($view_name);
 
     $view->associated = array();
-    foreach($this->associated as $associated_item)
+    foreach ($this->associated as $associated_item)
     {
       $view->associated[] = $this->get_item_view($associated_item, $view_name, true );
     }
@@ -248,7 +248,7 @@ Class Associator {
   private function pool_item_views($view_name = NULL)
   {
     $pool_item_views = array();
-    foreach($this->pool as $pool_item)
+    foreach ($this->pool as $pool_item)
     {
       $pool_item_views[] = $this->get_item_view($pool_item, $view_name, false );
     }

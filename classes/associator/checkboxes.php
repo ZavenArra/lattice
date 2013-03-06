@@ -18,7 +18,7 @@ Class Associator_Checkboxes {
   public static function get_filters_from_dom_node($node){
     $filters_node_list = lattice::config('objects', 'filter', $node);
     $filters = array();
-    foreach($filters_node_list as $filter){
+    foreach ($filters_node_list as $filter){
       $setting = array();
       $setting['from'] = $filter->get_attribute('from');
       $setting['object_type_name'] = $filter->get_attribute('object_type_name');
@@ -43,7 +43,7 @@ Class Associator_Checkboxes {
     $this->lattice = $lattice;
     $this->filters = $filters; 
     
-    foreach($this->parent->get_lattice_children($this->lattice) as $child){
+    foreach ($this->parent->get_lattice_children($this->lattice) as $child){
       $this->associated[] = $child;
     }
 
@@ -53,7 +53,7 @@ Class Associator_Checkboxes {
 
     //load pool
     if ($filters){
-      foreach($filters as $filter){
+      foreach ($filters as $filter){
         $objects = Graph::object();
 
         if (isset($filter['from']) AND $filter['from']){
@@ -82,7 +82,7 @@ Class Associator_Checkboxes {
         if (isset($filter['match']) AND $filter['match']){
           $match_fields = explode(',',$filter['match_fields']);
           $wheres = array();
-          foreach($match_fields as $match_field){
+          foreach ($match_fields as $match_field){
             $wheres[] = array($match_field, 'LIKE', '%'.$filter['match'].'%'); 
           }
           $objects->content_filter($wheres);
@@ -99,7 +99,7 @@ Class Associator_Checkboxes {
         $objects->limit($this->max_pool_size);
 
         $results = $objects->find_all();
-        foreach($results as $object){
+        foreach ($results as $object){
           if (!$this->parent->check_lattice_relationship($lattice, $object)){
             $this->pool[$object->id] = $object;  //scalability problem
           }
@@ -136,7 +136,7 @@ Class Associator_Checkboxes {
     $view->pool = $this->pool_item_views($view_name);
 
     $view->associated = array();
-    foreach($this->associated as $associated_item){
+    foreach ($this->associated as $associated_item){
       $view->associated[] = $this->get_item_view($associated_item, $view_name);
     }
 
@@ -154,7 +154,7 @@ Class Associator_Checkboxes {
 
   private function pool_item_views($view_name = NULL){
     $pool_item_views = array();
-    foreach($this->pool as $pool_item){
+    foreach ($this->pool as $pool_item){
       $pool_item_views[] = $this->get_item_view($pool_item, $view_name);
     }
     return $pool_item_views;
@@ -194,7 +194,7 @@ Class Associator_Checkboxes {
       $associated_views = array_combine($keys, $associated_views);
     }
     $pool_views = array_combine( array_map(array('Associator_Checkboxes','title_index'), $pool_views),  $pool_views);
-    foreach($associated_views as $key => $view){
+    foreach ($associated_views as $key => $view){
       $view->selected = true;
       $pool_views[$key] = $view;
     }

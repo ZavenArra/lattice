@@ -111,7 +111,7 @@ class Model_Object extends ORM implements arrayaccess {
       $check_slug = $check_slug->find_all();
       if (count($check_slug)){
         $idents = array();
-        foreach($check_slug as $ident){
+        foreach ($check_slug as $ident){
           $idents[] = $ident->slug;
         }
         natsort($idents);
@@ -449,7 +449,7 @@ class Model_Object extends ORM implements arrayaccess {
       //TODO: Change this to an object_type_name match below
       } else if ($column == 'tags'){
         $tags = explode(',', $value);
-        foreach($tags as $tag_name){
+        foreach ($tags as $tag_name){
           $this->add_tag($tag_name);
         }
       } else if ($column) {
@@ -495,7 +495,7 @@ class Model_Object extends ORM implements arrayaccess {
      $this->_save();
 
      $children = $object->get_lattice_children();
-     foreach($children as $child){
+     foreach ($children as $child){
        $child->cascade_undelete();
      }
 
@@ -507,7 +507,7 @@ class Model_Object extends ORM implements arrayaccess {
      $this->_save();
 
      $children = $this->get_lattice_children();
-     foreach($children as $child){
+     foreach ($children as $child){
        $child->cascade_delete($permanent);
      }
 
@@ -1054,7 +1054,7 @@ class Model_Object extends ORM implements arrayaccess {
       }
 
    //And process resizes passed in from caller
-      foreach($additional_resizes as $uiresize){
+      foreach ($additional_resizes as $uiresize){
         Model_Object::resize_image($imagefilename, $uiresize['prefix'] . '_' . $imagefilename, $uiresize['width'], $uiresize['height'], $uiresize['force_dimension'], $uiresize['crop'], $uiresize['aspect_follows_orientation'] 
         );
       }
@@ -1106,7 +1106,7 @@ class Model_Object extends ORM implements arrayaccess {
      );
      if ($driver_info['driver']=='mysql'){
 
-       foreach($wheres as $where){
+       foreach ($wheres as $where){
 
          if ($where[0] == 'title'){
            $this->join($driver_info['table_name'])->on('objects.id', '=', $driver_info['table_name'].'.object_id');
@@ -1126,7 +1126,7 @@ class Model_Object extends ORM implements arrayaccess {
      $map = lattice::config('objects', '//object_type[elements/*/@name="'.$column.'"]'); 
      $map_query = array();
      if ($map->length){
-       foreach($map as $object_type_config){
+       foreach ($map as $object_type_config){
          $object_type = ORM::Factory('objecttype', $object_type_config->get_attribute('name')); 
          if (!$object_type->loaded()){
            continue;
@@ -1575,7 +1575,7 @@ class Model_Object extends ORM implements arrayaccess {
    private function update_content_data($data){
 
      //load defaults for this object type
-     foreach($this->objecttype->defaults() as $field => $default){
+     foreach ($this->objecttype->defaults() as $field => $default){
        if (!isset($data[$field])){
          $data[$field] = $default;
        }
@@ -1880,13 +1880,13 @@ class Model_Object extends ORM implements arrayaccess {
         */
     public function reset_role_access(){
       $roles = $this->roles->find_all();
-      foreach($roles as $role){
+      foreach ($roles as $role){
         $this->remove_role_access($role->name);
       }
 
       $default_roles = $this->objecttype->initial_access_roles;
       if ($default_roles){
-        foreach($default_roles as $role){
+        foreach ($default_roles as $role){
           $this->add_role_access($role);
         }
       }

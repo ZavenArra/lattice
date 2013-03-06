@@ -21,9 +21,9 @@ Class Builder_Frontend {
     flush();
 
     $created_views = array();
-    //	foreach(lattice::config('frontend', '//view') as $view ){
+    //	foreach (lattice::config('frontend', '//view') as $view ){
     //	//this has removed the ability to build virtual views
-    foreach(lattice::config('objects', '//object_type') as $object_type){
+    foreach (lattice::config('objects', '//object_type') as $object_type){
       $view = lattice::config('frontend', '//view[@name="'.$object_type->get_attribute('name').'"]');
       if (count($view)){
         $view = $view->item(0);
@@ -43,7 +43,7 @@ Class Builder_Frontend {
       if (!$view OR  ($view AND $view->get_attribute('load_page')=='true')){
         echo "<h1><?php=\$content['main']['title'];?></h1>\n\n";
         //this also implies that name is a objecttypename
-        foreach(lattice::config('objects', 
+        foreach (lattice::config('objects', 
           sprintf('//object_type[@name="%s"]/elements/*', $view_name )) as $element){
 
            switch($element->tag_name){
@@ -64,14 +64,14 @@ Class Builder_Frontend {
 
         //Now the include_data
         if ($i_data_nodes = lattice::config('frontend',"//view[@name=\"".$view->get_attribute('name')."\"]/include_data")){
-          foreach($i_data_nodes as $i_data_config){
+          foreach ($i_data_nodes as $i_data_config){
             $prefix = "\$content";
             $this->make_include_data_html($i_data_config, $prefix, null);
           }
         }
 
         if ($subviews = lattice::config('frontend',"//view[@name=\"".$view->get_attribute('name')."\"]/subview")){
-          foreach($subviews as $subview_config){
+          foreach ($subviews as $subview_config){
             echo "\n<?php=\$".$subview_config->get_attribute('label').";?>\n";
           }
         }
@@ -96,7 +96,7 @@ Class Builder_Frontend {
     flush();
 
     //and any virtual views
-    foreach(lattice::config('frontend', '//view') as $view_config){
+    foreach (lattice::config('frontend', '//view') as $view_config){
       $view_name = $view_config->get_attribute('name');
 
       if ( in_array($view_name, $created_views)){
@@ -114,14 +114,14 @@ Class Builder_Frontend {
       //Now the include_data
 
       if ($i_data_nodes = lattice::config('frontend',"//view[@name=\"".$view_name."\"]/include_data")){
-        foreach($i_data_nodes as $i_data_config){
+        foreach ($i_data_nodes as $i_data_config){
           $prefix = "\$content";
           $this->make_include_data_html($i_data_config, $prefix, null);
         }
       }
 
       if ($subviews = lattice::config('frontend',"//view[@name=\"".$view_name."\"]/subview")){
-        foreach($subviews as $subview_config){
+        foreach ($subviews as $subview_config){
           echo "\n<?php=\$".$subview_config->get_attribute('label').";?>\n";
         }
       }
@@ -155,7 +155,7 @@ Class Builder_Frontend {
   public function make_associator_data_html($associator_data_config, $prefix, $indent = ''){
     $object_types = array();
     $filters = lattice::config('objects', 'filter', $associator_data_config);
-    foreach($filters as $filter){
+    foreach ($filters as $filter){
       if ($filter->get_attribute('object_type_name')){
         $object_types[] = $filter->get_attribute('object_type_name');
       }
@@ -195,16 +195,16 @@ Class Builder_Frontend {
 			if ($from=="parent"){
 
 				//get the info from addable_objects of the current
-				foreach(lattice::config('objects', sprintf('//object_type[@name="%s"]/addable_object', $parent_template)) as $addable){
+				foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/addable_object', $parent_template)) as $addable){
 					$object_type_name = $addable->get_attribute('object_type_name');
 					$object_types[$object_type_name] = $object_type_name;
 				}
 
 				//and we can also check all the existing data to see if it has any other object_types
 				$parent_objects = Graph::object()->objecttype_filter($parent_template)->published_filter()->find_all();
-				foreach($parent_objects as $parent){
+				foreach ($parent_objects as $parent){
 					$children = $parent->get_published_children();
-					foreach($children as $child){
+					foreach ($children as $child){
 						$object_type_name = $child->objecttype->objecttypename;
 						$object_types[$object_type_name] = $object_type_name;
 					}
@@ -234,7 +234,7 @@ Class Builder_Frontend {
 			$do_switch = true;
 		}
 
-		echo $indent."<?phpforeach({$prefix}['$label'] as \${$label}Item):?>\n";
+		echo $indent."<?phpforeach ({$prefix}['$label'] as \${$label}Item):?>\n";
 		if ($do_switch){
 			echo $indent." <?phpswitch(\${$label}Item['object_type_name']){\n";
 		}

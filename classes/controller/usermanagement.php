@@ -59,7 +59,7 @@ Class Controller_User_management extends Controller_Layout {
 	public function action_index(){
 		//cleanup on an initial load
 		$incompletes = ORM::Factory($this->table)->where('status', '=', 'INCOMPLETE')->find_all();
-		foreach($incompletes as $incomplete){
+		foreach ($incompletes as $incomplete){
 			$incomplete->delete();
 		}
 
@@ -69,8 +69,8 @@ Class Controller_User_management extends Controller_Layout {
 
     $users = ORM::Factory($this->table)->find_all();
     $managed_users = array();
-    foreach($users as $user){
-      foreach($this->managed_roles as $role){
+    foreach ($users as $user){
+      foreach ($this->managed_roles as $role){
         if ($user->has('roles', ORM::Factory('role', array('name'=>$role)))){
           $managed_users[] = $user;
           continue (2);
@@ -78,7 +78,7 @@ Class Controller_User_management extends Controller_Layout {
       }
     }
 		$html = '';
-		foreach($managed_users as $user){
+		foreach ($managed_users as $user){
       $user_item_view = $this->create_user_item_view($user);	
 			$html .= $user_item_view->render();
 		}
@@ -133,7 +133,7 @@ Class Controller_User_management extends Controller_Layout {
 
   private function get_active_managed_role($user){
     $active_role = null;
-    foreach($this->managed_roles as $label=>$role){
+    foreach ($this->managed_roles as $label=>$role){
       if ($user->has('roles', ORM::Factory('role')->where('name','=',$role)->find()) ){
         $active_role = $role;
         break;
@@ -237,7 +237,7 @@ Class Controller_User_management extends Controller_Layout {
 			}
 
 			//first remove other managed_roles
-			foreach($this->managed_roles as $label => $role){
+			foreach ($this->managed_roles as $label => $role){
 				$role_obj = ORM::Factory('role')->where('name','=',$role)->find();
 				if ($user->has('roles',$role_obj)){
 					$user->remove('roles', $role_obj);

@@ -22,7 +22,7 @@ class Graph_Object_query {
       $this->attributes['from'] = null;
       $this->attributes['slug'] = null;
 
-      foreach($attributes as $key=>$value){
+      foreach ($attributes as $key=>$value){
          $this->attributes[$key] = $value;
       }
    }

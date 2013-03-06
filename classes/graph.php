@@ -79,7 +79,7 @@ class Graph {
       ->where('objects.activity', 'IS', NULL)
       ->find_all();
     $tags_text = array();
-    foreach($tags as $tag){
+    foreach ($tags as $tag){
       $tags_text[]= $tag->tag;
     }
     return $tags_text;
@@ -102,7 +102,7 @@ class Graph {
 
   public static function language($id){
     $languages = self::languages();
-    foreach($languages as $language){
+    foreach ($languages as $language){
 
       if ($language->id == $id OR $language->code == $id){
         return $language;
@@ -153,7 +153,7 @@ class Graph {
         }
       }
 
-      foreach(lattice::config('objects', 'elements/*', $object_type_config) as $item){
+      foreach (lattice::config('objects', 'elements/*', $object_type_config) as $item){
         if ($item->get_attribute('name')=='title'){
           throw new Kohana_Exception('Title is a reserved field name');
         }
@@ -172,7 +172,7 @@ class Graph {
 
     /*
      * This can just happen on the fly - lazy configure
-     foreach( lattice::config('objects', '//object_type[@name="'.$object_type_name.'"]/elements/*') as $item){
+     foreach ( lattice::config('objects', '//object_type[@name="'.$object_type_name.'"]/elements/*') as $item){
        $t_record->configure_element($item);
      }
     Model_Object::reinit_dbmap($t_record->id); // Rethink this.

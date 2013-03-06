@@ -221,7 +221,7 @@ class Controller_Export extends Controller {
       $relationships = $this->doc->create_element('relationships');
 
       $lattices = Graph::lattices();
-      foreach($lattices as $lattice){
+      foreach ($lattices as $lattice){
         if ($lattice->name == 'lattice'){
           continue;
         }
@@ -231,7 +231,7 @@ class Controller_Export extends Controller {
         $name_attr->append_child($name_value);
         $l->append_child($name_attr);
 
-        foreach($lattice->get_relationships() as $relationship){
+        foreach ($lattice->get_relationships() as $relationship){
           $r = $this->doc->create_element('relationship');
           $parent_slug = $this->doc->create_text_node(Graph::object($relationship->object_id)->slug);
           $parent = $this->doc->create_attribute('parent');

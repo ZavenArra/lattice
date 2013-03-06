@@ -60,7 +60,7 @@ Class Controller_CSV extends Controller {
        $this->csv_output .= "\n";
      }
 
-     foreach($objects as $object){
+     foreach ($objects as $object){
 
        $csv_view = NULL;
        if ($object->objecttype->node_type != 'container'){
@@ -195,14 +195,14 @@ Class Controller_CSV extends Controller {
 
 
      //and actually add the data to the objects
-     foreach($data as $lang=>$lang_data){
+     foreach ($data as $lang=>$lang_data){
        $object_to_update = $object->get_translated_object(Graph::language($lang));
-       foreach($lang_data as $field => $value){
+       foreach ($lang_data as $field => $value){
 
          if ($field=='tags'){
            if ($value){
              $tags = explode(',',$value); 
-             foreach($tags as $tag){
+             foreach ($tags as $tag){
                 $object_to_update->add_tag($tag);
              }
            }

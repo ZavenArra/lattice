@@ -18,10 +18,10 @@ class Navigation {
 		}
 
 		$node_info = array();
-		foreach(Kohana::config('navigation.nav_data_fields.object') as $send=>$field){
+		foreach (Kohana::config('navigation.nav_data_fields.object') as $send=>$field){
 			$node_info[$send] = $object->$field;
 		}
-		foreach(Kohana::config('navigation.nav_data_fields.object_type') as $field){
+		foreach (Kohana::config('navigation.nav_data_fields.object_type') as $field){
 			$node_info[$field] = $object->objecttype->$field;
 		}
 		if (!count($node_info['addable_objects'])){
@@ -29,7 +29,7 @@ class Navigation {
 		}
 
 		
-		foreach(Kohana::config('navigation.nav_data_fields.content') as $send=>$field){
+		foreach (Kohana::config('navigation.nav_data_fields.content') as $send=>$field){
 			$node_info[$send] = $object->$field;
       }
 		

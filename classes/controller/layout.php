@@ -42,8 +42,8 @@ class Controller_Layout extends Controller_Lattice {
 		$layout_view = View::Factory($layout);
 
     if (is_array(Kohana::config($layout.'.resources') ) ){
-      foreach(Kohana::config($layout.'.resources') as $key => $paths){
-        foreach($paths as $path){
+      foreach (Kohana::config($layout.'.resources') as $key => $paths){
+        foreach ($paths as $path){
           $this->resources[$key][$path] = $path;
         }
       }
@@ -51,19 +51,19 @@ class Controller_Layout extends Controller_Lattice {
 
     //build js and css
     $stylesheet = '';
-    foreach($this->resources['librarycss'] as $css){
+    foreach ($this->resources['librarycss'] as $css){
 			$stylesheet .=	HTML::style($css)."\n       ";
 		}
-		foreach($this->resources['css'] as $css){
+		foreach ($this->resources['css'] as $css){
 			$stylesheet .=	HTML::style($css)."\n       ";
 		}
 		$layout_view->stylesheet = $stylesheet;
 
 		$javascript = '';
-		foreach($this->resources['libraryjs'] as $js){
+		foreach ($this->resources['libraryjs'] as $js){
 			$javascript .= HTML::script($js)."\n        ";		
 		}
-		foreach($this->resources['js'] as $js){
+		foreach ($this->resources['js'] as $js){
 			$javascript .= HTML::script($js)."\n        ";		
 		}
 		$layout_view->javascript = $javascript;

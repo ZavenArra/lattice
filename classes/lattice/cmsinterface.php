@@ -285,7 +285,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
         ->where('object_id','=',$object_id)
         ->where('user_id','=',$user_id);
         $results = $o->find_all();
-        foreach($results as $result) {
+        foreach ($results as $result) {
           $result->delete();
         }
   			$this->response->data( array('value'=>$_POST["value"]) );

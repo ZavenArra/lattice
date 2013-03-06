@@ -109,7 +109,7 @@ Class Lattice_auth_Controller_Registration extends Controller_Layout {
     //add the login role
     $user->add('roles', ORM::Factory('role', array('name'=>'login')));
     if (is_array(Kohana::config('registration.default.roles'))){
-      foreach(Kohana::config('registration.default.roles') as $role){
+      foreach (Kohana::config('registration.default.roles') as $role){
         $user->add('roles', ORM::Factory('role', array('name'=>$role)));
       }
     }

@@ -8,7 +8,7 @@ Class Associator_Radios {
       $associated_views = array_combine($keys, $associated_views);
     }
     $pool_views = array_combine( array_map(array('Associator_Radios','title_index'), $pool_views),  $pool_views);
-    foreach($associated_views as $key => $view){
+    foreach ($associated_views as $key => $view){
       $view->selected = true;
       $pool_views[$key] = $view;
     }

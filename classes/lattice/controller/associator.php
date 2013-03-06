@@ -19,7 +19,7 @@ Class Lattice_Controller_Associator extends Controller_Lattice {
     $element = latticecms::get_element_dom_node(Graph::object($parent_id), $name);
     $filters = Associator::get_filters_from_dom_node($element);
     $modified_filters = array();
-    foreach($filters as $filter){
+    foreach ($filters as $filter){
       $filter['match'] = $word;
       $filter['match_fields']  = 'title';
       $modified_filters[] = $filter;
@@ -41,7 +41,7 @@ Class Lattice_Controller_Associator extends Controller_Lattice {
     $element = latticecms::get_element_dom_node(Graph::object($parent_id), $name);
     $filters = Associator::get_filters_from_dom_node($element);
     $modified_filters = array();
-    foreach($filters as $filter){
+    foreach ($filters as $filter){
       $filter['match'] = $word;
       $filter['match_fields']  = 'title';
       $modified_filters[] = $filter;

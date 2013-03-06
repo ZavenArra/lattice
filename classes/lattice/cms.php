@@ -166,14 +166,14 @@ class Lattice_CMS extends Lattice_CMSInterface {
 
    $settings = Kohana::config('cms.defaultsettings');
    if (is_array($settings)){
-     foreach($settings as $key=>$value){
+     foreach ($settings as $key=>$value){
        $this->nodetitle->$key = $value;
      }
    }
    //and get settings for specific object_type
    $settings = Kohana::config('cms.'.$object->objecttype->objecttypename.'.defaultsettings');
    if (is_array($settings)){
-     foreach($settings as $key=>$value){
+     foreach ($settings as $key=>$value){
        $this->nodetitle->$key = $value;
      }
    }
@@ -221,7 +221,7 @@ class Lattice_CMS extends Lattice_CMSInterface {
    //add the file keys in so that we can look them up in the FILES array laster
    //consider just combining POST and FILES here
    $file_keys = array_keys($_FILES);
-   foreach($file_keys as $fk){
+   foreach ($file_keys as $fk){
      $data[$fk] = null; 
    }
    Kohana::$log->add(Log::INFO, var_export($data, true));

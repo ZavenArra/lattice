@@ -109,7 +109,7 @@ class Controller_List extends Lattice_CMSInterface {
          if (Kohana::find_file('views', $custom_item_view)) {
             $item_view = new View($custom_item_view);
             $this->load_resources_for_key($custom_item_view);
-            foreach($html_chunks as $key=>$value){
+            foreach ($html_chunks as $key=>$value){
                $item_view->$key = $value;
             }
             $item_view->object = $object;
@@ -196,7 +196,7 @@ class Controller_List extends Lattice_CMSInterface {
       $item_view = null;
       if (Kohana::find_file('views', $custom_item_view)) {
          $item_view = new View($custom_item_view);
-         foreach($html_chunks as $key=>$value){
+         foreach ($html_chunks as $key=>$value){
 				$item_view->$key = $value;
 			}
          $item_view->object = $object;

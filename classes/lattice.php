@@ -125,7 +125,7 @@ Class lattice {
 				//echo $clusters->_delegate->saveXML();
 				$clusters = new DOMXPath($clusters->_delegate);
 				$cluster_nodes = $clusters->evaluate('//object_type');
-				foreach($cluster_nodes as $node){
+				foreach ($cluster_nodes as $node){
 					$node = $dom->_delegate->import_node($node, true);
 					$object_types_node = $dom->_delegate->get_elements_by_tag_name('object_types')->item(0);
 					$object_types_node->append_child($node);
@@ -168,7 +168,7 @@ Class lattice {
 				$view = new View($module['modulename']);
 				$object = Graph::object($module['modulename']);
         if ($object->loaded()){ // in this case it's a slug for a specific object
-					foreach(latticeviews::get_view_content($object->id, $object->objecttype->objecttypename) as $key=>$content){
+					foreach (latticeviews::get_view_content($object->id, $object->objecttype->objecttypename) as $key=>$content){
 						$view->$key = $content;
 					}
 				}
@@ -234,7 +234,7 @@ Class lattice {
 				break;
 			default:
 				$message = $e->get_message();
-				foreach( $e->get_trace() as $trace){
+				foreach ( $e->get_trace() as $trace){
 					if (isset($trace['file'])){
 						$message .= " ::::: ".$trace['file'].':'.$trace['line']."\n;";
 					}

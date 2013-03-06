@@ -51,7 +51,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
   private static function load_dbmap_for_object_type($objecttype_id){
     $dbmaps = ORM::Factory('objectmap')->where('objecttype_id', '=', $objecttype_id)->find_all();
     self::$dbmaps[$objecttype_id] = array();
-    foreach($dbmaps as $map){
+    foreach ($dbmaps as $map){
       self::$dbmaps[$objecttype_id][$map->column] = $map->type.$map->index;
     }
   }

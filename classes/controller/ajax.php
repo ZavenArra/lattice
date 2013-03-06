@@ -96,18 +96,18 @@ class Controller_Ajax extends Controller_Lattice {
 
 
 		$css_resources = array();
-		foreach($this->resources['librarycss'] as $css){
+		foreach ($this->resources['librarycss'] as $css){
 			array_push($css_resources, $css);
 		}
-		foreach($this->resources['css'] as $css){
+		foreach ($this->resources['css'] as $css){
 			array_push($css_resources, $css);
 		}
 
 		$js_resources = array();
-		foreach($this->resources['libraryjs'] as $js){
+		foreach ($this->resources['libraryjs'] as $js){
 			array_push($js_resources, $js);
 		}
-		foreach($this->resources['js'] as $js){
+		foreach ($this->resources['js'] as $js){
 			array_push($js_resources, $js);
 		}
 
@@ -146,18 +146,18 @@ class Controller_Ajax extends Controller_Lattice {
 
 
 		$css_resources = array();
-		foreach($this->resources['librarycss'] as $css){
+		foreach ($this->resources['librarycss'] as $css){
 			array_push($css_resources, $css);
 		}
-		foreach($this->resources['css'] as $css){
+		foreach ($this->resources['css'] as $css){
 			array_push($css_resources, $css);
 		}
 
 		$js_resources = array();
-		foreach($this->resources['libraryjs'] as $js){
+		foreach ($this->resources['libraryjs'] as $js){
 			array_push($js_resources, $js);
 		}
-		foreach($this->resources['js'] as $js){
+		foreach ($this->resources['js'] as $js){
 			array_push($js_resources, $js);
 		}
 

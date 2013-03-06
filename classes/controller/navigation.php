@@ -44,11 +44,11 @@ class Controller_Navigation extends Controller_Lattice{
     if ($items){
       $send_item_containers = array(); //these will go first
       $send_item_objects = array();
-      foreach($items as $child){
+      foreach ($items as $child){
 
         //Check for Access to this object
         $roles = $child->roles->find_all();
-        foreach($roles as $role){
+        foreach ($roles as $role){
           if (!latticeutil::check_access($role->name)){
             continue (2);
           } 
@@ -94,7 +94,7 @@ class Controller_Navigation extends Controller_Lattice{
       //add in any modules
       if ($parent->id == Graph::get_root_node(Kohana::config('cms.graph_root_node'))->id ){
         $cms_modules = lattice::config('cms_modules', '//module');
-        foreach($cms_modules as $m){
+        foreach ($cms_modules as $m){
           $controller = $m->get_attribute('controller');
           $roles = Kohana::config(strtolower($controller).'.authrole', FALSE, FALSE); 
           $access_granted = latticeutil::check_access($roles);
@@ -160,7 +160,7 @@ class Controller_Navigation extends Controller_Lattice{
 
     $tier_view = new View('navigation_tier');
     $nodes_html = array();
-    foreach($nodes as $node){
+    foreach ($nodes as $node){
       $node_view = new View('navigation_node');
       $node_view->content = $node; 
       $nodes_html[] = $node_view->render();
@@ -171,7 +171,7 @@ class Controller_Navigation extends Controller_Lattice{
     $addable_objects = $parent->objecttype->addable_objects;
 
     if (latticeutil::check_access('superuser')){
-      foreach($this->get_object_types() as $object_type){
+      foreach ($this->get_object_types() as $object_type){
         $addable_object = array();
         $addable_object['object_type_id'] = $object_type['object_type_name'];
         $addable_object['object_type_add_text'] = "Add a ".$object_type['object_type_name'];
@@ -189,7 +189,7 @@ class Controller_Navigation extends Controller_Lattice{
 
   public function get_object_types(){
     $object_types = array();
-    foreach(lattice::config('objects', '//object_type') as $object_type){
+    foreach (lattice::config('objects', '//object_type') as $object_type){
       $entry = array();
       $entry['object_type_name'] = $object_type->get_attribute('name'); 
       $entry['label'] = $object_type->get_attribute('name').' label'; 

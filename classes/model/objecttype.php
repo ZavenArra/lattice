@@ -78,7 +78,7 @@ class Model_Object_type extends ORM {
 				$x_query .= '/addable_object';
 				$nodes = lattice::config('objects', $x_query);
 				$value_from_config = array();
-				foreach($nodes as $node){
+				foreach ($nodes as $node){
 					$entry = array();
 					$entry['object_type_id'] = $node->get_attribute('object_type_name');
 					$entry['object_type_add_text'] = $node->get_attribute('add_text');
@@ -135,7 +135,7 @@ class Model_Object_type extends ORM {
     public function defaults(){
       $elements = Model_Object_type::get_elements($this->objecttypename);
       $defaults = array();
-      foreach($elements as $element){
+      foreach ($elements as $element){
         $default = $element->get_attribute('default');
         switch($default){
         case 'now':

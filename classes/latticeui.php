@@ -111,7 +111,7 @@ Class latticeui{
 				if (isset($element['object'])){
 					$object = Kohana::config('cms.object_types.'.$element['object']);
 					$element['options'] = array();
-					foreach($object as $field){
+					foreach ($object as $field){
 						if ($field['type'] == 'checkbox'){
 							$element['options'][$field['name']] = $field['label'];
 						}
@@ -119,7 +119,7 @@ Class latticeui{
 				}	
 				if ($fieldvalue){
 					$prep_field_value = array();
-					foreach($fieldvalue as $name => $selected){
+					foreach ($fieldvalue as $name => $selected){
 						if ($selected){
 							$prep_field_value[] = $name;
 						}
@@ -135,7 +135,7 @@ Class latticeui{
 			$object_type = new View($view);
 			$object_type->id = $id;
 			$object_type->class = null;
-			foreach($element as $key=>$value){
+			foreach ($element as $key=>$value){
 				$object_type->$key = $value;
 			}
 			$object_type->value = $fieldvalue;
