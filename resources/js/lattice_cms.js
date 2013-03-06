@@ -100,6 +100,21 @@ lattice.modules.CMS = new Class({
 	    return lattice.util.getBaseURL() + "ajax/data/cms/saveSortOrder/" + nodeId;
 	},
 	
+<<<<<<< HEAD
+=======
+	getGetTagsURL: function(){
+    return lattice.util.getBaseURL() + "ajax/data/cms/getTags/" + this.getObjectId();		
+	},
+	
+	getAddTagURL: function(){
+    return lattice.util.getBaseURL() + "ajax/data/cms/addTag/" + this.getObjectId();		
+	},
+	
+	getRemoveTagURL: function(){
+    return lattice.util.getBaseURL() + "ajax/data/cms/removeTag/" + this.getObjectId();		
+	},
+
+>>>>>>> master
 	getClearFileURL: function( fieldName ){
 		return this.getClearFieldURL( fieldName );
 	},
@@ -152,8 +167,13 @@ lattice.modules.CMS = new Class({
 		this.initModules( this.element );
 	},
 
+<<<<<<< HEAD
 	populate: function( html, objectTypeName ){
 		console.log( 'populate', objectTypeName );
+=======
+	populate: function( html ){
+		
+>>>>>>> master
 		var page, langPage, langContainer, pageCount, w;
 
 		if( !this.pages[ this.loc ] ){
@@ -171,7 +191,11 @@ lattice.modules.CMS = new Class({
 		console.log( "W", w )
 		this.pageContainer.setStyle( "width", w );
 
+<<<<<<< HEAD
 		this.currentPage.populate( html, objectTypeName );
+=======
+		this.currentPage.populate( html );
+>>>>>>> master
 		
 		this.slideToPage( this.currentPage );
 	},
@@ -213,13 +237,21 @@ lattice.modules.CMS = new Class({
     if( this.slugIPE ) this.slugIPE.retrieve( "Class" ).setValue( response.slug );
 	},
 
+<<<<<<< HEAD
 	onJSLoaded: function( html, objectTypeName ){
 		console.log( 'onJSLoaded', objectTypeName );
+=======
+	onJSLoaded: function( html, jsLoadCount ){
+>>>>>>> master
 		// keeps any callbacks from previous pageloads from registering
 		this.scriptsLoaded++;
 //		console.log( this, "onJSLoaded", html, this.scriptsLoaded, this.loadedJS.length );
 		if( this.loadedJS.length == this.loadedJS.length ){			
+<<<<<<< HEAD
 			this.populate( html, objectTypeName );
+=======
+			this.populate( html );
+>>>>>>> master
 		}
 	},
 
@@ -251,7 +283,10 @@ lattice.modules.CMS = new Class({
 			json - Object : { css: [ "pathToCSSFile", "pathToCSSFile", ... ], js: [ "pathToJSFile", "pathToJSFile", "pathToJSFile", ... ], html: "String" }
 	*/
 	requestPageResponse: function( json ){
+<<<<<<< HEAD
 		console.log( ":::::: requestPageResponse", json.response.data.objectTypeName );
+=======
+>>>>>>> master
 		if( json.response.data ) this.setObjectId( json.response.data.id );
 		json.response.css.each( function( styleSheetURL, index ){
 			styleSheetURL = lattice.util.getBaseURL() + styleSheetURL;
@@ -268,6 +303,7 @@ lattice.modules.CMS = new Class({
 				this.loadedJS.push( urlString );
 				lattice.util.loadJS( urlString, {
 					type: "text/javascript", 
+<<<<<<< HEAD
 					onload: this.onJSLoaded.bind( this, [ json.response.html, json.response.data.objectTypeName ] )
 				} );                    
 			}
@@ -275,6 +311,15 @@ lattice.modules.CMS = new Class({
 			if( noneLoaded ) this.populate( json.response.html, json.response.data.objectTypeName );
 		}else{
 			this.populate( json.response.html, json.response.data.objectTypeName );
+=======
+					onload: this.onJSLoaded.bind( this, [ json.response.html ] )
+				} );                    
+			}
+		}, this );
+			if( noneLoaded ) this.populate( json.response.html );
+		}else{
+			this.populate( json.response.html );
+>>>>>>> master
 		}
 	},
 	
@@ -336,6 +381,36 @@ lattice.modules.CMS = new Class({
 	addObjectResponse: function( json ){
 //		console.log( "addObjectResponse", json );
 	},
+<<<<<<< HEAD
+=======
+
+	getTags: function( callback ){
+		return new Request.JSON({
+			url: this.getGetTagsURL(),
+			onSuccess: function( json  ){
+				if( callback ) callback( json );
+			}.bind( this )
+		}).send();				
+	},
+	
+	addTag: function( tag, callback ){
+		return new Request.JSON({
+			url: this.getAddTagURL(),
+			onSuccess: function( json  ){
+				if( callback ) callback( json );
+			}.bind( this )
+		}).post( { tag: tag } );		
+	},
+	
+	removeTag: function( tag, callback ){
+		return new Request.JSON({
+			url: this.getRemoveTagURL(),
+			onSuccess: function( json  ){
+				if( callback ) callback( json );
+			}.bind( this )
+		}).post( { tag: tag } );
+	},
+>>>>>>> master
 	
 	removeObjectRequest: function( parentId, callback ){
 		return new Request.JSON({
@@ -395,6 +470,7 @@ lattice.modules.CMSPage = new Class({
 		return '[object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.CMSPage ]';
 	},
 	
+<<<<<<< HEAD
 	populate: function( content, objectTypeName ){
 		console.log( "CMSPAGE", objectTypeName );
 		var titleEl, titleIPE;
@@ -409,6 +485,12 @@ lattice.modules.CMSPage = new Class({
 		// and we add the class
 		this.element.addClass( objectTypeName );
 		// set the content
+=======
+	populate: function( content ){
+		var titleEl, titleIPE;
+		this.clearContent();
+		this.loc = this.element.getValueFromClassName('loc');
+>>>>>>> master
 		this.element.set( 'html', content );
 		this.UIFields = this.initUI( this.element );
 		this.initModules( this.element );		
@@ -421,6 +503,7 @@ lattice.modules.CMSPage = new Class({
 				this.addEvent( 'uifieldsaveresponse', this.marshal.onUIFieldSaved.bind( this.marshal ) );
 			}
 			this.slugIPE = this.pageHeader.getElement( ".field-slug" );
+<<<<<<< HEAD
 			this.metaIcon = this.pageHeader.getElement( "a.pageMeta" );
 			if( $('pageMeta') ){
 				this.pageMetaElement = $('pageMeta').dispose();
@@ -433,10 +516,16 @@ lattice.modules.CMSPage = new Class({
 			}
 		}
 		
+=======
+		}
+		
+		this.initializeHideShowTabs();
+>>>>>>> master
 		this.initMoveWidget();
 		this.element.unspin();
 	},
 
+<<<<<<< HEAD
 	showPageMeta: function( e ){
 		e.preventDefault();
 		
@@ -449,6 +538,16 @@ lattice.modules.CMSPage = new Class({
 		lattice.metaModal.show();
 	},
 	
+=======
+	initializeHideShowTabs: function(){
+		tabGroups = this.element.getElements('.tabGroup');
+		tabGroups.each( function( tabGroup ){
+			new lattice.ui.HideShowTabs( tabGroup );
+		});
+	},
+	
+	
+>>>>>>> master
 	initMoveWidget: function(){
 //		console.log( "initMoveWidget" );
 		var widget = this.element.getElement('.moveWidget');
@@ -514,6 +613,7 @@ lattice.modules.CMSPage = new Class({
 
 if( !lattice.util.hasDOMReadyFired() ){
 	window.addEvent( "domready", function(){
+<<<<<<< HEAD
 
 			/* smooth */
 //			new SmoothScroll({duration:500});
@@ -529,6 +629,9 @@ if( !lattice.util.hasDOMReadyFired() ){
 		lattice.clickEvent = ( lattice.util.isMobile )? 'touchend' : 'click';
 
 
+=======
+		lattice.util.DOMReadyHasFired();
+>>>>>>> master
 		lattice.historyManager = new lattice.util.HistoryManager().instance();
 		lattice.historyManager.init();
 		lattice.eventManager = new lattice.util.Broadcaster();
@@ -536,7 +639,10 @@ if( !lattice.util.hasDOMReadyFired() ){
 		if( lattice.loginTimeout && lattice.loginTimeout > 0 ) loginMonitor = new lattice.util.LoginMonitor();
 		lattice.util.EventManager.broadcastMessage( "resize" );
 		lattice.CMS = new lattice.modules.CMS( 'cms' );
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> master
 	});
 }

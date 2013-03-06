@@ -1,0 +1,15 @@
+contents
+files
+languages
+lattices
+objectelementrelationships
+objectmaps
+objectrelationships
+objects
+objects_roles
+objects_tags
+objecttypes
+rosettas
+tagbuckets
+tags
+tags_tagbuckets

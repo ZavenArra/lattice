@@ -26,6 +26,7 @@ lattice.modules.Module = new Class({
 	*/
 	childModules: {},
 	
+<<<<<<< HEAD
 
 	getAddTagURL: function(){
     return lattice.util.getBaseURL() + "ajax/data/cms/addTag/" + this.getObjectId();		
@@ -71,12 +72,17 @@ lattice.modules.Module = new Class({
 	},
 
 
+=======
+>>>>>>> master
 	getSaveFieldURL: function(){
 		throw "Abstract function getSaveFieldURL must be overriden in" + this.toString();
 	},
 
   getSaveFileSubmitURL: function(){
+<<<<<<< HEAD
   	console.log( this.toString(), 'getSaveFileSubmit' );
+=======
+>>>>>>> master
    throw "Abstract function getSaveFileSubmit must be overriden in" + this.toString();
   },
 
@@ -127,6 +133,7 @@ lattice.modules.Module = new Class({
 	build: function(){
 		this.UIFields = this.initUI();
 		this.childModules = this.initModules( this.element );
+<<<<<<< HEAD
 		this.tabGroups = this.initTabGroups( this.element )
 		this.modalActuators = this.initModalActuators( this.element );
 	},
@@ -151,6 +158,10 @@ lattice.modules.Module = new Class({
 		}, this );
 	},
 
+=======
+	},
+	
+>>>>>>> master
 	toElement: function(){
 		return this.element;
 	},
@@ -158,6 +169,7 @@ lattice.modules.Module = new Class({
 	toString: function(){
 		return "[ object, lattice.modules.Module ]";
 	},
+<<<<<<< HEAD
 
 	showModal: function( el, title ) {
 		console.log( this.toString(), 'showModal' );
@@ -207,6 +219,9 @@ lattice.modules.Module = new Class({
 		return modalActuators;
 	},
 
+=======
+	
+>>>>>>> master
 	/*
 		Function: initModules	
 		Loops through elements with the class "module" and initializes each as a module
@@ -245,7 +260,11 @@ lattice.modules.Module = new Class({
 	*/
 	initModule: function( anElement ){
 		//console.log( Array.from( arguments ) );
+<<<<<<< HEAD
 //		console.log( "initModule", this.toString(),  "element", anElement );
+=======
+		//console.log( "initModule", this.toString(),  "element", anElement );
+>>>>>>> master
 		var elementClass = anElement.get( 'class' );
 		var classPath = lattice.util.getValueFromClassName( "classPath", elementClass ).split( "_" );
 		ref = null;
@@ -264,18 +283,29 @@ lattice.modules.Module = new Class({
 	getModuleUIFields: function( anElement ){
 		var elements = [];
 		anElement.getChildren().each( function( aChild, anIndex ){
+<<<<<<< HEAD
 			if( aChild.get('class') && aChild.get( "class" ).indexOf( "ui-" ) > -1 ){
 				// if a child element has a class of ui-Something it's a uifield for this module
 				elements.combine( [ aChild ] );
 			} else if( !aChild.hasClass( "modal" ) && !aChild.hasClass( "module" ) && !aChild.hasClass( "listItem" ) ){
 				//if this child element isnt a modal, module or listitem, it's just structural markup and we should grab it's children ui-fields too.
+=======
+//			console.log( 'getModuleUIFields', aChild, aChild.get('class') );
+			if( aChild.get('class') && aChild.get( "class" ).indexOf( "ui-" ) > -1 ){
+//	   console.log( "\t\tfound ui field", aChild.get('class'), ':', aChild.get('data-field'), 'in', anElement.get('class') );
+				elements.combine( [ aChild ] );
+			} else if( !aChild.hasClass( "modal" ) && !aChild.hasClass( "module" ) && !aChild.hasClass( "listItem" ) ){
+>>>>>>> master
 				elements.combine( this.getModuleUIFields( aChild ) );
 			}
 		}, this );
 		return elements;
 	},
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> master
 	/*
 		Function: initUI
 		loops through child elements and instantiates ui elements that dont live inside other modules
@@ -355,6 +385,7 @@ Extends: lattice.modules.Module,
 		return "[Object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.Cluster ]";
 	},
 
+<<<<<<< HEAD
 	//hmmm, this maybe should be set in the Module class and overriden when needed as opposed to being always overriden
 	getSaveFileSubmitURL: function(){
 		return lattice.util.getBaseURL() + 'ajax/data/cms/savefile/' + this.getObjectId() + "/";
@@ -362,6 +393,12 @@ Extends: lattice.modules.Module,
 
 	getSaveFieldURL: function(){
 		var url = lattice.util.getBaseURL() +"ajax/data/cms/savefield/" + this.getObjectId();
+=======
+	getSaveFieldURL: function(){
+//		console.log( this.toString(), this.element );
+		var url = lattice.util.getBaseURL() +"ajax/data/cms/savefield/" + this.getObjectId();
+//		console.log( 'cluster.getSaveFieldURL', url );
+>>>>>>> master
 		return url;
 	}
 
@@ -429,6 +466,7 @@ lattice.modules.AjaxFormModule = new Class({
 	},
 
 	onFormSubmissionComplete: function( text, json ){
+<<<<<<< HEAD
 		if( json ){
 			json = JSON.decode( json );
 			if( this.resultsContainer ){
@@ -440,6 +478,26 @@ lattice.modules.AjaxFormModule = new Class({
 		}
 	}
 	
+=======
+
+		if( json ){
+//			console.log( this.toString(), "onFormSubmissionComplete", text, json );
+			json = JSON.decode( json );
+//			console.log( this.toString(), "onFormSubmissionComplete" );
+			if( this.resultsContainer ){
+//				this.resultsContainer.setStyle( "height", 'auto' );
+//				this.resultsContainer.removeClass( "centeredSpinner" );
+				this.resultsContainer.set( "html", json.html );
+			}
+//			console.log( this.resultsContainer.get( "html" ) );
+		}else{
+			throw "NO JSON RESPONSE... check for 500 error?";
+		}
+	
+	}
+	
+
+>>>>>>> master
 });
 
 lattice.modules.LatticeList = new Class({
@@ -962,10 +1020,20 @@ lattice.modules.LatticeAssociator = new Class({
 		this.parent( anElement, aMarshal, options );
 		this.objectId = this.element.get( 'data-objectid' );
 		this.allowChildSort = ( this.element.get('data-allowchildsort') == 'true' )? true : false;
+<<<<<<< HEAD
 		this.searchInput = this.element.getElement( ".actuator input[name~='filter']" );
 		if( this.searchInput ){
 			this.searchInput.addEvent( 'click', function(e){ e.stop(); this.searchInput.select(); }.bindWithEvent( this ) );
 		}
+=======
+		console.log( this.element )
+
+		console.log( this.element )
+		this.searchInput = this.element.getElement( ".actuator input[name~='filter']" );	
+    if(this.searchInput){
+      this.searchInput.addEvent( 'click', function(e){ e.stop(); this.searchInput.select(); }.bindWithEvent( this ) );
+    }
+>>>>>>> master
 	},
 	
 	filterPoolByWord: function( e ){
@@ -993,7 +1061,11 @@ lattice.modules.LatticeAssociator = new Class({
 
 		this.parent();
 
+<<<<<<< HEAD
 		this.methods = this.element.getElement('.methods');
+=======
+		this.actuator = this.element.getElement('.actuator');
+>>>>>>> master
 		this.associated = this.element.getElement( 'ul.associated' );
 		this.poolContainer = this.element.getElement('.poolcontainer');
 		this.poolList = this.element.getElement( 'ul.pool' );
@@ -1005,9 +1077,15 @@ lattice.modules.LatticeAssociator = new Class({
 
 		this.poolMorph = new Fx.Morph( this.poolList, { duration: 'short', transition: Fx.Transitions.Sine.easeOut } );
 
+<<<<<<< HEAD
 		if( this.methods ){
 
 			this.paginator = this.methods.getElement( '.paginator' );
+=======
+		if( this.actuator ){
+
+			this.paginator = this.actuator.getElement( '.paginator' );
+>>>>>>> master
 			if( this.paginator ){
 				this.paginator.getElements('li a').each( function( anItem ){
 					if( anItem.hasClass('active') ) this.activePage = anItem;
@@ -1117,6 +1195,7 @@ lattice.modules.LatticeAssociator = new Class({
 	},
 
 	dissociateRequest: function( item ){
+<<<<<<< HEAD
 		console.log("dissociate", item.toString(), item.getObjectId(), this.poolList );
 		console.log( item.element );
 		this.sortableList.removeItems( item.element );
@@ -1124,6 +1203,13 @@ lattice.modules.LatticeAssociator = new Class({
 	  // this was breaking when element was in a non-visible container
 	  // item.element.spin();
 		this.onOrderChanged();
+=======
+		//console.log("dissociate", item, item.getObjectId(), this.poolList );
+		this.poolList.grab( item.element, 'top' );
+    item.element.spin();
+		this.onOrderChanged();
+		this.sortableList.removeItems( item.element );
+>>>>>>> master
 		lattice.util.EventManager.broadcastMessage( "resize" );          
 		var jsonRequest = new Request.JSON( { url: this.getDissociateURL( this.getObjectId(), item.getObjectId(), this.element.get('data-lattice') ), onSuccess: function( json ){ this.onDissociateResponse( json, item ); }.bind( this ) } ).send();
 		return jsonRequest;

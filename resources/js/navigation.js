@@ -110,6 +110,10 @@ lattice.modules.navigation.Navigation = new Class({
 		//console.log( 'requestTier', nodeId, parentTier, deepLink );
 		cached = ( this.tiers[ nodeId ] && !deepLink )? true : false;
 		if( cached ){
+<<<<<<< HEAD
+=======
+			console.group();
+>>>>>>> master
 			//console.log( "cached: ", cached );
 			this.renderPane( this.tiers[ nodeId ] );
 		}else{
@@ -145,6 +149,7 @@ lattice.modules.navigation.Navigation = new Class({
 		this.breadCrumbs.addCrumb( { label: '/' } );		
 		this.requestTier( this.rootId, null, deepLink );
 		if( deepLink ) this.marshal.onNodeSelected( deepLink );
+<<<<<<< HEAD
 
 		this.slideToggle = this.element.getElement('.slideToggle');
 		if( this.slideToggle ){
@@ -189,6 +194,8 @@ lattice.modules.navigation.Navigation = new Class({
 
 	hideFixedNav: function( e ){
 		this.element.removeClass('showing');
+=======
+>>>>>>> master
 	},
 
 	addPane: function(){
@@ -236,9 +243,13 @@ lattice.modules.navigation.Navigation = new Class({
 		if( !target || this.getPanes().indexOf( target ) < this.numberOfVisiblePanes ){
 			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toLeft();
 		}else{
+<<<<<<< HEAD
 			var coords = this.element.getElement('.container').getCoordinates();
 			var targetCoords = target.getCoordinates();
 			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).start( targetCoords.left - targetCoords.width - coords.left , 0 );//toRight( target );
+=======
+			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).start( target.getCoordinates().left - target.getCoordinates().width - this.element.getElement('.container').getCoordinates().left , 0 );//toRight( target );
+>>>>>>> master
 		}		
 	},
 	
@@ -352,7 +363,10 @@ lattice.modules.navigation.Tier = new Class({
 
 	render: function( e ){
 		lattice.util.stopEvent( e );
+<<<<<<< HEAD
 //		if( this.boundOnKeyPress ) this.element.removeEvent( 'keydown', this.boundOnKeyPress );
+=======
+>>>>>>> master
 		if( this.element.get('html') != this.html ) this.element.set( 'html', this.html );
 		this.nodeElement = this.element.getElement( ".nodes" );
 		if( this.options.allowChildSort ) this.makeSortable();
@@ -362,11 +376,25 @@ lattice.modules.navigation.Tier = new Class({
 		}, this );
 		this.drawer = this.element.getElement( '.tierMethodsDrawer' );
  		if( this.drawer ){
+<<<<<<< HEAD
+=======
+			this.drawer.set( "morph", {
+				duration: 200, 
+				transition: Fx.Transitions.Quad.easeInOut
+			});
+			this.drawer.getElement( '.close' ).addClass( 'hidden' );
+			this.drawer.setStyle( 'height', 'auto' );
+			this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', 'auto' );
+			this.drawer.getElement( '.close' ).addEvent( 'click', this.render.bindWithEvent( this ) );
+			if( !this.drawer.retrieve( 'initTop' ) ) this.drawer.store( "initTop", this.drawer.getStyle( "top" ) );	
+			this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
+>>>>>>> master
 			var addObjectLinks = this.drawer.getElements( "li" );
 			// wire addobject links
 			addObjectLinks.each( function( aLink ){
 				aLink.addEvent( "click", this.onAddObjectClicked.bindWithEvent( this, aLink ) );
 			}, this );
+<<<<<<< HEAD
 		}
 	},
 	
@@ -377,6 +405,34 @@ lattice.modules.navigation.Tier = new Class({
 		}
 	},
 
+=======
+			if( this.marshal.getUserLevel() == 'superuser' && addObjectLinks.length > 5  ){
+				// this.element.removeClass( "dark" );
+				this.drawer.getElement( ".close" ).addClass("hidden");
+			 	this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
+				this.drawer.addEvent( 'click', this.renderAddObjectSelection.bindWithEvent( this, addObjectLinks ) );
+			}else{
+				this.drawer.addEvent( 'mouseenter', this.onDrawerMouseEnter.bindWithEvent( this ) );
+				this.drawer.addEvent( 'mouseleave', this.onDrawerMouseLeave.bindWithEvent( this ) );
+			}
+			// make nodes element shorter by the height of the addableObjects title height
+			// if( this.nodeElement.getDimensions().height >= this.element.getDimensions().height ){
+			// 	this.nodeElement.setStyle( 'height', this.element.getSize().y - this.drawer.getElement( "div.titleBar" ).getDimensions().height );
+			// }
+		}
+	},
+
+	renderAddObjectSelection: function( e, addObjectLinks ){
+		lattice.util.stopEvent( e );
+		this.nodeElement.addClass( 'hidden' );
+		this.drawer.setStyle( 'height', '100%' );
+		this.drawer.getElement( '.close' ).removeClass( 'hidden' );
+		var h = this.element.getSize().y - this.drawer.getElement( "div.titleBar" ).getSize().y;
+		this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', h );
+		this.drawer.morph( { 'top': 0 } );
+	},
+	
+>>>>>>> master
 	detach: function(){
 		this.element.unspin();
 		this.setActiveNode( null );
@@ -434,7 +490,11 @@ lattice.modules.navigation.Tier = new Class({
 
 	onNodeClicked: function( e, el ){
 		var nodeId, slug;
+<<<<<<< HEAD
 		e.preventDefault();
+=======
+		lattice.util.stopEvent( e );
+>>>>>>> master
 		nodeId = this.marshal.getNodeIdFromElement( el );
 		slug = this.marshal.getSlugFromId( nodeId );
 		this.setActiveNode( el );

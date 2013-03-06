@@ -1,10 +1,13 @@
 lattice.ui = {};
 lattice.ui.navigation = {};
 
+<<<<<<< HEAD
 
 /*
 todo, this kinda crap goes away if we use sass+compass
 */
+=======
+>>>>>>> master
 Element.implement({
 	roundCorners: function( radius ){
 		var borderStyle;
@@ -25,6 +28,7 @@ Element.implement({
 });
 
 
+<<<<<<< HEAD
 		/* scroll spy plugin / class */
 		var ScrollSpy = new Class({
 			
@@ -95,6 +99,8 @@ Element.implement({
 		});
 
 
+=======
+>>>>>>> master
 lattice.ui.UIField = new Class({
 
   Extends: lattice.LatticeObject,
@@ -349,11 +355,19 @@ lattice.ui.Sticky = new Class({
 });
 
 
+<<<<<<< HEAD
 lattice.ui.Tabs = new Class({
 
 	initialize: function( el ){
 		this.element = el;
 		this.element.store( 'Class', this );
+=======
+lattice.ui.HideShowTabs = new Class({
+
+	initialize: function( el ){
+//		console.log( 'HideShowTabs', el );
+		this.element = el;
+>>>>>>> master
 		this.tabs = el.getElements( '.tabNav li');
 		this.tabs.each( function( tab ){
 			tab.addEvent( 'click', this.onTabClicked.bindWithEvent( this, tab ) );
@@ -362,6 +376,7 @@ lattice.ui.Tabs = new Class({
 		this.activePanel = this.element.getElement( '.' + this.activeTab.get( 'data-targetselector' ) );
 	},
 
+<<<<<<< HEAD
 	clickTab: function( selector ){
 		var targetTab = this.element.getElement( '.tabNav' + ' .' + selector + '-tab' );
 		this.onTabClicked( null, targetTab );
@@ -371,11 +386,19 @@ lattice.ui.Tabs = new Class({
 		console.log( 'onTabClicked', tab, tab.get( 'data-targetselector' ) );
 		if( e ) e.preventDefault();
 		var target = this.element.getElement( '.tab-contents .' + tab.get( 'data-targetselector' ) );
+=======
+	onTabClicked: function( e, tab ){
+		e.preventDefault();
+		var target = this.element.getElement( '.' + tab.get( 'data-targetselector' ) );
+>>>>>>> master
 		this.activeTab.removeClass( 'active' );
 		this.activeTab = tab;
 		this.activePanel.addClass('hidden');
 		tab.addClass('active');
+<<<<<<< HEAD
 		console.log( target, tab );
+=======
+>>>>>>> master
 		target.removeClass('hidden');
 		this.activePanel = target;
 	}
@@ -395,6 +418,50 @@ lattice.ui.FieldSticky = new Class({
 			this.parent();
 		}
 });
+<<<<<<< HEAD
+=======
+/*
+	Class: lattice.ui.navigation.Tabs
+	Generic helper for handling tabbed navigation
+	Simply takes an collection of elements with the passed selector from the passed element, and returns a reference of the clicked element to the callback function.
+	More generic than tabs for sure, but what to call? Buton collection?
+*/
+lattice.ui.navigation.Tabs = new Class({
+	
+	toString: function(){
+		return "[ object, lattice.ui.navigation.Tabs ]";
+	},
+	
+	initialize: function( anElement, aSelector, callback ){
+		this.tabs = anElement.getElements( aSelector );
+		this.callback = callback;
+		this.tabs.each( this.applyTabBehavior.bind( this ) );
+	},
+	
+	applyTabBehavior: function( aTab, anIndex ){
+//		console.log( this, "applyTabBehavior", aTab, anIndex );
+		aTab.addEvent( "click", this.onTabClicked.bindWithEvent( this, aTab ) );
+		if( aTab.hasClass( "active" ) ){
+			// this.activeTab = aTab;
+			this.onTabClicked( null, aTab );
+		}
+	},
+	
+	onTabClicked: function( e, aTab ){
+		lattice.util.stopEvent( e );
+		if( this.activeTab && this.activeTab == aTab ) return;
+		if( this.activeTab ) this.activeTab.removeClass( "active" );
+		aTab.addClass( "active" );
+		this.activeTab = aTab;
+		this.callback( aTab );
+	},
+	
+	destroy: function(){
+		this.tabs = this.callback = null;
+	}
+
+});
+>>>>>>> master
 
 /*
 	Class: lattice.ui.navigation.BreadCrumbTrail
@@ -435,7 +502,11 @@ lattice.ui.navigation.BreadCrumbTrail = new Class({
 	
 	onCrumbClicked: function( e, obj ){
 		lattice.util.stopEvent( e );
+<<<<<<< HEAD
 		console.log( "::::: \t onBreadCrumbClicked", obj );
+=======
+//		console.log( "::::: \t onBreadCrumbClicked", obj );
+>>>>>>> master
 		this.onCrumbClickedCallback( obj );
 	},
 	
@@ -555,8 +626,12 @@ lattice.ui.Sortable = new Class({
 		area: 24,
 		constrain: false,
 		onComplete: function( droppedItem, ghostItem ){
+<<<<<<< HEAD
 
 		console.log( "::::", arguments );
+=======
+			console.log( arguments );
+>>>>>>> master
 			this.isSorting = false; 
 			this.scroller.stop();
 			droppedItem.removeClass('ghost');
@@ -621,9 +696,12 @@ lattice.ui.Modal = new Class({
 			this.modalAnchor.setStyles({ "useHandCursor":false });
 			this.modalAnchor.set( 'href', "#" );
 			this.modalAnchor.addEvent( "click", function( e ){ lattice.util.stopEvent(e); } );
+<<<<<<< HEAD
 
 			this.boundOnKeyPress = this.onKeyPress.bind( this );
 
+=======
+>>>>>>> master
 			this.showTransition = new Fx.Morph( this.element, { 
 				property: "opacity",
 				duration: this.options.fadeDuration,
@@ -641,7 +719,11 @@ lattice.ui.Modal = new Class({
 				duration: this.options.fadeDuration
 			});
 		},
+<<<<<<< HEAD
 
+=======
+		
+>>>>>>> master
 		build: function(){
 			this.element = new Element( "div", { "class": "modalContainer hidden" });
 			this.modalAnchor = new Element( "a", {
@@ -683,13 +765,17 @@ lattice.ui.Modal = new Class({
 		toString: function(){ return "[ object, lattice.ui.Modal ]"; },
 		
 		show: function(){
+<<<<<<< HEAD
 			console.log( this.modalAnchor, 'show', this.boundOnKeyPress );
 			$(window).addEvent( 'keydown', this.boundOnKeyPress );
+=======
+>>>>>>> master
 			this.element.setStyle( "opacity", 0 );
 			this.element.removeClass("hidden");
 			this.showTransition.start( { "opacity": 1 } );
 		},
 
+<<<<<<< HEAD
 		onKeyPress: function( e ){
 			console.log( "onKeyPress", e.key );
 			if( e.key == 'esc'){
@@ -699,19 +785,29 @@ lattice.ui.Modal = new Class({
 
 		close: function( onComplete ){
 			this.element.removeEvents();
+=======
+		close: function( onComplete ){
+>>>>>>> master
 			this.hideTransition.cancel();
 			this.hideTransition.start({
 				onComplete: function(){
 					if( onComplete ) onComplete();
+<<<<<<< HEAD
 					this.element.setStyle( 'opacity', 0 );
 					this.element.addClass( 'hidden' );
+=======
+					lattice.modalManager.removeModal( this );
+>>>>>>> master
 				}.bind( this )
 			});
 		},
 		
 		cancel: function( e ){
 			lattice.util.stopEvent( e );
+<<<<<<< HEAD
 			$(window).removeEvent( 'keydown', this.boundOnKeyPress );
+=======
+>>>>>>> master
 			if( this.options.onCancel ) this.options.onCancel();
 			this.close();
 		},
@@ -728,11 +824,16 @@ lattice.ui.Modal = new Class({
 			this.setContent( json.html );
 		},
 
+<<<<<<< HEAD
 		setContent: function( someContent, aTitle, grab ){
+=======
+		setContent: function( someContent, aTitle ){
+>>>>>>> master
 			if( aTitle ) this.setTitle( aTitle );
 			this.container.unspin();
 			if( typeof someContent == "string" ){
 				this.container.set( "html", someContent );
+<<<<<<< HEAD
 			}else if ( grab ){
 				this.grabbedContent = someContent;
 				this.container.grab( this.grabbedContent );
@@ -747,12 +848,21 @@ lattice.ui.Modal = new Class({
 
 		destroy: function(){
 			$(window).removeEvent( 'keydown', this.boundOnKeyPress );
+=======
+			}else{
+				this.container.adopt( someContent );
+			}
+		},
+
+		destroy: function(){
+>>>>>>> master
 			if( this.element ) this.element.destroy();
 			this.element = this.modalAnchor = this.modal = this.header = this.headerControls = this.title = this.container = this.footer = this.footerControls = this.marshal = this.hideTransition = this.showTransision = null;
 		}		
 
 });
 
+<<<<<<< HEAD
 lattice.ui.ModuleModal = new Class({
 	
 	Extends: lattice.ui.Modal,
@@ -775,6 +885,8 @@ lattice.ui.ModuleModal = new Class({
 	}
 });
 
+=======
+>>>>>>> master
 
 lattice.ui.AddObjectDialogue = new Class({
 	
@@ -1124,13 +1236,21 @@ lattice.ui.DatePicker = new Class({
 		
 	initialize: function( anElement, options ){
 		this.parent( anElement, options );
+<<<<<<< HEAD
 //		console.log( 'datepicker', anElement, options );
+=======
+>>>>>>> master
 		this.format = ( this.element.getData('format') )? this.element.getData('format') : this.options.format;
 		this.allowEmpty = ( this.element.getData('allowempty') )? this.element.getData('allowempty') : this.options.allowEmpty;
 		this.dateField = this.element.getElement("input");
 	    this.buildPicker();
 	},
+<<<<<<< HEAD
 
+=======
+	
+    
+>>>>>>> master
 	toString: function(){
 		return '[ object, lattice.ui.UIField, lattice.ui.DatePicker ]';
 	},
@@ -1152,6 +1272,7 @@ lattice.ui.DatePicker = new Class({
 	
 	onShow: function(){
 		var scrollData = ( this.scrollContext == "modal" )? lattice.ModalManager.getActiveModal().getScrollOffset() : $( window ).getScroll();
+<<<<<<< HEAD
 		console.log( 'onShow', scrollData );
 	//	this.reposition( scrollData );
 	},
@@ -1159,6 +1280,14 @@ lattice.ui.DatePicker = new Class({
 	// reposition: function( scrollData ){
 	// 	this.picker.reposition( scrollData );
 	// },
+=======
+		this.reposition( scrollData );
+	},
+
+	reposition: function( scrollData ){
+		this.picker.reposition( scrollData );
+	},
+>>>>>>> master
 	
 	onResponse: function( json ){
 		this.parent( json );
@@ -1540,8 +1669,12 @@ lattice.ui.FileElement = new Class({
 		this.downloadButton.removeClass("hidden");
 		this.downloadButton.set( 'title', 'download ' + json.response.filename );
 		this.downloadButton.set( "href", lattice.util.getBaseURL() + json.response.src );
+<<<<<<< HEAD
 		console.log( this.toString(), "onFileComplete", lattice.util.getBaseURL() + json.response.thumbSrc );
 		this.element.removeClass('empty');
+=======
+		//console.log( this.toString(), "onFileComplete", lattice.util.getBaseURL() + json.response.thumbSrc );
+>>>>>>> master
 		this.downloadButton.removeClass("hidden");
 		if( this.previewElement ){
 			this.imgAsset = new Asset.image( lattice.util.getBaseURL() + json.response.thumbSrc, {  alt: json.response.filename, onload: this.updateThumb.bind( this, json ) } );
@@ -2203,6 +2336,7 @@ lattice.ui.Input = new Class({
 	},
 
 	checkFormaxLength: function( e ){
+<<<<<<< HEAD
 		var len = e.target.get("value").length;
 		console.log( 'length', len );
 		if( len > this.maxLength
@@ -2222,6 +2356,13 @@ lattice.ui.Input = new Class({
 			lattice.util.stopEvent( e );
 			alert( "The maximum length this field allows is " + this.maxLength + " characters. This field currently has, " + len );
 		}	},
+=======
+		if( e.target.get("value").length >= this.maxLength && e.key != "shift" && e.key != "enter" && e.key != "return" && e.key != "tab" && e.keycode != 46 && e.keycode != 8 ){
+			lattice.util.stopEvent( e );
+			alert( "The maximum length this field allows is " + this.maxLength + " characters");
+		}
+	},
+>>>>>>> master
 
 	getValue: function(){
 		return this.inputElement.get( "value" );
@@ -2292,7 +2433,11 @@ lattice.ui.Text = new Class({
 		this.ipeElement = new Element( "div", { 
 			"class": "ipe " + this.field.get( 'class' ).split( " " ).splice( 1 ).join(' '),
 			"html": this.field.get( 'value' )
+<<<<<<< HEAD
 		}).inject( this.field, 'before' );
+=======
+		}).inject( anElement );
+>>>>>>> master
 
 		//set up reusable events by creating variables containing bound functions
 		this.documentBoundUpdateAndClose = this.onDocumentClicked.bindWithEvent( this );
@@ -2430,6 +2575,7 @@ lattice.ui.Text = new Class({
 	},
 		
 	checkFormaxLength: function(e){
+<<<<<<< HEAD
 		var len = e.target.get("value").length;
 		if( len > this.maxLength
 			 && e.code != 46
@@ -2447,6 +2593,11 @@ lattice.ui.Text = new Class({
 			 && e.key != 'backspace' ){
 			lattice.util.stopEvent( e );
 			alert( "The maximum length this field allows is " + this.maxLength + " characters. This field currently has, " + len );
+=======
+		if( e.target.get("value").length > this.maxLength && e.keycode != 46 && e.keycode != 8 ){
+			lattice.util.stopEvent( e );
+			alert( "The maximum length this field allows is " + this.maxLength + " characters");
+>>>>>>> master
 		}
 	},
 
@@ -2931,7 +3082,10 @@ lattice.ui.Tags = new Class({
 		this.parent( anElement, aMarshal, options );
 		this.field = this.element.getElement('.tagInput');
 		this.tokenList = this.element.getElement( 'ul.tokens' ); 
+<<<<<<< HEAD
 //		console.log( ":::", this.tokenList, this.tokenList.getChildren(), this.marshal.getElement() );
+=======
+>>>>>>> master
 		this.tokenTemplate = this.tokenList.getElement( '.token.template' ).dispose();
 		this.tokenTemplate.removeClass('template');
 		this.ogBg = this.tokenTemplate.getStyle( 'background-color' );
@@ -3017,8 +3171,12 @@ lattice.ui.Tags = new Class({
 		var index, token, bg;
 		index = this.getTokens().indexOf( tokenString )
 		token = this.tokenList.getElements( 'li.token' )[index];
+<<<<<<< HEAD
 		this.leaveEditMode( null );
 		token.set( 'morph', { link: 'chain', transition: Fx.Transitions.Quad.easeOut, duration: 750 } );
+=======
+		token.set( 'morph', { link: 'chain', transition: Fx.Transitions.Quad.easeOut, duration: 250 } );
+>>>>>>> master
 		token.morph( { 'background-color' : "#fcf3a0" } );
 		token.morph( { 'background-color' : this.ogbg } );
 	},
