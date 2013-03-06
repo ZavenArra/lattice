@@ -45,7 +45,7 @@ $config['passwordChangeEmail']['from'] = "Lattice Usermanagement <usermanagement
  * Array is of format array( {label} => {role unique text key})
  */
 $config['managedRoles'] = array('Admin'=>'admin');
-$config['defaultRoles'] = 'client';
+$config['defaultRoles'] = 'admin';
 $config['superuserEdit'] = true;
 
 return $config;
