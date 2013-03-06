@@ -11,34 +11,34 @@
  * @author deepwinter1
  */
 abstract class Model_Lattice_Content_driver {
-   
-   protected $contenttable;
-   
-   abstract public function load_content_table($object);
 
-   abstract public function get_title($object);
-   abstract public function set_title($object, $title);
+  protected $contenttable;
 
-   
-   abstract public function get_content_column($object, $column);
+  abstract public function load_content_table($object);
 
-   abstract public function set_content_column($object, $column, $value);
-   
-   abstract public function save_content_table($object, $inserting=false);
+  abstract public function get_title($object);
+  abstract public function set_title($object, $title);
 
-   abstract public function delete();
 
-   /*
-    * Returns info about the driver.
-    */
-   public function driver_info()
-{
+  abstract public function get_content_column($object, $column);
+
+  abstract public function set_content_column($object, $column, $value);
+
+  abstract public function save_content_table($object, $inserting=false);
+
+  abstract public function delete();
+
+  /*
+   * Returns info about the driver.
+   */
+  public function driver_info()
+  {
     return array(
       'driver'=>'mysql',
       'table_name'=>$this->contenttable,
     );
-   }
-   
   }
-   
+
+}
+
 

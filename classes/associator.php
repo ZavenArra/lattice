@@ -141,7 +141,7 @@ Class Associator {
         //compact the array to remove redundant keys
         $res = array();
         foreach ($results as $id)
-{
+        {
           $object = Graph::object($id);
           if (!$this->parent->check_lattice_relationship($lattice, $object))
           {
@@ -170,7 +170,7 @@ Class Associator {
       }	
 
     } else if (!is_array($load_pool))
-{
+    {
 
       $objects = Graph::object()
         ->where( 'id', '!=', $parent_id )
@@ -237,7 +237,7 @@ Class Associator {
     // $view->action = $action;
     // $view->params = $this->request->param();
     // $view->current_page = $view->params["param4"];
-    
+
     /* end paginator vars*/ 
     return $view->render();
   }

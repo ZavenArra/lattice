@@ -7,11 +7,11 @@
 
 Class Controller_HTML extends Controller_Lattice {
 
-		public function action_html($uri)
-{
+  public function action_html($uri)
+  {
 
-				$sub_request = Request::Factory($uri)->execute();
-				$this->response->body($sub_request->body());
-		}
+    $sub_request = Request::Factory($uri)->execute();
+    $this->response->body($sub_request->body());
+  }
 
 }

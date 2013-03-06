@@ -9,34 +9,34 @@
  */
 
 class Controller_Layout extends Controller_Lattice {
-	
-	protected $_actions_that_get_layout = array();
-	
-	protected $sub_request;
-	
-	public function after()
-{
-		if ($this->request == Request::initial() )
-{
-			if (in_array($this->request->action(), $this->_actions_that_get_layout))
-{
-				$this->wrap_with_layout();
-			} 
-		}
-	}
-	
-/*
- * Function: output_layout
- * Wrap the response in its configured layout
- */
+
+  protected $_actions_that_get_layout = array();
+
+  protected $sub_request;
+
+  public function after()
+  {
+    if ($this->request == Request::initial() )
+    {
+      if (in_array($this->request->action(), $this->_actions_that_get_layout))
+      {
+        $this->wrap_with_layout();
+      } 
+    }
+  }
+
+  /*
+   * Function: output_layout
+   * Wrap the response in its configured layout
+   */
   public function wrap_with_layout($layout=NULL)
-{
+  {
     if ($layout==NULL)
-{
+    {
       //set layout - read from config file
       $layout = Kohana::config(strtolower($this->request->controller()) . '.layout');
       if (!$layout)
-{
+      {
         throw new Kohana_Exception("Layout controller subclass :controller configured to layout action :action, but no layout set in configuration",
           array(
             ':controller'=>$this->request->controller(),
@@ -45,14 +45,14 @@ class Controller_Layout extends Controller_Lattice {
 
       }
     }
-		$layout_view = View::Factory($layout);
+    $layout_view = View::Factory($layout);
 
     if (is_array(Kohana::config($layout.'.resources') ) )
-{
+    {
       foreach (Kohana::config($layout.'.resources') as $key => $paths)
-{
+      {
         foreach ($paths as $path)
-{
+        {
           $this->resources[$key][$path] = $path;
         }
       }
@@ -61,29 +61,29 @@ class Controller_Layout extends Controller_Lattice {
     //build js and css
     $stylesheet = '';
     foreach ($this->resources['librarycss'] as $css)
-{
-			$stylesheet .=	HTML::style($css)."\n       ";
-		}
-		foreach ($this->resources['css'] as $css)
-{
-			$stylesheet .=	HTML::style($css)."\n       ";
-		}
-		$layout_view->stylesheet = $stylesheet;
+    {
+      $stylesheet .=	HTML::style($css)."\n       ";
+    }
+    foreach ($this->resources['css'] as $css)
+    {
+      $stylesheet .=	HTML::style($css)."\n       ";
+    }
+    $layout_view->stylesheet = $stylesheet;
 
-		$javascript = '';
-		foreach ($this->resources['libraryjs'] as $js)
-{
-			$javascript .= HTML::script($js)."\n        ";		
-		}
-		foreach ($this->resources['js'] as $js)
-{
-			$javascript .= HTML::script($js)."\n        ";		
-		}
-		$layout_view->javascript = $javascript;
+    $javascript = '';
+    foreach ($this->resources['libraryjs'] as $js)
+    {
+      $javascript .= HTML::script($js)."\n        ";		
+    }
+    foreach ($this->resources['js'] as $js)
+    {
+      $javascript .= HTML::script($js)."\n        ";		
+    }
+    $layout_view->javascript = $javascript;
 
-		$layout_view->body = $this->response->body();
-		$this->response->body($layout_view->render());
-	}
+    $layout_view->body = $this->response->body();
+    $this->response->body($layout_view->render());
+  }
 
 
 } // End Welcome

@@ -13,4 +13,3 @@
 class Model_Initialized_module extends ORM {
 //put your code here
 }
-?>

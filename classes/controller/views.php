@@ -7,12 +7,12 @@
 
 Class Controller_Views extends Controller {
 
-	public function action_js($filename)
-{
-		$view = new View('js/'.$filename);	
+  public function action_js($filename)
+  {
+    $view = new View('js/'.$filename);	
 
-		$this->response->headers('Content-Type', 'application/x-javascript');
-		$this->response->body($view->render());
+    $this->response->headers('Content-Type', 'application/x-javascript');
+    $this->response->body($view->render());
 
-	}
+  }
 }

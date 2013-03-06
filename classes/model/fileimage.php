@@ -8,101 +8,101 @@
 class Model_File_image {
 
 
-	/*
-	 * Variable: filename 
-	 * The name of the file
-	 */
-	private $filename;
+  /*
+   * Variable: filename 
+   * The name of the file
+   */
+  private $filename;
 
-	/*
-	 * Variable: prefix
-	 * The resize prefix.
-	 */
-	private $prefix='';
+  /*
+   * Variable: prefix
+   * The resize prefix.
+   */
+  private $prefix='';
 
-	/*
-	 * Variable: width 
-	 * The width of the image
-	 */
-	private $width;
+  /*
+   * Variable: width 
+   * The width of the image
+   */
+  private $width;
 
-	/*
-	 * Variable: height
-	 * The height of the image
-	 */
-	private $height;
+  /*
+   * Variable: height
+   * The height of the image
+   */
+  private $height;
 
-	/*
-	 * Variable: fullpath
-	 * The full path to the file
-	 */
-	private $fullpath;
+  /*
+   * Variable: fullpath
+   * The full path to the file
+   */
+  private $fullpath;
 
-	/*
-	 * Variable: urlfilename 
-	 * The url of the file
-	 */
-	private $urlfilename;
+  /*
+   * Variable: urlfilename 
+   * The url of the file
+   */
+  private $urlfilename;
 
-	/*
-	 * Function: __construct($filename, $prefix)
-	 * Constructor, reads data parameters from the file.
-	 * Parameters:
-	 * $filename - the base filename to load
-	 * $prefix - the prefixed filename that this object holds data for
-	 * Returns: nothing
-	 */
-	public function __construct($filename, $prefix)
-{
-		if ($prefix != 'original')
-{
-			$this->prefix = $prefix.'_';
-		}
-		if ($filename)
-{
-			$this->filename = $this->prefix.$filename;
-			if ($prefix == 'uithumb')
-{
-				$ext = substr(strrchr($filename, '.'), 1);
-				switch($ext)
-{
-				case 'tiff':
-					case 'tif':
-						case 'TIFF':
-							case 'TIF':
-								$this->filename = $this->filename.'_converted.jpg';
-								break;
-				}
-			}
+  /*
+   * Function: __construct($filename, $prefix)
+   * Constructor, reads data parameters from the file.
+   * Parameters:
+   * $filename - the base filename to load
+   * $prefix - the prefixed filename that this object holds data for
+   * Returns: nothing
+   */
+  public function __construct($filename, $prefix)
+  {
+    if ($prefix != 'original')
+    {
+      $this->prefix = $prefix.'_';
+    }
+    if ($filename)
+    {
+      $this->filename = $this->prefix.$filename;
+      if ($prefix == 'uithumb')
+      {
+        $ext = substr(strrchr($filename, '.'), 1);
+        switch($ext)
+        {
+        case 'tiff':
+        case 'tif':
+        case 'TIFF':
+        case 'TIF':
+          $this->filename = $this->filename.'_converted.jpg';
+          break;
+        }
+      }
 
 
-			$this->urlfilename = rawurlencode($this->filename);
-			$dirprefix = '';
-			if (Kohana::config('lattice.staging'))
-{
-				$dirprefix = 'staging/';
-			}
-			if (file_exists($dirprefix.'application/media/'.$this->filename))
-{
-				$size = getimagesize($dirprefix.'application/media/'.$this->filename);
-				$this->width = $size[0];
-				$this->height = $size[1];
-				$this->fullpath = 'application/media/'.$this->filename;
-			}
-		}
-	}
+      $this->urlfilename = rawurlencode($this->filename);
+      $dirprefix = '';
+      if (Kohana::config('lattice.staging'))
+      {
+        $dirprefix = 'staging/';
+      }
+      if (file_exists($dirprefix.'application/media/'.$this->filename))
+      {
+        $size = getimagesize($dirprefix.'application/media/'.$this->filename);
+        $this->width = $size[0];
+        $this->height = $size[1];
+        $this->fullpath = 'application/media/'.$this->filename;
+      }
+    }
+  }
 
-	/*
-	 * Function: __get($column)
-	 * Custom getter for this model, simply returns class variables
-	 * Parameters:
-	 * $column - class variable to return
-	 * Returns: value
-	 */
-	public function __get($column)
-{
-		return $this->$column;
-	}
+  /*
+   * Function: __get($column)
+   * Custom getter for this model, simply returns class variables
+   * Parameters:
+   * $column - class variable to return
+   * Returns: value
+   */
+  public function __get($column)
+  {
+    return $this->$column;
+  }
 
 
 }

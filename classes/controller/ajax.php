@@ -2,191 +2,191 @@
 
 class Controller_Ajax extends Controller_Lattice {
 
-	public function action_index()
-	{
-		throw new HTTP_Exception_404('Ajax controller called without action. Check URL.');
-	}
-   
-   private function handle_exception($e)
-{
-      
-      // Get the exception information
-      $type    = get_class($e);
-      $code    = $e->get_code();
-      $message = $e->get_message();
-      $file    = $e->get_file();
-      $line    = $e->get_line();
+  public function action_index()
+  {
+    throw new HTTP_Exception_404('Ajax controller called without action. Check URL.');
+  }
 
-      // Get the exception backtrace
-      $trace = $e->get_trace();
-      
-      ob_start();
+  private function handle_exception($e)
+  {
 
-      // Include the exception HTML
-      if ($view_file = Kohana::find_file('views', Kohana_Exception::$error_view))
-      {
-        include $view_file;
-      }
-      else
-      {
-        throw new Kohana_Exception('Error view file does not exist: views/:file', array(
-          ':file' => Kohana_Exception::$error_view,
-        ));
-      }
+    // Get the exception information
+    $type    = get_class($e);
+    $code    = $e->get_code();
+    $message = $e->get_message();
+    $file    = $e->get_file();
+    $line    = $e->get_line();
 
-      // Display the contents of the output buffer
-      $message = ob_get_clean();
-      return $message;
-   }
+    // Get the exception backtrace
+    $trace = $e->get_trace();
 
-	public function action_data($uri)
-	{
-		//request to child, just data
-		$arguments = explode('/', $uri);
+    ob_start();
 
-		try {
-			$sub_request = Request::Factory($uri);
-			$data = $sub_request->execute()->data();
-		} catch (Exception $e)
-{
-			//return HTML from exception
-         
-          // Start an output buffer
-   
-			$ajax_response = array(
-				'return_value' => FALSE,
-				'response' => $this->handle_exception($e),
-				'arguments'=>$arguments
+    // Include the exception HTML
+    if ($view_file = Kohana::find_file('views', Kohana_Exception::$error_view))
+    {
+      include $view_file;
+    }
+    else
+    {
+      throw new Kohana_Exception('Error view file does not exist: views/:file', array(
+        ':file' => Kohana_Exception::$error_view,
+      ));
+    }
 
-			);
-			$this->response->headers('Content-Type', 'application/json');
-			$this->response->body(json_encode($ajax_response));
-			return;
-		}
-		$ajax_response = array(
-			'return_value' => TRUE,
-			'response'=>$data,
-			'arguments'=>$arguments
-		);
-		$this->response->headers('Content-Type', 'application/json');
-		$this->response->body(json_encode($ajax_response));
-		$this->response->body();
-	}
+    // Display the contents of the output buffer
+    $message = ob_get_clean();
+    return $message;
+  }
 
-	public function action_html($uri)
-	{
-//		Kohana::$log->add(Log::INFO, 'Ajax html request begin');
-		$arguments = explode('/', $uri);
+  public function action_data($uri)
+  {
+    //request to child, just data
+    $arguments = explode('/', $uri);
 
-		try {
-			$sub_request = Request::Factory($uri);
-			$html = $sub_request->execute()->body();
-		} catch (Exception $e)
-{
-			//return HTML from exception
+    try {
+      $sub_request = Request::Factory($uri);
+      $data = $sub_request->execute()->data();
+    } catch (Exception $e)
+    {
+      //return HTML from exception
 
-			$message = $e;
-			$ajax_response = array(
-				'return_value' => FALSE,
-				'response' => $this->handle_exception($e),
-				'arguments'=>$arguments
+      // Start an output buffer
 
-			);
-			$this->response->headers('Content-Type', 'application/json');
-			$this->response->body(json_encode($ajax_response));
-			return;
-		}
+      $ajax_response = array(
+        'return_value' => FALSE,
+        'response' => $this->handle_exception($e),
+        'arguments'=>$arguments
 
+      );
+      $this->response->headers('Content-Type', 'application/json');
+      $this->response->body(json_encode($ajax_response));
+      return;
+    }
+    $ajax_response = array(
+      'return_value' => TRUE,
+      'response'=>$data,
+      'arguments'=>$arguments
+    );
+    $this->response->headers('Content-Type', 'application/json');
+    $this->response->body(json_encode($ajax_response));
+    $this->response->body();
+  }
 
-		$css_resources = array();
-		foreach ($this->resources['librarycss'] as $css)
-{
-			array_push($css_resources, $css);
-		}
-		foreach ($this->resources['css'] as $css)
-{
-			array_push($css_resources, $css);
-		}
+  public function action_html($uri)
+  {
+    //		Kohana::$log->add(Log::INFO, 'Ajax html request begin');
+    $arguments = explode('/', $uri);
 
-		$js_resources = array();
-		foreach ($this->resources['libraryjs'] as $js)
-{
-			array_push($js_resources, $js);
-		}
-		foreach ($this->resources['js'] as $js)
-{
-			array_push($js_resources, $js);
-		}
+    try {
+      $sub_request = Request::Factory($uri);
+      $html = $sub_request->execute()->body();
+    } catch (Exception $e)
+    {
+      //return HTML from exception
 
-		$ajax_response = array(
-			'response'=>array(
-				'html'=>$html,
-				'js'=>$js_resources,
-				'css'=>$css_resources
-			),
-			'return_value' => TRUE,
-			'arguments'=>$arguments
-		);
-		$this->response->headers('Content-Type', 'application/json');
-		$this->response->body(json_encode($ajax_response));
-	}
+      $message = $e;
+      $ajax_response = array(
+        'return_value' => FALSE,
+        'response' => $this->handle_exception($e),
+        'arguments'=>$arguments
 
-	public function action_compound($uri)
-	{
-		$arguments = explode('/', $uri);
-
-		try {
-   		$sub_request = Request::Factory($uri);
-			$request_response = $sub_request->execute();
-   	} catch (Exception $e)
-{
-			//return HTML from exception
-			$message = $e;
-			$ajax_response = array(
-				'return_value' => FALSE,
-				'response' => $this->handle_exception($e),
-				'arguments'=>$arguments
-			);
-			$this->response->headers('Content-Type', 'application/json');
-			$this->response->body(json_encode($ajax_response));
-			return;
-		}
+      );
+      $this->response->headers('Content-Type', 'application/json');
+      $this->response->body(json_encode($ajax_response));
+      return;
+    }
 
 
-		$css_resources = array();
-		foreach ($this->resources['librarycss'] as $css)
-{
-			array_push($css_resources, $css);
-		}
-		foreach ($this->resources['css'] as $css)
-{
-			array_push($css_resources, $css);
-		}
+    $css_resources = array();
+    foreach ($this->resources['librarycss'] as $css)
+    {
+      array_push($css_resources, $css);
+    }
+    foreach ($this->resources['css'] as $css)
+    {
+      array_push($css_resources, $css);
+    }
 
-		$js_resources = array();
-		foreach ($this->resources['libraryjs'] as $js)
-{
-			array_push($js_resources, $js);
-		}
-		foreach ($this->resources['js'] as $js)
-{
-			array_push($js_resources, $js);
-		}
+    $js_resources = array();
+    foreach ($this->resources['libraryjs'] as $js)
+    {
+      array_push($js_resources, $js);
+    }
+    foreach ($this->resources['js'] as $js)
+    {
+      array_push($js_resources, $js);
+    }
+
+    $ajax_response = array(
+      'response'=>array(
+        'html'=>$html,
+        'js'=>$js_resources,
+        'css'=>$css_resources
+      ),
+      'return_value' => TRUE,
+      'arguments'=>$arguments
+    );
+    $this->response->headers('Content-Type', 'application/json');
+    $this->response->body(json_encode($ajax_response));
+  }
+
+  public function action_compound($uri)
+  {
+    $arguments = explode('/', $uri);
+
+    try {
+      $sub_request = Request::Factory($uri);
+      $request_response = $sub_request->execute();
+    } catch (Exception $e)
+    {
+      //return HTML from exception
+      $message = $e;
+      $ajax_response = array(
+        'return_value' => FALSE,
+        'response' => $this->handle_exception($e),
+        'arguments'=>$arguments
+      );
+      $this->response->headers('Content-Type', 'application/json');
+      $this->response->body(json_encode($ajax_response));
+      return;
+    }
 
 
-		$compound_response = array(
-			'data' => $request_response->data(),
-			'html' => $request_response->body(),
-			'css' => $css_resources,
-			'js' => $js_resources,
-		);
-		$ajax_response = array(
-			'return_value' => TRUE,
-			'response'=>$compound_response,
-			'arguments'=>$arguments
-		);
-		$this->response->headers('Content-Type', 'application/json');
-		$this->response->body(json_encode($ajax_response));
-	}
+    $css_resources = array();
+    foreach ($this->resources['librarycss'] as $css)
+    {
+      array_push($css_resources, $css);
+    }
+    foreach ($this->resources['css'] as $css)
+    {
+      array_push($css_resources, $css);
+    }
+
+    $js_resources = array();
+    foreach ($this->resources['libraryjs'] as $js)
+    {
+      array_push($js_resources, $js);
+    }
+    foreach ($this->resources['js'] as $js)
+    {
+      array_push($js_resources, $js);
+    }
+
+
+    $compound_response = array(
+      'data' => $request_response->data(),
+      'html' => $request_response->body(),
+      'css' => $css_resources,
+      'js' => $js_resources,
+    );
+    $ajax_response = array(
+      'return_value' => TRUE,
+      'response'=>$compound_response,
+      'arguments'=>$arguments
+    );
+    $this->response->headers('Content-Type', 'application/json');
+    $this->response->body(json_encode($ajax_response));
+  }
 
 } // End Welcome

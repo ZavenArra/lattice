@@ -1,6 +1,4 @@
 <?php
-/*
-* Class: Model for Content_Small
-*/
-class Model_Content extends ORM {}
-?>
+class Model_Content extends ORM 
+{
+}
