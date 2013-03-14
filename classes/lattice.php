@@ -148,7 +148,7 @@ Class lattice {
         $clusters->load( $path[0] );
         // echo $clusters->_delegate->saveXML();
         $clusters = new DOMXPath($clusters->_delegate);
-        $cluster_nodes = $clusters->evaluate('// object_type');
+        $cluster_nodes = $clusters->evaluate('//object_type');
         foreach ($cluster_nodes as $node)
         {
           $node = $dom->_delegate->import_node($node, TRUE);

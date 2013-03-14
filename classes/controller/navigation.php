@@ -107,7 +107,7 @@ class Controller_Navigation extends Controller_Lattice{
       // add in any modules
       if ($parent->id == Graph::get_root_node(Kohana::config('cms.graph_root_node'))->id )
       {
-        $cms_modules = lattice::config('cms_modules', '// module');
+        $cms_modules = lattice::config('cms_modules', '//module');
         foreach ($cms_modules as $m)
         {
           $controller = $m->get_attribute('controller');
@@ -214,7 +214,7 @@ class Controller_Navigation extends Controller_Lattice{
   public function get_object_types()
   {
     $object_types = array();
-    foreach (lattice::config('objects', '// object_type') as $object_type)
+    foreach (lattice::config('objects', '//object_type') as $object_type)
     {
       $entry = array();
       $entry['object_type_name'] = $object_type->get_attribute('name'); 

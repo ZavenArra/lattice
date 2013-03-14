@@ -32,7 +32,7 @@ class latticecms {
       {
 
         // check if this element type is in fact a object_type
-        $x_path =  sprintf('// object_type[@name="%s"]', $element['type']);
+        $x_path =  sprintf('//object_type[@name="%s"]', $element['type']);
         $t_config = lattice::config('objects', $x_path)->item(0);
 
         if ($t_config)
@@ -177,7 +177,7 @@ class latticecms {
 
   public static function get_element_dom_node($object, $element_name)
   {
-    $x_path = sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]',
+    $x_path = sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]',
       $object->objecttype->objecttypename,
       $element_name
     );
@@ -192,7 +192,7 @@ class latticecms {
 
   public static function buildUIHtml_chunks_for_object($object, $translated_language_code = NULL)
   {
-    $elements = lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/*', $object->objecttype->objecttypename));
+    $elements = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $object->objecttype->objecttypename));
     //  should be Model_object->get_elements();
     //  this way a different driver could be created for non-xml config if desired
     $elements_config = array();
@@ -284,7 +284,7 @@ class latticecms {
   public static function regenerate_images()
   {
     // find all images
-    foreach (lattice::config('objects', '// object_type') as $object_type)
+    foreach (lattice::config('objects', '//object_type') as $object_type)
     {
       foreach (lattice::config('objects', 'elements/*', $object_type) as $element)
       {
@@ -310,7 +310,7 @@ class latticecms {
     foreach ($object_ids as $id)
     {
       $object = Graph::object($id);
-      foreach (lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element)
+      foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element)
       {
         if ($element->tag_name == 'image')
         {
@@ -361,7 +361,7 @@ class latticecms {
   public static function move_node_html($object)
   {
     $object_type_name = $object->objecttypename;
-    $x_path = sprintf('// object_type[addable_object[@object_type_name="%s"]]', $object_type_name);
+    $x_path = sprintf('//object_type[addable_object[@object_type_name="%s"]]', $object_type_name);
     $object_types_result = lattice::config('objects', $x_path);
 
     $object_types = array();

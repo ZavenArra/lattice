@@ -30,13 +30,13 @@ class Model_Object_type extends ORM {
 
   public static function get_config($object_type_name)
   {
-    $config = lattice::config('objects', sprintf('// object_type[@name="%s"]', $object_type_name));
+    $config = lattice::config('objects', sprintf('//object_type[@name="%s"]', $object_type_name));
     if ($config->length)
     {
       return $config->item(0);
     }
 
-    $config = lattice::config('objects', sprintf('// list[@name="%s"]', $object_type_name));
+    $config = lattice::config('objects', sprintf('//list[@name="%s"]', $object_type_name));
     if ($config->length)
     {
       return $config->item(0);
@@ -77,10 +77,10 @@ class Model_Object_type extends ORM {
       if (parent::__get('node_type')=='container')
       {
         // For lists, values will be on the 2nd level 
-        $x_query =  sprintf('// list[@name="%s"]', parent::__get('objecttypename'));
+        $x_query =  sprintf('//list[@name="%s"]', parent::__get('objecttypename'));
       } else {
         // everything else is a normal lookup
-        $x_query =  sprintf('// object_type[@name="%s"]', parent::__get('objecttypename'));
+        $x_query =  sprintf('//object_type[@name="%s"]', parent::__get('objecttypename'));
       }
 
       $value_from_config=NULL;
@@ -94,7 +94,7 @@ class Model_Object_type extends ORM {
           $entry = array();
           $entry['object_type_id'] = $node->get_attribute('object_type_name');
           $entry['object_type_add_text'] = $node->get_attribute('add_text');
-          $t_config = lattice::config('objects', sprintf('// object_type[@name="%s"]', $entry['object_type_id'] ))->item(0);
+          $t_config = lattice::config('objects', sprintf('//object_type[@name="%s"]', $entry['object_type_id'] ))->item(0);
           if ( ! count($t_config))
           {
             throw new Kohana_Exception('No object type definition by name: '.$entry['object_type_id']);

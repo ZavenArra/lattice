@@ -313,7 +313,7 @@ class Model_Object extends ORM implements arrayaccess {
 
 
     // check if this is a list container
-    $list_config = lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/list[@name="%s"]', $this->objecttype->objecttypename, $column));
+    $list_config = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/list[@name="%s"]', $this->objecttype->objecttypename, $column));
     if ($list_config->length)
     {
 
@@ -459,10 +459,10 @@ class Model_Object extends ORM implements arrayaccess {
     if ($this->__get('objecttype')->node_type == 'container')
     {
       // For lists, values will be on the 2nd level 
-      $x_path = sprintf('// list[@name="%s"]', $this->__get('objecttype')->objecttypename);
+      $x_path = sprintf('//list[@name="%s"]', $this->__get('objecttype')->objecttypename);
     } else {
       // everything else is a normal lookup
-      $x_path = sprintf('// object_type[@name="%s"]', $this->__get('objecttype')->objecttypename);
+      $x_path = sprintf('//object_type[@name="%s"]', $this->__get('objecttype')->objecttypename);
     }
     $field_config = lattice::config('objects', $x_path . sprintf('/elements/*[@name="%s"]', $element_name));
     return $field_config;
@@ -523,7 +523,7 @@ class Model_Object extends ORM implements arrayaccess {
 
         $object_type = ORM::Factory('objecttype', $objecttype_id);
 
-        $xpath = sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]', $object_type->objecttypename, $column);
+        $xpath = sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $object_type->objecttypename, $column);
         $field_info = lattice::config('objects', $xpath)->item(0);
         if ( ! $field_info)
         {
@@ -776,7 +776,7 @@ class Model_Object extends ORM implements arrayaccess {
       $content['dateadded'] = $this->dateadded;
       $content['object_type_name'] = $this->objecttype->objecttypename;
 
-      $fields = lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/*', $this->objecttype->objecttypename));
+      $fields = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $this->objecttype->objecttypename));
 
       foreach ($fields as $field_info)
       {
@@ -785,14 +785,14 @@ class Model_Object extends ORM implements arrayaccess {
       }
 
       // find any lists
-      foreach (lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
+      foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
       {
         $name = $list->get_attribute('name');
         $content[$name] = $this->get_list_content_as_array($name);
       }
 
       // find any associators
-      foreach (lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/associator', $this->objecttype->objecttypename)) as $list)
+      foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/associator', $this->objecttype->objecttypename)) as $list)
       {
         $name = $list->get_attribute('name');
         $content[$name] = $this->get_lattice_children($list->get_attribute('name'));;
@@ -804,13 +804,13 @@ class Model_Object extends ORM implements arrayaccess {
     {
       $fields = array('id', 'title', 'slug', 'dateadded', 'objecttypename');
 
-      $object_fields = lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/*', $this->objecttype->objecttypename));
+      $object_fields = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $this->objecttype->objecttypename));
       foreach ($object_fields as $field_info)
       {
         $fields[] = $field_info->get_attribute('name');   
       }
 
-      foreach (lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
+      foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
       {
         $family = $list->get_attribute('name');
         $fields[] = $family;
@@ -1170,7 +1170,7 @@ class Model_Object extends ORM implements arrayaccess {
 
       // do the resizing
       $objecttypename = $this->objecttype->objecttypename;
-      $resizes = lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]/resize', $objecttypename, $field
+      $resizes = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]/resize', $objecttypename, $field
       )
     );
       foreach ($resizes as $resize)
@@ -1291,7 +1291,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function join_content_column($column)
     {
-      $map = lattice::config('objects', '// object_type[elements/*/@name="'.$column.'"]'); 
+      $map = lattice::config('objects', '//object_type[elements/*/@name="'.$column.'"]'); 
       $map_query = array();
       if ($map->length)
       {
@@ -1685,7 +1685,7 @@ class Model_Object extends ORM implements arrayaccess {
 
 
       // chain problem
-      $containers = lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/list', $this->objecttype->objecttypename));
+      $containers = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/list', $this->objecttype->objecttypename));
       foreach ($containers as $c)
       {
         $arguments['title'] = $c->get_attribute('label');
@@ -1698,7 +1698,7 @@ class Model_Object extends ORM implements arrayaccess {
 
       // look up any components and add them as well
       // configured components
-      $components = lattice::config('objects', sprintf('// object_type[@name="%s"]/components/component', $this->objecttype->objecttypename));
+      $components = lattice::config('objects', sprintf('//object_type[@name="%s"]/components/component', $this->objecttype->objecttypename));
       foreach ($components as $c)
       {
         $arguments = array();
@@ -1767,7 +1767,7 @@ class Model_Object extends ORM implements arrayaccess {
 
       // check for enabled publish/unpublish. 
       // if not enabled, insert as published
-      $t_settings = lattice::config('objects', sprintf('// object_type[@name="%s"]', $this->objecttype->objecttypename));
+      $t_settings = lattice::config('objects', sprintf('//object_type[@name="%s"]', $this->objecttype->objecttypename));
       $t_settings = $t_settings->item(0);
       $this->published = 1;
       if ($t_settings)
@@ -1830,7 +1830,7 @@ class Model_Object extends ORM implements arrayaccess {
 
 
 
-      $lookup_templates = lattice::config('objects', '// object_type');
+      $lookup_templates = lattice::config('objects', '//object_type');
       $object_types = array();
       foreach ($lookup_templates as $t_config)
       {
@@ -1854,7 +1854,7 @@ class Model_Object extends ORM implements arrayaccess {
 
         // $field_info = Model_Object_type::get_field_info_for_object_type($this->objectttype->objecttypename, $field)
 
-        $field_infoXPath = sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field);
+        $field_infoXPath = sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field);
         $field_info = lattice::config('objects', $field_infoXPath)->item(0);
         if ( ! $field_info)
         {
@@ -2102,8 +2102,8 @@ class Model_Object extends ORM implements arrayaccess {
 
 
           // check objects.xml for configuration
-          $x_path =  sprintf('// object_type[@name="%s"]', $object_type_name);
-          $x_path_list =  sprintf('// list[@name="%s"]', $object_type_name);
+          $x_path =  sprintf('//object_type[@name="%s"]', $object_type_name);
+          $x_path_list =  sprintf('//list[@name="%s"]', $object_type_name);
           if ($object_type_config = lattice::config('objects', $x_path)->item(0))
           {
             // there's a config for this object_type
@@ -2212,7 +2212,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function get_meta_object_type_name($lattice)
     {
-      $x_path = sprintf('// object_type[@name="%s"]/elements/associator[@lattice="%s"]', 
+      $x_path = sprintf('//object_type[@name="%s"]/elements/associator[@lattice="%s"]', 
         $this->objecttype->objecttypename,
         $lattice);
       // echo $x_path;

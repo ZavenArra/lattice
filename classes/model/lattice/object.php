@@ -40,7 +40,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
         return self::$dbmaps[$objecttype_id][$column];
       } else {
         // Attempt lazy configuration
-        $xpath = sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]', $objecttype->objecttypename, $column);
+        $xpath = sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $objecttype->objecttypename, $column);
         $element = lattice::config('objects', $xpath)->item(0);
         if ( ! count($element))
         {
@@ -111,11 +111,11 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
       if ($object->objecttype->node_type == 'container')
       {
         // For lists, values will be on the 2nd level 
-        $x_path = sprintf('// list[@name="%s"]', $object->objecttype->objecttypename);
+        $x_path = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
 
       } else {
         // everything else is a normal lookup
-        $x_path = sprintf('// object_type[@name="%s"]', $object->objecttype->objecttypename);
+        $x_path = sprintf('//object_type[@name="%s"]', $object->objecttype->objecttypename);
 
       }
 
@@ -184,10 +184,10 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
       if ($object->objecttype->node_type == 'container')
       {
         // For lists, values will be on the 2nd level 
-        $x_path = sprintf('// object_type/elements/list[@name="%s"]', $object->objecttype->objecttypename);
+        $x_path = sprintf('//object_type/elements/list[@name="%s"]', $object->objecttype->objecttypename);
       } else {
         // everything else is a normal lookup
-        $x_path = sprintf('// object_type[@name="%s"]', $object->objecttype->objecttypename);
+        $x_path = sprintf('//object_type[@name="%s"]', $object->objecttype->objecttypename);
       }
 
       $element_config = lattice::config('objects', $x_path . sprintf('/elements/*[@name="%s"]', $column));
@@ -230,10 +230,10 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
     if ($object->objecttype->node_type == 'container')
     {
       // For lists, values will be on the 2nd level 
-      $x_path = sprintf('// list[@name="%s"]', $object->objecttype->objecttypename);
+      $x_path = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
     } else {
       // everything else is a normal lookup
-      $x_path = sprintf('// object_type[@name="%s"]', $object->objecttype->objecttypename);
+      $x_path = sprintf('//object_type[@name="%s"]', $object->objecttype->objecttypename);
     }
 
 

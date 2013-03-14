@@ -155,7 +155,7 @@ Class Controller_CSV extends Controller {
       }
 
       // check if this object type is valid for the current objects.xml
-      $object_config = lattice::config('objects', sprintf('// object_type[@name="%s"]', $object_type_name));
+      $object_config = lattice::config('objects', sprintf('//object_type[@name="%s"]', $object_type_name));
       if ( ! $object_config->item(0))
       {
         throw new Kohana_Exception("No object type configured in objects.xml for ".$object_type_name); 
@@ -247,11 +247,11 @@ Class Controller_CSV extends Controller {
         }
 
         // need to look up field and switch on field type 
-        $field_info = lattice::config('objects', sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]',$object->objecttype->objecttypename, $field));
+        $field_info = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]',$object->objecttype->objecttypename, $field));
         $field_info = $field_info->item(0);
         if ( ! $field_info)
         {
-          throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('// object_type[@name="%s"]/elements/*[@name="%s"]', $object->objecttype->objecttypename, $field));
+          throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $object->objecttype->objecttypename, $field));
         }
 
 

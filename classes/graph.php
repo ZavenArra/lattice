@@ -173,8 +173,8 @@ class Graph {
     if ( ! $force)
     {
       $object_type_config = NULL;
-      $x_path =  sprintf('// object_type[@name="%s"]', $object_type_name);
-      $x_path_list =  sprintf('// list[@name="%s"]', $object_type_name);
+      $x_path =  sprintf('//object_type[@name="%s"]', $object_type_name);
+      $x_path_list =  sprintf('//list[@name="%s"]', $object_type_name);
       if ( ! $object_type_config = lattice::config('objects', $x_path)->item(0))
       { 
         if ( ! $object_type_config = lattice::config('objects', $x_path_list)->item(0))
@@ -205,7 +205,7 @@ class Graph {
 
     /*
      * This can just happen on the fly - lazy configure
-     foreach ( lattice::config('objects', '// object_type[@name="'.$object_type_name.'"]/elements/*') as $item)
+     foreach ( lattice::config('objects', '//object_type[@name="'.$object_type_name.'"]/elements/*') as $item)
      {
        $t_record->configure_element($item);
   }
