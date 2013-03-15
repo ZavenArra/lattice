@@ -10,7 +10,7 @@
  *
  * @author deepwinter1
  */
-abstract class Model_Lattice_Content_driver {
+abstract class Model_Lattice_Contentdriver {
 
   protected $contenttable;
 

@@ -2008,7 +2008,7 @@ class Model_Object extends ORM implements arrayaccess {
         $lattice = Graph::lattice($lattice);
       }
 
-      $object_relationship = ORM::Factory('object_relationship')
+      $object_relationship = ORM::Factory('objectrelationship')
         ->where('lattice_id', '=', $lattice->id)
         ->where('object_id', '=', $this->id)
         ->where('connectedobject_id', '=', $new_object_id)
