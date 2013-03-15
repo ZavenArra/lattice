@@ -12,7 +12,7 @@ class Model_Objecttype extends ORM {
    * Variable: nonmappedfield
    * Array of fields to not pass through to the content field mapping logic
    */
-  private $nonmappedfields = array('id', 'object_id', 'activity', 'loaded', 'objecttypename', 'node_type');
+  private $nonmappedfields = array('id', 'object_id', 'activity', 'loaded', 'objecttypename', 'nodeType');
 
   public function __construct($id=NULL)
   {
@@ -74,7 +74,7 @@ class Model_Objecttype extends ORM {
         return parent::__get($column);
       }
 
-      if (parent::__get('node_type')=='container')
+      if (parent::__get('nodeType')=='container')
       {
         // For lists, values will be on the 2nd level 
         $x_query =  sprintf('//list[@name="%s"]', parent::__get('objecttypename'));
@@ -99,8 +99,8 @@ class Model_Objecttype extends ORM {
           {
             throw new Kohana_Exception('No object type definition by name: '.$entry['object_type_id']);
           }
-          $entry['node_type'] = $t_config->get_attribute('node_type');
-          $entry['content_type'] = $t_config->get_attribute('content_type');
+          $entry['nodeType'] = $t_config->get_attribute('node_type');
+          $entry['contentType'] = $t_config->get_attribute('content_type');
           $value_from_config[] = $entry;
         }
       } else {
@@ -235,7 +235,7 @@ class Model_Objecttype extends ORM {
       case 'list':
         $lt_record = ORM::Factory('objecttype');
         $lt_record->objecttypename = $item->get_attribute('name');
-        $lt_record->node_type = 'container';
+        $lt_record->nodeType = 'container';
         $lt_record->save();
         break;
 

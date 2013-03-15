@@ -131,7 +131,7 @@ if (isset($_SERVER['REQUEST_URI'])
     ORM::Factory('object')->find_all();
     Graph::get_root_node('cmsRootNode');
   } catch(Exception $e){
-    $view = new View('latticeNotInstalled');
+    $view = new View('lattice_not_installed');
     echo $view->render();
     die();
   }

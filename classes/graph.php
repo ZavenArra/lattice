@@ -199,7 +199,7 @@ class Graph {
     {
       $t_record = ORM::Factory('objecttype');
       $t_record->objecttypename = $object_type_name;
-      $t_record->node_type = 'object';
+      $t_record->nodeType = 'object';
       $t_record->save();
     }
 

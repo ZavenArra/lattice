@@ -112,7 +112,7 @@ class View_Csv {
           } else {
 
             // skip if it's a container
-            if ($data_item->objecttype->node_type == 'container')
+            if ($data_item->objecttype->nodeType == 'container')
             {
               continue;
             }

@@ -108,7 +108,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
     {
 
       // this column isn't mapped, check to see if it's in the xml
-      if ($object->objecttype->node_type == 'container')
+      if ($object->objecttype->nodeType == 'container')
       {
         // For lists, values will be on the 2nd level 
         $x_path = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);
@@ -181,7 +181,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
       //  it may make sense for the objecttype model to return the config info for itself
       //  or something similar
       // 
-      if ($object->objecttype->node_type == 'container')
+      if ($object->objecttype->nodeType == 'container')
       {
         // For lists, values will be on the 2nd level 
         $x_path = sprintf('//object_type/elements/list[@name="%s"]', $object->objecttype->objecttypename);
@@ -227,7 +227,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
 
 
     // this column isn't mapped, check to see if it's in the xml
-    if ($object->objecttype->node_type == 'container')
+    if ($object->objecttype->nodeType == 'container')
     {
       // For lists, values will be on the 2nd level 
       $x_path = sprintf('//list[@name="%s"]', $object->objecttype->objecttypename);

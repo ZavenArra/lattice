@@ -456,7 +456,7 @@ class Model_Object extends ORM implements arrayaccess {
   public function get_element_config($element_name)
   {
 
-    if ($this->__get('objecttype')->node_type == 'container')
+    if ($this->__get('objecttype')->nodeType == 'container')
     {
       // For lists, values will be on the 2nd level 
       $x_path = sprintf('//list[@name="%s"]', $this->__get('objecttype')->objecttypename);
@@ -852,7 +852,7 @@ class Model_Object extends ORM implements arrayaccess {
         ->where('activity', 'IS', NULL)
         ->order_by('objectrelationships.sortorder')
         ->join('objecttypes')->on('objects.objecttype_id', '=', 'objecttypes.id')
-        ->where('node_type', '!=', 'container')
+        ->where('nodeType', '!=', 'container')
         ->find_all();
       return $children;
     }
@@ -1324,7 +1324,7 @@ class Model_Object extends ORM implements arrayaccess {
     public function no_container_objects()
     {
       $res = ORM::Factory('objecttype')
-        ->where('node_type', '=', 'container')
+        ->where('nodeType', '=', 'container')
         ->find_all();
       $t_ids = array();
       foreach ($res as $container)

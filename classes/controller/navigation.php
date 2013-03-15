@@ -63,7 +63,7 @@ class Controller_Navigation extends Controller_Lattice{
         }
 
         // Containers should be skipped
-        if (strtolower($child->objecttype->node_type) == 'container')
+        if (strtolower($child->objecttype->nodeType) == 'container')
         {
           // we might be skipping this node
           $display = $child->objecttype->display;
@@ -93,7 +93,7 @@ class Controller_Navigation extends Controller_Lattice{
           $send_item['tier'] = $child_tier;
         }
 
-        if (strtolower($child->objecttype->node_type)=='container')
+        if (strtolower($child->objecttype->nodeType)=='container')
         {
           $send_item_containers[] = $send_item;
         } else {
@@ -121,8 +121,8 @@ class Controller_Navigation extends Controller_Lattice{
           $entry = array();
           $entry['id'] = $m->get_attribute('controller');
           $entry['slug'] = $m->get_attribute('controller');
-          $entry['node_type'] = 'module';
-          $entry['content_type'] = 'module';
+          $entry['nodeType'] = 'module';
+          $entry['contentType'] = 'module';
           $entry['title'] = $m->get_attribute('label');
           $entry['page_length'] = Kohana::config('cms.associator_page_length');;
           $send_item_objects[] = $entry;
@@ -199,8 +199,8 @@ class Controller_Navigation extends Controller_Lattice{
         $addable_object = array();
         $addable_object['object_type_id'] = $object_type['object_type_name'];
         $addable_object['object_type_add_text'] = "Add a ".$object_type['object_type_name'];
-        $addable_object['node_type'] = $object_type['node_type'];
-        $addable_object['content_type'] = $object_type['content_type'];
+        $addable_object['nodeType'] = $object_type['node_type'];
+        $addable_object['contentType'] = $object_type['content_type'];
         $addable_objects[] = $addable_object;
       }
     }
@@ -219,8 +219,8 @@ class Controller_Navigation extends Controller_Lattice{
       $entry = array();
       $entry['object_type_name'] = $object_type->get_attribute('name'); 
       $entry['label'] = $object_type->get_attribute('name').' label'; 
-      $entry['node_type'] = $object_type->get_attribute('node_type'); 
-      $entry['content_type'] = $object_type->get_attribute('content_type'); 
+      $entry['nodeType'] = $object_type->get_attribute('node_type'); 
+      $entry['contentType'] = $object_type->get_attribute('content_type'); 
       $object_types[] = $entry;
     }
     return $object_types;

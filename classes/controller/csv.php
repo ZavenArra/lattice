@@ -71,7 +71,7 @@ Class Controller_CSV extends Controller {
     {
 
       $csv_view = NULL;
-      if ($object->objecttype->node_type != 'container')
+      if ($object->objecttype->nodeType != 'container')
       {
         $csv_view = new View_CSV($this->level, $object);
       } else {
@@ -177,7 +177,7 @@ Class Controller_CSV extends Controller {
   {
     echo "Walking\n";
 
-    if ($object->objecttype->node_type != 'container')
+    if ($object->objecttype->nodeType != 'container')
     { 
       // get the elements line
       $this->advance();
