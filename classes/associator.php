@@ -99,7 +99,7 @@ Class Associator {
 
         if (isset($filter['object_type_name']) AND $filter['object_type_name'])
         {
-          $t = ORM::Factory('object_type', $filter['object_type_name']);
+          $t = ORM::Factory('objecttype', $filter['object_type_name']);
           if ( ! $t->loaded())
           {
             Graph::configure_object_type($filter['object_type_name']);

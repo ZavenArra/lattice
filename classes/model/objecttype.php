@@ -47,7 +47,7 @@ class Model_Objecttype extends ORM {
 
   public static function get_elements($object_type_name)
   {
-    $config = Model_Object_type::get_config($object_type_name);
+    $config = Model_Objecttype::get_config($object_type_name);
     $elements = lattice::config('objects', 'elements/*', $config);
     return $elements;
   }
@@ -149,7 +149,7 @@ class Model_Objecttype extends ORM {
      */
     public function defaults()
     {
-      $elements = Model_Object_type::get_elements($this->objecttypename);
+      $elements = Model_Objecttype::get_elements($this->objecttypename);
       $defaults = array();
       foreach ($elements as $element)
       {
@@ -233,7 +233,7 @@ class Model_Objecttype extends ORM {
       {
 
       case 'list':
-        $lt_record = ORM::Factory('object_type');
+        $lt_record = ORM::Factory('objecttype');
         $lt_record->objecttypename = $item->get_attribute('name');
         $lt_record->node_type = 'container';
         $lt_record->save();

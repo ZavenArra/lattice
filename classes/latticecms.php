@@ -290,7 +290,7 @@ class latticecms {
       {
         if ($element->tag_name == 'image')
         {
-          $objects = ORM::Factory('object_type', $object_type->get_attribute('name'))->get_active_members();
+          $objects = ORM::Factory('objecttype', $object_type->get_attribute('name'))->get_active_members();
           $fieldname = $element->get_attribute('name');
           foreach ($objects as $object)
           {

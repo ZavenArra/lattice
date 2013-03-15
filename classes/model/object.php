@@ -1238,7 +1238,7 @@ class Model_Object extends ORM implements arrayaccess {
         foreach ($t_names as $tname)
         {
           $result = DB::query("Select id from objecttypes where objecttypename = '$object_types'")->execute();
-          if ( ! $result->current->id AND !Model_Object_type::get_config($tname))
+          if ( ! $result->current->id AND !Model_Objecttype::get_config($tname))
           {
             throw new Kohana_Exception('Invalid object type requested in object_type_filter '.$object_types);
           }
@@ -1251,7 +1251,7 @@ class Model_Object extends ORM implements arrayaccess {
       } else {
         $object_type = $object_types; //  argument is just a singluar string
         $result = DB::query(Database::SELECT, "Select id from objecttypes where objecttypename = '$object_type'")->execute()->current();
-        if ( ! $result['id'] AND !Model_Object_type::get_config($object_type))
+        if ( ! $result['id'] AND !Model_Objecttype::get_config($object_type))
         {
           throw new Kohana_Exception('Invalid object type requested in object_type_filter '.$object_type);
         }
@@ -1852,7 +1852,7 @@ class Model_Object extends ORM implements arrayaccess {
           continue(2);
         }
 
-        // $field_info = Model_Object_type::get_field_info_for_object_type($this->objectttype->objecttypename, $field)
+        // $field_info = Model_Objecttype::get_field_info_for_object_type($this->objectttype->objecttypename, $field)
 
         $field_infoXPath = sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field);
         $field_info = lattice::config('objects', $field_infoXPath)->item(0);

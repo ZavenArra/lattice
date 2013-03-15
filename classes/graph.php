@@ -222,7 +222,7 @@ class Graph {
   public static function get_root_node($root_node_object_type)
   {
     // $this->driver->get_object_type_object($roo_node_object_type)
-    $object_type = ORM::Factory('object_type')->where('objecttypename', '=', $root_node_object_type)->find();
+    $object_type = ORM::Factory('objecttype')->where('objecttypename', '=', $root_node_object_type)->find();
     $object =  Graph::object()->object_type_filter($object_type->objecttypename)->find();
     if ( ! $object->loaded())
     {
