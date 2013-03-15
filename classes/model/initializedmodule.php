@@ -6,10 +6,10 @@
  */
 
 /**
- * Description of Model_Initialized_Modules
+ * Description of Model_InitializedModules
  *
  * @author deepwinter1
  */
-class Model_Initialized_module extends ORM {
+class Model_Initializedmodule extends ORM {
 // put your code here
 }

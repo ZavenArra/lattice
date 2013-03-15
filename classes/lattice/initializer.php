@@ -17,11 +17,14 @@ Class Lattice_Initializer {
       ORM::Factory('initializedmodule');
     } catch (Exception $e)
     {
-      if ($e->get_code() == 1146)
+      if ($e->getCode() == 1146)
       { // code for table doesn't exist
         // install the initializedmodules table
         $sql_file = Kohana::find_file('sql', 'initializedmodules', $ext = 'sql');
         $sql = file_get_contents($sql_file);
+        
+        print_r($sql); exit;
+        
         mysql_query($sql);
       }
     }
@@ -69,7 +72,7 @@ Class Lattice_Initializer {
     } 
     catch(Exception $e)
     {
-      self::$problems[] = $e->get_message() . Kohana_Exception::text($e);
+      self::$problems[] = $e->getMessage() . Kohana_Exception::text($e);
     }
 
     if ( ! count(self::$problems) AND count(self::$messages))

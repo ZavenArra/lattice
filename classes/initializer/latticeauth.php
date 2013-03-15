@@ -19,7 +19,7 @@ class Initializer_Latticeauth {
       ORM::Factory('user');
     } catch (Exception $e)
     {
-      if ($e->get_code() == 1146)
+      if ($e->getCode() == 1146)
       { // code for table doesn't exist
         // install the initializedmodules table
         $sql_file = Kohana::find_file('sql', 'auth-schema-mysql', $ext = 'sql');

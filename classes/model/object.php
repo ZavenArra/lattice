@@ -2224,24 +2224,23 @@ class Model_Object extends ORM implements arrayaccess {
       }
       return $config->item(0)->get_attribute('meta_object_type_name');
     }
-
-
-    public function offset_exists ($offset )
-    {
-      return TRUE; //  TODO: Fix this
-    }
-    public function offset_get ( $offset )
-    {
-      return $this->__get($offset);
-    }
-    public function offset_set (  $offset , $value )
-    {
-      return $this->__set($offset, value);
-    }
-    public function offset_unset ( $offset )
-    {
-      return TRUE; // can't unset in this class
-    }
-
+	
+	
+	public function offsetExists($offset)
+	{
+		return TRUE; // TODO: Fix this
+	}
+	public function offsetGet($offset) 
+	{
+		return $this->__get($offset);
+	}
+	public function offsetSet($offset, $value) 
+	{
+		return $this->__set($offset, $value);
+	}
+	public function offsetUnset ($offset) 
+	{
+		return TRUE; //can't unset in this class
+	}
 }
 ?>
