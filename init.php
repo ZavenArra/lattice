@@ -129,7 +129,7 @@ if (isset($_SERVER['REQUEST_URI'])
   && (!in_array(str_replace(url::base(), '', $_SERVER['REQUEST_URI']), array('setup', 'index.php/setup')))){
   try {
     ORM::Factory('object')->find_all();
-    Graph::getRootNode('cmsRootNode');
+    Graph::get_root_node('cmsRootNode');
   } catch(Exception $e){
     $view = new View('latticeNotInstalled');
     echo $view->render();

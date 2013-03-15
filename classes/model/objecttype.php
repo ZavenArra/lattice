@@ -1,9 +1,9 @@
 <?php
 
 /*
- * Class: Model_Object_type
+ * Class: Model_Objecttype
  */
-class Model_Object_type extends ORM {
+class Model_Objecttype extends ORM {
 
   protected $_has_many = array('object'=>array());
   protected $_belongs_to = array('object'=>array());
