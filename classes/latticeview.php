@@ -128,8 +128,16 @@ class latticeview {
     * Function: view()
     * Returns the rendered view for the current view model
     */
-	 public function view(){
-			return $this->view;
+	 public function view($set_view = null){
+     if($set_view){
+       $this->view = new View($set_view);
+     }
+
+     foreach ($this->data as $key => $value) {
+       $this->view->$key = $value;
+     }
+
+     return $this->view;
 	 }
 
 	 private static function getGraphObject($objectIdOrSlug){
@@ -194,12 +202,9 @@ class latticeview {
 		$viewContent = $this->getViewContent($viewName, $this->object);
 
 		$this->data = $viewContent;
-
-		foreach ($viewContent as $key => $value) {
-			$view->$key = $value;
-		}
-      
 		$this->view = $view;
+
+    
 
    }
    

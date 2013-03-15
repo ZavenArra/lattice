@@ -889,8 +889,6 @@ class Model_Object extends ORM implements arrayaccess {
          );
          return $result;
       }
-      //Kohana::$log->add(Log::INFO, 'tmp moved file to ' . Graph::mediapath() . $saveName);
-
       return $saveName;
    }
    
@@ -1187,15 +1185,12 @@ class Model_Object extends ORM implements arrayaccess {
        /*return $this->join('objectrelationships')->on('objectrelationships.object_id','=','objects.id')
           ->where('objectrelationships.connectedobject_id','IN',$o_ids);
           */
-        Kohana::$log->add(Log::INFO,print_r($o_ids,1))->write();
-
         $lattice = Graph::lattice('lattice');
         $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
         $this->where('objectrelationships.lattice_id', '=', $lattice->id);
         $this->where('objectrelationships.object_id', 'IN', $o_ids);
         return $this;
      } else {
-       Kohana::$log->add(Log::INFO,"none")->write();
        return $this;
      }
 
@@ -1326,7 +1321,6 @@ class Model_Object extends ORM implements arrayaccess {
 
    public function getSortOrder($lattice, $currentId){
       $lattice = Graph::lattice($lattice);
-      Kohana::$log->add(Kohana_Log::INFO, $lattice->id);
       $sortOrderQuery = clone($this);
       $sortOrderQuery->where('objects.id', '=', $currentId);
       $sortOrderQuery->join( array('objectrelationships', 'objectrelationshipstosort') )->on('objects.id', '=', 'objectrelationshipstosort.connectedobject_id');
