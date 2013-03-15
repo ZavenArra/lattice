@@ -34,7 +34,7 @@ $config['resources']['js'] = array(
 $config['defaultsettings']['editable_title'] = true;
 //- - if set all titles editable
 
-$config['newObjectPlacement'] = 'bottom';
+$config['new_object_placement'] = 'bottom';
 
 $config['uiresizes'] =  array(
 	'uithumb' => array(
@@ -47,15 +47,15 @@ $config['uiresizes'] =  array(
 	)
 );
 
-$config['navigationRequest'] = 'navigation';
+$config['navigation_request'] = 'navigation';
 
 
 $config['stagingmediapath'] = 'staging/application/media/';
 $config['basemediapath'] = 'application/media/';
 
-$config['enableSlugEditing'] = false;
+$config['enable_slug_editing'] = false;
 
-$config['baseName'] = 'modules_cms';
+$config['base_name'] = 'modules_cms';
 $config['localization'] = FALSE;
 
 

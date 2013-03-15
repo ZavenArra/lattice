@@ -159,10 +159,10 @@ class FrontendRouting {
          
          $slug = strtok($segment, '_');
          $languageCode = strtok('_');
-				 if (latticeutil::checkAccess('admin')){
+				 if (latticeutil::check_access('admin')){
 					 $object = Graph::object($slug);
 				 } else {
-					 $object = Graph::object()->publishedFilter()->where('slug', '=', $slug)->find();
+					 $object = Graph::object()->published_filter()->where('slug', '=', $slug)->find();
 				 }
          if ($languageCode) {
             $object = $object->translate($languageCode);
