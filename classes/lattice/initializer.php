@@ -22,9 +22,6 @@ Class Lattice_Initializer {
         // install the initializedmodules table
         $sql_file = Kohana::find_file('sql', 'initializedmodules', $ext = 'sql');
         $sql = file_get_contents($sql_file);
-        
-        print_r($sql); exit;
-        
         mysql_query($sql);
       }
     }
