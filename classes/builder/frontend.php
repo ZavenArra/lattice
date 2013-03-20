@@ -17,7 +17,7 @@ Class Builder_Frontend {
     echo "Configuring Frontend\n";
     echo "Reading application/config/frontend.xml\n";
 
-    lattice::config('objects', '//object_types');
+    lattice::config('objects', '//objectTypes');
 
     flush();
     ob_flush();
@@ -27,7 +27,7 @@ Class Builder_Frontend {
     // 	foreach (lattice::config('frontend', '//view') as $view )
     {
       // 	//this has removed the ability to build virtual views
-      foreach (lattice::config('objects', '//object_type') as $object_type)
+      foreach (lattice::config('objects', '//objectType') as $object_type)
       {
         $view = lattice::config('frontend', '//view[@name="'.$object_type->get_attribute('name').'"]');
         if (count($view))
@@ -52,7 +52,7 @@ Class Builder_Frontend {
           echo "<h1><?php=\$content['main']['title'];?></h1>\n\n";
           // this also implies that name is a objecttypename
           foreach (lattice::config('objects', 
-            sprintf('//object_type[@name="%s"]/elements/*', $view_name )) as $element)
+            sprintf('//objectType[@name="%s"]/elements/*', $view_name )) as $element)
           {
 
             switch($element->tag_name)
@@ -228,7 +228,7 @@ Class Builder_Frontend {
         {
 
           // get the info from addable_objects of the current
-          foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/addable_object', $parent_template)) as $addable)
+          foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/addable_object', $parent_template)) as $addable)
           {
             $object_type_name = $addable->get_attribute('objectTypeName');
             $object_types[$object_type_name] = $object_type_name;
@@ -297,7 +297,7 @@ Class Builder_Frontend {
         }
         echo $indent . "  <li class=\"$object_type_name\">\n";
         echo $indent . "   " . "<h2><?php=\${$label}Item['title'];?></h2>\n\n";
-        foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*', $object_type_name)) as $element)
+        foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object_type_name)) as $element)
         {
           switch($element->tag_name)
           {
@@ -345,7 +345,7 @@ Class Builder_Frontend {
       if ($object->loaded())
       {
         // find its addable objects
-        foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/addable_object', $object->objecttype->objecttypename)) as $addable)
+        foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/addable_object', $object->objecttype->objecttypename)) as $addable)
         {
           $object_type_name = $addable->get_attribute('objectTypeName');
           $object_types[$object_type_name] = $object_type_name;

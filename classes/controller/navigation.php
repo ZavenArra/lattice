@@ -214,7 +214,7 @@ class Controller_Navigation extends Controller_Lattice{
   public function get_object_types()
   {
     $object_types = array();
-    foreach (lattice::config('objects', '//object_type') as $object_type)
+    foreach (lattice::config('objects', '//objectType') as $object_type)
     {
       $entry = array();
       $entry['object_type_name'] = $object_type->get_attribute('name'); 

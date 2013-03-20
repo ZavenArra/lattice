@@ -205,14 +205,14 @@ class Controller_Builder extends Controller {
         }
 
         // need to look up field and switch on field type 
-        $field_info = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('objectTypeName'), $content->get_attribute('name')))->item(0);
+        $field_info = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('objectTypeName'), $content->get_attribute('name')))->item(0);
         if ( ! $field_info)
         {
-          throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('objectTypeName'), $content->get_attribute('name')));
+          throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('objectTypeName'), $content->get_attribute('name')));
         }
 
         // if an element is actually an object, prepare it for insert/update
-        if (lattice::config('objects', sprintf('//object_type[@name="%s"]', $field_info->tag_name))->length > 0)
+        if (lattice::config('objects', sprintf('//objectType[@name="%s"]', $field_info->tag_name))->length > 0)
         {
           // we have a cluster..               
           $cluster_data = array();
@@ -272,8 +272,8 @@ class Controller_Builder extends Controller {
       }
 
       // check for pre-existing object as list container
-      // echo sprintf('//object_type[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename);
-      foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename)) as $list_container_type)
+      // echo sprintf('//objectType[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename);
+      foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename)) as $list_container_type)
       {
         $preexisting_object = Graph::object()
           ->lattice_children_filter($parent_object->id)
