@@ -151,9 +151,9 @@ Class lattice {
         $cluster_nodes = $clusters->evaluate('//objectType');
         foreach ($cluster_nodes as $node)
         {
-          $node = $dom->_delegate->import_node($node, TRUE);
-          $object_types_node = $dom->_delegate->get_elements_by_tag_name('object_types')->item(0);
-          $object_types_node->append_child($node);
+          $node = $dom->_delegate->importNode($node, TRUE);
+          $object_types_node = $dom->_delegate->getElementsByTagName('objectTypes')->item(0);
+          $object_types_node->appendChild($node);
           // $dom->_delegate->insert_before($node, $ref_node);
         }
         // recreate Xpath object

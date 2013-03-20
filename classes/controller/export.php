@@ -41,19 +41,19 @@ class Controller_Export extends Controller {
             $target_path = $this->output_dir . $value->filename;
             if (file_exists($target_path))
             {
-              $node->append_child($this->doc->create_text_node($target_path));
+              $node->appendChild($this->doc->create_text_node($target_path));
             }
           }
           break;
         case 'Model_Page':
           foreach ($this->get_object_fields($value) as $sub_field)
           {
-            $node->append_child($sub_field);
+            $node->appendChild($sub_field);
           }
           break;
         }
       } else {
-        $node->append_child($this->doc->create_text_node($value));
+        $node->appendChild($this->doc->create_text_node($value));
       }
       $nodes[] = $node;
     }
@@ -91,8 +91,8 @@ class Controller_Export extends Controller {
       $node = $this->doc->create_element('field');
       $node_attr = $this->doc->create_attribute('name');
       $node_value = $this->doc->create_text_node($key);
-      $node_attr->append_child($node_value);
-      $node->append_child($node_attr);
+      $node_attr->appendChild($node_value);
+      $node->appendChild($node_attr);
 
       if (is_object($value))
       {
@@ -106,34 +106,34 @@ class Controller_Export extends Controller {
             $target_path = $this->output_dir . $value->filename;
             if (file_exists($target_path))
             {
-              $node->append_child($this->doc->create_text_node($target_path));
+              $node->appendChild($this->doc->create_text_node($target_path));
             }
           }
           break;
         case 'Model_Object':
           foreach ($this->get_object_fields_lattice_format($value) as $sub_element)
           {
-            $node->append_child($sub_element);
+            $node->appendChild($sub_element);
           }
           break;
         }
       } elseif ($key == "tags")
       {
 
-        $node->append_child($this->doc->create_text_node(implode(',',$value)));
+        $node->appendChild($this->doc->create_text_node(implode(',',$value)));
 
       } else {
 
-        $node->append_child($this->doc->create_text_node($value));
+        $node->appendChild($this->doc->create_text_node($value));
       }
       $nodes[] = $node;
     }
     $node = $this->doc->create_element('field');
     $node_attr = $this->doc->create_attribute('name');
     $node_value = $this->doc->create_text_node('published');
-    $node_attr->append_child($node_value);
-    $node->append_child($node_attr);
-    $node->append_child($this->doc->create_text_node($object->published));
+    $node_attr->appendChild($node_value);
+    $node->appendChild($node_attr);
+    $node->appendChild($this->doc->create_text_node($object->published));
     $nodes[] = $node;
     return $nodes;
   }
@@ -148,7 +148,7 @@ class Controller_Export extends Controller {
 
       foreach ($this->get_object_fields($object) as $field)
       {
-        $item->append_child($field);
+        $item->appendChild($field);
       }
 
       // and get the children
@@ -156,7 +156,7 @@ class Controller_Export extends Controller {
 
       foreach ($this->export_tier($child_objects) as $child_item)
       {
-        $item->append_child($child_item);
+        $item->appendChild($child_item);
       }
       $nodes[] = $item;
     }
@@ -173,19 +173,19 @@ class Controller_Export extends Controller {
       $item = $this->doc->create_element('item');
       $object_type_attr = $this->doc->create_attribute('object_type_name');
       $object_type_value = $this->doc->create_text_node($object->objecttype->objecttypename);
-      $object_type_attr->append_child($object_type_value);
-      $item->append_child($object_type_attr);
+      $object_type_attr->appendChild($object_type_value);
+      $item->appendChild($object_type_attr);
 
       foreach ($this->get_object_fields_lattice_format($object) as $field)
       {
-        $item->append_child($field);
+        $item->appendChild($field);
       }
 
       // and get the children
       $child_objects = $object->get_lattice_children();
       foreach ($this->export_tier_lattice_format($child_objects) as $child_item)
       {
-        $item->append_child($child_item);
+        $item->appendChild($child_item);
       }
       $nodes[] = $item;
     }
@@ -252,9 +252,9 @@ class Controller_Export extends Controller {
 
     foreach ($this->$export_function($objects) as $item)
     {
-      $nodes->append_child($item);
+      $nodes->appendChild($item);
     }
-    $data->append_child($nodes);
+    $data->appendChild($nodes);
 
 
     $relationships = $this->doc->create_element('relationships');
@@ -269,28 +269,28 @@ class Controller_Export extends Controller {
       $l = $this->doc->create_element('lattice');
       $name_attr = $this->doc->create_attribute('name');
       $name_value = $this->doc->create_text_node($lattice->name);
-      $name_attr->append_child($name_value);
-      $l->append_child($name_attr);
+      $name_attr->appendChild($name_value);
+      $l->appendChild($name_attr);
 
       foreach ($lattice->get_relationships() as $relationship)
       {
         $r = $this->doc->create_element('relationship');
         $parent_slug = $this->doc->create_text_node(Graph::object($relationship->object_id)->slug);
         $parent = $this->doc->create_attribute('parent');
-        $parent->append_child($parent_slug);
+        $parent->appendChild($parent_slug);
         $child_slug = $this->doc->create_text_node(Graph::object($relationship->connectedobject_id)->slug);
         $child = $this->doc->create_attribute('child');
-        $child->append_child($child_slug);
-        $r->append_child($parent);
-        $r->append_child($child);
-        $l->append_child($r);
+        $child->appendChild($child_slug);
+        $r->appendChild($parent);
+        $r->appendChild($child);
+        $l->appendChild($r);
       }
-      $relationships->append_child($l);
+      $relationships->appendChild($l);
     }
 
-    $data->append_child($relationships);
+    $data->appendChild($relationships);
 
-    $this->doc->append_child($data);
+    $this->doc->appendChild($data);
 
     echo getcwd() . '/' . $this->output_dir;
     flush();
