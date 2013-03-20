@@ -3,4 +3,4 @@
 		<?=$node;?>
 	<?endforeach;?>
 	</ul>
-	<?=$tierMethodsDrawer;?>
+	<?=$tier_methods_drawer;?>

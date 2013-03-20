@@ -138,7 +138,7 @@ lattice.ui.UIField = new Class({
 	toString: function(){ return "[ object, lattice.ui.UIField ]"; },
 	
 	onResponse: function( json ){
-		if( !json.returnValue || !json.response ){
+		if( !json.return_value || !json.response ){
 			throw json;
 		}else if( json.response.error ){
 			this.showValidationError( json.response.message );

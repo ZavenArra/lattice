@@ -12,7 +12,7 @@ Request.JSON.implement({
 		}
 		if ( json == null ){
 			this.onFailure();
-		} else if( !json.returnValue ){
+		} else if( !json.return_value ){
 			if( json.response ){
 				if( !lattice.warningModal ){
 					lattice.warningModal = new lattice.ui.Modal();
@@ -463,7 +463,7 @@ lattice.modules.CMSPage = new Class({
 	
 	onObjectMoved: function( json ){
 //		console.log( "onObjectMoved", json );
-		if( json.returnValue == true ){
+		if( json.return_value == true ){
 			window.location.reload();
 		}else{
 			console.log( "Error:", json );
