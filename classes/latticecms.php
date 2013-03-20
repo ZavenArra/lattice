@@ -361,7 +361,7 @@ class latticecms {
   public static function move_node_html($object)
   {
     $object_type_name = $object->objecttypename;
-    $x_path = sprintf('//objectType[addable_object[@object_type_name="%s"]]', $object_type_name);
+    $x_path = sprintf('//objectType[addableObject[@objectTypeName="%s"]]', $object_type_name);
     $object_types_result = lattice::config('objects', $x_path);
 
     $object_types = array();
