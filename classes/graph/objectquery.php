@@ -32,7 +32,7 @@ class Graph_Object_query {
   public function init_with_xml($xml)
   {
     $this->attributes['label'] = $xml->get_attribute('label');
-    $this->attributes['object_type_filter'] = $xml->get_attribute('object_type_filter');
+    $this->attributes['object_type_filter'] = $xml->get_attribute('objectTypeFilter');
     $this->attributes['where'] = $xml->get_attribute('where');
     $this->attributes['from'] = $xml->get_attribute('from');
     $this->attributes['slug'] = $xml->get_attribute('slug');
@@ -66,7 +66,7 @@ class Graph_Object_query {
     }
 
     // apply optional object_type filter
-    $objects = $objects->object_type_filter($this->attributes['object_type_filter']); 
+    $objects = $objects->object_type_filter($this->attributes['objectTypeFilter']); 
 
     // apply optional SQL where filter
     if ($where = $this->attributes['where'])
