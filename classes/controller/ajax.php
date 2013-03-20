@@ -12,13 +12,13 @@ class Controller_Ajax extends Controller_Lattice {
 
     //  Get the exception information
     $type    = get_class($e);
-    $code    = $e->get_code();
-    $message = $e->get_message();
-    $file    = $e->get_file();
-    $line    = $e->get_line();
+    $code    = $e->getCode();
+    $message = $e->getMessage();
+    $file    = $e->getFile();
+    $line    = $e->getLine();
 
     //  Get the exception backtrace
-    $trace = $e->get_trace();
+    $trace = $e->getTrace();
 
     ob_start();
 

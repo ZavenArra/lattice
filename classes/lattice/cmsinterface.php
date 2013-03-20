@@ -31,12 +31,12 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
    );
    */
 
-  public function action_savefile($object_id)
+  public function action_save_file($object_id)
   {
 
     try {
 
-      $this->savefile($object_id);
+      $this->save_file($object_id);
 
     } catch (Exception $e)
     {
@@ -48,7 +48,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
     }
   }
 
-  public function savefile($object_id)
+  public function save_file($object_id)
   {
 
     $field = strtok($_POST['field'], '_');
@@ -99,7 +99,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
   /*
    *
-   * Function: action_savefield()
+   * Function: action_save_field()
    * Saves data to a field via ajax.  Call this using /cms/ajax/save/{objectid}/
    * Parameters:
    * $id - the id of the object currently being edited
@@ -108,12 +108,12 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
    * Returns: array('value'=>{value})
    */
 
-  public function action_savefield($id)
+  public function action_save_field($id)
   {
 
     try {
 
-      $this->savefield($id);
+      $this->save_field($id);
     } catch (Exception $e)
     {
 
@@ -125,7 +125,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
 
   /*
    *
-   * Function: _savefield()
+   * Function: _save_field()
    * Saves data to a field via ajax.  Call this using /cms/ajax/save/{objectid}/
    * Parameters:
    * $id - the id of the object currently being edited
@@ -134,7 +134,7 @@ abstract class Lattice_CMSInterface extends Controller_Layout {
    * Returns: array('value'=>{value})
    */
 
-  public function savefield($id)
+  public function save_field($id)
   {
 
     // $field = strtok($_POST['field'], '_');
