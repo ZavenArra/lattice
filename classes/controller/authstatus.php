@@ -1,9 +1,9 @@
 <?php
 /*
- * Class: Lattice_Auth_Controller
+ * Class: Controller_Authstatus
  * Reponsible for the 'logged in as' object on the MOP backend objects
  */
-class Controller_Auth_status extends Controller {
+class Controller_Authstatus extends Controller {
 
   /*
    * Function: create_index_view()

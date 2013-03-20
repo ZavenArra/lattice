@@ -137,12 +137,6 @@ if (isset($_SERVER['REQUEST_URI'])
   }
 }
 
-/*
-Route::set('default4', '(<controller>(/<action>(/<id>(/<thing>))))')
-	->defaults(array(
-	));
- */
-
 class FrontendRouting {
 
    public static function routeSlug($uri) {
