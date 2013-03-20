@@ -165,7 +165,7 @@ Class Builder_Frontend {
       $object_types = array();
       foreach (lattice::config('objects', 'addable_object', $list_data_config) as $addable)
       {
-        $object_type_name = $addable->get_attribute('object_type_name');
+        $object_type_name = $addable->get_attribute('objectTypeName');
         $object_types[$object_type_name] = $object_type_name;
       }
 
@@ -181,9 +181,9 @@ Class Builder_Frontend {
       $filters = lattice::config('objects', 'filter', $associator_data_config);
       foreach ($filters as $filter)
       {
-        if ($filter->get_attribute('object_type_name'))
+        if ($filter->get_attribute('objectTypeName'))
         {
-          $object_types[] = $filter->get_attribute('object_type_name');
+          $object_types[] = $filter->get_attribute('objectTypeName');
         }
       }
 
@@ -230,7 +230,7 @@ Class Builder_Frontend {
           // get the info from addable_objects of the current
           foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/addable_object', $parent_template)) as $addable)
           {
-            $object_type_name = $addable->get_attribute('object_type_name');
+            $object_type_name = $addable->get_attribute('objectTypeName');
             $object_types[$object_type_name] = $object_type_name;
           }
 
@@ -347,7 +347,7 @@ Class Builder_Frontend {
         // find its addable objects
         foreach (lattice::config('objects', sprintf('//object_type[@name="%s"]/addable_object', $object->objecttype->objecttypename)) as $addable)
         {
-          $object_type_name = $addable->get_attribute('object_type_name');
+          $object_type_name = $addable->get_attribute('objectTypeName');
           $object_types[$object_type_name] = $object_type_name;
         }
         // and follow up with any existing data

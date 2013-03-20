@@ -27,7 +27,7 @@ Class Associator {
     {
       $setting = array();
       $setting['from'] = $filter->get_attribute('from');
-      $setting['object_type_name'] = $filter->get_attribute('object_type_name');
+      $setting['object_type_name'] = $filter->get_attribute('objectTypeName');
       $setting['tagged'] = $filter->get_attribute('tagged');
       $setting['function'] = $filter->get_attribute('function');
       $filters[] = $setting;

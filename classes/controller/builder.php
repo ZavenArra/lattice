@@ -175,7 +175,7 @@ class Controller_Builder extends Controller {
     foreach ($items as $item)
     {
 
-      if ( ! $item->get_attribute('object_type_name'))
+      if ( ! $item->get_attribute('objectTypeName'))
       {
         // echo $item->tag_name;
         throw new Kohana_Exception("No objecttypename specified for Item " . $item->tag_name);
@@ -183,7 +183,7 @@ class Controller_Builder extends Controller {
 
 
       $object = Graph::instance();
-      $object_type = ORM::Factory('objecttype', $item->get_attribute('object_type_name'));
+      $object_type = ORM::Factory('objecttype', $item->get_attribute('objectTypeName'));
 
       $data = array();
       $clusters_data = array();
@@ -205,10 +205,10 @@ class Controller_Builder extends Controller {
         }
 
         // need to look up field and switch on field type 
-        $field_info = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('object_type_name'), $content->get_attribute('name')))->item(0);
+        $field_info = lattice::config('objects', sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('objectTypeName'), $content->get_attribute('name')))->item(0);
         if ( ! $field_info)
         {
-          throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('object_type_name'), $content->get_attribute('name')));
+          throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('//object_type[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('objectTypeName'), $content->get_attribute('name')));
         }
 
         // if an element is actually an object, prepare it for insert/update
@@ -279,9 +279,9 @@ class Controller_Builder extends Controller {
           ->lattice_children_filter($parent_object->id)
           ->object_type_filter($list_container_type->get_attribute('name'))
           ->find();
-        if ($preexisting_object->loaded() AND $preexisting_object->objecttype->objecttypename == $item->get_attribute('object_type_name') )
+        if ($preexisting_object->loaded() AND $preexisting_object->objecttype->objecttypename == $item->get_attribute('objectTypeName') )
         {
-          // echo 'Found prexisting list container: '.$preexisting_object->objecttype->objecttypename .' '.$item->get_attribute('object_type_name');
+          // echo 'Found prexisting list container: '.$preexisting_object->objecttype->objecttypename .' '.$item->get_attribute('objectTypeName');
           $component = $preexisting_object;
         }
       }
@@ -295,9 +295,9 @@ class Controller_Builder extends Controller {
         $object_id = $component->id;
       } else {
         // actually add the object
-        // echo 'Adding Object '.$item->get_attribute('object_type_name')."\n";
+        // echo 'Adding Object '.$item->get_attribute('objectTypeName')."\n";
         // print_r($data);
-        $object_id = $parent_object->add_object($item->get_attribute('object_type_name'), $data);
+        $object_id = $parent_object->add_object($item->get_attribute('objectTypeName'), $data);
         $this->new_object_ids[] = $object_id;
       }
 

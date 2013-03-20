@@ -1734,7 +1734,7 @@ class Model_Object extends ORM implements arrayaccess {
 
         if ( ! $component_already_present)
         {
-          $this->add_object($c->get_attribute('object_type_name'), $arguments);
+          $this->add_object($c->get_attribute('objectTypeName'), $arguments);
         }
       }
 

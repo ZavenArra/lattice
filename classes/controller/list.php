@@ -186,7 +186,7 @@ class Controller_List extends Lattice_CMSInterface {
       {
         throw new Kohana_Exception('No Addable Objects ' .' Count not locate configuration in objects.xml for ' . sprintf('//list[@name="%s"]/addableobject', $this->_family));
       }
-      $object_type_id = $addable_object_types->item(0)->get_attribute('object_type_name');
+      $object_type_id = $addable_object_types->item(0)->get_attribute('objectTypeName');
     } 
 
     $new_id = $list_object->add_object($object_type_id);
