@@ -15,20 +15,20 @@ lattice.modules.UserManagement = new Class({
 	/* Section: Getters & Setters */
 	
 	getSaveFieldURL: function( itemObjectId  ){
-	  var url = lattice.util.getBaseURL() +"ajax/data/"+this.controller+"/savefield/" + itemObjectId;
+	  var url = lattice.util.getBaseURL() +"ajax/data/"+this.controller+"/save_field/" + itemObjectId;
 		return url;
 	},
 	
 	getAddObjectURL: function(){
-	    return lattice.util.getBaseURL() + "ajax/html/"+this.controller+"/addObject/";
+	    return lattice.util.getBaseURL() + "ajax/html/"+this.controller+"/add_object/";
 	},
 	
 	getRemoveObjectURL: function( itemId ){
-	    return lattice.util.getBaseURL()  + "ajax/data/"+this.controller+"/removeObject/" + itemId;
+	    return lattice.util.getBaseURL()  + "ajax/data/"+this.controller+"/remove_object/" + itemId;
 	},
 	
 	getSubmitSortOrderURL: function(){
-	    return lattice.util.getBaseURL() + "ajax/data/"+this.controller+"/saveSortOrder/";
+	    return lattice.util.getBaseURL() + "ajax/data/"+this.controller+"/save_sort_order/";
 	},
 	
 	/* Section: Methods */
@@ -39,14 +39,14 @@ lattice.modules.UserManagement = new Class({
 
 });
 
-if ( !lattice.util.hasDOMReadyFired() ){
+if( !lattice.util.hasDOMReadyFired() ){
 	window.addEvent( 'domready', function(){
 		lattice.util.DOMReadyHasFired();
 		//self instantiates only first instance
 		lattice.UserManagement = new lattice.modules.UserManagement( $$( ".classPath-lattice_modules_UserManagement" )[0] );
 		lattice.modalManager = new lattice.ui.ModalManager();
 		var doAuthTimeout = lattice.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
-		if ( doAuthTimeout && doAuthTimeout != "0" ) loginMonitor = new lattice.util.LoginMonitor();
+		if( doAuthTimeout && doAuthTimeout != "0" ) loginMonitor = new lattice.util.LoginMonitor();
 	})
 }
 	

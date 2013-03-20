@@ -1,4 +1,4 @@
-if ( !lattice.modules.navigation ) lattice.modules.navigation = {};
+if( !lattice.modules.navigation ) lattice.modules.navigation = {};
 /*
     Interface NavDataSource
     See MopCore Class.Mutators.Interface... 

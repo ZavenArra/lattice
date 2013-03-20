@@ -1,18 +1,15 @@
 lattice.ui = {};
 lattice.ui.navigation = {};
 
-<<<<<<< HEAD
 
 /*
 todo, this kinda crap goes away if we use sass+compass
 */
-=======
->>>>>>> master
 Element.implement({
 	roundCorners: function( radius ){
 		var borderStyle;
-		if ( Browser.safari && Browser.version < 5 ){ borderStyle = "-webkit-border-radius"; }else if ( Browser.firefox && Browser.version < 4 ){ borderStyle = "-moz-border-radius"; }else{ borderStyle = "border-radius"; }
-		if ( (Browser.ie && Browser.version >= 9) || !Browser.ie  ) this.setStyle( borderStyle, radius + "px" );
+		if( Browser.safari && Browser.version < 5 ){ borderStyle = "-webkit-border-radius"; }else if( Browser.firefox && Browser.version < 4 ){ borderStyle = "-moz-border-radius"; }else{ borderStyle = "border-radius"; }
+		if( (Browser.ie && Browser.version >= 9) || !Browser.ie  ) this.setStyle( borderStyle, radius + "px" );
 	},
 	addBoxShadow: function( shadow ){
 		/*
@@ -20,15 +17,14 @@ Element.implement({
 		*/
 		var styles = ( shadow )? shadow : '1px 1px 3px #444';
 		var styleName;
-		if ( Browser.safari && Browser.version <= 5 ){ styleName = "-webkit-box-shadow"; }else if ( Browser.firefox && Browser.version < 4 ){ styleName = "-moz-box-shadow"; }else{ styleName = "box-shadow"; }
-		if ( (Browser.ie && Browser.version >= 9) || !Browser.ie ){
+		if( Browser.safari && Browser.version <= 5 ){ styleName = "-webkit-box-shadow"; }else if( Browser.firefox && Browser.version < 4 ){ styleName = "-moz-box-shadow"; }else{ styleName = "box-shadow"; }
+		if( (Browser.ie && Browser.version >= 9) || !Browser.ie ){
 			this.setStyle( styleName, styles );
 		}
 	}
 });
 
 
-<<<<<<< HEAD
 		/* scroll spy plugin / class */
 		var ScrollSpy = new Class({
 			
@@ -55,7 +51,7 @@ Element.implement({
 				this.max = this.options.max;
 				
 				/* fix max */
-				if (this.max == 0) 
+				if(this.max == 0) 
 				{ 
 					var ss = this.container.getScrollSize();
 					this.max = this.options.mode == 'vertical' ? ss.y : ss.x;
@@ -73,9 +69,9 @@ Element.implement({
 					var position = this.container.getScroll();
 					var xy = this.options.mode == 'vertical' ? position.y : position.x;
 					/* if we reach the minimum and are still below the max... */
-					if (xy >= this.options.min && xy <= this.max) {
+					if(xy >= this.options.min && xy <= this.max) {
 							/* trigger Enter event if necessary */
-							if (!this.inside) {
+							if(!this.inside) {
 								/* record as inside */
 								this.inside = true;
 								this.enters++;
@@ -87,7 +83,7 @@ Element.implement({
 					}
 					else {
 						/* trigger leave */
-						if (this.inside) 
+						if(this.inside) 
 						{
 							this.inside = false;
 							this.leaves++;
@@ -99,8 +95,6 @@ Element.implement({
 		});
 
 
-=======
->>>>>>> master
 lattice.ui.UIField = new Class({
 
   Extends: lattice.LatticeObject,
@@ -144,9 +138,9 @@ lattice.ui.UIField = new Class({
 	toString: function(){ return "[ object, lattice.ui.UIField ]"; },
 	
 	onResponse: function( json ){
-		if ( !json.returnValue || !json.response ){
+		if( !json.returnValue || !json.response ){
 			throw json;
-		}else if ( json.response.error ){
+		}else if( json.response.error ){
 			this.showValidationError( json.response.message );
 		}else{
 			this.onSaveFieldSuccess( json.response );
@@ -162,7 +156,7 @@ lattice.ui.UIField = new Class({
 //		this.field.focus();
 //		this.field.fireEvent( 'focus' );
 		
-		if ( !this.validationSticky ){
+		if( !this.validationSticky ){
 			this.validationSticky = new lattice.ui.FieldSticky( this.element.getElement('label'), {
 				content: "<p>Error: " + errorMessage + "</p>",
 				position: 'centerTop',
@@ -178,7 +172,7 @@ lattice.ui.UIField = new Class({
 	},
 	
 	destroyValidationSticky: function(){
-		if ( !this.validationSticky ) return;
+		if( !this.validationSticky ) return;
 		this.validationSticky.destroy();
 		this.validationSticky = null;
 	},
@@ -192,12 +186,12 @@ lattice.ui.UIField = new Class({
 		lattice.util.stopEvent( e );
 		var val = this.getValue();
 		this.submittedValue = val;
-		if ( !this.autoSubmit ){
+		if( !this.autoSubmit ){
 			this.setValue( val );
 			return true;
 		}		
-		if ( this.showSaving ) this.showSaving();
-		if ( this.leaveEditMode ) this.leaveEditMode();
+		if( this.showSaving ) this.showSaving();
+		if( this.leaveEditMode ) this.leaveEditMode();
 		
 		var controller = ( this.element.getData( 'controller' ) )? this.element.getData( 'controller' ) : 'cms';
 		var action = ( this.element.getData( 'action' ) )? this.element.getData( 'action' ) : 'savefield';
@@ -225,7 +219,7 @@ lattice.ui.Menu = new Class({
 	initialize: function( element, marshal, options ){
 		this.parent( element, marshal, options );
 		this.element.getElements( "a" ).each( function( item ){
-			if ( typeof this.options.onItemClicked ){
+			if( typeof this.options.onItemClicked ){
 				item.addEvent( 'click', this.onItemClicked.bindWithEvent( this, item ) );
 			}else{
 				throw "lattice.ui.Menu requires you pass it an onItemClicked callback in the options object";
@@ -234,7 +228,7 @@ lattice.ui.Menu = new Class({
 	},
 	onItemClicked: function( e, item ){
 		e.preventDefault( e );
-		if ( this.activeItem ) this.activeItem.removeClass( this.options.activeClassName );
+		if( this.activeItem ) this.activeItem.removeClass( this.options.activeClassName );
 		item.addClass( this.options.activeClassName );
 		this.activeItem = item;
 		this.options.clickCallback( item );
@@ -278,28 +272,28 @@ lattice.ui.Sticky = new Class({
 		this.element = new Element( 'div.sticky' );
 		this.element.addClass( this.options.tick );
 		this.content = new Element( 'div.content.clearFix' );
-		if ( this.options.content && typeof this.options.content == 'string' ){
+		if( this.options.content && typeof this.options.content == 'string' ){
 			this.content.set( 'html', this.options.content );
-		}else if ( this.options.content ){
+		}else if( this.options.content ){
 			this.content.adopt( this.options.content );			
 		}
-		if ( this.options.cssClassses ) this.element.addClass( this.options.cssClassses );
+		if( this.options.cssClassses ) this.element.addClass( this.options.cssClassses );
 		this.mouseenter = this.target.addEvent( 'mouseenter', this.startShow.bindWithEvent( this ) );
-		if ( !this.options.stayOnBlur ) this.mouseleave = this.target.addEvent( 'mouseleave', this.startHide.bindWithEvent( this ) );
+		if( !this.options.stayOnBlur ) this.mouseleave = this.target.addEvent( 'mouseleave', this.startHide.bindWithEvent( this ) );
 		
 		// the sticky isn't inside the target
 		this.element.addEvent( 'mouseenter', function( e ){ clearTimeout( this.hideInterval ) }.bind( this ) );
 		// we may want to pass methods for when the mouse/enter leaves control (say disable submit on blur on ipes );
-		if ( this.options.mouseEnter ) this.element.addEvent( 'mouseenter', this.options.mouseEnter )
-		if ( this.options.mouseLeave ) this.element.addEvent( 'mouseleave', this.options.mouseLeave );
+		if( this.options.mouseEnter ) this.element.addEvent( 'mouseenter', this.options.mouseEnter )
+		if( this.options.mouseLeave ) this.element.addEvent( 'mouseleave', this.options.mouseLeave );
 		
-		if ( !this.options.stayOnBlur ) this.element.addEvent( 'mouseleave', this.startHide.bindWithEvent( this ) );
+		if( !this.options.stayOnBlur ) this.element.addEvent( 'mouseleave', this.startHide.bindWithEvent( this ) );
 		this.element.adopt( this.content );
 		this.populate( this.options.content );
 		this.morph = new Fx.Morph( this.element, { duration: 250, transition: Fx.Transitions.Quad.easeOut } );
 		$(document.body).adopt( this.element );
-		if ( this.options.borderRadius ) this.content.roundCorners( this.options.borderRadius );		
-		if ( this.options.boxShadow ) this.content.addBoxShadow();
+		if( this.options.borderRadius ) this.content.roundCorners( this.options.borderRadius );		
+		if( this.options.boxShadow ) this.content.addBoxShadow();
 		this.position();
 	},
 
@@ -331,43 +325,35 @@ lattice.ui.Sticky = new Class({
 	},
 	
 	show: function(){ 
-		if ( this.morph ){
+		if( this.morph ){
 			this.morph.cancel();
 			this.morph.start( { 'opacity' : 1 } );
 		}
 	},
 
 	hide: function(){
-		if ( this.morph ) this.morph.cancel();
+		if( this.morph ) this.morph.cancel();
 		this.morph.start( { 'opacity' : 0 } );
 	},
     
 	destroy: function(){
 		this.element.destroy();
 		this.morph.cancel();
-		if ( this.showInterval ) clearTimeout( this.showInterval );
-		if ( this.hideInterval ) clearTimeout( this.hideInterval );
-		if ( this.mouseenter ) this.target.removeEvent( 'mouseenter', this.mouseenter );
-		if ( this.mouseleave ) this.target.removeEvent( 'mouseleave', this.mouseleave );
+		if( this.showInterval ) clearTimeout( this.showInterval );
+		if( this.hideInterval ) clearTimeout( this.hideInterval );
+		if( this.mouseenter ) this.target.removeEvent( 'mouseenter', this.mouseenter );
+		if( this.mouseleave ) this.target.removeEvent( 'mouseleave', this.mouseleave );
 		this.element = this.content = this.options = this.target = this.morph = this.mouseenter = this.mouseleave = this.showInterval = this.hideInterval = null;
 	}
     
 });
 
 
-<<<<<<< HEAD
 lattice.ui.Tabs = new Class({
 
 	initialize: function( el ){
 		this.element = el;
 		this.element.store( 'Class', this );
-=======
-lattice.ui.HideShowTabs = new Class({
-
-	initialize: function( el ){
-//		console.log( 'HideShowTabs', el );
-		this.element = el;
->>>>>>> master
 		this.tabs = el.getElements( '.tabNav li');
 		this.tabs.each( function( tab ){
 			tab.addEvent( 'click', this.onTabClicked.bindWithEvent( this, tab ) );
@@ -376,7 +362,6 @@ lattice.ui.HideShowTabs = new Class({
 		this.activePanel = this.element.getElement( '.' + this.activeTab.get( 'data-targetselector' ) );
 	},
 
-<<<<<<< HEAD
 	clickTab: function( selector ){
 		var targetTab = this.element.getElement( '.tabNav' + ' .' + selector + '-tab' );
 		this.onTabClicked( null, targetTab );
@@ -384,21 +369,13 @@ lattice.ui.HideShowTabs = new Class({
 
 	onTabClicked: function( e, tab ){
 		console.log( 'onTabClicked', tab, tab.get( 'data-targetselector' ) );
-		if ( e ) e.preventDefault();
+		if( e ) e.preventDefault();
 		var target = this.element.getElement( '.tab-contents .' + tab.get( 'data-targetselector' ) );
-=======
-	onTabClicked: function( e, tab ){
-		e.preventDefault();
-		var target = this.element.getElement( '.' + tab.get( 'data-targetselector' ) );
->>>>>>> master
 		this.activeTab.removeClass( 'active' );
 		this.activeTab = tab;
 		this.activePanel.addClass('hidden');
 		tab.addClass('active');
-<<<<<<< HEAD
 		console.log( target, tab );
-=======
->>>>>>> master
 		target.removeClass('hidden');
 		this.activePanel = target;
 	}
@@ -418,50 +395,6 @@ lattice.ui.FieldSticky = new Class({
 			this.parent();
 		}
 });
-<<<<<<< HEAD
-=======
-/*
-	Class: lattice.ui.navigation.Tabs
-	Generic helper for handling tabbed navigation
-	Simply takes an collection of elements with the passed selector from the passed element, and returns a reference of the clicked element to the callback function.
-	More generic than tabs for sure, but what to call? Buton collection?
-*/
-lattice.ui.navigation.Tabs = new Class({
-	
-	toString: function(){
-		return "[ object, lattice.ui.navigation.Tabs ]";
-	},
-	
-	initialize: function( anElement, aSelector, callback ){
-		this.tabs = anElement.getElements( aSelector );
-		this.callback = callback;
-		this.tabs.each( this.applyTabBehavior.bind( this ) );
-	},
-	
-	applyTabBehavior: function( aTab, anIndex ){
-//		console.log( this, "applyTabBehavior", aTab, anIndex );
-		aTab.addEvent( "click", this.onTabClicked.bindWithEvent( this, aTab ) );
-		if ( aTab.hasClass( "active" ) ){
-			// this.activeTab = aTab;
-			this.onTabClicked( null, aTab );
-		}
-	},
-	
-	onTabClicked: function( e, aTab ){
-		lattice.util.stopEvent( e );
-		if ( this.activeTab && this.activeTab == aTab ) return;
-		if ( this.activeTab ) this.activeTab.removeClass( "active" );
-		aTab.addClass( "active" );
-		this.activeTab = aTab;
-		this.callback( aTab );
-	},
-	
-	destroy: function(){
-		this.tabs = this.callback = null;
-	}
-
-});
->>>>>>> master
 
 /*
 	Class: lattice.ui.navigation.BreadCrumbTrail
@@ -483,7 +416,7 @@ lattice.ui.navigation.BreadCrumbTrail = new Class({
 
 	clearCrumbs: function( anIndex ){
 		var crumb = this.element.getChildren( "li" )[ anIndex ];
-		if ( crumb ){
+		if( crumb ){
 			subsequentCrumbs = crumb.getAllNext();
 			crumb.destroy();
 			subsequentCrumbs.each( function( aCrumb ){ aCrumb.destroy(); } );
@@ -502,11 +435,7 @@ lattice.ui.navigation.BreadCrumbTrail = new Class({
 	
 	onCrumbClicked: function( e, obj ){
 		lattice.util.stopEvent( e );
-<<<<<<< HEAD
 		console.log( "::::: \t onBreadCrumbClicked", obj );
-=======
-//		console.log( "::::: \t onBreadCrumbClicked", obj );
->>>>>>> master
 		this.onCrumbClickedCallback( obj );
 	},
 	
@@ -518,7 +447,7 @@ lattice.ui.navigation.BreadCrumbTrail = new Class({
 	
 	removeCrumbByLabel: function( label ){
 		this.getCrumbs().each( function( aCrumb ){
-			if ( label == aCrumb.retrieve( 'data' ).label ){
+			if( label == aCrumb.retrieve( 'data' ).label ){
 //				console.log('!', label, aCrumb.retrieve( 'data' ).label, aCrumb );
 				aCrumb.destroy();
 			}
@@ -557,7 +486,7 @@ lattice.ui.ModalManager = new Class({
 	
 	setActiveModal: function( aModal ){
 		this.modals.push( aModal );
-		if ( this.activeModal ) this.activeModal.element.removeEvent( "scroll" );
+		if( this.activeModal ) this.activeModal.element.removeEvent( "scroll" );
 		this.activeModal = aModal;
 		this.modals.push( this.activeModal );
 		$( document ).getElement("body").setStyle( "overflow", "hidden" );
@@ -580,8 +509,8 @@ lattice.ui.ModalManager = new Class({
 	removeModal: function( aModal ){
 		aModal.destroy();
 		this.modals.erase( aModal );
-		if ( this.activeModal == aModal ) this.activeModal = this.getPreviousModal();
-		if ( !this.activeModal ) $( document ).getElement("body").setStyle( "overflow", "auto" );
+		if( this.activeModal == aModal ) this.activeModal = this.getPreviousModal();
+		if( !this.activeModal ) $( document ).getElement("body").setStyle( "overflow", "auto" );
 		aModal = null;
 	},
 	
@@ -626,12 +555,8 @@ lattice.ui.Sortable = new Class({
 		area: 24,
 		constrain: false,
 		onComplete: function( droppedItem, ghostItem ){
-<<<<<<< HEAD
 
 		console.log( "::::", arguments );
-=======
-			console.log( arguments );
->>>>>>> master
 			this.isSorting = false; 
 			this.scroller.stop();
 			droppedItem.removeClass('ghost');
@@ -684,7 +609,7 @@ lattice.ui.Modal = new Class({
 			cancelText: 'Cancel'
 		},
 
-		setTitle: function( aString ){ if ( this.title ) this.title.set( "text", aString ); },
+		setTitle: function( aString ){ if( this.title ) this.title.set( "text", aString ); },
 		spin: function(){ this.modal.show(); },
 		unSpin: function(){ this.modal.unspin(); },
 		getScrollOffset: function(){ return this.element.getScroll(); },
@@ -696,12 +621,9 @@ lattice.ui.Modal = new Class({
 			this.modalAnchor.setStyles({ "useHandCursor":false });
 			this.modalAnchor.set( 'href', "#" );
 			this.modalAnchor.addEvent( "click", function( e ){ lattice.util.stopEvent(e); } );
-<<<<<<< HEAD
 
 			this.boundOnKeyPress = this.onKeyPress.bind( this );
 
-=======
->>>>>>> master
 			this.showTransition = new Fx.Morph( this.element, { 
 				property: "opacity",
 				duration: this.options.fadeDuration,
@@ -719,11 +641,7 @@ lattice.ui.Modal = new Class({
 				duration: this.options.fadeDuration
 			});
 		},
-<<<<<<< HEAD
 
-=======
-		
->>>>>>> master
 		build: function(){
 			this.element = new Element( "div", { "class": "modalContainer hidden" });
 			this.modalAnchor = new Element( "a", {
@@ -765,50 +683,36 @@ lattice.ui.Modal = new Class({
 		toString: function(){ return "[ object, lattice.ui.Modal ]"; },
 		
 		show: function(){
-<<<<<<< HEAD
 			console.log( this.modalAnchor, 'show', this.boundOnKeyPress );
 			$(window).addEvent( 'keydown', this.boundOnKeyPress );
-=======
->>>>>>> master
 			this.element.setStyle( "opacity", 0 );
 			this.element.removeClass("hidden");
 			this.showTransition.start( { "opacity": 1 } );
 		},
 
-<<<<<<< HEAD
 		onKeyPress: function( e ){
 			console.log( "onKeyPress", e.key );
-			if ( e.key == 'esc'){
+			if( e.key == 'esc'){
 				this.cancel();
 			}
 		},
 
 		close: function( onComplete ){
 			this.element.removeEvents();
-=======
-		close: function( onComplete ){
->>>>>>> master
 			this.hideTransition.cancel();
 			this.hideTransition.start({
 				onComplete: function(){
-					if ( onComplete ) onComplete();
-<<<<<<< HEAD
+					if( onComplete ) onComplete();
 					this.element.setStyle( 'opacity', 0 );
 					this.element.addClass( 'hidden' );
-=======
-					lattice.modalManager.removeModal( this );
->>>>>>> master
 				}.bind( this )
 			});
 		},
 		
 		cancel: function( e ){
 			lattice.util.stopEvent( e );
-<<<<<<< HEAD
 			$(window).removeEvent( 'keydown', this.boundOnKeyPress );
-=======
->>>>>>> master
-			if ( this.options.onCancel ) this.options.onCancel();
+			if( this.options.onCancel ) this.options.onCancel();
 			this.close();
 		},
 				
@@ -824,16 +728,11 @@ lattice.ui.Modal = new Class({
 			this.setContent( json.html );
 		},
 
-<<<<<<< HEAD
 		setContent: function( someContent, aTitle, grab ){
-=======
-		setContent: function( someContent, aTitle ){
->>>>>>> master
-			if ( aTitle ) this.setTitle( aTitle );
+			if( aTitle ) this.setTitle( aTitle );
 			this.container.unspin();
-			if ( typeof someContent == "string" ){
+			if( typeof someContent == "string" ){
 				this.container.set( "html", someContent );
-<<<<<<< HEAD
 			}else if ( grab ){
 				this.grabbedContent = someContent;
 				this.container.grab( this.grabbedContent );
@@ -848,21 +747,12 @@ lattice.ui.Modal = new Class({
 
 		destroy: function(){
 			$(window).removeEvent( 'keydown', this.boundOnKeyPress );
-=======
-			}else{
-				this.container.adopt( someContent );
-			}
-		},
-
-		destroy: function(){
->>>>>>> master
-			if ( this.element ) this.element.destroy();
+			if( this.element ) this.element.destroy();
 			this.element = this.modalAnchor = this.modal = this.header = this.headerControls = this.title = this.container = this.footer = this.footerControls = this.marshal = this.hideTransition = this.showTransision = null;
 		}		
 
 });
 
-<<<<<<< HEAD
 lattice.ui.ModuleModal = new Class({
 	
 	Extends: lattice.ui.Modal,
@@ -878,15 +768,13 @@ lattice.ui.ModuleModal = new Class({
 		lattice.util.stopEvent( e );
 		console.log("!", this.onKeyPress );
 		$( window ).removeEvent( 'keydown', this.boundOnKeyPress );
-		if ( this.options.onCancel ) this.options.onCancel();
+		if( this.options.onCancel ) this.options.onCancel();
 		// put element back where it belongs
 		this.marshal.updateContentFromModal( this.grabbedContent );
 		this.close();
 	}
 });
 
-=======
->>>>>>> master
 
 lattice.ui.AddObjectDialogue = new Class({
 	
@@ -924,13 +812,13 @@ lattice.ui.AddObjectDialogue = new Class({
 	},
 	
 	setContent: function( itemToAdd, aTitle ){
-		if ( aTitle ) this.title.set( "text", aTitle );
+		if( aTitle ) this.title.set( "text", aTitle );
 		this.modal.unspin();
 		this.itemContainer = new Element( "ul" );
 		this.container.empty();
 		this.container.adopt( this.itemContainer );
 		this.itemContainer.adopt( itemToAdd );
-		if ( this.element.getScrollSize().y <= this.element.getSize().y ){
+		if( this.element.getScrollSize().y <= this.element.getSize().y ){
 //			this.header.setStyle( "margin-left", parseInt( this.header.getStyle( "margin-left" ) ) + 7 );
 		}
 		this.itemInstance = itemToAdd.retrieve("Class");
@@ -943,7 +831,7 @@ lattice.ui.AddObjectDialogue = new Class({
 			this.itemInstance.element.setStyle( "opacity", 0 );
 			this.marshal.insertItem( this.itemInstance );
 		}.bind( this ) );
-		if ( this.options.onConfirm ) this.options.onConfirm();
+		if( this.options.onConfirm ) this.options.onConfirm();
 	},
 
 	cancel: function( e ){
@@ -1007,7 +895,7 @@ lattice.ui.InactivityDialogue = new Class({
 	submit: function( e ){		
 		lattice.util.stopEvent( e );		
 		this.close();
-		if ( this.options.onConfirm ) this.options.onConfirm();
+		if( this.options.onConfirm ) this.options.onConfirm();
 	}
 
 });
@@ -1066,7 +954,7 @@ lattice.ui.MultiSelect = new Class({
 	
 	buildMultiSelect: function(){
 		
-		if ( this.multiBox ) this.multiBox.destroy();
+		if( this.multiBox ) this.multiBox.destroy();
 
 		var w = ( this.ogSelect.getCoordinates().width > this.valueElement.getCoordinates().width )? this.ogSelect.getCoordinates().width + 16 : this.valueElement.getCoordinates().width + 16;
 
@@ -1112,8 +1000,8 @@ lattice.ui.MultiSelect = new Class({
 
 	onDocumentClicked: function( e ){
 		lattice.util.stopEvent( e );
-	    if ( e.target == this.saveButton || e.target == this.cancelButton ) return;
-	    if ( e && ( e.target == this.multiBox || this.multiBox.contains( e.target ) ) ) return;
+	    if( e.target == this.saveButton || e.target == this.cancelButton ) return;
+	    if( e && ( e.target == this.multiBox || this.multiBox.contains( e.target ) ) ) return;
 	    this.updateAndClose( e );
 	},
 	
@@ -1126,7 +1014,7 @@ lattice.ui.MultiSelect = new Class({
 		delete this.checkBoxes;
 		this.checkBoxes = [];
 	
-		if ( !this.ogSelect.getProperty("value") ){
+		if( !this.ogSelect.getProperty("value") ){
 			this.ogSelect.setProperty( "value", 0 );
 		}
 
@@ -1135,9 +1023,9 @@ lattice.ui.MultiSelect = new Class({
 			var opt = new Element( "li" );
 			var checkBox = new Element( "input", { "type" : "checkbox", "value": anOption.get( "value" ) } );
 
-			if ( this.firstIsNull ){
+			if( this.firstIsNull ){
 
-				if ( anIndex == 0 ){
+				if( anIndex == 0 ){
 
 					checkBox.addEvent( "click", this.clearNotNullOptions.bindWithEvent( this ) );
 
@@ -1153,7 +1041,7 @@ lattice.ui.MultiSelect = new Class({
 
 			var label = new Element( "label" );
 			var span = new Element( "span", { "text" : anOption.get("text") } );
-			if ( anOption.getProperty( "selected" ) ) checkBox.setProperty( "checked", "checked" );
+			if( anOption.getProperty( "selected" ) ) checkBox.setProperty( "checked", "checked" );
 			label.adopt( checkBox );
 			label.adopt( span );
 			opt.adopt(label);
@@ -1170,7 +1058,7 @@ lattice.ui.MultiSelect = new Class({
 	clearNotNullOptions: function( e ){
 
 		this.checkBoxes.each( function( aCheckBox, anIndex ){
-			if ( anIndex != 0 ) aCheckBox.removeProperty( "checked" );
+			if( anIndex != 0 ) aCheckBox.removeProperty( "checked" );
 		});
 		
 	},
@@ -1179,8 +1067,8 @@ lattice.ui.MultiSelect = new Class({
 		var selectOptions = this.ogSelect.getChildren();
 		var selectedOptions = this.ogSelect.getSelected();
 		this.multiBox.getElements( "input[type='checkbox']" ).each( function( aCheckBox, anIndex ){
-			if ( selectedOptions.contains( selectedOptions[ anIndex ] ) ) selectedOptions[ anIndex ].removeProperty( "selected" );
-			if ( aCheckBox.getProperty( "checked" ) ) selectOptions[ anIndex ].setProperty( "selected", true );
+			if( selectedOptions.contains( selectedOptions[ anIndex ] ) ) selectedOptions[ anIndex ].removeProperty( "selected" );
+			if( aCheckBox.getProperty( "checked" ) ) selectOptions[ anIndex ].setProperty( "selected", true );
 		});
 	},
 	
@@ -1236,21 +1124,13 @@ lattice.ui.DatePicker = new Class({
 		
 	initialize: function( anElement, options ){
 		this.parent( anElement, options );
-<<<<<<< HEAD
 //		console.log( 'datepicker', anElement, options );
-=======
->>>>>>> master
 		this.format = ( this.element.getData('format') )? this.element.getData('format') : this.options.format;
 		this.allowEmpty = ( this.element.getData('allowempty') )? this.element.getData('allowempty') : this.options.allowEmpty;
 		this.dateField = this.element.getElement("input");
 	    this.buildPicker();
 	},
-<<<<<<< HEAD
 
-=======
-	
-    
->>>>>>> master
 	toString: function(){
 		return '[ object, lattice.ui.UIField, lattice.ui.DatePicker ]';
 	},
@@ -1272,7 +1152,6 @@ lattice.ui.DatePicker = new Class({
 	
 	onShow: function(){
 		var scrollData = ( this.scrollContext == "modal" )? lattice.ModalManager.getActiveModal().getScrollOffset() : $( window ).getScroll();
-<<<<<<< HEAD
 		console.log( 'onShow', scrollData );
 	//	this.reposition( scrollData );
 	},
@@ -1280,14 +1159,6 @@ lattice.ui.DatePicker = new Class({
 	// reposition: function( scrollData ){
 	// 	this.picker.reposition( scrollData );
 	// },
-=======
-		this.reposition( scrollData );
-	},
-
-	reposition: function( scrollData ){
-		this.picker.reposition( scrollData );
-	},
->>>>>>> master
 	
 	onResponse: function( json ){
 		this.parent( json );
@@ -1310,7 +1181,7 @@ lattice.ui.DatePicker = new Class({
 	},
 	
 	destroy: function(){
-		if ( this.picker ) this.picker.destroy();
+		if( this.picker ) this.picker.destroy();
 		this.parent();
 	},
 	
@@ -1321,7 +1192,7 @@ lattice.ui.DatePicker = new Class({
 	getCurrentDateString: function(){
 		var currentDate = new Date();
 		var dateString = "";
-		if ( this.getDateFormat() == "dmy" ){
+		if( this.getDateFormat() == "dmy" ){
 			dateString = currentDate.getDate() + "/"+ currentDate.getMonth() + "/" + currentDate.getYear();
 		}else{
 			dateString = currentDate.getMonth() + "/" + currentDate.getDate() + "/"+ currentDate.getYear();
@@ -1394,9 +1265,9 @@ lattice.ui.DateRange = new Class({
 	
 	onSelect: function( e ){
 		lattice.util.stopEvent( e );
-		if ( this.options.autoSubmit ) this.submit();
+		if( this.options.autoSubmit ) this.submit();
 		this.element.getElement(".spinner").removeClass("hidden");
-		if ( this.options.onSelectCallback ) this.options.onSelectCallback();
+		if( this.options.onSelectCallback ) this.options.onSelectCallback();
 	},
 	
 	reposition: function( scrollData ){ 
@@ -1525,9 +1396,9 @@ lattice.ui.FileElement = new Class({
 			}.bind( this )
 		});
 		this.previewElement = this.element.getElement(".preview");
-		if ( this.previewElement ) this.imagePreview = this.previewElement.getElement( "img" );
+		if( this.previewElement ) this.imagePreview = this.previewElement.getElement( "img" );
 		this.filename = this.element.getElement( ".fileName" );
-		if ( lattice.util.getValueFromClassName( 'extensions', this.element.get("class") ) ) this.extensions = this.buildExtensionsObject()
+		if( lattice.util.getValueFromClassName( 'extensions', this.element.get("class") ) ) this.extensions = this.buildExtensionsObject()
 		this.uploader.setTarget( this, this.uploadLink, this.getOptions() );
 		this.reposition();
 	},	
@@ -1535,7 +1406,7 @@ lattice.ui.FileElement = new Class({
 	clearFile: function( e ){
 		e.preventDefault();
 		//console.log( 'clearField' );
-		if ( this.previewElement ){
+		if( this.previewElement ){
 			this.imageFadeOut = new Fx.Morph( this.imagePreview, {
 				'duration': 300,
 				'onComplete': lattice.eventManager.broadcastMessage.bind( lattice.eventManager, "resize" )
@@ -1551,12 +1422,12 @@ lattice.ui.FileElement = new Class({
 	
 	onMouseOut: function( e ){
 		e.preventDefault();
-		if ( this.marshal.resumeSort ) this.marshal.resumeSort();
+		if( this.marshal.resumeSort ) this.marshal.resumeSort();
 	},
 	
 	onMouseOver: function( e ){
 		e.preventDefault();
-		if ( this.marshal.suspendSort ) this.marshal.suspendSort();		
+		if( this.marshal.suspendSort ) this.marshal.suspendSort();		
 	},
 	
 	toString: function(){
@@ -1582,7 +1453,7 @@ lattice.ui.FileElement = new Class({
     var extensionsArray = ( typeof this.extensions == 'string' )? this.extensions.split(",") : this.extensions;
 		var desc = "";
 		var exts = "";
-		if ( extensionsArray.length ){
+		if( extensionsArray.length ){
 		    extensionsArray.each( function( extension, index ){
 			    desc = ( index < extensionsArray.length-1 )? desc +  "*." + extension + ", " : desc +  "*." + extension;
 			    exts = ( index < extensionsArray.length-1 )? exts + "*." + extension + ";" : exts + "*." + extension;
@@ -1644,7 +1515,7 @@ lattice.ui.FileElement = new Class({
 	showProgress: function( data ) {
 //		console.log( this.toString(), "onProgress", $A( arguments ) );
 		this.progressBar.setStyle( "background-position", ( 100 - data.percentLoaded )+"% 0%" );
-		if ( this.imagePreview ) this.imagePreview.setStyle( "opacity", ( 1 - data.percentLoaded * .01 ) );
+		if( this.imagePreview ) this.imagePreview.setStyle( "opacity", ( 1 - data.percentLoaded * .01 ) );
 
 	},	
 	
@@ -1664,19 +1535,15 @@ lattice.ui.FileElement = new Class({
 	onFileComplete: function( json ){
 		json = JSON.decode( json.response.text );
 		this.clearButton.fade( "in" );
-		if ( this.filename ) this.filename.set( "text",  json.response.filename );
+		if( this.filename ) this.filename.set( "text",  json.response.filename );
 		this.clearButton.removeClass("hidden");
 		this.downloadButton.removeClass("hidden");
 		this.downloadButton.set( 'title', 'download ' + json.response.filename );
 		this.downloadButton.set( "href", lattice.util.getBaseURL() + json.response.src );
-<<<<<<< HEAD
 		console.log( this.toString(), "onFileComplete", lattice.util.getBaseURL() + json.response.thumbSrc );
 		this.element.removeClass('empty');
-=======
-		//console.log( this.toString(), "onFileComplete", lattice.util.getBaseURL() + json.response.thumbSrc );
->>>>>>> master
 		this.downloadButton.removeClass("hidden");
-		if ( this.previewElement ){
+		if( this.previewElement ){
 			this.imgAsset = new Asset.image( lattice.util.getBaseURL() + json.response.thumbSrc, {  alt: json.response.filename, onload: this.updateThumb.bind( this, json ) } );
 		}else{
 			this.revertToReadyState();
@@ -1688,7 +1555,7 @@ lattice.ui.FileElement = new Class({
 		this.imgAsset.setStyle( 'width', imageData.width );
 		this.imgAsset.setStyle( 'height', imageData.height );
 		//this.imgAsset.setStyle( 'opacity', 0 );
-		if ( !this.imagePreview ){
+		if( !this.imagePreview ){
 			//this.imagePreview = new Element( "img" ).inject( this.previewElement, "top" );
 			this.imgAsset.inject( this.previewElement, 'top' );
 		}else{
@@ -1795,12 +1662,12 @@ lattice.util.Uploader = new Class({
 	},
 
 	buttonEnter: function( eventName ){
-		if ( this.target.getParent().hasClass("command" ) ) this.target.getParent().addClass( "active" );
+		if( this.target.getParent().hasClass("command" ) ) this.target.getParent().addClass( "active" );
 		this.targetRelay( eventName );
 	},
 	
 	buttonLeave: function( eventName ){
-		if ( this.target.getParent() ) this.target.getParent().removeClass( "active" );
+		if( this.target.getParent() ) this.target.getParent().removeClass( "active" );
 		this.targetRelay( eventName );
 	},
 
@@ -1879,13 +1746,13 @@ lattice.util.Uploader = new Class({
 			if ( options.url) options.url = lattice.util.Uploader.qualifyPath( options.url );
 			if ( options.buttonImage) options.buttonImage = lattice.util.Uploader.qualifyPath( options.buttonImage );
 			this.parent( options );
-			if ( this.loaded ) this.remote( 'setOptions', options );
+			if( this.loaded ) this.remote( 'setOptions', options );
 		}
 		return this;
 	},
 
 	onTargetHovered: function( target, targetElement, coords, options ){
-		if ( this.currentFileElementInstance == target ) return;
+		if( this.currentFileElementInstance == target ) return;
 	},
 
 	setEnabled: function(status) {
@@ -1912,7 +1779,7 @@ lattice.util.Uploader = new Class({
 
 	update: function( data ) {
 		// the data is saved right to the instance
-		if ( data ) this.currentFileElementInstance.showProgress( data );
+		if( data ) this.currentFileElementInstance.showProgress( data );
 		Object.append( this,  data );
 		this.fireEvent('queue', [this], 10);
 		return this;
@@ -1970,7 +1837,7 @@ lattice.util.Uploader = new Class({
 
 	processFiles: function( successraw, failraw, queue ) {
 		var fail = [], success = [];
-		if ( successraw ){
+		if( successraw ){
 			successraw.each( function( data ) {
 				this.size += data.size;
 				this.fileList.push( this.currentFileElementInstance );
@@ -2004,7 +1871,7 @@ lattice.util.Uploader = new Class({
 	onResize: function(){ this.reposition(); },
 	
 	reposition: function( scrollContext ) {		
-		if ( !this.currentFileElementInstance ) return;
+		if( !this.currentFileElementInstance ) return;
 		// var coords = this.currentFileElementInstance.getCoordinates();
 		// this.box.setStyles( {
 		// 	position: 'absolute',
@@ -2113,12 +1980,12 @@ lattice.ui.PulldownNav = new Class({
 		var selectedOption = this.pulldown.getSelected();
 		selectedOption.removeProperty( "selected" );
 		this.pulldown.getChildren().each( function( anOption ){
-			if ( anOption.getProperty( "value" ) == aValue ) anOption.setProperty( "selected", "selected" );
+			if( anOption.getProperty( "value" ) == aValue ) anOption.setProperty( "selected", "selected" );
 		});
 	},	
 	
 	redirect: function(){
-		if ( this.getValue() == null || this.getValue() == "" ) return;
+		if( this.getValue() == null || this.getValue() == "" ) return;
 		var url = this.getValue();
 		window.location.href = url;
 	}
@@ -2145,7 +2012,7 @@ lattice.ui.Pulldown = new Class({
 		var selectedOption = this.pulldown.getSelected();
 		selectedOption.removeProperty( "selected" );
 		this.pulldown.getChildren().each( function( anOption ){
-			if ( anOption.getProperty( "value" ) == aValue ) anOption.setProperty( "selected", "selected" );
+			if( anOption.getProperty( "value" ) == aValue ) anOption.setProperty( "selected", "selected" );
 		});
 	},
 	
@@ -2185,13 +2052,13 @@ lattice.ui.CheckBox = new Class({
 	submit: function( e ){
 		var val = this.getValue();
 		this.submittedValue = val;
-		if ( !this.autoSubmit ){
+		if( !this.autoSubmit ){
 			this.setValue( val );
-			if ( this.leaveEditMode ) this.leaveEditMode();
+			if( this.leaveEditMode ) this.leaveEditMode();
 			return;
 		}
-		if ( this.showSaving ) this.showSaving();
-		if ( this.leaveEditMode ) this.leaveEditMode();
+		if( this.showSaving ) this.showSaving();
+		if( this.leaveEditMode ) this.leaveEditMode();
 		var controller = ( this.element.getData( 'controller' ) )? this.element.getData( 'controller' ) : 'cms';
 		var action = ( this.element.getData( 'action' ) )? this.element.getData( 'action' ) : 'savefield';
 
@@ -2201,7 +2068,7 @@ lattice.ui.CheckBox = new Class({
 	
 	
 	setValue: function( aVal ){
-		if ( aVal == 1 ){
+		if( aVal == 1 ){
 			this.field.setProperty( "checked", "checked" );
 		}else{
 			this.field.removeProperty( "checked" );
@@ -2230,16 +2097,16 @@ lattice.ui.RadioGroup = new Class({
 
 	getValue: function(){
 		for( var i = 0; i < this.radios.length; i++ ){
-			if ( this.radios[i].get( "checked" ) ) return this.radios[i].get( "value" );
+			if( this.radios[i].get( "checked" ) ) return this.radios[i].get( "value" );
 		}
 		return null;
 	},
 
 	setValue: function( aValue ){
-		if ( aValue == null ) aValue = "";
+		if( aValue == null ) aValue = "";
 		for( var i = 0; i < this.radios.length; i++ ){
 			var aRadio = this.radios[i];
-			if ( aRadio.get( "value" ) == aValue ) aRadio.setProperty( "checked", "checked" );
+			if( aRadio.get( "value" ) == aValue ) aRadio.setProperty( "checked", "checked" );
 		}
 	},
 
@@ -2313,7 +2180,7 @@ lattice.ui.Input = new Class({
 		this.parent( anElement, aMarshal, options );
 		this.inputElement = this.element.getElement( "input" );
 		this.maxLength = ( this.element.getData( 'maxlength' ) )? this.element.getData( 'maxlength' ) : this.options.maxLength;
-		if ( this.maxLength ) this.element.addEvent("keydown", this.checkFormaxLength.bindWithEvent( this ) );
+		if( this.maxLength ) this.element.addEvent("keydown", this.checkFormaxLength.bindWithEvent( this ) );
 	},
 	
 	enableElement: function( e ){
@@ -2321,7 +2188,7 @@ lattice.ui.Input = new Class({
 		this.parent();
 		this.inputElement.erase( "disabled" );
 		this.inputElement.removeEvents();
-		if ( this.maxLength ) this.element.addEvent("keydown", this.checkFormaxLength.bindWithEvent( this ) );
+		if( this.maxLength ) this.element.addEvent("keydown", this.checkFormaxLength.bindWithEvent( this ) );
 	},
 	
 	disableElement: function( e ){
@@ -2336,10 +2203,9 @@ lattice.ui.Input = new Class({
 	},
 
 	checkFormaxLength: function( e ){
-<<<<<<< HEAD
 		var len = e.target.get("value").length;
 		console.log( 'length', len );
-		if ( len > this.maxLength
+		if( len > this.maxLength
 			 && e.code != 46
 			 && e.key != 'enter'
 			 && e.key != 'return'
@@ -2356,13 +2222,6 @@ lattice.ui.Input = new Class({
 			lattice.util.stopEvent( e );
 			alert( "The maximum length this field allows is " + this.maxLength + " characters. This field currently has, " + len );
 		}	},
-=======
-		if ( e.target.get("value").length >= this.maxLength && e.key != "shift" && e.key != "enter" && e.key != "return" && e.key != "tab" && e.keycode != 46 && e.keycode != 8 ){
-			lattice.util.stopEvent( e );
-			alert( "The maximum length this field allows is " + this.maxLength + " characters");
-		}
-	},
->>>>>>> master
 
 	getValue: function(){
 		return this.inputElement.get( "value" );
@@ -2414,7 +2273,7 @@ lattice.ui.Text = new Class({
 	},
 	
 	setValue: function( aValue ){
-		if ( this.field ) this.field.set( 'value', aValue );
+		if( this.field ) this.field.set( 'value', aValue );
 		this.ipeElement.set( 'html', aValue.formatForDisplay() );
 	},
 
@@ -2425,19 +2284,15 @@ lattice.ui.Text = new Class({
 		this.maxLength = ( this.element.getData( 'maxlength' ) )? this.element.getData( 'maxlength' ) : this.options.maxLength;
 		this.validate = ( this.element.getData( 'validate' ) )? this.element.getData( 'validate' ) : this.options.validate;
 		this.mode = "atRest";
-		if ( this.submitOnBlur ) this.allowSubmitOnBlur = true;
+		if( this.submitOnBlur ) this.allowSubmitOnBlur = true;
 		this.field = anElement.getElement( ".og" );
-		// if ( this.validate ){
+		// if( this.validate ){
 		// 	//do validation (refactor to use mootools validation )
 		// }
 		this.ipeElement = new Element( "div", { 
 			"class": "ipe " + this.field.get( 'class' ).split( " " ).splice( 1 ).join(' '),
 			"html": this.field.get( 'value' )
-<<<<<<< HEAD
 		}).inject( this.field, 'before' );
-=======
-		}).inject( anElement );
->>>>>>> master
 
 		//set up reusable events by creating variables containing bound functions
 		this.documentBoundUpdateAndClose = this.onDocumentClicked.bindWithEvent( this );
@@ -2457,9 +2312,9 @@ lattice.ui.Text = new Class({
 	},
 
 	onDocumentClicked: function( e ){
-		if ( this.mode != "editing" ) return;
-	  if ( e.target == this.saveButton || e.target == this.cancelButton ) return;
-	  if ( e.target == this.element || this.element.contains( e.target ) ) return;
+		if( this.mode != "editing" ) return;
+	  if( e.target == this.saveButton || e.target == this.cancelButton ) return;
+	  if( e.target == this.element || this.element.contains( e.target ) ) return;
 		lattice.util.stopEvent( e );
 	},
 
@@ -2467,9 +2322,9 @@ lattice.ui.Text = new Class({
 	
 	onKeyPress: function( e ){
 		var submitCondition = ( ( e.control || e.meta) && e.key == 'enter' );
-		if ( submitCondition == true ){
+		if( submitCondition == true ){
 			this.submit(e);
-		}else if ( e.key == "esc" ){
+		}else if( e.key == "esc" ){
 			this.cancelEditing( e );
 		}
 		submitCondition = null;
@@ -2477,12 +2332,12 @@ lattice.ui.Text = new Class({
 	
 	onFieldFocus: function( e ){
 		lattice.util.stopEvent( e );
-		if ( this.mode == "editing ") return false;
+		if( this.mode == "editing ") return false;
 		this.enterEditMode( e );
 	},
 	
 	onFieldBlur: function( e ){
-		if ( this.allowSubmitOnBlur && !this.validationSticky ) this.submit();
+		if( this.allowSubmitOnBlur && !this.validationSticky ) this.submit();
 	},
 	
 	prepareField: function(){
@@ -2497,19 +2352,19 @@ lattice.ui.Text = new Class({
 			'overflow': 'hidden',
 			'width': w
 		});
-		if ( this.isMultiline ){
+		if( this.isMultiline ){
 			this.field.addEvent( 'keyup', this.fitToContent.bind( this ) );
 		}
-		if ( this.maxLength ) this.field.addEvent( 'keydown', this.checkFormaxLength.bindWithEvent( this ) );
+		if( this.maxLength ) this.field.addEvent( 'keydown', this.checkFormaxLength.bindWithEvent( this ) );
 		window.addEvent( "mousedown", this.documentBoundUpdateAndClose );
-		if ( this.submitOnBlur ){
+		if( this.submitOnBlur ){
 			this.submitOnBlurEnabled = true;
 			this.field.addEvent( 'blur', this.boundOnFieldBlur );
 		}else{
 			this.submitOnBlurEnabled = false;
 			this.field.addEvent( 'blur', this.cancelEditing.bind( this ) );
 		}
-		if ( this.controls ){
+		if( this.controls ){
 			this.controls.destroy();
 			this.controls = null;
 		}
@@ -2522,7 +2377,7 @@ lattice.ui.Text = new Class({
 			mouseEnter: this.setAllowSubmitOnBlur.bind( this, false ),
 			mouseLeave: this.setAllowSubmitOnBlur.bind( this, true )
 		});
-		if ( this.isMultiline ){
+		if( this.isMultiline ){
 			this.fitToContent()
 			this.field.select();
 		}else{
@@ -2575,9 +2430,8 @@ lattice.ui.Text = new Class({
 	},
 		
 	checkFormaxLength: function(e){
-<<<<<<< HEAD
 		var len = e.target.get("value").length;
-		if ( len > this.maxLength
+		if( len > this.maxLength
 			 && e.code != 46
 			 && e.key != 'enter'
 			 && e.key != 'return'
@@ -2593,11 +2447,6 @@ lattice.ui.Text = new Class({
 			 && e.key != 'backspace' ){
 			lattice.util.stopEvent( e );
 			alert( "The maximum length this field allows is " + this.maxLength + " characters. This field currently has, " + len );
-=======
-		if ( e.target.get("value").length > this.maxLength && e.keycode != 46 && e.keycode != 8 ){
-			lattice.util.stopEvent( e );
-			alert( "The maximum length this field allows is " + this.maxLength + " characters");
->>>>>>> master
 		}
 	},
 
@@ -2616,10 +2465,10 @@ lattice.ui.Text = new Class({
 	
 	enterEditMode: function( e ){
 		lattice.util.stopEvent( e );
-		if ( this.mode == "editing ") return false;
+		if( this.mode == "editing ") return false;
 		this.mode = "editing";
 		// if we don't suspend parent sorting, then when we click the field we start a drag angle
-		if ( this.marshal.suspendSort ) this.marshal.suspendSort();
+		if( this.marshal.suspendSort ) this.marshal.suspendSort();
 		this.prepareField();
 	},
 	
@@ -2628,12 +2477,12 @@ lattice.ui.Text = new Class({
 		this.field.removeEvents('blur', this.boundOnFieldBlur );
 		this.mode = 'atRest';
 		// see enterEditMode and sorting
-		if ( this.marshal.resumeSort ) this.marshal.resumeSort();
-		if ( this.controls ){
+		if( this.marshal.resumeSort ) this.marshal.resumeSort();
+		if( this.controls ){
 			this.controls.destroy();
 			this.controls = null;
 		}
-		if ( this.submitOnBlur ) this.allowSubmitOnBlur = true;
+		if( this.submitOnBlur ) this.allowSubmitOnBlur = true;
 		this.field.addClass('away');
 		this.ipeElement.removeClass( 'away' );
 		this.ipeElement.addClass('atRest');
@@ -2642,7 +2491,7 @@ lattice.ui.Text = new Class({
 
 	cancelEditing: function( e ){
 		e.preventDefault();
-		if ( this.oldValue ){
+		if( this.oldValue ){
 			var val = this.oldValue.formatForDisplay()
 			this.field.set( 'value', val );
 			this.ipeElement.set( 'html', this.oldValue );
@@ -2675,7 +2524,7 @@ lattice.ui.Text = new Class({
 		val = this.getValue().formatForDisplay();
 		size = this.measureIPEElementWithValue( val );
 		this.field.setStyle( "height", size.y + 12 );
-		if ( this.controls ) this.controls.position();
+		if( this.controls ) this.controls.position();
 	},
 	
 	measureIPEElementWithValue: function( aValue ){
@@ -2698,7 +2547,7 @@ lattice.ui.Text = new Class({
 	onSaveFieldSuccess: function( response ){
 		this.enableElement();
 		val = response.value;
-		if ( this.field.get( 'type' ) == 'password' ){
+		if( this.field.get( 'type' ) == 'password' ){
 			this.ipeElement.set( 'text', val.replace( /./g, '*' ) );
 		}else{
 			this.ipeElement.set( 'html', val );
@@ -2715,10 +2564,10 @@ lattice.ui.Text = new Class({
 	},	
 
 	destroy: function(){
-		if ( this.mode == 'editing' ){
+		if( this.mode == 'editing' ){
 			this.leaveEditMode();
 		}
-		if ( this.ipeElement ) this.ipeElement.eliminate( 'Class' );
+		if( this.ipeElement ) this.ipeElement.eliminate( 'Class' );
 		this.ipeElement.destroy();
 		this.ipeElement = this.mode = this.value = this.oldValue = null;
 		this.parent();
@@ -2757,7 +2606,7 @@ lattice.ui.MooSwitch = new Class({
 
 		this.is_dragging = false;
 		
-		if (this.label_position == 'outside' && options.label_bg == undefined){
+		if(this.label_position == 'outside' && options.label_bg == undefined){
 			this.label_bg = 'light';
 		}else{
 			this.label_bg = (options.label_bg != undefined) ? options.label_bg : 'dark';
@@ -2783,13 +2632,13 @@ lattice.ui.MooSwitch = new Class({
 		this.radio_el = this.element.getElements('input[type="radio"]');
 		this.container.inject( this.radio_el[ this.radio_el.length - 1 ], 'after');
 		
-		if (this.label_bg == 'light') this.labels.addClass('light_bg');
-		if (this.label_position=='outside'){
+		if(this.label_bg == 'light') this.labels.addClass('light_bg');
+		if(this.label_position=='outside'){
 			this.container.setStyle('width', this.left_label.getStyle('width').toInt() + this.scrollarea.getStyle('width').toInt() + this.right_label.getStyle('width').toInt());
 			this.scrollarea.setStyle('left', this.left_label.getStyle('width').toInt());
 			this.scrollarea.setStyle('cursor', 'pointer');
 			this.scrollarea.addEvent('click', function(){
-				if (!this.mouse_over_handle) {
+				if(!this.mouse_over_handle) {
 					this.mvalue = ( this.mvalue == 0 )? 1 : 0;
 					this.goTo(this.mvalue);
 				}
@@ -2803,13 +2652,13 @@ lattice.ui.MooSwitch = new Class({
 
 		this.radio_el.each( function( item, index ){
 			
-			if (this.hide_radios) {
+			if(this.hide_radios) {
 				item.setStyle('display', 'none');
 				var label = this.element.getElement('label[for=' + item.get('id') + ']');
-				if ( label ) label.setStyle('display', 'none');
+				if( label ) label.setStyle('display', 'none');
 			}
 			
-			if ( item.get( "checked" ) ){
+			if( item.get( "checked" ) ){
 				this.goTo( index );
 			}
 			
@@ -2828,7 +2677,7 @@ lattice.ui.MooSwitch = new Class({
 			},
 
 			onComplete: function (){
-				if (this.handle.getStyle('left').toInt() < this.maxscroll*.5){
+				if(this.handle.getStyle('left').toInt() < this.maxscroll*.5){
 					this.goTo(1);
 				}else{
 					this.goTo(0);
@@ -2849,7 +2698,7 @@ lattice.ui.MooSwitch = new Class({
 			this.mouse_over_handle = false;
 		}.bind(this));
 		
-		if (this.hide_labels){
+		if(this.hide_labels){
 			this.labels.setStyle('display', 'none');
 		}
 	},
@@ -2869,7 +2718,7 @@ lattice.ui.MooSwitch = new Class({
 	goTo: function( value ){
 		var cursor = (value ==1 ) ? 'e-resize' : 'w-resize';
 		this.handle.setStyle('cursor', cursor);
-		if ( !this.isVirgin ){
+		if( !this.isVirgin ){
 			this.onChangeHandler( ( value == 1 )? 0 : 1 ); 
 		}else{
 		    this.isVirgin = false;
@@ -2901,12 +2750,12 @@ lattice.ui.SlideSwitch = new Class({
    onChange: function(val){
   
 		this.submittedValue = val;
-		if ( !this.autoSubmit ){
+		if( !this.autoSubmit ){
 			this.setValue( val );
 			return true;
 		}		
-		if ( this.showSaving ) this.showSaving();
-		if ( this.leaveEditMode ) this.leaveEditMode();
+		if( this.showSaving ) this.showSaving();
+		if( this.leaveEditMode ) this.leaveEditMode();
 		this.marshal.saveField( { field: this.fieldName, value: val }, this.onResponse.bind( this ) );
 	}
 });
@@ -2954,14 +2803,14 @@ lattice.ui.PaginationControls = new Class({
 	},
 	
 	build: function(){		
-		if ( this.getPaginationItemElement().get( "id" ) ){
+		if( this.getPaginationItemElement().get( "id" ) ){
 			var idArr = this.getPaginationItemElement().get( "id" ).split("_");
 			idArr.splice( idArr.length - 1, 1 );
             this.itemIdPrefix = idArr.join("_");
 		}
 		this.spinner = this.element.getElement(".spinner");
-		if ( this.element.getElement( ".pagingLeft" ) ) this.previousPageControl = this.element.getElement( ".pagingLeft" ).addEvent( "click", this.previousPage.bindWithEvent( this ) );
-		if ( this.element.getElement( ".pagingRight" ) ) this.nextPageControl = this.element.getElement( ".pagingRight" ).addEvent( "click", this.nextPage.bindWithEvent( this ) );
+		if( this.element.getElement( ".pagingLeft" ) ) this.previousPageControl = this.element.getElement( ".pagingLeft" ).addEvent( "click", this.previousPage.bindWithEvent( this ) );
+		if( this.element.getElement( ".pagingRight" ) ) this.nextPageControl = this.element.getElement( ".pagingRight" ).addEvent( "click", this.nextPage.bindWithEvent( this ) );
 	},
 	
 	getPaginationItemElement: function(){
@@ -2979,7 +2828,7 @@ lattice.ui.PaginationControls = new Class({
 	nextPage: function( e ){
 		lattice.util.stopEvent( e );
 		this.currentPage ++;
-		if ( this.currentPage == this.options.totalPages ) this.nextPageControl.addClass( "hidden" );
+		if( this.currentPage == this.options.totalPages ) this.nextPageControl.addClass( "hidden" );
 		this.previousPageControl.removeClass("hidden");
 		this.paginate();
 	},
@@ -2987,7 +2836,7 @@ lattice.ui.PaginationControls = new Class({
 	previousPage: function( e ){
 		lattice.util.stopEvent( e );
 		this.currentPage --;
-		if ( this.currentPage == 1 ){
+		if( this.currentPage == 1 ){
 			this.previousPageControl.addClass( "hidden" );
 		};
 		this.nextPageControl.removeClass( "hidden" );
@@ -2995,12 +2844,12 @@ lattice.ui.PaginationControls = new Class({
 	},
 
 	paginate: function(){
-		if ( this.pages[ this.currentPage ] && this.options.cachePages ){
+		if( this.pages[ this.currentPage ] && this.options.cachePages ){
 			var newChildren = this.buildItems( this.pages[ this.currentPage ] );
 			this.clearElements( this.getPageableItems() ); 
 			this.container.adopt( newChildren );
 			//this.container.adopt( this.pages[ this.currentPage ] );
-			if ( this.marshal && this.marshal.initList ) this.marshal.initList();
+			if( this.marshal && this.marshal.initList ) this.marshal.initList();
 		}else{
 			this.spinner.removeClass( "hidden" );
 			var marshalId = ( this.marshal.instanceName )? this.marshal.instanceName : this.marshal.get("id");
@@ -3012,7 +2861,7 @@ lattice.ui.PaginationControls = new Class({
 	clearElements: function ( contents ){
 		contents.each( function( anElement, index ){
 			var item = anElement.retrieve( "Class" );
-			if ( item ) item.destroy();
+			if( item ) item.destroy();
 			anElement.destroy();
 		});
 	},
@@ -3024,7 +2873,7 @@ lattice.ui.PaginationControls = new Class({
 		this.clearElements( contents );
 		this.pages[ this.currentPage ] = json;
 		this.container.adopt( newChildren );
-		if ( this.marshal && this.marshal.initList ){ this.marshal.initList(); }
+		if( this.marshal && this.marshal.initList ){ this.marshal.initList(); }
 	},
 	
 	buildItems: function( json ){
@@ -3038,15 +2887,15 @@ lattice.ui.PaginationControls = new Class({
 	
 	buildItem: function( json, anIndex ){
 		var clone = this.getPaginationItemElement().clone();//true );
-		if ( this.getPaginationItemElement().get( "id" ) ) clone.set( "id", this.itemIdPrefix + "_" + json.id );
+		if( this.getPaginationItemElement().get( "id" ) ) clone.set( "id", this.itemIdPrefix + "_" + json.id );
 		var jsonHash = new Hash( json );
 		// this will only work for simple structures, what about files and other more complex structures... how do we spec json for that ie, ids and className-based settings inside files? loop through it? Maybe html is better?
 		// for more complex structure pagination needs to know what the UNIT tag is (or class) in order to call its instantiation...
 		jsonHash.each( function( value, key ){
 			var node = clone.getElement( "." + key );
-			if ( node ) node.set( "text", value );
+			if( node ) node.set( "text", value );
 		});
-		if ( anIndex%2 != 0 ) clone.addClass("alternate");
+		if( anIndex%2 != 0 ) clone.addClass("alternate");
 		return clone;
 	},
 
@@ -3059,7 +2908,7 @@ lattice.ui.PaginationControls = new Class({
 		this.nextPageControl.destroy();
 		this.previousPageControl.destroy();
 		this.element.destroy();
-		if ( this.elementToClone ) this.elementToClone.destroy();
+		if( this.elementToClone ) this.elementToClone.destroy();
 		this.options = this.element = this.instanceName = this.itemIdPrefix = this.elementToClone	= this.nextPageControl = this.previousPageControl = this.pageableElement = this.method = this.container = this.spinner = this.marshal = this.pages = this.container = this.currentPage = this.pageableElement = null;
 	}
 });
@@ -3082,10 +2931,7 @@ lattice.ui.Tags = new Class({
 		this.parent( anElement, aMarshal, options );
 		this.field = this.element.getElement('.tagInput');
 		this.tokenList = this.element.getElement( 'ul.tokens' ); 
-<<<<<<< HEAD
 //		console.log( ":::", this.tokenList, this.tokenList.getChildren(), this.marshal.getElement() );
-=======
->>>>>>> master
 		this.tokenTemplate = this.tokenList.getElement( '.token.template' ).dispose();
 		this.tokenTemplate.removeClass('template');
 		this.ogBg = this.tokenTemplate.getStyle( 'background-color' );
@@ -3139,7 +2985,7 @@ lattice.ui.Tags = new Class({
 	
 	initTokens: function(){
 		this.tokenList.getElements('li.token').each( function(token){
-			if ( token.getElement( '.icon.close' ) ) token.getElement( '.icon.close' ).addEvent( 'click', this.removeToken.bindWithEvent( this, [ token, token.getElement('span').get('html') ] ) )			
+			if( token.getElement( '.icon.close' ) ) token.getElement( '.icon.close' ).addEvent( 'click', this.removeToken.bindWithEvent( this, [ token, token.getElement('span').get('html') ] ) )			
 		}, this );		
 	},
 	
@@ -3147,20 +2993,20 @@ lattice.ui.Tags = new Class({
 		var val, endChar, tokenString;
 		val = this.field.get('value');
 		lastChar = val.substring( val.length-1, val.length );
-		if ( e.key == 'esc'){
+		if( e.key == 'esc'){
 			this.field.set( 'value', '' );
 			this.field.removeEvent( 'keydown', this.boundOnKeyPress );
 			this.leaveEditMode();
 		}
-		if ( e.key == 'space' && lastChar == this.options.delimeter ){
+		if( e.key == 'space' && lastChar == this.options.delimeter ){
 			tokenString = val.substring( 0, val.length-1 ).trim();
-		}else if ( e.key == 'enter' ){
+		}else if( e.key == 'enter' ){
 			tokenString = val.replace( ',', '' ).trim();
 		}
-		if ( tokenString ){
+		if( tokenString ){
 			this.field.set('value',null);
-			if ( !this.doesTokenExist( tokenString ) ){				
-				if ( tokenString != '' ) this.addToken( tokenString );
+			if( !this.doesTokenExist( tokenString ) ){				
+				if( tokenString != '' ) this.addToken( tokenString );
 			}else{
 				this.highlightToken( tokenString );
 			}
@@ -3171,12 +3017,8 @@ lattice.ui.Tags = new Class({
 		var index, token, bg;
 		index = this.getTokens().indexOf( tokenString )
 		token = this.tokenList.getElements( 'li.token' )[index];
-<<<<<<< HEAD
 		this.leaveEditMode( null );
 		token.set( 'morph', { link: 'chain', transition: Fx.Transitions.Quad.easeOut, duration: 750 } );
-=======
-		token.set( 'morph', { link: 'chain', transition: Fx.Transitions.Quad.easeOut, duration: 250 } );
->>>>>>> master
 		token.morph( { 'background-color' : "#fcf3a0" } );
 		token.morph( { 'background-color' : this.ogbg } );
 	},
