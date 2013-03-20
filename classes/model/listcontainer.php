@@ -33,7 +33,7 @@ class Model_List_container extends Model_Object {
 
     if ( ! $this->_sort_direction)
     {
-      $this->_sort_direction = lattice::config('objects', sprintf('//list[@name="%s"]', $this->objecttype->objecttypename))->item(0)->get_attribute('sort_direction');   
+      $this->_sort_direction = lattice::config('objects', sprintf('//list[@name="%s"]', $this->objecttype->objecttypename))->item(0)->getAttribute('sort_direction');   
     }
 
     return $this->_sort_direction;

@@ -143,10 +143,10 @@ class Controller_List extends Lattice_CMSInterface {
 
     // actually we need to do an absolute path for local config
     $list_config = $this->_list_object->get_config();
-    $view->name = $list_config->get_attribute('name');
-    $view->label = $list_config->get_attribute('label');
-    $view->class = $list_config->get_attribute('css_classes');
-    $view->class .= ' allow_child_sort-' . $list_config->get_attribute('allow_child_sort');
+    $view->name = $list_config->getAttribute('name');
+    $view->label = $list_config->getAttribute('label');
+    $view->class = $list_config->getAttribute('css_classes');
+    $view->class .= ' allow_child_sort-' . $list_config->getAttribute('allow_child_sort');
     $view->class .= ' sort_direction-' . $this->_list_object->get_sort_direction();
     $view->items = $html;
     $view->instance = $this->_list_object->objecttype->templatname;
@@ -186,7 +186,7 @@ class Controller_List extends Lattice_CMSInterface {
       {
         throw new Kohana_Exception('No Addable Objects ' .' Count not locate configuration in objects.xml for ' . sprintf('//list[@name="%s"]/addableobject', $this->_family));
       }
-      $object_type_id = $addable_object_types->item(0)->get_attribute('objectTypeName');
+      $object_type_id = $addable_object_types->item(0)->getAttribute('objectTypeName');
     } 
 
     $new_id = $list_object->add_object($object_type_id);

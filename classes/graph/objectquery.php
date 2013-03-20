@@ -31,11 +31,11 @@ class Graph_Object_query {
 
   public function init_with_xml($xml)
   {
-    $this->attributes['label'] = $xml->get_attribute('label');
-    $this->attributes['object_type_filter'] = $xml->get_attribute('objectTypeFilter');
-    $this->attributes['where'] = $xml->get_attribute('where');
-    $this->attributes['from'] = $xml->get_attribute('from');
-    $this->attributes['slug'] = $xml->get_attribute('slug');
+    $this->attributes['label'] = $xml->getAttribute('label');
+    $this->attributes['object_type_filter'] = $xml->getAttribute('objectTypeFilter');
+    $this->attributes['where'] = $xml->getAttribute('where');
+    $this->attributes['from'] = $xml->getAttribute('from');
+    $this->attributes['slug'] = $xml->getAttribute('slug');
   }
 
   public function run($parent_id = NULL)

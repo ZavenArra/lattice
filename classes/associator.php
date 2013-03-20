@@ -26,10 +26,10 @@ Class Associator {
     foreach ($filters_node_list as $filter)
     {
       $setting = array();
-      $setting['from'] = $filter->get_attribute('from');
-      $setting['object_type_name'] = $filter->get_attribute('objectTypeName');
-      $setting['tagged'] = $filter->get_attribute('tagged');
-      $setting['function'] = $filter->get_attribute('function');
+      $setting['from'] = $filter->getAttribute('from');
+      $setting['object_type_name'] = $filter->getAttribute('objectTypeName');
+      $setting['tagged'] = $filter->getAttribute('tagged');
+      $setting['function'] = $filter->getAttribute('function');
       $filters[] = $setting;
     }
     return $filters;

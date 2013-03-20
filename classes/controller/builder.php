@@ -117,12 +117,12 @@ class Controller_Builder extends Controller {
     $lattices = lattice::config($xml_file, 'relationships/lattice');
     foreach ($lattices as $latticeDOM)
     {
-      $lattice = Graph::lattice($latticeDOM->get_attribute('name'));
+      $lattice = Graph::lattice($latticeDOM->getAttribute('name'));
       $relationships = lattice::config($xml_file, 'relationship', $latticeDOM);
       foreach ($relationships as $relationship)
       {
-        $parent_slug = $relationship->get_attribute('parent');  
-        $child_slug = $relationship->get_attribute('child');  
+        $parent_slug = $relationship->getAttribute('parent');  
+        $child_slug = $relationship->getAttribute('child');  
         // echo 'Adding lattice relationship';
         $parent = Graph::object($parent_slug)->add_lattice_relationship($lattice, $child_slug);
       }
@@ -175,7 +175,7 @@ class Controller_Builder extends Controller {
     foreach ($items as $item)
     {
 
-      if ( ! $item->get_attribute('objectTypeName'))
+      if ( ! $item->getAttribute('objectTypeName'))
       {
         // echo $item->tag_name;
         throw new Kohana_Exception("No objecttypename specified for Item " . $item->tag_name);
@@ -183,14 +183,14 @@ class Controller_Builder extends Controller {
 
 
       $object = Graph::instance();
-      $object_type = ORM::Factory('objecttype', $item->get_attribute('objectTypeName'));
+      $object_type = ORM::Factory('objecttype', $item->getAttribute('objectTypeName'));
 
       $data = array();
       $clusters_data = array();
       $fields = lattice::config($xml_file, 'field', $item );
       foreach ($fields as $content)
       {
-        $field = $content->get_attribute('name');
+        $field = $content->getAttribute('name');
 
         switch ($field)
         {
@@ -205,10 +205,10 @@ class Controller_Builder extends Controller {
         }
 
         // need to look up field and switch on field type 
-        $field_info = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('objectTypeName'), $content->get_attribute('name')))->item(0);
+        $field_info = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->get_attribute('name')))->item(0);
         if ( ! $field_info)
         {
-          throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->get_attribute('objectTypeName'), $content->get_attribute('name')));
+          throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->get_attribute('name')));
         }
 
         // if an element is actually an object, prepare it for insert/update
@@ -218,7 +218,7 @@ class Controller_Builder extends Controller {
           $cluster_data = array();
           foreach (lattice::config($xml_file, 'field', $content) as $cluster_field)
           {
-            $cluster_data[$cluster_field->get_attribute('name')] = $cluster_field->node_value;
+            $cluster_data[$cluster_field->getAttribute('name')] = $cluster_field->node_value;
           }
 
           $clusters_data[$field] = $cluster_data;
@@ -277,11 +277,11 @@ class Controller_Builder extends Controller {
       {
         $preexisting_object = Graph::object()
           ->lattice_children_filter($parent_object->id)
-          ->object_type_filter($list_container_type->get_attribute('name'))
+          ->object_type_filter($list_container_type->getAttribute('name'))
           ->find();
-        if ($preexisting_object->loaded() AND $preexisting_object->objecttype->objecttypename == $item->get_attribute('objectTypeName') )
+        if ($preexisting_object->loaded() AND $preexisting_object->objecttype->objecttypename == $item->getAttribute('objectTypeName') )
         {
-          // echo 'Found prexisting list container: '.$preexisting_object->objecttype->objecttypename .' '.$item->get_attribute('objectTypeName');
+          // echo 'Found prexisting list container: '.$preexisting_object->objecttype->objecttypename .' '.$item->getAttribute('objectTypeName');
           $component = $preexisting_object;
         }
       }
@@ -295,9 +295,9 @@ class Controller_Builder extends Controller {
         $object_id = $component->id;
       } else {
         // actually add the object
-        // echo 'Adding Object '.$item->get_attribute('objectTypeName')."\n";
+        // echo 'Adding Object '.$item->getAttribute('objectTypeName')."\n";
         // print_r($data);
-        $object_id = $parent_object->add_object($item->get_attribute('objectTypeName'), $data);
+        $object_id = $parent_object->add_object($item->getAttribute('objectTypeName'), $data);
         $this->new_object_ids[] = $object_id;
       }
 
@@ -322,7 +322,7 @@ class Controller_Builder extends Controller {
         // find the container
         $container = Graph::object()
           ->lattice_children_filter($object_id)
-          ->object_type_filter($list->get_attribute('name'))
+          ->object_type_filter($list->getAttribute('name'))
           ->find();
 
         // jump down a level to add object

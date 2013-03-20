@@ -110,7 +110,7 @@ class Controller_Navigation extends Controller_Lattice{
         $cms_modules = lattice::config('cms_modules', '//module');
         foreach ($cms_modules as $m)
         {
-          $controller = $m->get_attribute('controller');
+          $controller = $m->getAttribute('controller');
           $roles = Kohana::config(strtolower($controller).'.authrole', FALSE, FALSE); 
           $access_granted = latticeutil::check_access($roles);
           if ( ! $access_granted)
@@ -119,11 +119,11 @@ class Controller_Navigation extends Controller_Lattice{
           }
 
           $entry = array();
-          $entry['id'] = $m->get_attribute('controller');
-          $entry['slug'] = $m->get_attribute('controller');
+          $entry['id'] = $m->getAttribute('controller');
+          $entry['slug'] = $m->getAttribute('controller');
           $entry['nodeType'] = 'module';
           $entry['contentType'] = 'module';
-          $entry['title'] = $m->get_attribute('label');
+          $entry['title'] = $m->getAttribute('label');
           $entry['page_length'] = Kohana::config('cms.associator_page_length');;
           $send_item_objects[] = $entry;
         }
@@ -217,10 +217,10 @@ class Controller_Navigation extends Controller_Lattice{
     foreach (lattice::config('objects', '//objectType') as $object_type)
     {
       $entry = array();
-      $entry['object_type_name'] = $object_type->get_attribute('name'); 
-      $entry['label'] = $object_type->get_attribute('name').' label'; 
-      $entry['nodeType'] = $object_type->get_attribute('node_type'); 
-      $entry['contentType'] = $object_type->get_attribute('content_type'); 
+      $entry['object_type_name'] = $object_type->getAttribute('name'); 
+      $entry['label'] = $object_type->getAttribute('name').' label'; 
+      $entry['nodeType'] = $object_type->getAttribute('node_type'); 
+      $entry['contentType'] = $object_type->getAttribute('content_type'); 
       $object_types[] = $entry;
     }
     return $object_types;

@@ -218,8 +218,8 @@ class latticecms {
       $entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
     }
     // load defaults
-    $entry['tag'] = $element->get_attribute('tag');
-    $entry['is_multiline'] = ( $element->get_attribute('is_multiline') == 'TRUE' )? true : FALSE;
+    $entry['tag'] = $element->getAttribute('tag');
+    $entry['is_multiline'] = ( $element->getAttribute('is_multiline') == 'TRUE' )? true : FALSE;
     // any special xml reading that is necessary
     switch ($entry['type'])
     {
@@ -241,8 +241,8 @@ class latticecms {
       $radios = array();
       foreach ($children as $child)
       {
-        $label = $child->get_attribute('label');
-        $value = $child->get_attribute('value');
+        $label = $child->getAttribute('label');
+        $value = $child->getAttribute('value');
         $radios[$label] = $value;
       }
       $entry['radios'] = $radios;
@@ -254,8 +254,8 @@ class latticecms {
       $options  = array();
       foreach ($children as $child)
       {
-        $label = $child->get_attribute('label');
-        $value = $child->get_attribute('value');
+        $label = $child->getAttribute('label');
+        $value = $child->getAttribute('value');
         $options[$value] = $label;
       }
       $entry['options'] = $options;  
@@ -266,8 +266,8 @@ class latticecms {
       // need to load filters here
 
       $entry['filters'] = Associator::get_filters_from_dom_node($element);
-      $entry['pool_label'] = $element->get_attribute('pool_label');
-      $entry['associator_type'] = $element->get_attribute('associator_type');
+      $entry['pool_label'] = $element->getAttribute('pool_label');
+      $entry['associator_type'] = $element->getAttribute('associator_type');
       $entry['page_length'] = Kohana::config('cms.associator_page_length');;
       break;
     case 'tags':
@@ -290,8 +290,8 @@ class latticecms {
       {
         if ($element->tag_name == 'image')
         {
-          $objects = ORM::Factory('objecttype', $object_type->get_attribute('name'))->get_active_members();
-          $fieldname = $element->get_attribute('name');
+          $objects = ORM::Factory('objecttype', $object_type->getAttribute('name'))->get_active_members();
+          $fieldname = $element->getAttribute('name');
           foreach ($objects as $object)
           {
             if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename))
@@ -314,7 +314,7 @@ class latticecms {
       {
         if ($element->tag_name == 'image')
         {
-          $fieldname = $element->get_attribute('name');
+          $fieldname = $element->getAttribute('name');
           if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename))
           {
             $uiresizes = Kohana::config('lattice_cms.uiresizes');
@@ -367,7 +367,7 @@ class latticecms {
     $object_types = array();
     foreach ($object_types_result as $object_type)
     {
-      $object_type = $object_type->get_attribute('name');
+      $object_type = $object_type->getAttribute('name');
       $object_types[$object_type] = $object_type; 
     }
 

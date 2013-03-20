@@ -780,22 +780,22 @@ class Model_Object extends ORM implements arrayaccess {
 
       foreach ($fields as $field_info)
       {
-        $field = $field_info->get_attribute('name');
+        $field = $field_info->getAttribute('name');
         $content[$field] = $this->__get($field);
       }
 
       // find any lists
       foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
       {
-        $name = $list->get_attribute('name');
+        $name = $list->getAttribute('name');
         $content[$name] = $this->get_list_content_as_array($name);
       }
 
       // find any associators
       foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/associator', $this->objecttype->objecttypename)) as $list)
       {
-        $name = $list->get_attribute('name');
-        $content[$name] = $this->get_lattice_children($list->get_attribute('name'));;
+        $name = $list->getAttribute('name');
+        $content[$name] = $this->get_lattice_children($list->getAttribute('name'));;
       }
       return $content;
     }
@@ -807,12 +807,12 @@ class Model_Object extends ORM implements arrayaccess {
       $object_fields = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
       foreach ($object_fields as $field_info)
       {
-        $fields[] = $field_info->get_attribute('name');   
+        $fields[] = $field_info->getAttribute('name');   
       }
 
       foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
       {
-        $family = $list->get_attribute('name');
+        $family = $list->getAttribute('name');
         $fields[] = $family;
       }
 
@@ -1178,7 +1178,7 @@ class Model_Object extends ORM implements arrayaccess {
 
         $new_filename = NULL;
         $tag = NULL;
-        if ($tag = $resize->get_attribute('name'))
+        if ($tag = $resize->getAttribute('name'))
         {
           $prefix = $tag . '_';
           $new_filename = $prefix .  $imagefilename;
@@ -1190,7 +1190,7 @@ class Model_Object extends ORM implements arrayaccess {
 
         // This dependency should be moved out of latticecms
         // Rootgraph should never require latticecms
-        Model_Object::resize_image($imagefilename, $new_filename, $resize->get_attribute('width'), $resize->get_attribute('height'), $resize->get_attribute('force_dimension'), $resize->get_attribute('crop'), $resize->get_attribute('aspect_follows_orientation')
+        Model_Object::resize_image($imagefilename, $new_filename, $resize->getAttribute('width'), $resize->get_attribute('height'), $resize->get_attribute('force_dimension'), $resize->get_attribute('crop'), $resize->get_attribute('aspect_follows_orientation')
         );
 
         if (isset($oldfilename) AND $new_filename != $prefix . $oldfilename)
@@ -1297,7 +1297,7 @@ class Model_Object extends ORM implements arrayaccess {
       {
         foreach ($map as $object_type_config)
         {
-          $object_type = ORM::Factory('objecttype', $object_type_config->get_attribute('name')); 
+          $object_type = ORM::Factory('objecttype', $object_type_config->getAttribute('name')); 
           if ( ! $object_type->loaded())
           {
             continue;
@@ -1688,12 +1688,12 @@ class Model_Object extends ORM implements arrayaccess {
       $containers = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename));
       foreach ($containers as $c)
       {
-        $arguments['title'] = $c->get_attribute('label');
-        if ( ! ORM::Factory('objecttype', $c->get_attribute('name'))->loaded())
+        $arguments['title'] = $c->getAttribute('label');
+        if ( ! ORM::Factory('objecttype', $c->getAttribute('name'))->loaded())
         {
           $this->objecttype->configure_element($c);
         }
-        $this->add_object($c->get_attribute('name'), $arguments);
+        $this->add_object($c->getAttribute('name'), $arguments);
       }
 
       // look up any components and add them as well
@@ -1702,7 +1702,7 @@ class Model_Object extends ORM implements arrayaccess {
       foreach ($components as $c)
       {
         $arguments = array();
-        if ($label = $c->get_attribute('label'))
+        if ($label = $c->getAttribute('label'))
         {
           $arguments['title'] = $label;
         }
@@ -1734,7 +1734,7 @@ class Model_Object extends ORM implements arrayaccess {
 
         if ( ! $component_already_present)
         {
-          $this->add_object($c->get_attribute('objectTypeName'), $arguments);
+          $this->add_object($c->getAttribute('objectTypeName'), $arguments);
         }
       }
 
@@ -1772,7 +1772,7 @@ class Model_Object extends ORM implements arrayaccess {
       $this->published = 1;
       if ($t_settings)
       { // entry won't exist for Container objects
-        if ($t_settings->get_attribute('allow_toggle_publish') == 'TRUE')
+        if ($t_settings->getAttribute('allow_toggle_publish') == 'TRUE')
         {
           $this->published = 0;
         }
@@ -1834,7 +1834,7 @@ class Model_Object extends ORM implements arrayaccess {
       $object_types = array();
       foreach ($lookup_templates as $t_config)
       {
-        $object_types[] = $t_config->get_attribute('name');
+        $object_types[] = $t_config->getAttribute('name');
       }
       // add submitted data to content table
       foreach ($data as $field => $value)
@@ -2222,7 +2222,7 @@ class Model_Object extends ORM implements arrayaccess {
       {
         return NULL;
       }
-      return $config->item(0)->get_attribute('meta_object_type_name');
+      return $config->item(0)->getAttribute('meta_object_type_name');
     }
 	
 	

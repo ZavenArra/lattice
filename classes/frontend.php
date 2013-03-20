@@ -5,12 +5,12 @@ class frontend {
   public static function make_html_element($element, $prefix, $indent='')
   {
 
-    $field = $element->get_attribute('name');
+    $field = $element->getAttribute('name');
 
     switch($element->node_name)
     {
     case 'image':
-      if ( ! ($size=$element->get_attribute('size')))
+      if ( ! ($size=$element->getAttribute('size')))
       {
         $size = 'original';	
       }
@@ -25,8 +25,8 @@ class frontend {
       break;
     case 'checkbox':
       echo $indent."<div type=\"checkbox_result\">\n";
-      echo $indent." <label>".$element->get_attribute('label')."</label>\n";
-      echo $indent." <input type=\"checkbox\" name=\"".$element->get_attribute('name')."\" ".
+      echo $indent." <label>".$element->getAttribute('label')."</label>\n";
+      echo $indent." <input type=\"checkbox\" name=\"".$element->getAttribute('name')."\" ".
         "<?phpecho ({$prefix}['$field'])?'checked=\"TRUE\" ':'';?> disabled=\"disabled\" >\n";
       echo $indent."</div>\n\n";
       break;

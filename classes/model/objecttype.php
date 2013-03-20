@@ -92,21 +92,21 @@ class Model_Objecttype extends ORM {
         foreach ($nodes as $node)
         {
           $entry = array();
-          $entry['object_type_id'] = $node->get_attribute('objectTypeName');
-          $entry['object_type_add_text'] = $node->get_attribute('add_text');
+          $entry['object_type_id'] = $node->getAttribute('objectTypeName');
+          $entry['object_type_add_text'] = $node->getAttribute('add_text');
           $t_config = lattice::config('objects', sprintf('//objectType[@name="%s"]', $entry['object_type_id'] ))->item(0);
           if ( ! count($t_config))
           {
             throw new Kohana_Exception('No object type definition by name: '.$entry['object_type_id']);
           }
-          $entry['nodeType'] = $t_config->get_attribute('node_type');
-          $entry['contentType'] = $t_config->get_attribute('content_type');
+          $entry['nodeType'] = $t_config->getAttribute('node_type');
+          $entry['contentType'] = $t_config->getAttribute('content_type');
           $value_from_config[] = $entry;
         }
       } else {
         $node = lattice::config('objects', $x_query)->item(0);
         if ($node)
-          $value_from_config = $node->get_attribute($column);
+          $value_from_config = $node->getAttribute($column);
 
         switch($column)
         {
@@ -153,11 +153,11 @@ class Model_Objecttype extends ORM {
       $defaults = array();
       foreach ($elements as $element)
       {
-        $default = $element->get_attribute('default');
+        $default = $element->getAttribute('default');
         switch($default)
         {
         case 'now':
-          $defaults[$element->get_attribute('name')] = date('Y/m/d H:i:s ');
+          $defaults[$element->getAttribute('name')] = date('Y/m/d H:i:s ');
           break;
         case 'none':
           break;
@@ -165,7 +165,7 @@ class Model_Objecttype extends ORM {
         default:
           if ($default)
           {
-            $defaults[$element->get_attribute('name')] = $default; 
+            $defaults[$element->getAttribute('name')] = $default; 
           }
 
         }
@@ -234,13 +234,13 @@ class Model_Objecttype extends ORM {
 
       case 'list':
         $lt_record = ORM::Factory('objecttype');
-        $lt_record->objecttypename = $item->get_attribute('name');
+        $lt_record->objecttypename = $item->getAttribute('name');
         $lt_record->nodeType = 'container';
         $lt_record->save();
         break;
 
       default:
-        Model_Objectmap::configure_new_field($this->id, $item->get_attribute('name'), $item->tag_name );
+        Model_Objectmap::configure_new_field($this->id, $item->getAttribute('name'), $item->tag_name );
         break;
 
       }

@@ -341,9 +341,9 @@ class latticeview {
       {
         foreach ($sub_views as $subview)
         {
-          $view = $subview->get_attribute('view');
-          $slug = $subview->get_attribute('slug');
-          $label = $subview->get_attribute('label');
+          $view = $subview->getAttribute('view');
+          $slug = $subview->getAttribute('slug');
+          $label = $subview->getAttribute('label');
           if (lattice::config('frontend', "// view[@name=\"$view\"]"))
           {
 
@@ -370,7 +370,7 @@ class latticeview {
             $data[$label] = $sub_view->render();
           } else {
             // assume it's a module
-            $data[$label] = lattice::build_module(array('modulename' => $view/* , 'controllertype'=>'object' */), $subview->get_attribute('label'));
+            $data[$label] = lattice::build_module(array('modulename' => $view/* , 'controllertype'=>'object' */), $subview->getAttribute('label'));
           }
         }
       }
@@ -397,7 +397,7 @@ class latticeview {
           $content[$query->attributes['label']] = $include_content;
 
             /*
-            if ($sort_by = $include_content_query_params->get_attribute('sort_by'))
+            if ($sort_by = $include_content_query_params->getAttribute('sort_by'))
 {
               $sort_function = function($a, $b) use ($sort_by)
 {

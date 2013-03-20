@@ -185,7 +185,7 @@ class Graph {
 
       foreach (lattice::config('objects', 'elements/*', $object_type_config) as $item)
       {
-        if ($item->get_attribute('name')=='title')
+        if ($item->getAttribute('name')=='title')
         {
           throw new Kohana_Exception('Title is a reserved field name');
         }
