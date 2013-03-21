@@ -7,7 +7,7 @@ class frontend {
 
     $field = $element->getAttribute('name');
 
-    switch($element->node_name)
+    switch($element->nodeName)
     {
     case 'image':
       if ( ! ($size=$element->getAttribute('size')))

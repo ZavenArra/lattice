@@ -19,133 +19,74 @@ Class Builder_Frontend {
 
     lattice::config('objects', '//objectTypes');
 
-    flush();
-    ob_flush();
-    flush();
+    latticeutil::flush_ob();
 
     $created_views = array();
-    // 	foreach (lattice::config('frontend', '//view') as $view )
+    foreach (lattice::config('objects', '//objectType') as $object_type)
     {
-      // 	//this has removed the ability to build virtual views
-      foreach (lattice::config('objects', '//objectType') as $object_type)
+      $view = lattice::config('frontend', '//view[@name="'.$object_type->getAttribute('name').'"]');
+      if (count($view))
       {
-        $view = lattice::config('frontend', '//view[@name="'.$object_type->getAttribute('name').'"]');
-        if (count($view))
-        {
-          $view = $view->item(0);
-        }
-        if ($view)
-        {
-          $view_name = $view->getAttribute('name');
-        } else {
-          $view_name = $object_type->getAttribute('name');
-        }
-
-        echo $view_name."\n";
-        flush();
-        ob_flush();
-        flush();
-
-        ob_start();
-        if ( ! $view OR  ($view AND $view->getAttribute('load_page')=='TRUE'))
-        {
-          echo "<h1><?php=\$content['main']['title'];?></h1>\n\n";
-          // this also implies that name is a objecttypename
-          foreach (lattice::config('objects', 
-            sprintf('//objectType[@name="%s"]/elements/*', $view_name )) as $element)
-          {
-
-            switch($element->tag_name)
-            {
-            case 'list':
-              $this->make_list_data_html($element, "\$content['main']");
-              break;
-            case 'associator':
-              $this->make_associator_data_html($element, "\$content['main']");
-              break;
-            default:
-              frontend::make_html_element($element, "\$content['main']");
-              break;
-            }
-
-          }
-
-          if ($view AND $view->getAttribute('load_page')=='TRUE')
-          {
-
-            // Now the include_data
-            if ($i_data_nodes = lattice::config('frontend',"// view[@name=\"".$view->getAttribute('name')."\"]/include_data"))
-            {
-              foreach ($i_data_nodes as $i_data_config)
-              {
-                $prefix = "\$content";
-                $this->make_include_data_html($i_data_config, $prefix, NULL);
-              }
-            }
-
-            if ($subviews = lattice::config('frontend',"// view[@name=\"".$view->getAttribute('name')."\"]/subview"))
-            {
-              foreach ($subviews as $subview_config)
-              {
-                echo "\n<?php=\$".$subview_config->getAttribute('label').";?>\n";
-              }
-            }
-
-          }
-
-
-
-          $html = ob_get_contents();
-          ob_end_clean();
-          $file = fopen($this->base_path.$view_name.'.php', 'w');
-          fwrite($file, $html);
-          fclose($file);
-
-          $created_views[] = $view_name;
-        }
+        $view = $view->item(0);
       }
 
-      echo 'Completed all basic object views' . "\n";
-      flush();
-      ob_flush();
-      flush();
-
-      // and any virtual views
-      foreach (lattice::config('frontend', '//view') as $view_config)
+      if ($view)
       {
-        $view_name = $view_config->getAttribute('name');
+        $view_name = $view->getAttribute('name');
+      } else {
+        $view_name = $object_type->getAttribute('name');
+      }
+      echo $view_name."\n";
 
-        if ( in_array($view_name, $created_views))
+      latticeutil::flush_ob();
+
+      ob_start();
+      if ( ! $view OR  ($view AND $view->getAttribute('load_page')=='TRUE'))
+      {
+        echo "<h1><?php=\$content['main']['title'];?></h1>\n\n";
+        // this also implies that name is a objecttypename
+        foreach (lattice::config('objects', 
+          sprintf('//objectType[@name="%s"]/elements/*', $view_name )) as $element)
         {
-          continue;
-        }
-        echo 'Virtual View: '.$view_name . "\n";
-        flush();
-        ob_flush();
-        flush();
 
-
-        touch($this->base_path.$view_name.'.php');
-
-        ob_start();
-        // Now the include_data
-
-        if ($i_data_nodes = lattice::config('frontend',"// view[@name=\"".$view_name."\"]/include_data"))
-        {
-          foreach ($i_data_nodes as $i_data_config)
+          switch($element->tagName)
           {
-            $prefix = "\$content";
-            $this->make_include_data_html($i_data_config, $prefix, NULL);
+          case 'list':
+            $this->make_list_data_html($element, "\$content['main']");
+            break;
+          case 'associator':
+            $this->make_associator_data_html($element, "\$content['main']");
+            break;
+          default:
+            frontend::make_html_element($element, "\$content['main']");
+            break;
           }
+
         }
 
-        if ($subviews = lattice::config('frontend',"// view[@name=\"".$view_name."\"]/subview"))
+        if ($view AND $view->getAttribute('load_page')=='TRUE')
         {
-          foreach ($subviews as $subview_config)
+
+          // Now the include_data
+          if ($i_data_nodes = lattice::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/includeData"))
           {
-            echo "\n<?php=\$".$subview_config->getAttribute('label').";?>\n";
+            foreach ($i_data_nodes as $i_data_config)
+            {
+              $prefix = "\$content";
+              $this->make_include_data_html($i_data_config, $prefix, NULL);
+            }
           }
+
+          if ($subviews = lattice::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/subview"))
+          {
+            foreach ($subviews as $subview_config)
+            {
+              echo "\n<?php=\$".$subview_config->getAttribute('label').";?>\n";
+            }
+          }
+
         }
+
 
 
         $html = ob_get_contents();
@@ -153,12 +94,60 @@ Class Builder_Frontend {
         $file = fopen($this->base_path.$view_name.'.php', 'w');
         fwrite($file, $html);
         fclose($file);
+
+        $created_views[] = $view_name;
+      }
+    }
+
+    echo 'Completed all basic object views' . "\n";
+    latticeutil::flush_ob();
+
+    // and any virtual views
+    foreach (lattice::config('frontend', '//view') as $view_config)
+    {
+      $view_name = $view_config->getAttribute('name');
+
+      if ( in_array($view_name, $created_views))
+      {
+        continue;
+      }
+      echo 'Virtual View: '.$view_name . "\n";
+      touch($this->base_path.$view_name.'.php');
+
+      latticeutil::flush_ob();
+      ob_start();
+
+
+      // Now the include_data
+      if ($i_data_nodes = lattice::config('frontend',"//view[@name=\"".$view_name."\"]/includeData"))
+      {
+        foreach ($i_data_nodes as $i_data_config)
+        {
+          $prefix = "\$content";
+          $this->make_include_data_html($i_data_config, $prefix, NULL);
+        }
+      }
+
+      if ($subviews = lattice::config('frontend',"//view[@name=\"".$view_name."\"]/subview"))
+      {
+        foreach ($subviews as $subview_config)
+        {
+          echo "\n<?php=\$".$subview_config->getAttribute('label').";?>\n";
+        }
       }
 
 
-
-      echo "Done\n";
+      $html = ob_get_contents();
+      ob_end_clean();
+      $file = fopen($this->base_path.$view_name.'.php', 'w');
+      fwrite($file, $html);
+      fclose($file);
     }
+
+
+
+    echo "Done\n";
+  }
 
     public function make_list_data_html($list_data_config, $prefix, $indent = '')
     {
@@ -299,7 +288,7 @@ Class Builder_Frontend {
         echo $indent . "   " . "<h2><?php=\${$label}Item['title'];?></h2>\n\n";
         foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object_type_name)) as $element)
         {
-          switch($element->tag_name)
+          switch($element->tagName)
           {
           case 'list':
             $this->make_list_data_html($element, "\${$label}Item", $indent);
@@ -316,7 +305,7 @@ Class Builder_Frontend {
         // handle lower levels
         if ($frontend_node)
         {
-          foreach (lattice::config('frontend', 'include_data', $frontend_node) as $next_level)
+          foreach (lattice::config('frontend', 'includeData', $frontend_node) as $next_level)
           {
             $this->make_include_data_html($next_level, "\${$label}Item", $object_type_name, $indent . "   ");
           }

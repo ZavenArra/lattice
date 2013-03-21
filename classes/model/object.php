@@ -1706,9 +1706,9 @@ class Model_Object extends ORM implements arrayaccess {
         {
           $arguments['title'] = $label;
         }
-        if ($c->has_child_nodes())
+        if ($c->hasChildNodes())
         {
-          foreach ($c->child_nodes as $data)
+          foreach ($c->childNodes as $data)
           {
             $arguments[$data->tag_name] = $data->value;
           }

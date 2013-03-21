@@ -172,4 +172,10 @@ Class latticeutil {
     return implode( $delimiter, $output );
   }
 
+  public static function flush_ob(){
+    flush();
+    ob_flush();
+    flush();
+  }
+
 }
