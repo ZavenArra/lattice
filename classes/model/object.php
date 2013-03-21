@@ -1859,7 +1859,7 @@ class Model_Object extends ORM implements arrayaccess {
           throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath' => $field_infoXPath));
         }
 
-        switch ($field_info->tag_name)
+        switch ($field_info->tagName)
         {
         case 'file':
         case 'image':
