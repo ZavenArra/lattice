@@ -73,72 +73,50 @@ class latticeview {
     return Session::instance()->get('language_code');
   }
 
-  /*
-   * public static function indicate_category($slug)
-   * Returns TRUE/FALSE depending on if the given slug is either
-   * the slug of the initial view loaded or a child of that slug.
-   */
-  //  public static function within_subtree($slug)
+  public static function within_subtree($slug)
   {
-    //    //Direct links are not within lattice
-    //    if (strstr($slug, 'http'))
-  {
-    //      return FALSE;
-    //    }
-    //    //Only check the first part of given route
-    //    //This allos support for custom controllers.
-    //    $route = explode('/', $slug);
-    //    $slug = $route[0];
-    //  
-    //  
-    //    return self::initial_object()->is_within_sub_tree($slug);
-    //  
-    //  }
-
-    public static function within_subtree($slug)
+    // Direct links are not within lattice
+    if (strstr($slug,'http'))
     {
-      // Direct links are not within lattice
-      if (strstr($slug,'http'))
+      return FALSE;
+    }
+    // Only check the first part of given route
+    // This allos support for custom controllers.
+    $route = explode('/', $slug);
+    $slug = $route[0];
+    if ( self::initial_object() )
+    {
+      try {
+        $val = self::initial_object()->is_within_sub_tree($slug);
+        return $val;
+      } catch( Exception $e )
       {
         return FALSE;
       }
-      // Only check the first part of given route
-      // This allos support for custom controllers.
-      $route = explode('/', $slug);
-      $slug = $route[0];
-      if ( self::initial_object() )
+    }
+
+  }
+
+  public function __construct($object_id_or_slug = NULL)
+  {
+    try{
+      if ($object_id_or_slug != NULL)
       {
-        try {
-          $val = self::initial_object()->is_within_sub_tree($slug);
-          return $val;
-        } catch( Exception $e )
-        {
-          return FALSE;
-        }
-      }
+        $this->object = self::get_graph_object($object_id_or_slug);
+        $this->create_view($object_id_or_slug);
+      }		 	
+    } catch ( Exception $e )
+      {
+        throw $e; // ("There is no graph object with this object id or slug : " $object_id_or_slug . ' in object ' .  $object->slug);
+        return FALSE;
+      } 
 
-    }
+  }
 
-    public function __construct($object_id_or_slug = NULL)
-    {
-      try{
-        if ($object_id_or_slug != NULL)
-        {
-          $this->object = self::get_graph_object($object_id_or_slug);
-          $this->create_view($object_id_or_slug);
-        }		 	
-      } catch ( Exception $e )
-        {
-          throw $e; // ("There is no graph object with this object id or slug : " $object_id_or_slug . ' in object ' .  $object->slug);
-          return FALSE;
-        } 
-
-    }
-
-    public function data()
-    {
-      return $this->data;
-    }
+  public function data()
+  {
+    return $this->data;
+  }
 
     /*
      * Function: view()
