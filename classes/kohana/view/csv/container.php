@@ -1,6 +1,6 @@
 <?php
 
-class View_Csv_container {
+class Kohana_View_Csv_Container {
 
   private $_indent = 0;
   private $_object = 0;

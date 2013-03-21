@@ -1,10 +1,3 @@
-<?php
-/* @package Lattice */
+<?php defined('SYSPATH') or die('No direct access allowed.');
 
-Class Latticeurl {
-
-  public static function site($url)
-  {
-    return url::site($url, NULL, FALSE);
-  }
-}
+abstract class Latticeurl extends Kohana_Latticeurl { }
