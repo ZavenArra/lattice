@@ -177,8 +177,7 @@ class Controller_Builder extends Controller {
 
       if ( ! $item->getAttribute('objectTypeName'))
       {
-        // echo $item->tag_name;
-        throw new Kohana_Exception("No objecttypename specified for Item " . $item->tag_name);
+        throw new Kohana_Exception("No objecttypename specified for Item " . $item->tagName);
       }
 
 
@@ -196,10 +195,10 @@ class Controller_Builder extends Controller {
         {
         case 'title':
         case 'published':
-          $data[$field] = $content->node_value;
+          $data[$field] = $content->nodeValue;
           continue(2);
         case 'slug':
-          $data[$field] = $content->node_value;
+          $data[$field] = $content->nodeValue;
           $data['decoupleSlugTitle'] = 1;
           continue(2);
         }
@@ -212,13 +211,13 @@ class Controller_Builder extends Controller {
         }
 
         // if an element is actually an object, prepare it for insert/update
-        if (lattice::config('objects', sprintf('//objectType[@name="%s"]', $field_info->tag_name))->length > 0)
+        if (lattice::config('objects', sprintf('//objectType[@name="%s"]', $field_info->tagName))->length > 0)
         {
           // we have a cluster..               
           $cluster_data = array();
           foreach (lattice::config($xml_file, 'field', $content) as $cluster_field)
           {
-            $cluster_data[$cluster_field->getAttribute('name')] = $cluster_field->node_value;
+            $cluster_data[$cluster_field->getAttribute('name')] = $cluster_field->nodeValue;
           }
 
           $clusters_data[$field] = $cluster_data;
@@ -229,25 +228,25 @@ class Controller_Builder extends Controller {
 
 
         // special setup based on field type
-        switch ($field_info->tag_name)
+        switch ($field_info->tagName)
         {
         case 'file':
         case 'image':
-          $path_parts = pathinfo($content->node_value);
+          $path_parts = pathinfo($content->nodeValue);
           $savename = Model_Object::make_file_save_name($path_parts['basename']);
-          if (file_exists($content->node_value))
+          if (file_exists($content->nodeValue))
           {
-            copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $content->node_value, Graph::mediapath($savename) . $savename);
+            copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $content->nodeValue, Graph::mediapath($savename) . $savename);
             $data[$field] = $savename;
           } else {
-            if ($content->node_value)
+            if ($content->nodeValue)
             {
-              throw new Kohana_Exception( "File does not exist {$content->node_value} ");
+              throw new Kohana_Exception( "File does not exist {$content->nodeValue} ");
             }
           }
           break;
         default:
-          $data[$field] = $content->node_value;
+          $data[$field] = $content->nodeValue;
           break;
         }
 
