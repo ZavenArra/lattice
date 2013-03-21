@@ -113,7 +113,9 @@ Class Controller_Usermanagement extends Controller_Layout {
     if (strlen($user->password))
     {
       $data['password'] = '******';
-    } else {
+    } 
+    else 
+    {
       $data['password'] = '';
     }
 
@@ -121,7 +123,9 @@ Class Controller_Usermanagement extends Controller_Layout {
     if ($user->has('roles', ORM::Factory('role')->where('name','=','superuser')->find()) )
     {
       $data['superuser'] = TRUE;
-    } else {
+    } 
+    else 
+    {
       $data['superuser'] = FALSE;
     }
 
@@ -303,13 +307,15 @@ Class Controller_Usermanagement extends Controller_Layout {
 
     default:
 
-      // $errors = $user->check_value($_POST['field'], $_POST['value']);
+      //$errors = $user->check_value($_POST['field'], $_POST['value']);
       $errors  = array();
 
       if ( ! count($errors))
       {
 
-        try {
+        try 
+        {
+			
           $user->update_user(array($field => $value), array($field))->save();
 
 
@@ -332,19 +338,31 @@ Class Controller_Usermanagement extends Controller_Layout {
               $headers);
             $this->response->data(array('value' => '**********'));
             $this->response->data(array('value' => $body->password));
-          } else {
+          } 
+          else 
+          {
             $value = $user->{$_POST['field']};
             $this->response->data(array('value' => $value));
           }
-        } catch (Exception $e)
-          {
-            $model_errors = $e->errors('validation');
-            if (isset($model_errors['_external']))
-            {
-              $model_errors = array_values($model_errors['_external']);
-            } 
-            $errors = array_merge($errors, $model_errors);
-          }
+        } 
+        catch (Exception $e)
+        {
+			
+		   if($_POST['field'] == 'email' AND $_POST['value'] != '' AND valid::email($_POST['value']) == FALSE)
+		   {
+			  //todo move string to config or i18n file and do this at the level of validation
+			  $errors = array('email address is invalid');
+		   }
+		   else 
+		   {
+              $model_errors = $e->errors('validation');
+              if(isset($model_errors['_external']))
+              {
+                 $model_errors = array_values($model_errors['_external']);
+              } 
+              $errors = array_merge($errors, $model_errors);
+		   }
+        }
       }
       if ($errors)
       {
@@ -353,11 +371,14 @@ Class Controller_Usermanagement extends Controller_Layout {
         if ($_POST['field'] == 'password')
         {
           $rval = NULL;
-        } else {
+        } 
+        else 
+        {
           $rval = $user->{$_POST['field']};
         }
         $return = $this->response->data(array('value' => $rval, 'error' => 'TRUE', 'message' => $errors[$firstkey]));
       }
+      
       break;
     }
 
