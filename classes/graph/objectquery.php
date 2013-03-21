@@ -1,16 +1,6 @@
 <?php
 
-/*
- * To change this object_type, choose Tools | Templates
- * and open the object_type in the editor.
- */
-
-/**
- * Description of objectquery
- *
- * @author deepwinter1
- */
-class Graph_Object_query {
+class Graph_Objectquery {
 
   public $attributes;
 
@@ -66,7 +56,7 @@ class Graph_Object_query {
     }
 
     // apply optional object_type filter
-    $objects = $objects->object_type_filter($this->attributes['objectTypeFilter']); 
+    $objects = $objects->object_type_filter($this->attributes['object_type_filter']); 
 
     // apply optional SQL where filter
     if ($where = $this->attributes['where'])

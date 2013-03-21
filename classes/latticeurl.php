@@ -1,7 +1,7 @@
 <?php
 /* @package Lattice */
 
-Class Lattice_url {
+Class Latticeurl {
 
   public static function site($url)
   {

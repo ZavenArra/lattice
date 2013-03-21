@@ -139,7 +139,7 @@ if (isset($_SERVER['REQUEST_URI'])
 
 class FrontendRouting {
 
-   public static function routeSlug($uri) {
+   public static function route_slug($uri) {
       $segments = explode('/', $uri);
 
     
@@ -169,13 +169,13 @@ class FrontendRouting {
       if ($object) {
          return array(
              'controller' => 'latticeviews',
-             'action' => 'getView',
+             'action' => 'get_view',
              'objectidorslug' => $object->slug
          );
       }
    }
 
-	 public static function routeVirtual($uri){
+	 public static function route_virtual($uri){
 		
       $segments = explode('/', $uri);
       if (Kohana::find_file('classes/controller', $segments[0])){
@@ -187,7 +187,7 @@ class FrontendRouting {
 			if ($config->length){
          return array(
              'controller' => 'latticeviews',
-             'action' => 'getVirtualView',
+             'action' => 'get_virtual_view',
              'objectidorslug' => $uri
          );
 			} 
@@ -198,9 +198,9 @@ class FrontendRouting {
 
 }
 
-Route::set('latticeViewsSlug', array('FrontendRouting', 'routeSlug'));
+Route::set('latticeViewsSlug', array('FrontendRouting', 'route_slug'));
 
-Route::set('latticeViewsVirtual', array('FrontendRouting', 'routeVirtual'));
+Route::set('latticeViewsVirtual', array('FrontendRouting', 'route_virtual'));
 
 Route::set('defaultLatticeFrontend', '(<controller>)',
 	array(
@@ -208,7 +208,7 @@ Route::set('defaultLatticeFrontend', '(<controller>)',
 	))
 	->defaults(array(
 		'controller' => 'latticeviews',
-		'action' => 'getView',
+		'action' => 'get_view',
 		'id'     => 'home',
 	));
 

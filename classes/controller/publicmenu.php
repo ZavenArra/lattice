@@ -1,6 +1,6 @@
 <?php
 
-Class Controller_Public_menu extends Controller_Lattice {
+Class Controller_Publicmenu extends Controller_Lattice {
 
 
   public function action_index()

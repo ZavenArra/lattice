@@ -287,7 +287,7 @@ class latticeview {
         return $data;
       }
 
-      $view_config = lattice::config('frontend', "// view[@name=\"$view\"]")->item(0);
+      $view_config = lattice::config('frontend', "//view[@name=\"$view\"]")->item(0);
       if ( ! $view_config)
       {
         //  throw new Kohana_Exception("No View setup in frontend.xml by that name: $view");
@@ -316,14 +316,14 @@ class latticeview {
         $data['content'][$key] = $values;
       }
 
-      if ($sub_views = lattice::config('frontend', "sub_view", $view_config))
+      if ($sub_views = lattice::config('frontend', "subView", $view_config))
       {
         foreach ($sub_views as $subview)
         {
           $view = $subview->getAttribute('view');
           $slug = $subview->getAttribute('slug');
           $label = $subview->getAttribute('label');
-          if (lattice::config('frontend', "// view[@name=\"$view\"]"))
+          if (lattice::config('frontend', "//view[@name=\"$view\"]"))
           {
 
             if ($view AND $slug)
@@ -360,11 +360,11 @@ class latticeview {
     public function get_include_content($include_tier, $parent_id)
     {
       $content = array();
-      if ($include_content_queries = lattice::config('frontend', 'include_data', $include_tier))
+      if ($include_content_queries = lattice::config('frontend', 'includeData', $include_tier))
       {
         foreach ($include_content_queries as $include_content_query_params)
         {
-          $query = new Graph_Object_query();
+          $query = new Graph_Objectquery();
           $query->init_with_xml($include_content_query_params);
           $include_content = $query->run($parent_id);
 
