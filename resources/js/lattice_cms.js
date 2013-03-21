@@ -250,6 +250,7 @@ lattice.modules.CMS = new Class({
 			json - Object : { css: [ "pathToCSSFile", "pathToCSSFile", ... ], js: [ "pathToJSFile", "pathToJSFile", "pathToJSFile", ... ], html: "String" }
 	*/
 	requestPageResponse: function( json ){
+		console.log( ":::::: requestPageResponse", json );
 		console.log( ":::::: requestPageResponse", json.response.data.objectTypeName );
 		if( json.response.data ) this.setObjectId( json.response.data.id );
 		json.response.css.each( function( styleSheetURL, index ){

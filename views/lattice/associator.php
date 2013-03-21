@@ -1,4 +1,4 @@
-<div id="<?=$lattice;?><?=$parentId;?>" data-objectid="<?=$parentId;?>" data-lattice="<?=$lattice;?>" class="module associator classPath-lattice_modules_Associator clearfix">
+<div id="<?=$lattice;?><?=$parent_id;?>" data-objectid="<?=$parent_id;?>" data-lattice="<?=$lattice;?>" class="module associator classPath-lattice_modules_Associator clearfix">
 
 	<div class="floatcontrol">
 		<a href="#" title="Choose which items to include…" class="icon meta modal-actuator">meta</a>
@@ -14,10 +14,10 @@
 	<div class="modalContent associator hidden">
 	
 		<div class="methods clearFix">
-			<h4><?=$poolLabel;?></h4>		
-			<label for="<?=$lattice;?>SearchBox<?=$parentId;?>" class="filter hidden" >
+			<h4><?=$pool_label;?></h4>		
+			<label for="<?=$lattice;?>SearchBox<?=$parent_id;?>" class="filter hidden" >
 				Filter results
-				<input class="roundedInput" type="text" name="filter" value="Showing first fourty." id="<?=$lattice;?>SearchBox<?=$parentId;?>" />
+				<input class="roundedInput" type="text" name="filter" value="Showing first fourty." id="<?=$lattice;?>SearchBox<?=$parent_id;?>" />
 				<a href="#" class="filterButton button">Filter</a>
 			</label>
 			
@@ -25,7 +25,7 @@
 				<?if ( isset( $pages ) && count( $pages ) ):?>
 				<ul>
 					<?foreach( $page as $key => $pages):?>
-					<li><a class="active" href="ajax/html/associator/getPage/<?=$parentId;?>/<?=$lattice;?>/<?=$key;?>"><?=$key;?></a></li>
+					<li><a class="active" href="ajax/html/associator/getPage/<?=$parent_id;?>/<?=$lattice;?>/<?=$key;?>"><?=$key;?></a></li>
 					<?endforeach;?>
 				</ul>
 				<?endif;?>

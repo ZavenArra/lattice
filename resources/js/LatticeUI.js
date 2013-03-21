@@ -1534,17 +1534,18 @@ lattice.ui.FileElement = new Class({
 	
 	onFileComplete: function( json ){
 		json = JSON.decode( json.response.text );
+    console.log(json);
 		this.clearButton.fade( "in" );
 		if( this.filename ) this.filename.set( "text",  json.response.filename );
 		this.clearButton.removeClass("hidden");
 		this.downloadButton.removeClass("hidden");
 		this.downloadButton.set( 'title', 'download ' + json.response.filename );
 		this.downloadButton.set( "href", lattice.util.getBaseURL() + json.response.src );
-		console.log( this.toString(), "onFileComplete", lattice.util.getBaseURL() + json.response.thumbSrc );
+		console.log( this.toString(), "onFileComplete", lattice.util.getBaseURL() + json.response.thumb_src );
 		this.element.removeClass('empty');
 		this.downloadButton.removeClass("hidden");
 		if( this.previewElement ){
-			this.imgAsset = new Asset.image( lattice.util.getBaseURL() + json.response.thumbSrc, {  alt: json.response.filename, onload: this.updateThumb.bind( this, json ) } );
+			this.imgAsset = new Asset.image( lattice.util.getBaseURL() + json.response.thumb_src, {  alt: json.response.filename, onload: this.updateThumb.bind( this, json ) } );
 		}else{
 			this.revertToReadyState();
 		}

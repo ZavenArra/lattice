@@ -41,9 +41,9 @@ $config['uiresizes'] =  array(
 		'width'=>240,
 		'height'=>120,
 		'prefix' => 'uithumb',
-		'forceDimension'=>'width',
+		'force_dimension'=>'width',
 		'crop'=>true,
-    'aspectFollowsOrientation'=>false
+    'aspect_follows_orientation'=>false
 	)
 );
 
