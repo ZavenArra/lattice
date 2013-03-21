@@ -251,7 +251,6 @@ lattice.modules.CMS = new Class({
 	*/
 	requestPageResponse: function( json ){
 		console.log( ":::::: requestPageResponse", json );
-		console.log( ":::::: requestPageResponse", json.response.data.objectTypeName );
 		if( json.response.data ) this.setObjectId( json.response.data.id );
 		json.response.css.each( function( styleSheetURL, index ){
 			styleSheetURL = lattice.util.getBaseURL() + styleSheetURL;

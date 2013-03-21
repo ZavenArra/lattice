@@ -1,7 +1,7 @@
 <li data-objectid="<?=$data['id'];?>" id="item_<?=$data['id'];?>" class="listItem">
 
 	<div div class="clearFix">
-	<?if (!$data['superuser'] || latticeutil::checkRoleAccess('superuser')):?>
+	<?if (!$data['superuser'] || latticeutil::check_role_access('superuser')):?>
 		<?=latticeui::Text( 'username', "rows-1 validation-nonEmpty grid_2 alpha", "p", $data['username'], 'Username' );?>
 		<?=latticeui::Text( 'firstname', "rows-1 validation-nonEmpty grid_2 alpha", "p", $data['firstname'], 'First Name' );?>
 		<?=latticeui::Text( 'lastname', "rows-1 validation-nonEmpty grid_2 alpha", "p", $data['lastname'], 'Last Name' );?>
@@ -12,8 +12,8 @@
 	<?endif;?>
 	</div>
 
-	<?if (!$data['superuser'] || latticeutil::checkRoleAccess('superuser')):?>
-		<?=latticeui::radioGroup( 'role', '', $managedRoles, $data['role'], 'User Role');?>
+	<?if (!$data['superuser'] || latticeutil::check_role_access('superuser')):?>
+		<?=latticeui::radio_group( 'role', '', $managed_roles, $data['role'], 'User Role');?>
 	<?else:?>
 		Superuser
 	<?endif;?>

@@ -5,7 +5,7 @@
  * and passwords.  Can be configured deal with roles using the managedroles variables.
  */
 
-Class Controller_User_management extends Controller_Layout {
+Class Controller_Usermanagement extends Controller_Layout {
 
   protected $_actions_that_get_layout = array('index');
 
