@@ -1,6 +1,5 @@
 /*Navigation*/
 
-<<<<<<< HEAD
 header{
 	position: relative;
 	z-index: 999;
@@ -64,16 +63,6 @@ header .slideToggle {
 
 #navigation>.container{
 	height:23.75em;    
-=======
-#navigation{
-	height: 27em;
-	width: 100%;
-	clear: both;
-}
-
-#navigation>.container{
-	height:24em;    
->>>>>>> master
 	overflow:hidden;
 	border-top:1px #ccc solid;
 	border-bottom:1px #ccc solid;
@@ -96,12 +85,8 @@ header .slideToggle {
     width: 300px;
     margin: 0 0 0 0;
     padding: 0 0 0 0;
-<<<<<<< HEAD
     display: block;
     float: left;
-=======
-    display: inline-block;
->>>>>>> master
 		background: #f8f8f8 url( ../images/nav_bg.gif ) repeat-y;
 }
 
@@ -115,14 +100,11 @@ header .slideToggle {
 	height: 100%;
 }
 
-<<<<<<< HEAD
 #navigation .node { 
 	overflow: hidden;
 	position: relative;
 }
 
-=======
->>>>>>> master
 #navigation .node,
 .tierMethodsDrawer .addableObjects li{
 	line-height: 2;
@@ -133,19 +115,11 @@ header .slideToggle {
 	/*width: 100%;*/
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> master
 #navigation .node.active,
 #navigation .node:hover,
 .addableObjects li:hover{
 	cursor: pointer;
-<<<<<<< HEAD
 	background-color: rgba( 0, 170, 255, .8 )	;
-=======
-	background-color: #0af;
->>>>>>> master
 	color:#fff;
 }
 
@@ -163,17 +137,12 @@ header .slideToggle {
 	background-image: url( ../images/icon_leaf.png );
 	background-position: 12px 10px;
 	background-repeat: no-repeat;
-<<<<<<< HEAD
 	width: 215px;
-=======
-	width: 200px;
->>>>>>> master
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
 
-<<<<<<< HEAD
 #navigation .node .methods{
 	position: absolute;
 	top: -5em;
@@ -193,27 +162,14 @@ header .slideToggle {
 	line-height: 2em;
 	right: .25em;
 	opacity: 1;
-=======
-
-#navigation .node .methods{
-	padding: 0 .5em 0 0;
->>>>>>> master
 }
 
 #navigation a.icon{
 	text-indent: -3000px;
-<<<<<<< HEAD
 	display:inline-block;
 	width: 12px;
 	height: 100%;
 	margin:.5em .25em 0 0;
-=======
-	display:block;
-	float:left;
-	width: 12px;
-	height: 12px;
-	margin:.5em .25em;
->>>>>>> master
 }
 
 #navigation .node.active h5,
@@ -225,38 +181,23 @@ header .slideToggle {
 
 #navigation .node.category h5{
 	background-image: url( ../images/icon_category.png );
-<<<<<<< HEAD
 	background-position: 1em .75em;
-=======
-	background-position: 1em .5em;
->>>>>>> master
 	background-repeat: no-repeat;
 }
 
 #navigation .node.category.active h5,
 #navigation .node.category:hover h5{
 	background-image: url( ../images/icon_category_hover.png );	
-<<<<<<< HEAD
 	background-position: 1em .75em;
-=======
-	background-position: 1em .5em;
->>>>>>> master
 	background-repeat: no-repeat;
 }
 
 #navigation .node.module h5{
-<<<<<<< HEAD
 	background: url( ../images/icon_module.png ) 1em .675em no-repeat;	
-=======
-	background-image: url( ../images/icon_module.png );
-	background-position: 1em .5em;
-	background-repeat: no-repeat;
->>>>>>> master
 }
 
 #navigation .node.module.active h5,
 #navigation .node.module:hover h5{
-<<<<<<< HEAD
 	background: url( ../images/icon_module_hover.png ) 1em .675em no-repeat;	
 }
 
@@ -270,38 +211,6 @@ header .slideToggle {
 
 #navigation .node a.published {
 	background: url(../images/icon_published_hover.png) 0 .5em no-repeat;	
-=======
-	background-image: url( ../images/icon_module_hover.png );	
-	background-position: 1em .5em;
-	background-repeat: no-repeat;
-}
-
-#navigation .node a.removeNode{
-	background-image: url(../images/icon_delete.png);
-}
-
-#navigation .node:hover a.removeNode,
-#navigation .node.active a.removeNode{
-	background-image: url(../images/icon_delete_hover.png);
-}
-
-#navigation .node a.togglePublish{
-	background-image: url(../images/icon_unpublished.png);	
-}
-
-#navigation .node a.published{
-	background-image: url(../images/icon_published.png);	
-}
-
-#navigation .node.active a,
-#navigation .node:hover a{
-	background-image: url(../images/icon_unpublished_hover.png);	
-}
-
-#navigation .node.active a.published,
-#navigation .node:hover a.published{
-	background-image: url(../images/icon_published_hover.png);	
->>>>>>> master
 }
 
 .tierMethodsDrawer{
@@ -310,7 +219,6 @@ header .slideToggle {
 	font-size: 12px;
 	top: 25.45em;
 	z-index: 1000;
-<<<<<<< HEAD
 	background: rgba( 0,0,0,.9);
 	color: #fff;
 }
@@ -320,12 +228,6 @@ header .slideToggle {
 	height: auto;
 }
 
-=======
-	background: url( ../images/navBgDark.png	);
-	color: #fff;
-}
-
->>>>>>> master
 .tierMethodsDrawer .titleBar{
   padding: .25em 0 .25em 1em;
 }
@@ -341,25 +243,9 @@ header .slideToggle {
 	font-style: italic;
 }
 
-<<<<<<< HEAD
 .tierMethodsDrawer ul{
 	overflow: auto;
 	height: 25.45em;
-=======
-.tierMethodsDrawer .icon.close{
-	width: 12px;
-	height: 12px;
-	float: right;
-	display: block;
-	text-indent: -1000px;
-	position: relative;
-	background-image: url(../images/icon_delete_hover.png	);
-}
-
-.tierMethodsDrawer ul{
-	overflow: auto;
-	border-top: 1px #303030 solid;
->>>>>>> master
 }
 
 .tierMethodsDrawer li{
