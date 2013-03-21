@@ -484,7 +484,7 @@ class Model_Object extends ORM implements arrayaccess {
 
       if ( ! is_object($value))
       {
-        $value = Model_Object::convert_newlines($value);
+        $value = Model_Object::convert_new_lines($value);
       }
 
 
