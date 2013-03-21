@@ -229,7 +229,7 @@ class Model_Objecttype extends ORM {
     public function configure_element($item)
     {
 
-      switch($item->tag_name)
+      switch($item->tagName)
       {
 
       case 'list':
@@ -240,7 +240,7 @@ class Model_Objecttype extends ORM {
         break;
 
       default:
-        Model_Objectmap::configure_new_field($this->id, $item->getAttribute('name'), $item->tag_name );
+        Model_Objectmap::configure_new_field($this->id, $item->getAttribute('name'), $item->tagName );
         break;
 
       }

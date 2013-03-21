@@ -172,7 +172,7 @@ class latticecms {
   public static function get_element_config($object, $element_name)
   {
     latticecms::get_element_dom_node($object, $element_name);
-    return self::convertXMLElement_to_array($object, $element->item(0));
+    return self::convert_xml_element_to_array($object, $element->item(0));
   }
 
   public static function get_element_dom_node($object, $element_name)
@@ -205,14 +205,14 @@ class latticecms {
     return latticecms::buildUIHtml_chunks($elements_config, $object);
   }
 
-  public static function convertXMLElement_to_array($object, $element)
+  public static function convert_xml_element_to_array($object, $element)
   {
     $entry = array();
     // $entry should become an object, that contains configuration logic for each  view
     // or better yet, each mopui view should have it's own view object
     // which translates the configuration into the view display
 
-    $entry['type'] = $element->tag_name;
+    $entry['type'] = $element->tagName;
     for ($i = 0; $i < $element->attributes->length; $i++)
     {
       $entry[$element->attributes->item($i)->name] = $element->attributes->item($i)->value;
@@ -229,9 +229,9 @@ class latticecms {
       $children = lattice::config('objects', 'ext', $element);
       foreach ($children as $child)
       {
-        if ($child->tag_name == 'ext')
+        if ($child->tagName == 'ext')
         {
-          $ext[] = $child->node_value;
+          $ext[] = $child->nodeValue;
         }
       }
       $entry['extensions'] = implode(',', $ext);
@@ -288,7 +288,7 @@ class latticecms {
     {
       foreach (lattice::config('objects', 'elements/*', $object_type) as $element)
       {
-        if ($element->tag_name == 'image')
+        if ($element->tagName == 'image')
         {
           $objects = ORM::Factory('objecttype', $object_type->getAttribute('name'))->get_active_members();
           $fieldname = $element->getAttribute('name');
@@ -312,7 +312,7 @@ class latticecms {
       $object = Graph::object($id);
       foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element)
       {
-        if ($element->tag_name == 'image')
+        if ($element->tagName == 'image')
         {
           $fieldname = $element->getAttribute('name');
           if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename))

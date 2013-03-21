@@ -200,15 +200,15 @@ class Controller_Builder extends Controller {
           continue(2);
         case 'slug':
           $data[$field] = $content->node_value;
-          $data['decouple_slug_title'] = 1;
+          $data['decoupleSlugTitle'] = 1;
           continue(2);
         }
 
         // need to look up field and switch on field type 
-        $field_info = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->get_attribute('name')))->item(0);
+        $field_info = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
         if ( ! $field_info)
         {
-          throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->get_attribute('name')));
+          throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
         }
 
         // if an element is actually an object, prepare it for insert/update

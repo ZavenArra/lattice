@@ -491,11 +491,11 @@ class Model_Object extends ORM implements arrayaccess {
       if ($column == 'slug')
       {
         parent::__set('slug', Model_Object::create_slug($value, $this->id));
-        parent::__set('decouple_slug_title', 1);
+        parent::__set('decoupleSlugTitle', 1);
         return;
       } elseif ($column == 'title')
       {
-        if ( ! $this->decouple_slug_title)
+        if ( ! $this->decoupleSlugTitle)
         {
           $this->slug = Model_Object::create_slug($value, $this->id);
         }
@@ -654,7 +654,7 @@ class Model_Object extends ORM implements arrayaccess {
         switch ($field)
         {
         case 'slug':
-        case 'decouple_slug_title':
+        case 'decoupleSlugTitle':
         case 'date_added':
         case 'published':
         case 'activity':
@@ -1190,7 +1190,7 @@ class Model_Object extends ORM implements arrayaccess {
 
         // This dependency should be moved out of latticecms
         // Rootgraph should never require latticecms
-        Model_Object::resize_image($imagefilename, $new_filename, $resize->getAttribute('width'), $resize->get_attribute('height'), $resize->get_attribute('force_dimension'), $resize->get_attribute('crop'), $resize->get_attribute('aspect_follows_orientation')
+        Model_Object::resize_image($imagefilename, $new_filename, $resize->getAttribute('width'), $resize->getAttribute('height'), $resize->getAttribute('force_dimension'), $resize->getAttribute('crop'), $resize->getAttribute('aspect_follows_orientation')
         );
 
         if (isset($oldfilename) AND $new_filename != $prefix . $oldfilename)
@@ -1844,15 +1844,13 @@ class Model_Object extends ORM implements arrayaccess {
         switch ($field)
         {
         case 'slug':
-        case 'decouple_slug_title':
+        case 'decoupleSlugTitle':
           $this->$field = $data[$field];
           continue(2);
         case 'title':
           $this->$field = $data[$field];
           continue(2);
         }
-
-        // $field_info = Model_Objecttype::get_field_info_for_object_type($this->objectttype->objecttypename, $field)
 
         $field_infoXPath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field);
         $field_info = lattice::config('objects', $field_infoXPath)->item(0);
@@ -1865,10 +1863,7 @@ class Model_Object extends ORM implements arrayaccess {
         {
         case 'file':
         case 'image':
-          // need to get the file out of the FILES array
-
-          //  Kohana::$log->add(Log::ERROR, var_export($_POST, TRUE));
-          //  Kohana::$log->add(Log::ERROR, var_export($_FILES, TRUE));
+          // Get the file out of the FILES array
 
           if (isset($_FILES[$field]))
           {

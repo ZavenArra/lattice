@@ -626,7 +626,7 @@ initList: function(){
 		if( this.allowChildSort && this.oldSort != newOrder ){
 			clearInterval( this.submitDelay );
 			this.submitDelay = null;
-     	var request = new Request.JSON( {url: this.getSubmitSortOrderURL()} ).post( {sortOrder: newOrder} );
+     	var request = new Request.JSON( {url: this.getSubmitSortOrderURL()} ).post( {sort_order: newOrder} );
 			this.oldSort = newOrder;
 			return request;
 		}
@@ -1170,7 +1170,7 @@ lattice.modules.LatticeAssociator = new Class({
 		if( this.oldSort != newOrder ){
 			clearInterval( this.submitDelay );
 			this.submitDelay = null;
-     	var request = new Request.JSON( {url: this.getSubmitSortOrderURL( this.getObjectId(), this.element.get('data-lattice') ) } ).post( {sortOrder: newOrder} );
+     	var request = new Request.JSON( {url: this.getSubmitSortOrderURL( this.getObjectId(), this.element.get('data-lattice') ) } ).post( {sort_order: newOrder} );
 			this.oldSort = newOrder;
 			return request;
 		}

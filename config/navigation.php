@@ -8,7 +8,7 @@ $config['nav_data_fields']['object'] = array(
 		'published'=>'published',
 	);
 
-$config['nav_data_fields']['objectType'] = array(
+$config['nav_data_fields']['object_type'] = array(
 		'nodeType',
 		'contentType',
 		'allowDelete',

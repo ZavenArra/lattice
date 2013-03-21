@@ -90,7 +90,7 @@ lattice.modules.CMS = new Class({
 
 	getSaveFieldURL: function( controller, action ){
 		controller = ( controller )? controller : 'cms';
-		action = ( action )? action : 'savefield';
+		action = ( action )? action : 'save_field';
 		var url = lattice.util.getBaseURL() + "ajax/data/" + controller + "/"+ action + "/"+ this.getObjectId();
 		return url;
 	},	
@@ -319,7 +319,7 @@ lattice.modules.CMS = new Class({
 	},
 
 	saveTierSortRequest: function( newOrder, objectId ){
-		return new Request.JSON( { url: this.getSubmitSortOrderURL(objectId) } ).post( { sortOrder: newOrder });
+		return new Request.JSON( { url: this.getSubmitSortOrderURL(objectId) } ).post( { sort_order: newOrder });
 	},
 
 	addObjectRequest: function( parentId, templateId, nodeProperties, callback ){

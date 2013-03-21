@@ -28,9 +28,9 @@ class Navigation {
     {
       $node_info[$field] = $object->objecttype->$field;
     }
-    if ( ! count($node_info['addable_objects']))
+    if ( ! count($node_info['addableObjects']))
     {
-      unset($node_info['addable_objects']);
+      unset($node_info['addableObjects']);
     }
 
 

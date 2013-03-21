@@ -1,6 +1,6 @@
 <div class="objectTitle">	
 	<?
-	if ($allowTitleEdit){
+	if ($allow_title_edit){
 		$elementArray = array( 'type'=>'text', 'name'=>'title', 'isMultiline'=>'false', 'label'=>'Title', 'class'=>'grid_7', 'tag'=>'p', 'labelClass'=>'hidden' );
 		echo latticeui::buildUIElement( $elementArray, $title );
 	}else{
