@@ -144,8 +144,15 @@ class latticeview {
      * Function: view()
      * Returns the rendered view for the current view model
      */
-    public function view()
-    {
+    public function view($set_view = null){
+      if($set_view){
+        $this->view = new View($set_view);
+      }
+
+      foreach ($this->data as $key => $value) {
+        $this->view->$key = $value;
+      }
+
       return $this->view;
     }
 
@@ -223,12 +230,6 @@ class latticeview {
       $view_content = $this->get_view_content($view_name, $this->object);
 
       $this->data = $view_content;
-
-      foreach ($view_content as $key => $value)
-      {
-        $view->$key = $value;
-      }
-
       $this->view = $view;
 
     }
