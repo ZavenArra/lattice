@@ -1,6 +1,6 @@
 <? $keys = array_keys($content);?>
 <li title="<?=$content['title']; ?>" class="node <?=$content['nodeType'];?> <?=$content['contentType'];?> clearFix" id="node_<?=$content['id'];?>">
-  <h5><?=$content['title'];?></h5>
+  <h5><?echo substr($content['title'], 0, 12);?></h5>
   <?if ( ( isset($content['allowTogglePublish']) && $content['allowTogglePublish']=='true' ) 
     || ( isset( $content['allowDelete'] ) && $content['allowDelete']=='true' ) ):?>
   <div class="methods">
