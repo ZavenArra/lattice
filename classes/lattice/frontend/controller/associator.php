@@ -1,6 +1,6 @@
 <?php
 
-Class Kohana_Lattice_Controller_Associator extends Controller_Lattice {
+Class Lattice_Frontend_Controller_Associator extends Controller_Lattice {
 
   public function action_associate($parent_id, $object_id, $lattice)
   {

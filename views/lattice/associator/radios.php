@@ -3,7 +3,7 @@
 	<div data-field="<?=$lattice;?>">
 		<label class="groupLabel"><?=$label;?></label>
 		<fieldset class="radios">
-		<?foreach( Associator_Radios::makePool($associated, $pool) as $view):?>
+		<?foreach( Frontend_Associator_Radios::makePool($associated, $pool) as $view):?>
 			<?=$view->render();?>
 		<?endforeach;?>
 		</fieldset>
