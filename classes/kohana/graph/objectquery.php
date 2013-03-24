@@ -1,6 +1,6 @@
 <?php
 
-class Kohana_Graph_Objectquery {
+class Kohana_Graph_Core_Objectquery {
 
   public $attributes;
 
@@ -31,7 +31,7 @@ class Kohana_Graph_Objectquery {
   public function run($parent_id = NULL)
   {
 
-    $objects = Graph::object();
+    $objects = Graph_Core::object();
 
     // apply slug filter
     if ($this->attributes['slug'])
@@ -48,7 +48,7 @@ class Kohana_Graph_Objectquery {
         {
           $objects->lattice_children_filter($parent_id);
         } else {
-          $from = Graph::object($from);
+          $from = Graph_Core::object($from);
           $objects->lattice_children_filter($from->id);
         }
         $objects->order_by('objectrelationships.sortorder');

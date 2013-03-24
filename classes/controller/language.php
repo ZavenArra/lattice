@@ -17,7 +17,7 @@ Class Controller_Language extends Controller {
 
   public function action_language_controls()
   {
-    $languages = Graph::languages();
+    $languages = Graph_Core::languages();
     $view = new View('language_controls');
     $view->languages = $languages;
     $this->response->body($view->render());

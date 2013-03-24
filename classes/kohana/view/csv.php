@@ -35,7 +35,7 @@ class Kohana_View_Csv {
     $csv .= "\n";
 
     $il8n_objects = array();
-    $languages = Graph::languages();
+    $languages = Graph_Core::languages();
     if (count($languages))
     {
       foreach ($languages as $language)
@@ -63,7 +63,7 @@ class Kohana_View_Csv {
 
       // cycle through all languages for each field
 
-      // $languages = Graph::languages();
+      // $languages = Graph_Core::languages();
       // foreach ($languages as $translation_language)
       {
 

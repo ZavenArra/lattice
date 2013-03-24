@@ -49,7 +49,7 @@ Class Kohana_Associator_Checkboxes {
   public function __construct($parent_id, $lattice, $filters=NULL, $load_pool=NULL)
   {
     $this->parent_id = $parent_id;
-    $this->parent = Graph::object($this->parent_id);
+    $this->parent = Graph_Core::object($this->parent_id);
     $this->lattice = $lattice;
     $this->filters = $filters; 
 
@@ -68,11 +68,11 @@ Class Kohana_Associator_Checkboxes {
     {
       foreach ($filters as $filter)
       {
-        $objects = Graph::object();
+        $objects = Graph_Core::object();
 
         if (isset($filter['from']) AND $filter['from'])
         {
-          $from = Graph::object($filter['from']);
+          $from = Graph_Core::object($filter['from']);
           ($filter['lattice']) ? $lattice = $filter['lattice'] : $lattice = 'lattice';
           $objects = $from->lattice_children_query($lattice);
         }
@@ -89,7 +89,7 @@ Class Kohana_Associator_Checkboxes {
           $t = ORM::Factory('objecttype', $filter['object_type_name']);
           if ( ! $t->loaded())
           {
-            Graph::configure_object_type($filter['object_type_name']);
+            Graph_Core::configure_object_type($filter['object_type_name']);
             $t = ORM::Factory('objecttype', $filter['object_type_name']);
             if ( ! $t->loaded())
             {
@@ -116,7 +116,7 @@ Class Kohana_Associator_Checkboxes {
           $objects = call_user_func($callback, $objects, $parent_id);
         }
 
-        $objects->where('objects.language_id', '=', Graph::default_language());
+        $objects->where('objects.language_id', '=', Graph_Core::default_language());
         $objects->published_filter();
         $objects->limit($this->max_pool_size);
 
@@ -132,9 +132,9 @@ Class Kohana_Associator_Checkboxes {
     } elseif ( ! is_array($load_pool))
     {
 
-      $objects = Graph::object()
+      $objects = Graph_Core::object()
         ->where('id', '!=', $parent_id)
-        ->where('objects.language_id', '=', Graph::default_language())
+        ->where('objects.language_id', '=', Graph_Core::default_language())
         ->published_filter()
         ->limit($this->max_pool_size)
         ->find_all();

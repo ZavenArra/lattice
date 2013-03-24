@@ -16,7 +16,7 @@ class Kohana_Navigation {
   {
     if ( ! strstr('Lattice_Object', get_class($object)))
     {
-      $object = Graph::object($object);
+      $object = Graph_Core::object($object);
     }
 
     $node_info = array();
@@ -60,7 +60,7 @@ class Kohana_Navigation {
     */
   public static function get_node_info_by_id($id)
   {
-    $object = Graph::object($id);
+    $object = Graph_Core::object($id);
     $node_info = Navigation::get_node_info($object);
     return $node_info;
   }

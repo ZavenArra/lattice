@@ -5,7 +5,7 @@ class Controller_CMS extends Lattice_CMS {
   public function get_root_object()
   {
     $root_object_type = ORM::factory('objecttype')->where('objectTypeName', '=', Kohana::config('cms.graph_root_node'))->find();
-    $root_object = Graph::object()->object_type_filter($root_object_type->id)->find();
+    $root_object = Graph_Core::object()->object_type_filter($root_object_type->id)->find();
     return $root_object;
 
   }
@@ -14,7 +14,7 @@ class Controller_CMS extends Lattice_CMS {
   public function cms_add_object($parent_id, $object_type_id, $data)
   {
 
-    $new_id = Graph::object($parent_id)->add_object($object_type_id, $data);
+    $new_id = Graph_Core::object($parent_id)->add_object($object_type_id, $data);
     return $new_id;
 
   }

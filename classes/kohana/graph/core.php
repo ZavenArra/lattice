@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Graph class - fundamental entry point into the data 'graph'
+ * Graph_Core class - fundamental entry point into the data 'graph'
  *
  * @author deepwinter1
  */
 /* @package Lattice */
-class Kohana_Graph {
+class Kohana_Graph_Core {
 
   public static $mediapath; 
 
@@ -41,8 +41,8 @@ class Kohana_Graph {
   public static function create_object($object_type_name, $key=NULL)
   {
     $key ? $data = array('slug'=>$key) : $data=array(); 
-    $object_id = Graph::instance()->add_object($object_type_name, $data);
-    return Graph::object($object_id);
+    $object_id = Graph_Core::instance()->add_object($object_type_name, $data);
+    return Graph_Core::object($object_id);
 
   }
 
@@ -216,14 +216,14 @@ class Kohana_Graph {
   public static function add_root_node($root_node_object_type)
   {
     // $this->driver->get_object_type_object($roo_node_object_type)
-    Graph::object()->add_object($root_node_object_type);
+    Graph_Core::object()->add_object($root_node_object_type);
   }
 
   public static function get_root_node($root_node_object_type)
   {
     // $this->driver->get_object_type_object($roo_node_object_type)
     $object_type = ORM::Factory('objecttype')->where('objecttypename', '=', $root_node_object_type)->find();
-    $object =  Graph::object()->object_type_filter($object_type->objecttypename)->find();
+    $object =  Graph_Core::object()->object_type_filter($object_type->objecttypename)->find();
     if ( ! $object->loaded())
     {
       throw new Kohana_Exception('Root node not found: '.$root_node_object_type);
@@ -238,7 +238,7 @@ class Kohana_Graph {
       ->find();
 
     $object_relationship = ORM::Factory('objectrelationship')
-      ->where('lattice_id', '=', Graph::lattice($lattice_id))
+      ->where('lattice_id', '=', Graph_Core::lattice($lattice_id))
       ->where('object_id', '=', 0)
       ->join('objects')->on('objects.id', '=', 'objectrelationships.connectedobject_id' )
       ->where('language_id', '=', $language->id)

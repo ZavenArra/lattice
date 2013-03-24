@@ -66,9 +66,9 @@ abstract class Kohana_Lattice_CMSInterface extends Controller_Layout {
     $thumb_src = NULL;
     if ($file->uithumb->filename)
     {
-      if (file_exists(Graph::mediapath() . $file->uithumb->filename))
+      if (file_exists(Graph_Core::mediapath() . $file->uithumb->filename))
       {
-        $resultpath = Graph::mediapath() . $file->uithumb->filename;
+        $resultpath = Graph_Core::mediapath() . $file->uithumb->filename;
         $thumb_src = $resultpath; // Kohana::config('cms.basemediapath') . $file->uithumb->fullpath;
       }
     }
@@ -86,8 +86,8 @@ abstract class Kohana_Lattice_CMSInterface extends Controller_Layout {
   public function action_clear_field($object_id, $field)
   {
 
-    $object = Graph::object($object_id);
-    if (Graph::is_file_model($object->$field) AND $object->$field->loaded())
+    $object = Graph_Core::object($object_id);
+    if (Graph_Core::is_file_model($object->$field) AND $object->$field->loaded())
     {
       $file = $object->$field;
       $file->delete();
@@ -141,7 +141,7 @@ abstract class Kohana_Lattice_CMSInterface extends Controller_Layout {
     $field = $_POST['field'];
 
 
-    $object = Graph::object($id);
+    $object = Graph_Core::object($id);
     $object->$field = $_POST['value'];
     $object->save();
 
@@ -151,7 +151,7 @@ abstract class Kohana_Lattice_CMSInterface extends Controller_Layout {
       $return_data['messages'] = $object->get_messages();
     }
 
-    $object = Graph::object($id);
+    $object = Graph_Core::object($id);
     $value = $object->$field;
 
     $config = $object->get_element_config($field);
@@ -167,7 +167,7 @@ abstract class Kohana_Lattice_CMSInterface extends Controller_Layout {
 
   public function action_move($object_id, $new_parent_id, $lattice='lattice', $old_parent_id=NULL)
   {
-    $object = Graph::object($object_id);
+    $object = Graph_Core::object($object_id);
     $object->move($new_parent_id, $lattice, $old_parent_id);
     $this->response->data(array('new_parent_id', $object->get_lattice_parent($lattice)->id));
   }
@@ -207,7 +207,7 @@ abstract class Kohana_Lattice_CMSInterface extends Controller_Layout {
 
   public function action_toggle_publish($id)
   {
-    $object = Graph::object($id);
+    $object = Graph_Core::object($id);
     if ($object->published == 0)
     {
       $object->published = 1;
@@ -241,20 +241,20 @@ abstract class Kohana_Lattice_CMSInterface extends Controller_Layout {
 
   public function action_add_tag($id)
   {
-    $object = Graph::object($id);
+    $object = Graph_Core::object($id);
     $object->add_tag($_POST['tag']);
   }
 
   public function action_remove_tag($id)
   {
-    $object = Graph::object($id);
+    $object = Graph_Core::object($id);
     $object->remove_tag($_POST['tag']);
   }
 
   public function action_get_tags($id)
   {
 
-    $tags = Graph::object($id)->get_tag_strings();
+    $tags = Graph_Core::object($id)->get_tag_strings();
     $this->response->data(array('tags' => $tags));
   }
 
@@ -265,7 +265,7 @@ abstract class Kohana_Lattice_CMSInterface extends Controller_Layout {
     */
   public function action_remove_object($id)
   {
-    $object = Graph::object($id);
+    $object = Graph_Core::object($id);
     $object->deactivate($id);
 
     $view = new View('lattice_cms_undelete');
@@ -282,21 +282,21 @@ abstract class Kohana_Lattice_CMSInterface extends Controller_Layout {
     */
   public function action_undelete($id)
   {
-    $object = Graph::object($id);
+    $object = Graph_Core::object($id);
     $object->reactivate($id);
     $this->response->data(array('undeleted' => TRUE));
   }
 
   public function action_associate($parent_id, $object_id, $lattice)
   {
-    $parent = Graph::object($parent_id);
+    $parent = Graph_Core::object($parent_id);
     $parent->add_lattice_relationship($objectid, $lattice);
     $meta_object_type = $parent->get_meta_object_type($lattice);
   }
 
   public function action_disassociate($parent_id, $object_id, $lattice)
   {
-    Graph::object($parent_id)->remove_lattice_relationship($objectid, $lattice);
+    Graph_Core::object($parent_id)->remove_lattice_relationship($objectid, $lattice);
   }
 
   public function action_toggle_user_association($object_id)
@@ -369,7 +369,7 @@ abstract class Kohana_Lattice_CMSInterface extends Controller_Layout {
 
   public function action_get_children_paged($id,$page_num)
   {
-    $object = Graph::object($id);
+    $object = Graph_Core::object($id);
     $object->set_page_num($page_num);
     //      $object->set_items_per_page(2);
     $ret = $object->lattice_children_filter_paged($id,"lattice");

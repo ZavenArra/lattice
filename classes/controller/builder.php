@@ -79,8 +79,8 @@ class Controller_Builder extends Controller {
     ob_flush();
 
     // immediately reinitialize the graph
-    Graph::configure_object_type($this->root_node_object_type, TRUE);
-    Graph::add_root_node($this->root_node_object_type);
+    Graph_Core::configure_object_type($this->root_node_object_type, TRUE);
+    Graph_Core::add_root_node($this->root_node_object_type);
 
     if ($xml_file != 'data')
     {
@@ -117,14 +117,14 @@ class Controller_Builder extends Controller {
     $lattices = lattice::config($xml_file, 'relationships/lattice');
     foreach ($lattices as $latticeDOM)
     {
-      $lattice = Graph::lattice($latticeDOM->getAttribute('name'));
+      $lattice = Graph_Core::lattice($latticeDOM->getAttribute('name'));
       $relationships = lattice::config($xml_file, 'relationship', $latticeDOM);
       foreach ($relationships as $relationship)
       {
         $parent_slug = $relationship->getAttribute('parent');  
         $child_slug = $relationship->getAttribute('child');  
         // echo 'Adding lattice relationship';
-        $parent = Graph::object($parent_slug)->add_lattice_relationship($lattice, $child_slug);
+        $parent = Graph_Core::object($parent_slug)->add_lattice_relationship($lattice, $child_slug);
       }
       unset($relationships);
     }
@@ -141,13 +141,13 @@ class Controller_Builder extends Controller {
   public function action_add_data($xml_file, $secondary_root_node_object_type=NULL)
   {
 
-    if ($secondary_root_node_object_type AND ! $parent_id = Graph::get_root_node($secondary_root_node_object_type))
+    if ($secondary_root_node_object_type AND ! $parent_id = Graph_Core::get_root_node($secondary_root_node_object_type))
     {
-      Graph::configure_object_type($secondary_root_node_object_type);
-      Graph::add_root_node($secondary_root_node_object_type);
-      $parent_object = Graph::get_root_node($secondary_root_node_object_type);
+      Graph_Core::configure_object_type($secondary_root_node_object_type);
+      Graph_Core::add_root_node($secondary_root_node_object_type);
+      $parent_object = Graph_Core::get_root_node($secondary_root_node_object_type);
     } else {
-      $parent_object = Graph::get_root_node($this->root_node_object_type);
+      $parent_object = Graph_Core::get_root_node($this->root_node_object_type);
     }
 
     $xml_file = 'application/export/'.$xml_file.'/'.$xml_file.'.xml';
@@ -165,9 +165,9 @@ class Controller_Builder extends Controller {
   {
     if ($parent_id == NULL)
     {
-      $parent_object = Graph::get_root_node($this->root_node_object_type);
+      $parent_object = Graph_Core::get_root_node($this->root_node_object_type);
     } else {
-      $parent_object = Graph::object($parent_id);
+      $parent_object = Graph_Core::object($parent_id);
     }
 
 
@@ -181,7 +181,7 @@ class Controller_Builder extends Controller {
       }
 
 
-      $object = Graph::instance();
+      $object = Graph_Core::instance();
       $object_type = ORM::Factory('objecttype', $item->getAttribute('objectTypeName'));
 
       $data = array();
@@ -236,7 +236,7 @@ class Controller_Builder extends Controller {
           $savename = Model_Object::make_file_save_name($path_parts['basename']);
           if (file_exists($content->nodeValue))
           {
-            copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $content->nodeValue, Graph::mediapath($savename) . $savename);
+            copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $content->nodeValue, Graph_Core::mediapath($savename) . $savename);
             $data[$field] = $savename;
           } else {
             if ($content->nodeValue)
@@ -258,7 +258,7 @@ class Controller_Builder extends Controller {
       $component = FALSE;
       if (isset($data['title']) AND $data['title'])
       {
-        $preexisting_object = Graph::object()
+        $preexisting_object = Graph_Core::object()
           ->lattice_children_filter($parent_object->id)
           ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
           ->where('title', '=', $data['title'])
@@ -274,7 +274,7 @@ class Controller_Builder extends Controller {
       // echo sprintf('//objectType[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename);
       foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename)) as $list_container_type)
       {
-        $preexisting_object = Graph::object()
+        $preexisting_object = Graph_Core::object()
           ->lattice_children_filter($parent_object->id)
           ->object_type_filter($list_container_type->getAttribute('name'))
           ->find();
@@ -303,7 +303,7 @@ class Controller_Builder extends Controller {
       // and now update with element_objects;
       if (count($clusters_data))
       {
-        $object = Graph::object($object_id);
+        $object = Graph_Core::object($object_id);
         // echo "Updating clusters\n";
         $object->update_with_array($clusters_data);
       }
@@ -319,7 +319,7 @@ class Controller_Builder extends Controller {
       foreach ($lists as $list)
       {
         // find the container
-        $container = Graph::object()
+        $container = Graph_Core::object()
           ->lattice_children_filter($object_id)
           ->object_type_filter($list->getAttribute('name'))
           ->find();

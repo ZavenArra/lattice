@@ -184,7 +184,7 @@ class Model_Objecttype extends ORM {
     public function get_published_members($limit=NULL)
     {
 
-      $o = Graph::object()
+      $o = Graph_Core::object()
         ->published_filter()
         ->object_type_filter($this->object_type_name);
       if ($limit)
@@ -211,7 +211,7 @@ class Model_Objecttype extends ORM {
         return array();
       }
 
-      $o = Graph::object()
+      $o = Graph_Core::object()
         ->active_filter()
         ->object_type_filter($this->objecttypename);
       if ($limit)

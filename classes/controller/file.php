@@ -16,12 +16,12 @@ class Controller_File extends Controller{
 
   public function action_download($file_id)
   {
-    $file = Graph::file($file_id);
+    $file = Graph_Core::file($file_id);
 
     // check access
     // don't have object wise access checking at this point
 
-    $filename = Graph::media_path().$file->filename;
+    $filename = Graph_Core::media_path().$file->filename;
     $ctype = $file->mime;
 
     if ( ! file_exists($filename))
@@ -48,9 +48,9 @@ class Controller_File extends Controller{
 
   public function action_directlink($file_id)
   {
-    $file = Graph::file($file_id);
+    $file = Graph_Core::file($file_id);
 
-    $filename = Graph::media_path().$file->filename;
+    $filename = Graph_Core::media_path().$file->filename;
     $ctype = $file->mime;
 
     if ( ! file_exists($filename))
