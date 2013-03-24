@@ -1,3 +1,3 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 
-class View_Csv extends Kohana_View_Csv { }
+class Cms_View_Csv extends Lattice_Cms_View_Csv { }

@@ -90,7 +90,7 @@ Class Controller_CSV extends Controller {
           $object = Graph_Core::object()->set_object_type($addable_object_type['object_type_id']);
 
 
-          $csv_view = new View_Csv($this->level, $object);
+          $csv_view = new Cms_View_Csv($this->level, $object);
           $this->csv_output .= $csv_view->render();
 
 

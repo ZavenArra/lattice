@@ -1,6 +1,6 @@
 <?php
 
-class Kohana_View_Csv_Container {
+class Lattice_Cms_View_Csv_Container {
 
   private $_indent = 0;
   private $_object = 0;

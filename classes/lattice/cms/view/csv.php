@@ -10,7 +10,7 @@
  *
  * @author deepwinter1
  */
-class Kohana_View_Csv {
+class Lattice_Cms_View_Csv {
 
   private $_indent = 0;
   private $_object = 0;
@@ -117,7 +117,7 @@ class Kohana_View_Csv {
               continue;
             }
 
-            $csv_view = new View_Csv($this->_indent + 1, $data_item);
+            $csv_view = new Cms_View_Csv($this->_indent + 1, $data_item);
             $csv .= $csv_view->render();
             $csv .= "\n";
           }
