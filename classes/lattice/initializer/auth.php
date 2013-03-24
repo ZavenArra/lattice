@@ -42,7 +42,7 @@ class Lattice_Initializer_Auth {
       $user->username = 'admin';
       $user->firstname = 'Admin';
       $user->lastname = 'Admin';
-      $password = Utility_Auth::random_password(); 
+      $password = Core_Utility_Auth::random_password(); 
       $user->password = $password;
       $user->email = 'PLACEHOLDER_' . rand() . '@placeholder.com';
       $user->save();

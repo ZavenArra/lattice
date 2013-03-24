@@ -1,3 +1,3 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 
-class Utility_Auth extends Kohana_Utility_Auth { }
+class Core_Utility_Auth extends Lattice_Core_Utility_Auth { }

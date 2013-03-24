@@ -18,7 +18,7 @@ function make_seed()
 }
 
 
-class Kohana_Utility_Auth {
+class Lattice_Core_Utility_Auth {
 
   public static function random_password()
   {

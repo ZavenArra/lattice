@@ -200,9 +200,9 @@ Class Controller_Custom_reel extends Controller_Layout {
   {
     $user = ORM::factory($this->table);
     $user->status = 'INCOMPLETE';
-    $user->username = 'PLACEHOLDER_'.Utility_Auth::random_password();;
-    $user->password = Utility_Auth::random_password();
-    $user->email = 'PLACEHOLDER'.Utility_Auth::random_password().'@madeofpeople.org';
+    $user->username = 'PLACEHOLDER_'.Core_Utility_Auth::random_password();;
+    $user->password = Core_Utility_Auth::random_password();
+    $user->email = 'PLACEHOLDER'.Core_Utility_Auth::random_password().'@madeofpeople.org';
     $user->save();
 
     // add the login role
