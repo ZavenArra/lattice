@@ -5,7 +5,7 @@ Class Kohana_Initializer_Lattice {
   public function initialize()
   {
     try {
-      Graph::object();
+      Graph_Core::object();
     } catch (Exception $e)
     {
       if ($e->getCode() == 1146)

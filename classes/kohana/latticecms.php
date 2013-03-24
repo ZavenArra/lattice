@@ -294,7 +294,7 @@ class Kohana_Latticecms {
           $fieldname = $element->getAttribute('name');
           foreach ($objects as $object)
           {
-            if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename))
+            if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph_Core::mediapath() . $object->$fieldname->filename))
             {
               $uiresizes = Kohana::config('lattice_cms.uiresizes');
               $object->process_image($object->$fieldname->filename, $fieldname, $uiresizes);
@@ -309,13 +309,13 @@ class Kohana_Latticecms {
   {
     foreach ($object_ids as $id)
     {
-      $object = Graph::object($id);
+      $object = Graph_Core::object($id);
       foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element)
       {
         if ($element->tagName == 'image')
         {
           $fieldname = $element->getAttribute('name');
-          if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph::mediapath() . $object->$fieldname->filename))
+          if (is_object($object->$fieldname) AND $object->$fieldname->filename AND file_exists(Graph_Core::mediapath() . $object->$fieldname->filename))
           {
             $uiresizes = Kohana::config('lattice_cms.uiresizes');
             $object->process_image($object->$fieldname->filename, $fieldname, $uiresizes);
@@ -330,7 +330,7 @@ class Kohana_Latticecms {
   public static function save_http_post_file($objectid, $field, $post_file_vars)
   {
     Kohana::$log->add(Log::ERROR, 'save uploaded');
-    $object = Graph::object($objectid);
+    $object = Graph_Core::object($objectid);
     // check the file extension
     $filename = $post_file_vars['name'];
     $ext = substr(strrchr($filename, '.'), 1);
@@ -374,7 +374,7 @@ class Kohana_Latticecms {
     $parent_candidates = array();
     foreach ($object_types as $object_type)
     {
-      $objects = Graph::object()->object_type_filter($object_type)->active_filter()->find_all();
+      $objects = Graph_Core::object()->object_type_filter($object_type)->active_filter()->find_all();
       foreach ($objects as $object)
       {
         $title = $object->title;

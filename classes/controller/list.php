@@ -59,7 +59,7 @@ class Controller_List extends Lattice_CMSInterface {
     {
       $parent_id = $list_object_id_or_parent_id;
 
-      $list_container_object = Graph::object($parent_id)->$family;
+      $list_container_object = Graph_Core::object($parent_id)->$family;
 
 
       if ( ! $list_container_object->loaded())
@@ -195,7 +195,7 @@ class Controller_List extends Lattice_CMSInterface {
     // $this->response->body( $this->cms_get_node_html($new_id));
 
 
-    $object = Graph::object($new_id);
+    $object = Graph_Core::object($new_id);
 
     /*Cludge to bypass echoing placeholders necessary to pass validation*/
     //  $item->username = NULL;
