@@ -1,6 +1,6 @@
 <?php
 
-class Controller_CMS extends Lattice_CMS {
+class Controller_CMS extends Cms_Core {
 
   public function get_root_object()
   {

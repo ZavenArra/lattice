@@ -1,3 +1,3 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 
-abstract class Graph_Core extends Kohana_Graph_Core { }
+class Graph_Core extends Lattice_Graph_Core { }

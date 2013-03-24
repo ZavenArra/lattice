@@ -12,7 +12,7 @@
 
  */
 
-class Controller_List extends Lattice_CMSInterface {
+class Controller_List extends Cms_Interface {
   /*
    *  Variable: object_id
    *  static int the global object id when operating within the CMS submodules get the object id
