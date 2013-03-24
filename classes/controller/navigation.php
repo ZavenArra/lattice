@@ -56,7 +56,7 @@ class Controller_Navigation extends Controller_Lattice{
         $roles = $child->roles->find_all();
         foreach ($roles as $role)
         {
-          if ( ! latticeutil::check_access($role->name))
+          if ( ! cms_util::check_access($role->name))
           {
             continue (2);
           } 
@@ -112,7 +112,7 @@ class Controller_Navigation extends Controller_Lattice{
         {
           $controller = $m->getAttribute('controller');
           $roles = Kohana::config(strtolower($controller).'.authrole', FALSE, FALSE); 
-          $access_granted = latticeutil::check_access($roles);
+          $access_granted = cms_util::check_access($roles);
           if ( ! $access_granted)
           {
             continue;
@@ -192,7 +192,7 @@ class Controller_Navigation extends Controller_Lattice{
     $tier_methods_drawer = new View('tier_methods_drawer');
     $addable_objects = $parent->objecttype->addable_objects;
 
-    if (latticeutil::check_access('superuser'))
+    if (cms_util::check_access('superuser'))
     {
       foreach ($this->get_object_types() as $object_type)
       {

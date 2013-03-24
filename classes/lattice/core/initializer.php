@@ -1,6 +1,6 @@
 <?php
 
-Class Lattice_Cms_Initializer {
+Class Lattice_Core_Initializer {
 
   protected static $messages = array();
   protected static $problems = array(); // not yet implemented

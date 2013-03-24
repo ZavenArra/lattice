@@ -6,7 +6,7 @@
  * @author Matthew Shultz
  * @package Lattice
  */
-abstract class Kohana_Lattice_CMSInterface extends Controller_Layout {
+abstract class Lattice_Core_CMSInterface extends Controller_Layout {
 
 
   public function __construct($request, $response)

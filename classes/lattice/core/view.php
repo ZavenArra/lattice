@@ -7,13 +7,13 @@
 
 
 /**
- * Description of latticeviews
+ * Description of core_views
  *
  * @author deepwinter1
  */
 /* @package Lattice */
 
-class Kohana_Latticeview {
+class Lattice_Core_View {
 
   private static $initial_object = NULL;
 
@@ -31,7 +31,7 @@ class Kohana_Latticeview {
       $class_name = 'View_model_'.$object_type_name;
       $view_model = new $class_name($object_id_or_slug);
     } else {
-      $view_model = new latticeview($object_id_or_slug);
+      $view_model = new core_view($object_id_or_slug);
     }
     return $view_model;
   }
@@ -281,7 +281,7 @@ class Kohana_Latticeview {
       {
         if ( ! $object->loaded())
         {
-          throw new Kohana_Exception('latticeviews::get_view_content : Default view callled with no slug');
+          throw new Kohana_Exception('core_views::get_view_content : Default view callled with no slug');
         }
         $data['content']['main'] = $object->get_page_content();
         return $data;
@@ -298,7 +298,7 @@ class Kohana_Latticeview {
       {
         if ($object->loaded() != 1)
         {
-          throw new Kohana_Exception('latticeviews::get_view_content : view called with slug: :slug, but no object to load',
+          throw new Kohana_Exception('core_views::get_view_content : view called with slug: :slug, but no object to load',
             array(
               ':slug'=>$slug,
             )

@@ -18,7 +18,7 @@ class Kohana_View_Csv_Container {
   {
 
     $object_type_line = array_pad(array($this->_object_type_name), -1 - $this->_indent, '');
-    $csv = latticeutil::array_to_csv($object_type_line, ',');
+    $csv = cms_util::array_to_csv($object_type_line, ',');
     $csv .= "\n";
 
     return $csv;

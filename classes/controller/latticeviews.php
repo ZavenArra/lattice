@@ -5,7 +5,7 @@
  * using slugs or ids to navigate between objects.  Works hand in
  * hand with the slugs hook
  */
-Class Controller_Latticeviews extends Controller_Layout{
+Class Controller_Core_Views extends Controller_Layout{
 
   protected $_actions_that_get_layout = array(
     'get_view',
@@ -27,16 +27,16 @@ Class Controller_Latticeviews extends Controller_Layout{
   /*
    * Function: after
    * Calculate layout wrapping for slug
-   * Setting latticeviews.layouts.$slug to a layout name will load slug within that layout
+   * Setting core_views.layouts.$slug to a layout name will load slug within that layout
    * if there is no view file available for that name, no wrapping occurs
    */
   public function after()
   {
     if ($this->request == Request::initial() )
     {
-      $layout_for_slug = Kohana::config('latticeviews.layouts.'.self::$slug);
+      $layout_for_slug = Kohana::config('core_views.layouts.'.self::$slug);
       $object = Graph_Core::object(self::$slug);
-      $layout_for_object_type = Kohana::config('latticeviews.layouts_for_object_type.'.$object->objecttypename);
+      $layout_for_object_type = Kohana::config('core_views.layouts_for_object_type.'.$object->objecttypename);
       if ($layout_for_slug)
       {
         if (Kohana::find_file('views/', $layout_for_slug))
@@ -78,8 +78,8 @@ Class Controller_Latticeviews extends Controller_Layout{
   public function action_get_view($object_id_or_slug=NULL)
   {
 
-    $access = Kohana::config('latticeviews.access.'.$object_id_or_slug);
-    if ( ! latticeutil::check_access($access))
+    $access = Kohana::config('core_views.access.'.$object_id_or_slug);
+    if ( ! cms_util::check_access($access))
     {
       Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),FALSE).'/'.Request::initial()->uri());
     }
@@ -101,7 +101,7 @@ Class Controller_Latticeviews extends Controller_Layout{
       $object_id_or_slug = $translated_object->id;
     }
 
-    $this->view_model = latticeview::Factory($object_id_or_slug);
+    $this->view_model = core_view::Factory($object_id_or_slug);
 
     // possible hook for processing content	
 
@@ -115,7 +115,7 @@ Class Controller_Latticeviews extends Controller_Layout{
   public function action_get_virtual_view($view_name)
   {
 
-    $this->view = new latticeview($view_name);
+    $this->view = new core_view($view_name);
 
     // possible hook for processing content	
 

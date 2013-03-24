@@ -10,7 +10,7 @@
  *
  * @author deepwinter
  */
-class Kohana_Initializer_Latticeauth {
+class Lattice_Initializer_Auth {
 
   public function initialize()
   {

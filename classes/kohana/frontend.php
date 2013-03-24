@@ -15,7 +15,7 @@ class Kohana_Frontend {
         $size = 'original';	
       }
       echo $indent."<?phpif (is_object({$prefix}['$field'])):?>\n";
-      echo $indent." <img id=\"$field\" src=\"<?php=latticeurl::site({$prefix}['$field']->{$size}->fullpath);?>\" width=\"<?php={$prefix}['$field']->{$size}->width;?>\" height=\"<?php={$prefix}['$field']->{$size}->height;?>\" alt=\"<?php={$prefix}['$field']->{$size}->filename;?>\" />\n";
+      echo $indent." <img id=\"$field\" src=\"<?php=core_url::site({$prefix}['$field']->{$size}->fullpath);?>\" width=\"<?php={$prefix}['$field']->{$size}->width;?>\" height=\"<?php={$prefix}['$field']->{$size}->height;?>\" alt=\"<?php={$prefix}['$field']->{$size}->filename;?>\" />\n";
       echo $indent."<?phpendif;?>\n\n";
       break;
     case 'file':

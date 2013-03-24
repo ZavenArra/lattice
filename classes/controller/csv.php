@@ -9,7 +9,7 @@ Class Controller_CSV extends Controller {
   public function __construct($request, $response)
   {
     parent::__construct($request, $response);
-    if ( ! latticeutil::check_role_access('superuser')  AND PHP_SAPI != 'cli' )
+    if ( ! cms_util::check_role_access('superuser')  AND PHP_SAPI != 'cli' )
     {
       die('Only superuser can access builder tool');
     }
@@ -63,7 +63,7 @@ Class Controller_CSV extends Controller {
     if ($example OR ($this->level > 0 AND count($objects)))
     {
       $children_line = array_pad(array('Children'), -1 - $this->level, '');
-      $this->csv_output .= latticeutil::array_to_csv($children_line, ',');
+      $this->csv_output .= cms_util::array_to_csv($children_line, ',');
       $this->csv_output .= "\n";
     }
 

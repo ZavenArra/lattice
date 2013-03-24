@@ -199,7 +199,7 @@ Class lattice {
         $object = Graph_Core::object($module['modulename']);
         if ($object->loaded())
         { //  in this case it's a slug for a specific object
-          foreach (latticeviews::get_view_content($object->id, $object->objecttype->objecttypename) as $key=>$content)
+          foreach (core_views::get_view_content($object->id, $object->objecttype->objecttypename) as $key=>$content)
           {
             $view->$key = $content;
           }

@@ -39,7 +39,7 @@ Class Controller_Usermanagement extends Controller_Layout {
 
     $this->managed_roles = Kohana::config(strtolower($this->controller_name).'.managed_roles');
     if (Kohana::config(strtolower($this->controller_name).'.superuser_edit')
-      AND latticeutil::check_role_access('superuser'))
+      AND cms_util::check_role_access('superuser'))
     {
       if (is_array($this->managed_roles))
       {
@@ -244,7 +244,7 @@ Class Controller_Usermanagement extends Controller_Layout {
   public function action_save_field($id)
   {
 
-    if ( ! latticeutil::check_role_access('admin'))
+    if ( ! cms_util::check_role_access('admin'))
     {
       throw new Kohana_Exception('Only Admin has access to User Management');
     }
@@ -260,7 +260,7 @@ Class Controller_Usermanagement extends Controller_Layout {
 
       if ($user->has('roles', ORM::Factory('role')->where('name', '=' ,'superuser')->find() ))
       {
-        if ( ! latticeutil::check_role_access('superuser'))
+        if ( ! cms_util::check_role_access('superuser'))
         {
           throw new Kohana_Exception('Only superuser can change superuser');
         }
@@ -287,7 +287,7 @@ Class Controller_Usermanagement extends Controller_Layout {
       if ($value=='superuser')
       {
 
-        if ( ! latticeutil::check_role_access('superuser'))
+        if ( ! cms_util::check_role_access('superuser'))
         {
           throw new Kohana_Exception('Updating to superuser not allowed for non-superuser');
         }

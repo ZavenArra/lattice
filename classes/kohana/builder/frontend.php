@@ -19,7 +19,7 @@ Class Kohana_Builder_Frontend {
 
     lattice::config('objects', '//objectTypes');
 
-    latticeutil::flush_ob();
+    cms_util::flush_ob();
 
     $created_views = array();
     foreach (lattice::config('objects', '//objectType') as $object_type)
@@ -38,7 +38,7 @@ Class Kohana_Builder_Frontend {
       }
       echo $view_name."\n";
 
-      latticeutil::flush_ob();
+      cms_util::flush_ob();
 
       ob_start();
       if ( ! $view OR  ($view AND $view->getAttribute('load_page')=='TRUE'))
@@ -100,7 +100,7 @@ Class Kohana_Builder_Frontend {
     }
 
     echo 'Completed all basic object views' . "\n";
-    latticeutil::flush_ob();
+    cms_util::flush_ob();
 
     // and any virtual views
     foreach (lattice::config('frontend', '//view') as $view_config)
@@ -114,7 +114,7 @@ Class Kohana_Builder_Frontend {
       echo 'Virtual View: '.$view_name . "\n";
       touch($this->base_path.$view_name.'.php');
 
-      latticeutil::flush_ob();
+      cms_util::flush_ob();
       ob_start();
 
 
@@ -270,7 +270,7 @@ Class Kohana_Builder_Frontend {
 
       if (count($object_types) == 0)
       {
-        echo $indent." <?php=latticeview::Factory(\${$label}Item)->view()->render();?>\n";
+        echo $indent." <?php=core_view::Factory(\${$label}Item)->view()->render();?>\n";
       }
 
       $i=0;

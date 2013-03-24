@@ -153,7 +153,7 @@ class FrontendRouting {
          
          $slug = strtok($segment, '_');
          $languageCode = strtok('_');
-				 if (latticeutil::check_access('admin')){
+				 if (cms_util::check_access('admin')){
 					 $object = Graph_Core::object($slug);
 				 } else {
 					 $object = Graph_Core::object()->published_filter()->where('slug', '=', $slug)->find();
@@ -168,7 +168,7 @@ class FrontendRouting {
       }
       if ($object) {
          return array(
-             'controller' => 'latticeviews',
+             'controller' => 'core_views',
              'action' => 'get_view',
              'objectidorslug' => $object->slug
          );
@@ -186,7 +186,7 @@ class FrontendRouting {
 			$config = lattice::config('frontend', '//view[@name="'.$uri.'"]');
 			if ($config->length){
          return array(
-             'controller' => 'latticeviews',
+             'controller' => 'core_views',
              'action' => 'get_virtual_view',
              'objectidorslug' => $uri
          );
@@ -207,7 +207,7 @@ Route::set('defaultLatticeFrontend', '(<controller>)',
 		'controller'=>'',
 	))
 	->defaults(array(
-		'controller' => 'latticeviews',
+		'controller' => 'core_views',
 		'action' => 'get_view',
 		'id'     => 'home',
 	));

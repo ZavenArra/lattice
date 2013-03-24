@@ -6,7 +6,7 @@
  * @package Lattice
  */
 
-class Kohana_Lattice_CMS extends Lattice_CMSInterface {
+class Lattice_Core_Cms extends Lattice_CMSInterface {
 
 
   protected $_actions_that_get_layout = array(
@@ -201,11 +201,11 @@ class Kohana_Lattice_CMS extends Lattice_CMSInterface {
     }
 
     $nodetitlehtml = $this->nodetitle->render();
-    $move_node_html = latticecms::move_node_html($object);
+    $move_node_html = Cms_Core::move_node_html($object);
 
     $custom_view = 'lattice/object_types/'.$object->objecttype->objecttypename; // check for custom view for this object_type
 
-    $html_chunks = latticecms::buildUIHtml_chunks_for_object($object, $language_code);
+    $html_chunks = Cms_Core::buildUIHtml_chunks_for_object($object, $language_code);
     if (Kohana::find_file('views', $custom_view))
     {
       $html = $nodetitlehtml;

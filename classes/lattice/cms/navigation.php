@@ -5,7 +5,7 @@
  *
  */
 
-class Kohana_Navigation {
+class Lattice_Cms_Navigation {
 
 
   /*

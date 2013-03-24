@@ -7,7 +7,7 @@ class Controller_Builder extends Controller {
   public function __construct()
   {
 
-    if ( ! latticeutil::check_role_access('superuser') AND PHP_SAPI != 'cli' )
+    if ( ! cms_util::check_role_access('superuser') AND PHP_SAPI != 'cli' )
     {
       die('Only superuser can access builder tool');
     }

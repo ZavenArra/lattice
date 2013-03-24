@@ -81,7 +81,7 @@ class Controller_Lattice extends Controller {
           }
         }
 
-        if (latticeutil::check_role_access($a_role))
+        if (cms_util::check_role_access($a_role))
         {
           $access_granted = TRUE;
         }
@@ -96,7 +96,7 @@ class Controller_Lattice extends Controller {
         }
       }
 
-      $access_granted = latticeutil::check_role_access($roles);
+      $access_granted = cms_util::check_role_access($roles);
     }
 
     if ( ! $access_granted)

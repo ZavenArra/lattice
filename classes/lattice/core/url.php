@@ -1,7 +1,7 @@
 <?php
 /* @package Lattice */
 
-Class Kohana_Latticeurl {
+Class Lattice_Core_Url {
 
   public static function site($url)
   {

@@ -28,10 +28,10 @@ class Kohana_View_Csv {
   {
 
     $object_type_line = array_pad(array($this->_object_type_name), -1 - $this->_indent, '');
-    $csv = latticeutil::array_to_csv($object_type_line, ',');
+    $csv = cms_util::array_to_csv($object_type_line, ',');
     $csv .= "\n";
     $elements_line = array_pad(array('Elements'), -1 - ($this->_indent + 1), '');
-    $csv .= latticeutil::array_to_csv($elements_line, ',');
+    $csv .= cms_util::array_to_csv($elements_line, ',');
     $csv .= "\n";
 
     $il8n_objects = array();
@@ -90,7 +90,7 @@ class Kohana_View_Csv {
           {
 
             $data_item_line = array_pad(array($column_name, $data_item->filename), - 2 - $this->_indent - 1, '');
-            $csv .= latticeutil::array_to_csv($data_item_line, ',');
+            $csv .= cms_util::array_to_csv($data_item_line, ',');
             $csv .= "\n";
             // and do the other languages
             foreach ($languages as $language)
@@ -106,7 +106,7 @@ class Kohana_View_Csv {
               $column_name_out = $column_name . $suffix;
 
               $data_item_line = array_pad(array($column_name_out, $data_item->filename), - 2 - $this->_indent - 1, '');
-              $csv .= latticeutil::array_to_csv($data_item_line, ',');
+              $csv .= cms_util::array_to_csv($data_item_line, ',');
               $csv .= "\n";
             }
           } else {
@@ -139,7 +139,7 @@ class Kohana_View_Csv {
             }
             $column_name_out = $column_name . $suffix;
             $data_item_line = array_pad(array($column_name_out, $data_item), - 2 - $this->_indent - 1, '');
-            $csv .= latticeutil::array_to_csv($data_item_line, ',');
+            $csv .= cms_util::array_to_csv($data_item_line, ',');
             $csv .= "\n";
           }
         }

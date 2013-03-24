@@ -1,19 +1,19 @@
 <?php
 
 /*
- * Class: latticeui
- * Helper class which generates all the latticeui form elements
+ * Class: cms_ui
+ * Helper class which generates all the cms_ui form elements
  * Functions in this class need to be stardardized and have their parameters cleaned up
  */
 /* @package Lattice */
 
-Class Kohana_Latticeui{
+Class Lattice_Cms_Ui{
 
   private static $unique = 1;
 
   /*
    * Function: buildUIElement
-   * Builds a UI element from the latticeui views directory
+   * Builds a UI element from the cms_ui views directory
    * $element -  array of key value pairs passed to the object_type, including 'type' key which indicates the object_type to use
    * $fieldvalue - the value to display
    * Example: build_text_element(array('type'=>'text', 'name'=>'fieldname', 'class'=>'class_name'), {Value})
@@ -44,9 +44,9 @@ Class Kohana_Latticeui{
     if (isset($element['name']))
     {
       // 	$object_type->id =$element['name'].str_replace(array(' ', '.'), '', microtime());
-      $id =$element['name'].latticeui::$unique++.$microtime;
+      $id =$element['name'].lattice_cms_ui::$unique++.$microtime;
     } else {
-      $id ='name'.latticeui::$unique++.$microtime;
+      $id ='name'.lattice_cms_ui::$unique++.$microtime;
     }
     $element['id'] = $id;
 
@@ -171,49 +171,49 @@ Class Kohana_Latticeui{
   public static function Input( $field, $class, $tag, $field_value, $label=NULL, $size=32 )
   {
     $element_array = array( 'type'=>'input', 'name'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "size"=>$size );
-    return latticeui::buildUIElement( $element_array, $field_value);
+    return cms_ui::buildUIElement( $element_array, $field_value);
   }
 
   public static function text( $field, $class, $tag, $field_value, $label=NULL, $label_class=NULL )
   {
     $element_array = array( 'type'=>'text', 'name'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "label_class"=>$label_class );
-    return latticeui::buildUIElement( $element_array, $field_value);
+    return cms_ui::buildUIElement( $element_array, $field_value);
   }
 
   public static function password( $field, $class, $tag, $field_value, $label=NULL, $label_class=NULL )
   {
     $element_array = array( 'type'=>'password', 'name'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "label_class"=>$label_class );
-    return latticeui::buildUIElement( $element_array, $field_value);		
+    return cms_ui::buildUIElement( $element_array, $field_value);		
   }
 
   public static function radio_group( $field, $class, $radios, $field_value, $label=NULL, $label_class=NULL )
   {
     $microtime = str_replace(array(' ', '.'), '', microtime());
-    $name =$field.latticeui::$unique++.$microtime;
+    $name =$field.cms_ui::$unique++.$microtime;
     $element_array = array( 'type'=>'radio_group', 'radioname'=>$name, 'class'=>$class, 'grouplabel'=>$label, 'name'=>$field, 'radios'=> $radios, "label_class"=>$label_class );
-    return latticeui::buildUIElement( $element_array, $field_value );
+    return cms_ui::buildUIElement( $element_array, $field_value );
   }
 
   public static function checkbox( $field, $checkboxvalue, $value, $label)
   {
-    return latticeui::buildUIElement( array('type'=>'checkbox', 'name'=>$field, 'checkboxvalue'=>$checkboxvalue, 'label'=>$label, 'class'=>'checkbox'), $value);
+    return cms_ui::buildUIElement( array('type'=>'checkbox', 'name'=>$field, 'checkboxvalue'=>$checkboxvalue, 'label'=>$label, 'class'=>'checkbox'), $value);
   }
 
   public static function file($field, $extensions, $maxlength, $current_file=NULL )
   {
-    return latticeui::buildUIElement( array('type'=>'file', 'name'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $current_file );
+    return cms_ui::buildUIElement( array('type'=>'file', 'name'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $current_file );
   }
 
   public static function fieldmap($values, $options)
   {
-    return latticeui::buildUIElement(array('type'=>'fieldmap', 'values'=>$values, 'options'=>$options) );
+    return cms_ui::buildUIElement(array('type'=>'fieldmap', 'values'=>$values, 'options'=>$options) );
   }
 
   //  0ak - revisit this function.  Needed?
   public static function pulldown ( $field, $class, $options, $field_value, $label=NULL, $label_class=NULL )
   {
     $element_array = array( 'type'=>'pulldown',  'class'=>$class, 'label'=>$label, 'name'=>$field, 'options'=> $options, "label_class"=>$label_class );
-    return latticeui::buildUIElement( $element_array, $field_value );
+    return cms_ui::buildUIElement( $element_array, $field_value );
   }
 
 

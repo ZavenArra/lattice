@@ -1,11 +1,11 @@
 <?php
 
 /*
- * Class: latticeutil
+ * Class: cms_util
  * Utility helper class
  */
 /* @package Lattice */
-Class Kohana_Latticeutil {
+Class Lattice_Cms_Util {
 
   /*
    * Function: get_micro_seconds()
@@ -25,7 +25,7 @@ Class Kohana_Latticeutil {
    */
   public static function get_micro_timestamp()
   {
-    $timestamp = date('Ymd_his') . substr(latticeutil::get_micro_seconds(), 1) ;
+    $timestamp = date('Ymd_his') . substr(cms_util::get_micro_seconds(), 1) ;
     return $timestamp;
   }
 
@@ -94,7 +94,7 @@ Class Kohana_Latticeutil {
     }
     foreach ($roles as $role)
     {
-      if (latticeutil::check_role_access($role))
+      if (cms_util::check_role_access($role))
       {
         return TRUE;
       }
@@ -115,7 +115,7 @@ Class Kohana_Latticeutil {
     } else {
       for($i=0, $keys=array_keys($value), $count=count($value); $i<$count; $i++)
       {
-        $value[$keys[$i]] = latticeutil::decode_recurse($value[$keys[$i]]);
+        $value[$keys[$i]] = cms_util::decode_recurse($value[$keys[$i]]);
       }
       return $value;
     }
