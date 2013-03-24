@@ -1,7 +1,7 @@
 <?php
 /* @package Lattice */
 
-class Kohana_Frontend {
+class Lattice_Frontend {
   public static function make_html_element($element, $prefix, $indent='')
   {
 

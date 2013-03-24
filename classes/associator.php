@@ -1,3 +1,3 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 
-abstract class Associator extends Kohana_Associator { }
+abstract class Associator extends Lattice_Associator { }

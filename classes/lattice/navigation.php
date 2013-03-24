@@ -5,7 +5,7 @@
  *
  */
 
-class Lattice_Cms_Navigation {
+class Lattice_Navigation {
 
 
   /*

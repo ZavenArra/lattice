@@ -1,6 +1,6 @@
 <?php
 
-Class Kohana_Builder_Frontend {
+Class Lattice_Builder_Frontend {
 
   private $base_path = 'application/views/generated/';
 

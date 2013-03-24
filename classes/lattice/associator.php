@@ -1,7 +1,7 @@
 <?php
 /* @package Lattice */
 
-Class Kohana_Associator {
+Class Lattice_Associator {
   public $parent_id = NULL;
   public $parent = NULL;
   public $lattice = NULL;
