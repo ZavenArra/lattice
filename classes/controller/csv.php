@@ -25,7 +25,7 @@ Class Controller_CSV extends Controller {
   {
     $this->csv_output = '';
 
-    $root_object = Graph_Core::get_lattice_root();
+    $root_object = Graph::get_lattice_root();
 
 
     $this->level = 0;
@@ -87,7 +87,7 @@ Class Controller_CSV extends Controller {
         // And now append one example object of each addable object
         foreach ($object->objecttype->addable_objects as $addable_object_type)
         {
-          $object = Graph_Core::object()->set_object_type($addable_object_type['object_type_id']);
+          $object = Graph::object()->set_object_type($addable_object_type['object_type_id']);
 
 
           $csv_view = new View_Csv($this->level, $object);
@@ -125,7 +125,7 @@ Class Controller_CSV extends Controller {
     }
     $this->column = 0;
 
-    $this->walkCSVObjects(Graph_Core::get_lattice_root());
+    $this->walkCSVObjects(Graph::get_lattice_root());
 
     fclose($this->csv_file);
 
@@ -163,7 +163,7 @@ Class Controller_CSV extends Controller {
 
       // we have an object_type
       $new_object_id = $parent->add_object($object_type_name);
-      $new_object = Graph_Core::object($new_object_id);
+      $new_object = Graph::object($new_object_id);
       $this->walkCSVElements($new_object);
 
     }
@@ -222,7 +222,7 @@ Class Controller_CSV extends Controller {
     // and actually add the data to the objects
     foreach ($data as $lang=>$lang_data)
     {
-      $object_to_update = $object->get_translated_object(Graph_Core::language($lang));
+      $object_to_update = $object->get_translated_object(Graph::language($lang));
       foreach ($lang_data as $field => $value)
       {
 
@@ -268,7 +268,7 @@ Class Controller_CSV extends Controller {
           $image_path = $value;
           if (file_exists($image_path))
           {
-            copy($image_path, Graph_Core::mediapath($savename) . $savename);
+            copy($image_path, Graph::mediapath($savename) . $savename);
             $file = ORM::Factory('file');
             $file->filename = $savename;
             $file->save();
@@ -307,7 +307,7 @@ Class Controller_CSV extends Controller {
       // echo $this->column;
       $child_object_type_name = $this->line[$this->column+1]; 
       $child_object_id = $object->add_object($child_object_type_name);
-      $child_object = Graph_Core::object($child_object_id);
+      $child_object = Graph::object($child_object_id);
       $this->column++;
       // echo $this->column;
       $this->walkCSVElements($child_object);

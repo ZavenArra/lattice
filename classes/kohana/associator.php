@@ -52,7 +52,7 @@ Class Kohana_Associator {
   public function __construct($parent_id, $lattice, $filters=NULL, $load_pool=NULL)
   {
     $this->parent_id = $parent_id;
-    $this->parent = Graph_Core::object($this->parent_id);
+    $this->parent = Graph::object($this->parent_id);
     $this->lattice = $lattice;
     $this->filters = $filters; 
     $this->page_length = Kohana::config('cms.associator_page_length');
@@ -80,14 +80,14 @@ Class Kohana_Associator {
     if ($filters)
     {
 
-      $objects = Graph_Core::object();
+      $objects = Graph::object();
 
       foreach ($filters as $filter)
       {
 
         if (isset($filter['from']) AND $filter['from'])
         {
-          $from = Graph_Core::object($filter['from']);
+          $from = Graph::object($filter['from']);
           ($filter['lattice']) ? $lattice = $filter['lattice'] : ( $lattice = 'lattice' );
           $objects = $from->lattice_children_query($lattice);
         }
@@ -102,7 +102,7 @@ Class Kohana_Associator {
           $t = ORM::Factory('objecttype', $filter['object_type_name']);
           if ( ! $t->loaded())
           {
-            Graph_Core::configure_object_type($filter['object_type_name']);
+            Graph::configure_object_type($filter['object_type_name']);
             $t = ORM::Factory('objecttype', $filter['object_type_name']);
             if ( ! $t->loaded())
             {
@@ -133,7 +133,7 @@ Class Kohana_Associator {
         }
 
 
-        $objects->where('objects.language_id', '=', Graph_Core::default_language());
+        $objects->where('objects.language_id', '=', Graph::default_language());
         $objects->published_filter();
         // just return an array of id's then load the pool object
         $results = $objects->find_all()->as_array(NULL, 'id');
@@ -142,7 +142,7 @@ Class Kohana_Associator {
         $res = array();
         foreach ($results as $id)
         {
-          $object = Graph_Core::object($id);
+          $object = Graph::object($id);
           if ( ! $this->parent->check_lattice_relationship($lattice, $object))
           {
             $res[$id] = $id;
@@ -164,7 +164,7 @@ Class Kohana_Associator {
 
         foreach ($results as $id)
         {
-          $object = Graph_Core::object($id);
+          $object = Graph::object($id);
           $this->pool[$id] =$object;  
         }
       }	
@@ -172,9 +172,9 @@ Class Kohana_Associator {
     } elseif ( ! is_array($load_pool))
     {
 
-      $objects = Graph_Core::object()
+      $objects = Graph::object()
         ->where( 'id', '!=', $parent_id )
-        ->where( 'objects.language_id', '=', Graph_Core::default_language() )
+        ->where( 'objects.language_id', '=', Graph::default_language() )
         ->published_filter()
         ->limit( $this->max_pool_size )
         ->find_all();

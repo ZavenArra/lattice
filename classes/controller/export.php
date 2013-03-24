@@ -236,7 +236,7 @@ class Controller_Export extends Controller {
     $data = $this->doc->create_element('data');
     $nodes = $this->doc->create_element('nodes');
 
-    $object = Graph_Core::get_root_node('cms_root_node');
+    $object = Graph::get_root_node('cms_root_node');
     $objects = $object->get_lattice_children();
 
     $export_function = NULL;
@@ -259,7 +259,7 @@ class Controller_Export extends Controller {
 
     $relationships = $this->doc->create_element('relationships');
 
-    $lattices = Graph_Core::lattices();
+    $lattices = Graph::lattices();
     foreach ($lattices as $lattice)
     {
       if ($lattice->name == 'lattice')
@@ -275,10 +275,10 @@ class Controller_Export extends Controller {
       foreach ($lattice->get_relationships() as $relationship)
       {
         $r = $this->doc->create_element('relationship');
-        $parent_slug = $this->doc->create_text_node(Graph_Core::object($relationship->object_id)->slug);
+        $parent_slug = $this->doc->create_text_node(Graph::object($relationship->object_id)->slug);
         $parent = $this->doc->create_attribute('parent');
         $parent->appendChild($parent_slug);
-        $child_slug = $this->doc->create_text_node(Graph_Core::object($relationship->connectedobject_id)->slug);
+        $child_slug = $this->doc->create_text_node(Graph::object($relationship->connectedobject_id)->slug);
         $child = $this->doc->create_attribute('child');
         $child->appendChild($child_slug);
         $r->appendChild($parent);

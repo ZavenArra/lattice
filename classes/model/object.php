@@ -54,7 +54,7 @@ class Model_Object extends ORM implements arrayaccess {
       {
         $slug = strtok($id, '_');
         $language_code = strtok($id);
-        $object = Graph_Core::object($slug);
+        $object = Graph::object($slug);
         $translated_object = $object->translated($language_code);
         return $translated_object;
       } else {
@@ -96,7 +96,7 @@ class Model_Object extends ORM implements arrayaccess {
       $slug = substr($slug, 0, 50);
 
 
-      $check_slug = Graph_Core::object()
+      $check_slug = Graph::object()
         ->where('slug', '=', $slug);
       if ($for_page_id != NULL)
       {
@@ -109,7 +109,7 @@ class Model_Object extends ORM implements arrayaccess {
       }
 
 
-      $check_slug = Graph_Core::object()
+      $check_slug = Graph::object()
         ->where('slug', 'REGEXP',  '^'.$slug.'[0-9]*$')
         ->order_by("slug", 'DESC');
 
@@ -179,7 +179,7 @@ class Model_Object extends ORM implements arrayaccess {
       break;
     }
 
-    $image = Image::factory(Graph_Core::mediapath().$original_filename);
+    $image = Image::factory(Graph::mediapath().$original_filename);
 
     // just do the resample
     // set up sizes
@@ -188,7 +188,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     if ($aspect_follows_orientation == 'TRUE' )
     {
-      $osize = getimagesize(Graph_Core::mediapath().$original_filename);
+      $osize = getimagesize(Graph::mediapath().$original_filename);
       $horizontal = FALSE;
       if ($osize[0] > $osize[1])
       {
@@ -218,7 +218,7 @@ class Model_Object extends ORM implements arrayaccess {
         $crop_key_dimension = Image::WIDTH;
       }
       $image->resize($width, $height, $crop_key_dimension)->crop($width, $height);
-      $image->save(Graph_Core::mediapath().$new_filename);
+      $image->save(Graph::mediapath().$new_filename);
     }
 
     // maintain aspect ratio
@@ -226,7 +226,7 @@ class Model_Object extends ORM implements arrayaccess {
     // forcing with aspectfolloworientation is gonna give weird results! 
     $image->resize($resize_width, $resize_height, $key_dimension);
 
-    $image->save(Graph_Core::mediapath() .$new_filename);
+    $image->save(Graph::mediapath() .$new_filename);
 
   }
 
@@ -632,7 +632,7 @@ class Model_Object extends ORM implements arrayaccess {
         throw new Kohana_Exception('Invalid language code :code', array(':code'=>$language_code));
       }
 
-      $translated_object = Graph_Core::object()
+      $translated_object = Graph::object()
         ->where('rosetta_id', '=', $rosetta_id)
         ->where('objects.language_id', '=', $language_id)
         ->find();
@@ -835,7 +835,7 @@ class Model_Object extends ORM implements arrayaccess {
     {
       // get container
       $c_template = ORM::Factory('objecttype', $family);
-      $container = Graph_Core::object()
+      $container = Graph::object()
         ->lattice_children_filter($this->id)
         ->where('objecttype_id', '=', $c_template->id)
         ->where('activity', 'IS', NULL)
@@ -847,7 +847,7 @@ class Model_Object extends ORM implements arrayaccess {
     public function get_published_children($lattice = 'lattice')
     {
 
-      $children = Graph_Core::object()->lattice_children_filter($this->id, $lattice)
+      $children = Graph::object()->lattice_children_filter($this->id, $lattice)
         ->where('published', '=', 1)
         ->where('activity', 'IS', NULL)
         ->order_by('objectrelationships.sortorder')
@@ -859,7 +859,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function get_lattice_children($lattice = 'lattice')
     {
-      $children = Graph_Core::object()
+      $children = Graph::object()
         ->lattice_children_filter($this->id, $lattice)
         ->where('activity', 'IS', NULL)
         ->order_by('objectrelationships.sortorder')
@@ -870,7 +870,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function get_lattice_children_paged($lattice = 'lattice')
     {
-      $children = Graph_Core::object()
+      $children = Graph::object()
         ->lattice_children_filter_paged($this->id, $lattice)
         ->where('activity', 'IS', NULL)
         ->order_by('objectrelationships.sortorder')
@@ -882,7 +882,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function get_next_published_peer()
     {
-      $next = Graph_Core::object()
+      $next = Graph::object()
         ->lattice_children_filter($this->get_lattice_parent()->id)
         ->where('published', '=', 1)
         ->where('activity', 'IS', NULL)
@@ -900,7 +900,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function get_prev_published_peer()
     {
-      $next = Graph_Core::object()
+      $next = Graph::object()
         ->lattice_children_filter($this->get_lattice_parent()->id)
         ->where('published', '=', 1)
         ->where('activity', 'IS', NULL)
@@ -918,7 +918,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function get_first_published_peer()
     {
-      $first = Graph_Core::object()
+      $first = Graph::object()
         ->lattice_children_filter($this->get_lattice_parent()->id)
         ->where('published', '=', 1)
         ->where('activity', 'IS', NULL)
@@ -935,7 +935,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function get_last_published_peer()
     {
-      $last = Graph_Core::object()
+      $last = Graph::object()
         ->lattice_children_filter($this->get_lattice_parent()->id)
         ->where('published', '=', 1)
         ->where('activity', 'IS', NULL)
@@ -952,7 +952,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function set_sort_order($order, $lattice='lattice')
     {
-      $lattice = Graph_Core::lattice($lattice);
+      $lattice = Graph::lattice($lattice);
 
       for ($i = 0; $i < count($order); $i++)
       {
@@ -1013,7 +1013,7 @@ class Model_Object extends ORM implements arrayaccess {
     {
       $save_name = Model_Object::make_file_save_name('tmp') . microtime();
 
-      if ( ! move_uploaded_file($tmp_name, Graph_Core::mediapath() . $save_name))
+      if ( ! move_uploaded_file($tmp_name, Graph::mediapath() . $save_name))
       {
         $result = array(
           'result' => 'failed',
@@ -1021,7 +1021,7 @@ class Model_Object extends ORM implements arrayaccess {
         );
         return $result;
       }
-      // Kohana::$log->add(Log::INFO, 'tmp moved file to ' . Graph_Core::mediapath() . $save_name);
+      // Kohana::$log->add(Log::INFO, 'tmp moved file to ' . Graph::mediapath() . $save_name);
 
       return $save_name;
     }
@@ -1039,11 +1039,11 @@ class Model_Object extends ORM implements arrayaccess {
       $name = array_slice($xarray, 0, $nr - 1);
       $name = implode('.', $name);
       $i = 1;
-      if ( ! file_exists(Graph_Core::mediapath() . "$name" . '.' . $ext))
+      if ( ! file_exists(Graph::mediapath() . "$name" . '.' . $ext))
       {
         $i = '';
       } else {
-        for (; file_exists(Graph_Core::mediapath() . "$name" . $i . '.' . $ext); $i++)
+        for (; file_exists(Graph::mediapath() . "$name" . $i . '.' . $ext); $i++)
         {     
         }
       }
@@ -1072,11 +1072,11 @@ class Model_Object extends ORM implements arrayaccess {
       $file->unlink_old_file();
       $save_name = Model_Object::make_file_save_name($filename);
 
-      if ( ! copy(Graph_Core::mediapath() . $tmp_name, Graph_Core::mediapath() . $save_name))
+      if ( ! copy(Graph::mediapath() . $tmp_name, Graph::mediapath() . $save_name))
       {
         throw new Lattice_Exception('this is a MOP Exception');
       }
-      unlink(Graph_Core::mediapath() . $tmp_name);
+      unlink(Graph::mediapath() . $tmp_name);
 
       $file->filename = $save_name;
       $file->mime = $type;
@@ -1089,7 +1089,7 @@ class Model_Object extends ORM implements arrayaccess {
       if ($replacing_empty_file)
       {
 
-        $languages = Graph_Core::languages();
+        $languages = Graph::languages();
         foreach ($languages as $translation_language)
         {
 
@@ -1159,9 +1159,9 @@ class Model_Object extends ORM implements arrayaccess {
         //   Kohana::$log->add(Log::INFO, 'Converting TIFF image to JPG for resize');
 
         $imagefilename = $filename . '_converted.jpg';
-        $command = sprintf('convert %s %s', addcslashes(Graph_Core::mediapath() . $filename, "'\"\\ "), addcslashes(Graph_Core::mediapath() . $imagefilename, "'\"\\ "));
+        $command = sprintf('convert %s %s', addcslashes(Graph::mediapath() . $filename, "'\"\\ "), addcslashes(Graph::mediapath() . $imagefilename, "'\"\\ "));
         //    Kohana::$log->add(Log::INFO, $command);
-        system(sprintf('convert %s %s', addcslashes(Graph_Core::mediapath() . $filename, "'\"\\ "), addcslashes(Graph_Core::mediapath() . $imagefilename, "'\"\\ ")));
+        system(sprintf('convert %s %s', addcslashes(Graph::mediapath() . $filename, "'\"\\ "), addcslashes(Graph::mediapath() . $imagefilename, "'\"\\ ")));
         break;
       default:
         $imagefilename = $filename;
@@ -1186,7 +1186,7 @@ class Model_Object extends ORM implements arrayaccess {
           $prefix = '';
           $new_filename = $imagefilename;
         }
-        $save_name = Graph_Core::mediapath() . $new_filename;
+        $save_name = Graph::mediapath() . $new_filename;
 
         // This dependency should be moved out of latticecms
         // Rootgraph should never require latticecms
@@ -1195,9 +1195,9 @@ class Model_Object extends ORM implements arrayaccess {
 
         if (isset($oldfilename) AND $new_filename != $prefix . $oldfilename)
         {
-          if (file_exists(Graph_Core::mediapath() . $oldfilename))
+          if (file_exists(Graph::mediapath() . $oldfilename))
           {
-            unlink(Graph_Core::mediapath() . $oldfilename);
+            unlink(Graph::mediapath() . $oldfilename);
           }
         }
 
@@ -1370,7 +1370,7 @@ class Model_Object extends ORM implements arrayaccess {
      */
     Kohana::$log->add(Log::INFO,print_r($o_ids,1))->write();
 
-    $lattice = Graph_Core::lattice('lattice');
+    $lattice = Graph::lattice('lattice');
     $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
     $this->where('objectrelationships.lattice_id', '=', $lattice->id);
     $this->where('objectrelationships.object_id', 'IN', $o_ids);
@@ -1392,7 +1392,7 @@ class Model_Object extends ORM implements arrayaccess {
     public function lattice_children_filter($parent_id, $lattice="lattice")
     {
       // run this query without limit to get a count
-      $lattice = Graph_Core::lattice($lattice);
+      $lattice = Graph::lattice($lattice);
       $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
       $this->where('objectrelationships.lattice_id', '=', $lattice->id);
       $this->where('objectrelationships.object_id', '=', $parent_id);
@@ -1404,7 +1404,7 @@ class Model_Object extends ORM implements arrayaccess {
       // twg -> thiago removed call to lattice_children_filter and instead duplicated with pagination
       //         tom added it to lattice_children_filter which was also paginating nav ages and lists...
       // run this query without limit to get a count
-      $lattice = Graph_Core::lattice($lattice);
+      $lattice = Graph::lattice($lattice);
       $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
       $this->where('objectrelationships.lattice_id', '=', $lattice->id);
       $this->where('objectrelationships.object_id', '=', $parent_id);
@@ -1428,7 +1428,7 @@ class Model_Object extends ORM implements arrayaccess {
   /* 
    public function lattice_children_count($parent_id, $lattice)
 {
-     $children = Graph_Core::object();
+     $children = Graph::object();
      $children->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
      $children->where('objectrelationships.lattice_id', '=', $lattice->id);
      $children->where('objectrelationships.object_id', '=', $parent_id);
@@ -1440,7 +1440,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function lattice_children_query($lattice='lattice')
     {
-      return Graph_Core::instance()->lattice_children_filter($this->id, $lattice);
+      return Graph::instance()->lattice_children_filter($this->id, $lattice);
 
     }
 
@@ -1468,7 +1468,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function lattice_parents_filter($child_id, $lattice="lattice")
     {
-      $lattice = Graph_Core::lattice($lattice);
+      $lattice = Graph::lattice($lattice);
 
       $this->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.object_id');
       $this->where('objectrelationships.lattice_id', '=', $lattice->id);
@@ -1479,7 +1479,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function lattice_parents_query($lattice='lattice')
     {
-      return Graph_Core::instance()->lattice_parents_filter($this->id, $lattice);
+      return Graph::instance()->lattice_parents_filter($this->id, $lattice);
 
     }
 
@@ -1496,7 +1496,7 @@ class Model_Object extends ORM implements arrayaccess {
       $sub_tree_object = NULL;
       if ( ! is_object($object_id))
       {
-        $sub_tree_object = Graph_Core::object($object_id);
+        $sub_tree_object = Graph::object($object_id);
       } else {
         $sub_tree_object = $object_id;
       }
@@ -1527,7 +1527,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function get_sort_order($lattice, $current_id)
     {
-      $lattice = Graph_Core::lattice($lattice);
+      $lattice = Graph::lattice($lattice);
       Kohana::$log->add(Kohana_Log::INFO, $lattice->id);
       $sort_order_query = clone($this);
       $sort_order_query->where('objects.id', '=', $current_id);
@@ -1562,7 +1562,7 @@ class Model_Object extends ORM implements arrayaccess {
       $query = clone($this); 
       if ($current_id)
       {
-        $current = Graph_Core::object($current_id);
+        $current = Graph::object($current_id);
       } else {
         $current = $this;
       }
@@ -1586,7 +1586,7 @@ class Model_Object extends ORM implements arrayaccess {
         // this assumes we've already joined objectrelatinpshios
         $sort_value = $this->get_sort_order($lattice, $current->id);  // implement this function
         $query->join( array('objectrelationships', 'objectrelationshipstosort') )->on('objects.id', '=', 'objectrelationshipstosort.connectedobject_id');
-        $query->where('objectrelationshipstosort.lattice_id', '=', Graph_Core::lattice($lattice)->id);
+        $query->where('objectrelationshipstosort.lattice_id', '=', Graph::lattice($lattice)->id);
         $query->where('objectrelationshipstosort.'.$sort_field, $inequality, $sort_value);
         $query->order_by('objectrelationshipstosort.sortorder', $order);
       } else  {
@@ -1641,7 +1641,7 @@ class Model_Object extends ORM implements arrayaccess {
      */
     if ( ! $rosetta_id)
     {
-      $languages = Graph_Core::languages();
+      $languages = Graph::languages();
       foreach ($languages as $translation_language)
       {           
         if ($translation_language->id == $new_object->language_id)
@@ -1655,7 +1655,7 @@ class Model_Object extends ORM implements arrayaccess {
 
           $translated_parent->add_lattice_object($new_object->objecttype->objecttypename, $lattice, $new_object->rosetta_id, $translation_language->id);
         } else {
-          Graph_Core::object()->add_lattice_object($new_object->objecttype->objecttypename, $lattice,  $new_object->rosetta_id, $translation_language->id);
+          Graph::object()->add_lattice_object($new_object->objecttype->objecttypename, $lattice,  $new_object->rosetta_id, $translation_language->id);
         }
 
       }
@@ -1721,7 +1721,7 @@ class Model_Object extends ORM implements arrayaccess {
         $component_already_present = FALSE;
         if (isset($arguments['title']))
         {
-          $check_for_preexisting_object = Graph_Core::object()
+          $check_for_preexisting_object = Graph::object()
             ->lattice_children_filter($this->id)
             ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
             ->where('title', '=', $arguments['title'])
@@ -1753,11 +1753,11 @@ class Model_Object extends ORM implements arrayaccess {
         throw new Kohana_Exception('Create cannot be called without a valid object_type_name: '.$object_type_name );
       }
 
-      ! $rosetta_id ?  $translation_rosetta_id = Graph_Core::new_rosetta() : $translation_rosetta_id = $rosetta_id;
+      ! $rosetta_id ?  $translation_rosetta_id = Graph::new_rosetta() : $translation_rosetta_id = $rosetta_id;
 
       if ($language_id == NULL)
       {
-        $this->language_id == NULL ? $language_id = Graph_Core::default_language() : $language_id = $this->language_id;
+        $this->language_id == NULL ? $language_id = Graph::default_language() : $language_id = $this->language_id;
       }
 
       $this->set_object_type($object_type_name);
@@ -1789,9 +1789,9 @@ class Model_Object extends ORM implements arrayaccess {
     private function _create_object($object_type_name, $rosetta_id = NULL, $language_id = NULL)
     {
 
-      $new_object = Graph_Core::object();
+      $new_object = Graph::object();
       $new_object->create_object($object_type_name, $rosetta_id, $language_id);
-      $new_object = Graph_Core::object($new_object->id);
+      $new_object = Graph::object($new_object->id);
       return $new_object;
 
     }
@@ -1920,7 +1920,7 @@ class Model_Object extends ORM implements arrayaccess {
      */
     if ( ! $rosetta_id)
     {
-      $languages = Graph_Core::languages();
+      $languages = Graph::languages();
       foreach ($languages as $translation_language)
       {
 
@@ -1935,7 +1935,7 @@ class Model_Object extends ORM implements arrayaccess {
 
           $translated_parent->add_element_object($new_object->objecttype->objecttypename, $element_name, $data, $new_object->rosetta_id, $translation_language->id);
         } else {
-          Graph_Core::object()->add_element_object($new_object->objecttype->objecttypename, $element_name, $data, $new_object->rosetta_id, $translation_language->id);
+          Graph::object()->add_element_object($new_object->objecttype->objecttypename, $element_name, $data, $new_object->rosetta_id, $translation_language->id);
         }
 
       }
@@ -1954,8 +1954,8 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function move($new_lattice_parent, $lattice='lattice', $old_lattice_parent=NULL)
     {
-      $old_lattice_parent == NULL ? $old_lattice_parent = $this->get_lattice_parent() : $old_lattice_parent = Graph_Core::object($old_lattice_parent);
-      $new_lattice_parent = Graph_Core::object($new_lattice_parent);
+      $old_lattice_parent == NULL ? $old_lattice_parent = $this->get_lattice_parent() : $old_lattice_parent = Graph::object($old_lattice_parent);
+      $new_lattice_parent = Graph::object($new_lattice_parent);
       $old_lattice_parent->remove_lattice_relationship('lattice',$this);
       $new_lattice_parent->add_lattice_relationship('lattice',$this);
 
@@ -1966,7 +1966,7 @@ class Model_Object extends ORM implements arrayaccess {
 
       if ( ! is_numeric($new_object_id))
       {
-        $new_object_id = Graph_Core::object($new_object_id);
+        $new_object_id = Graph::object($new_object_id);
       }
 
       if ($this->check_lattice_relationship($lattice, $new_object_id))
@@ -1976,7 +1976,7 @@ class Model_Object extends ORM implements arrayaccess {
 
       if ( ! is_object($lattice))
       {
-        $lattice = Graph_Core::lattice($lattice);
+        $lattice = Graph::lattice($lattice);
       }
 
       $object_relationship = ORM::Factory('objectrelationship');
@@ -2000,7 +2000,7 @@ class Model_Object extends ORM implements arrayaccess {
     {
       if ( ! is_object($lattice))
       {
-        $lattice = Graph_Core::lattice($lattice);
+        $lattice = Graph::lattice($lattice);
       }
 
       $object_relationship = ORM::Factory('objectrelationship')
@@ -2021,7 +2021,7 @@ class Model_Object extends ORM implements arrayaccess {
     {
       if ( ! is_object($lattice))
       {
-        $lattice = Graph_Core::lattice($lattice);
+        $lattice = Graph::lattice($lattice);
       }
 
       $object_relationship = ORM::Factory('objectrelationship');
@@ -2043,7 +2043,7 @@ class Model_Object extends ORM implements arrayaccess {
       $new_object = $this->_create_object($object_type_name, $rosetta_id, $language_id);
 
       // The objet has been built, now set it's lattice point
-      $lattice = Graph_Core::lattice();
+      $lattice = Graph::lattice();
       $this->add_lattice_relationship($lattice->id, $new_object->id);
 
 
@@ -2057,7 +2057,7 @@ class Model_Object extends ORM implements arrayaccess {
     {
       if ( ! is_object($lattice))
       {
-        $lattice = Graph_Core::lattice($lattice);
+        $lattice = Graph::lattice($lattice);
       }
 
       die('Not yet implemented');
@@ -2066,7 +2066,7 @@ class Model_Object extends ORM implements arrayaccess {
     public function get_translated_object($language_id)
     {
       $parent_rosetta_id = $this->rosetta_id;
-      $translated_object = Graph_Core::object()
+      $translated_object = Graph::object()
         ->where('rosetta_id', '=', $this->rosetta_id)
         ->where('objects.language_id', '=', $language_id)
         ->find();
@@ -2103,11 +2103,11 @@ class Model_Object extends ORM implements arrayaccess {
           {
             // there's a config for this object_type
             // go ahead and configure it
-            Graph_Core::configure_object_type($object_type_name);
+            Graph::configure_object_type($object_type_name);
             $object_type = ORM::Factory('objecttype', $object_type_name);
           } elseif ($object_type_config = lattice::config('objects', $x_path_list)->item(0))
           { 
-            Graph_Core::configure_object_type($object_type_name);
+            Graph::configure_object_type($object_type_name);
             $object_type = ORM::Factory('objecttype', $object_type_name);
           } else {
             throw new Kohana_Exception('No config for object_type ' . $object_type_name .' '.$x_path);

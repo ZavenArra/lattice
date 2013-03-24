@@ -53,7 +53,7 @@ class Model_File extends ORM {
       return rawurlencode(parent::__get('filename'));
     } elseif ($column == 'fullpath')
     {
-      return Graph_Core::mediapath().parent::__get('filename');
+      return Graph::mediapath().parent::__get('filename');
     } elseif ($column == 'ext')
     {
       $chunks = explode('.', parent::__get('filename'));
@@ -81,9 +81,9 @@ class Model_File extends ORM {
   public function unlink_old_file()
   {
     $oldfilename = parent::__get('filename');
-    if ($oldfilename AND file_exists(Graph_Core::mediapath().$oldfilename))
+    if ($oldfilename AND file_exists(Graph::mediapath().$oldfilename))
     {
-      unlink(Graph_Core::mediapath().$oldfilename);
+      unlink(Graph::mediapath().$oldfilename);
     }
   }
 

@@ -49,7 +49,7 @@ class Kohana_Latticeview {
     {
       return $slug_or_object_id;
     }
-    $object = Graph_Core::object($slug_or_object_id);
+    $object = Graph::object($slug_or_object_id);
     $original_slug_base = str_replace(array('0','1','2','3','4','5','6','7','8','9'), '', strtok($object->slug,'_'));
     $translated_object = $object->translate($language_code);
     $redirect_slug = $translated_object->slug;
@@ -138,7 +138,7 @@ class Kohana_Latticeview {
     {
       if ( ! is_object($object_id_or_slug))
       {
-        $object = Graph_Core::object($object_id_or_slug);
+        $object = Graph::object($object_id_or_slug);
       } else {
         $object = $object_id_or_slug;
       }
@@ -267,7 +267,7 @@ class Kohana_Latticeview {
 
         if ( ! is_object($slug))
         {
-          $object = Graph_Core::object($slug);
+          $object = Graph::object($slug);
         } else {
           $object = $slug;
         }
@@ -331,7 +331,7 @@ class Kohana_Latticeview {
               $sub_view_content = $this->get_view_content($view, $slug);
             } elseif ($slug)
             {
-              $object = Graph_Core::object($slug);
+              $object = Graph::object($slug);
               $view = $object->objecttype->objecttypename;
               $sub_view_content = $this->get_view_content($view, $slug);
             } elseif ($view)
@@ -364,7 +364,7 @@ class Kohana_Latticeview {
       {
         foreach ($include_content_queries as $include_content_query_params)
         {
-          $query = new Graph_Core_Objectquery();
+          $query = new Graph_Objectquery();
           $query->init_with_xml($include_content_query_params);
           $include_content = $query->run($parent_id);
 

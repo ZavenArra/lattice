@@ -7,7 +7,7 @@ Class Controller_Publicmenu extends Controller_Lattice {
   {
     $this->view = new View('publicnav');
 
-    $top_level = Graph_Core::get_root_node('cms_root_node')
+    $top_level = Graph::get_root_node('cms_root_node')
       ->lattice_children_query('public_site') 
       ->published_filter()
       ->no_container_objects()
@@ -29,7 +29,7 @@ Class Controller_Publicmenu extends Controller_Lattice {
     foreach ($navi as $slug => $entry)
     {
 
-      $children = Graph_Core::object($slug)
+      $children = Graph::object($slug)
         ->lattice_children_query($object->id)
         ->published_filter()
         ->no_container_objects()
@@ -44,7 +44,7 @@ Class Controller_Publicmenu extends Controller_Lattice {
           $child_entry['slug'] = $child->slug;
           $child_entry['path'] = $object->slug.'/'.$child->slug;
 
-          $children2 = Graph_Core::object()
+          $children2 = Graph::object()
             ->where('parent_id', '=', $child->id)
             ->published_filter()
             ->no_container_objects()

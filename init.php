@@ -129,7 +129,7 @@ if (isset($_SERVER['REQUEST_URI'])
   && (!in_array(str_replace(url::base(), '', $_SERVER['REQUEST_URI']), array('setup', 'index.php/setup')))){
   try {
     ORM::Factory('object')->find_all();
-    Graph_Core::get_root_node('cmsRootNode');
+    Graph::get_root_node('cmsRootNode');
   } catch(Exception $e){
     $view = new View('lattice_not_installed');
     echo $view->render();
@@ -154,9 +154,9 @@ class FrontendRouting {
          $slug = strtok($segment, '_');
          $languageCode = strtok('_');
 				 if (latticeutil::check_access('admin')){
-					 $object = Graph_Core::object($slug);
+					 $object = Graph::object($slug);
 				 } else {
-					 $object = Graph_Core::object()->published_filter()->where('slug', '=', $slug)->find();
+					 $object = Graph::object()->published_filter()->where('slug', '=', $slug)->find();
 				 }
          if ($languageCode) {
             $object = $object->translate($languageCode);

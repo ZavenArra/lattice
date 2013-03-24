@@ -18,7 +18,7 @@ Consider adding 'populated' or '' to $class variable
 		<?endif;?>
 		<div class="preview">
 			<?if (isset($value['id'])):?>
-				<img src="<?=url::site(Graph_Core::mediapath().$value['thumb_src'], null, false);?>" width="<?=$value['width'];?>" height="<?=$value['height'];?>" alt="<?=$value['filename'];?>"/>
+				<img src="<?=url::site(Graph::mediapath().$value['thumb_src'], null, false);?>" width="<?=$value['width'];?>" height="<?=$value['height'];?>" alt="<?=$value['filename'];?>"/>
 			<?endif;?>
 		</div>
 		<div class="status hidden">
