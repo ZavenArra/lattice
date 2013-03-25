@@ -33,7 +33,7 @@ class Model_List_container extends Model_Object {
 
     if ( ! $this->_sort_direction)
     {
-      $this->_sort_direction = lattice::config('objects', sprintf('//list[@name="%s"]', $this->objecttype->objecttypename))->item(0)->getAttribute('sort_direction');   
+      $this->_sort_direction = core_lattice::config('objects', sprintf('//list[@name="%s"]', $this->objecttype->objecttypename))->item(0)->getAttribute('sort_direction');   
     }
 
     return $this->_sort_direction;
@@ -44,7 +44,7 @@ class Model_List_container extends Model_Object {
     if ( ! $this->_xml_config)
     {
       $x_path_lookup = sprintf('//list[@name="%s"]', $this->objecttype->objecttypename);
-      $this->_xml_config = lattice::config('objects', $x_path_lookup)->item(0);
+      $this->_xml_config = core_lattice::config('objects', $x_path_lookup)->item(0);
       if ( ! $this->_xml_config)
       {
         throw new Kohana_Exception('Failed to find x_path config in objects.xml :lookup', array(':lookup' => $x_path_lookup));

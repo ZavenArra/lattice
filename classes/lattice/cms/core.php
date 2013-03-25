@@ -33,7 +33,7 @@ class Lattice_Cms_Core {
 
         // check if this element type is in fact a object_type
         $x_path =  sprintf('//objectType[@name="%s"]', $element['type']);
-        $t_config = lattice::config('objects', $x_path)->item(0);
+        $t_config = core_lattice::config('objects', $x_path)->item(0);
 
         if ($t_config)
         {
@@ -96,9 +96,9 @@ class Lattice_Cms_Core {
         case 'element': // this should not be called 'element' as element has a different meaning
           if (isset($element['arguments']))
           {
-            $html = lattice::build_module($element, $element['elementname'], $element['arguments']);
+            $html = core_lattice::build_module($element, $element['elementname'], $element['arguments']);
           } else {
-            $html = lattice::build_module($element, $element['elementname']);
+            $html = core_lattice::build_module($element, $element['elementname']);
           }
           $html_chunks[$element['modulename']] = $html;
           break;
@@ -181,7 +181,7 @@ class Lattice_Cms_Core {
       $object->objecttype->objecttypename,
       $element_name
     );
-    $element = lattice::config('objects', $x_path);
+    $element = core_lattice::config('objects', $x_path);
     if ( ! $element OR !$element->length )
     {
       throw new Kohana_Exception('x_path returned no results: '. $x_path);
@@ -192,7 +192,7 @@ class Lattice_Cms_Core {
 
   public static function buildUIHtml_chunks_for_object($object, $translated_language_code = NULL)
   {
-    $elements = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename));
+    $elements = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename));
     //  should be Model_object->get_elements();
     //  this way a different driver could be created for non-xml config if desired
     $elements_config = array();
@@ -226,7 +226,7 @@ class Lattice_Cms_Core {
     case 'file':
     case 'image':
       $ext = array();
-      $children = lattice::config('objects', 'ext', $element);
+      $children = core_lattice::config('objects', 'ext', $element);
       foreach ($children as $child)
       {
         if ($child->tagName == 'ext')
@@ -237,7 +237,7 @@ class Lattice_Cms_Core {
       $entry['extensions'] = implode(',', $ext);
       break;
     case 'radio_group':
-      $children = lattice::config('objects', 'radio', $element);
+      $children = core_lattice::config('objects', 'radio', $element);
       $radios = array();
       foreach ($children as $child)
       {
@@ -250,7 +250,7 @@ class Lattice_Cms_Core {
 
       //  Begin pulldown change
     case 'pulldown':
-      $children = lattice::config('objects', 'option', $element); // $element['type']);
+      $children = core_lattice::config('objects', 'option', $element); // $element['type']);
       $options  = array();
       foreach ($children as $child)
       {
@@ -284,9 +284,9 @@ class Lattice_Cms_Core {
   public static function regenerate_images()
   {
     // find all images
-    foreach (lattice::config('objects', '//objectType') as $object_type)
+    foreach (core_lattice::config('objects', '//objectType') as $object_type)
     {
-      foreach (lattice::config('objects', 'elements/*', $object_type) as $element)
+      foreach (core_lattice::config('objects', 'elements/*', $object_type) as $element)
       {
         if ($element->tagName == 'image')
         {
@@ -310,7 +310,7 @@ class Lattice_Cms_Core {
     foreach ($object_ids as $id)
     {
       $object = Graph_Core::object($id);
-      foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element)
+      foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object->objecttype->objecttypename)) as $element)
       {
         if ($element->tagName == 'image')
         {
@@ -362,7 +362,7 @@ class Lattice_Cms_Core {
   {
     $object_type_name = $object->objecttypename;
     $x_path = sprintf('//objectType[addableObject[@objectTypeName="%s"]]', $object_type_name);
-    $object_types_result = lattice::config('objects', $x_path);
+    $object_types_result = core_lattice::config('objects', $x_path);
 
     $object_types = array();
     foreach ($object_types_result as $object_type)

@@ -1,7 +1,7 @@
 <?php
 /* @package Lattice */
 
-Class Lattice_Associator {
+Class Lattice_Cms_Associator {
   public $parent_id = NULL;
   public $parent = NULL;
   public $lattice = NULL;
@@ -21,7 +21,7 @@ Class Lattice_Associator {
   private $page_num = 1;
   public static function get_filters_from_dom_node($node)
   {
-    $filters_node_list = lattice::config('objects', 'filter', $node);
+    $filters_node_list = core_lattice::config('objects', 'filter', $node);
     $filters = array();
     foreach ($filters_node_list as $filter)
     {

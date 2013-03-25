@@ -1,7 +1,7 @@
 <?php
 /* @package Lattice */
 
-class Lattice_Frontend {
+class Lattice_Frontend_Front {
   public static function make_html_element($element, $prefix, $indent='')
   {
 

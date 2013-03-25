@@ -5,7 +5,7 @@
  * using slugs or ids to navigate between objects.  Works hand in
  * hand with the slugs hook
  */
-Class Controller_Core_Views extends Controller_Layout{
+Class Controller_Core_Views extends Core_Controller_Layout{
 
   protected $_actions_that_get_layout = array(
     'get_view',

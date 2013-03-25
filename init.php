@@ -183,7 +183,7 @@ class FrontendRouting {
       }
 
 			return;
-			$config = lattice::config('frontend', '//view[@name="'.$uri.'"]');
+			$config = core_lattice::config('frontend', '//view[@name="'.$uri.'"]');
 			if ($config->length){
          return array(
              'controller' => 'core_views',

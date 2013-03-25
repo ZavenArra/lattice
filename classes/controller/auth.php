@@ -3,7 +3,7 @@
  * @package    Lattice_auth
  * @author     Deepwinter
  */
-class Controller_Auth extends Controller_Layout {
+class Controller_Auth extends Core_Controller_Layout {
 
   protected $_actions_that_get_layout = array(
     'index',

@@ -189,7 +189,7 @@ Class Lattice_Cms_Ui{
   public static function radio_group( $field, $class, $radios, $field_value, $label=NULL, $label_class=NULL )
   {
     $microtime = str_replace(array(' ', '.'), '', microtime());
-    $name =$field.cms_ui::$unique++.$microtime;
+    $name =$field.lattice_cms_ui::$unique++.$microtime;
     $element_array = array( 'type'=>'radio_group', 'radioname'=>$name, 'class'=>$class, 'grouplabel'=>$label, 'name'=>$field, 'radios'=> $radios, "label_class"=>$label_class );
     return cms_ui::buildUIElement( $element_array, $field_value );
   }

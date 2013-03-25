@@ -1,6 +1,6 @@
 <?php
 
-class Controller_Lattice extends Controller {
+class Core_Controller_Lattice extends Controller {
 
   public static $top_controller;
 
@@ -133,17 +133,17 @@ class Controller_Lattice extends Controller {
     if (self::$top_controller == NULL)
     {
       return;
-      // self::$top_controller should not be NULL, in order to use load_resources_for_key you must extend Controller_Lattice in the controller of your initial route 
+      // self::$top_controller should not be NULL, in order to use load_resources_for_key you must extend Core_Controller_Lattice in the controller of your initial route 
     }
 
     // should add to self, then merge into top_controller
     if ($css = Kohana::find_file('resources', 'css/'.$key, 'css'))
     {
-      $this->resources['css'][$css] = lattice::convert_full_path_to_web_path($css);
+      $this->resources['css'][$css] = core_lattice::convert_full_path_to_web_path($css);
     }
     if ($js = Kohana::find_file('resources', 'js/'.$key, 'js'))
     {
-      $this->resources['js'][$js] = lattice::convert_full_path_to_web_path($js);
+      $this->resources['js'][$js] = core_lattice::convert_full_path_to_web_path($js);
     }
 
     $config = Kohana::config($key);

@@ -175,15 +175,15 @@ class Lattice_Graph_Core {
       $object_type_config = NULL;
       $x_path =  sprintf('//objectType[@name="%s"]', $object_type_name);
       $x_path_list =  sprintf('//list[@name="%s"]', $object_type_name);
-      if ( ! $object_type_config = lattice::config('objects', $x_path)->item(0))
+      if ( ! $object_type_config = core_lattice::config('objects', $x_path)->item(0))
       { 
-        if ( ! $object_type_config = lattice::config('objects', $x_path_list)->item(0))
+        if ( ! $object_type_config = core_lattice::config('objects', $x_path_list)->item(0))
         {
           throw new Kohana_Exception("Object type '".$object_type_name."' does not exist in objects.xml"); 
         }
       }
 
-      foreach (lattice::config('objects', 'elements/*', $object_type_config) as $item)
+      foreach (core_lattice::config('objects', 'elements/*', $object_type_config) as $item)
       {
         if ($item->getAttribute('name')=='title')
         {
@@ -205,7 +205,7 @@ class Lattice_Graph_Core {
 
     /*
      * This can just happen on the fly - lazy configure
-     foreach ( lattice::config('objects', '//objectType[@name="'.$object_type_name.'"]/elements/*') as $item)
+     foreach ( core_lattice::config('objects', '//objectType[@name="'.$object_type_name.'"]/elements/*') as $item)
      {
        $t_record->configure_element($item);
   }

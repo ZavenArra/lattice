@@ -5,7 +5,7 @@
  * and passwords.  Can be configured deal with roles using the managedroles variables.
  */
 
-Class Controller_Custom_reel extends Controller_Layout {
+Class Controller_Custom_reel extends Core_Controller_Layout {
 
   protected $_actions_that_get_layout = array('index');
 

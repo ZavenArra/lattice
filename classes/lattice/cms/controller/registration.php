@@ -1,6 +1,6 @@
 <?php
 
-Class Lattice_Cms_Controller_Registration extends Controller_Layout {
+Class Lattice_Cms_Controller_Registration extends Core_Controller_Layout {
 
   protected $_actions_that_get_layout = array(
     'index',

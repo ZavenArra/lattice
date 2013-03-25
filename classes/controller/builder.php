@@ -88,7 +88,7 @@ class Controller_Builder extends Controller {
       $xml_file = 'application/export/'.$xml_file.'/'.$xml_file.'.xml';
     }
     echo "\n_inserting Data\n";
-    $this->insert_data($xml_file, NULL, lattice::config($xml_file, 'nodes')->item(0) );
+    $this->insert_data($xml_file, NULL, core_lattice::config($xml_file, 'nodes')->item(0) );
 
     latticecms::regenerate_images();
 
@@ -114,11 +114,11 @@ class Controller_Builder extends Controller {
   public function insert_relationships($xml_file)
   {
 
-    $lattices = lattice::config($xml_file, 'relationships/lattice');
+    $lattices = core_lattice::config($xml_file, 'relationships/lattice');
     foreach ($lattices as $latticeDOM)
     {
       $lattice = Graph_Core::lattice($latticeDOM->getAttribute('name'));
-      $relationships = lattice::config($xml_file, 'relationship', $latticeDOM);
+      $relationships = core_lattice::config($xml_file, 'relationship', $latticeDOM);
       foreach ($relationships as $relationship)
       {
         $parent_slug = $relationship->getAttribute('parent');  
@@ -152,7 +152,7 @@ class Controller_Builder extends Controller {
 
     $xml_file = 'application/export/'.$xml_file.'/'.$xml_file.'.xml';
 
-    $this->insert_data($xml_file, $parent_object->id, lattice::config($xml_file, 'nodes')->item(0) ); 
+    $this->insert_data($xml_file, $parent_object->id, core_lattice::config($xml_file, 'nodes')->item(0) ); 
 
     $this->insert_relationships($xml_file);
 
@@ -171,7 +171,7 @@ class Controller_Builder extends Controller {
     }
 
 
-    $items = lattice::config($xml_file, 'item', $context);
+    $items = core_lattice::config($xml_file, 'item', $context);
     foreach ($items as $item)
     {
 
@@ -186,7 +186,7 @@ class Controller_Builder extends Controller {
 
       $data = array();
       $clusters_data = array();
-      $fields = lattice::config($xml_file, 'field', $item );
+      $fields = core_lattice::config($xml_file, 'field', $item );
       foreach ($fields as $content)
       {
         $field = $content->getAttribute('name');
@@ -204,18 +204,18 @@ class Controller_Builder extends Controller {
         }
 
         // need to look up field and switch on field type 
-        $field_info = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
+        $field_info = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
         if ( ! $field_info)
         {
           throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
         }
 
         // if an element is actually an object, prepare it for insert/update
-        if (lattice::config('objects', sprintf('//objectType[@name="%s"]', $field_info->tagName))->length > 0)
+        if (core_lattice::config('objects', sprintf('//objectType[@name="%s"]', $field_info->tagName))->length > 0)
         {
           // we have a cluster..               
           $cluster_data = array();
-          foreach (lattice::config($xml_file, 'field', $content) as $cluster_field)
+          foreach (core_lattice::config($xml_file, 'field', $content) as $cluster_field)
           {
             $cluster_data[$cluster_field->getAttribute('name')] = $cluster_field->nodeValue;
           }
@@ -272,7 +272,7 @@ class Controller_Builder extends Controller {
 
       // check for pre-existing object as list container
       // echo sprintf('//objectType[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename);
-      foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename)) as $list_container_type)
+      foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename)) as $list_container_type)
       {
         $preexisting_object = Graph_Core::object()
           ->lattice_children_filter($parent_object->id)
@@ -310,12 +310,12 @@ class Controller_Builder extends Controller {
 
 
       // do recursive if it has children
-      if (lattice::config($xml_file, 'item', $item)->length )
+      if (core_lattice::config($xml_file, 'item', $item)->length )
       {
         $this->insert_data($xml_file, $object_id,  $item);
       }
 
-      $lists = lattice::config($xml_file, 'list', $item);
+      $lists = core_lattice::config($xml_file, 'list', $item);
       foreach ($lists as $list)
       {
         // find the container

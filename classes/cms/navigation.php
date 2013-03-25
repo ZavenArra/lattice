@@ -1,3 +1,3 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 
-abstract class Frontend extends Lattice_Frontend { }
+class Cms_Navigation extends Lattice_Cms_Navigation { }

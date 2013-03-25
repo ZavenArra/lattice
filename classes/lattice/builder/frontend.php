@@ -17,14 +17,14 @@ Class Lattice_Builder_Frontend {
     echo "Configuring Frontend\n";
     echo "Reading application/config/frontend.xml\n";
 
-    lattice::config('objects', '//objectTypes');
+    core_lattice::config('objects', '//objectTypes');
 
     cms_util::flush_ob();
 
     $created_views = array();
-    foreach (lattice::config('objects', '//objectType') as $object_type)
+    foreach (core_lattice::config('objects', '//objectType') as $object_type)
     {
-      $view = lattice::config('frontend', '//view[@name="'.$object_type->getAttribute('name').'"]');
+      $view = core_lattice::config('frontend', '//view[@name="'.$object_type->getAttribute('name').'"]');
       if (count($view))
       {
         $view = $view->item(0);
@@ -45,7 +45,7 @@ Class Lattice_Builder_Frontend {
       {
         echo "<h1><?php=\$content['main']['title'];?></h1>\n\n";
         // this also implies that name is a objecttypename
-        foreach (lattice::config('objects', 
+        foreach (core_lattice::config('objects', 
           sprintf('//objectType[@name="%s"]/elements/*', $view_name )) as $element)
         {
 
@@ -58,7 +58,7 @@ Class Lattice_Builder_Frontend {
             $this->make_associator_data_html($element, "\$content['main']");
             break;
           default:
-            frontend::make_html_element($element, "\$content['main']");
+            frontend_front::make_html_element($element, "\$content['main']");
             break;
           }
 
@@ -68,7 +68,7 @@ Class Lattice_Builder_Frontend {
         {
 
           // Now the include_data
-          if ($i_data_nodes = lattice::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/includeData"))
+          if ($i_data_nodes = core_lattice::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/includeData"))
           {
             foreach ($i_data_nodes as $i_data_config)
             {
@@ -77,7 +77,7 @@ Class Lattice_Builder_Frontend {
             }
           }
 
-          if ($subviews = lattice::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/subview"))
+          if ($subviews = core_lattice::config('frontend',"//view[@name=\"".$view->getAttribute('name')."\"]/subview"))
           {
             foreach ($subviews as $subview_config)
             {
@@ -103,7 +103,7 @@ Class Lattice_Builder_Frontend {
     cms_util::flush_ob();
 
     // and any virtual views
-    foreach (lattice::config('frontend', '//view') as $view_config)
+    foreach (core_lattice::config('frontend', '//view') as $view_config)
     {
       $view_name = $view_config->getAttribute('name');
 
@@ -119,7 +119,7 @@ Class Lattice_Builder_Frontend {
 
 
       // Now the include_data
-      if ($i_data_nodes = lattice::config('frontend',"//view[@name=\"".$view_name."\"]/includeData"))
+      if ($i_data_nodes = core_lattice::config('frontend',"//view[@name=\"".$view_name."\"]/includeData"))
       {
         foreach ($i_data_nodes as $i_data_config)
         {
@@ -128,7 +128,7 @@ Class Lattice_Builder_Frontend {
         }
       }
 
-      if ($subviews = lattice::config('frontend',"//view[@name=\"".$view_name."\"]/subview"))
+      if ($subviews = core_lattice::config('frontend',"//view[@name=\"".$view_name."\"]/subview"))
       {
         foreach ($subviews as $subview_config)
         {
@@ -152,7 +152,7 @@ Class Lattice_Builder_Frontend {
     public function make_list_data_html($list_data_config, $prefix, $indent = '')
     {
       $object_types = array();
-      foreach (lattice::config('objects', 'addable_object', $list_data_config) as $addable)
+      foreach (core_lattice::config('objects', 'addable_object', $list_data_config) as $addable)
       {
         $object_type_name = $addable->getAttribute('objectTypeName');
         $object_types[$object_type_name] = $object_type_name;
@@ -167,7 +167,7 @@ Class Lattice_Builder_Frontend {
     public function make_associator_data_html($associator_data_config, $prefix, $indent = '')
     {
       $object_types = array();
-      $filters = lattice::config('objects', 'filter', $associator_data_config);
+      $filters = core_lattice::config('objects', 'filter', $associator_data_config);
       foreach ($filters as $filter)
       {
         if ($filter->getAttribute('objectTypeName'))
@@ -217,7 +217,7 @@ Class Lattice_Builder_Frontend {
         {
 
           // get the info from addable_objects of the current
-          foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/addable_object', $parent_template)) as $addable)
+          foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/addable_object', $parent_template)) as $addable)
           {
             $object_type_name = $addable->getAttribute('objectTypeName');
             $object_types[$object_type_name] = $object_type_name;
@@ -286,7 +286,7 @@ Class Lattice_Builder_Frontend {
         }
         echo $indent . "  <li class=\"$object_type_name\">\n";
         echo $indent . "   " . "<h2><?php=\${$label}Item['title'];?></h2>\n\n";
-        foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object_type_name)) as $element)
+        foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object_type_name)) as $element)
         {
           switch($element->tagName)
           {
@@ -297,7 +297,7 @@ Class Lattice_Builder_Frontend {
             $this->make_associator_data_html($element, "\${$label}Item", $indent);
             break;
           default:
-            frontend::make_html_element($element, "\${$label}Item", $indent . "   ");
+            frontend_front::make_html_element($element, "\${$label}Item", $indent . "   ");
             break;
           }
         }
@@ -305,7 +305,7 @@ Class Lattice_Builder_Frontend {
         // handle lower levels
         if ($frontend_node)
         {
-          foreach (lattice::config('frontend', 'includeData', $frontend_node) as $next_level)
+          foreach (core_lattice::config('frontend', 'includeData', $frontend_node) as $next_level)
           {
             $this->make_include_data_html($next_level, "\${$label}Item", $object_type_name, $indent . "   ");
           }
@@ -334,7 +334,7 @@ Class Lattice_Builder_Frontend {
       if ($object->loaded())
       {
         // find its addable objects
-        foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/addable_object', $object->objecttype->objecttypename)) as $addable)
+        foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/addable_object', $object->objecttype->objecttypename)) as $addable)
         {
           $object_type_name = $addable->getAttribute('objectTypeName');
           $object_types[$object_type_name] = $object_type_name;

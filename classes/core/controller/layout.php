@@ -1,14 +1,14 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 /*
- * Class: Controller_Layout
- * Extension of Controller_Lattice which handles automatic wrapping of the main request in header and footer layout.
+ * Class: Core_Controller_Layout
+ * Extension of Core_Controller_Lattice which handles automatic wrapping of the main request in header and footer layout.
  * Extend this class and set $_aactions_that_get_layout with actions that should always be wraped with the layout specified in their config.
  * In the future, config could have a mapping of actions to layouts, if necessary.
  * Auto wrapping can be manually bypassed by calling the html action as html/controller/action/etc.
  */
 
-class Controller_Layout extends Controller_Lattice {
+class Core_Controller_Layout extends Core_Controller_Lattice {
 
   protected $_actions_that_get_layout = array();
 

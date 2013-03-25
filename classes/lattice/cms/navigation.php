@@ -5,7 +5,7 @@
  *
  */
 
-class Lattice_Navigation {
+class Lattice_Cms_Navigation {
 
 
   /*
@@ -61,7 +61,7 @@ class Lattice_Navigation {
   public static function get_node_info_by_id($id)
   {
     $object = Graph_Core::object($id);
-    $node_info = Navigation::get_node_info($object);
+    $node_info = Cms_Navigation::get_node_info($object);
     return $node_info;
   }
 

@@ -5,7 +5,7 @@
  *
  */
 
-class Controller_Navigation extends Controller_Lattice{
+class Controller_Navigation extends Core_Controller_Lattice{
 
   private $default_add_category_text = '';
   private $default_add_leaf_text = '';
@@ -73,7 +73,7 @@ class Controller_Navigation extends Controller_Lattice{
             continue;
           }
         }
-        $send_item = Navigation::get_node_info($child);
+        $send_item = Cms_Navigation::get_node_info($child);
 
         // implementation of deeplinking
         $send_item['follow'] = FALSE;
@@ -107,7 +107,7 @@ class Controller_Navigation extends Controller_Lattice{
       // add in any modules
       if ($parent->id == Graph_Core::get_root_node(Kohana::config('cms.graph_root_node'))->id )
       {
-        $cms_modules = lattice::config('cms_modules', '//module');
+        $cms_modules = core_lattice::config('cms_modules', '//module');
         foreach ($cms_modules as $m)
         {
           $controller = $m->getAttribute('controller');
@@ -214,7 +214,7 @@ class Controller_Navigation extends Controller_Lattice{
   public function get_object_types()
   {
     $object_types = array();
-    foreach (lattice::config('objects', '//objectType') as $object_type)
+    foreach (core_lattice::config('objects', '//objectType') as $object_type)
     {
       $entry = array();
       $entry['object_type_name'] = $object_type->getAttribute('name'); 

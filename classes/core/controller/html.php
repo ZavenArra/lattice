@@ -1,11 +1,11 @@
 <?php
 /*
- * Class: Controller_HTML
+ * Class: Core_Controller_Html
  * This controller provides a simple manual override to the auto layout wrapping
- * implemented in Controller_Layout subclasses. 
+ * implemented in Core_Controller_Layout subclasses. 
  */
 
-Class Controller_HTML extends Controller_Lattice {
+Class Core_Controller_Html extends Core_Controller_Lattice {
 
   public function action_html($uri)
   {

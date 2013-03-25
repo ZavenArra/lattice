@@ -55,7 +55,7 @@ class Lattice_Core_Cms extends Lattice_CMSInterface {
 
     $this->load_resources('lattice_cms');
 
-    lattice::config('objects', 'object_types');
+    core_lattice::config('objects', 'object_types');
 
   }
 

@@ -313,7 +313,7 @@ class Model_Object extends ORM implements arrayaccess {
 
 
     // check if this is a list container
-    $list_config = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]', $this->objecttype->objecttypename, $column));
+    $list_config = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list[@name="%s"]', $this->objecttype->objecttypename, $column));
     if ($list_config->length)
     {
 
@@ -464,7 +464,7 @@ class Model_Object extends ORM implements arrayaccess {
       // everything else is a normal lookup
       $x_path = sprintf('//objectType[@name="%s"]', $this->__get('objecttype')->objecttypename);
     }
-    $field_config = lattice::config('objects', $x_path . sprintf('/elements/*[@name="%s"]', $element_name));
+    $field_config = core_lattice::config('objects', $x_path . sprintf('/elements/*[@name="%s"]', $element_name));
     return $field_config;
   }
 
@@ -524,7 +524,7 @@ class Model_Object extends ORM implements arrayaccess {
         $object_type = ORM::Factory('objecttype', $objecttype_id);
 
         $xpath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $object_type->objecttypename, $column);
-        $field_info = lattice::config('objects', $xpath)->item(0);
+        $field_info = core_lattice::config('objects', $xpath)->item(0);
         if ( ! $field_info)
         {
           throw new Kohana_Exception('Invalid field for object_type, using XPath : :xpath', array(':xpath' => $xpath));
@@ -776,7 +776,7 @@ class Model_Object extends ORM implements arrayaccess {
       $content['dateadded'] = $this->dateadded;
       $content['object_type_name'] = $this->objecttype->objecttypename;
 
-      $fields = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
+      $fields = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
 
       foreach ($fields as $field_info)
       {
@@ -785,14 +785,14 @@ class Model_Object extends ORM implements arrayaccess {
       }
 
       // find any lists
-      foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
+      foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
       {
         $name = $list->getAttribute('name');
         $content[$name] = $this->get_list_content_as_array($name);
       }
 
       // find any associators
-      foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/associator', $this->objecttype->objecttypename)) as $list)
+      foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/associator', $this->objecttype->objecttypename)) as $list)
       {
         $name = $list->getAttribute('name');
         $content[$name] = $this->get_lattice_children($list->getAttribute('name'));;
@@ -804,13 +804,13 @@ class Model_Object extends ORM implements arrayaccess {
     {
       $fields = array('id', 'title', 'slug', 'dateadded', 'objecttypename');
 
-      $object_fields = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
+      $object_fields = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
       foreach ($object_fields as $field_info)
       {
         $fields[] = $field_info->getAttribute('name');   
       }
 
-      foreach (lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
+      foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
       {
         $family = $list->getAttribute('name');
         $fields[] = $family;
@@ -1170,7 +1170,7 @@ class Model_Object extends ORM implements arrayaccess {
 
       // do the resizing
       $objecttypename = $this->objecttype->objecttypename;
-      $resizes = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]/resize', $objecttypename, $field
+      $resizes = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]/resize', $objecttypename, $field
       )
     );
       foreach ($resizes as $resize)
@@ -1291,7 +1291,7 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function join_content_column($column)
     {
-      $map = lattice::config('objects', '//objectType[elements/*/@name="'.$column.'"]'); 
+      $map = core_lattice::config('objects', '//objectType[elements/*/@name="'.$column.'"]'); 
       $map_query = array();
       if ($map->length)
       {
@@ -1685,7 +1685,7 @@ class Model_Object extends ORM implements arrayaccess {
 
 
       // chain problem
-      $containers = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename));
+      $containers = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename));
       foreach ($containers as $c)
       {
         $arguments['title'] = $c->getAttribute('label');
@@ -1698,7 +1698,7 @@ class Model_Object extends ORM implements arrayaccess {
 
       // look up any components and add them as well
       // configured components
-      $components = lattice::config('objects', sprintf('//objectType[@name="%s"]/components/component', $this->objecttype->objecttypename));
+      $components = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/components/component', $this->objecttype->objecttypename));
       foreach ($components as $c)
       {
         $arguments = array();
@@ -1767,7 +1767,7 @@ class Model_Object extends ORM implements arrayaccess {
 
       // check for enabled publish/unpublish. 
       // if not enabled, insert as published
-      $t_settings = lattice::config('objects', sprintf('//objectType[@name="%s"]', $this->objecttype->objecttypename));
+      $t_settings = core_lattice::config('objects', sprintf('//objectType[@name="%s"]', $this->objecttype->objecttypename));
       $t_settings = $t_settings->item(0);
       $this->published = 1;
       if ($t_settings)
@@ -1830,7 +1830,7 @@ class Model_Object extends ORM implements arrayaccess {
 
 
 
-      $lookup_templates = lattice::config('objects', '//objectType');
+      $lookup_templates = core_lattice::config('objects', '//objectType');
       $object_types = array();
       foreach ($lookup_templates as $t_config)
       {
@@ -1853,7 +1853,7 @@ class Model_Object extends ORM implements arrayaccess {
         }
 
         $field_infoXPath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $this->objecttype->objecttypename, $field);
-        $field_info = lattice::config('objects', $field_infoXPath)->item(0);
+        $field_info = core_lattice::config('objects', $field_infoXPath)->item(0);
         if ( ! $field_info)
         {
           throw new Kohana_Exception("No field info found in objects.xml while adding new object, using Xpath :xpath", array(':xpath' => $field_infoXPath));
@@ -2099,13 +2099,13 @@ class Model_Object extends ORM implements arrayaccess {
           // check objects.xml for configuration
           $x_path =  sprintf('//objectType[@name="%s"]', $object_type_name);
           $x_path_list =  sprintf('//list[@name="%s"]', $object_type_name);
-          if ($object_type_config = lattice::config('objects', $x_path)->item(0))
+          if ($object_type_config = core_lattice::config('objects', $x_path)->item(0))
           {
             // there's a config for this object_type
             // go ahead and configure it
             Graph_Core::configure_object_type($object_type_name);
             $object_type = ORM::Factory('objecttype', $object_type_name);
-          } elseif ($object_type_config = lattice::config('objects', $x_path_list)->item(0))
+          } elseif ($object_type_config = core_lattice::config('objects', $x_path_list)->item(0))
           { 
             Graph_Core::configure_object_type($object_type_name);
             $object_type = ORM::Factory('objecttype', $object_type_name);
@@ -2212,7 +2212,7 @@ class Model_Object extends ORM implements arrayaccess {
         $lattice);
       // echo $x_path;
 
-      $config = lattice::config('objects', $x_path); 
+      $config = core_lattice::config('objects', $x_path); 
       if ( ! $config->item(0))
       {
         return NULL;

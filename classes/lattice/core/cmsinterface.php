@@ -6,7 +6,7 @@
  * @author Matthew Shultz
  * @package Lattice
  */
-abstract class Lattice_Core_CMSInterface extends Controller_Layout {
+abstract class Lattice_Core_CMSInterface extends Core_Controller_Layout {
 
 
   public function __construct($request, $response)

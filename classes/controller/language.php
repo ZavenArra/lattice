@@ -5,7 +5,7 @@ Class Controller_Language extends Controller {
   public function action_change_language($language_code, $redirect_object_id = NULL)
   {
 
-    lattice::set_current_language($language_code);
+    core_lattice::set_current_language($language_code);
     if ($redirect_object_id)
     {
       // process redirect with new language_code
