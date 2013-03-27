@@ -12,13 +12,13 @@ Class Lattice_Cms_Ui{
   private static $unique = 1;
 
   /*
-   * Function: buildUIElement
+   * Function: build_ui_element
    * Builds a UI element from the cms_ui views directory
    * $element -  array of key value pairs passed to the object_type, including 'type' key which indicates the object_type to use
    * $fieldvalue - the value to display
    * Example: build_text_element(array('type'=>'text', 'name'=>'fieldname', 'class'=>'class_name'), {Value})
    */
-  public static function buildUIElement($element, $fieldvalue=NULL)
+  public static function build_ui_element($element, $fieldvalue=NULL)
   {
     $view = 'ui/'.$element['type'];
 
@@ -171,19 +171,19 @@ Class Lattice_Cms_Ui{
   public static function Input( $field, $class, $tag, $field_value, $label=NULL, $size=32 )
   {
     $element_array = array( 'type'=>'input', 'name'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "size"=>$size );
-    return cms_ui::buildUIElement( $element_array, $field_value);
+    return cms_ui::build_ui_element( $element_array, $field_value);
   }
 
   public static function text( $field, $class, $tag, $field_value, $label=NULL, $label_class=NULL )
   {
     $element_array = array( 'type'=>'text', 'name'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "label_class"=>$label_class );
-    return cms_ui::buildUIElement( $element_array, $field_value);
+    return cms_ui::build_ui_element( $element_array, $field_value);
   }
 
   public static function password( $field, $class, $tag, $field_value, $label=NULL, $label_class=NULL )
   {
     $element_array = array( 'type'=>'password', 'name'=>$field, 'label'=>$label, 'class'=>$class, 'tag'=>$tag, "label_class"=>$label_class );
-    return cms_ui::buildUIElement( $element_array, $field_value);		
+    return cms_ui::build_ui_element( $element_array, $field_value);		
   }
 
   public static function radio_group( $field, $class, $radios, $field_value, $label=NULL, $label_class=NULL )
@@ -191,29 +191,29 @@ Class Lattice_Cms_Ui{
     $microtime = str_replace(array(' ', '.'), '', microtime());
     $name =$field.lattice_cms_ui::$unique++.$microtime;
     $element_array = array( 'type'=>'radio_group', 'radioname'=>$name, 'class'=>$class, 'grouplabel'=>$label, 'name'=>$field, 'radios'=> $radios, "label_class"=>$label_class );
-    return cms_ui::buildUIElement( $element_array, $field_value );
+    return cms_ui::build_ui_element( $element_array, $field_value );
   }
 
   public static function checkbox( $field, $checkboxvalue, $value, $label)
   {
-    return cms_ui::buildUIElement( array('type'=>'checkbox', 'name'=>$field, 'checkboxvalue'=>$checkboxvalue, 'label'=>$label, 'class'=>'checkbox'), $value);
+    return cms_ui::build_ui_element( array('type'=>'checkbox', 'name'=>$field, 'checkboxvalue'=>$checkboxvalue, 'label'=>$label, 'class'=>'checkbox'), $value);
   }
 
   public static function file($field, $extensions, $maxlength, $current_file=NULL )
   {
-    return cms_ui::buildUIElement( array('type'=>'file', 'name'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $current_file );
+    return cms_ui::build_ui_element( array('type'=>'file', 'name'=>$field, 'extensions'=>$extensions, 'maxlength'=>$maxlength,  ), $current_file );
   }
 
   public static function fieldmap($values, $options)
   {
-    return cms_ui::buildUIElement(array('type'=>'fieldmap', 'values'=>$values, 'options'=>$options) );
+    return cms_ui::build_ui_element(array('type'=>'fieldmap', 'values'=>$values, 'options'=>$options) );
   }
 
   //  0ak - revisit this function.  Needed?
   public static function pulldown ( $field, $class, $options, $field_value, $label=NULL, $label_class=NULL )
   {
     $element_array = array( 'type'=>'pulldown',  'class'=>$class, 'label'=>$label, 'name'=>$field, 'options'=> $options, "label_class"=>$label_class );
-    return cms_ui::buildUIElement( $element_array, $field_value );
+    return cms_ui::build_ui_element( $element_array, $field_value );
   }
 
 

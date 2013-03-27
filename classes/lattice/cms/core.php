@@ -135,14 +135,14 @@ class Lattice_Cms_Core {
 
         case 'password':
           $key = $element['type'] . '_' . $ui_arguments['name'];
-          $html = self::buildUIElement($element, $ui_arguments, NULL);
+          $html = self::build_ui_element($element, $ui_arguments, NULL);
           $html_chunks[$key] = $html;
           break;
 
         default:
           // deal with html object_type elements
           $key = $element['type'] . '_' . $ui_arguments['name'];
-          $html = self::buildUIElement($element, $ui_arguments, $object->{$element['name']});
+          $html = self::build_ui_element($element, $ui_arguments, $object->{$element['name']});
           $html_chunks[$key] = $html;
           break;
         }
@@ -154,15 +154,15 @@ class Lattice_Cms_Core {
     return $html_chunks;
   }
 
-  private static function buildUIElement($element, $ui_arguments, $value)
+  private static function build_ui_element($element, $ui_arguments, $value)
   {
 
     $html = NULL;
     if ( ! isset($element['name']))
     {
       $element['name'] = LatticeCMS::unique_element_id();
-      $html = cms_ui::buildUIElement($element, NULL);
-    } elseif ( ! $html = cms_ui::buildUIElement($ui_arguments, $value))
+      $html = cms_ui::build_ui_element($element, NULL);
+    } elseif ( ! $html = cms_ui::build_ui_element($ui_arguments, $value))
     {
       throw new Kohana_Exception('bad config in cms: bad ui element');
     }

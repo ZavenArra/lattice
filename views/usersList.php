@@ -4,7 +4,7 @@
   <?php foreach ($usersList as $user):?>
     <div class="checkbox">
       <?=form::checkbox('user',$user["id"],$user["checked"])?><?=$user["username"]?>
-      <?=cms_ui::buildUIElement( array('type'=>'checkbox', 'name'=>$field, 'checkboxvalue'=>$user['id'], 'label'=>$user['username'], 'class'=>'checkbox'), $user['checked'])?>
+      <?=cms_ui::build_ui_element( array('type'=>'checkbox', 'name'=>$field, 'checkboxvalue'=>$user['id'], 'label'=>$user['username'], 'class'=>'checkbox'), $user['checked'])?>
     </div>
   <?php endforeach;?>
   <?php else: ?>
