@@ -146,6 +146,10 @@ Class Lattice_Cms_Ui{
         $fieldvalue = $prep_field_value;
       }
       break;
+      
+    case 'item':
+		$element['item_name'] = 'fsdfdsf';
+		break;
     }
 
     if ( ! isset($element['class']))
@@ -222,8 +226,13 @@ Class Lattice_Cms_Ui{
     $view = new View('ui/tags');
     $view->tags = $current_tags;
     return $view->render();
-
-
   }
+  
+  // used to display the item type
+  public static function item($item_name)
+  {
+	 return View::factory('ui/item')->set('item_name', $item_name);
+  }
+  
 }
 

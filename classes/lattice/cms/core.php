@@ -45,7 +45,7 @@ class Lattice_Cms_Core {
             throw new Kohana_Exception('Cluster Object did not load for '.$object->id.': '.$field);
           }
 
-          $cluster_html_chunks = latticecms::buildUIHtml_chunks_for_object($cluster_object);
+          $cluster_html_chunks = cms_core::buildUIHtml_chunks_for_object($cluster_object);
 
 
           $customview = 'lattice/object_types/' . $cluster_object->objecttype->objecttypename; // check for custom view for this object_type
