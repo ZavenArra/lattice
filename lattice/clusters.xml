@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration SYSTEM "clusters.dtd">
+
+<configuration>
+	<clusters>
+<!-- 
+  page meta bits need to expand frontend side to offer more than just opengraph stuff maybe foaf and rdf
+-->
+    <objectType name="pagemeta">
+      <elements>
+        <text name="slug" label="Page Slug" />  
+        <text name="windowTitle" label="Browser Window Title" />  
+        <text name="description" label="Meta Description" />
+        <text name="socialDescription" label="Share Description" />
+        <text name="keywords" label="Page Keywords" />
+        <image name="img" label="Page Thumb">
+          <resize name="uithumb" width="90" height="90" forceDimension="height" />
+        </image>
+      </elements>
+    </objectType>
+<!-- link cluster -->
+		<objectType name="link">
+			<elements>
+    		<text name="label" label="Label" isMultiline="false" />	
+				<text name="url" label="URL" isMultiline="false" />
+        <checkbox name="external" label="external" />
+			</elements>
+		</objectType>
+
+<!-- @Todo, create an image cluster so that it's not necessary to define it via the ojbecttype, although that gives you more control over the markup, still some defaults are nice -->
+	</clusters>
+
+</configuration>
+

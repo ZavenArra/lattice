@@ -110,7 +110,7 @@ class Controller_List extends Lattice_CMSInterface {
     foreach ($list_members as $object)
     {
 
-      $html_chunks = latticecms::buildUIHtml_chunks_for_object($object);
+      $html_chunks = Cms_Core::buildUIHtml_chunks_for_object($object);
 
       $custom_item_view = 'lattice/object_types/' . $object->objecttype->objecttypename;
       $item_view = NULL;
@@ -203,7 +203,7 @@ class Controller_List extends Lattice_CMSInterface {
     //  $item->email = NULL;
     /*End cludge*/
 
-    $html_chunks = latticecms::buildUIHtml_chunks_for_object($object);
+    $html_chunks = Cms_Core::buildUIHtml_chunks_for_object($object);
 
     $custom_item_view = 'lattice/object_types/' . $object->objecttype->objecttypename;
     $item_view = NULL;

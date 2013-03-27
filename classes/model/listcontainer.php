@@ -10,7 +10,7 @@
  *
  * @author deepwinter1
  */
-class Model_List_container extends Model_Object {
+class Model_listcontainer extends Model_Object {
 
   protected $_has_one = array(
     'objecttype' => array('foreign_key'=>'objecttype_id')

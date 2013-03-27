@@ -117,7 +117,7 @@ class Lattice_Cms_Core {
           break;
 
         case 'associator':
-          $associator = new Associator($object->id, $element['lattice'],$element['filters']);
+          $associator = new Cms_Associator($object->id, $element['lattice'],$element['filters']);
           $associator->set_label($element['label']);
           $associator->set_pool_label($element['pool_label']);
           $associator->set_page_length(Kohana::config('cms.associator_page_length'));
@@ -265,7 +265,7 @@ class Lattice_Cms_Core {
     case 'associator':
       // need to load filters here
 
-      $entry['filters'] = Associator::get_filters_from_dom_node($element);
+      $entry['filters'] = Cms_Associator::get_filters_from_dom_node($element);
       $entry['pool_label'] = $element->getAttribute('pool_label');
       $entry['associator_type'] = $element->getAttribute('associator_type');
       $entry['page_length'] = Kohana::config('cms.associator_page_length');;
