@@ -364,7 +364,7 @@ class Lattice_Core_View {
       {
         foreach ($include_content_queries as $include_content_query_params)
         {
-          $query = new Graph_Core_Objectquery();
+          $query = new Graph_Objectquery();
           $query->init_with_xml($include_content_query_params);
           $include_content = $query->run($parent_id);
 

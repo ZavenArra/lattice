@@ -168,7 +168,7 @@ class FrontendRouting {
       }
       if ($object) {
          return array(
-             'controller' => 'core_views',
+             'controller' => 'latticeviews',
              'action' => 'get_view',
              'objectidorslug' => $object->slug
          );
@@ -186,7 +186,7 @@ class FrontendRouting {
 			$config = core_lattice::config('frontend', '//view[@name="'.$uri.'"]');
 			if ($config->length){
          return array(
-             'controller' => 'core_views',
+             'controller' => 'latticeviews',
              'action' => 'get_virtual_view',
              'objectidorslug' => $uri
          );
@@ -207,7 +207,7 @@ Route::set('defaultLatticeFrontend', '(<controller>)',
 		'controller'=>'',
 	))
 	->defaults(array(
-		'controller' => 'core_views',
+		'controller' => 'latticeviews',
 		'action' => 'get_view',
 		'id'     => 'home',
 	));
