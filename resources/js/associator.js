@@ -5,7 +5,7 @@ lattice.modules.Associator = new Class({
 	/* Section: Getters & Setters */	
 
 	getSaveFieldURL: function( itemObjectId ){
-	  var url = lattice.util.getBaseURL() +"ajax/data/associator/savefield/" + itemObjectId;
+	  var url = lattice.util.getBaseURL() +"ajax/data/associator/save_field/" + itemObjectId;
 //		console.log( '\t\getSaveFieldURL', url );
 		return url;
 	},
@@ -23,14 +23,16 @@ lattice.modules.Associator = new Class({
 	},
 	
 	getSubmitSortOrderURL: function( itemid, latticeid ){
-		var url = lattice.util.getBaseURL() + "ajax/data/cms/saveSortOrder/" + itemid + "/" + latticeid;
+		var url = lattice.util.getBaseURL() + "ajax/data/cms/save_sort_order/" + itemid + "/" + latticeid;
 //		console.log( '\t\getSubmitSortOrderURL', url );
 		return url;
 	},
 	
 	getFilterPoolByWordsURL: function( pid, latticeid, word ){
-		var url = lattice.util.getBaseURL() + "ajax/html/associator/filterPoolByWord/" + pid + "/" + latticeid + "/" + word;
-		log( '\t\getFilterPoolByWordURL', url );
+		var url = lattice.util.getBaseURL() + "ajax/compound/associator/filter_pool_by_word/" + pid + "/" + latticeid + "/0/" + word;
+  	//stuffing in page number as 0
+
+		console.log( '\t\getFilterPoolByWordURL', url );
 		return url;
 	},
 	
@@ -83,8 +85,8 @@ lattice.modules.CheckboxAssociator = new Class({
 	/* Section: Getters & Setters */	
 	
 	getAssociateURL: function( id, itemid, latticeid ){
+		console.log( 'getAssociateURL', id, itemid, latticeid  );
 		var url = lattice.util.getBaseURL() + 'ajax/html/associator/associate/' + id + "/" + itemid + "/" + latticeid;
-//	console.log( 'getAssociateURL', id, itemid, latticeid  );
 //	console.log( url );
 		return url;
 	},

@@ -1,13 +1,68 @@
 /*Navigation*/
 
-#navigation{
-	height: 27em;
-	width: 100%;
+header{
+	position: relative;
+	z-index: 999;
+	width: 960px;
 	clear: both;
 }
 
-#navigation .container{
-	height:24em;    
+/*I love css 3 transitions*/
+.fixednav header,
+.tierMethodsDrawer {
+	-webkit-transition: top 500ms cubic-bezier(0.250, 0.460, 0.450, 0.940);
+	-moz-transition: top 500ms cubic-bezier(0.250, 0.460, 0.450, 0.940);
+	-ms-transition: top 500ms cubic-bezier(0.250, 0.460, 0.450, 0.940);
+	-o-transition: top 500ms cubic-bezier(0.250, 0.460, 0.450, 0.940);
+	transition: top 500ms cubic-bezier(0.250, 0.460, 0.450, 0.940);	
+}
+
+header .slideToggle {
+	padding: .25em .5em;
+	color: #999;
+	opacity: 0;
+	position: relative;
+	top: -12em;
+	text-decoration: none;
+	font-family: Georgia, times, serif;
+	font-size: .875em;
+	-webkit-transition: all 500ms cubic-bezier(0.250, 0.460, 0.450, 0.940);
+	-moz-transition: all 500ms cubic-bezier(0.250, 0.460, 0.450, 0.940);
+	-ms-transition: all 500ms cubic-bezier(0.250, 0.460, 0.450, 0.940);
+	-o-transition: all 500ms cubic-bezier(0.250, 0.460, 0.450, 0.940);
+	transition: all 500ms cubic-bezier(0.250, 0.460, 0.450, 0.940);	
+}
+
+.fixednav header .slideToggle {
+	top: 0;
+	display: block;
+	opacity: 1;
+	clear: both;
+}
+
+.fixednav header:hover .slideToggle {
+	display: none;
+}
+
+.fixednav {
+	padding-top: 27.125em;
+}
+
+
+.fixednav header {
+	background: rgba( 255, 255, 255, .95);
+	box-shadow: 1px 1px 5px rgba( 0, 0, 0, .3);
+	position: fixed;
+	z-index: 999;
+	top: -27.125em;
+}
+
+.fixednav header:hover {
+	top: 0em;
+}
+
+#navigation>.container{
+	height:23.75em;    
 	overflow:hidden;
 	border-top:1px #ccc solid;
 	border-bottom:1px #ccc solid;
@@ -26,12 +81,13 @@
 }
 
 #navigation .pane{
-	height: 100%;
-	width: 300px;
-	margin: 0 0 0 0;
-	padding: 0 0 0 0;
-	float: left;
-	background: #f8f8f8 url( ../images/nav_bg.gif ) repeat-y;
+    height: 100%;
+    width: 300px;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    display: block;
+    float: left;
+		background: #f8f8f8 url( ../images/nav_bg.gif ) repeat-y;
 }
 
 #navigation .pane.dark{
@@ -44,6 +100,11 @@
 	height: 100%;
 }
 
+#navigation .node { 
+	overflow: hidden;
+	position: relative;
+}
+
 #navigation .node,
 .tierMethodsDrawer .addableObjects li{
 	line-height: 2;
@@ -54,101 +115,102 @@
 	/*width: 100%;*/
 }
 
-
 #navigation .node.active,
 #navigation .node:hover,
-#navigation .node:hover h5,
-#navigation .node.active h5,
 .addableObjects li:hover{
 	cursor: pointer;
-	background-color: #0af;
+	background-color: rgba( 0, 170, 255, .8 )	;
+	color:#fff;
+}
+
+#navigation .node.active h5,
+#navigation .node:hover h5{
 	color:#fff;
 }
 
 #navigation .node h5{
 	font-size: .875em;
-	line-height:1.2em;
+	line-height:1.4em;
 	margin: 0 0 0 0;
-	padding:.5em 0 .5em 2.5em;
+	padding: 8px 0 9px 32px;
 	float: left;
 	background-image: url( ../images/icon_leaf.png );
-	background-position: 1em .5em;
-	background-repeat: no-repeat;	
+	background-position: 12px 10px;
+	background-repeat: no-repeat;
+	width: 215px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
-
 #navigation .node .methods{
-	float: right;
+	position: absolute;
+	top: -5em;
+	opacity: 0;
+	text-align: right;
 	padding: 0 .5em 0 0;
+	-webkit-transition: opacity 200ms cubic-bezier(0.250, 0.460, 0.450, 0.940);
+	-moz-transition: opacity 200ms cubic-bezier(0.250, 0.460, 0.450, 0.940);
+	-ms-transition: opacity 200ms cubic-bezier(0.250, 0.460, 0.450, 0.940);
+	-o-transition: opacity 200ms cubic-bezier(0.250, 0.460, 0.450, 0.940);
+	transition: opacity 200ms cubic-bezier(0.250, 0.460, 0.450, 0.940);
+}
+
+#navigation .node:hover .methods{
+	height: 100%;
+	top: 0;
+	line-height: 2em;
+	right: .25em;
+	opacity: 1;
 }
 
 #navigation a.icon{
 	text-indent: -3000px;
-	display:block;
-	float:left;
+	display:inline-block;
 	width: 12px;
-	height: 12px;
-	margin:.5em .25em;
+	height: 100%;
+	margin:.5em .25em 0 0;
 }
 
 #navigation .node.active h5,
 #navigation .node:hover h5{
 	background-image: url( ../images/icon_leaf_hover.png );
-	background-position: 1em .5em;
+	background-position: 12px 10px;
 	background-repeat: no-repeat;
 }
 
 #navigation .node.category h5{
 	background-image: url( ../images/icon_category.png );
-	background-position: 1em .5em;
+	background-position: 1em .75em;
 	background-repeat: no-repeat;
 }
 
 #navigation .node.category.active h5,
 #navigation .node.category:hover h5{
 	background-image: url( ../images/icon_category_hover.png );	
-	background-position: 1em .5em;
+	background-position: 1em .75em;
 	background-repeat: no-repeat;
 }
 
 #navigation .node.module h5{
-	background-image: url( ../images/icon_module.png );
-	background-position: 1em .5em;
-	background-repeat: no-repeat;
+	background: url( ../images/icon_module.png ) 1em .675em no-repeat;	
 }
 
 #navigation .node.module.active h5,
 #navigation .node.module:hover h5{
-	background-image: url( ../images/icon_module_hover.png );	
-	background-position: 1em .5em;
-	background-repeat: no-repeat;
+	background: url( ../images/icon_module_hover.png ) 1em .675em no-repeat;	
 }
 
 #navigation .node a.removeNode{
-	background-image: url(../images/icon_delete.png);
+	background: url(../images/icon_delete_hover.png) 0 .5em no-repeat;
 }
 
-#navigation .node:hover a.removeNode,
-#navigation .node.active a.removeNode{
-	background-image: url(../images/icon_delete_hover.png);
+#navigation .node a.togglePublishedStatus {
+	background: url(../images/icon_unpublished_hover.png) 0 .5em no-repeat;
 }
 
-#navigation .node a.togglePublish{
-	background-image: url(../images/icon_unpublished.png);	
-}
-
-#navigation .node a.published{
-	background-image: url(../images/icon_published.png);	
-}
-
-#navigation .node.active a,
-#navigation .node:hover a{
-	background-image: url(../images/icon_unpublished_hover.png);	
-}
-
-#navigation .node.active a.published,
-#navigation .node:hover a.published{
-	background-image: url(../images/icon_published_hover.png);	
+#navigation .node a.published {
+	background: url(../images/icon_published_hover.png) 0 .5em no-repeat;	
 }
 
 .tierMethodsDrawer{
@@ -157,8 +219,13 @@
 	font-size: 12px;
 	top: 25.45em;
 	z-index: 1000;
-	background: url( ../images/navBgDark.png	);
+	background: rgba( 0,0,0,.9);
 	color: #fff;
+}
+
+.tierMethodsDrawer:hover {
+	top: 0;
+	height: auto;
 }
 
 .tierMethodsDrawer .titleBar{
@@ -176,19 +243,9 @@
 	font-style: italic;
 }
 
-.tierMethodsDrawer .icon.close{
-	width: 12px;
-	height: 12px;
-	float: right;
-	display: block;
-	text-indent: -1000px;
-	position: relative;
-	background-image: url(../images/icon_delete_hover.png	);
-}
-
 .tierMethodsDrawer ul{
 	overflow: auto;
-	border-top: 1px #303030 solid;
+	height: 25.45em;
 }
 
 .tierMethodsDrawer li{

@@ -16,7 +16,8 @@ General
 .hidden{ display: none !important; }
 
 .away{
-	position: absolute;
+	display: block !important;
+	position: absolute !important; 
 	top: -5000px;
 	left: -5000px;
 }
@@ -224,6 +225,7 @@ input, textarea{
 .ui-Text input,
 .ui-Text textarea,
 .ui-Input input{
+	position: relative;
 	font-family: Georgia, Times, Serif;
 	margin: 0em 0em .5em 0em;
 	padding: .5em .75em !important;
@@ -231,10 +233,25 @@ input, textarea{
 	cursor: text;
 }
 
+
+.associator .floatcontrol{
+	display: none;
+	padding: 1em;
+	background: transparent;
+}
+
+.associator:hover .floatcontrol{
+	position: absolute;
+	left: -2.5em;
+	top: -0.25em;
+	display: block;
+}
+
 .ui-Text textarea{
 	word-wrap: break-word;
 	display: block;
 	resize: none;
+	position: relative;
 }
 
 .ui-Text .ipe{
@@ -371,6 +388,16 @@ ul.listing li{
 	background: #aaa;
 }
 
+.associator_checkboxes {
+	padding: 1em .5em .5em 1em;
+	border: 1px transparent solid;
+}
+
+.associator_checkboxes h4 {
+	font-size: 1.5em;
+	margin-bottom: .25em;
+}
+
 .associator_checkboxes .toggle{
 	border-radius: 3px;
 	background: #dedede;
@@ -407,10 +434,36 @@ ul.listing li{
 	display: none;
 }
 
-/*.controls{ margin-bottom: 1em; }
-*/
+.associatorImage,
+.listItem {
+	position: relative;
+}
+
+.associatorImage{
+	padding: .5em;
+	box-shadow: 1px 1px 5px rgba( 0,0,0,.5 );
+}
+
+.associatorImage>.itemControls .delete,
 .listItem>.itemControls .delete{
 	background: url( ../images/icon_trash.gif );
+}
+
+.associatorImage>.itemControls,
+.listItem>.itemControls{
+	margin: 0 auto;
+	position: absolute;
+	background: #fafafa;
+	box-shadow: 1px 1px 2px rgba( 0,0,0,.7 );
+	padding: .125em .25em .125em .25em;
+	z-index: -1;
+	opacity: 0;
+}
+
+.associatorImage:hover>.itemControls,
+.listItem:hover>.itemControls{
+	z-index: 500;
+	opacity: 1;
 }
 
 /*
@@ -422,15 +475,39 @@ ul.listing li{
 .associator{
 	margin-top: 1.5em;
 	position: relative;
+	border: 1px transparent solid;
 }
 
-.associator ul li h4{
+.associator_checkboxes:hover,
+.associator:hover	{
+	border: 1px #aaa dotted;
+}
+
+.modal .associator{
+	margin: 0 0 0 0	
+}
+
+.modal .associator:hover {
+	border: none;
+}
+
+.modal .associator ul.pool{
+	background: none;
+}
+
+.associator h4{
 	position: static;
 	font-size: 1em;
+	margin: 1em 0 0 .75em;
 }
 
-.associator .associated{
-	border: 1px #aaa dotted;
+
+.associator>h4{
+	font-size: 1.5em;
+	margin-top: .5em;
+}
+
+.associator>.associated{
 	min-height: 3em;
 }
 
@@ -445,15 +522,18 @@ ul.listing li{
 }
 
 .associator ul.pool{
-	padding-top: .5em;
-	min-height: 5em;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
 	max-height: 88em;
 	overflow: auto;
-	background:#eee;
+	background:#efefef;
 }
 
 .associator ul li{
-	float: left;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	display: inline-block;
+	position: relative;
 	padding: .5em;
 	margin: .5em;
 	background:#fff;
@@ -464,9 +544,10 @@ ul.listing li{
 	cursor: move;
 }
 
-.associator .actuator{
+.associator .methods{
 	clear: both;
-	padding: .5em 1em .5em 0;
+	padding: .5em 0 0 0;
+	margin: 0;
 }
 
 .associator input{
@@ -477,40 +558,52 @@ ul.listing li{
 	line-height: 1.25em;
 }
 
-.associator .actuator h4{
+.associator .methods h4{
 	font-size: 1em;
-	line-height: 2;
+	background: #efefef;
+	color: #aaa;
+	margin: 0;
+	padding: .75em .5em .25em 1em;
 }
-.associator .actuator .actuatorButton,
+
+.modal .associator .methods h4{
+	font-size: 1.25em;
+	font-weight: normal;
+	padding: none;
+	margin-bottom: .25em;
+	background: none;
+}
+
+
+.associator .methods .actuatorButton,
 .associator ul li{
 	position: relative;
 }
 
-.associator .actuator .actuatorButton{
+.associator .methods .actuatorButton{
 	text-indent: 2em !important;
 }
 
-
-.associator .actuator a.actuatorButton{
+.associator .methods a.actuatorButton{
 	display: block;
 	height: 16px;
 	background-image: url( ../images/sprite_openclose.png );
 	background-repeat: no-repeat;
 }
 
-.associator .actuator a.icon.closed{
+.associator .methods a.icon.closed{
 	background-position: 0px 32px;
 }
 
-.associator .actuator a.icon.closed:hover{
+.associator .methods a.icon.closed:hover{
 	background-position: 0px 48px;
 }
 
-.associator .actuator a.icon.open{
+.associator .methods a.icon.open{
 	background-position: 0px 0px;
 }
 
-.associator .actuator a.icon.open:hover{
+.associator .methods a.icon.open:hover{
 	background-position: 0px 16px;
 }
 
@@ -518,6 +611,13 @@ ul.listing li{
 	border: 1px #aaa dotted;
 	min-height: 3em;
 }
+
+.associator .itemControls {
+	position: absolute;
+	top: -.5em;
+	right: -.5em;
+}
+
 .associator .itemControls .dissociate,
 .associator .itemControls .associate{
 	display: none;
@@ -528,31 +628,15 @@ ul.listing li{
 	opacity: .7;
 	z-index: 12000;
 }
-.associator .itemControls{
-	display:none;
-	position: absolute;
-	top: 50%;
-	width: 24px;
-	height: 24px;
-}
-
-.associator .pool li:hover .itemControls,
-.associator .associated li:hover .itemControls{
-	display: block;
-}
 
 .associator .pool li:hover .itemControls a.associate,
 .associator .associated li:hover .itemControls a.dissociate{
-	position: absolute;
 	display:block;
-	top:-50%;
-	left: -50%;
 	width: 24px;
 	height: 24px;
 	text-align: center;
 	text-decoration: none;
-/*	line-height:`6em;
-*/	color:#aaa;
+	color:#aaa;
 	vertical-align: middle;
 	text-indent: -30000px;
 	
@@ -575,6 +659,7 @@ ul.listing li{
 .associator .filter .button{
 	float: none;
 }
+
 /* /////////////////////////////////////////////////////////// */
 
 .spinner {
@@ -592,80 +677,83 @@ ul.listing li{
 
 /* /////////////////////////////////////////////////////////// */
 
-.ui-FileElement .controls,
-.ui-File .controls,
-.ui-ImageFile .controls{
-	margin-left: .5em;
+.wrapper {
+	position: relative;
 }
 
-.file img,
-.ui-FileElement img{
-	border: .5em #eee solid;
+.ui-FileElement img {
+	display: inline-block;
+	margin: 0 auto;
+	border: 1px #dedede solid;
+	position: relative;
+	z-index: 1;
 }
 
-.file,
+.ui-FileElement .controls {
+	position: absolute;
+	display: none;
+	top: -.125em;
+	right: .25em;
+	bottom: none;
+	left: none;
+	opacity: 0;
+	z-index: 10;
+}
+
+.ui-FileElement:hover .controls {
+	display: block;
+	opacity: 1;
+}
+
+.associatorImage .wrapper,
 .cluster,
-.ui-FileElement,
-.ui-ImageFile,
-.ui-File{
-	margin:1em 0 .5em 0;
+.ui-FileElement {
+	margin: .25em 0 .5em 0;
 	padding: .5em;
 	background: #efefef;
 	border-radius: 3px;
 	background:#f9f9f9;
-	border: 1px #dedede solid;
+	border: 1px #eee solid;
 }
 
+
+
 .cluster.link .ui-Text{
-	width: 160px;
-	float: left;
+	width: 260px;
+	display: inline-block;
 	margin: .5em 1em 0 0;
 }
 
 .cluster.link .wrapper{
-	width: 650px;
+	width: auto;
 	padding: .25em;
 }
 
-.cluster.link .itemControls{
-	float: right;
-}
-
-.cluster.link h4{
+/*.cluster.link h4{
 	float: left;
 	font-size: 1em;
 	margin: .5em 1em .5em .5em;
 }
-
-.ui-FileElement .fileName,
-.ui-ImageFile .fileName,
-.ui-File .fileName{
+*/
+.ui-FileElement .fileName {
 	height: 16px;
 	color: #666;
 	font-size: 80%;
 	background-repeat:no-repeat;
-	background-position: .5em 1em;
-	padding: 1em .25em .125em 3em;
+	background-position: .25em .25em;
+	padding: .25em .25em .125em 2.5em;
 	margin:0 0 .5em 0;
 }
 
-.ui-ImageFile .preview{
-	margin:1em 0;
-	clear: both;
-}
 
-.ui-FileElement .status,
-.ui-ImageFile .status,
-.ui-File .status{
+.ui-FileElement .status {
 	margin:1em 0;
 }
 
-.ui-FileElement .status .progress,
-.ui-ImageFile .status .progress,
-.ui-File .status .progress{
+.ui-FileElement .status .progress {
 	background:	white url( ../images/progress.gif) no-repeat;
 	background-position: +50% 0;
-	width:248px;
+	width:100%;
 	margin:0 auto;
 }
 
@@ -702,8 +790,8 @@ ul.listing li{
 
 button, a.button{
 	cursor: pointer;
+	font-size: .875em;
 	display: inline-block;
-	float: left;
 	padding: .25em .5em;
 	margin: 0 .5em 0 0;
 	border: none;
@@ -724,10 +812,9 @@ button:hover, a.button:hover{
 .icon,
 a.command,
 .uploadButton{
-	display:block;
-	float:left;
+	display:inline-block;
 	height: 16px;
-	margin:.25em .125em;
+	margin: .25em 0 .25em .125em;
 	text-align: center;
 	vertical-align: middle;
 }
@@ -753,7 +840,7 @@ a.command,
 input.button,
 .uploadButton{
 	border: none;
-	background-color: #aaa;
+	background-color: #000;
 	color: #eee;
 	text-decoration: none;
 	padding: .15em .5em;
@@ -761,6 +848,7 @@ input.button,
   -webkit-border-radius: 2px;
   -khtml-border-radius: 2px;
   border-radius: 2px;
+  box-shadow: 1px 1px 2px rgba( 0,0,0,.5 );
 }
 
 a.command:hover,
@@ -772,8 +860,9 @@ a.command.active{
 }
 
 a.command.clearImageLink{
-	vertical-align: -.25em important;
-}
+	line-height: 1;
+/*	vertical-align: -.25em important;
+*/}
 
 a.command.clearImageLink:hover{
 	background: #f00;
@@ -783,6 +872,28 @@ a.delete{ background-image: url( ../images/icon_delete.png); }
 a.delete:hover{ background-image: url( ../images/icon_delete_hover.png); }
 a.icon.submit{ background-image: url( ../images/icon_confirm.png); }
 a.icon.cancel{ background-image: url( ../images/icon_cancel.png); }
+
+.pageMeta {
+	position: relative;
+	top: 1em;
+}
+
+a.icon.meta { 
+	background-image: url( ../images/icon_cog.png );
+	background-position: top left; 
+}
+
+a.icon.meta:hover, 
+a.icon.meta.active { background-image: url( ../images/icon_cog.png ); background-position: top right; }
+
+a.icon.preview {
+	background-image: url( ../images/icon_preview.png ); background-position: top left;
+	position: relative;
+	top: 1em;
+}
+a.icon.preview:hover, 
+a.icon.preview.active { background-image: url( ../images/icon_preview.png ); background-position: top right; }
+
 .active a.icon.submit, a.icon.submit:hover{ background-image: url( ../images/icon_confirm_hover.png ); }
 .active a.icon.cancel, a.icon.cancel:hover{ background-image: url( ../images/icon_cancel_hover.png); }
 
@@ -795,11 +906,12 @@ a.icon.cancel{ background-image: url( ../images/icon_cancel.png); }
 .listcontrol.top{
 	margin-top: 1em;
 }
+
 /* -----------------------------------------------------------
 Labels
 ----------------------------------------------------------- */
 
-label{
+label {
 	font-size: .875em;
 	font-weight: normal;
 	color:#aaa;
@@ -860,11 +972,12 @@ label{
 }
 
 .loginStatus{
-	float: right;
+	position: absolute;
+	right: 0;
 	color: #999;
 	font-size: .875em;
 	margin: .5em 0;
-	width: 185px;
+	text-align: right;
 	line-height: 1.5em;
 	white-space: nowrap !important;
 }
@@ -874,8 +987,7 @@ label{
 }
 
 .loginStatus .button{
-	position: relative;
-	top: -0.25em;
+	display: inline-block;
 }
 
 th.spinner{
@@ -890,7 +1002,7 @@ input[type='radio']{
 }
 
 .ipe{ 
-	min-height: 1.5em;
+	min-height: 1em;
 	height: auto !important;
 }
 
@@ -1417,10 +1529,11 @@ td{
 	margin-top:1em;
 }
 
-.uploadButton{ background: #aaa; height: 16px; }
-.uploadButton.active{ background: #0af }
-.uploadLink{ background: #aaa; float: left; display: block; height: 16px; width: 16px; background: url( ../images/uarr.png ) center center no-repeat; position: relative; }
-.downloadLink{ background: url( ../images/darr.png ) center center no-repeat; position: relative; }
+.uploadButton{ background: #000; height: 16px; }
+.uploadButton.active{ background: #000 }
+.uploadLink{ background: #000; float: left; display: block; height: 16px; width: 16px; background: url( ../images/uarr.png ) center center no-repeat; position: relative; }
+.downloadLink{ overflow: hidden; width: 8px; text-align: center; padding-bottom: 0; text-indent: -1000px; line-height: .875em; background: url( ../images/darr.png ) center center no-repeat; position: relative; }
+.downloadLink:hover{ text-indent: 0px; font-size: 1em; font-weight: bold; }
 
 .uploadLink object{
 	position: absolute;
@@ -1463,7 +1576,7 @@ ul.listing li.menuItem:hover{
     clear: both;
 	list-style:none;
 	font-family: "Georgia", "Times", serif;
-	margin: 0 0 0 0;
+	margin: 0 0 0 .5em;
 }
 
 .breadCrumb ul li{
@@ -1492,9 +1605,13 @@ ul.listing li.menuItem:hover{
 }
 
 
-/***************************
-*   TAGS
-****************************/
+/*
+-----------------------------------------------------
+
+	Tags
+
+-----------------------------------------------------
+*/
 
 .ui-Tags{
 	background:transparent;
@@ -1504,7 +1621,7 @@ ul.listing li.menuItem:hover{
 	border-radius: 4px;	
 	padding: .75em .5em .5em .5em;
 	margin-bottom: 1em;
-	background:#f9f9f9;
+	background:#fafafa;
 }
 
 .ui-Tags input{
@@ -1514,7 +1631,7 @@ ul.listing li.menuItem:hover{
 }
 
 .ui-Tags .atRest{
-	opacity: .5;
+	background:#f9f9f9;
 }
 
 .ui-Tags .atRest input{
@@ -1552,6 +1669,7 @@ ul.tokens{
 	-webkit-border-radius: 6px;
 	-khtml-border-radius: 6px;
 	border-radius: 6px;	
+	border: 1px #f000 solid;
 	background-color: #dedede;
 	color: #999;
 }
@@ -1562,9 +1680,11 @@ ul.tokens{
 	padding: .125em .5em;
 }
 
-.ui-Tags label{
+.associator_checkboxes label,
+.ui-Tags label {
 	display: block;
 	float: left;
+	color: #000 !important;
 	padding-top: .25em;
 }
 
@@ -1607,6 +1727,15 @@ ul.tokens{
 	margin-left: .5em;
 	background-image: url( '../images/icon_cancel.png' );
 }
+
+
+/*
+-----------------------------------------------------
+
+	Localization
+
+-----------------------------------------------------
+*/
 
 .localizationControls{ clear: both; margin: 1em 0 2em 0; }
 .localizationControls ul{ border-bottom: 1px transparent solid; }

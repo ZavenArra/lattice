@@ -15,20 +15,20 @@ lattice.modules.UserManagement = new Class({
 	/* Section: Getters & Setters */
 	
 	getSaveFieldURL: function( itemObjectId  ){
-	  var url = lattice.util.getBaseURL() +"ajax/data/"+this.controller+"/savefield/" + itemObjectId;
+	  var url = lattice.util.getBaseURL() +"ajax/data/"+this.controller+"/save_field/" + itemObjectId;
 		return url;
 	},
 	
 	getAddObjectURL: function(){
-	    return lattice.util.getBaseURL() + "ajax/html/"+this.controller+"/addObject/";
+	    return lattice.util.getBaseURL() + "ajax/html/"+this.controller+"/add_object/";
 	},
 	
 	getRemoveObjectURL: function( itemId ){
-	    return lattice.util.getBaseURL()  + "ajax/data/"+this.controller+"/removeObject/" + itemId;
+	    return lattice.util.getBaseURL()  + "ajax/data/"+this.controller+"/remove_object/" + itemId;
 	},
 	
 	getSubmitSortOrderURL: function(){
-	    return lattice.util.getBaseURL() + "ajax/data/"+this.controller+"/saveSortOrder/";
+	    return lattice.util.getBaseURL() + "ajax/data/"+this.controller+"/save_sort_order/";
 	},
 	
 	/* Section: Methods */
