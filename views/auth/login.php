@@ -7,7 +7,7 @@
 			<div class="content login">
 				<fieldset>
 					<legend>
-					<?if(isset($message)):?>
+					<?if (isset($message)):?>
 						<?=$message;?>
 					<?else:?>
 						Please enter your login credentials.

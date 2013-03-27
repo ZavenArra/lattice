@@ -31,8 +31,8 @@ Class LatticeUITest extends Kohana_UnitTest_TestCase {
 
   public function testCluster(){
 
-    $objectId = Graph::object()->addObject('clusterTest', array('slug'=>'cluster-test'));
-    $object = Graph::object($objectId);
+    $objectId = Graph_Core::object()->addObject('clusterTest', array('slug'=>'cluster-test'));
+    $object = Graph_Core::object($objectId);
 
     $ui = latticecms::buildUIHtmlChunksForObject($object);
 

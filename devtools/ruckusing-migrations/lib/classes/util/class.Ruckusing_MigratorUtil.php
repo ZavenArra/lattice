@@ -23,7 +23,7 @@ class Ruckusing_MigratorUtil {
       $versions[] = $v['version'];
     }
     $num_versions = count($versions);
-    if($num_versions) {
+    if ($num_versions) {
       sort($versions); //sorts lowest-to-highest (ascending)
       return (string)$versions[$num_versions-1];
     } else {
@@ -39,9 +39,9 @@ class Ruckusing_MigratorUtil {
   */
 	public function get_runnable_migrations($directory, $direction, $destination = null, $use_cache = true) {
 	  // cache migration lookups and early return if we've seen this requested set
-	  if($use_cache == true) {
+	  if ($use_cache == true) {
       $key = $direction . '-' . $destination;
-      if(array_key_exists($key, $this->migrations)) {
+      if (array_key_exists($key, $this->migrations)) {
         return($this->migrations[$key]);
       }
     }
@@ -51,7 +51,7 @@ class Ruckusing_MigratorUtil {
 		$migrations = $this->get_migration_files($directory, $direction);
 		$current = $this->find_version($migrations, $this->get_max_version() );
 		$target = $this->find_version($migrations, $destination);
-		if(is_null($target) && !is_null($destination) && $destination > 0) {
+		if (is_null($target) && !is_null($destination) && $destination > 0) {
 		  trigger_error("Could not find target version {$destination} in set of migrations.");
 	  }
 	  $start = $direction == 'up' ? 0 : array_search($current, $migrations);
@@ -63,7 +63,7 @@ class Ruckusing_MigratorUtil {
 	  $runnable = array_slice($migrations, $start, $item_length);
 	    
     //dont include first item if going down but not if going all the way to the bottom
-    if($direction == 'down' && count($runnable) > 0 && $target != null) {
+    if ($direction == 'down' && count($runnable) > 0 && $target != null) {
       array_pop($runnable);
     }
     
@@ -72,16 +72,16 @@ class Ruckusing_MigratorUtil {
 
     foreach($runnable as $migration) {
       //Skip ones that we have already executed
-      if($direction == 'up' && in_array($migration['version'], $executed)) {
+      if ($direction == 'up' && in_array($migration['version'], $executed)) {
         continue;
       }
       //Skip ones that we never executed
-      if($direction == 'down' && !in_array($migration['version'], $executed)) {
+      if ($direction == 'down' && !in_array($migration['version'], $executed)) {
         continue;
       } 
       $to_execute[] = $migration;
     }
-    if($use_cache == true) {
+    if ($use_cache == true) {
       $this->migrations[$key] = $to_execute;
     }
     return($to_execute);
@@ -99,10 +99,10 @@ class Ruckusing_MigratorUtil {
 	this version from our set of executed migrations.
 	*/
 	public function resolve_current_version($version, $direction) {
-	  if($direction === 'up') {
+	  if ($direction === 'up') {
 	    $this->adapter->set_current_version($version);
     }
-    if($direction === 'down') {
+    if ($direction === 'down') {
 	    $this->adapter->remove_version($version);
     }
     return $version;
@@ -122,22 +122,22 @@ class Ruckusing_MigratorUtil {
 	*/
 	public static function get_migration_files($directory, $direction) { 
    $valid_files = array();
-  	if(!is_dir($directory)) {
+  	if (!is_dir($directory)) {
   	  die("\nRuckusing_MigratorUtil - ({$directory}) is not a directory.\n");
   	}
   	$files = scandir($directory);
   	$file_cnt = count($files);
-  	if($file_cnt > 0) {
+  	if ($file_cnt > 0) {
   		for($i = 0; $i < $file_cnt; $i++) {
-  			if(preg_match('/^(\d+)_(.*)\.php$/', $files[$i], $matches)) {
-  				if(count($matches) == 3) {
+  			if (preg_match('/^(\d+)_(.*)\.php$/', $files[$i], $matches)) {
+  				if (count($matches) == 3) {
   				  $valid_files[] = $files[$i];
   				}//if-matches
         }//if-preg-match
   		}//for
   	}//if-file-cnt		
   	sort($valid_files); //sorts in place
-    if($direction == 'down') {
+    if ($direction == 'down') {
       $valid_files = array_reverse($valid_files);
     }
 	
@@ -146,7 +146,7 @@ class Ruckusing_MigratorUtil {
 		$cnt = count($valid_files);
 		for($i = 0; $i < $cnt; $i++) {
 			$migration = $valid_files[$i];
-			if(preg_match('/^(\d+)_(.*)\.php$/', $migration, $matches)) {
+			if (preg_match('/^(\d+)_(.*)\.php$/', $migration, $matches)) {
 				$files[] = array(
 										'version' => $matches[1],
 										'class' 	=> $matches[2],
@@ -163,7 +163,7 @@ class Ruckusing_MigratorUtil {
 	private function find_version($migrations, $version) {
     $len = count($migrations);
     for($i = 0; $i < $len; $i++) {
-      if($migrations[$i]['version'] == $version) {
+      if ($migrations[$i]['version'] == $version) {
         return $migrations[$i];
       }
     }
@@ -173,12 +173,12 @@ class Ruckusing_MigratorUtil {
   /* Find the index of the migration in the set of migrations that match the given version */
   private function find_version_index($migrations, $version) {
     //edge case
-    if(is_null($version)) {
+    if (is_null($version)) {
       return null;
     }
     $len = count($migrations);
     for($i = 0; $i < $len; $i++) {
-      if($migrations[$i]['version'] == $version) {
+      if ($migrations[$i]['version'] == $version) {
         return $i;
       }
     }

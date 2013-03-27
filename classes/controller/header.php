@@ -1,12 +1,12 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 class Controller_Header extends Controller {
-	protected $viewPrefix = 'header';
+  protected $view_prefix = 'header';
 
-	public function action_build($viewSuffix)
-	{
-		$view = new View($this->viewPrefix.'_'.$viewSuffix);
-		$this->response->body($view->render());
-	}
+  public function action_build($view_suffix)
+  {
+    $view = new View($this->view_prefix.'_'.$view_suffix);
+    $this->response->body($view->render());
+  }
 
-} // End Welcome
+} //  End Welcome

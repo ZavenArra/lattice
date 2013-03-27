@@ -2,7 +2,7 @@
 	<label class="groupLabel"><?=$label;?></label>
   <?
     $optionsWithSelectText = array();
-    $optionsWithSelectText["0"] = 'Select';
+    $optionsWithSelectText["0"] = 'Select an option.';
     foreach($options as $optionValue => $key){
       $optionsWithSelectText[$optionValue] = $key;
     }

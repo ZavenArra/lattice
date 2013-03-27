@@ -1,12 +1,14 @@
-<?
+<?php
 
-class KeepAlive_Controller extends Controller {
+class Keep_alive_Controller extends Controller {
 
-	public function index(){
-		if(Auth::instance()->logged_in()){
-			echo 'true';
-		} else {
-			echo 'false';
-		}
-	}
+  public function index()
+  {
+    if (Auth::instance()->logged_in())
+    {
+      echo 'TRUE';
+    } else {
+      echo 'FALSE';
+    }
+  }
 }

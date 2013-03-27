@@ -2,7 +2,7 @@
 	<div class="modal">
 		<h3>Forgot Password</h3>
 		<div class="container">
-			<?if(isset($message)):?><?=$message;?><?endif;?>
+			<?if (isset($message)):?><?=$message;?><?endif;?>
 			<form action="<?=URL::base();?>auth/forgot/" method="POST">
 			Please enter your email.  A new password will be sent to you.<br>
 

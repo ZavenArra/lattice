@@ -1,0 +1,1 @@
+This project contains all the frontend resources for lattice, including all js, css, and images.  These resources can be resued to create a CMS frontend with dynamic functionality atom any backend respecting the lattice API.

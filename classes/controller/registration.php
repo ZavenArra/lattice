@@ -1,5 +1,5 @@
-<?
+<?php
 
-Class Controller_Registration extends LatticeAuth_Controller_Registration {
+Class Controller_Registration extends Cms_Controller_Registration {
 
 }

@@ -1,15 +1,4 @@
-<?php
+<?php defined('SYSPATH') or die('No direct access allowed.');
 
-Class Initializer_Cms {
-
-	public function initialize() {
-		
-      Graph::configureObjectType(Kohana::config('cms.graphRootNode'), true);
-      Graph::addRootNode(Kohana::config('cms.graphRootNode'));
-      
-      Lattice_Initializer::addMessage('configured graph root node');
-
-	}
-
-
+class Initializer_Cms extends Lattice_Initializer_Cms { }
 }

@@ -1,8 +1,8 @@
 <?php
 
 /*
- * To change this objectType, choose Tools | Templates
- * and open the objectType in the editor.
+ * To change this object_type, choose Tools | Templates
+ * and open the object_type in the editor.
  */
 
 /**
@@ -11,9 +11,10 @@
  * @author deepwinter
  */
 class Controller_Initializer extends Controller {
-   public function action_reinitialize($module) {
-      Lattice_Initializer::reinitialize($module);
-   }
+  public function action_reinitialize($module)
+  {
+    Lattice_Initializer::reinitialize($module);
+  }
 }
 
 ?>

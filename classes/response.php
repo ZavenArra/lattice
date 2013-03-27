@@ -3,15 +3,17 @@
 
 class Response extends Kohana_Response {
 
-	protected $_data;
+  protected $_data;
 
-	public function data($value=null){
-		if($value){
-			$this->_data = $value;
-		}	
-		return $this->_data;
+  public function data($value=NULL)
+  {
+    if ($value)
+    {
+      $this->_data = $value;
+    }	
+    return $this->_data;
 
-	}
+  }
 
 
 }

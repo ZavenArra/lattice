@@ -1,22 +1,25 @@
-<?
+<?php
 
 Class Controller_Language extends Controller {
 
-	public function action_changeLanguage($languageCode, $redirectObjectId = NULL){
+  public function action_change_language($language_code, $redirect_object_id = NULL)
+  {
 
-		lattice::setCurrentLanguage($languageCode);
-			if($redirectObjectId){
-				//process redirect with new languageCode
-				//this is actually the latticeview::getLanguageAwareSlug call
-				$this->request->redirect(latticeview::slug($redirectObjectId));
-			}
-	}
+    core_lattice::set_current_language($language_code);
+    if ($redirect_object_id)
+    {
+      // process redirect with new language_code
+      // this is actually the core_view::get_language_aware_slug call
+      $this->request->redirect(core_view::slug($redirect_object_id));
+    }
+  }
 
 
-	public function action_languageControls(){
-		$languages = Graph::languages();
-		$view = new View('languageControls');
-		$view->languages = $languages;
-		$this->response->body($view->render());
-	}
+  public function action_language_controls()
+  {
+    $languages = Graph_Core::languages();
+    $view = new View('language_controls');
+    $view->languages = $languages;
+    $this->response->body($view->render());
+  }
 }

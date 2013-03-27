@@ -22,7 +22,7 @@ class Ruckusing_DB_Setup implements Ruckusing_iTask {
 		echo "Started: " . date('Y-m-d g:ia T') . "\n\n";		
 		echo "[db:setup]: \n";
 		//it doesnt exist, create it
-		if( !$this->adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME) ) {
+		if ( !$this->adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME) ) {
 			echo sprintf("\tCreating table: %s", RUCKUSING_TS_SCHEMA_TBL_NAME);
       $this->adapter->create_schema_version_table();
 			echo "\n\tDone.\n";

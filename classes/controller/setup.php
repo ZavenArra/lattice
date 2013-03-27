@@ -1,8 +1,9 @@
-<?
+<?php
 
 Class Controller_Setup extends Controller {
 
-  public function action_index(){
+  public function action_index()
+  {
 
     $initialized = Lattice_Initializer::check(
       array(
@@ -13,8 +14,9 @@ Class Controller_Setup extends Controller {
       )
     );
 
-    if($initialized){
-      $view = new View('latticeInstalled');
+    if ($initialized)
+    {
+      $view = new View('lattice_installed');
       $this->response->body($view->render());
     } else {
       echo 'A problem occurred';

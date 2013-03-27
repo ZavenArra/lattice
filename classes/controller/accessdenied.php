@@ -1,12 +1,13 @@
-<?
+<?php
 
-Class Controller_AccessDenied extends Controller_Layout {
+Class Controller_Access_denied extends Core_Controller_Layout {
 
-	public $_actionsThatGetLayout = array('index');
+  public $_actions_that_get_layout = array('index');
 
-	public function action_index(){
-		$view = new View('accessdenied');
-		$this->response->body($view->render());
-	}
+  public function action_index()
+  {
+    $view = new View('accessdenied');
+    $this->response->body($view->render());
+  }
 
 }
