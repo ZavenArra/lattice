@@ -83,6 +83,9 @@ class Lattice_Core_Cms extends Lattice_CMSInterface {
 
     // basically this is an issue with wanting to have multiple things going on
     // with the same controller as a parent at runtime
+    
+    //print_r(Kohana::config($this->controller_name.'.navigation_request'));
+    
     $this->view->navigation = Request::factory(Kohana::config($this->controller_name.'.navigation_request'))->execute()->body();
 
     // get all the languages
