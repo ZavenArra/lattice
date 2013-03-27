@@ -21,7 +21,7 @@ class Controller_File extends Controller{
     // check access
     // don't have object wise access checking at this point
 
-    $filename = Graph_Core::media_path().$file->filename;
+    $filename = Graph_Core::mediapath().$file->filename;
     $ctype = $file->mime;
 
     if ( ! file_exists($filename))
