@@ -5,7 +5,7 @@
 	<div class="listcontrols controls top clearFix"><a href="#" class="addItem button">Add a User</a></div>
 
 	<ul class="listing">
-		<?=$items;?>
+		<?=$items;?> 
 	</ul>
 
   <div class="listcontrols controls bottom clearFix"><a href="#" class="addItem button">Add a User</a></div>

@@ -11,12 +11,18 @@
 		<?=$data['username'];?>	
 	<?endif;?>
 	</div>
-
+	
+	
+	<? if(Auth::instance()->get_user()->username != $data['username']): ?> 
+	
 	<?if (!$data['superuser'] || cms_util::check_role_access('superuser')):?>
 		<?=cms_ui::radio_group( 'role', '', $managed_roles, $data['role'], 'User Role');?>
 	<?else:?>
 		Superuser
 	<?endif;?>
+	<? else:
+		echo ucfirst($data['role']);
+	 endif; ?>
 	
 	<div class="itemControls clearFix">
 		<a href="#" title="delete this list item" class="icon delete">delete</a>
