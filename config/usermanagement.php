@@ -46,6 +46,6 @@ $config['password_change_email']['from'] = "Lattice Usermanagement <usermanageme
  */
 $config['managed_roles'] = array('Admin'=>'admin');
 $config['default_roles'] = 'admin';
-$config['superuser_edit'] = true;
+$config['superuser_edit'] = false;
 
 return $config;
