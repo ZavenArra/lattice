@@ -172,6 +172,7 @@ class Lattice_Core_Cms extends Lattice_CMSInterface {
     $this->nodetitle->title = $object->title; // this should change to object table
     $this->nodetitle->slug = $object->slug;
     $this->nodetitle->id = $object->id;
+    $this->nodetitle->objecttypename = $object->objecttype->objecttypename;
     $this->nodetitle->allow_delete = $object->objecttype->allow_delete;
     $this->nodetitle->allow_title_edit = ($object->objecttype->allow_title_edit == "TRUE" ? true : FALSE);
 

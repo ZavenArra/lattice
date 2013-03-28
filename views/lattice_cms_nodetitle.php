@@ -2,8 +2,8 @@
 	<?
 	//display the item type
 	
-	$elementArray = array( 'type'=>'item', 'name'=>'item', 'isMultiline'=>'false', 'label'=>'Item', 'class'=>'grid_7 inactive', 'tag'=>'p', 'labelClass'=>'hidden' );
-	echo cms_ui::build_ui_element($elementArray, 'dsfdsfds');
+	$elementArray = array( 'type'=>'item', 'name'=>'item', 'isMultiline'=>'false', 'label'=>'Item Type', 'class'=>'grid_7 inactive', 'tag'=>'p', 'labelClass'=>'hidden' );
+	echo cms_ui::build_ui_element($elementArray, $objecttypename);
 	
 	if ($allow_title_edit){
 		$elementArray = array( 'type'=>'text', 'name'=>'title', 'isMultiline'=>'false', 'label'=>'Title', 'class'=>'grid_7', 'tag'=>'p', 'labelClass'=>'hidden' );

@@ -148,7 +148,7 @@ Class Lattice_Cms_Ui{
       break;
       
     case 'item':
-		$element['item_name'] = 'fsdfdsf';
+		$element['item_name'] =  $fieldvalue;
 		break;
     }
 

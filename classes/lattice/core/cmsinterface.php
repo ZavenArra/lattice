@@ -53,7 +53,7 @@ abstract class Lattice_Core_CMSInterface extends Core_Controller_Layout {
 
     $field = strtok($_POST['field'], '_');
 
-    $file = latticecms::save_http_post_file($object_id, $field, $_FILES['Filedata']);
+    $file = cms_core::save_http_post_file($object_id, $field, $_FILES['Filedata']);
     $result = array(
       'id' => $file->id,
       'src' => $file->original->fullpath,
