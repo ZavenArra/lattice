@@ -2,11 +2,11 @@
 Class AssociatorTest extends Kohana_UnitTest_TestCase {
 
   public static function setUpBeforeClass(){
-    Graph_Core::createObject('article', 'associator-test-article');
+    Graph::createObject('article', 'associator-test-article');
   }
 
   public static function tearDownAfterClass(){
-    Graph_Core::object('associator-test-article')->delete();
+    Graph::object('associator-test-article')->delete();
   }
 
   private $articleFilter = array(
@@ -74,12 +74,12 @@ Class AssociatorTest extends Kohana_UnitTest_TestCase {
 
 
   public function testAssociatorPoolExcludesAssociated(){
-    $object1 = Graph_Core::createObject('article', 'test1');
-    $object1 = Graph_Core::object($object1);
-    $object2 = Graph_Core::createObject('article', 'test2');
-    $object2 = Graph_Core::object($object2);
-    $object3 = Graph_Core::createObject('article', 'test3');
-    $object3 = Graph_Core::object($object3);
+    $object1 = Graph::createObject('article', 'test1');
+    $object1 = Graph::object($object1);
+    $object2 = Graph::createObject('article', 'test2');
+    $object2 = Graph::object($object2);
+    $object3 = Graph::createObject('article', 'test3');
+    $object3 = Graph::object($object3);
 
     $object1->addLatticeRelationship('testAssociation', $object2->id);
 

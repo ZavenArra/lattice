@@ -196,7 +196,7 @@ Class Core_Lattice {
       if ( ! isset($module['controllertype']))
       {
         $view = new View($module['modulename']);
-        $object = Graph_Core::object($module['modulename']);
+        $object = Graph::object($module['modulename']);
         if ($object->loaded())
         { //  in this case it's a slug for a specific object
           foreach (core_views::get_view_content($object->id, $object->objecttype->objecttypename) as $key=>$content)

@@ -33,13 +33,13 @@ class Controller_Navigation extends Core_Controller_Lattice{
    */
   public function get_tier($parent_id, $deeplink_path=array(), &$follow=FALSE)
   {
-    $parent = Graph_Core::object($parent_id);
+    $parent = Graph::object($parent_id);
     if ( ! $parent->loaded())
     {
       throw new Kohana_Exception('Invalid object id sent to get_tier');
     }
 
-    $items = Graph_Core::object($parent->id)
+    $items = Graph::object($parent->id)
       ->lattice_children_query()
       ->active_filter();
     //  ->order_by('objectrelationships.sortorder', 'ASC');
@@ -105,7 +105,7 @@ class Controller_Navigation extends Core_Controller_Lattice{
 
 
       // add in any modules
-      if ($parent->id == Graph_Core::get_root_node(Kohana::config('cms.graph_root_node'))->id )
+      if ($parent->id == Graph::get_root_node(Kohana::config('cms.graph_root_node'))->id )
       {
         $cms_modules = core_lattice::config('cms_modules', '//module');
         foreach ($cms_modules as $m)
@@ -151,7 +151,7 @@ class Controller_Navigation extends Core_Controller_Lattice{
       $object_id = $deeplink;
       while($object_id)
       {
-        $object = Graph_Core::object($object_id);
+        $object = Graph::object($object_id);
         $deeplink_path[] = $object->id;
         $parent = $object->get_lattice_parent();
         if ($parent)
@@ -166,7 +166,7 @@ class Controller_Navigation extends Core_Controller_Lattice{
     }
 
     // this database call happens twice, should be a class variable?
-    $parent = Graph_Core::object($parent_id);
+    $parent = Graph::object($parent_id);
 
 
     $tier = $this->get_tier($parent_id, $deeplink_path);

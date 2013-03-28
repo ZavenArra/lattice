@@ -173,7 +173,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
       ->where('object_id', '=', $object->id)
       ->where('name', '=', $column)
       ->find();
-    $object_element = Graph_Core::object($object_element_relationship->elementobject_id);
+    $object_element = Graph::object($object_element_relationship->elementobject_id);
 
     if ( ! $object_element->loaded())
     {

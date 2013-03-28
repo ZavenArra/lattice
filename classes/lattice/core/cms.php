@@ -130,9 +130,9 @@ class Lattice_Core_Cms extends Lattice_CMSInterface {
 
     if ( ! $language_code)
     {
-      $object = Graph_Core::object($id);
+      $object = Graph::object($id);
     } else {
-      $object = Graph_Core::object($id)->translate($language_code);
+      $object = Graph::object($id)->translate($language_code);
     }
 
     self::$object_id = $id;
@@ -249,7 +249,7 @@ class Lattice_Core_Cms extends Lattice_CMSInterface {
     }
     Kohana::$log->add(Log::INFO, var_export($data, TRUE));
     Kohana::$log->add(Log::INFO, var_export($_FILES, TRUE));
-    $new_id = Graph_Core::object($id)->add_object($objecttype_id, $data);
+    $new_id = Graph::object($id)->add_object($objecttype_id, $data);
     $this->response->data($new_id);
   }
 

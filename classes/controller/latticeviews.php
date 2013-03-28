@@ -35,7 +35,7 @@ Class Controller_LatticeViews extends Core_Controller_Layout{
     if ($this->request == Request::initial() )
     {
       $layout_for_slug = Kohana::config('core_views.layouts.'.self::$slug);
-      $object = Graph_Core::object(self::$slug);
+      $object = Graph::object(self::$slug);
       $layout_for_object_type = Kohana::config('core_views.layouts_for_object_type.'.$object->objecttypename);
       if ($layout_for_slug)
       {
@@ -88,7 +88,7 @@ Class Controller_LatticeViews extends Core_Controller_Layout{
 
     if (Session::instance()->get('language_code'))
     {
-      $object = Graph_Core::object($object_id_or_slug);
+      $object = Graph::object($object_id_or_slug);
       if ( ! $object->loaded())
       {
         if ( ! $object_id_or_slug)

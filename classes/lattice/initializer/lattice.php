@@ -5,7 +5,7 @@ Class Lattice_Initializer_Lattice {
   public function initialize()
   {
     try {
-      Graph_Core::object();
+      Graph::object();
     } catch (Exception $e)
     {
       if ($e->getCode() == 1146)

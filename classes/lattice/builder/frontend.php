@@ -189,7 +189,7 @@ Class Lattice_Builder_Frontend {
       // if slug defined, get object_type from slug
       if ($slug = $i_data_config->getAttribute('slug'))
       {
-        $object = Graph_Core::object($slug);
+        $object = Graph::object($slug);
         if ( ! $object->loaded())
         {
           // error out,
@@ -224,7 +224,7 @@ Class Lattice_Builder_Frontend {
           }
 
           // and we can also check all the existing data to see if it has any other object_types
-          $parent_objects = Graph_Core::object()->objecttype_filter($parent_template)->published_filter()->find_all();
+          $parent_objects = Graph::object()->objecttype_filter($parent_template)->published_filter()->find_all();
           foreach ($parent_objects as $parent)
           {
             $children = $parent->get_published_children();
@@ -236,7 +236,7 @@ Class Lattice_Builder_Frontend {
           }
         } else {
           // see if from is a slug
-          $object_types_from_parent = $this->get_children_object_types(Graph_Core::object($from));
+          $object_types_from_parent = $this->get_children_object_types(Graph::object($from));
           $object_types = array_merge($object_types, $object_types_from_parent);
 
 

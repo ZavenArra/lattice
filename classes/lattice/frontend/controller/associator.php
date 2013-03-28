@@ -4,23 +4,23 @@ Class Lattice_Frontend_Controller_Associator extends Core_Controller_Lattice {
 
   public function action_associate($parent_id, $object_id, $lattice)
   {
-    Graph_Core::object($parent_id)->add_lattice_relationship($lattice, $object_id);
+    Graph::object($parent_id)->add_lattice_relationship($lattice, $object_id);
   }
 
   public function action_dissociate($parent_id, $object_id, $lattice)
   {
-    Graph_Core::object($parent_id)->remove_lattice_relationship($lattice, $object_id);
+    Graph::object($parent_id)->remove_lattice_relationship($lattice, $object_id);
   }
 
   public function action_get_page($parent_id, $name, $page_num=0, $word="")
   {
-    $parent = Graph_Core::object($parent_id);
+    $parent = Graph::object($parent_id);
     if ( ! $parent->loaded())
     {
       throw new Kohana_Exception('Parent object not found, invalid parent_id?');
     }
 
-    $element = latticecms::get_element_dom_node(Graph_Core::object($parent_id), $name);
+    $element = latticecms::get_element_dom_node(Graph::object($parent_id), $name);
     $filters = Associator::get_filters_from_dom_node($element);
     $modified_filters = array();
     foreach ($filters as $filter)
@@ -38,14 +38,14 @@ Class Lattice_Frontend_Controller_Associator extends Core_Controller_Lattice {
 
     Kohana::$log->add( Kohana_Log::INFO,"++ action_filter_pool_by_word: " . $parent_id . ", name: " . $name . ", " . $page_num . ", " . $word  )->write();
 
-    $parent = Graph_Core::object($parent_id);
+    $parent = Graph::object($parent_id);
 
     if ( ! $parent->loaded())
     {
       throw new Kohana_Exception('Parent object not found, invalid parent_id?');
     }
 
-    $element = latticecms::get_element_dom_node(Graph_Core::object($parent_id), $name);
+    $element = latticecms::get_element_dom_node(Graph::object($parent_id), $name);
     $filters = Associator::get_filters_from_dom_node($element);
     $modified_filters = array();
     foreach ($filters as $filter)
@@ -67,7 +67,7 @@ Class Lattice_Frontend_Controller_Associator extends Core_Controller_Lattice {
 
   public function action_filter_pool_by_tag($parent_id, $name, $tag)
   {
-    $parent = Graph_Core::object($parent_id);
+    $parent = Graph::object($parent_id);
     if ( ! $parent->loaded())
     {
       throw new Kohana_Exception('Parent object not found, invalid parent_id?');

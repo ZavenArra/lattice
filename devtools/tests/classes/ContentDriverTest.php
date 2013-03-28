@@ -2,15 +2,15 @@
 Class ContentDriverTest extends Kohana_UnitTest_TestCase {
 
   public static function setUpBeforeClass(){
-    Graph_Core::createObject('article', 'content-driver-test');
+    Graph::createObject('article', 'content-driver-test');
   }
 
   public static function tearDownAfterClass(){
-    Graph_Core::object('content-driver-test')->delete();
+    Graph::object('content-driver-test')->delete();
   }
 
   public function testDriverInfo(){
-    $info = Graph_Core::object('content-driver-test')->contentDriver()->driverInfo();
+    $info = Graph::object('content-driver-test')->contentDriver()->driverInfo();
     $this->assertTrue(is_array($info));
     $this->assertTrue(isset($info['driver']));
     $this->assertTrue(isset($info['tableName']));

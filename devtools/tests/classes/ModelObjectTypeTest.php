@@ -6,7 +6,7 @@ Class ModelObjectTypeTest extends Kohana_UnitTest_TestCase {
 
   public static function setUpBeforeClass(){
     self::$ot = ORM::Factory('objecttype', 'article');
-    self::$object = Graph_Core::object()->addObject('defaultsTest', array('slug'=>'defaults-test'));
+    self::$object = Graph::object()->addObject('defaultsTest', array('slug'=>'defaults-test'));
   }
 
   public static function tearDownAfterClass(){

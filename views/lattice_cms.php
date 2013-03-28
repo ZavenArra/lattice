@@ -1,4 +1,4 @@
-<div id="cms" class="module classPath-lattice_modules_CMS rootObjectId-<? echo Graph_Core::get_root_node(Kohana::config('cms.graphRootNode'))->id; ?> navigation-navigation userLevel-<?=$userlevel;?>">
+<div id="cms" class="module classPath-lattice_modules_CMS rootObjectId-<? echo Graph::get_root_node(Kohana::config('cms.graphRootNode'))->id; ?> navigation-navigation userLevel-<?=$userlevel;?>">
 
 <header>
 	<? 

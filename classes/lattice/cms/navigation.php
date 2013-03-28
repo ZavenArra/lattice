@@ -16,7 +16,7 @@ class Lattice_Cms_Navigation {
   {
     if ( ! strstr('Lattice_Object', get_class($object)))
     {
-      $object = Graph_Core::object($object);
+      $object = Graph::object($object);
     }
 
     $node_info = array();
@@ -60,7 +60,7 @@ class Lattice_Cms_Navigation {
     */
   public static function get_node_info_by_id($id)
   {
-    $object = Graph_Core::object($id);
+    $object = Graph::object($id);
     $node_info = Cms_Navigation::get_node_info($object);
     return $node_info;
   }

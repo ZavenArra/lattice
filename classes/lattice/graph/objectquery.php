@@ -31,7 +31,7 @@ class Lattice_Graph_Objectquery {
   public function run($parent_id = NULL)
   {
 
-    $objects = Graph_Core::object();
+    $objects = Graph::object();
 
     // apply slug filter
     if ($this->attributes['slug'])
@@ -48,7 +48,7 @@ class Lattice_Graph_Objectquery {
         {
           $objects->lattice_children_filter($parent_id);
         } else {
-          $from = Graph_Core::object($from);
+          $from = Graph::object($from);
           $objects->lattice_children_filter($from->id);
         }
         $objects->order_by('objectrelationships.sortorder');
