@@ -220,7 +220,6 @@ class Controller_Export extends Controller {
 
     }
     chmod(getcwd() . '/' . $this->output_dir, 0777);
-    system('cp -Rp application/media/* ' . $this->output_dir);
 
     $XML = new DOMDocument();
     $implementation = new DOMImplementation();
@@ -292,7 +291,9 @@ class Controller_Export extends Controller {
 
     $this->doc->appendChild($data);
 
-    echo getcwd() . '/' . $this->output_dir;
+    // Copy media last to avoid mysql timeout
+    system('cp -Rp application/media/* ' . $this->output_dir);
+
     flush();
     ob_flush();
     $this->doc->save($this->output_dir . '/' . $outputfilename . '.xml');
