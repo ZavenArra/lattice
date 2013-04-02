@@ -3,7 +3,7 @@
  * @package    Lattice_auth
  * @author     Deepwinter
  */
-class Controller_Auth extends Controller_Layout {
+class Controller_Auth extends Core_Controller_Layout {
 
   protected $_actions_that_get_layout = array(
     'index',
@@ -165,7 +165,7 @@ $this->view->content = $form->render();
       $user = ORM::Factory('user')->where('email', '=', $_POST['email'])->find();
       if ($user->loaded() )
       {
-        $password = Utility_Auth::random_password();
+        $password = Core_Utility_Auth::random_password();
         $user->password = $password;
         $user->save();
         $body = I18n::get('forgot_password_email_body');

@@ -23,7 +23,7 @@ class Controller_CMS extends Lattice_CMS {
   {
 
     // Dial up associated navi and ask for details
-    return Navigation::get_node_info_by_id($id);
+    return Cms_Navigation::get_node_info_by_id($id);
 
   }
 
@@ -31,7 +31,7 @@ class Controller_CMS extends Lattice_CMS {
   {
 
     // Dial up associated navi and ask for details
-    $item = Navigation::get_node_info_by_id($id);
+    $item = Cms_Navigation::get_node_info_by_id($id);
     $node_view = new View('navigation_node');
     $node_view->content = $item;
     return $node_view->render();

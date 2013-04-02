@@ -1,8 +1,8 @@
 <?$instance=$data['instance'];?>
 <li data-objectid="<?=$data['id'];?>" id="item_<?=$data['id'];?>" class="listItem"> 
 
-	<?foreach($uiElements as $htmlChunk):?>
-		<?=$htmlChunk;?>
+	<?foreach($ui_elements as $html_chunk):?>
+		<?=$html_chunk;?>
 	<?endforeach;?>
 
 	<div class="itemControls clearFix">

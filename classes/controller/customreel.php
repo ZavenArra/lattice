@@ -5,7 +5,7 @@
  * and passwords.  Can be configured deal with roles using the managedroles variables.
  */
 
-Class Controller_Custom_reel extends Controller_Layout {
+Class Controller_Custom_reel extends Core_Controller_Layout {
 
   protected $_actions_that_get_layout = array('index');
 
@@ -39,7 +39,7 @@ Class Controller_Custom_reel extends Controller_Layout {
 
     $this->managed_roles = Kohana::config(strtolower($this->controller_name).'.managed_roles');
     if (Kohana::config(strtolower($this->controller_name).'.superuser_edit')
-      AND latticeutil::check_role_access('superuser'))
+      AND cms_util::check_role_access('superuser'))
     {
       if (is_array($this->managed_roles))
       {
@@ -200,9 +200,9 @@ Class Controller_Custom_reel extends Controller_Layout {
   {
     $user = ORM::factory($this->table);
     $user->status = 'INCOMPLETE';
-    $user->username = 'PLACEHOLDER_'.Utility_Auth::random_password();;
-    $user->password = Utility_Auth::random_password();
-    $user->email = 'PLACEHOLDER'.Utility_Auth::random_password().'@madeofpeople.org';
+    $user->username = 'PLACEHOLDER_'.Core_Utility_Auth::random_password();;
+    $user->password = Core_Utility_Auth::random_password();
+    $user->email = 'PLACEHOLDER'.Core_Utility_Auth::random_password().'@madeofpeople.org';
     $user->save();
 
     // add the login role
@@ -241,7 +241,7 @@ Class Controller_Custom_reel extends Controller_Layout {
   public function action_save_field($id)
   {
 
-    if ( ! latticeutil::check_role_access('admin'))
+    if ( ! cms_util::check_role_access('admin'))
     {
       throw new Kohana_Exception('Only Admin has access to User Management');
     }
@@ -257,7 +257,7 @@ Class Controller_Custom_reel extends Controller_Layout {
 
       if ($user->has('roles', ORM::Factory('role')->where('name', '=' ,'superuser')->find() ))
       {
-        if ( ! latticeutil::check_role_access('superuser'))
+        if ( ! cms_util::check_role_access('superuser'))
         {
           throw new Kohana_Exception('Only superuser can change superuser');
         }
@@ -284,7 +284,7 @@ Class Controller_Custom_reel extends Controller_Layout {
       if ($value=='superuser')
       {
 
-        if ( ! latticeutil::check_role_access('superuser'))
+        if ( ! cms_util::check_role_access('superuser'))
         {
           throw new Kohana_Exception('Updating to superuser not allowed for non-superuser');
         }

@@ -41,7 +41,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
       } else {
         // Attempt lazy configuration
         $xpath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $objecttype->objecttypename, $column);
-        $element = lattice::config('objects', $xpath)->item(0);
+        $element = core_lattice::config('objects', $xpath)->item(0);
         if ( ! count($element))
         {
           throw new Kohana_Exception('DBMap column not found or configured: '.$column);
@@ -119,7 +119,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
 
       }
 
-      $field_config = lattice::config('objects', $x_path . sprintf('/elements/*[@name="%s"]', $column));
+      $field_config = core_lattice::config('objects', $x_path . sprintf('/elements/*[@name="%s"]', $column));
 
 
       if ($field_config->item(0))
@@ -190,7 +190,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
         $x_path = sprintf('//objectType[@name="%s"]', $object->objecttype->objecttypename);
       }
 
-      $element_config = lattice::config('objects', $x_path . sprintf('/elements/*[@name="%s"]', $column));
+      $element_config = core_lattice::config('objects', $x_path . sprintf('/elements/*[@name="%s"]', $column));
 
       // build the object
       $object_element = $object->add_element_object($element_config->item(0)->tag_name, $column);
@@ -237,7 +237,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
     }
 
 
-    $field_config = lattice::config('objects', $x_path . sprintf('/elements/*[@name="%s"]', $column));
+    $field_config = core_lattice::config('objects', $x_path . sprintf('/elements/*[@name="%s"]', $column));
     if ($field_config->item(0))
     {
       // field is configured but not initialized in database

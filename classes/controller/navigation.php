@@ -5,7 +5,7 @@
  *
  */
 
-class Controller_Navigation extends Controller_Lattice{
+class Controller_Navigation extends Core_Controller_Lattice{
 
   private $default_add_category_text = '';
   private $default_add_leaf_text = '';
@@ -56,7 +56,7 @@ class Controller_Navigation extends Controller_Lattice{
         $roles = $child->roles->find_all();
         foreach ($roles as $role)
         {
-          if ( ! latticeutil::check_access($role->name))
+          if ( ! cms_util::check_access($role->name))
           {
             continue (2);
           } 
@@ -73,7 +73,7 @@ class Controller_Navigation extends Controller_Lattice{
             continue;
           }
         }
-        $send_item = Navigation::get_node_info($child);
+        $send_item = Cms_Navigation::get_node_info($child);
 
         // implementation of deeplinking
         $send_item['follow'] = FALSE;
@@ -107,12 +107,12 @@ class Controller_Navigation extends Controller_Lattice{
       // add in any modules
       if ($parent->id == Graph::get_root_node(Kohana::config('cms.graph_root_node'))->id )
       {
-        $cms_modules = lattice::config('cms_modules', '//module');
+        $cms_modules = core_lattice::config('cms_modules', '//module');
         foreach ($cms_modules as $m)
         {
           $controller = $m->getAttribute('controller');
           $roles = Kohana::config(strtolower($controller).'.authrole', FALSE, FALSE); 
-          $access_granted = latticeutil::check_access($roles);
+          $access_granted = cms_util::check_access($roles);
           if ( ! $access_granted)
           {
             continue;
@@ -192,7 +192,7 @@ class Controller_Navigation extends Controller_Lattice{
     $tier_methods_drawer = new View('tier_methods_drawer');
     $addable_objects = $parent->objecttype->addable_objects;
 
-    if (latticeutil::check_access('superuser'))
+    if (cms_util::check_access('superuser'))
     {
       foreach ($this->get_object_types() as $object_type)
       {
@@ -214,7 +214,7 @@ class Controller_Navigation extends Controller_Lattice{
   public function get_object_types()
   {
     $object_types = array();
-    foreach (lattice::config('objects', '//objectType') as $object_type)
+    foreach (core_lattice::config('objects', '//objectType') as $object_type)
     {
       $entry = array();
       $entry['object_type_name'] = $object_type->getAttribute('name'); 

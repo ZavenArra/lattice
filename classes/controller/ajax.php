@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_Ajax extends Controller_Lattice {
+class Controller_Ajax extends Core_Controller_Lattice {
 
   public function action_index()
   {

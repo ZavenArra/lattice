@@ -1,6 +1,6 @@
 <?php
 
-Class Controller_Access_denied extends Controller_Layout {
+Class Controller_Access_denied extends Core_Controller_Layout {
 
   public $_actions_that_get_layout = array('index');
 

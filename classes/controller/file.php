@@ -21,7 +21,7 @@ class Controller_File extends Controller{
     // check access
     // don't have object wise access checking at this point
 
-    $filename = Graph::media_path().$file->filename;
+    $filename = Graph::mediapath().$file->filename;
     $ctype = $file->mime;
 
     if ( ! file_exists($filename))
@@ -50,7 +50,7 @@ class Controller_File extends Controller{
   {
     $file = Graph::file($file_id);
 
-    $filename = Graph::media_path().$file->filename;
+    $filename = Graph::mediapath().$file->filename;
     $ctype = $file->mime;
 
     if ( ! file_exists($filename))

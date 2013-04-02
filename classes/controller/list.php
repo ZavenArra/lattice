@@ -110,7 +110,7 @@ class Controller_List extends Lattice_CMSInterface {
     foreach ($list_members as $object)
     {
 
-      $html_chunks = latticecms::buildUIHtml_chunks_for_object($object);
+      $html_chunks = Cms_Core::buildUIHtml_chunks_for_object($object);
 
       $custom_item_view = 'lattice/object_types/' . $object->objecttype->objecttypename;
       $item_view = NULL;
@@ -181,7 +181,7 @@ class Controller_List extends Lattice_CMSInterface {
     if ($object_type_id == NULL)
     {
 
-      $addable_object_types = lattice::config('objects', sprintf('//list[@name="%s"]/addable_object', $list_object->objecttype->objecttypename));
+      $addable_object_types = core_lattice::config('objects', sprintf('//list[@name="%s"]/addable_object', $list_object->objecttype->objecttypename));
       if ( ! $addable_object_types->length > 0)
       {
         throw new Kohana_Exception('No Addable Objects ' .' Count not locate configuration in objects.xml for ' . sprintf('//list[@name="%s"]/addableobject', $this->_family));
@@ -203,7 +203,7 @@ class Controller_List extends Lattice_CMSInterface {
     //  $item->email = NULL;
     /*End cludge*/
 
-    $html_chunks = latticecms::buildUIHtml_chunks_for_object($object);
+    $html_chunks = Cms_Core::buildUIHtml_chunks_for_object($object);
 
     $custom_item_view = 'lattice/object_types/' . $object->objecttype->objecttypename;
     $item_view = NULL;

@@ -1,4 +1,4 @@
-<div id="<?=$lattice;?><?=$parentId;?>" data-objectid="<?=$parentId;?>" data-lattice="<?=$lattice;?>" class="module associator_checkboxes classPath-lattice_modules_CheckboxAssociator clearfix">
+<div id="<?=$lattice;?><?=$parentId;?>" data-objectid="<?=$parentId;?>" data-lattice="<?=$lattice;?>" class="module cms_associator_checkboxes classPath-lattice_modules_CheckboxAssociator clearfix">
 
   <h4><?=$label;?></h4>
 

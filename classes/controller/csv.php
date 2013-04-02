@@ -9,7 +9,7 @@ Class Controller_CSV extends Controller {
   public function __construct($request, $response)
   {
     parent::__construct($request, $response);
-    if ( ! latticeutil::check_role_access('superuser')  AND PHP_SAPI != 'cli' )
+    if ( ! cms_util::check_role_access('superuser')  AND PHP_SAPI != 'cli' )
     {
       die('Only superuser can access builder tool');
     }
@@ -63,7 +63,7 @@ Class Controller_CSV extends Controller {
     if ($example OR ($this->level > 0 AND count($objects)))
     {
       $children_line = array_pad(array('Children'), -1 - $this->level, '');
-      $this->csv_output .= latticeutil::array_to_csv($children_line, ',');
+      $this->csv_output .= cms_util::array_to_csv($children_line, ',');
       $this->csv_output .= "\n";
     }
 
@@ -90,7 +90,7 @@ Class Controller_CSV extends Controller {
           $object = Graph::object()->set_object_type($addable_object_type['object_type_id']);
 
 
-          $csv_view = new View_Csv($this->level, $object);
+          $csv_view = new Cms_View_Csv($this->level, $object);
           $this->csv_output .= $csv_view->render();
 
 
@@ -155,7 +155,7 @@ Class Controller_CSV extends Controller {
       }
 
       // check if this object type is valid for the current objects.xml
-      $object_config = lattice::config('objects', sprintf('//objectType[@name="%s"]', $object_type_name));
+      $object_config = core_lattice::config('objects', sprintf('//objectType[@name="%s"]', $object_type_name));
       if ( ! $object_config->item(0))
       {
         throw new Kohana_Exception("No object type configured in objects.xml for ".$object_type_name); 
@@ -247,7 +247,7 @@ Class Controller_CSV extends Controller {
         }
 
         // need to look up field and switch on field type 
-        $field_info = lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]',$object->objecttype->objecttypename, $field));
+        $field_info = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]',$object->objecttype->objecttypename, $field));
         $field_info = $field_info->item(0);
         if ( ! $field_info)
         {

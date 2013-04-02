@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_Test extends Controller_Lattice {
+class Controller_Test extends Core_Controller_Lattice {
 
   public function action_index()
   {

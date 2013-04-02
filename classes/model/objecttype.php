@@ -30,13 +30,13 @@ class Model_Objecttype extends ORM {
 
   public static function get_config($object_type_name)
   {
-    $config = lattice::config('objects', sprintf('//objectType[@name="%s"]', $object_type_name));
+    $config = core_lattice::config('objects', sprintf('//objectType[@name="%s"]', $object_type_name));
     if ($config->length)
     {
       return $config->item(0);
     }
 
-    $config = lattice::config('objects', sprintf('//list[@name="%s"]', $object_type_name));
+    $config = core_lattice::config('objects', sprintf('//list[@name="%s"]', $object_type_name));
     if ($config->length)
     {
       return $config->item(0);
@@ -48,7 +48,7 @@ class Model_Objecttype extends ORM {
   public static function get_elements($object_type_name)
   {
     $config = Model_Objecttype::get_config($object_type_name);
-    $elements = lattice::config('objects', 'elements/*', $config);
+    $elements = core_lattice::config('objects', 'elements/*', $config);
     return $elements;
   }
 
@@ -87,14 +87,14 @@ class Model_Objecttype extends ORM {
       if ($column == 'addable_objects')
       {
         $x_query .= '/addable_object';
-        $nodes = lattice::config('objects', $x_query);
+        $nodes = core_lattice::config('objects', $x_query);
         $value_from_config = array();
         foreach ($nodes as $node)
         {
           $entry = array();
           $entry['object_type_id'] = $node->getAttribute('objectTypeName');
           $entry['object_type_add_text'] = $node->getAttribute('add_text');
-          $t_config = lattice::config('objects', sprintf('//objectType[@name="%s"]', $entry['object_type_id'] ))->item(0);
+          $t_config = core_lattice::config('objects', sprintf('//objectType[@name="%s"]', $entry['object_type_id'] ))->item(0);
           if ( ! count($t_config))
           {
             throw new Kohana_Exception('No object type definition by name: '.$entry['object_type_id']);
@@ -104,7 +104,7 @@ class Model_Objecttype extends ORM {
           $value_from_config[] = $entry;
         }
       } else {
-        $node = lattice::config('objects', $x_query)->item(0);
+        $node = core_lattice::config('objects', $x_query)->item(0);
         if ($node)
           $value_from_config = $node->getAttribute($column);
 
