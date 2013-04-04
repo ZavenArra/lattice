@@ -41,7 +41,7 @@ class Controller_Export extends Controller {
             $target_path = $this->output_dir . $value->filename;
             if (file_exists($target_path))
             {
-              $node->appendChild($this->doc->create_text_node($target_path));
+              $node->appendChild($this->doc->createTextNode($target_path));
             }
           }
           break;
@@ -53,7 +53,7 @@ class Controller_Export extends Controller {
           break;
         }
       } else {
-        $node->appendChild($this->doc->create_text_node($value));
+        $node->appendChild($this->doc->createTextNode($value));
       }
       $nodes[] = $node;
     }
@@ -88,9 +88,9 @@ class Controller_Export extends Controller {
         continue;
       }
 
-      $node = $this->doc->create_element('field');
-      $node_attr = $this->doc->create_attribute('name');
-      $node_value = $this->doc->create_text_node($key);
+      $node = $this->doc->createElement('field');
+      $node_attr = $this->doc->createAttribute('name');
+      $node_value = $this->doc->createTextNode($key);
       $node_attr->appendChild($node_value);
       $node->appendChild($node_attr);
 
@@ -106,7 +106,7 @@ class Controller_Export extends Controller {
             $target_path = $this->output_dir . $value->filename;
             if (file_exists($target_path))
             {
-              $node->appendChild($this->doc->create_text_node($target_path));
+              $node->appendChild($this->doc->createTextNode($target_path));
             }
           }
           break;
@@ -120,20 +120,20 @@ class Controller_Export extends Controller {
       } elseif ($key == "tags")
       {
 
-        $node->appendChild($this->doc->create_text_node(implode(',',$value)));
+        $node->appendChild($this->doc->createTextNode(implode(',',$value)));
 
       } else {
 
-        $node->appendChild($this->doc->create_text_node($value));
+        $node->appendChild($this->doc->createTextNode($value));
       }
       $nodes[] = $node;
     }
-    $node = $this->doc->create_element('field');
-    $node_attr = $this->doc->create_attribute('name');
-    $node_value = $this->doc->create_text_node('published');
+    $node = $this->doc->createElement('field');
+    $node_attr = $this->doc->createAttribute('name');
+    $node_value = $this->doc->createTextNode('published');
     $node_attr->appendChild($node_value);
     $node->appendChild($node_attr);
-    $node->appendChild($this->doc->create_text_node($object->published));
+    $node->appendChild($this->doc->createTextNode($object->published));
     $nodes[] = $node;
     return $nodes;
   }
@@ -144,7 +144,7 @@ class Controller_Export extends Controller {
     $nodes = array();
     foreach ($objects as $object)
     {
-      $item = $this->doc->create_element($object->objecttype->objecttypename);
+      $item = $this->doc->createElement($object->objecttype->objecttypename);
 
       foreach ($this->get_object_fields($object) as $field)
       {
@@ -170,9 +170,9 @@ class Controller_Export extends Controller {
     $nodes = array();
     foreach ($objects as $object)
     {
-      $item = $this->doc->create_element('item');
-      $object_type_attr = $this->doc->create_attribute('object_type_name');
-      $object_type_value = $this->doc->create_text_node($object->objecttype->objecttypename);
+      $item = $this->doc->createElement('item');
+      $object_type_attr = $this->doc->createAttribute('object_type_name');
+      $object_type_value = $this->doc->createTextNode($object->objecttype->objecttypename);
       $object_type_attr->appendChild($object_type_value);
       $item->appendChild($object_type_attr);
 
@@ -224,17 +224,18 @@ class Controller_Export extends Controller {
 
     $XML = new DOMDocument();
     $implementation = new DOMImplementation();
-    $dtd = $implementation->create_document_type('data',
+      
+    $dtd = $implementation->createDocumentType('data',
       '-//WINTERROOT//DTD Data//EN',
       '../../../modules/lattice/lattice/data.dtd');
-    $this->doc = $implementation->create_document('', '', $dtd);
+    $this->doc = $implementation->createDocument('', '', $dtd);
 
     $this->doc->xml_version="1.0";
     $this->doc->encoding="UTF-8";
     $this->doc->format_output = TRUE;
 
-    $data = $this->doc->create_element('data');
-    $nodes = $this->doc->create_element('nodes');
+    $data = $this->doc->createElement('data');
+    $nodes = $this->doc->createElement('nodes');
 
     $object = Graph::get_root_node('cms_root_node');
     $objects = $object->get_lattice_children();
@@ -257,7 +258,7 @@ class Controller_Export extends Controller {
     $data->appendChild($nodes);
 
 
-    $relationships = $this->doc->create_element('relationships');
+    $relationships = $this->doc->createElement('relationships');
 
     $lattices = Graph::lattices();
     foreach ($lattices as $lattice)
@@ -266,20 +267,20 @@ class Controller_Export extends Controller {
       {
         continue;
       }
-      $l = $this->doc->create_element('lattice');
-      $name_attr = $this->doc->create_attribute('name');
-      $name_value = $this->doc->create_text_node($lattice->name);
+      $l = $this->doc->createElement('lattice');
+      $name_attr = $this->doc->createAttribute('name');
+      $name_value = $this->doc->createTextNode($lattice->name);
       $name_attr->appendChild($name_value);
       $l->appendChild($name_attr);
 
       foreach ($lattice->get_relationships() as $relationship)
       {
-        $r = $this->doc->create_element('relationship');
-        $parent_slug = $this->doc->create_text_node(Graph::object($relationship->object_id)->slug);
-        $parent = $this->doc->create_attribute('parent');
+        $r = $this->doc->createElement('relationship');
+        $parent_slug = $this->doc->createTextNode(Graph::object($relationship->object_id)->slug);
+        $parent = $this->doc->createAttribute('parent');
         $parent->appendChild($parent_slug);
-        $child_slug = $this->doc->create_text_node(Graph::object($relationship->connectedobject_id)->slug);
-        $child = $this->doc->create_attribute('child');
+        $child_slug = $this->doc->createTextNode(Graph::object($relationship->connectedobject_id)->slug);
+        $child = $this->doc->createAttribute('child');
         $child->appendChild($child_slug);
         $r->appendChild($parent);
         $r->appendChild($child);
