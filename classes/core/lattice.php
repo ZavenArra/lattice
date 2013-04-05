@@ -55,6 +55,9 @@ Class Core_Lattice {
 
   public static function config($arena, $xpath, $context_node=NULL)
   {
+    
+   // var_dump(Kohana::config('lattice.active_configuration')); exit;
+    
     if ( ! is_array(self::$config))
     {
       self::$config = array();

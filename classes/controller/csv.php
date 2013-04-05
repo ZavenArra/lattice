@@ -144,8 +144,8 @@ Class Controller_CSV extends Controller {
     $this->advance();
     while($this->line)
     {
-      $object_type_name = $this->line[$this->column];
-      if ( ! $object_type_name)
+      $objectTypeName = $this->line[$this->column];
+      if ( ! $objectTypeName)
       {
         throw new Kohana_Exception("Expecting object_type at column :column, but none found :line",
           array(
@@ -155,14 +155,14 @@ Class Controller_CSV extends Controller {
       }
 
       // check if this object type is valid for the current objects.xml
-      $object_config = core_lattice::config('objects', sprintf('//objectType[@name="%s"]', $object_type_name));
+      $object_config = core_lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName));
       if ( ! $object_config->item(0))
       {
-        throw new Kohana_Exception("No object type configured in objects.xml for ".$object_type_name); 
+        throw new Kohana_Exception("No object type configured in objects.xml for ".$objectTypeName); 
       }
 
       // we have an object_type
-      $new_object_id = $parent->add_object($object_type_name);
+      $new_object_id = $parent->add_object($objectTypeName);
       $new_object = Graph::object($new_object_id);
       $this->walkCSVElements($new_object);
 
@@ -305,8 +305,8 @@ Class Controller_CSV extends Controller {
     {
       // echo "foudn Child\n";
       // echo $this->column;
-      $child_object_type_name = $this->line[$this->column+1]; 
-      $child_object_id = $object->add_object($child_object_type_name);
+      $child_objectTypeName = $this->line[$this->column+1]; 
+      $child_object_id = $object->add_object($child_objectTypeName);
       $child_object = Graph::object($child_object_id);
       $this->column++;
       // echo $this->column;

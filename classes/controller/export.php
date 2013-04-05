@@ -18,7 +18,7 @@ class Controller_Export extends Controller {
     $content = $object->get_content();
     foreach ($content as $key => $value)
     {
-      if ($key == 'object_type_name')
+      if ($key == 'objectTypeName')
       {
         continue;
       }
@@ -26,7 +26,7 @@ class Controller_Export extends Controller {
       {
         // continue;
       }
-      $node = $this->doc->create_element($key);
+      $node = $this->doc->createElement($key);
       if (is_array($value))
       {
 
@@ -66,7 +66,7 @@ class Controller_Export extends Controller {
     $content = $object->get_content();
     foreach ($content as $key => $value)
     {
-      if ($key == 'object_type_name' OR $key == 'dateadded')
+      if ($key == 'objectTypeName' OR $key == 'dateadded')
       {
         continue;
       }
@@ -171,7 +171,7 @@ class Controller_Export extends Controller {
     foreach ($objects as $object)
     {
       $item = $this->doc->createElement('item');
-      $object_type_attr = $this->doc->createAttribute('object_type_name');
+      $object_type_attr = $this->doc->createAttribute('objectTypeName');
       $object_type_value = $this->doc->createTextNode($object->objecttype->objecttypename);
       $object_type_attr->appendChild($object_type_value);
       $item->appendChild($object_type_attr);
@@ -296,6 +296,10 @@ class Controller_Export extends Controller {
     echo getcwd() . '/' . $this->output_dir;
     flush();
     ob_flush();
+    
+    //format file
+    $this->doc->formatOutput = true;
+    
     $this->doc->save($this->output_dir . '/' . $outputfilename . '.xml');
     echo 'done';
   }

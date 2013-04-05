@@ -197,8 +197,8 @@ class Controller_Navigation extends Core_Controller_Lattice{
       foreach ($this->get_object_types() as $object_type)
       {
         $addable_object = array();
-        $addable_object['object_type_id'] = $object_type['object_type_name'];
-        $addable_object['object_type_add_text'] = "Add a ".$object_type['object_type_name'];
+        $addable_object['object_type_id'] = $object_type['objectTypeName'];
+        $addable_object['object_type_add_text'] = "Add a ".$object_type['objectTypeName'];
         $addable_object['nodeType'] = $object_type['nodeType'];
         $addable_object['contentType'] = $object_type['contentType'];
         $addable_objects[] = $addable_object;
@@ -217,7 +217,7 @@ class Controller_Navigation extends Core_Controller_Lattice{
     foreach (core_lattice::config('objects', '//objectType') as $object_type)
     {
       $entry = array();
-      $entry['object_type_name'] = $object_type->getAttribute('name'); 
+      $entry['objectTypeName'] = $object_type->getAttribute('name'); 
       $entry['label'] = $object_type->getAttribute('name').' label'; 
       $entry['nodeType'] = $object_type->getAttribute('nodeType'); 
       $entry['contentType'] = $object_type->getAttribute('contentType'); 

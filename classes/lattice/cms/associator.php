@@ -27,7 +27,7 @@ Class Lattice_Cms_Associator {
     {
       $setting = array();
       $setting['from'] = $filter->getAttribute('from');
-      $setting['object_type_name'] = $filter->getAttribute('objectTypeName');
+      $setting['objectTypeName'] = $filter->getAttribute('objectTypeName');
       $setting['tagged'] = $filter->getAttribute('tagged');
       $setting['function'] = $filter->getAttribute('function');
       $filters[] = $setting;
@@ -97,16 +97,16 @@ Class Lattice_Cms_Associator {
           $objects->tagged_filter($filter['tagged']); 
         }
 
-        if (isset($filter['object_type_name']) AND $filter['object_type_name'])
+        if (isset($filter['objectTypeName']) AND $filter['objectTypeName'])
         {
-          $t = ORM::Factory('objecttype', $filter['object_type_name']);
+          $t = ORM::Factory('objecttype', $filter['objectTypeName']);
           if ( ! $t->loaded())
           {
-            Graph::configure_object_type($filter['object_type_name']);
-            $t = ORM::Factory('objecttype', $filter['object_type_name']);
+            Graph::configure_object_type($filter['objectTypeName']);
+            $t = ORM::Factory('objecttype', $filter['objectTypeName']);
             if ( ! $t->loaded())
             {
-              throw new Kohana_Exception($filter['object_type_name'] .' Not Found');
+              throw new Kohana_Exception($filter['objectTypeName'] .' Not Found');
             }
           }
           $objects->where('objecttype_id', '=', $t->id);

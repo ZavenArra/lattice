@@ -54,10 +54,10 @@ class Model_listcontainer extends Model_Object {
   }
 
 
-  public function add_object($object_type_name, $data = array(), $lattice = NULL, $rosetta_id = NULL, $language_id = NULL)
+  public function add_object($objectTypeName, $data = array(), $lattice = NULL, $rosetta_id = NULL, $language_id = NULL)
   {
     $data['published'] = 1;
-    return parent::add_object($object_type_name, $data, $lattice, $rosetta_id, $language_id);
+    return parent::add_object($objectTypeName, $data, $lattice, $rosetta_id, $language_id);
   }
 
 }

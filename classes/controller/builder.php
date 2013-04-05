@@ -7,10 +7,10 @@ class Controller_Builder extends Controller {
   public function __construct()
   {
 
-    if ( ! cms_util::check_role_access('superuser') AND PHP_SAPI != 'cli' )
-    {
-      die('Only superuser can access builder tool');
-    }
+  //  if ( ! cms_util::check_role_access('superuser') AND PHP_SAPI != 'cli' )
+   /// {
+  //    die('Only superuser can access builder tool');
+  ///  }
 
     $this->root_node_object_type = Kohana::config('cms.graph_root_node');
 
@@ -90,7 +90,7 @@ class Controller_Builder extends Controller {
     echo "\n_inserting Data\n";
     $this->insert_data($xml_file, NULL, core_lattice::config($xml_file, 'nodes')->item(0) );
 
-    latticecms::regenerate_images();
+    Cms_Core::regenerate_images();
 
     $this->insert_relationships($xml_file);
 
@@ -156,7 +156,7 @@ class Controller_Builder extends Controller {
 
     $this->insert_relationships($xml_file);
 
-    latticecms::generate_new_images($this->new_object_ids);
+    Cms_Core::generate_new_images($this->new_object_ids);
   }
 
 
@@ -170,6 +170,7 @@ class Controller_Builder extends Controller {
       $parent_object = Graph::object($parent_id);
     }
 
+	//echo "$parent_object | ";
 
     $items = core_lattice::config($xml_file, 'item', $context);
     foreach ($items as $item)
@@ -331,14 +332,13 @@ class Controller_Builder extends Controller {
 
     }
     unset($items);
-
   }
 
 
   public function action_regenerate_images()
   {
     try {
-      latticecms::regenerate_images();
+      Cms_Core::regenerate_images();
     } catch(Exception $e)
     {
       print_r($e->get_message() . $e->get_trace());

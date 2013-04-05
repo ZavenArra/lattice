@@ -60,14 +60,14 @@ class Lattice_Cms_Core {
             $view = new View('ui/clusters_wrapper');
             $view->label = $element['label'];
             $view->html = $html;
-            $view->object_type_name = $cluster_object->objecttype->objecttypename;
+            $view->objectTypeName = $cluster_object->objecttype->objecttypename;
             $view->object_id = $cluster_object->id;
             $html = $view->render();
           } else {
             $view = new View($customview);
             // $view->load_resources();
             $view->label = $element['label'];
-            $view->object_type_name = $cluster_object->objecttype->objecttypename;
+            $view->objectTypeName = $cluster_object->objecttype->objecttypename;
             $view->object_id = $cluster_object->id;
             foreach ($cluster_html_chunks as $key => $value)
             {
@@ -360,8 +360,8 @@ class Lattice_Cms_Core {
 
   public static function move_node_html($object)
   {
-    $object_type_name = $object->objecttypename;
-    $x_path = sprintf('//objectType[addableObject[@objectTypeName="%s"]]', $object_type_name);
+    $objectTypeName = $object->objecttypename;
+    $x_path = sprintf('//objectType[addableObject[@objectTypeName="%s"]]', $objectTypeName);
     $object_types_result = core_lattice::config('objects', $x_path);
 
     $object_types = array();

@@ -234,12 +234,12 @@ class Model_Object extends ORM implements arrayaccess {
   protected function load_content_driver()
   {
 
-    $object_type_name = $this->objecttype->objecttypename;
-    if ($object_type_name)
+    $objectTypeName = $this->objecttype->objecttypename;
+    if ($objectTypeName)
     {
-      if (Kohana::find_file('classes/model/lattice', strtolower($object_type_name)))
+      if (Kohana::find_file('classes/model/lattice', strtolower($objectTypeName)))
       {
-        $model_name = 'Model_Lattice_' . $object_type_name;
+        $model_name = 'Model_Lattice_' . $objectTypeName;
         $model = new $model_name($object_id);
         $this->content_driver = $model;
       } else {
@@ -357,13 +357,13 @@ class Model_Object extends ORM implements arrayaccess {
     if ( ! $this->content_driver)
     {
 
-      $object_type_name = $this->objecttype->objecttypename;
+      $objectTypeName = $this->objecttype->objecttypename;
 
-      if ($object_type_name)
+      if ($objectTypeName)
       {
-        if (Kohana::find_file('classes/model/lattice', $object_type_name))
+        if (Kohana::find_file('classes/model/lattice', $objectTypeName))
         {
-          $model_name = 'Model_Lattice_' . $object_type_name;
+          $model_name = 'Model_Lattice_' . $objectTypeName;
           $model = new $model_name($object_id);
           $this->content_driver = $model;
         } else {
@@ -434,10 +434,10 @@ class Model_Object extends ORM implements arrayaccess {
   {
 
     // create the content driver table
-    $object_type_name = $this->objecttype->objecttypename;
-    if (Kohana::find_file('classes','model/lattice/'.strtolower($object_type_name)))
+    $objectTypeName = $this->objecttype->objecttypename;
+    if (Kohana::find_file('classes','model/lattice/'.strtolower($objectTypeName)))
     {
-      $model_name = 'Model_Lattice_' . $object_type_name;
+      $model_name = 'Model_Lattice_' . $objectTypeName;
       $model = new $model_name($object_id);
       $this->content_driver = $model;
     } else {
@@ -508,7 +508,7 @@ class Model_Object extends ORM implements arrayaccess {
       {
         parent::__set($column, $value);
 
-        // TODO: Change this to an object_type_name match below
+        // TODO: Change this to an objectTypeName match below
       } elseif ($column == 'tags')
       {
         $tags = explode(',', $value);
@@ -522,9 +522,14 @@ class Model_Object extends ORM implements arrayaccess {
         $objecttype_id = $o['objecttype_id'];
 
         $object_type = ORM::Factory('objecttype', $objecttype_id);
-
+			
+		echo $object_type->objecttypename . ' | ' . $column .' | ';
+			
         $xpath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $object_type->objecttypename, $column);
         $field_info = core_lattice::config('objects', $xpath)->item(0);
+        
+        var_dump($field_info);  echo '<br />';
+        
         if ( ! $field_info)
         {
           throw new Kohana_Exception('Invalid field for object_type, using XPath : :xpath', array(':xpath' => $xpath));
@@ -774,7 +779,7 @@ class Model_Object extends ORM implements arrayaccess {
       $content['title'] = $this->title;
       $content['slug'] = $this->slug;
       $content['dateadded'] = $this->dateadded;
-      $content['object_type_name'] = $this->objecttype->objecttypename;
+      $content['objectTypeName'] = $this->objecttype->objecttypename;
 
       $fields = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
 
@@ -1628,12 +1633,12 @@ class Model_Object extends ORM implements arrayaccess {
       return $this->adjacent_record($sort_field, 'prev', $current_id, $lattice);
     }
 
-    public function add_object($object_type_name, $data = array(), $lattice = NULL, $rosetta_id = NULL, $language_id = NULL)
+    public function add_object($objectTypeName, $data = array(), $lattice = NULL, $rosetta_id = NULL, $language_id = NULL)
     {
 
-      $new_object_type = ORM::Factory('objecttype', $object_type_name);
+      $new_object_type = ORM::Factory('objecttype', $objectTypeName);
 
-      $new_object = $this->add_lattice_object($object_type_name, $lattice, $rosetta_id, $language_id);
+      $new_object = $this->add_lattice_object($objectTypeName, $lattice, $rosetta_id, $language_id);
 
 
       /*
@@ -1742,15 +1747,15 @@ class Model_Object extends ORM implements arrayaccess {
     }
 
 
-    public function create_object($object_type_name, $rosetta_id=NULL, $language_id=NULL)
+    public function create_object($objectTypeName, $rosetta_id=NULL, $language_id=NULL)
     {
       if ($this->loaded())
       {
         throw new Kohana_Exception('Create cannot be called on a loaded object');
       } 
-      if ( ! $object_type_name)
+      if ( ! $objectTypeName)
       {
-        throw new Kohana_Exception('Create cannot be called without a valid object_type_name: '.$object_type_name );
+        throw new Kohana_Exception('Create cannot be called without a valid objectTypeName: '.$objectTypeName );
       }
 
       ! $rosetta_id ?  $translation_rosetta_id = Graph::new_rosetta() : $translation_rosetta_id = $rosetta_id;
@@ -1760,7 +1765,7 @@ class Model_Object extends ORM implements arrayaccess {
         $this->language_id == NULL ? $language_id = Graph::default_language() : $language_id = $this->language_id;
       }
 
-      $this->set_object_type($object_type_name);
+      $this->set_object_type($objectTypeName);
       $this->language_id = $language_id;
       $this->rosetta_id = $translation_rosetta_id;
       $this->slug = self::create_slug();
@@ -1786,11 +1791,11 @@ class Model_Object extends ORM implements arrayaccess {
 
     }
 
-    private function _create_object($object_type_name, $rosetta_id = NULL, $language_id = NULL)
+    private function _create_object($objectTypeName, $rosetta_id = NULL, $language_id = NULL)
     {
 
       $new_object = Graph::object();
-      $new_object->create_object($object_type_name, $rosetta_id, $language_id);
+      $new_object->create_object($objectTypeName, $rosetta_id, $language_id);
       $new_object = Graph::object($new_object->id);
       return $new_object;
 
@@ -1896,11 +1901,11 @@ class Model_Object extends ORM implements arrayaccess {
      * 
      */
 
-    public function add_element_object($object_type_name, $element_name, $data=array(), $rosetta_id = NULL, $language_id = NULL)
+    public function add_element_object($objectTypeName, $element_name, $data=array(), $rosetta_id = NULL, $language_id = NULL)
     {
-      $new_object_type = ORM::Factory('objecttype', $object_type_name);
+      $new_object_type = ORM::Factory('objecttype', $objectTypeName);
 
-      $new_object = $this->_create_object($object_type_name, $rosetta_id, $language_id);
+      $new_object = $this->_create_object($objectTypeName, $rosetta_id, $language_id);
 
 
       // and set up the element relationship
@@ -2037,10 +2042,10 @@ class Model_Object extends ORM implements arrayaccess {
     }
 
 
-    private function add_lattice_object($object_type_name, $lattice = NULL, $rosetta_id = NULL, $language_id = NULL)
+    private function add_lattice_object($objectTypeName, $lattice = NULL, $rosetta_id = NULL, $language_id = NULL)
     {
 
-      $new_object = $this->_create_object($object_type_name, $rosetta_id, $language_id);
+      $new_object = $this->_create_object($objectTypeName, $rosetta_id, $language_id);
 
       // The objet has been built, now set it's lattice point
       $lattice = Graph::lattice();
@@ -2088,29 +2093,29 @@ class Model_Object extends ORM implements arrayaccess {
       if ( ! is_object($object_type_class_or_name))
       {
 
-        $object_type_name = $object_type_class_or_name;
+        $objectTypeName = $object_type_class_or_name;
 
-        $object_type = ORM::Factory('objecttype', $object_type_name);
+        $object_type = ORM::Factory('objecttype', $objectTypeName);
 
         if ( ! $object_type->id)
         {
 
 
           // check objects.xml for configuration
-          $x_path =  sprintf('//objectType[@name="%s"]', $object_type_name);
-          $x_path_list =  sprintf('//list[@name="%s"]', $object_type_name);
+          $x_path =  sprintf('//objectType[@name="%s"]', $objectTypeName);
+          $x_path_list =  sprintf('//list[@name="%s"]', $objectTypeName);
           if ($object_type_config = core_lattice::config('objects', $x_path)->item(0))
           {
             // there's a config for this object_type
             // go ahead and configure it
-            Graph::configure_object_type($object_type_name);
-            $object_type = ORM::Factory('objecttype', $object_type_name);
+            Graph::configure_object_type($objectTypeName);
+            $object_type = ORM::Factory('objecttype', $objectTypeName);
           } elseif ($object_type_config = core_lattice::config('objects', $x_path_list)->item(0))
           { 
-            Graph::configure_object_type($object_type_name);
-            $object_type = ORM::Factory('objecttype', $object_type_name);
+            Graph::configure_object_type($objectTypeName);
+            $object_type = ORM::Factory('objecttype', $objectTypeName);
           } else {
-            throw new Kohana_Exception('No config for object_type ' . $object_type_name .' '.$x_path);
+            throw new Kohana_Exception('No config for object_type ' . $objectTypeName .' '.$x_path);
           }
         }
       } else {
@@ -2205,7 +2210,7 @@ class Model_Object extends ORM implements arrayaccess {
     }
 
 
-    public function get_meta_object_type_name($lattice)
+    public function get_meta_objectTypeName($lattice)
     {
       $x_path = sprintf('//objectType[@name="%s"]/elements/associator[@lattice="%s"]', 
         $this->objecttype->objecttypename,
@@ -2217,7 +2222,7 @@ class Model_Object extends ORM implements arrayaccess {
       {
         return NULL;
       }
-      return $config->item(0)->getAttribute('meta_object_type_name');
+      return $config->item(0)->getAttribute('meta_objectTypeName');
     }
 	
 	
