@@ -1,21 +1,8 @@
 <?php
 /*
- * Class: Controller_Authstatus
+ * Class: Controller_Authstatus extends Lattice_Controller_Authstatus
  * Reponsible for the 'logged in as' object on the MOP backend objects
  */
-class Controller_Authstatus extends Controller {
+class Controller_Authstatus extends Lattice_Controller_Authstatus {
 
-  /*
-   * Function: create_index_view()
-   * Implements abstract function in base assigning the main view 
-   */
-  public function action_index()
-  {
-    $view = new View('logged_in_as');
-    if (Auth::instance()->get_user())
-    {
-      $view->username = Auth::instance()->get_user()->username;
-    }
-    $this->response->body($view->render());
-  }
 }

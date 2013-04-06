@@ -532,7 +532,7 @@ class Model_Object extends ORM implements arrayaccess {
         
         if ( ! $field_info)
         {
-          throw new Kohana_Exception('Invalid field for object_type, using XPath : :xpath', array(':xpath' => $xpath));
+          throw new Kohana_Exception('Invalid field for objecttype, using XPath : :xpath', array(':xpath' => $xpath));
         }
 
 

@@ -1,6 +1,6 @@
 <?php
 
-class Controller_Keepalive extends Lattice_Controller_Keepalive {
+class Lattice_Controller_Keepalive extends Controller {
 
   public function index()
   {

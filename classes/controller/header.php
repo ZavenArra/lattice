@@ -1,12 +1,5 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_Header extends Controller {
-  protected $view_prefix = 'header';
-
-  public function action_build($view_suffix)
-  {
-    $view = new View($this->view_prefix.'_'.$view_suffix);
-    $this->response->body($view->render());
-  }
-
-} //  End Welcome
+class Controller_Header extends Lattice_Controller_Header {
+ 
+}
