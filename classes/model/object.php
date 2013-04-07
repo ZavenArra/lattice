@@ -523,12 +523,8 @@ class Model_Object extends ORM implements arrayaccess {
 
         $object_type = ORM::Factory('objecttype', $objecttype_id);
 			
-		echo $object_type->objecttypename . ' | ' . $column .' | ';
-			
         $xpath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $object_type->objecttypename, $column);
         $field_info = core_lattice::config('objects', $xpath)->item(0);
-        
-        var_dump($field_info);  echo '<br />';
         
         if ( ! $field_info)
         {

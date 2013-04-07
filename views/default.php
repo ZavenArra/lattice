@@ -9,7 +9,7 @@ foreach(core_lattice::config('objects',
 $html = ob_get_contents();
 ob_end_clean();
 
-echo Debug::vars($html);
+eval('?> '.$html.' <?');
 
 ?>
 

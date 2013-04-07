@@ -43,7 +43,7 @@ Class Lattice_Builder_Frontend {
       ob_start();
       if ( ! $view OR  ($view AND $view->getAttribute('load_page')=='TRUE'))
       {
-        echo "<h1><?php=\$content['main']['title'];?></h1>\n\n";
+        echo "<h1><?php echo \$content['main']['title'];?></h1>\n\n";
         // this also implies that name is a objecttypename
         foreach (core_lattice::config('objects', 
           sprintf('//objectType[@name="%s"]/elements/*', $view_name )) as $element)
@@ -81,7 +81,7 @@ Class Lattice_Builder_Frontend {
           {
             foreach ($subviews as $subview_config)
             {
-              echo "\n<?php=\$".$subview_config->getAttribute('label').";?>\n";
+              echo "\n<?php echo \$".$subview_config->getAttribute('label')."; ?>\n";
             }
           }
 
@@ -132,7 +132,7 @@ Class Lattice_Builder_Frontend {
       {
         foreach ($subviews as $subview_config)
         {
-          echo "\n<?php=\$".$subview_config->getAttribute('label').";?>\n";
+          echo "\n<?php echo \$".$subview_config->getAttribute('label')."; ?>\n";
         }
       }
 
@@ -261,16 +261,16 @@ Class Lattice_Builder_Frontend {
         $do_switch = TRUE;
       }
 
-      echo $indent."<?phpforeach ({$prefix}['$label'] as \${$label}Item):?>\n";
+      echo $indent."<?php foreach ({$prefix}['$label'] as \${$label}Item):?>\n";
       if ($do_switch)
       {
-        echo $indent." <?phpswitch(\${$label}Item['objectTypeName'])
+        echo $indent." <?php switch(\${$label}Item['objectTypeName'])
       {\n";
       }
 
       if (count($object_types) == 0)
       {
-        echo $indent." <?php=core_view::Factory(\${$label}Item)->view()->render();?>\n";
+        echo $indent." <?php echo core_view::Factory(\${$label}Item)->view()->render(); ?>\n";
       }
 
       $i=0;
@@ -285,7 +285,7 @@ Class Lattice_Builder_Frontend {
             echo " <?php case '$objectTypeName':?>\n";
         }
         echo $indent . "  <li class=\"$objectTypeName\">\n";
-        echo $indent . "   " . "<h2><?php=\${$label}Item['title'];?></h2>\n\n";
+        echo $indent . "   " . "<h2><?php echo \${$label}Item['title'];?></h2>\n\n";
         foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $objectTypeName)) as $element)
         {
           switch($element->tagName)
@@ -314,17 +314,17 @@ Class Lattice_Builder_Frontend {
         echo $indent . "  </li>\n";
         if ($do_switch)
         {
-          echo $indent . " <?php  break;?>\n";
+          echo $indent . " <?php  break; ?>\n";
         }
         $i++;
       }
       if ($do_switch)
       {
-        echo $indent . "<?php }?>\n";
+        echo $indent . "<?php } ?>\n";
       }
 
 
-      echo $indent . "<?phpendforeach;?>\n" .
+      echo $indent . "<?php endforeach; ?>\n" .
         $indent . "</ul>\n\n";
     }
 
