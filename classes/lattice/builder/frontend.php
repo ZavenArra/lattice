@@ -58,7 +58,7 @@ Class Lattice_Builder_Frontend {
             $this->make_associator_data_html($element, "\$content['main']");
             break;
           default:
-            frontend_front::make_html_element($element, "\$content['main']");
+            frontend_core::make_html_element($element, "\$content['main']");
             break;
           }
 
@@ -297,7 +297,7 @@ Class Lattice_Builder_Frontend {
             $this->make_associator_data_html($element, "\${$label}Item", $indent);
             break;
           default:
-            frontend_front::make_html_element($element, "\${$label}Item", $indent . "   ");
+            frontend_core::make_html_element($element, "\${$label}Item", $indent . "   ");
             break;
           }
         }

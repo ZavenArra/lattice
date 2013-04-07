@@ -170,8 +170,6 @@ class Lattice_Controller_Builder extends Controller {
       $parent_object = Graph::object($parent_id);
     }
 
-	//echo "$parent_object | ";
-
     $items = core_lattice::config($xml_file, 'item', $context);
     foreach ($items as $item)
     {

@@ -77,8 +77,6 @@ Class Core_Lattice {
       }
     }
 
-
-
     if ( ! isset(self::$config[$arena]))
     {
 
@@ -93,7 +91,6 @@ Class Core_Lattice {
       } else {
         $arena_path = $arena;
       }
-
 
       $request = NULL;
       $response = NULL;

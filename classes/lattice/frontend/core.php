@@ -1,7 +1,7 @@
 <?php
 /* @package Lattice */
 
-class Lattice_Frontend_Front {
+class Lattice_Frontend_Core {
   public static function make_html_element($element, $prefix, $indent='')
   {
 
@@ -14,14 +14,14 @@ class Lattice_Frontend_Front {
       {
         $size = 'original';	
       }
-      echo $indent."<?phpif (is_object({$prefix}['$field'])):?>\n";
-      echo $indent." <img id=\"$field\" src=\"<?php=core_url::site({$prefix}['$field']->{$size}->fullpath);?>\" width=\"<?php={$prefix}['$field']->{$size}->width;?>\" height=\"<?php={$prefix}['$field']->{$size}->height;?>\" alt=\"<?php={$prefix}['$field']->{$size}->filename;?>\" />\n";
+      echo $indent."<?php if (is_object({$prefix}['$field'])):?>\n";
+      echo $indent." <img id=\"$field\" src=\"<?php core_url::site({$prefix}['$field']->{$size}->fullpath);?>\" width=\"<?php echo {$prefix}['$field']->{$size}->width;?>\" height=\"<?php echo {$prefix}['$field']->{$size}->height;?>\" alt=\"<?php echo {$prefix}['$field']->{$size}->filename;?>\" />\n";
       echo $indent."<?phpendif;?>\n\n";
       break;
     case 'file':
-      echo $indent."<?phpif (is_object({$prefix}['$field'])):?>\n";
-      echo $indent."<a href=\"<?php={$prefix}['$field']->fullpath;?>\"><?php={$prefix}['$field']->filename;?></a>\n\n";
-      echo $indent."<?phpendif;?>\n\n";
+      echo $indent."<?php if (is_object({$prefix}['$field'])):?>\n";
+      echo $indent."<a href=\"<?php echo {$prefix}['$field']->fullpath;?>\"><?php echo {$prefix}['$field']->filename;?></a>\n\n";
+      echo $indent."<?php endif;?>\n\n";
       break;
     case 'checkbox':
       echo $indent."<div type=\"checkbox_result\">\n";
@@ -31,13 +31,13 @@ class Lattice_Frontend_Front {
       echo $indent."</div>\n\n";
       break;
     case 'tags':
-      echo $indent."<p class=\"$field\"> <?php=implode({$prefix}['$field'], ', ');?></p>\n\n";
+      echo $indent."<p class=\"$field\"> <?php echo implode({$prefix}['$field'], ', ');?></p>\n\n";
       break;
     case 'associator':
 
       break;
     default:
-      echo $indent."<p class=\"$field\"> <?php={$prefix}['$field'];?></p>\n\n";
+      echo $indent."<p class=\"$field\"> <?php echo {$prefix}['$field'];?></p>\n\n";
       break;
     }
 
