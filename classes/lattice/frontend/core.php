@@ -15,7 +15,7 @@ class Lattice_Frontend_Core {
         $size = 'original';	
       }
       echo $indent."<?php if (is_object({$prefix}['$field'])):?>\n";
-      echo $indent." <img id=\"$field\" src=\"<?php core_url::site({$prefix}['$field']->{$size}->fullpath);?>\" width=\"<?php echo {$prefix}['$field']->{$size}->width;?>\" height=\"<?php echo {$prefix}['$field']->{$size}->height;?>\" alt=\"<?php echo {$prefix}['$field']->{$size}->filename;?>\" />\n";
+      echo $indent." <img id=\"$field\" src=\"<?php echo core_url::site({$prefix}['$field']->{$size}->fullpath);?>\" width=\"<?php echo {$prefix}['$field']->{$size}->width;?>\" height=\"<?php echo {$prefix}['$field']->{$size}->height;?>\" alt=\"<?php echo {$prefix}['$field']->{$size}->filename;?>\" />\n";
       echo $indent."<?php endif; ?>\n\n";
       break;
     case 'file':
