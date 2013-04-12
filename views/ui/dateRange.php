@@ -1,5 +1,5 @@
 <div class="ui-DateRange" data-autosubmit='false' data-field='reportDateRange'>
-	<?if(isset($label)):?>
+	<?if (isset($label)):?>
 		<label><?=$label;?></label>
 	<?endif;?>
   <input type="text" name="<?=$name;?>" value="<?=$startDate;?>-<?=$endDate;?>" />

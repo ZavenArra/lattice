@@ -21,7 +21,7 @@ class Ruckusing_DB_Version implements Ruckusing_iTask {
 	public function execute($args) {
 		echo "Started: " . date('Y-m-d g:ia T') . "\n\n";		
 		echo "[db:version]: \n";
-		if( ! $this->adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME) ) {
+		if ( ! $this->adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME) ) {
 			//it doesnt exist, create it
 			echo "\tSchema version table (" . RUCKUSING_TS_SCHEMA_TBL_NAME . ") does not exist. Do you need to run 'db:setup'?";
 		} else {
@@ -35,7 +35,7 @@ class Ruckusing_DB_Version implements Ruckusing_iTask {
         $versions[] = $v['version'];
       }
       $num_versions = count($versions);
-      if($num_versions > 0) {
+      if ($num_versions > 0) {
         sort($versions); //sorts lowest-to-highest (ascending)
         $version = (string)$versions[$num_versions-1];
   			printf("\tCurrent version: %s", $version);

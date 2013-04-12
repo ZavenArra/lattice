@@ -1,14 +1,14 @@
-<div id="<?=$instance;?>" class="module usermanagement controller-<?=$class;?> classPath-lattice_modules_UserManagement sortable-true">
+<div id="<?=$instance;?>" class="module usermanagement controller-<?=$class;?> classPath-lattice_modules_UserManagement sortable-true clearFix">
 
-	<?if(isset($label)):?>
-		<label class='listLabel'><?=$label;?></label>
-	<?endif;?>
+	<label class='listLabel'>Manage users</label>
 
-	<div class="controls clearFix"><a href="#" class="addItem button">Add a User</a></div>
+	<div class="listcontrols controls top clearFix"><a href="#" class="addItem button">Add a User</a></div>
 
 	<ul class="listing">
-		<?=$items;?>
+		<?=$items;?> 
 	</ul>
+
+  <div class="listcontrols controls bottom clearFix"><a href="#" class="addItem button">Add a User</a></div>
 
 </div>
 

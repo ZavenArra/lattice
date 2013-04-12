@@ -7,4 +7,5 @@
 			<div class="pane"></div>
 		</div>
 	</div>
+  <a href="#" class="slideToggle" >Show Navigation</a>
 </div>

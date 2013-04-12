@@ -10,7 +10,10 @@
 </head>
 <body>
 	<div id="container" class="container_12">
-<?=Request::Factory('header/admin')->execute()->body();?>
+<?	
+	//this is already included in the cms view (lattice_cms)
+	//Request::Factory('header/admin')->execute()->body();
+?>
 <?=$body;?>
 <?=Request::Factory('footer/admin')->execute()->body();?>
 	</div>

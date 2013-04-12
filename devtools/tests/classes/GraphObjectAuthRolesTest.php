@@ -5,7 +5,7 @@ Class GraphObjectAuthRolesTest extends Kohana_UnitTest_TestCase {
     $object = Graph::createObject('article', 'test');
 
     $role = ORM::Factory('role', array('name'=>'editor'));
-    if(!$role->loaded()){
+    if (!$role->loaded()){
       $role = ORM::Factory('role');
       $role->name = 'editor';
       $role->save();

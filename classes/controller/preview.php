@@ -1,8 +1,9 @@
-<?
+<?php
 
-Class Controller_Preview extends Controller_Lattice {
+Class Controller_Preview extends Lattice_Controller_Preview {
 
-	public function preview($slug){
-		
-	}
+  public function preview($slug)
+  {
+
+  }
 }

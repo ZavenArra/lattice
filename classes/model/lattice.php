@@ -1,8 +1,8 @@
 <?php
 
 /*
- * To change this objectType, choose Tools | Templates
- * and open the objectType in the editor.
+ * To change this object_type, choose Tools | Templates
+ * and open the object_type in the editor.
  */
 
 /**
@@ -12,8 +12,10 @@
  */
 class Model_Lattice extends ORM {
 
-  public function getRelationships(){
-    if(!$this->loaded()){
+  public function get_relationships()
+  {
+    if ( ! $this->loaded())
+    {
       throw new Kohana_Exception('Model is not loaded');
     }
 

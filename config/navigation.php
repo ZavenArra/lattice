@@ -1,14 +1,14 @@
 <?
 
-$config['addObjectPosition'] = 'bottom';
+$config['add_object_position'] = 'bottom';
 
-$config['navDataFields']['object'] = array(
+$config['nav_data_fields']['object'] = array(
 		'id'=>'id',
 		'slug'=>'slug',
 		'published'=>'published',
 	);
 
-$config['navDataFields']['objectType'] = array(
+$config['nav_data_fields']['object_type'] = array(
 		'nodeType',
 		'contentType',
 		'allowDelete',
@@ -18,7 +18,7 @@ $config['navDataFields']['objectType'] = array(
 		'addableObjects',
 	);
 
-$config['navDataFields']['content'] = array(
+$config['nav_data_fields']['content'] = array(
 		'title'=>'title',
 	);
 

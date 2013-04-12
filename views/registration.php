@@ -1,4 +1,4 @@
-<?if($errors):?>
+<?if ($errors):?>
 <ul>
 <?foreach($errors as $field=>$error):?>
   <li class="<?=$field;?>" ><?=$error;?></li>

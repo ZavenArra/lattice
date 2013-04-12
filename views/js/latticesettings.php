@@ -1,6 +1,6 @@
 var lattice = {
 	baseURL: '<?=URL::base();?>',
-	loginTimeout: <?=Kohana::config('lattice.loginTimeout');?>,
-	defaultLanguage: '<?=Kohana::config('lattice.defaultLanguage');?>',
+	loginTimeout: <?=Kohana::config('lattice.login_timeout');?>,
+	defaultLanguage: '<?=Kohana::config('lattice.default_language');?>',
 	debug: true
 };

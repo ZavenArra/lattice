@@ -27,7 +27,7 @@ class Ruckusing_TaskManager  {
 		returns it. Otherwise null is returned.
 	*/
 	public function get_task($key) {
-		if( array_key_exists($key, $this->tasks)) {
+		if ( array_key_exists($key, $this->tasks)) {
 			return $this->tasks[$key];
 		} else {
 			return null;
@@ -35,7 +35,7 @@ class Ruckusing_TaskManager  {
 	}
 
 	public function has_task($key) {
-		if( array_key_exists($key, $this->tasks)) {
+		if ( array_key_exists($key, $this->tasks)) {
 			return true;
 		} else {
 			return false;
@@ -50,14 +50,14 @@ class Ruckusing_TaskManager  {
 	*/
 	public function register_task($key, $obj) {
 		
-		if( array_key_exists($key, $this->tasks)) {
+		if ( array_key_exists($key, $this->tasks)) {
 			trigger_error(sprintf("Task key '%s' is already defined!", $key));
 			return false;
 		}
 		
 		//Reflect on the object and make sure it has an "execute()" method
 		$refl = new ReflectionObject($obj);
-		if( !$refl->hasMethod('execute')) {
+		if ( !$refl->hasMethod('execute')) {
 			trigger_error(sprintf("Task '%s' does not have an 'execute' method defined", $key));
 			return false;
 		}
@@ -72,7 +72,7 @@ class Ruckusing_TaskManager  {
 	// PRIVATE METHODS
 	//---------------------
 	private function load_all_tasks($task_dir) {
-		if(!is_dir($task_dir)) {
+		if (!is_dir($task_dir)) {
 			throw new Exception(sprintf("Task dir: %s does not exist", $task_dir));
 			return false;
 		}
@@ -80,7 +80,7 @@ class Ruckusing_TaskManager  {
 		$regex = '/^class\.(\w+)\.php$/';
 		foreach($files as $f) {			
 			//skip over invalid files
-			if($f == '.' || $f == ".." || !preg_match($regex,$f, $matches) ) { continue; }
+			if ($f == '.' || $f == ".." || !preg_match($regex,$f, $matches) ) { continue; }
 			require_once $task_dir . '/' . $f;
 			$task_name = Ruckusing_NamingUtil::task_from_class_name($matches[1]);
 			$klass = Ruckusing_NamingUtil::class_from_file_name($f);
@@ -95,11 +95,11 @@ class Ruckusing_TaskManager  {
 	}
 	
 	public function execute($task_name, $options) {
-		if( !$this->has_task($task_name)) {
+		if ( !$this->has_task($task_name)) {
 			throw new Exception("Task '$task_name' is not registered.");
 		}
 		$task = $this->get_task($task_name);
-		if($task) {
+		if ($task) {
 			return $task->execute($options);
 		}
 		return "";		

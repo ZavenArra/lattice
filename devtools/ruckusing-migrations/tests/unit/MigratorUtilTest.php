@@ -1,6 +1,6 @@
 <?php
 
-if(!defined('BASE')) {
+if (!defined('BASE')) {
   define('BASE', dirname(__FILE__) . '/..');
 }
 require_once BASE  . '/test_helper.php';
@@ -18,7 +18,7 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
   protected function setUp() {
     global $ruckusing_db_config;
     
-  	if( !is_array($ruckusing_db_config) || !array_key_exists("test", $ruckusing_db_config)) {
+  	if ( !is_array($ruckusing_db_config) || !array_key_exists("test", $ruckusing_db_config)) {
   		die("\n'test' DB is not defined in config/database.inc.php\n\n");
   	}
 

@@ -1,12 +1,6 @@
-<?
+<?php
 
-Class Controller_AccessDenied extends Controller_Layout {
+Class Controller_Accessdenied extends Lattice_Controller_Accessdenied {
 
-	public $_actionsThatGetLayout = array('index');
-
-	public function action_index(){
-		$view = new View('accessdenied');
-		$this->response->body($view->render());
-	}
 
 }

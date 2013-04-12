@@ -1,12 +1,12 @@
 <?php
 
-if(!defined('BASE')) {
+if (!defined('BASE')) {
   define('BASE', dirname(__FILE__) . '/..');
 }
 require_once BASE  . '/test_helper.php';
 require_once RUCKUSING_BASE  . '/lib/classes/util/class.Ruckusing_NamingUtil.php';
 
-if(!defined('RUCKUSING_TEST_HOME')) {
+if (!defined('RUCKUSING_TEST_HOME')) {
   define('RUCKUSING_TEST_HOME', RUCKUSING_BASE . '/tests');
 }
 
