@@ -49,6 +49,7 @@
           <radio value="dessert" label="Dessert"/>
           <radio value="misc" label="Misc"/>
         </radioGroup>
+
 <!-- @Todo, create an image cluster so that it's not necessary to define it via the ojbecttype, although that gives you more control over the markup, still some defaults are nice -->
 	</clusters>
 
