@@ -240,7 +240,8 @@ class Lattice_Controller_Builder extends Controller {
           } else {
             if ($content->nodeValue)
             {
-              throw new Kohana_Exception( "File does not exist {$content->nodeValue} ");
+              //throw new Kohana_Exception( "File does not exist {$content->nodeValue} ");
+              echo "File does not exist {$content->nodeValue} ";
             }
           }
           break;
