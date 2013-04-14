@@ -183,6 +183,7 @@ $this->view->content = $form->render();
     } else {
       $view = new View('auth/forgot');
     }
+    $view->title = 'Forgot Password';
     $this->response->body($view);
   }
 
