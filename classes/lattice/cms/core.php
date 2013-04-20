@@ -160,7 +160,7 @@ class Lattice_Cms_Core {
     $html = NULL;
     if ( ! isset($element['name']))
     {
-      $element['name'] = LatticeCMS::unique_element_id();
+      $element['name'] = Cms_Core::unique_element_id();
       $html = cms_ui::build_ui_element($element, NULL);
     } elseif ( ! $html = cms_ui::build_ui_element($ui_arguments, $value))
     {
