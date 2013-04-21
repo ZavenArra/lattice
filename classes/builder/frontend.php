@@ -209,16 +209,17 @@ Class Builder_Frontend {
 						$objectTypes[$objectTypeName] = $objectTypeName;
 					}
 				}
-			} else {
-				//see if from is a slug
-            $objectTypesFromParent = $this->getChildrenObjectTypes(Graph::object($from));
-            $objectTypes = array_merge($objectTypes, $objectTypesFromParent);
-            
-				
+      } else if ($from=="root"){
+        $objectTypesFromParent = $this->getChildrenObjectTypes( Object::getRootNode( Kohana::config('cms.graphRootNode') ) );
+        $objectTypes = array_merge($objectTypes, $objectTypesFromParent);
+      } else {
+        //see if from is a slug
+        $objectTypesFromParent = $this->getChildrenObjectTypes(Graph::object($from));
+        $objectTypes = array_merge($objectTypes, $objectTypesFromParent);
 			}
 		}	
 
-		// now $objectTypes contains all the needed objectTypes in the view
+     // now $objectTypes contains all the needed objectTypes in the view
 		
 
       $this->makeMultiObjectTypeLoop($objectTypes, $label, $prefix, $indent, $iDataConfig);
