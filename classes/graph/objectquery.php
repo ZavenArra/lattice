@@ -49,7 +49,10 @@ class Graph_ObjectQuery {
 				if($from != 'all'){
 					if ($from == 'parent') {
 						$objects->latticeChildrenFilter($parentId);
-					} else {
+          } else if ( $from == 'root') {
+            $from = Graph::object( Object::getRootNode( Kohana::config('cms.graphRootNode') ) );
+            $objects->latticeChildrenFilter($from->id);
+          } else {
 						$from = Graph::object($from);
 						$objects->latticeChildrenFilter($from->id);
 					}
