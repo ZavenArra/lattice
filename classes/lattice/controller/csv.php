@@ -130,7 +130,7 @@ Class Lattice_Controller_CSV extends Controller {
     fclose($this->csv_file);
 
     try {
-      latticecms::regenerate_images();
+      Cms_Core::regenerate_images();
     } catch(Exception $e)
     {
       print_r($e->get_message() . $e->get_trace());

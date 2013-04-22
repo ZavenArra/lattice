@@ -14,7 +14,7 @@ Class LatticeCmsTest extends Kohana_UnitTest_TestCase {
     Graph::createObject('category', 'cat3');
     Graph::createObject('category', 'cat4');
     $anArticle = Graph::createObject('article', 'articl1');
-    $html = latticecms::moveNodeHtml($anArticle);
+    $html = Cms_Core::moveNodeHtml($anArticle);
     $this->assertNotNull($html);
     
   }

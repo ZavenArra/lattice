@@ -64,16 +64,7 @@ class Lattice_Cms_Core {
             $view->object_id = $cluster_object->id;
             $html = $view->render();
           } else {
-            $view = new View($customview);
-            // $view->load_resources();
-            $view->label = $element['label'];
-            $view->objectTypeName = $cluster_object->objecttype->objecttypename;
-            $view->object_id = $cluster_object->id;
-            foreach ($cluster_html_chunks as $key => $value)
-            {
-              $view->$key = $value;
-            }
-            $html = $view->render();
+            
           }
           $html_chunks[$element['type'] . '_' . $element['name']] = $html;
           continue;
@@ -138,9 +129,9 @@ class Lattice_Cms_Core {
           $html = self::build_ui_element($element, $ui_arguments, NULL);
           $html_chunks[$key] = $html;
           break;
-
+		
         default:
-          // deal with html object_type elements
+          // deal with html object_type elementsSS
           $key = $element['type'] . '_' . $ui_arguments['name'];
           $html = self::build_ui_element($element, $ui_arguments, $object->{$element['name']});
           $html_chunks[$key] = $html;
@@ -162,7 +153,8 @@ class Lattice_Cms_Core {
     {
       $element['name'] = Cms_Core::unique_element_id();
       $html = cms_ui::build_ui_element($element, NULL);
-    } elseif ( ! $html = cms_ui::build_ui_element($ui_arguments, $value))
+    } 
+    elseif ( ! $html = cms_ui::build_ui_element($ui_arguments, $value))
     {
       throw new Kohana_Exception('bad config in cms: bad ui element');
     }
@@ -171,7 +163,7 @@ class Lattice_Cms_Core {
 
   public static function get_element_config($object, $element_name)
   {
-    latticecms::get_element_dom_node($object, $element_name);
+    Cms_Core::get_element_dom_node($object, $element_name);
     return self::convert_xml_element_to_array($object, $element->item(0));
   }
 

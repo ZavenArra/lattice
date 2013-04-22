@@ -1768,3 +1768,29 @@ ul.tokens{
 	width: 960px;
 	float: left;
 }
+
+
+/*
+-----------------------------------------------------
+
+	Search
+
+-----------------------------------------------------
+*/
+
+.search-form input{
+	position: relative;
+	width:290px;
+	font-family: Georgia, Times, Serif;
+	margin:5px;
+	padding: .5em .75em !important;
+	color: #222;
+	cursor: text;
+	border: none;
+	background-color: #FFFAC4;
+	opacity: 1;
+}
+.search-form input:hover {
+background-color: #F26A35;
+color: white !important;
+}
