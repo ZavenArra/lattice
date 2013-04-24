@@ -28,7 +28,7 @@ class Ruckusing_DB_Status implements Ruckusing_iTask {
 		$applied = array();
 		$not_applied = array();
 		foreach($files as $file) {
-		  if(in_array($file['version'], $migrations)) {
+		  if (in_array($file['version'], $migrations)) {
 		    $applied[] = $file['class'] . ' [ ' . $file['version'] . ' ]';
 		  } else {
 		    $not_applied[] = $file['class'] . ' [ ' . $file['version'] . ' ]';

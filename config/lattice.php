@@ -1,11 +1,11 @@
 <?
-$config['siteTitle'] = "LatticeCMS - It's Made of People";
+$config['site_title'] = "LatticeCMS - It's Made of People";
 $config['mediapath'] = 'application/media/';
 $config['stagingmediapath'] = 'staging/application/media/';
 $config['staging_enabled'] = false;
 $config['slugs_enabled'] = true;
-$config['loginTimeout'] = 1800; //in seconds
-$config['defaultLanguage'] = 'en';
+$config['login_timeout'] = 1800; //in seconds
+$config['default_language'] = 'en';
 $config['live'] = false;
 
 return $config;

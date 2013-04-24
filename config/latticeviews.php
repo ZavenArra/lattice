@@ -1,6 +1,6 @@
 <?
 
-$config['navigationRequest'] = 'navigation';
+$config['navigation_request'] = 'navigation';
 
 $config['layout'] = 'LayoutPublic';
 

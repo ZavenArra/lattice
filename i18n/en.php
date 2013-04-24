@@ -10,6 +10,7 @@ Password: ___Lattice___password___Lattice___
 	'resetPasswordFailed'=> 'That email is not in the system.  Please try again.',
   'confirmation.registration.subject' => 'Confirm your information',
   'confirmation.registration.body' => 'Clink the link to confirm your information <a href=":confirmationLink">:confirmationLink</a>',
+ 'invalid' => 'Invalid email',
 );
 return $lang;
 

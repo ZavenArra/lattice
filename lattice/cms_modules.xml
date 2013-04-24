@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration SYSTEM "cms_modules.dtd">
+
+<configuration>
+
+	<module controller="usermanagement" label="Add &amp; modify users" />
+	
+</configuration>

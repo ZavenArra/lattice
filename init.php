@@ -125,31 +125,25 @@ Route::set('footer', 'footer(/<id>)')
 	);
 
 
-if(isset($_SERVER['REQUEST_URI'])
+if (isset($_SERVER['REQUEST_URI'])
   && (!in_array(str_replace(url::base(), '', $_SERVER['REQUEST_URI']), array('setup', 'index.php/setup')))){
   try {
     ORM::Factory('object')->find_all();
-    Graph::getRootNode('cmsRootNode');
+    Graph::get_root_node('cmsRootNode');
   } catch(Exception $e){
-    $view = new View('latticeNotInstalled');
+    $view = new View('lattice_not_installed');
     echo $view->render();
     die();
   }
 }
 
-/*
-Route::set('default4', '(<controller>(/<action>(/<id>(/<thing>))))')
-	->defaults(array(
-	));
- */
-
 class FrontendRouting {
 
-   public static function routeSlug($uri) {
+   public static function route_slug($uri) {
       $segments = explode('/', $uri);
 
     
-      if(Kohana::find_file('classes/controller', $segments[0])){
+      if (Kohana::find_file('classes/controller', $segments[0])){
          return;
       }
       
@@ -159,10 +153,10 @@ class FrontendRouting {
          
          $slug = strtok($segment, '_');
          $languageCode = strtok('_');
-				 if(latticeutil::checkAccess('admin')){
+				 if (cms_util::check_access('admin')){
 					 $object = Graph::object($slug);
 				 } else {
-					 $object = Graph::object()->publishedFilter()->where('slug', '=', $slug)->find();
+					 $object = Graph::object()->published_filter()->where('slug', '=', $slug)->find();
 				 }
          if ($languageCode) {
             $object = $object->translate($languageCode);
@@ -175,25 +169,25 @@ class FrontendRouting {
       if ($object) {
          return array(
              'controller' => 'latticeviews',
-             'action' => 'getView',
+             'action' => 'get_view',
              'objectidorslug' => $object->slug
          );
       }
    }
 
-	 public static function routeVirtual($uri){
+	 public static function route_virtual($uri){
 		
       $segments = explode('/', $uri);
-      if(Kohana::find_file('classes/controller', $segments[0])){
+      if (Kohana::find_file('classes/controller', $segments[0])){
          return;
       }
 
 			return;
-			$config = lattice::config('frontend', '//view[@name="'.$uri.'"]');
-			if($config->length){
+			$config = core_lattice::config('frontend', '//view[@name="'.$uri.'"]');
+			if ($config->length){
          return array(
              'controller' => 'latticeviews',
-             'action' => 'getVirtualView',
+             'action' => 'get_virtual_view',
              'objectidorslug' => $uri
          );
 			} 
@@ -204,9 +198,9 @@ class FrontendRouting {
 
 }
 
-Route::set('latticeViewsSlug', array('FrontendRouting', 'routeSlug'));
+Route::set('latticeViewsSlug', array('FrontendRouting', 'route_slug'));
 
-Route::set('latticeViewsVirtual', array('FrontendRouting', 'routeVirtual'));
+Route::set('latticeViewsVirtual', array('FrontendRouting', 'route_virtual'));
 
 Route::set('defaultLatticeFrontend', '(<controller>)',
 	array(
@@ -214,7 +208,7 @@ Route::set('defaultLatticeFrontend', '(<controller>)',
 	))
 	->defaults(array(
 		'controller' => 'latticeviews',
-		'action' => 'getView',
+		'action' => 'get_view',
 		'id'     => 'home',
 	));
 

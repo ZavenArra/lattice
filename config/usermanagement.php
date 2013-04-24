@@ -4,7 +4,8 @@ $config['authrole'] = 'admin'; //access controlled by default for safety
 
 $config['resources']['librarycss'] = array(
 	'modules/lattice/resources/thirdparty/960Grid/reset.css',
-	'modules/lattice/resources/thirdparty/960Grid/960.css'
+	'modules/lattice/resources/thirdparty/960Grid/960.css',
+	'modules/lattice/resources/css/lattice_cms.css',
 );
 $config['resources']['libraryjs'] = array(
 	'modules/lattice/resources/thirdparty/mootools/mootools.js',
@@ -22,9 +23,7 @@ $config['layout'] = 'LayoutAdmin';
 /*
  * Config: ['resources']['css']
  */
-$config['resources']['css'] = array( 
-   	'modules/lattice/resources/css/lattice_cms.css'
-);
+$config['resources']['css'] = array( );
 
 /*
  * Config: ['resources']['js']
@@ -37,11 +36,11 @@ $config['resources']['js'] = array(
  * Config: ['passwordchangeemail']['subject']
  * The subject of the password reset email
  */
-$config['passwordChangeEmail']['subject'] = 'LatticeCMS Password Changed';
-$config['passwordChangeEmail']['from'] = "Lattice Usermanagement <usermanagement@madeofpeople.org>";
+$config['password_change_email']['subject'] = 'LatticeCMS Password Changed';
+$config['password_change_email']['from'] = "Lattice Usermanagement <usermanagement@madeofpeople.org>";
 
 /*
- * Config: ['managedRoles']
+ * Config: ['managed_roles']
  * The roles that the admin can select from when creating a user. 
  * Array is of format array( {label} => {role unique text key})
  */

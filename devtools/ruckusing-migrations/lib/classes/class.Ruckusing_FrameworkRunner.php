@@ -33,9 +33,9 @@ class Ruckusing_FrameworkRunner {
 
 			//initialize logger
 			$log_dir = RUCKUSING_BASE . "/logs";
-			if(is_dir($log_dir) && !is_writable($log_dir)) {
+			if (is_dir($log_dir) && !is_writable($log_dir)) {
 				die("\n\nCannot write to log directory: $log_dir\n\nCheck permissions.\n\n");
-			}elseif(!is_dir($log_dir)){
+			}elseif (!is_dir($log_dir)){
 				//try and create the log directory
 				mkdir($log_dir);
 			}
@@ -58,7 +58,7 @@ class Ruckusing_FrameworkRunner {
 	// PUBLIC METHODS
 	//-------------------------	
 	public function execute() {
-		if($this->task_mgr->has_task($this->cur_task_name)) {
+		if ($this->task_mgr->has_task($this->cur_task_name)) {
 			$output = $this->task_mgr->execute($this->cur_task_name, $this->task_options);
 			$this->display_results($output);
 			exit(0); // 0 is success
@@ -66,7 +66,7 @@ class Ruckusing_FrameworkRunner {
 			trigger_error(sprintf("Task not found: %s", $this->cur_task_name));
 			exit(1);
 		}
-		if($this->logger) {
+		if ($this->logger) {
 		  $this->logger->close();
 	  }
 	}
@@ -81,7 +81,7 @@ class Ruckusing_FrameworkRunner {
 			$db = $this->db_config[$this->ENV];
 			$adapter = $this->get_adapter_class($db['type']);
 			
-			if($adapter === null) {
+			if ($adapter === null) {
 				trigger_error(sprintf("No adapter available for DB type: %s", $db['type']));
 			}			
 			//construct our adapter			
@@ -105,15 +105,15 @@ class Ruckusing_FrameworkRunner {
 		
 		$num_args = count($argv);
 
-		if($num_args >= 2) {					
+		if ($num_args >= 2) {					
 			$this->cur_task_name = $argv[1];			
 			$options = array();
 			for($i = 2; $i < $num_args;$i++) {
 				$arg = $argv[$i];
-				if(strpos($arg, '=') !== FALSE) {
+				if (strpos($arg, '=') !== FALSE) {
 					list($key, $value) = explode("=", $arg);
 					$options[$key] = $value;
-					if($key == 'ENV') {
+					if ($key == 'ENV') {
 						$this->ENV = $value;
 					}
 				}
@@ -143,18 +143,18 @@ class Ruckusing_FrameworkRunner {
 	  $migrator_util = new Ruckusing_MigratorUtil($this->adapter);
 	  $files = $migrator_util->get_migration_files(RUCKUSING_MIGRATION_DIR, 'up');
     foreach($files as $file) {
-      if( (int)$file['version'] >= PHP_INT_MAX) {
+      if ( (int)$file['version'] >= PHP_INT_MAX) {
         //its new style like '20081010170207' so its not a candidate
         continue;
       }
       //query old table, if it less than or equal to our max version, then its a candidate for insertion     
       $query_sql = sprintf("SELECT version FROM %s WHERE version >= %d", RUCKUSING_SCHEMA_TBL_NAME, $file['version']);
       $existing_version_old_style = $this->adapter->select_one($query_sql);
-      if(count($existing_version_old_style) > 0) {
+      if (count($existing_version_old_style) > 0) {
         //make sure it doesnt exist in our new table, who knows how it got inserted?
         $new_vers_sql = sprintf("SELECT version FROM %s WHERE version = %d", RUCKUSING_TS_SCHEMA_TBL_NAME, $file['version']);
         $existing_version_new_style = $this->adapter->select_one($new_vers_sql);
-        if(empty($existing_version_new_style)) {       
+        if (empty($existing_version_new_style)) {       
           // use printf & %d to force it to be stripped of any leading zeros, we *know* this represents an old version style
           // so we dont have to worry about PHP and integer overflow
           $insert_sql = sprintf("INSERT INTO %s (version) VALUES (%d)", RUCKUSING_TS_SCHEMA_TBL_NAME, $file['version']);
@@ -177,29 +177,29 @@ class Ruckusing_FrameworkRunner {
 	}
 	
 	private function set_opt($key, $value) {
-		if(!$key) { return; }		
+		if (!$key) { return; }		
 		$this->opt_map[$key] = $value;		
 	}
 	
 	private function verify_db_config() {
-		if( !array_key_exists($this->ENV, $this->db_config)) {
+		if ( !array_key_exists($this->ENV, $this->db_config)) {
 			throw new Exception(sprintf("Error: '%s' DB is not configured",$this->opt_map[$ENV]));
 		}
 		$env = $this->ENV;
 		$this->active_db_config = $this->db_config[$this->ENV];
-		if(!array_key_exists("type",$this->active_db_config)) {
+		if (!array_key_exists("type",$this->active_db_config)) {
 			throw new Exception(sprintf("Error: 'type' is not set for '%s' DB",$this->ENV));			
 		}
-		if(!array_key_exists("host",$this->active_db_config)) {
+		if (!array_key_exists("host",$this->active_db_config)) {
 			throw new Exception(sprintf("Error: 'host' is not set for '%s' DB",$this->ENV));			
 		}
-		if(!array_key_exists("database",$this->active_db_config)) {
+		if (!array_key_exists("database",$this->active_db_config)) {
 			throw new Exception(sprintf("Error: 'database' is not set for '%s' DB",$this->ENV));			
 		}
-		if(!array_key_exists("user",$this->active_db_config)) {
+		if (!array_key_exists("user",$this->active_db_config)) {
 			throw new Exception(sprintf("Error: 'user' is not set for '%s' DB",$this->ENV));			
 		}
-		if(!array_key_exists("password",$this->active_db_config)) {
+		if (!array_key_exists("password",$this->active_db_config)) {
 			throw new Exception(sprintf("Error: 'password' is not set for '%s' DB",$this->ENV));			
 		}
 	}//verify_db_config
@@ -228,7 +228,7 @@ class Ruckusing_FrameworkRunner {
 		See the function "get_adapter_class" in this class for examples.
 	*/
 	private function load_all_adapters($adapter_dir) {
-		if(!is_dir($adapter_dir)) {
+		if (!is_dir($adapter_dir)) {
 			trigger_error(sprintf("Adapter dir: %s does not exist", $adapter_dir));
 			return false;
 		}
@@ -236,7 +236,7 @@ class Ruckusing_FrameworkRunner {
 		$regex = '/^class\.(\w+)Adapter\.php$/';
 		foreach($files as $f) {			
 			//skip over invalid files
-			if($f == '.' || $f == ".." || !preg_match($regex,$f) ) { continue; }
+			if ($f == '.' || $f == ".." || !preg_match($regex,$f) ) { continue; }
 			require_once $adapter_dir . '/' . $f;
 		}
 	}

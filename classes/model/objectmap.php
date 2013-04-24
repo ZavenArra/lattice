@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
  *
@@ -8,62 +8,68 @@
 
 class Model_Objectmap extends ORM {
 
-   public static function configureNewField($objectTypeId, $fieldName, $uiType) {
-      $mapEntry = ORM::Factory('objectmap');
-      $mapEntry->objecttype_id = $objectTypeId;
-      $mapEntry->type = self::fieldTypeForUI($uiType);
-      $mapEntry->column = $fieldName;
-      $mapEntry->index = self::nextIndex($objectTypeId, $mapEntry->type);
-      $mapEntry->save();
-   }
+  public static function configure_new_field($object_type_id, $field_name, $ui_type)
+  {
+    $map_entry = ORM::Factory('objectmap');
+    $map_entry->objecttype_id = $object_type_id;
+    $map_entry->type = self::field_type_forUI($ui_type);
+    $map_entry->column = $field_name;
+    $map_entry->index = self::next_index($object_type_id, $map_entry->type);
+    $map_entry->save();
+  }
 
-   private static function nextIndex($objectTypeId, $fieldType) {
-      
-		$result = DB::select(array('index', 'maxIndex'))
-              ->from('objectmaps')
-              ->where('objecttype_id', '=', $objectTypeId)
-              ->where('type', '=', $fieldType)
-              ->order_by('index', 'DESC')
-              ->limit(1, 0)
-              ->execute()
-              ->current();
-      return $result['maxIndex'] + 1;
-   }
+  private static function next_index($object_type_id, $field_type)
+  {
 
-   public static function fieldTypeForUI($uiType) {
-      $index = null;
-      switch ($uiType) {
-         case 'text':
-         case 'radioGroup':
-         case 'pulldown':
-         case 'time':
-         case 'date':
-         case 'multiSelect':
-            $index = 'field';
-            break;
-         case 'image':
-         case 'file':
-            $index = 'file';
-            break;
-         case 'checkbox':
-            $index = 'flag';
-            break;
-         default:
-            $tConfigs = lattice::config('objects', '//objectType');
-            $objectTypes = array();
-            foreach ($tConfigs as $objectType) {
-               $objectTypes[] = $objectType->getAttribute('name');
-            }
-            //print_r($objectTypes);
-            if (in_array($uiType, $objectTypes)) {
-               $index = 'object';
-            } else {
-               return null;
-            }
-            break;
+    $result = DB::select(array('index', 'max_index'))
+      ->from('objectmaps')
+      ->where('objecttype_id', '=', $object_type_id)
+      ->where('type', '=', $field_type)
+      ->order_by('index', 'DESC')
+      ->limit(1, 0)
+      ->execute()
+      ->current();
+    return $result['max_index'] + 1;
+  }
+
+  public static function field_type_forUI($ui_type)
+  {
+    $index = NULL;
+    switch ($ui_type)
+    {
+    case 'text':
+    case 'radio_group':
+    case 'pulldown':
+    case 'time':
+    case 'date':
+    case 'multi_select':
+      $index = 'field';
+      break;
+    case 'image':
+    case 'file':
+      $index = 'file';
+      break;
+    case 'checkbox':
+      $index = 'flag';
+      break;
+    default:
+      $t_configs = core_lattice::config('objects', '//objectType');
+      $object_types = array();
+      foreach ($t_configs as $object_type)
+      {
+        $object_types[] = $object_type->getAttribute('name');
       }
-      return $index;
-   }
+      // print_r($object_types);
+      if (in_array($ui_type, $object_types))
+      {
+        $index = 'object';
+      } else {
+        return NULL;
+      }
+      break;
+    }
+    return $index;
+  }
 
 }
 

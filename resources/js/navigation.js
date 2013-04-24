@@ -110,7 +110,6 @@ lattice.modules.navigation.Navigation = new Class({
 		//console.log( 'requestTier', nodeId, parentTier, deepLink );
 		cached = ( this.tiers[ nodeId ] && !deepLink )? true : false;
 		if( cached ){
-			console.group();
 			//console.log( "cached: ", cached );
 			this.renderPane( this.tiers[ nodeId ] );
 		}else{
@@ -146,6 +145,50 @@ lattice.modules.navigation.Navigation = new Class({
 		this.breadCrumbs.addCrumb( { label: '/' } );		
 		this.requestTier( this.rootId, null, deepLink );
 		if( deepLink ) this.marshal.onNodeSelected( deepLink );
+
+		this.slideToggle = this.element.getElement('.slideToggle');
+		if( this.slideToggle ){
+			console.log( ">>>>>", this.element, lattice.pointerEnterEvent );
+			this.element.addEvent( lattice.pointerEnterEvent, this.showFixedNav.bindWithEvent( this ) );
+			this.element.addEvent( lattice.pointerLeaveEvent, this.hideFixedNav.bindWithEvent( this ) );	
+			this.slideToggle.addEvent( 'click', function( e ){ e.preventDefault() } );	
+		}
+
+					/* scrollspy instance */
+			console.log( ":::::: ", this.element.getSize().y );
+			var navelement = this.element;
+			navelementheight = this.element.getSize().y;
+			lattice.ss = new ScrollSpy({
+				min: navelementheight,
+				onEnter: function(position,enters) {
+					console.log( 'onEnter' );
+					//navelement.addClass('fixednav');
+					lattice.CMS.element.addClass('fixednav');
+					//setStyle('padding-top', navelementheight + 'px' );
+				},
+				onLeave: function(position,leaves) {
+					if( position.y < navelementheight){
+						lattice.CMS.element.removeClass('fixednav');						
+					}
+//					console.log( 'onLeave' );
+				},
+				onTick: function(position,state,enters,leaves) {
+	//				if(console) { console.log('Tick  [' + enters + ', ' + leaves + '] at: ' + position.x + ' / ' + position.y + " : " + lattice.ss.min + " : " + navelementheight ); }
+				},
+				container: window
+			});
+
+
+	},
+
+	showFixedNav: function( e ){
+		e.preventDefault();
+		console.log('showFixedNav');
+		this.element.addClass('showing');
+	},
+
+	hideFixedNav: function( e ){
+		this.element.removeClass('showing');
 	},
 
 	addPane: function(){
@@ -193,7 +236,9 @@ lattice.modules.navigation.Navigation = new Class({
 		if( !target || this.getPanes().indexOf( target ) < this.numberOfVisiblePanes ){
 			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toLeft();
 		}else{
-			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).start( target.getCoordinates().left - target.getCoordinates().width - this.element.getElement('.container').getCoordinates().left , 0 );//toRight( target );
+			var coords = this.element.getElement('.container').getCoordinates();
+			var targetCoords = target.getCoordinates();
+			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).start( targetCoords.left - targetCoords.width - coords.left , 0 );//toRight( target );
 		}		
 	},
 	
@@ -307,6 +352,7 @@ lattice.modules.navigation.Tier = new Class({
 
 	render: function( e ){
 		lattice.util.stopEvent( e );
+//		if( this.boundOnKeyPress ) this.element.removeEvent( 'keydown', this.boundOnKeyPress );
 		if( this.element.get('html') != this.html ) this.element.set( 'html', this.html );
 		this.nodeElement = this.element.getElement( ".nodes" );
 		if( this.options.allowChildSort ) this.makeSortable();
@@ -316,47 +362,21 @@ lattice.modules.navigation.Tier = new Class({
 		}, this );
 		this.drawer = this.element.getElement( '.tierMethodsDrawer' );
  		if( this.drawer ){
-			this.drawer.set( "morph", {
-				duration: 200, 
-				transition: Fx.Transitions.Quad.easeInOut
-			});
-			this.drawer.getElement( '.close' ).addClass( 'hidden' );
-			this.drawer.setStyle( 'height', 'auto' );
-			this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', 'auto' );
-			this.drawer.getElement( '.close' ).addEvent( 'click', this.render.bindWithEvent( this ) );
-			if( !this.drawer.retrieve( 'initTop' ) ) this.drawer.store( "initTop", this.drawer.getStyle( "top" ) );	
-			this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
 			var addObjectLinks = this.drawer.getElements( "li" );
 			// wire addobject links
 			addObjectLinks.each( function( aLink ){
 				aLink.addEvent( "click", this.onAddObjectClicked.bindWithEvent( this, aLink ) );
 			}, this );
-			if( this.marshal.getUserLevel() == 'superuser' && addObjectLinks.length > 5  ){
-				// this.element.removeClass( "dark" );
-				this.drawer.getElement( ".close" ).addClass("hidden");
-			 	this.drawer.setStyle( 'top', this.drawer.retrieve( 'initTop' ) );
-				this.drawer.addEvent( 'click', this.renderAddObjectSelection.bindWithEvent( this, addObjectLinks ) );
-			}else{
-				this.drawer.addEvent( 'mouseenter', this.onDrawerMouseEnter.bindWithEvent( this ) );
-				this.drawer.addEvent( 'mouseleave', this.onDrawerMouseLeave.bindWithEvent( this ) );
-			}
-			// make nodes element shorter by the height of the addableObjects title height
-			// if( this.nodeElement.getDimensions().height >= this.element.getDimensions().height ){
-			// 	this.nodeElement.setStyle( 'height', this.element.getSize().y - this.drawer.getElement( "div.titleBar" ).getDimensions().height );
-			// }
+		}
+	},
+	
+	onKeyPress: function( e ){
+		console.log( "onKeyPress", e.key );
+		if( e.key == 'esc'){
+			this.cancel();
 		}
 	},
 
-	renderAddObjectSelection: function( e, addObjectLinks ){
-		lattice.util.stopEvent( e );
-		this.nodeElement.addClass( 'hidden' );
-		this.drawer.setStyle( 'height', '100%' );
-		this.drawer.getElement( '.close' ).removeClass( 'hidden' );
-		var h = this.element.getSize().y - this.drawer.getElement( "div.titleBar" ).getSize().y;
-		this.drawer.getElement( 'ul.addableObjects' ).setStyle( 'height', h );
-		this.drawer.morph( { 'top': 0 } );
-	},
-	
 	detach: function(){
 		this.element.unspin();
 		this.setActiveNode( null );
@@ -414,7 +434,7 @@ lattice.modules.navigation.Tier = new Class({
 
 	onNodeClicked: function( e, el ){
 		var nodeId, slug;
-		lattice.util.stopEvent( e );
+		e.preventDefault();
 		nodeId = this.marshal.getNodeIdFromElement( el );
 		slug = this.marshal.getSlugFromId( nodeId );
 		this.setActiveNode( el );

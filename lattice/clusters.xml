@@ -3,12 +3,48 @@
 
 <configuration>
 	<clusters>
+<!-- 
+  page meta bits need to expand frontend side to offer more than just opengraph stuff maybe foaf and rdf
+-->
+    <objectType name="pagemeta">
+      <elements>
+        <text name="slug" label="Page Slug" />  
+        <text name="windowTitle" label="Browser Window Title" />  
+        <text name="description" label="Meta Description" />
+        <text name="socialDescription" label="Share Description" />
+        <text name="keywords" label="Page Keywords" />
+        <image name="img" label="Page Thumb">
+          <resize name="uithumb" width="90" height="90" forceDimension="height" />
+        </image>
+      </elements>
+    </objectType>
+<!-- link cluster -->
 		<objectType name="link">
 			<elements>
-				<text name="label" label="Label" />	
-				<text name="url" label="URL" />
+    		<text name="label" label="Label" isMultiline="false" />	
+				<text name="url" label="URL" isMultiline="false" />
+        <checkbox name="external" label="external" />
 			</elements>
 		</objectType>
+		
+		<objectType name="plant">
+			<elements>
+			<plantType name="plantType" label="Type of Plant"/>
+			<seasons name="seasonsEdible" label="All Seasons this Plant is Edible"/>
+			<seasons name="primarySeasonsEdible" label="Primary Seasons this Plant is Edible"/>
+							
+			<foodUses name="foodUses" label="Food Uses"/>
+			<edibleParts name="edibleParts" label="Parts to Use"/>
+							
+			<habitats name="habitats" label="Habitats"/>
+			<habitats name="primaryHabitats" label="Primary Habitats"/>
+			</elements>
+		</objectType>
+		
+		
+		
+
+<!-- @Todo, create an image cluster so that it's not necessary to define it via the ojbecttype, although that gives you more control over the markup, still some defaults are nice -->
 	</clusters>
 
 </configuration>

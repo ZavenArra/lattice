@@ -133,7 +133,7 @@ Swiff.Uploader = new Class({
 
 	removeFile: function(file){
 		if (file) file = {name: file.name, size: file.size};
-//		alert("removeFile");
+		alert("removeFile");
 		return this.remote('removeFile', file);
 	},
 

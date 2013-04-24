@@ -277,11 +277,11 @@ Request.JSON.implement({
 		}
 		if ( json == null ){
 			this.onFailure();
-		} else if( !json.returnValue ){
+		} else if( !json.return_value ){
 			if( json.response && json.response.error ){
 				throw json.response.error;						
 			}else{
-				throw 'response to JSON request has eiter no returnValue, or no response. '
+				throw 'response to JSON request has eiter no return_value, or no response. '
 			}
 		} else {
 			this.onSuccess( json, text );
@@ -339,6 +339,9 @@ lattice.util.loadStyleSheet = function( cssURL, mediaString, opts ){
 	new Asset.css( cssURL, options ); 
 }
 
+lattice.util.isMobile = function(){
+	return (  Event.touchstart && typeof Event.touchstart == 'object' );
+}
 /*
 	Function: lattice.util.loadJS
 	Attach a javascript element to head element via DOM

@@ -1,16 +1,15 @@
 <?php
 
 /*
- * To change this objectType, choose Tools | Templates
- * and open the objectType in the editor.
+ * To change this object_type, choose Tools | Templates
+ * and open the object_type in the editor.
  */
 
 /**
- * Description of Model_Initialized_Modules
+ * Description of Model_InitializedModules
  *
  * @author deepwinter1
  */
-class Model_InitializedModule extends ORM {
-//put your code here
+class Model_Initializedmodule extends ORM {
+// put your code here
 }
-?>

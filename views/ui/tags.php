@@ -1,5 +1,5 @@
 <div class="ui-Tags clearFix" data-tags="<?=$tags;?>" data-field="tags">
-	<?/*if(isset($label)):?>
+	<?/*if (isset($label)):?>
 		<label><?=$label;?></label>
 	<?endif;*/?>
 	<div class="container atRest">

@@ -34,28 +34,28 @@ $config['resources']['js'] = array(
 $config['defaultsettings']['editable_title'] = true;
 //- - if set all titles editable
 
-$config['newObjectPlacement'] = 'bottom';
+$config['new_object_placement'] = 'bottom';
 
 $config['uiresizes'] =  array(
 	'uithumb' => array(
 		'width'=>240,
 		'height'=>120,
 		'prefix' => 'uithumb',
-		'forceDimension'=>'width',
+		'force_dimension'=>'width',
 		'crop'=>true,
-    'aspectFollowsOrientation'=>false
+    'aspect_follows_orientation'=>false
 	)
 );
 
-$config['navigationRequest'] = 'navigation';
+$config['navigation_request'] = 'navigation';
 
 
 $config['stagingmediapath'] = 'staging/application/media/';
 $config['basemediapath'] = 'application/media/';
 
-$config['enableSlugEditing'] = false;
+$config['enable_slug_editing'] = false;
 
-$config['baseName'] = 'modules_cms';
+$config['base_name'] = 'modules_cms';
 $config['localization'] = FALSE;
 
 
