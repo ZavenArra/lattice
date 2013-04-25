@@ -8,7 +8,7 @@ Class Lattice_Controller_Setup extends Controller {
     $initialized = Lattice_Initializer::check(
       array(
         'lattice',
-        'latticeauth',
+        'auth',
         'cms',
         'usermanagement',
       )

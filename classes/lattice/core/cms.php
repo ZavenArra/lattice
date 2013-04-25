@@ -276,7 +276,15 @@ class Lattice_Core_Cms extends Lattice_CMSInterface {
 
   }
 
-
+  /**
+   * Enables search of objects at the backend
+   * 
+   * @param int parent_id 
+   */
+  public function search_node($parent_id)
+  {
+	  echo "dfsdf";
+  }
 
 }
 

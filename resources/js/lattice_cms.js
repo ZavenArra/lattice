@@ -107,7 +107,12 @@ lattice.modules.CMS = new Class({
 		var url = lattice.util.getBaseURL() + "ajax/data/cms/clear_field/" + this.getObjectId() + "/" + fieldName;
 		return url;
 	},
-
+	
+	getSearchRequestURL: function( parentId ){
+		var url = lattice.util.getBaseURL() + "ajax/data/cms/search_node/" + parentId;
+		return url;
+	},
+	
 	getRootNodeId: function(){ return this.options.rootObjectId; },
 
 	getObjectId: function(){ return this.currentObjectId; },
@@ -367,6 +372,17 @@ lattice.modules.CMS = new Class({
 		}).send();
 	},
 
+	OnSearchKeyUp:function( parentId ){
+		console.log("bound to search function in js");return;
+		return new Request.JSON({
+			url: this.getSearchRequestURL( parentId ),
+			onSuccess: function( json ){
+				if( callback ) callback( json );
+			}.bind( this )
+		}).send();	
+		/* get the current value of the input field */
+		current_value =  this.element.getElement( '#search_node' );
+	},
 	
 	destroy: function(){
 		this.clearPages();
