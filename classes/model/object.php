@@ -2111,15 +2111,21 @@ class Model_Object extends ORM implements arrayaccess {
             Graph::configure_object_type($objectTypeName);
             $object_type = ORM::Factory('objecttype', $objectTypeName);
           } else {
-            throw new Kohana_Exception('No config for object_type ' . $objectTypeName .' '.$x_path);
+            //throw new Kohana_Exception('No config for object_type ' . $objectTypeName .' '.$x_path);
+            //object type doesn't exit in xml --- should skip save in DB now
+            echo "<br /> Warning: No config for object_type $objectTypeName $x_path";
           }
         }
       } else {
         $object_type = $object_type_class_or_name;
       }
-      $this->objecttype_id = $object_type->id;
-      $this->__set('objecttype', $object_type);
-
+      
+      if ($object_type->id)
+      {
+	     $this->objecttype_id = $object_type->id;
+		 $this->__set('objecttype', $object_type);
+	  }
+     
       return $this; // chainable
     }
 
