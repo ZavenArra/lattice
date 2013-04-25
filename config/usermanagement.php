@@ -44,8 +44,8 @@ $config['password_change_email']['from'] = "Lattice Usermanagement <usermanageme
  * The roles that the admin can select from when creating a user. 
  * Array is of format array( {label} => {role unique text key})
  */
-$config['managed_roles'] = array('Admin'=>'admin');
-$config['default_roles'] = 'admin';
-$config['superuser_edit'] = false;
+$config['managedRoles'] = array('Admin'=>'admin');
+$config['defaultRoles'] = 'admin';
+$config['superuserEdit'] = true;
 
 return $config;

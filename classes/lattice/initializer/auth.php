@@ -20,8 +20,8 @@ class Lattice_Initializer_Auth {
     } catch (Exception $e)
     {
       if ($e->getCode() == 1146)
-      { // code for table doesn't exist
-        // install the initializedmodules table
+      { 
+        // code for table doesn't exist
         $sql_file = Kohana::find_file('sql', 'auth-schema-mysql', $ext = 'sql');
 
         $sql = file_get_contents( $sql_file);

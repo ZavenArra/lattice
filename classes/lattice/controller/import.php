@@ -1,6 +1,6 @@
 <?php
 
-class Lattice_Controller_Builder extends Controller {
+class Lattice_Controller_Import extends Controller {
 
   private $new_object_ids = array();
 
@@ -48,7 +48,7 @@ class Lattice_Controller_Builder extends Controller {
 
     if (Kohana::config('lattice.live'))
     {
-      die('builder/initialize_site is disabled on sites marked live');
+      die('import is disabled on sites marked live');
     }
 
     // clean out media dir
@@ -297,7 +297,9 @@ class Lattice_Controller_Builder extends Controller {
         // echo 'Adding Object '.$item->getAttribute('objectTypeName')."\n";
         // print_r($data);
         $object_id = $parent_object->add_object($item->getAttribute('objectTypeName'), $data);
-        $this->new_object_ids[] = $object_id;
+        
+        if($object_id != NULL)
+			$this->new_object_ids[] = $object_id;
       }
 
       // and now update with element_objects;
@@ -346,5 +348,6 @@ class Lattice_Controller_Builder extends Controller {
     flush();
     ob_flush();
   }
+  
 
 }
