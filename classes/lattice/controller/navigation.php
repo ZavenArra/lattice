@@ -22,6 +22,12 @@ class Lattice_Controller_Navigation extends Core_Controller_Lattice{
     // $this->view = new View(strtolower($this->controllername));
     // //this should check and extend
     $this->view = new View('navigation');
+    
+     //search view
+    $search_view = cms_ui::search('live-search');
+    
+    $this->view->search_view = $search_view;
+    
     $this->response->body($this->view->render());
 
   }
@@ -206,11 +212,6 @@ class Lattice_Controller_Navigation extends Core_Controller_Lattice{
     $tier_methods_drawer->addable_objects = $addable_objects;
 
     $tier_view->tier_methods_drawer = $tier_methods_drawer->render();
-    
-    //search view
-    $search_view = cms_ui::search('live-search');
-    
-    $tier_view->search_view = $search_view;
     
     return $tier_view->render();
 

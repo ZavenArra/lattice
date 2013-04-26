@@ -2286,6 +2286,7 @@ lattice.ui.Text = new Class({
 		this.validate = ( this.element.getData( 'validate' ) )? this.element.getData( 'validate' ) : this.options.validate;
 		this.mode = "atRest";
 		if( this.submitOnBlur ) this.allowSubmitOnBlur = true;
+
 		this.field = anElement.getElement( ".og" );
 		// if( this.validate ){
 		// 	//do validation (refactor to use mootools validation )
@@ -2511,6 +2512,7 @@ lattice.ui.Text = new Class({
 		this.ipeElement.setStyle( 'opacity', .2 );
 		this.ipeElement.set( "title", this.options.messages.saving );
 	},
+	
 
 	showValidationError: function( errorMessage ){
 		this.ipeElement.removeClass("saving");

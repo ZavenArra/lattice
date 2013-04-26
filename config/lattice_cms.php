@@ -9,7 +9,10 @@ $config['resources']['libraryjs'] = array(
 
 	'modules/lattice/resources/thirdparty/mootools/mootools.js',
 	'modules/lattice/resources/thirdparty/mootools/mootools-more.js',
-
+	
+	//for live search of objects
+	'modules/lattice/resources/thirdparty/live_list_search.js',
+	
 	//these are required by LatticeUI
 	'modules/lattice/resources/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
 	'modules/lattice/resources/thirdparty/arian/datepicker/Source/Locale.en-US.DatePicker.js',

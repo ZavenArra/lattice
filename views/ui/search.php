@@ -1,3 +1,4 @@
-<div class="search-form">
-	<input class="<?php echo $search_field ?>" type="text" name="search_node" value="" id="search_node" placeholder="search for an object"/>
+
+<div class="ui-Input search-form">
+	<input type="text" name="search_words" id="search_node" onkeyup="lattice.CMS.searchTiers();  "  autocomplete="off" placeholder="search active tiers for an object">
 </div>
