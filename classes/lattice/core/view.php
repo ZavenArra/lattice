@@ -26,9 +26,9 @@ class Lattice_Core_View {
 
     $object = self::get_graph_object($object_id_or_slug);
     $objectTypeName = $object->objecttype->objecttypename;
-    if (Kohana::find_file('classes', 'viewmodel/'.strtolower($objectTypeName)))
+    if (Kohana::find_file('classes', 'view/model/'.strtolower($objectTypeName)))
     {
-      $class_name = 'View_model_'.$objectTypeName;
+      $class_name = 'View_Model_'.$objectTypeName;
       $view_model = new $class_name($object_id_or_slug);
     } else {
       $view_model = new core_view($object_id_or_slug);
