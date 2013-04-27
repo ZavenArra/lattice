@@ -1631,54 +1631,47 @@ class Model_Object extends ORM implements arrayaccess {
 
     public function add_object($objectTypeName, $data = array(), $lattice = NULL, $rosetta_id = NULL, $language_id = NULL)
     {
-	  if($this->objecttype_id)
-	  {
-	  
-		  $new_object_type = ORM::Factory('objecttype', $objectTypeName);
 
-		  $new_object = $this->add_lattice_object($objectTypeName, $lattice, $rosetta_id, $language_id);
+      $new_object_type = ORM::Factory('objecttype', $objectTypeName);
+
+      $new_object = $this->add_lattice_object($objectTypeName, $lattice, $rosetta_id, $language_id);
 
 
-		  /*
-		   * Set up any translated peer objects
-		 */
-		if ( ! $rosetta_id)
-		{
-		  $languages = Graph::languages();
-		  foreach ($languages as $translation_language)
-		  {           
-			if ($translation_language->id == $new_object->language_id)
-			{
-			  continue;
-			}
+      /*
+       * Set up any translated peer objects
+     */
+    if ( ! $rosetta_id)
+    {
+      $languages = Graph::languages();
+      foreach ($languages as $translation_language)
+      {           
+        if ($translation_language->id == $new_object->language_id)
+        {
+          continue;
+        }
 
-			if ($this->loaded())
-			{
-			  $translated_parent = $this->get_translated_object($translation_language->id);
+        if ($this->loaded())
+        {
+          $translated_parent = $this->get_translated_object($translation_language->id);
 
-			  $translated_parent->add_lattice_object($new_object->objecttype->objecttypename, $lattice, $new_object->rosetta_id, $translation_language->id);
-			} else {
-			  Graph::object()->add_lattice_object($new_object->objecttype->objecttypename, $lattice,  $new_object->rosetta_id, $translation_language->id);
-			}
+          $translated_parent->add_lattice_object($new_object->objecttype->objecttypename, $lattice, $new_object->rosetta_id, $translation_language->id);
+        } else {
+          Graph::object()->add_lattice_object($new_object->objecttype->objecttypename, $lattice,  $new_object->rosetta_id, $translation_language->id);
+        }
 
-		  }
-		}
+      }
+    }
 
 
-		$new_object->update_content_data($data);
+    $new_object->update_content_data($data);
 
-		/*
-		 * adding of components is delayed until after alternate language objects creates,
-		 * because data trees need to be built before components go looking for rosetta ids
-		 */
-		$new_object->add_components();
+    /*
+     * adding of components is delayed until after alternate language objects creates,
+     * because data trees need to be built before components go looking for rosetta ids
+     */
+    $new_object->add_components();
 
-		return $new_object->id;
-	  }
-	  else
-	  {
-		 return NULL;  
-	  }
+    return $new_object->id;
 
     }
 
@@ -2118,7 +2111,7 @@ class Model_Object extends ORM implements arrayaccess {
             Graph::configure_object_type($objectTypeName);
             $object_type = ORM::Factory('objecttype', $objectTypeName);
           } else {
-            //throw new Kohana_Exception('No config for object_type ' . $objectTypeName .' '.$x_path);
+            throw new Kohana_Exception('No config for object_type ' . $objectTypeName .' '.$x_path);
             //object type doesn't exit in xml --- should skip save in DB now
             echo "<br /> Warning: No config for object_type $objectTypeName $x_path";
           }
@@ -2126,13 +2119,14 @@ class Model_Object extends ORM implements arrayaccess {
       } else {
         $object_type = $object_type_class_or_name;
       }
-      
-      if ($object_type->id)
+
+	//using this if to fast forward 
+	  if ($object_type->id)
       {
 	     $this->objecttype_id = $object_type->id;
 		 $this->__set('objecttype', $object_type);
 	  }
-     
+
       return $this; // chainable
     }
 
