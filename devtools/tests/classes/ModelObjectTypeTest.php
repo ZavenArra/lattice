@@ -31,7 +31,7 @@ Class ModelObjectTypeTest extends Kohana_UnitTest_TestCase {
 
   public function testDefaultsSave(){
     $object = self::$object;
-    //print_r($object->getPageContent());
+    //print_r($object->get_page_content());
     $this->assertNotNULL($object->dateField);
     $this->assertNULL($object->dateFieldNoDefault);
     $this->assertNotNULL($object->textFieldDefault);

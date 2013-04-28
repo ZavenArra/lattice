@@ -34,9 +34,9 @@ Class Lattice_Controller_Latticeviews extends Core_Controller_Layout{
   {
     if ($this->request == Request::initial() )
     {
-      $layout_for_slug = Kohana::config('core_views.layouts.'.self::$slug);
+      $layout_for_slug = Kohana::config('latticeviews.layouts.'.self::$slug);
       $object = Graph::object(self::$slug);
-      $layout_for_object_type = Kohana::config('core_views.layouts_for_object_type.'.$object->objecttypename);
+      $layout_for_object_type = Kohana::config('latticeviews.layouts_for_object_type.'.$object->objecttypename);
       if ($layout_for_slug)
       {
         if (Kohana::find_file('views/', $layout_for_slug))
@@ -78,7 +78,7 @@ Class Lattice_Controller_Latticeviews extends Core_Controller_Layout{
   public function action_get_view($object_id_or_slug=NULL)
   {
 
-    $access = Kohana::config('core_views.access.'.$object_id_or_slug);
+    $access = Kohana::config('latticeviews.access.'.$object_id_or_slug);
     if ( ! cms_util::check_access($access))
     {
       Request::current()->redirect(url::site('auth/login/',Request::current()->protocol(),FALSE).'/'.Request::initial()->uri());

@@ -2,7 +2,7 @@
 Class GraphObjectAuthRolesTest extends Kohana_UnitTest_TestCase {
 
   public static function setUpBeforeClass(){
-    $object = Graph::createObject('article', 'test');
+    $object = Graph::create_object('article', 'test');
 
     $role = ORM::Factory('role', array('name'=>'editor'));
     if (!$role->loaded()){
@@ -52,7 +52,7 @@ Class GraphObjectAuthRolesTest extends Kohana_UnitTest_TestCase {
   }
 
   public function testCreateWithConfiguredAccess(){
-    $objectId = Graph::createObject('editorOnlyObjectType', 'editorOnlyTest');
+    $objectId = Graph::create_object('editorOnlyObjectType', 'editorOnlyTest');
     $object = Graph::object($objectId);
     $this->assertTrue($object->checkRoleAccess('editor'), 'Configured access does not have access');
     $this->assertFalse($object->checkRoleAccess('admin'), 'Unconfigured access has access');
@@ -60,7 +60,7 @@ Class GraphObjectAuthRolesTest extends Kohana_UnitTest_TestCase {
   }
 
   public function testChangeAccess(){
-    $objectId = Graph::createObject('editorOnlyObjectType', 'editorOnly2');
+    $objectId = Graph::create_object('editorOnlyObjectType', 'editorOnly2');
     $object = Graph::object($objectId);
     $object->removeRoleAccess('editor');
     $object->addRoleAccess('admin');
@@ -80,7 +80,7 @@ Class GraphObjectAuthRolesTest extends Kohana_UnitTest_TestCase {
   }
 
   public function testDoubleAddDoesntBreak(){
-    $object = Graph::createObject('article', 'testDoubleAddDoesntBreak');
+    $object = Graph::create_object('article', 'testDoubleAddDoesntBreak');
     $object->addRoleAccess('editor');
     $object->addRoleAccess('editor');
     $this->assertTrue($object->checkRoleAccess('editor'));

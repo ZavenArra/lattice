@@ -1,7 +1,7 @@
 <?php
 
 $config['parameters']['singleIPE'] = array(
-    'objectTypeFilter' => 'singleIPE',
+    'object_type_filter' => 'singleIPE',
 );
 
 return $config;

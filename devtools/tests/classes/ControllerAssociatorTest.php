@@ -2,8 +2,8 @@
 Class ControllerAssociatorTest extends Kohana_UnitTest_TestCase {
 
   public static function setUpBeforeClass(){
-    Graph::createObject('singleAssociator', 'associateTest');
-    Graph::createObject('singleAssociator', 'associateTest2');
+    Graph::create_object('singleAssociator', 'associateTest');
+    Graph::create_object('singleAssociator', 'associateTest2');
   }
 
   public static function tearDownAfterClass(){
