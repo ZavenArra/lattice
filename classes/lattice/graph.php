@@ -251,7 +251,7 @@ class Lattice_Graph {
     return $root;
 
   }
-
+  
 
 }
 

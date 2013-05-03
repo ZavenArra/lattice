@@ -563,7 +563,7 @@ class Model_Object extends ORM implements arrayaccess {
     {
       $this->activity = new Database_Expression(NULL);
       $this->slug = Model_Object::create_slug($this->contenttable->title, $this->id);
-      $this->contentdriver()->undelete();
+      $this->content_driver()->undelete();
       $this->_save();
 
       $children = $object->get_lattice_children();
@@ -588,7 +588,7 @@ class Model_Object extends ORM implements arrayaccess {
 
       if ($permanent)
       {
-        $this->contentdriver()->delete();
+        $this->content_driver()->delete();
         parent::delete();
       }
     }
