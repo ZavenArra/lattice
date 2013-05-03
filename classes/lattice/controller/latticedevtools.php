@@ -7,40 +7,42 @@ class Lattice_Controller_Latticedevtools extends Core_Controller_Lattice
 	{
 		$this->response->body('this is the output');
 	}
-	
-	public function action_graph($id)
+
+	public function action_graph($id=NULL)
 	{
-		if(is_numeric($id))
-		{
-			//$object_id = $id;
+
+		$object = NULL;
+		if($id){
+			$object = graph::object($id);
+		} else {
+			$object = graph::get_lattice_root();
 		}
-		else
+
+		if(!is_object($object) )
 		{
-			//$slug = $id;
+			throw new Kohana_Exception("$id is not a proper graph member");
 		}
-		
-		$object = graph::object($id);
-		
+
 		$object_type_name = $object->objecttype->objecttypename;
-		
-		
+
+
 		$children = $object->get_lattice_children();
-		
-		$parent = $object->get_lattice_parent();
-		
-		if(!is_object($children) OR !is_object($parent) )
+
+		// Don't need this, the current object is the 'parent' to display
+		// $parent = $object->get_lattice_parent();
+
+		echo "{$object->title} &raquo; {$object->slug} <br /> | <br />";
+		if(!is_object($children) )
 		{
-			throw new Kohana_Exception("$id is not a valid slug / id");
+			throw new Kohana_Exception("Database error finding children");
 		}
-		
-		echo "<center> {$parent->title} &raquo; {$parent->slug} <br /> | <br />";
-		
+
 		foreach($children as $child)
 		{
 			echo "{$child->title} &raquo; {$child->slug} <br /> | <br /> ";
 		}
-		
-		echo " --- end --- </center>";
+
+		echo " --- end ---";
 
 	}
 }
