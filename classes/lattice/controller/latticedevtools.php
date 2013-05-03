@@ -25,22 +25,29 @@ class Lattice_Controller_Latticedevtools extends Core_Controller_Lattice
 
 		$object_type_name = $object->objecttype->objecttypename;
 
+    echo "{$object->title} &raquo; {$object->slug} <br /> | <br />";
 
-		$children = $object->get_lattice_children();
+    $lattices = array('lattice', 'artist', 'whatever'); // TODO this needs to query database for all lattices
+                                                        //  probably add an 'all_lattices' method to object or lattice model 
 
-		// Don't need this, the current object is the 'parent' to display
-		// $parent = $object->get_lattice_parent();
+    foreach($lattices as $lattice){
+      echo "Lattice: $lattice <br /><br />";
 
-		echo "{$object->title} &raquo; {$object->slug} <br /> | <br />";
-		if(!is_object($children) )
-		{
-			throw new Kohana_Exception("Database error finding children");
-		}
+      $children = $object->get_lattice_children($lattice);
 
-		foreach($children as $child)
-		{
-			echo "{$child->title} &raquo; {$child->slug} <br /> | <br /> ";
-		}
+      if(!is_object($children) )
+      {
+        throw new Kohana_Exception("Database error finding children");
+      }
+
+      if(count($children) == 0){
+        // echo something about empty children ?
+      } else 
+        foreach($children as $child)
+        {
+          echo "{$child->title} &raquo; <a href=\"".url::site('latticedevtools/graph/'.$child->slug)."\">{$child->slug}</a> <br /> | <br /> ";
+        }
+    }
 
 		echo " --- end ---";
 
