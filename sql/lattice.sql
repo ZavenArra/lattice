@@ -18,7 +18,7 @@ INSERT INTO `schema_migrations` VALUES ('20120204023751_');
   `contentType` varchar(20) CHARACTER SET utf8 DEFAULT NULL,
   `sort_order` smallint(2) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 CREATE TABLE `languages` (
@@ -27,7 +27,7 @@ CREATE TABLE `languages` (
   `fullname` varchar(100) NOT NULL,
   `activity` char(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 insert into `languages` ( `code`, `fullname`, `activity`) values ('en', 'English', NULL);
@@ -37,7 +37,7 @@ insert into `languages` ( `code`, `fullname`, `activity`) values ('br', 'Portuge
 CREATE TABLE `rosettas` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
 	PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objects` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
@@ -52,7 +52,7 @@ CREATE TABLE `objects` (
 	`activity` char(1) CHARACTER SET utf8 DEFAULT NULL,
 	PRIMARY KEY (`id`),
 	UNIQUE KEY `identifier` (`slug`,`language_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objectmaps` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -61,7 +61,7 @@ CREATE TABLE `objectmaps` (
   `index` int(11) NOT NULL,
   `column` varchar(100) CHARACTER SET utf8 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `contents` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -369,14 +369,14 @@ CREATE TABLE `contents` (
   `activity` char(1) CHARACTER SET utf8 DEFAULT NULL,
   PRIMARY KEY (`object_id`),
   KEY `id` (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `files` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `filename` varchar(100) DEFAULT NULL,
   `mime` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objectrelationships` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
@@ -385,7 +385,7 @@ CREATE TABLE `objectrelationships` (
 	`connectedobject_id` int(11) NOT NULL,
 	`sortorder` int(11) NOT NULL,
 	PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objectelementrelationships` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -393,13 +393,13 @@ CREATE TABLE `objectelementrelationships` (
   `elementobject_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `lattices` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
 	`name` varchar(200) NOT NULL,
 	PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT into `lattices` (`id`, `name`) values (1, 'lattice');
 
@@ -408,7 +408,7 @@ CREATE TABLE `objects_roles` (
   `object_id` int(11) DEFAULT NULL,
   `role_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=575 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=575 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 CREATE TABLE `tags` (
@@ -416,20 +416,20 @@ CREATE TABLE `tags` (
   `tag` varchar(255) NOT NULL,
 	`language_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `objects_tags` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `object_id` int(11) NOT NULL,
   `tag_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `tagbuckets` (
 	`id` int(11) NOT NULL,
 	`name` varchar(255) NOT NULL,
 	PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `tags_tagbuckets` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
@@ -440,4 +440,4 @@ CREATE TABLE `tags_tagbuckets` (
 	KEY `tag_id` (`tag_id`),
 	CONSTRAINT `tags_tagbuckets_tag_id_fk` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`),
 	CONSTRAINT `tags_tagbuckets_tagbucket_id_fk` FOREIGN KEY (`tagbucket_id`) REFERENCES `tagbuckets` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+) ENGINE=MyISAM DEFAULT CHARSET=utf8

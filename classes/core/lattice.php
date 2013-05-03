@@ -145,7 +145,8 @@ Class Core_Lattice {
         {
           throw new Kohana_Exception('Could not locate xml clusters');
         }
-        $clusters->load( $path[0] );
+        $index = count($path)-1;
+        $clusters->load( $path[$index] );
         // echo $clusters->_delegate->saveXML();
         $clusters = new DOMXPath($clusters->_delegate);
         $cluster_nodes = $clusters->evaluate('//objectType');
