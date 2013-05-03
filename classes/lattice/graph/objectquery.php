@@ -22,7 +22,7 @@ class Lattice_Graph_Objectquery {
   public function init_with_xml($xml)
   {
     $this->attributes['label'] = $xml->getAttribute('label');
-    $this->attributes['object_type_filter'] = $xml->getAttribute('objectTypeFilter');
+    $this->attributes['object_type_filter'] = $xml->getAttribute('object_type_filter');
     $this->attributes['where'] = $xml->getAttribute('where');
     $this->attributes['from'] = $xml->getAttribute('from');
     $this->attributes['slug'] = $xml->getAttribute('slug');

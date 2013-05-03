@@ -16,13 +16,13 @@ Class LatticeUITest extends Kohana_UnitTest_TestCase {
     $elementsConfig = array();
     foreach ($elements as $element) {
 
-      $entry = latticecms::convertXmlElementToArray($object, $element);
+      $entry = Cms_Core::convertXmlElementToArray($object, $element);
 
       $elementsConfig[$entry['name']] = $entry;
     }
 
 
-    $ui = latticecms::buildUIHtmlChunks($elementsConfig);
+    $ui = Cms_Core::buildUIHtmlChunks($elementsConfig);
 
     $this->assertNotNULL($ui);
     $this->assertNotNULL($ui['text_url']);
@@ -34,7 +34,7 @@ Class LatticeUITest extends Kohana_UnitTest_TestCase {
     $objectId = Graph::object()->addObject('clusterTest', array('slug'=>'cluster-test'));
     $object = Graph::object($objectId);
 
-    $ui = latticecms::buildUIHtmlChunksForObject($object);
+    $ui = Cms_Core::buildUIHtmlChunksForObject($object);
 
     $this->assertNotNULL($ui);
     $this->assertNotNULL($ui['link_myLink']);

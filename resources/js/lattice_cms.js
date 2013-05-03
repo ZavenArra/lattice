@@ -1,5 +1,6 @@
 /* Class: lattice.cms.CMS */
 
+
 Request.JSON.implement({
 	success: function(text){
 		var json;
@@ -107,7 +108,11 @@ lattice.modules.CMS = new Class({
 		var url = lattice.util.getBaseURL() + "ajax/data/cms/clear_field/" + this.getObjectId() + "/" + fieldName;
 		return url;
 	},
-
+    
+    getSearchRequestURL: function( nodeId ){
+		var url = lattice.util.getBaseURL() + "ajax/data/cms/search_node/" + parentId;
+		return url;
+	},
 	getRootNodeId: function(){ return this.options.rootObjectId; },
 
 	getObjectId: function(){ return this.currentObjectId; },
@@ -163,7 +168,6 @@ lattice.modules.CMS = new Class({
 		}else{
 			this.currentPage = this.pages[ this.loc ];
 		}
-
 		w = this.element.getElement('.pagesPane').getDimensions().width;
 		pageCount = Object.getLength( this.pages );
 		w *= pageCount;
@@ -273,6 +277,7 @@ lattice.modules.CMS = new Class({
 		}, this );
 			if( noneLoaded ) this.populate( json.response.html, json.response.data.objectTypeName );
 		}else{
+			console.log(json.response.html);
 			this.populate( json.response.html, json.response.data.objectTypeName );
 		}
 	},
@@ -366,7 +371,24 @@ lattice.modules.CMS = new Class({
 			}.bind( this )
 		}).send();
 	},
+  	
+	searchTiers:function(){
+		
+           this.inputName = $('search_node'); 
+           //console.log(this.inputName);
+    		searchTags = new LLSearch({
+				'inputID'  : this.inputName,                        
+				'listID'   : 'search_tag',                         
+				'searchTermLi' : 'search_term',
+				'onEnter' : function(e, term){
+                         //nothing
+				},
+				'onClick' : function(e, term){
+                        //nothing
+				}
+			});
 
+	},	
 	
 	destroy: function(){
 		this.clearPages();
@@ -511,14 +533,16 @@ lattice.modules.CMSPage = new Class({
 
 });
 
+
 if( !lattice.util.hasDOMReadyFired() ){
 	window.addEvent( "domready", function(){
+
 
 			/* smooth */
 //			new SmoothScroll({duration:500});
 						
-
-
+     
+           
 
 		lattice.util.DOMReadyHasFired();
 		var ismobile = 	lattice.util.isMobile();
@@ -535,7 +559,10 @@ if( !lattice.util.hasDOMReadyFired() ){
 		if( lattice.loginTimeout && lattice.loginTimeout > 0 ) loginMonitor = new lattice.util.LoginMonitor();
 		lattice.util.EventManager.broadcastMessage( "resize" );
 		lattice.CMS = new lattice.modules.CMS( 'cms' );
-
+		
+	
+	 
+         
 
 	});
 }

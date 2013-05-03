@@ -38,10 +38,10 @@ class Lattice_Graph {
     return $object;
   }
 
-  public static function create_object($object_type_name, $key=NULL)
+  public static function create_object($objectTypeName, $key=NULL)
   {
     $key ? $data = array('slug'=>$key) : $data=array(); 
-    $object_id = Graph::instance()->add_object($object_type_name, $data);
+    $object_id = Graph::instance()->add_object($objectTypeName, $data);
     return Graph::object($object_id);
 
   }
@@ -162,7 +162,7 @@ class Lattice_Graph {
   }
 
 
-  public static function configure_object_type($object_type_name, $force = FALSE)
+  public static function configure_object_type($objectTypeName, $force = FALSE)
   {
 
 
@@ -173,13 +173,13 @@ class Lattice_Graph {
     if ( ! $force)
     {
       $object_type_config = NULL;
-      $x_path =  sprintf('//objectType[@name="%s"]', $object_type_name);
-      $x_path_list =  sprintf('//list[@name="%s"]', $object_type_name);
+      $x_path =  sprintf('//objectType[@name="%s"]', $objectTypeName);
+      $x_path_list =  sprintf('//list[@name="%s"]', $objectTypeName);
       if ( ! $object_type_config = core_lattice::config('objects', $x_path)->item(0))
       { 
         if ( ! $object_type_config = core_lattice::config('objects', $x_path_list)->item(0))
         {
-          throw new Kohana_Exception("Object type '".$object_type_name."' does not exist in objects.xml"); 
+          throw new Kohana_Exception("Object type '".$objectTypeName."' does not exist in objects.xml"); 
         }
       }
 
@@ -194,18 +194,18 @@ class Lattice_Graph {
     }
 
     // find or create object_type record
-    $t_record = ORM::Factory('objecttype', $object_type_name );
+    $t_record = ORM::Factory('objecttype', $objectTypeName );
     if ( ! $t_record->loaded())
     {
       $t_record = ORM::Factory('objecttype');
-      $t_record->objecttypename = $object_type_name;
+      $t_record->objecttypename = $objectTypeName;
       $t_record->nodeType = 'object';
       $t_record->save();
     }
 
     /*
      * This can just happen on the fly - lazy configure
-     foreach ( core_lattice::config('objects', '//objectType[@name="'.$object_type_name.'"]/elements/*') as $item)
+     foreach ( core_lattice::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item)
      {
        $t_record->configure_element($item);
   }
@@ -251,7 +251,7 @@ class Lattice_Graph {
     return $root;
 
   }
-
+  
 
 }
 

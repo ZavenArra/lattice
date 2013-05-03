@@ -128,7 +128,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
         // quick fix for tags
         // tags is not a dbmapped field / configured field
         // so just return here
-        if ($field_config->item(0)->tag_name == 'tags')
+        if ($field_config->item(0)->tagName == 'tags')
         {
           return $object->get_tag_strings();
         }
@@ -193,7 +193,7 @@ class Model_Lattice_Object extends Model_Lattice_Contentdriver {
       $element_config = core_lattice::config('objects', $x_path . sprintf('/elements/*[@name="%s"]', $column));
 
       // build the object
-      $object_element = $object->add_element_object($element_config->item(0)->tag_name, $column);
+      $object_element = $object->add_element_object($element_config->item(0)->tagName, $column);
     }
     return $object_element;
 

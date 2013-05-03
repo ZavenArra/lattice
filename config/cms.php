@@ -1,4 +1,4 @@
-<?
+<?php 
 $config['resources']['libraryjs'] = array( 'views/js/latticesettings' );
 $config['navigation_request'] = 'navigation';
 $config['layout'] = 'LayoutAdmin';

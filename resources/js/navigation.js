@@ -352,6 +352,7 @@ lattice.modules.navigation.Tier = new Class({
 
 	render: function( e ){
 		lattice.util.stopEvent( e );
+
 //		if( this.boundOnKeyPress ) this.element.removeEvent( 'keydown', this.boundOnKeyPress );
 		if( this.element.get('html') != this.html ) this.element.set( 'html', this.html );
 		this.nodeElement = this.element.getElement( ".nodes" );
@@ -400,6 +401,7 @@ lattice.modules.navigation.Tier = new Class({
 
 	initNode: function( aNodeElement ){
 		var togglePublishedStatusElement, removeNodeElement;
+			
 		togglePublishedStatusElement = aNodeElement.getElement(".togglePublishedStatus");
 		node = this.marshal.getNodeById( this.marshal.getNodeIdFromElement( aNodeElement ) );
 		removeNodeElement = aNodeElement.getElement(".removeNode");
@@ -545,6 +547,6 @@ lattice.modules.navigation.Tier = new Class({
 				}
 		}, this );
 		return sortArray.join( ',' );
-	}	
+	}
 
 });

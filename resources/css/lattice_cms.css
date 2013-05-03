@@ -897,10 +897,7 @@ a.icon.preview.active { background-image: url( ../images/icon_preview.png ); bac
 .active a.icon.submit, a.icon.submit:hover{ background-image: url( ../images/icon_confirm_hover.png ); }
 .active a.icon.cancel, a.icon.cancel:hover{ background-image: url( ../images/icon_cancel_hover.png); }
 
-.controls a,
-.controls a{
-	color:#fff;	
-}
+
 
 
 .listcontrol.top{
@@ -1770,4 +1767,29 @@ ul.tokens{
 .page{
 	width: 960px;
 	float: left;
+}
+
+
+/*
+-----------------------------------------------------
+
+	Search
+
+-----------------------------------------------------
+*/
+
+.search-form input{
+	position: relative;
+	font-family: Georgia, Times, Serif;
+	margin:5px;
+	padding: .5em .75em !important;
+	color: #222;
+	cursor: text;
+	border: none;
+	background-color: #FFFAC4;
+	opacity: 1;
+}
+.search-form input:hover {
+background-color: #F26A35;
+color: white !important;
 }

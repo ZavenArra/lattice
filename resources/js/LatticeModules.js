@@ -963,6 +963,8 @@ lattice.modules.LatticeAssociator = new Class({
 		this.objectId = this.element.get( 'data-objectid' );
 		this.allowChildSort = ( this.element.get('data-allowchildsort') == 'true' )? true : false;
 		this.searchInput = this.element.getElement( ".actuator input[name~='filter']" );
+		this.searchNode = this.element.getElement(".search_node input[name~='search_node]");
+		console.log(searchNode);
 		if( this.searchInput ){
 			this.searchInput.addEvent( 'click', function(e){ e.stop(); this.searchInput.select(); }.bindWithEvent( this ) );
 		}

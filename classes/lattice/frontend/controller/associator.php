@@ -20,7 +20,7 @@ Class Lattice_Frontend_Controller_Associator extends Core_Controller_Lattice {
       throw new Kohana_Exception('Parent object not found, invalid parent_id?');
     }
 
-    $element = latticecms::get_element_dom_node(Graph::object($parent_id), $name);
+    $element = Cms_Core::get_element_dom_node(Graph::object($parent_id), $name);
     $filters = Associator::get_filters_from_dom_node($element);
     $modified_filters = array();
     foreach ($filters as $filter)
@@ -45,7 +45,7 @@ Class Lattice_Frontend_Controller_Associator extends Core_Controller_Lattice {
       throw new Kohana_Exception('Parent object not found, invalid parent_id?');
     }
 
-    $element = latticecms::get_element_dom_node(Graph::object($parent_id), $name);
+    $element = Cms_Core::get_element_dom_node(Graph::object($parent_id), $name);
     $filters = Associator::get_filters_from_dom_node($element);
     $modified_filters = array();
     foreach ($filters as $filter)

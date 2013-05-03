@@ -46,6 +46,7 @@ if( !lattice.util.hasDOMReadyFired() ){
 		lattice.UserManagement = new lattice.modules.UserManagement( $$( ".classPath-lattice_modules_UserManagement" )[0] );
 		lattice.modalManager = new lattice.ui.ModalManager();
 		var doAuthTimeout = lattice.util.getValueFromClassName( 'loginTimeout', $(document).getElement("body").get("class") );
+
 		if( doAuthTimeout && doAuthTimeout != "0" ) loginMonitor = new lattice.util.LoginMonitor();
 	})
 }

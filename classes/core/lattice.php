@@ -55,6 +55,9 @@ Class Core_Lattice {
 
   public static function config($arena, $xpath, $context_node=NULL)
   {
+    
+   // var_dump(Kohana::config('lattice.active_configuration')); exit;
+    
     if ( ! is_array(self::$config))
     {
       self::$config = array();
@@ -74,8 +77,6 @@ Class Core_Lattice {
       }
     }
 
-
-
     if ( ! isset(self::$config[$arena]))
     {
 
@@ -90,7 +91,6 @@ Class Core_Lattice {
       } else {
         $arena_path = $arena;
       }
-
 
       $request = NULL;
       $response = NULL;

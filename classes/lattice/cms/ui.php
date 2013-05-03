@@ -234,5 +234,10 @@ Class Lattice_Cms_Ui{
 	 return View::factory('ui/item')->set('item_name', $item_name);
   }
   
+  // render search field
+  public static function search($search_field = null)
+  {
+	 return View::factory('ui/search')->set('search_field', $search_field);
+  }
 }
 

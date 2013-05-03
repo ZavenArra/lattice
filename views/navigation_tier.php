@@ -1,6 +1,9 @@
-	<ul class="nodes clearFix">
-	<?foreach($nodes as $node):?>
-		<?=$node;?>
-	<?endforeach;?>
+	
+	<ul class="nodes" id="search_tag">
+	
+	<?php foreach($nodes as $node):?>
+		<?php echo $node; ?>
+	<?php endforeach;?>
 	</ul>
-	<?=$tier_methods_drawer;?>
+	
+	<?php echo $tier_methods_drawer; ?>

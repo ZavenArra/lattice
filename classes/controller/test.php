@@ -6,7 +6,7 @@ class Controller_Test extends Core_Controller_Lattice {
   {
     $this->response->body('this is the outpu');
     // print_r(self::$top_controller->resources['js']);
-    $this->response->body($this->output_layout());
+    //$this->response->body($this->output_layout());
   }
 
 

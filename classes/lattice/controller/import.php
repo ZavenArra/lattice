@@ -1,6 +1,6 @@
 <?php
 
-class Controller_Builder extends Controller {
+class Lattice_Controller_Import extends Controller {
 
   private $new_object_ids = array();
 
@@ -48,7 +48,7 @@ class Controller_Builder extends Controller {
 
     if (Kohana::config('lattice.live'))
     {
-      die('builder/initialize_site is disabled on sites marked live');
+      die('import is disabled on sites marked live');
     }
 
     // clean out media dir
@@ -90,7 +90,7 @@ class Controller_Builder extends Controller {
     echo "\n_inserting Data\n";
     $this->insert_data($xml_file, NULL, core_lattice::config($xml_file, 'nodes')->item(0) );
 
-    latticecms::regenerate_images();
+    Cms_Core::regenerate_images();
 
     $this->insert_relationships($xml_file);
 
@@ -156,7 +156,7 @@ class Controller_Builder extends Controller {
 
     $this->insert_relationships($xml_file);
 
-    latticecms::generate_new_images($this->new_object_ids);
+    Cms_Core::generate_new_images($this->new_object_ids);
   }
 
 
@@ -169,7 +169,6 @@ class Controller_Builder extends Controller {
     } else {
       $parent_object = Graph::object($parent_id);
     }
-
 
     $items = core_lattice::config($xml_file, 'item', $context);
     foreach ($items as $item)
@@ -241,7 +240,8 @@ class Controller_Builder extends Controller {
           } else {
             if ($content->nodeValue)
             {
-              throw new Kohana_Exception( "File does not exist {$content->nodeValue} ");
+              //throw new Kohana_Exception( "File does not exist {$content->nodeValue} ");
+              echo "File does not exist {$content->nodeValue} ";
             }
           }
           break;
@@ -297,7 +297,9 @@ class Controller_Builder extends Controller {
         // echo 'Adding Object '.$item->getAttribute('objectTypeName')."\n";
         // print_r($data);
         $object_id = $parent_object->add_object($item->getAttribute('objectTypeName'), $data);
-        $this->new_object_ids[] = $object_id;
+        
+        if($object_id != NULL)
+			$this->new_object_ids[] = $object_id;
       }
 
       // and now update with element_objects;
@@ -331,14 +333,13 @@ class Controller_Builder extends Controller {
 
     }
     unset($items);
-
   }
 
 
   public function action_regenerate_images()
   {
     try {
-      latticecms::regenerate_images();
+      Cms_Core::regenerate_images();
     } catch(Exception $e)
     {
       print_r($e->get_message() . $e->get_trace());
@@ -347,5 +348,6 @@ class Controller_Builder extends Controller {
     flush();
     ob_flush();
   }
+  
 
 }

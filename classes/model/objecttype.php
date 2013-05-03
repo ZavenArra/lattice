@@ -28,15 +28,15 @@ class Model_Objecttype extends ORM {
 
   }
 
-  public static function get_config($object_type_name)
+  public static function get_config($objectTypeName)
   {
-    $config = core_lattice::config('objects', sprintf('//objectType[@name="%s"]', $object_type_name));
+    $config = core_lattice::config('objects', sprintf('//objectType[@name="%s"]', $objectTypeName));
     if ($config->length)
     {
       return $config->item(0);
     }
 
-    $config = core_lattice::config('objects', sprintf('//list[@name="%s"]', $object_type_name));
+    $config = core_lattice::config('objects', sprintf('//list[@name="%s"]', $objectTypeName));
     if ($config->length)
     {
       return $config->item(0);
@@ -45,14 +45,14 @@ class Model_Objecttype extends ORM {
     }
   }
 
-  public static function get_elements($object_type_name)
+  public static function get_elements($objectTypeName)
   {
-    $config = Model_Objecttype::get_config($object_type_name);
+    $config = Model_Objecttype::get_config($objectTypeName);
     $elements = core_lattice::config('objects', 'elements/*', $config);
     return $elements;
   }
 
-  public static function get_element_config($object_type_name, $element_name)
+  public static function get_element_config($objectTypeName, $element_name)
   {
     throw new Kohana_Expection("Not Implemented");
   }
@@ -186,7 +186,7 @@ class Model_Objecttype extends ORM {
 
       $o = Graph::object()
         ->published_filter()
-        ->object_type_filter($this->object_type_name);
+        ->object_type_filter($this->objectTypeName);
       if ($limit)
       {
         $o->limit($limit);

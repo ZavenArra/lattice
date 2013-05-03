@@ -7,20 +7,20 @@ Class GraphTest extends Kohana_UnitTest_TestCase {
 	}
 
 	public function testGraphCreateObject(){
-    $object = Graph::createObject('article', 'anArticle');
+    $object = Graph::create_object('article', 'anArticle');
     $this->assertTrue($object->loaded());
     $object->delete();
 	}
 
 	public function testGraphCreateObjectWithKey(){
-    $object = Graph::createObject('article', 'testkey');
+    $object = Graph::create_object('article', 'testkey');
     $this->assertTrue($object->loaded());
     $object->delete();
 	}
 
   
   public function testGraphLoadObject(){
-    $object = Graph::createObject('article', 'testkey');
+    $object = Graph::create_object('article', 'testkey');
     $objectId = $object->id;
     $object = Graph::object($objectId);
     $this->assertTrue($object->loaded());
@@ -29,7 +29,7 @@ Class GraphTest extends Kohana_UnitTest_TestCase {
 
   
   public function testGraphDeleteObject(){
-    $object = Graph::createObject('article', 'anotherArticle');
+    $object = Graph::create_object('article', 'anotherArticle');
     $objectId = $object->id;
     $object->delete();
     $object = Graph::object($objectId);

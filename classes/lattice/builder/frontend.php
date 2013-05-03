@@ -43,7 +43,7 @@ Class Lattice_Builder_Frontend {
       ob_start();
       if ( ! $view OR  ($view AND $view->getAttribute('load_page')=='TRUE'))
       {
-        echo "<h1><?php=\$content['main']['title'];?></h1>\n\n";
+        echo "<h1><?php echo \$content['main']['title'];?></h1>\n\n";
         // this also implies that name is a objecttypename
         foreach (core_lattice::config('objects', 
           sprintf('//objectType[@name="%s"]/elements/*', $view_name )) as $element)
@@ -58,7 +58,7 @@ Class Lattice_Builder_Frontend {
             $this->make_associator_data_html($element, "\$content['main']");
             break;
           default:
-            frontend_front::make_html_element($element, "\$content['main']");
+            frontend_core::make_html_element($element, "\$content['main']");
             break;
           }
 
@@ -81,7 +81,7 @@ Class Lattice_Builder_Frontend {
           {
             foreach ($subviews as $subview_config)
             {
-              echo "\n<?php=\$".$subview_config->getAttribute('label').";?>\n";
+              echo "\n<?php echo \$".$subview_config->getAttribute('label')."; ?>\n";
             }
           }
 
@@ -132,7 +132,7 @@ Class Lattice_Builder_Frontend {
       {
         foreach ($subviews as $subview_config)
         {
-          echo "\n<?php=\$".$subview_config->getAttribute('label').";?>\n";
+          echo "\n<?php echo \$".$subview_config->getAttribute('label')."; ?>\n";
         }
       }
 
@@ -154,8 +154,8 @@ Class Lattice_Builder_Frontend {
       $object_types = array();
       foreach (core_lattice::config('objects', 'addable_object', $list_data_config) as $addable)
       {
-        $object_type_name = $addable->getAttribute('objectTypeName');
-        $object_types[$object_type_name] = $object_type_name;
+        $objectTypeName = $addable->getAttribute('objectTypeName');
+        $object_types[$objectTypeName] = $objectTypeName;
       }
 
       $this->make_multi_object_type_loop($object_types, $list_data_config->getAttribute('name'),  $prefix, $indent);
@@ -163,7 +163,7 @@ Class Lattice_Builder_Frontend {
     }
 
     // TODO: This doesn't currently support filter types that don't declare objec_type_names or 
-    // nor with multiple object_type_names per filter
+    // nor with multiple objectTypeNames per filter
     public function make_associator_data_html($associator_data_config, $prefix, $indent = '')
     {
       $object_types = array();
@@ -219,8 +219,8 @@ Class Lattice_Builder_Frontend {
           // get the info from addable_objects of the current
           foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/addable_object', $parent_template)) as $addable)
           {
-            $object_type_name = $addable->getAttribute('objectTypeName');
-            $object_types[$object_type_name] = $object_type_name;
+            $objectTypeName = $addable->getAttribute('objectTypeName');
+            $object_types[$objectTypeName] = $objectTypeName;
           }
 
           // and we can also check all the existing data to see if it has any other object_types
@@ -230,8 +230,8 @@ Class Lattice_Builder_Frontend {
             $children = $parent->get_published_children();
             foreach ($children as $child)
             {
-              $object_type_name = $child->objecttype->objecttypename;
-              $object_types[$object_type_name] = $object_type_name;
+              $objectTypeName = $child->objecttype->objecttypename;
+              $object_types[$objectTypeName] = $objectTypeName;
             }
           }
         } else {
@@ -261,32 +261,32 @@ Class Lattice_Builder_Frontend {
         $do_switch = TRUE;
       }
 
-      echo $indent."<?phpforeach ({$prefix}['$label'] as \${$label}Item):?>\n";
+      echo $indent."<?php foreach ({$prefix}['$label'] as \${$label}Item):?>\n";
       if ($do_switch)
       {
-        echo $indent." <?phpswitch(\${$label}Item['object_type_name'])
+        echo $indent." <?php switch(\${$label}Item['objectTypeName'])
       {\n";
       }
 
       if (count($object_types) == 0)
       {
-        echo $indent." <?php=core_view::Factory(\${$label}Item)->view()->render();?>\n";
+        echo $indent." <?php echo core_view::Factory(\${$label}Item)->view()->render(); ?>\n";
       }
 
       $i=0;
-      foreach ($object_types as $object_type_name)
+      foreach ($object_types as $objectTypeName)
       {
         if ($do_switch)
         {
           echo $indent;
           if ($i==0)
-            echo "    case '$object_type_name':?>\n";
+            echo "    case '$objectTypeName':?>\n";
           else 
-            echo " <?php case '$object_type_name':?>\n";
+            echo " <?php case '$objectTypeName':?>\n";
         }
-        echo $indent . "  <li class=\"$object_type_name\">\n";
-        echo $indent . "   " . "<h2><?php=\${$label}Item['title'];?></h2>\n\n";
-        foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $object_type_name)) as $element)
+        echo $indent . "  <li class=\"$objectTypeName\">\n";
+        echo $indent . "   " . "<h2><?php echo \${$label}Item['title'];?></h2>\n\n";
+        foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $objectTypeName)) as $element)
         {
           switch($element->tagName)
           {
@@ -297,7 +297,7 @@ Class Lattice_Builder_Frontend {
             $this->make_associator_data_html($element, "\${$label}Item", $indent);
             break;
           default:
-            frontend_front::make_html_element($element, "\${$label}Item", $indent . "   ");
+            frontend_core::make_html_element($element, "\${$label}Item", $indent . "   ");
             break;
           }
         }
@@ -307,24 +307,24 @@ Class Lattice_Builder_Frontend {
         {
           foreach (core_lattice::config('frontend', 'includeData', $frontend_node) as $next_level)
           {
-            $this->make_include_data_html($next_level, "\${$label}Item", $object_type_name, $indent . "   ");
+            $this->make_include_data_html($next_level, "\${$label}Item", $objectTypeName, $indent . "   ");
           }
         }
 
         echo $indent . "  </li>\n";
         if ($do_switch)
         {
-          echo $indent . " <?php  break;?>\n";
+          echo $indent . " <?php  break; ?>\n";
         }
         $i++;
       }
       if ($do_switch)
       {
-        echo $indent . "<?php }?>\n";
+        echo $indent . "<?php } ?>\n";
       }
 
 
-      echo $indent . "<?phpendforeach;?>\n" .
+      echo $indent . "<?php endforeach; ?>\n" .
         $indent . "</ul>\n\n";
     }
 
@@ -336,15 +336,15 @@ Class Lattice_Builder_Frontend {
         // find its addable objects
         foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/addable_object', $object->objecttype->objecttypename)) as $addable)
         {
-          $object_type_name = $addable->getAttribute('objectTypeName');
-          $object_types[$object_type_name] = $object_type_name;
+          $objectTypeName = $addable->getAttribute('objectTypeName');
+          $object_types[$objectTypeName] = $objectTypeName;
         }
         // and follow up with any existing data
         $children = $object->get_published_children();
         foreach ($children as $child)
         {
-          $object_type_name = $child->objecttype->objecttypename;
-          $object_types[$object_type_name] = $object_type_name;
+          $objectTypeName = $child->objecttype->objecttypename;
+          $object_types[$objectTypeName] = $objectTypeName;
         }
       }
       return $object_types;
