@@ -23,11 +23,15 @@ class Lattice_Controller_Latticedevtools extends Core_Controller_Lattice
 		
 		$object_type_name = $object->objecttype->objecttypename;
 		
-
+		
 		$children = $object->get_lattice_children();
 		
 		$parent = $object->get_lattice_parent();
 		
+		if(!is_object($children) OR !is_object($parent) )
+		{
+			throw new Kohana_Exception("$id is not a valid slug / id");
+		}
 		
 		echo "<center> {$parent->title} &raquo; {$parent->slug} <br /> | <br />";
 		
@@ -36,7 +40,7 @@ class Lattice_Controller_Latticedevtools extends Core_Controller_Lattice
 			echo "{$child->title} &raquo; {$child->slug} <br /> | <br /> ";
 		}
 		
-		echo "</center>";
+		echo " --- end --- </center>";
 
 	}
 }
