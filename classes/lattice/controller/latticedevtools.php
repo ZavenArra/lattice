@@ -16,7 +16,7 @@ class Lattice_Controller_Latticedevtools extends Core_Controller_Lattice
 	{
 		if ( ! cms_util::check_role_access('superuser') AND PHP_SAPI != 'cli' )
 		{
-			die('Only superuser can access builder tool');
+			die('Only superuser can access Latticedevtools');
 		}
 	}
 	
