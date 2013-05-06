@@ -12,6 +12,9 @@ $config['resources']['libraryjs'] = array(
 	
 	//for live search of objects
 	'modules/lattice/resources/thirdparty/live_list_search.js',
+	'modules/lattice/resources/thirdparty/mootools-fxsort-1.4.0.1.js',
+	'modules/lattice/resources/thirdparty/mootools-array-sortby.js',
+	'modules/lattice/resources/thirdparty/tools.js',
 	
 	//these are required by LatticeUI
 	'modules/lattice/resources/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',

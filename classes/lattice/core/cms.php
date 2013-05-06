@@ -276,15 +276,37 @@ class Lattice_Core_Cms extends Lattice_CMSInterface {
 
   }
 
-  /**
-   * Enables search of objects at the backend
-   * 
-   * @param int parent_id 
-   */
-  public function search_node($parent_id)
-  {
-	  echo "dfsdf";
-  }
+	/**
+	* Sort Objects by title
+	*/
+	public function action_save_sort_title_order()
+	{
+		echo $_POST['sort_order'];
+		exit;
+		
+		if ($_POST['sort_order'])
+		{
+			$order = explode(',', $_POST['sort_order']);
+			$object = ORM::Factory('object', $parent_id);
+			$object->set_sort_title($order, $lattice);
+		}
+	}
+	
+	/**
+	* Sort Objects by date added
+	*/
+	public function action_save_sort_datetime_order()
+	{
+		echo $_POST['sort_order'];
+		exit;
+		
+		if ($_POST['sort_order'])
+		{
+			$order = explode(',', $_POST['sort_order']);
+			$object = ORM::Factory('object', $parent_id);
+			$object->set_sort_datetime($order, $lattice);
+		}
+	}
 
 }
 

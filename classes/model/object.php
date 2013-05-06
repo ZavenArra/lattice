@@ -982,7 +982,40 @@ class Model_Object extends ORM implements arrayaccess {
         $object_relationship->save();
       }
     }
-
+	
+	//sort object by title (alphabetically)
+	public function set_sort_title($order, $lattice='lattice')
+	{
+		//get all object content and order by title
+		$contents = Model_Content::sort_content_by_title($order);
+		
+		$order = array();
+		foreach($contents as $content):
+			array_push($order, $content->object_id);
+		endforeach;
+		
+		self::set_sort_order($order, $lattice='lattice');
+	}
+	
+	//sort object by title (alphabetically)
+	public function set_sort_datetime($order, $lattice='lattice')
+	{
+		$objects = ORM::factory('object')->where('id', 'IN', $order)->order_by('dateadded', 'DESC')->find_all();
+		
+		$order = array();
+		foreach($objects as $object):
+			array_push($order, $object->id);
+		endforeach;
+		
+		self::set_sort_order($order, $lattice='lattice');
+	}
+	
+	//sort object by title (alphabetically)
+	public function set_sort_order_date($order, $lattice='lattice')
+	{
+		$content = ORM::factory('content')->where('object_id', 'IN', $order)->order_by('title', 'ASC')->find_all();
+		self::set_sort_order($order, $lattice='lattice');
+	}
 
     public function save_field($field, $value)
     {

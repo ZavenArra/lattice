@@ -88,4 +88,34 @@ class Lattice_Controller_Latticedevtools extends Core_Controller_Lattice
 		echo " --- end ---";
 
 	}
+	
+	public function action_sort()
+	{
+		$order = array(1, 5, 6);
+		
+		$contents = Model_Content::sort_content_by_title($order);
+		
+		$or = array();
+		foreach($contents as $content):
+			array_push($or, $content->object_id);
+		endforeach;
+		
+		var_dump($or);
+		
+	}
+	
+	public function action_date()
+	{
+		$order = array(1, 5, 6);
+		
+		$objects = ORM::factory('object')->where('id', 'IN', $order)->order_by('dateadded', 'DESC')->find_all();
+		
+		$or = array();
+		foreach($objects as $object):
+			array_push($or, $object->id);
+		endforeach;
+		
+		var_dump($or);
+		
+	}
 }
