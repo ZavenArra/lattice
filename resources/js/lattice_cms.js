@@ -392,7 +392,7 @@ lattice.modules.CMS = new Class({
 	
 	doAjax: function(sort_order){
 	//do an ajax request
-                   url =lattice.util.getBaseURL() +"ajax/compound/cms/re_order";
+                   url =lattice.util.getBaseURL() +"ajax/compound/cms/save_sort_datetime_order";
           			var request =  new Request({
           					url:url,
           					method:'post',
