@@ -60,7 +60,7 @@ class Lattice_Cms_Core {
             $view = new View('ui/clusters_wrapper');
             $view->label = $element['label'];
             $view->html = $html;
-            $view->objectTypeName = $cluster_object->objecttype->objecttypename;
+            $view->object_type_name = $cluster_object->objecttype->objecttypename;
             $view->object_id = $cluster_object->id;
             $html = $view->render();
           } else {
