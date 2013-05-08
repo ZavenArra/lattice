@@ -52,8 +52,17 @@ class Lattice_Controller_Latticedevtools extends Core_Controller_Lattice
 
 		$object_type_name = $object->objecttype->objecttypename;
 
-		echo "$object->title &raquo; $object->slug";
+		echo "$object->title &raquo; $object->slug<br /><br />";
 
+    // Clusters
+    $elementRelationships = ORM::Factory('objectelementrelationship')
+      ->where('object_id', '=', $object->id)
+      ->find_all();
+    foreach($elementRelationships as $cluster){
+      echo "Cluster: $cluster->name &raquo; <a href=\"".url::site('latticedevtools/graph/'.$cluster->elementobject_id)."\">$cluster->elementobject_id</a> <br /> "; 
+    }
+
+    // Latices
 		//return lattice model :: TODO this needs to return only lattices of the current object
 		$lattices = Model_Lattice::get_all_lattices();
 		
