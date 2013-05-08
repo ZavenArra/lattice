@@ -52,7 +52,8 @@ class Lattice_Controller_Latticedevtools extends Core_Controller_Lattice
 
 		$object_type_name = $object->objecttype->objecttypename;
 
-		echo "$object->title &raquo; $object->slug<br /><br />";
+    echo "$object->title &raquo; $object->slug<br />";
+    echo "Object Type: {$object->objecttype->objecttypename} <br />";
 
     // Clusters
     $elementRelationships = ORM::Factory('objectelementrelationship')
