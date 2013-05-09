@@ -135,6 +135,9 @@ lattice.modules.CMS = new Class({
 			this.localizationControls = new lattice.ui.Menu( 
 				this.element.getElement( '.localizationControls' ), this, { 'clickCallback': this.onLanguageSelected.bind( this ) } );
 		}
+
+		$('search_node').addEvent('click', this.searchTiers.bind(this));
+
 	},
 		
 	onLanguageSelected: function( item ){
