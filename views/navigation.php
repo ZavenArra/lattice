@@ -9,9 +9,11 @@
 		
 	</div>
 	<ul>
+		<?php if(Kohana::config('lattice.search_enabled')): ?>
 		<li>
 			<?php echo $search_view; ?>
 		</li>
+		<?php endif; ?>
 	</ul>
 	<div class="container">
 		<div class="panes">
