@@ -993,7 +993,7 @@ lattice.modules.LatticeAssociator = new Class({
 
 		this.parent();
 
-		this.methods = this.element.getElement('.methods');
+		this.actuator = this.element.getElement('.actuator');
 		this.associated = this.element.getElement( 'ul.associated' );
 		this.poolContainer = this.element.getElement('.poolcontainer');
 		this.poolList = this.element.getElement( 'ul.pool' );
@@ -1005,9 +1005,9 @@ lattice.modules.LatticeAssociator = new Class({
 
 		this.poolMorph = new Fx.Morph( this.poolList, { duration: 'short', transition: Fx.Transitions.Sine.easeOut } );
 
-		if( this.methods ){
+		if( this.actuator ){
 
-			this.paginator = this.methods.getElement( '.paginator' );
+			this.paginator = this.actuator.getElement( '.paginator' );
 			if( this.paginator ){
 				this.paginator.getElements('li a').each( function( anItem ){
 					if( anItem.hasClass('active') ) this.activePage = anItem;
@@ -1051,7 +1051,7 @@ lattice.modules.LatticeAssociator = new Class({
 		console.log('initItems');
     var items = this.element.getElements( "ul.associated li" ).combine( this.element.getElements( "ul.pool li" ) );
 		items.each( function( el ){
-		console.log('\t\tinitItem', el );
+		// console.log('\t\tinitItem', el );
 			this.initItem( el );
 		}, this );
   },

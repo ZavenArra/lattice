@@ -27,7 +27,7 @@
           ?>
           <?php for ($i = 0; $i < $num_pages; $i++):?>
           <li>
-						<a href="<?php echo url::site("/ajax/compound/associator/get_page/$parent_id/$lattice/$i"); ?>" <?=($i==0)?'class="active"':''?>>
+						<a href="<?php echo url::site("/ajax/compound/associator/get_page/$parent_id/$lattice/$i"); ?> " <?=($i==0)?'class="active"':''?>>
 							<?=($i+1)?>
 						</a>
 					</li>
