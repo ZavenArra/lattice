@@ -46,6 +46,7 @@ class Lattice_Controller_Import extends Controller {
     $starttime = $mtime;
 
 
+    echo "Starting import - if you don't see the word Done at the end of the output, it means PHP killed the script before it completed";
     if (Kohana::config('lattice.live'))
     {
       die('import is disabled on sites marked live');
@@ -117,18 +118,30 @@ class Lattice_Controller_Import extends Controller {
     $lattices = core_lattice::config($xml_file, 'relationships/lattice');
     foreach ($lattices as $latticeDOM)
     {
+      $this->add_relationships_for_lattice($xml_file, $latticeDOM);
+    }
+    $lattices = NULL;
+    unset($lattices);
+  }
+
+  private function add_relationships_for_lattice($xml_file, $latticeDOM){
+    echo 'Inserting relationships for '.$latticeDOM->getAttribute('name');
       $lattice = Graph::lattice($latticeDOM->getAttribute('name'));
       $relationships = core_lattice::config($xml_file, 'relationship', $latticeDOM);
       foreach ($relationships as $relationship)
       {
-        $parent_slug = $relationship->getAttribute('parent');  
-        $child_slug = $relationship->getAttribute('child');  
-        // echo 'Adding lattice relationship';
-        $parent = Graph::object($parent_slug)->add_lattice_relationship($lattice, $child_slug);
+        $this->add_relationship($lattice, $relationship);
       }
+      $relationships = NULL;
       unset($relationships);
-    }
-    unset($lattices);
+      $lattice = NULL;
+      unset($lattice);
+  }
+
+  private function add_relationship($lattice, $relationship){
+    $parent_slug = $relationship->getAttribute('parent');  
+    $child_slug = $relationship->getAttribute('child');  
+    Graph::object($parent_slug)->add_lattice_relationship($lattice, $child_slug);
   }
 
   public function action_frontend()
@@ -171,168 +184,203 @@ class Lattice_Controller_Import extends Controller {
     }
 
     $items = core_lattice::config($xml_file, 'item', $context);
+    $this->add_items_to_parent($xml_file, $parent_object, $items);
+
+    $parent_object = NULL;
+    unset($parent_object);
+    $items = NULL;
+    unset($items);
+  }
+
+  public function add_items_to_parent($xml_file, $parent_object, $items){
     foreach ($items as $item)
     {
-
-      if ( ! $item->getAttribute('objectTypeName'))
-      {
-        throw new Kohana_Exception("No objecttypename specified for Item " . $item->tagName);
-      }
-
-
-      $object = Graph::instance();
-      $object_type = ORM::Factory('objecttype', $item->getAttribute('objectTypeName'));
-
-      $data = array();
-      $clusters_data = array();
-      $fields = core_lattice::config($xml_file, 'field', $item );
-      foreach ($fields as $content)
-      {
-        $field = $content->getAttribute('name');
-
-        switch ($field)
-        {
-        case 'title':
-        case 'published':
-          $data[$field] = $content->nodeValue;
-          continue(2);
-        case 'slug':
-          $data[$field] = $content->nodeValue;
-          $data['decoupleSlugTitle'] = 1;
-          continue(2);
-        }
-
-        // need to look up field and switch on field type 
-        $field_info = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
-        if ( ! $field_info)
-        {
-          throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
-        }
-
-        // if an element is actually an object, prepare it for insert/update
-        if (core_lattice::config('objects', sprintf('//objectType[@name="%s"]', $field_info->tagName))->length > 0)
-        {
-          // we have a cluster..               
-          $cluster_data = array();
-          foreach (core_lattice::config($xml_file, 'field', $content) as $cluster_field)
-          {
-            $cluster_data[$cluster_field->getAttribute('name')] = $cluster_field->nodeValue;
-          }
-
-          $clusters_data[$field] = $cluster_data;
-          // have to wait until object is inserted to respect translations
-          // echo 'continuing';
-          continue;
-        }
-
-
-        // special setup based on field type
-        switch ($field_info->tagName)
-        {
-        case 'file':
-        case 'image':
-          $path_parts = pathinfo($content->nodeValue);
-          $savename = Model_Object::make_file_save_name($path_parts['basename']);
-          if (file_exists($content->nodeValue))
-          {
-            copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $content->nodeValue, Graph::mediapath($savename) . $savename);
-            $data[$field] = $savename;
-          } else {
-            if ($content->nodeValue)
-            {
-              //throw new Kohana_Exception( "File does not exist {$content->nodeValue} ");
-              echo "File does not exist {$content->nodeValue} ";
-            }
-          }
-          break;
-        default:
-          $data[$field] = $content->nodeValue;
-          break;
-        }
-
-      }
-      // now we check for a title collision
-      // if there is a title collision, we assume that this is a component
-      // already added at the next level up, in this case we just
-      // update the objects data
-      $component = FALSE;
-      if (isset($data['title']) AND $data['title'])
-      {
-        $preexisting_object = Graph::object()
-          ->lattice_children_filter($parent_object->id)
-          ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
-          ->where('title', '=', $data['title'])
-          ->find();
-        if ($preexisting_object->loaded())
-        {
-          $component = $preexisting_object;
-          // echo 'Found prexisting component: '.$preexisting_object->objecttype->objecttypename;
-        }
-      }
-
-      // check for pre-existing object as list container
-      // echo sprintf('//objectType[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename);
-      foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename)) as $list_container_type)
-      {
-        $preexisting_object = Graph::object()
-          ->lattice_children_filter($parent_object->id)
-          ->object_type_filter($list_container_type->getAttribute('name'))
-          ->find();
-        if ($preexisting_object->loaded() AND $preexisting_object->objecttype->objecttypename == $item->getAttribute('objectTypeName') )
-        {
-          // echo 'Found prexisting list container: '.$preexisting_object->objecttype->objecttypename .' '.$item->getAttribute('objectTypeName');
-          $component = $preexisting_object;
-        }
-      }
-
-
-      if ($component)
-      {
-        // echo 'Updating Object '.$component->objecttype->objecttypename."\n";
-        // print_r($data);
-        $component->update_with_array($data);
-        $object_id = $component->id;
-      } else {
-        // actually add the object
-        // echo 'Adding Object '.$item->getAttribute('objectTypeName')."\n";
-        // print_r($data);
-        $object_id = $parent_object->add_object($item->getAttribute('objectTypeName'), $data);
-        
-        if($object_id != NULL)
-			$this->new_object_ids[] = $object_id;
-      }
-
-      // and now update with element_objects;
-      if (count($clusters_data))
-      {
-        $object = Graph::object($object_id);
-        // echo "Updating clusters\n";
-        $object->update_with_array($clusters_data);
-      }
-
-
-      // do recursive if it has children
-      if (core_lattice::config($xml_file, 'item', $item)->length )
-      {
-        $this->insert_data($xml_file, $object_id,  $item);
-      }
-
-      $lists = core_lattice::config($xml_file, 'list', $item);
-      foreach ($lists as $list)
-      {
-        // find the container
-        $container = Graph::object()
-          ->lattice_children_filter($object_id)
-          ->object_type_filter($list->getAttribute('name'))
-          ->find();
-
-        // jump down a level to add object
-        $this->insert_data($xml_file, $container->id, $list);
-      }
-      unset($lists);
-
+      $this->add_item_to_parent($xml_file, $parent_object, $item);
     }
-    unset($items);
+  }
+
+  private function check_for_component($parent_object, $title){
+    $preexisting_object = Graph::object()
+      ->lattice_children_filter($parent_object->id)
+      ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
+      ->where('title', '=', $title)
+      ->find();
+    if ($preexisting_object->loaded())
+    {
+      $component = $preexisting_object;
+    }
+  }
+
+  private function load_data_for_content($xml_file, $content, $item,  &$data, &$clusters_date){
+
+      $field = $content->getAttribute('name');
+
+      switch ($field)
+      {
+      case 'title':
+      case 'published':
+        $data[$field] = $content->nodeValue;
+        break;
+      case 'slug':
+        $data[$field] = $content->nodeValue;
+        $data['decoupleSlugTitle'] = 1;
+        break;
+      }
+      if(in_array($field, array('title', 'published', 'slug'))){
+        // We're done if it's these fields
+        return;
+      }
+
+      // need to look up field and switch on field type 
+      $field_info = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
+      if ( ! $field_info)
+      {
+        throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
+      }
+
+      // if an element is actually an object, prepare it for insert/update
+      if (core_lattice::config('objects', sprintf('//objectType[@name="%s"]', $field_info->tagName))->length > 0)
+      {
+        // we have a cluster..               
+        $cluster_data = array();
+        foreach (core_lattice::config($xml_file, 'field', $content) as $cluster_field)
+        {
+          $cluster_data[$cluster_field->getAttribute('name')] = $cluster_field->nodeValue;
+        }
+
+        $clusters_data[$field] = $cluster_data;
+        // have to wait until object is inserted to respect translations
+        return;
+      }
+
+
+      // special setup based on field type
+      switch ($field_info->tagName)
+      {
+      case 'file':
+      case 'image':
+        $path_parts = pathinfo($content->nodeValue);
+        $savename = Model_Object::make_file_save_name($path_parts['basename']);
+        if (file_exists($content->nodeValue))
+        {
+          copy(str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']) . $content->nodeValue, Graph::mediapath($savename) . $savename);
+          $data[$field] = $savename;
+        } else {
+          if ($content->nodeValue)
+          {
+            //throw new Kohana_Exception( "File does not exist {$content->nodeValue} ");
+            echo "File does not exist {$content->nodeValue} ";
+          }
+        }
+        break;
+      default:
+        $data[$field] = $content->nodeValue;
+        break;
+      }
+
+      // $data array as modified by reference
+  }
+
+
+  public function add_item_to_parent($xml_file, $parent_object, $item){
+
+    if ( ! $item->getAttribute('objectTypeName'))
+    {
+      throw new Kohana_Exception("No objecttypename specified for Item " . $item->tagName);
+    }
+
+    $object = Graph::instance();
+    $object_type = ORM::Factory('objecttype', $item->getAttribute('objectTypeName'));
+
+    $data = array();
+    $clusters_data = array();
+    $fields = core_lattice::config($xml_file, 'field', $item );
+    foreach ($fields as $content)
+    {
+      $this->load_data_for_content($xml_file, $content, $item, $data, $clusters_data);
+    }
+
+    // now we check for a title collision
+    // if there is a title collision, we assume that this is a component
+    // already added at the next level up, in this case we just
+    // update the objects data
+    $component = FALSE;
+    if (isset($data['title']) AND $data['title'])
+    {
+      $component = $this->check_for_component($parent_object, $data['title']);
+    }
+
+    // check for pre-existing object as list container, another kind of potential collision
+    $list_container = $this->check_for_list_container($parent_object, $item);
+    if($list_container){
+      $component = $list_container;
+    }
+
+    // If we found an existing object, update that one, otherwise go ahead and instert a new object
+    if ($component)
+    {
+      // echo 'Updating Object '.$component->objecttype->objecttypename."\n";
+      $component->update_with_array($data);
+      $object_id = $component->id;
+    } else {
+      // actually add the object
+      // echo 'Adding Object '.$item->getAttribute('objectTypeName')."\n";
+      $object_id = $parent_object->add_object($item->getAttribute('objectTypeName'), $data);
+
+      if($object_id != NULL) {
+        $this->new_object_ids[] = $object_id;
+      }
+    }
+
+    // and now update with element_objects;
+    if (count($clusters_data))
+    {
+      $object = Graph::object($object_id);
+      // echo "Updating clusters\n";
+      $object->update_with_array($clusters_data);
+    }
+
+
+    // do recursive if it has children
+    if (core_lattice::config($xml_file, 'item', $item)->length )
+    {
+      $this->insert_data($xml_file, $object_id,  $item);
+    }
+
+    // and lastly, insert data for lists
+    $lists = core_lattice::config($xml_file, 'list', $item);
+    foreach ($lists as $list)
+    {
+      // find the container
+      $container = Graph::object()
+        ->lattice_children_filter($object_id)
+        ->object_type_filter($list->getAttribute('name'))
+        ->find();
+
+      // jump down a level to add object
+      $this->insert_data($xml_file, $container->id, $list);
+    }
+    unset($lists);
+
+  }
+
+  private function check_for_list_container($parent_object, $item){
+    $component = FALSE;
+    foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $parent_object->objecttype->objecttypename)) as $list_container_type)
+    {
+      $preexisting_object = Graph::object()
+        ->lattice_children_filter($parent_object->id)
+        ->object_type_filter($list_container_type->getAttribute('name'))
+        ->find();
+      if ($preexisting_object->loaded() AND $preexisting_object->objecttype->objecttypename == $item->getAttribute('objectTypeName') )
+      {
+        $component = $preexisting_object;
+        break;
+      }
+    }
+    //If there somehow were multiple conflicts, this will just return the first one
+    //Multiple conflicts would mean a very poorly designer object architecture in objects.xml
+    return $component;
   }
 
 
