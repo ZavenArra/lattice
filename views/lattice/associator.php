@@ -8,7 +8,7 @@
 	</ul>
 <?php if ($num_pages > 1):?>
 	<div class="actuator clearFix">
-		<h4><?=$poolLabel;?></h4>		
+		<h4><?=$pool_label;?></h4>		
 		<label for="<?=$lattice;?>SearchBox<?=$parent_id;?>" class="filter" >
 			Filter results
 			<input class="roundedInput" type="text" name="filter" value="Showing first <?=$page_length?>" id="<?=$lattice;?>SearchBox<?=$parent_id;?>" />
