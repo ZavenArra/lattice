@@ -21,9 +21,11 @@
 	});
 </script>
 	<ul class="nodes" id="search_tag">
+		<?php if(Kohana::config('lattice.tier_sort_enabled')): ?>
 		Sort by: <span id="sort1" onclick="
 lattice.CMS.doAjax(this.get('rel'));" rel="desc">down</span> 
 		| <span id="sort2" rel="asc">up</span>
+		<?php endif; ?>
 	<?php foreach($nodes as $node):?>
 		<?php echo $node; ?>
 	<?php endforeach;?>

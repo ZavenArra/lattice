@@ -7,7 +7,12 @@ $config['slugs_enabled'] = true;
 $config['login_timeout'] = 1800; //in seconds
 $config['default_language'] = 'en';
 $config['live'] = false;
+
 //live search
 $config['search_enabled'] = TRUE;
+//object sorting
+$config['tier_sort_enabled'] = TRUE;
+//drag and drop sorting of objects
+$config['onject_move_enable'] = TRUE;
 
 return $config;
