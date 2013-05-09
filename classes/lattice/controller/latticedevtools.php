@@ -83,7 +83,7 @@ class Lattice_Controller_Latticedevtools extends Core_Controller_Lattice
 
 			if(count($children) == 0)
 			{
-				echo "There is no child for this lattice <br />";
+				echo "There are no children in this lattice <br />";
 			} 
 			else 
 			{
