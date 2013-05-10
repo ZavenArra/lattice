@@ -52,18 +52,18 @@ class Lattice_Controller_Latticedevtools extends Core_Controller_Lattice
 
 		$object_type_name = $object->objecttype->objecttypename;
 
-    echo "$object->title &raquo; $object->slug<br />";
-    echo "Object Type: {$object->objecttype->objecttypename} <br />";
+		echo "Object Title: $object->title | Object Slug: $object->slug <br />";
+		echo "Object Type: {$object->objecttype->objecttypename} <br />";
 
-    // Clusters
-    $elementRelationships = ORM::Factory('objectelementrelationship')
-      ->where('object_id', '=', $object->id)
-      ->find_all();
-    foreach($elementRelationships as $cluster){
-      echo "Cluster: $cluster->name &raquo; <a href=\"".url::site('latticedevtools/graph/'.$cluster->elementobject_id)."\">$cluster->elementobject_id</a> <br /> "; 
-    }
+		// Clusters
+		$elementRelationships = ORM::Factory('objectelementrelationship')->where('object_id', '=', $object->id)->find_all();
+		
+		foreach($elementRelationships as $cluster)
+		{
+			echo "Cluster: $cluster->name &raquo; <a href=\"".url::site('latticedevtools/graph/'.$cluster->elementobject_id)."\">$cluster->elementobject_id</a> <br /> "; 
+		}
 
-    // Latices
+		// Latices
 		//return lattice model :: TODO this needs to return only lattices of the current object
 		$lattices = Model_Lattice::get_all_lattices();
 
@@ -71,8 +71,6 @@ class Lattice_Controller_Latticedevtools extends Core_Controller_Lattice
 
 		foreach($lattices as $lattice)
 		{
-			echo "<h2> Lattice: $lattice->name </h2>";
-
 			//get lattice children
 			$children = $object->get_lattice_children($lattice->name);
 
@@ -81,18 +79,19 @@ class Lattice_Controller_Latticedevtools extends Core_Controller_Lattice
 				throw new Kohana_Exception("Database error finding children");
 			}
 
-			if(count($children) == 0)
+			if(count($children) != 0) 
 			{
-				echo "There are no children in this lattice <br />";
-			} 
-			else 
-			{
+				
+				echo "<h2> Lattice: $lattice->name </h2>";
+				
 				foreach($children as $child)
 				{
 					echo "$child->title &raquo; <a href=\"".url::site('latticedevtools/graph/'.$child->slug)."\">$child->slug</a> <br /> ";
 				}
+				
+				echo "<hr />";
 			}
-			echo "<hr />";
+			
 		}
 
 		echo " --- end ---";
