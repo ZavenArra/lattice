@@ -1,7 +1,4 @@
 <div id="navigation" class="module classPath-lattice_modules_navigation_Navigation addObjectPosition-bottom">
-	<script> //there should be a better way to do this
-		lattice.CMS = new lattice.modules.CMS( 'cms' );
-	</script>
 	<div class="breadCrumb clearFix">
 		<ul>
 		

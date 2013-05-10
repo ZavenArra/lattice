@@ -162,7 +162,7 @@ class Model_Object extends ORM implements arrayaccess {
   /*
    *
    */
-  public static function resize_image($original_filename, $new_filename, $width, $height,
+ public static function resize_image($original_filename, $new_filename, $width, $height,
     $force_dimension='width', $crop='FALSE', $aspect_follows_orientation='false')
   {
     // set up dimenion to key off of
@@ -181,49 +181,68 @@ class Model_Object extends ORM implements arrayaccess {
 
     $image = Image::factory(Graph::mediapath().$original_filename);
 
-    // just do the resample
-    // set up sizes
-    $resize_width = $width;
-    $resize_height = $height;
-
-    if ($aspect_follows_orientation == 'TRUE' )
+    if ($aspect_follows_orientation == 'TRUE')
     {
-      $osize = getimagesize(Graph::mediapath().$original_filename);
-      $horizontal = FALSE;
-      if ($osize[0] > $osize[1])
-      {
-        // horizontal
-        $horizontal = TRUE; 
-      }
-      $newsize = array($resize_width, $resize_height);
-      sort($newsize);
-      if ($horizontal)
-      {
-        $resize_width = $newsize[1];
-        $resize_height = $newsize[0];
-      } else {
-        $resize_width = $newsize[0];
-        $resize_height = $newsize[1];
-      }
+		$osize = getimagesize(Graph::mediapath().$original_filename);
+		$horizontal = FALSE;
+		if ($osize[0] > $osize[1])
+		{
+			// horizontal
+			$horizontal = TRUE; 
+		}
+		$newsize = array($resize_width, $resize_height);
+		sort($newsize);
+		if ($horizontal)
+		{
+			$resize_width = $newsize[1];
+			$resize_height = $newsize[0];
+		} 
+		else 
+		{
+			$resize_width = $newsize[0];
+			$resize_height = $newsize[1];
+		}
     }
-
-    if ($crop=='TRUE')
+ 
+	if ($crop == 'TRUE' or $aspect_follows_orientation == 'TRUE')
     {
-      // resample with crop
-      // set up sizes, and crop
-      if ( ($image->width / $image->height) > ($image->height / $image->width) )
-      {
-        $crop_key_dimension = Image::HEIGHT;
-      } else {
-        $crop_key_dimension = Image::WIDTH;
-      }
-      $image->resize($width, $height, $crop_key_dimension)->crop($width, $height);
-      $image->save(Graph::mediapath().$new_filename);
-    }
+		// resample with crop
+		// set up sizes, and crop
+		if ( ($image->width / $image->height) > ($image->height / $image->width) )
+		{
+			$crop_key_dimension = Image::HEIGHT;
+		} 
+		else 
+		{
+			$crop_key_dimension = Image::WIDTH;
+		}
+      
+		$original_width = $image->width;
+		$original_height = $image->height;
 
+		$original_aspect = $original_width / $original_height;
+		$current_aspect = $width / $height;
+
+		if ( $original_aspect >= $current_aspect )
+		{
+			// If image is wider than new size (in aspect ratio sense)
+			$resize_height = $height;
+			$resize_width = $original_width / ($original_height / $height);
+		}
+		else
+		{
+		   // If the new size is wider than the image
+		   $resize_width = $width;
+		   $resize_height = $original_height / ($original_width / $width);
+		}    
+      
+		$image->resize($resize_width, $resize_height, $crop_key_dimension)->crop($width, $height);
+		$image->save(Graph::mediapath().$new_filename);
+    }
     // maintain aspect ratio
     // use the forcing when it applied
     // forcing with aspectfolloworientation is gonna give weird results! 
+    // but setting crop to true the result is :)
     $image->resize($resize_width, $resize_height, $key_dimension);
 
     $image->save(Graph::mediapath() .$new_filename);
