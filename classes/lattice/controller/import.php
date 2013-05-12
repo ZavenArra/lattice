@@ -1,4 +1,4 @@
-<?php
+<?php defined('SYSPATH') or die('No direct access allowed.');
 
 class Lattice_Controller_Import extends Controller {
 
@@ -42,6 +42,8 @@ class Lattice_Controller_Import extends Controller {
 		$mtime = $mtime[1] + $mtime[0];
 		$starttime = $mtime;
 
+		unset($mtime);
+		
 		echo "Starting import - if you don't see the word Done at the end of the output, it means PHP killed the script before it completed";
 		if (Kohana::config('lattice.live'))
 		{
@@ -90,7 +92,10 @@ class Lattice_Controller_Import extends Controller {
 		Cms_Core::regenerate_images();
 
 		$this->insert_relationships($xml_file);
-
+		
+		//unset xml file
+		unset($xml_file);
+		
 		// and run frontend
 		echo "\n Regenerating Frontend";
 		$this->action_frontend();
