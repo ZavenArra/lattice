@@ -237,10 +237,7 @@ class Lattice_Controller_Export extends Controller {
 			echo "failed to copy $source_xml to $destination_xml  <br />";
 		}
 
-		=======
-			>>>>>>> cd2636c08f309b0ee2337538d2500d89daee8186
-
-			$XML = new DOMDocument();
+		$XML = new DOMDocument();
 		$implementation = new DOMImplementation();
 
 		$dtd = $implementation->createDocumentType('data',
