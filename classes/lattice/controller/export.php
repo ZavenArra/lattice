@@ -213,19 +213,20 @@ class Lattice_Controller_Export extends Controller {
 
 		$this->output_dir = 'application/export/' . $outputfilename . '/';
 
-		try {
+		try 
+		{
 			mkdir($this->output_dir, 777);
-		} catch ( Exception $e)
+		} 
+		catch ( Exception $e)
 		{
 
 		}
 
 		//give permission to application/
 		chmod(getcwd() . '/' . $this->output_dir, 0777);
-		<<<<<<< HEAD
 
-			//now copy object.xml to export
-			$source_xml = APPPATH.'lattice/objects.xml';
+		//now copy object.xml to export
+		$source_xml = APPPATH.'lattice/objects.xml';
 		$destination_xml = $this->output_dir.'objects.xml';
 
 		if (copy($source_xml, $destination_xml)) 
