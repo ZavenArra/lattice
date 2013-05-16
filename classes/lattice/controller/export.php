@@ -323,8 +323,6 @@ class Lattice_Controller_Export extends Controller {
 
 		$this->doc->save($this->output_dir . '/' . $outputfilename . '.xml');
 		
-		echo "we are here";
-		
 		echo 'done';
 	}
 	
