@@ -144,6 +144,9 @@ class Lattice_Controller_Export extends Controller {
 		$nodes = array();
 		foreach ($objects as $object)
 		{
+			
+			//var_dump($object->objecttype->objecttypename);
+			
 			$item = $this->doc->createElement($object->objecttype->objecttypename);
 
 			foreach ($this->get_object_fields($object) as $field)
@@ -319,7 +322,117 @@ class Lattice_Controller_Export extends Controller {
 		$this->doc->formatOutput = true;
 
 		$this->doc->save($this->output_dir . '/' . $outputfilename . '.xml');
+		
+		echo "we are here";
+		
 		echo 'done';
 	}
+	
+	
+	public function create_xml_chunks($boundary_tag, $start_at, $max_items, $raw_data, $fixed_footer)
+	{
+		$arr = explode("\n", $raw_data);
+		
+		// no.of items done in loop. resets to zero everytime a file is created
+		$items = 0; 
+		
+		// count of files created
+		$files = $start_at; 
+		
+		$length = count($arr); 
+		
+		// header block for xml file
+		$header = "";
+		
+		// footer block for xml file
+		$footer = ""; 
+		
+		// chunk of xml data to be written into file
+		$chunk = "";  
+		
+		// array of files created
+		$arr_files = array(); 
+		
+		// true when first boundary tag is found
+		$boundary_is_found = false; 
+			
+		// false if some data has not been written to file
+		$file_written = false;	 
+
+		// get footer data
+		$footer_break= "</" . trim($boundary_tag). ">";		
+
+		for ($i = $length-1; $i>= 0; $i--)
+		{
+			$line = $arr[$i];
+			if (strpos($line, $footer_break) == false) 
+			{
+				$footer = $line . "\r\n" . $footer;
+			}
+			else
+			{
+				break;
+			}
+		}
+		
+		// process main data		
+		for ($i = 0;$i < $length; $i++)
+		{
+			$line  = $arr[$i];
+			if (strpos($line, "<". trim($boundary_tag) . ">") !== false || strpos($line, "<" . trim($boundary_tag) ." ") !== false) 
+			{
+				$items ++;
+				$boundary_is_Found = true;
+			}
+			if (!$boundary_is_Found)
+			{
+				$header .= $line . "\r\n";
+			}
+	
+			if ($items >= $max_items) 
+			{
+				$items = 0;
+				$files++;
+
+				$filename =  $files . ".xml";
+				$f = fopen($filename, "w");
+				fwrite($f,$header);
+				fwrite($f, $chunk);
+				if ($fixed_footer == null || $fixed_footer == '')
+				{
+					fwrite($f, $footer);
+				}	
+				else
+				{
+					fwrite($f, $fixed_footer);
+				}	
+				fclose($f);
+				$arr_files[] = $filename;
+				$chunk = $line . "\r\n";
+				$file_written = true;
+			}
+			else 
+			{
+				$file_is_written = false;
+				if ($boundary_is_found)
+				{
+					$chunk .= $line . "\r\n";
+				}
+			}
+		}
+
+		if (!$file_is_written ) 
+		{
+			$files++;
+			$filename =  $files . ".xml";
+			$f = fopen($filename, "w");
+			fwrite($f,$header);
+			fwrite($f, $chunk);
+			fclose($f);
+			$arr_files[] = $filename;		
+		}
+
+		return $arr_files;
+	}			
 
 }

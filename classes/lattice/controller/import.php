@@ -74,6 +74,7 @@ class Lattice_Controller_Import extends Controller {
 		$db->query(Database::UPDATE, 'alter table objects_tags AUTO_INCREMENT = 1');
 		$db->query(Database::DELETE, 'delete from tags_tagbuckets');
 		$db->query(Database::UPDATE, 'alter table tags_tagbuckets AUTO_INCREMENT = 1');
+		
 		flush();
 		ob_flush();
 
