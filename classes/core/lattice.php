@@ -69,20 +69,6 @@ Class Core_Lattice {
 			self::$config = array();
 		}
 
-		if ($active_config = Kohana::config('lattice.active_configuration'))
-		{
-			if ($configurations = Kohana::config('lattice.configurations'))
-			{
-				if ($active = $configurations[$active_config])
-				{
-					if (isset($active[$arena]) AND $new_name = $active[$arena])
-					{
-						$arena = $new_name;
-					}
-				}
-			}
-		}
-
 		if ( ! isset(self::$config[$arena]))
 		{
 			$dom = new DOMDocument();
