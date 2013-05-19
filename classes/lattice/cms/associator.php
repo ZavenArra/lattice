@@ -65,18 +65,10 @@ Class Lattice_Cms_Associator {
     if (is_array($load_pool))
     {
       $this->pool = $load_pool;
+    } else if (is_object($load_pool)) {
+			$this->pool = $load_pool;
     }
-    $load_pool = array();
 
-    if (is_array($load_pool))
-    {
-      foreach ($load_pool as $l)
-      {
-        $load_pool[] = $l->id;
-      }
-
-    }
-    //  load pool
     if ($filters)
     {
 
@@ -169,7 +161,7 @@ Class Lattice_Cms_Associator {
         }
       }	
 
-    } elseif ( ! is_array($load_pool))
+    } elseif ( ! $load_pool )
     {
 
       $objects = Graph::object()
@@ -259,7 +251,6 @@ Class Lattice_Cms_Associator {
 
   private function get_item_view($item, $view_name, $associated )
   {
-
     if ($view_name AND $view = Kohana::find_file('views/lattice/associator/'.$view_name, $item->objecttype->objecttypename))
     {
       $view = new View('lattice/associator/'.$view_name.'/'.$item->objecttype->objecttypename);
