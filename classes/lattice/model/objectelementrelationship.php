@@ -10,6 +10,6 @@
  *
  * @author deepwinter1
  */
-class Lattie_Model_Objectelementrelationship extends ORM {
+class Lattice_Model_Objectelementrelationship extends ORM {
 // put your code here
 }
