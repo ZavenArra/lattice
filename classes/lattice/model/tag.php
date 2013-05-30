@@ -4,7 +4,7 @@
  *
  * @author deepwinter1
  */
-class Model_Tag extends ORM {
+class Lattice_Model_Tag extends ORM {
   // put your code here
 }
 

@@ -10,7 +10,7 @@
  *
  * @author deepwinter1
  */
-class Model_Language extends ORM {
+class Lattice_Model_Language extends ORM {
 
 
   public function __construct($id=NULL)

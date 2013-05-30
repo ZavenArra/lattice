@@ -11,7 +11,7 @@
  */
 
 
-class Model_Lattice extends ORM {
+class Lattice_Model_Lattice extends ORM {
 
 	public function get_relationships()
 	{

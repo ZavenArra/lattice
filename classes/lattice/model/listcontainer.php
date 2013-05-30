@@ -10,7 +10,7 @@
  *
  * @author deepwinter1
  */
-class Model_listcontainer extends Model_Object {
+class Lattice_Model_listcontainer extends Model_Object {
 
   protected $_has_one = array(
     'objecttype' => array('foreign_key'=>'objecttype_id')

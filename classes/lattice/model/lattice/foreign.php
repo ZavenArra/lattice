@@ -10,7 +10,7 @@
  *
  * @author deepwinter1
  */
-abstract class Model_Lattice_Foreign extends Model_Lattice_Content_driver {
+abstract class Lattice_Model_Lattice_Foreign extends Model_Lattice_Content_driver {
 
   protected $contenttable;
 

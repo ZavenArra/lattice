@@ -6,7 +6,7 @@
  *
  */
 
-class Model_Objectmap extends ORM {
+class Lattice_Model_Objectmap extends ORM {
 
   public static function configure_new_field($object_type_id, $field_name, $ui_type)
   {

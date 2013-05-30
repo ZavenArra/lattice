@@ -8,7 +8,7 @@
  * @package Lattice
  * @author deepwinter1
  */
-class Model_Object extends ORM implements arrayaccess {
+class Lattice_Model_Object extends ORM implements arrayaccess {
 
   protected $_belongs_to = array(
     'objecttype' => array()

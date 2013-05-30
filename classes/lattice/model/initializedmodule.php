@@ -10,6 +10,6 @@
  *
  * @author deepwinter1
  */
-class Model_Initializedmodule extends ORM {
+class Lattice_Model_Initializedmodule extends ORM {
 // put your code here
 }

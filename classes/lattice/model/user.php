@@ -3,7 +3,7 @@
  * @package usermanagement
  **/
 
-class Model_User extends Model_Auth_User {
+class Lattice_Model_User extends Model_Auth_User {
 
   //  This class simply overrides the necessity of a password_confirm field
   //  OK for the time being, but either we should have the field

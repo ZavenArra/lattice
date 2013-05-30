@@ -5,7 +5,7 @@
  * instead functioning as a cache for manually reading file size and other info.
  */
 
-class Model_FileImage {
+class Lattice_Model_FileImage {
 
 
 	/*

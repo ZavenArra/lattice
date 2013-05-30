@@ -3,7 +3,7 @@
  * Class: File_Model
  * ORM Class implementing files table
  */
-class Model_File extends ORM {
+class Lattice_Model_File extends ORM {
 
   /*
    * Variable: $imageinfo

@@ -11,7 +11,7 @@
  *
  * @author deepwinter1
  */
-class Model_Lattice_Object extends Model_Lattice_Contentdriver {
+class Lattice_Model_Lattice_Object extends Model_Lattice_Contentdriver {
 
   private static $dbmaps;
   /*

@@ -1,6 +1,6 @@
 <?php
 
-class Model_Content extends ORM {
+class Lattice_Model_Content extends ORM {
 
 	/**
 	 * get all object content and order by title
