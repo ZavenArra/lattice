@@ -1,15 +1,5 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+Class Model_ObjectElementRelationship extends Lattice_Model_ObjectElementRelationship {
 
-/**
- * Description of objectelements
- *
- * @author deepwinter1
- */
-class Model_Objectelementrelationship extends ORM {
-// put your code here
 }

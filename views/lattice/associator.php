@@ -11,7 +11,7 @@
 		<h4><?=$pool_label;?></h4>		
 		<label for="<?=$lattice;?>SearchBox<?=$parent_id;?>" class="filter" >
 			Filter results
-			<input class="roundedInput" type="text" name="filter" value="Showing first <?=$page_length?>" id="<?=$lattice;?>SearchBox<?=$parent_id;?>" />
+			<input class="roundedInput" type="text" name="filter" value="" placeholder="Search Text" id="<?=$lattice;?>SearchBox<?=$parent_id;?>" />
 			<a href="#" class="filterButton button">Filter</a>
 		</label>
 		<?if( $num_pages > 1 ):?>

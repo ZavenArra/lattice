@@ -320,15 +320,60 @@ class Lattice_Controller_Export extends Controller {
 
 		//format file
 		$this->doc->formatOutput = true;
-
-		$this->doc->save($this->output_dir . '/' . $outputfilename . '.xml');
+		
+		//file_path
+		$arena = $this->output_dir . '/' . $outputfilename . '.xml';
+		
+		$this->doc->save($arena);
 		
 		echo 'done';
+		
+		$this->create_xml_chunks($arena);
 	}
 	
-	
-	public function create_xml_chunks($boundary_tag, $start_at, $max_items, $raw_data, $fixed_footer)
+	/**
+	 * Function to break an xml file into several smaller files 
+	 * If the orig xml file is smaller than max size then it will be maintained
+	 * @param string $boundary_tag for product boundary tag name
+	 * @param int $start_at file number to start at 
+	 * @param int max_items how many occurences of the item to break the file at
+	 * @param string $raw_data the raw data from the original xml file
+	 * @param string $fixed_footer if not null then footer will be this string and not computed
+	 * @returns $arrFiles array of filenames created
+	 **/
+	public function create_xml_chunks($arena)
 	{
+		//load file TODO:: use core_lattice::config();
+		$xml = new SimpleXMLElement($arena, LIBXML_COMPACT, TRUE);
+			
+		$raw_data = $xml->asXML();
+		
+		$start_at = 1;
+		
+		$max_items = 10;
+		
+		$node_name = "relationships";
+		
+		$fixed_footer = "";
+		
+		$relationships = $xml->xpath("relationships");
+		
+		
+		$fixed_footer = $this->generate_xml_section_from_array($relationships, $node_block='relationships', $node_name='node'); 
+
+		
+		echo Debug::vars($fixed_footer);
+		
+		//$boundary_tag, $start_at, $max_items, $raw_data, $fixed_footer
+
+		
+		//get placeholder tags
+		//$results = $xml->xpath("placeholder");
+		
+		
+		
+		exit;
+		
 		$arr = explode("\n", $raw_data);
 		
 		// no.of items done in loop. resets to zero everytime a file is created
@@ -431,6 +476,39 @@ class Lattice_Controller_Export extends Controller {
 		}
 
 		return $arr_files;
-	}			
+	}	
+	
+	public function generate_xml_from_array($array, $node_name) 
+	{
+		$xml = '';
+
+		if (is_array($array) || is_object($array)) 
+		{
+			foreach ($array as $key=>$value) 
+			{
+				if (is_numeric($key)) 
+				{
+					$key = $node_name;
+				}
+
+				$xml .= '<' . $key . '>' . "\n" . $this->generate_xml_from_array($value, $node_name) . '</' . $key . '>' . "\n";
+			}
+		} 
+		else 
+		{
+			$xml = htmlspecialchars($array, ENT_QUOTES) . "\n";
+		}
+
+		return $xml;
+	}
+
+	public function generate_xml_section_from_array($array, $node_block='nodes', $node_name='node') 
+	{
+		$xml = '';
+		$xml .= '<' . $node_block . '>' . "\n";
+		$xml .= $this->generate_xml_from_array($array, $node_name);
+		$xml .= '</' . $node_block . '>' . "\n";
+		return $xml;
+	}		
 
 }

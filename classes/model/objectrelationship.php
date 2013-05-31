@@ -1,6 +1,5 @@
 <?php
 
-class Model_Objectrelationship extends ORM {
-  // put your code here
-}
+Class Model_ObjectRelationship extends Lattice_Model_ObjectRelationship {
 
+}
