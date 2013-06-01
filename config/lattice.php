@@ -13,6 +13,6 @@ $config['search_enabled'] = TRUE;
 //object sorting
 $config['tier_sort_enabled'] = TRUE;
 //drag and drop sorting of objects
-$config['object_move_enable'] = TRUE;
+$config['object_move_enabled'] = TRUE;
 
 return $config;
