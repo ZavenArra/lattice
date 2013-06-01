@@ -136,7 +136,10 @@ lattice.modules.CMS = new Class({
 				this.element.getElement( '.localizationControls' ), this, { 'clickCallback': this.onLanguageSelected.bind( this ) } );
 		}
 
-		$('search_node').addEvent('click', this.searchTiers.bind(this));
+		search_node = $('search_node');
+		if(search_node != null){
+			$('search_node').addEvent('click', this.searchTiers.bind(this));
+		}
 
 	},
 		
