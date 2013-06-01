@@ -210,10 +210,12 @@ class Lattice_Controller_Import extends Controller {
 							  ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
 							  ->where('title', '=', $title)
 							  ->find();
+		$component = FALSE;
 		if ($preexisting_object->loaded())
 		{
 			$component = $preexisting_object;
 		}
+		return $component;
 	}	
 
 	private function load_data_for_content($xml_file, $content, $item,  &$data, &$clusters_date)
