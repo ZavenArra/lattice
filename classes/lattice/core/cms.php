@@ -202,7 +202,10 @@ class Lattice_Core_Cms extends Lattice_CMSInterface {
     }
 
     $nodetitlehtml = $this->nodetitle->render();
-    $move_node_html = Cms_Core::move_node_html($object);
+		$move_node_html = "";
+		if(Kohana::config('lattice.object_move_enabled')){
+			$move_node_html = Cms_Core::move_node_html($object);
+		}
 
     $custom_view = 'lattice/object_types/'.$object->objecttype->objecttypename; // check for custom view for this object_type
 
