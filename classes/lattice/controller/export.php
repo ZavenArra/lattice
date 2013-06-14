@@ -327,8 +327,7 @@ class Lattice_Controller_Export extends Controller {
 		$this->doc->save($arena);
 		
 		echo 'done';
-		
-		$this->create_xml_chunks($arena);
+		$this->create_xml_chunks($arena, $outputfilename);
 	}
 	
 	/**
@@ -341,8 +340,10 @@ class Lattice_Controller_Export extends Controller {
 	 * @param string $fixed_footer if not null then footer will be this string and not computed
 	 * @returns $arrFiles array of filenames created
 	 **/
-	public function create_xml_chunks($arena)
+	public function create_xml_chunks($arena, $outputfilename)
 	{
+		$footer_filename = 'application/export/' . $outputfilename . '/footer.xml';
+			
 		//load file TODO:: use core_lattice::config();
 		$xml = new SimpleXMLElement($arena, LIBXML_COMPACT, TRUE);
 			
@@ -352,29 +353,19 @@ class Lattice_Controller_Export extends Controller {
 		
 		$max_items = 10;
 		
-		$node_name = "relationships";
+		//split the data into two part
+		$data = $this->generate_footer($raw_data); 
 		
-		$fixed_footer = "";
-		
-		$relationships = $xml->xpath("relationships");
-		
-		
-		$fixed_footer = $this->generate_xml_section_from_array($relationships, $node_block='relationships', $node_name='node'); 
+		$fixed_footer = $data["footer"]; 
+		$top_data = $data["data"]; 
 
+		$file = fopen($footer_filename, 'w');
 		
-		echo Debug::vars($fixed_footer);
+		fwrite($file, $fixed_footer); 
 		
-		//$boundary_tag, $start_at, $max_items, $raw_data, $fixed_footer
-
+		fclose($file);
 		
-		//get placeholder tags
-		//$results = $xml->xpath("placeholder");
-		
-		
-		
-		exit;
-		
-		$arr = explode("\n", $raw_data);
+		$arr = explode("\n", $top_data);
 		
 		// no.of items done in loop. resets to zero everytime a file is created
 		$items = 0; 
@@ -398,12 +389,14 @@ class Lattice_Controller_Export extends Controller {
 		
 		// true when first boundary tag is found
 		$boundary_is_found = false; 
+		
+		$boundary_tag = "item";
 			
 		// false if some data has not been written to file
 		$file_written = false;	 
 
 		// get footer data
-		$footer_break= "</" . trim($boundary_tag). ">";		
+		$footer_break = "</" . trim($boundary_tag). ">";		
 
 		for ($i = $length-1; $i>= 0; $i--)
 		{
@@ -425,9 +418,9 @@ class Lattice_Controller_Export extends Controller {
 			if (strpos($line, "<". trim($boundary_tag) . ">") !== false || strpos($line, "<" . trim($boundary_tag) ." ") !== false) 
 			{
 				$items ++;
-				$boundary_is_Found = true;
+				$boundary_is_found = true;
 			}
-			if (!$boundary_is_Found)
+			if (!$boundary_is_found)
 			{
 				$header .= $line . "\r\n";
 			}
@@ -436,8 +429,7 @@ class Lattice_Controller_Export extends Controller {
 			{
 				$items = 0;
 				$files++;
-
-				$filename =  $files . ".xml";
+				$filename = 'application/export/' . $outputfilename .'/'. $files . ".xml";
 				$f = fopen($filename, "w");
 				fwrite($f,$header);
 				fwrite($f, $chunk);
@@ -467,7 +459,7 @@ class Lattice_Controller_Export extends Controller {
 		if (!$file_is_written ) 
 		{
 			$files++;
-			$filename =  $files . ".xml";
+			$filename = 'application/export/' . $outputfilename .'/'. $files . ".xml"; 
 			$f = fopen($filename, "w");
 			fwrite($f,$header);
 			fwrite($f, $chunk);
@@ -477,38 +469,14 @@ class Lattice_Controller_Export extends Controller {
 
 		return $arr_files;
 	}	
+			
 	
-	public function generate_xml_from_array($array, $node_name) 
+	public function generate_footer($raw_data)
 	{
-		$xml = '';
-
-		if (is_array($array) || is_object($array)) 
-		{
-			foreach ($array as $key=>$value) 
-			{
-				if (is_numeric($key)) 
-				{
-					$key = $node_name;
-				}
-
-				$xml .= '<' . $key . '>' . "\n" . $this->generate_xml_from_array($value, $node_name) . '</' . $key . '>' . "\n";
-			}
-		} 
-		else 
-		{
-			$xml = htmlspecialchars($array, ENT_QUOTES) . "\n";
-		}
-
-		return $xml;
+		$string = explode('</nodes>', $raw_data);
+		
+		//NB: the footer string has </data> and the end 
+		return array("data"=>$string[0], "footer"=>$string[1]);
 	}
-
-	public function generate_xml_section_from_array($array, $node_block='nodes', $node_name='node') 
-	{
-		$xml = '';
-		$xml .= '<' . $node_block . '>' . "\n";
-		$xml .= $this->generate_xml_from_array($array, $node_name);
-		$xml .= '</' . $node_block . '>' . "\n";
-		return $xml;
-	}		
 
 }
