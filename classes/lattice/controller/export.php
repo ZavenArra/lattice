@@ -328,7 +328,7 @@ class Lattice_Controller_Export extends Controller {
 		
 		echo 'done';
 		
-		$this->create_xml_chunks($arena);
+		//$this->create_xml_chunks($arena);
 	}
 	
 	/**
