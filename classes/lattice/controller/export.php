@@ -145,9 +145,11 @@ class Lattice_Controller_Export extends Controller {
 		foreach ($objects as $object)
 		{
 			
-			//var_dump($object->objecttype->objecttypename);
+			//echo $object->objecttype->objecttypename."<br />";
 			
-			$item = $this->doc->createElement($object->objecttype->objecttypename);
+			$element = $object->objecttype->objecttypename;
+			
+			$item = $this->doc->createElement($element);
 
 			foreach ($this->get_object_fields($object) as $field)
 			{
