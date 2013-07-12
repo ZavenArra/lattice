@@ -1,5 +1,5 @@
 <div id="<?=$lattice;?><?=$parent_id;?>" data-objectid="<?=$parent_id;?>" data-lattice="<?=$lattice;?>" class="module associator classPath-lattice_modules_Associator clearfix">
-
+	
 	<h4><?=$label;?></h4>
 	<ul class="associated clearfix ">
 	<?foreach($associated as $view):?>
@@ -11,10 +11,13 @@
 		<h4><?=$pool_label;?></h4>		
 		<label for="<?=$lattice;?>SearchBox<?=$parent_id;?>" class="filter" >
 			Filter results
-			<input class="roundedInput" type="text" name="filter" value="" placeholder="Search Text" id="<?=$lattice;?>SearchBox<?=$parent_id;?>" />
+			<input class="roundedInput searchFilter" type="text" name="filter" value="" placeholder="Search Text" id="<?=$lattice;?>SearchBox<?=$parent_id;?>" />
 			<a href="#" class="filterButton button">Filter</a>
 		</label>
-		<?if( $num_pages > 1 ):?>
+		
+		
+		
+		<?php if( $num_pages > 1 ):?>
     <div class="paginator" data-num_pages="<?=$num_pages;?>" >
       <ul class="pages">
       	
@@ -27,10 +30,10 @@
           ?>
           <?php for ($i = 0; $i < $num_pages; $i++):?>
           <li>
-						<a href="<?php echo url::site("/ajax/compound/associator/get_page/$parent_id/$lattice/$i"); ?> " <?=($i==0)?'class="active"':''?>>
-							<?=($i+1)?>
-						</a>
-					</li>
+			<a href="<?php echo url::site("/ajax/compound/associator/get_page/$parent_id/$lattice/$i/"); ?> " <?=($i==0)?'class="active"':''?> id="get_word">
+				<?=($i+1)?>
+			</a>
+		</li>
         <?php endfor;?>
       </ul>
     </div>
@@ -40,7 +43,8 @@
 <?php endif;?>
 
 	<ul class="pool clearfix">
-	<?foreach($pool as $view):?>
+	<?php foreach($pool as $view):
+	?>
 	  <?=$view->render();?>
 	<?endforeach;?>
 	</ul>

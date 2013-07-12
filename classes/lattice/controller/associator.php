@@ -31,6 +31,7 @@ Class Lattice_Controller_Associator extends Core_Controller_Lattice {
     }
     $a = new CMS_Associator($parent_id, $element->getAttribute('lattice'), $modified_filters);
     $this->response->body($a->render_pool_items());
+    $this->response->data(array("num_pages"=>$a->num_pages));
   }
 
   public function action_filter_pool_by_word($parent_id, $name, $page_num=0,$word="")

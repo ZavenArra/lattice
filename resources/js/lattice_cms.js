@@ -136,7 +136,21 @@ lattice.modules.CMS = new Class({
 				this.element.getElement( '.localizationControls' ), this, { 'clickCallback': this.onLanguageSelected.bind( this ) } );
 		}
 
-		$('search_node').addEvent('click', this.searchTiers.bind(this));
+			$('search_node').addEvent('click', this.searchTiers.bind(this));
+			
+			this.searchFilter = this.element.getElement(".filterButton");
+		    console.log( "search filter input active: ",this.searchFilter);return;
+		   $(this.searchFilter).addEvent('keyup', function(event) {	 
+			var $lis = $(".pages li");   
+			$lis.each(function(index) {         
+            var $this = $(this);
+           // var $child_a = $this.children('a');
+            var list = $lis.length;
+			});
+			console.log(list);
+	     });    
+		  
+		
 
 	},
 		
