@@ -35,7 +35,7 @@ class Lattice_Controller_Import extends Controller {
 		closedir($mydir);
 	}
 
-	public function action_initialize_site($xml_file='data')
+	public function action_import($xml_file='data')
 	{
 		$mtime = microtime();
 		$mtime = explode(' ', $mtime);
