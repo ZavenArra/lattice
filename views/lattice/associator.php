@@ -1,5 +1,5 @@
 <div id="<?=$lattice;?><?=$parent_id;?>" data-objectid="<?=$parent_id;?>" data-lattice="<?=$lattice;?>" class="module associator classPath-lattice_modules_Associator clearfix">
-
+	
 	<h4><?=$label;?></h4>
 	<ul class="associated clearfix ">
 	<?foreach($associated as $view):?>
@@ -11,9 +11,26 @@
 		<h4><?=$pool_label;?></h4>		
 		<label for="<?=$lattice;?>SearchBox<?=$parent_id;?>" class="filter" >
 			Filter results
-			<input class="roundedInput" type="text" name="filter" value="" placeholder="Search Text" id="<?=$lattice;?>SearchBox<?=$parent_id;?>" />
+			<input class="roundedInput" type="text" name="filter" value="ssss" placeholder="Search Text" id="<?=$lattice;?>SearchBox<?=$parent_id;?>" />
 			<a href="#" class="filterButton button">Filter</a>
 		</label>
+		
+		<script type="text/javascript">
+			id = <?=$lattice;?> + "SearchBox" + <?=$parent_id;?>;
+			
+			btn.onkeyup = function() {
+				value = '/' + document.getElementById(id).value;
+				get_word(value);
+			};
+			
+			function get_word(value)
+			{
+				document.write(value);
+			}
+			
+		</script>
+		
+		
 		<?if( $num_pages > 1 ):?>
     <div class="paginator" data-num_pages="<?=$num_pages;?>" >
       <ul class="pages">
@@ -31,7 +48,7 @@
 							<?=($i+1)?>
 						</a>
 					</li>
-        <?php endfor;?>
+					<?php endfor;?>
       </ul>
     </div>
 		<?endif;?>
