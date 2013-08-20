@@ -22,7 +22,7 @@ class Lattice_Graph_Objectquery {
   public function init_with_xml($xml)
   {
     $this->attributes['label'] = $xml->getAttribute('label');
-    $this->attributes['object_type_filter'] = $xml->getAttribute('object_type_filter');
+    $this->attributes['object_type_filter'] = $xml->getAttribute('objectTypeFilter');
     $this->attributes['where'] = $xml->getAttribute('where');
     $this->attributes['from'] = $xml->getAttribute('from');
     $this->attributes['slug'] = $xml->getAttribute('slug');
@@ -66,10 +66,11 @@ class Lattice_Graph_Objectquery {
 
 
     $objects->published_filter();
-    $objects = $objects->find_all();
+    $results = $objects->find_all();
+		//Kohana::$log->add(Log::INFO, $objects->last_query());
 
     $items = array();
-    foreach ($objects as $include_object)
+    foreach ($results as $include_object)
     {
       $items_data = $include_object->get_content();
       $items[] = $items_data;
