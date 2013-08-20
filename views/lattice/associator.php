@@ -11,34 +11,13 @@
 		<h4><?=$pool_label;?></h4>		
 		<label for="<?=$lattice;?>SearchBox<?=$parent_id;?>" class="filter" >
 			Filter results
-			<input class="roundedInput" type="text" name="filter" value="ssss" placeholder="Search Text" id="<?=$lattice;?>SearchBox<?=$parent_id;?>" />
+			<input class="roundedInput" type="text" name="filter" value="" placeholder="Search Text" id="<?=$lattice;?>SearchBox<?=$parent_id;?>" />
 			<a href="#" class="filterButton button">Filter</a>
 		</label>
-		
-		<script type="text/javascript">
-			id = <?=$lattice;?> + "SearchBox" + <?=$parent_id;?>;
-			
-			btn.onkeyup = function() {
-				value = '/' + document.getElementById(id).value;
-				get_word(value);
-			};
-			
-			function get_word(value)
-			{
-				document.write(value);
-			}
-			
-		</script>
-		
 		
 		<?if( $num_pages > 1 ):?>
     <div class="paginator" data-num_pages="<?=$num_pages;?>" >
       <ul class="pages">
-      	
-          <li class="template hidden">
-						<a href="<?php echo url::site("/ajax/compound/associator/get_page/$parent_id/$lattice/{{page}}/{{filter}}");?> ">0</a>
-					</li>
-
           <?php
           if (!isset($search_term) ) $search_term =null;
           ?>

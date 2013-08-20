@@ -987,8 +987,8 @@ lattice.modules.LatticeAssociator = new Class({
 		this.poolList.set( "html",  json.response.html );
 
 		// set number of pages
-		data = json.response.data;
-		total_pages = data.total_pages;
+		var data = json.response.data;
+		var total_pages = data.total_pages;
 
 		// adjust the number of visal pages here
 		// alert(total_pages);
@@ -1000,7 +1000,22 @@ lattice.modules.LatticeAssociator = new Class({
 			} else {
 				el.show();	
 			}
+			/*
+			var children = el.getChildren('a');
+			var link = children[0];
+			var href = link.get('href');
+			if(i==0){
+				alert(href);
+			}
+			var parts = href.split('/');
+			if(i==0){
+				console.log(parts);
+			}
+			parts[parts.length-1] = this.filterWord;
+			href = parts.join('/') + "/";
+			link.set('href', href);
 			i++;
+			*/
 		});
 
 		this.initItems();
