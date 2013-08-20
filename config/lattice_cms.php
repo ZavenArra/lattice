@@ -12,6 +12,9 @@ $config['resources']['libraryjs'] = array(
 	
 	//for live search of objects
 	'modules/lattice/resources/thirdparty/live_list_search.js',
+
+	//for autocomplete
+	'modules/lattice/resources/thirdparty/mootools/MooComplete.js',
 	
 	//these are required by LatticeUI
 	'modules/lattice/resources/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
