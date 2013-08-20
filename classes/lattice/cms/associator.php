@@ -57,10 +57,12 @@ Class Lattice_Cms_Associator {
     $this->filters = $filters; 
     $this->page_length = Kohana::config('cms.associator_page_length');
 
+
     foreach ($this->parent->get_lattice_children_paged($this->lattice) as $child)
     {
       $this->associated[] = $child;
-    }
+		}
+
 
     if (is_array($load_pool))
     {
@@ -161,18 +163,19 @@ Class Lattice_Cms_Associator {
         }
       }	
 
-    } elseif ( ! $load_pool )
-    {
+		} 
+		elseif ( ! $load_pool )
+		{
 
-      $objects = Graph::object()
-        ->where( 'id', '!=', $parent_id )
-        ->where( 'objects.language_id', '=', Graph::default_language() )
-        ->published_filter()
-        ->limit( $this->max_pool_size )
-        ->find_all();
-      $this->pool = $objects;
+			$objects = Graph::object()
+				->where( 'id', '!=', $parent_id )
+				->where( 'objects.language_id', '=', Graph::default_language() )
+				->published_filter()
+				->limit( $this->max_pool_size )
+				->find_all();
+			$this->pool = $objects;
 
-    }
+		}
 
   }
 

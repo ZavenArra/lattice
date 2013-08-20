@@ -9,10 +9,10 @@ $config['default_language'] = 'en';
 $config['live'] = false;
 
 //live search
-$config['search_enabled'] = TRUE;
+$config['search_enabled'] = FALSE;
 //object sorting
-$config['tier_sort_enabled'] = TRUE;
+$config['tier_sort_enabled'] = FALSE;
 //drag and drop sorting of objects
-$config['onject_move_enable'] = TRUE;
+$config['object_move_enabled'] = FALSE;
 
 return $config;
