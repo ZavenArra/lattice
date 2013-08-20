@@ -31,7 +31,7 @@ lattice.modules.Associator = new Class({
 	getFilterPoolByWordsURL: function( pid, latticeid, word ){
 		var url = lattice.util.getBaseURL() + "ajax/compound/associator/filter_pool_by_word/" + pid + "/" + latticeid + "/0/" + word;
   	//stuffing in page number as 0
-
+		//alert("dfdsf");
 		console.log( '\t\getFilterPoolByWordURL', url );
 		return url;
 	},

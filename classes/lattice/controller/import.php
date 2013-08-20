@@ -4,6 +4,8 @@ class Lattice_Controller_Import extends Controller {
 
 	private $new_object_ids = array();
 
+	private $legacy = false;
+
 	public function __construct()
 	{
 		if ( ! cms_util::check_role_access('superuser') AND PHP_SAPI != 'cli' )
@@ -35,7 +37,7 @@ class Lattice_Controller_Import extends Controller {
 		closedir($mydir);
 	}
 
-	public function action_initialize_site($xml_file='data')
+	public function action_import($xml_file='data')
 	{
 		$mtime = microtime();
 		$mtime = explode(' ', $mtime);
@@ -110,6 +112,11 @@ class Lattice_Controller_Import extends Controller {
 		$totaltime = ($endtime - $starttime);
 		echo '<! -- initialize_site took ' .$totaltime. ' seconds, and completed with memory usage of '.$memory_use_following_action;
 		echo 'Initialize Site Complete';
+	}
+
+	public function action_legacy($xml_file='data'){
+		$this->legacy = true;
+		$this->action_import($xml_file);
 	}
 
 	public function insert_relationships($xml_file)
@@ -355,23 +362,26 @@ class Lattice_Controller_Import extends Controller {
 			$object->update_with_array($clusters_data);
 		}
 
-		// do recursive if it has children
-		if (core_lattice::config($xml_file, 'item', $item)->length )
-		{
-			$this->insert_data($xml_file, $object_id,  $item);
-		}
+		if($this->legacy){
+			// do recursive if it has children
+			if (core_lattice::config($xml_file, 'item', $item)->length )
+			{
+				$this->insert_data($xml_file, $object_id,  $item);
+			}
 
-		// and lastly, insert data for lists
-		$lists = core_lattice::config($xml_file, 'list', $item);
-		foreach ($lists as $list)
-		{
-			// find the container
-			$container = Graph::object()
-						->lattice_children_filter($object_id)
-						->object_type_filter($list->getAttribute('name'))
-						->find();
-			// jump down a level to add object
-			$this->insert_data($xml_file, $container->id, $list);
+			// and lastly, insert data for lists
+			$lists = core_lattice::config($xml_file, 'list', $item);
+			foreach ($lists as $list)
+			{
+				// find the container
+				$container = Graph::object()
+					->lattice_children_filter($object_id)
+					->object_type_filter($list->getAttribute('name'))
+					->find();
+				// jump down a level to add object
+				$this->insert_data($xml_file, $container->id, $list);
+			}
+
 		}
     unset($lists);
 

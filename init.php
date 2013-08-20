@@ -238,6 +238,6 @@ Route::set('import', 'import(/<param1>)')
 	->defaults(
 		array(
 			'controller'=>'import',
-			'action'=>'initialize_site'
+			'action'=>'import'
 		)
 	); 
