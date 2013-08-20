@@ -387,6 +387,9 @@ CREATE TABLE `objectrelationships` (
 	PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE INDEX connected_object_id_index ON objectrelationships (connectedobject_id);
+CREATE INDEX object_id_index ON objectrelationships (object_id);
+
 CREATE TABLE `objectelementrelationships` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `object_id` int(11) NOT NULL,
