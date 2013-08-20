@@ -1000,22 +1000,6 @@ lattice.modules.LatticeAssociator = new Class({
 			} else {
 				el.show();	
 			}
-			/*
-			var children = el.getChildren('a');
-			var link = children[0];
-			var href = link.get('href');
-			if(i==0){
-				alert(href);
-			}
-			var parts = href.split('/');
-			if(i==0){
-				console.log(parts);
-			}
-			parts[parts.length-1] = this.filterWord;
-			href = parts.join('/') + "/";
-			link.set('href', href);
-			i++;
-			*/
 		});
 
 		this.initItems();
