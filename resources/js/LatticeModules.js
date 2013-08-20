@@ -987,8 +987,8 @@ lattice.modules.LatticeAssociator = new Class({
 		this.poolList.set( "html",  json.response.html );
 
 		// set number of pages
-		data = json.response.data;
-		total_pages = data.total_pages;
+		var data = json.response.data;
+		var total_pages = data.total_pages;
 
 		// adjust the number of visal pages here
 		// alert(total_pages);
@@ -1000,7 +1000,6 @@ lattice.modules.LatticeAssociator = new Class({
 			} else {
 				el.show();	
 			}
-			i++;
 		});
 
 		this.initItems();
