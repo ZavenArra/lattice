@@ -50,6 +50,11 @@ Class Lattice_Controller_Associator extends Core_Controller_Lattice {
 
   }
 
+	public function action_autocomplete_options($parend_id, $name, $word) {
+		// no default implementation at this time
+		$this->response->data(array("search_keys" => array()));
+	}
+
 
   public function action_filter_pool_by_tag($parent_id, $name, $tag)
   {

@@ -35,6 +35,12 @@ lattice.modules.Associator = new Class({
 		console.log( '\t\getFilterPoolByWordURL', url );
 		return url;
 	},
+
+	getAutocompleteOptionsURL: function( pid, latticeid, word){
+		var url = lattice.util.getBaseURL() + "ajax/compound/associator/autocomplete_options/" + pid + "/" + latticeid + "/" + word;
+		console.log(url);
+		return url;
+	},
 	
 	toString: function(){
 		return "[ object, lattice.LatticeObject, lattice.modules.Module, lattice.modules.LatticeAssociator, lattice.modules.Associator ]";

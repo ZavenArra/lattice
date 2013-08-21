@@ -100,7 +100,31 @@ function MooComplete(element, options) {
   // Reposition on a resize.
   window.addEvent('resize', position);
 
+	list.every(function(o) {
+		var li = suggestions++;
+
+		box.adopt(new Element('div', {
+			'events': {
+				'mousemove': function() { // don't use mouseover since that will bug when the user has the mouse below the input box while typing
+					if (!hiding) {
+						hover = li;
+						showHover();
+					}
+				}
+			}
+		}).adopt(options.render(o)).store('val', o));
+
+		return true;
+	});
+
+	position();
+
+	box.setStyle('display', 'block');
+
+
   // get element value to search for
+	// 
+	/*
   function getNeedle() {
     if(options.mode==='tag') {
 		element.store('input_value', element.get('value').substring(0, element.get('value').lastIndexOf(',')+1));
@@ -159,6 +183,7 @@ function MooComplete(element, options) {
     box.setStyle('display', 'block');
   }
 
+	*/
 
   // Highlight hovered item and place it in the input field
   function showHover() {
@@ -212,7 +237,7 @@ function MooComplete(element, options) {
         old = element.retrieve('val');
 
         if (e.code != 13) { // enter
-          showSuggestions();
+          //showSuggestions();
         } else {
           box.setStyle('display', 'none');
         }
@@ -222,7 +247,7 @@ function MooComplete(element, options) {
       hiding = false;
 
       if (box.getStyle('display') == 'none') {
-        showSuggestions();
+        //showSuggestions();
       }
     },
     'blur': function() {
