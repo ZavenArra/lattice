@@ -66,7 +66,7 @@ class Lattice_Core_Cms extends Lattice_CMSInterface {
 
   public function action_index()
   {
-    $this->view = new View('lattice_cms');
+    $this->view = new View('lattice/lattice_cms');
     if (Auth::instance()->logged_in('superuser'))
     {
       $this->view->userlevel = 'superuser';
@@ -168,7 +168,7 @@ class Lattice_Core_Cms extends Lattice_CMSInterface {
 
     // new generation of object
     // 1 grap cms_nodetitle
-    $this->nodetitle = new View('lattice_cms_nodetitle');
+    $this->nodetitle = new View('lattice/lattice_cms_nodetitle');
     $this->nodetitle->title = $object->title; // this should change to object table
     $this->nodetitle->slug = $object->slug;
     $this->nodetitle->id = $object->id;
