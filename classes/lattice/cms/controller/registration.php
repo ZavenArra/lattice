@@ -77,7 +77,7 @@ Class Lattice_Cms_Controller_Registration extends Core_Controller_Layout {
 
   protected function registration_view($errors=NULL)
   {
-    $view = new View('registration');
+    $view = new View('auth/registration');
     $view->errors = $this->errors;
     isset(    $_POST['username'] ) ? $view->username = $_POST['username'] : $view->username = '';
     isset(    $_POST['password'] ) ? $view->password = $_POST['password'] : $view->password = '';
