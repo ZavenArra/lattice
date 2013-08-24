@@ -71,7 +71,7 @@ Class Lattice_Cms_Controller_Registration extends Core_Controller_Layout {
     $user->status = 'ACTIVE';
     $user->save();
 
-    $view = new View('registration_confirmed');
+    $view = new View('auth/registration_confirmed');
     $this->response->body($view->render());
   }
 

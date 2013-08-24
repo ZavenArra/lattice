@@ -21,7 +21,7 @@ Class Lattice_Controller_Customreel extends Core_Controller_Layout {
    * Variable: view_name 
    * Name of the main view to load, also used for javascript class and instance.
    */
-  protected $view_name = 'usermanagement';
+  protected $view_name = 'auth/usermanagement';
 
   /*
    * Variable: managed_roles
@@ -321,7 +321,7 @@ Class Lattice_Controller_Customreel extends Core_Controller_Layout {
 
           if ($_POST['field'] == 'password')
           {
-            $body = new View('usermanagement_passwordchangeemail');
+            $body = new View('auth/usermanagement_passwordchangeemail');
             $body->username = $user->username;
             $body->password = $_POST['value'];
 
