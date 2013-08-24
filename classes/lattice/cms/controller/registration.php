@@ -55,7 +55,7 @@ Class Lattice_Cms_Controller_Registration extends Core_Controller_Layout {
       );
       $confirmation->send();
 
-      $view = new View('confirmation_required');
+      $view = new View('auth/confirmation_required');
       $this->response->body($view->render());
     }
   } 
