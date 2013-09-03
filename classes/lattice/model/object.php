@@ -1296,7 +1296,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
     public function content_filter($wheres)
     {
-      //   $driver_info = $this->content_driver()->driver_info();
+      // $driver_info = $this->content_driver()->driver_info();
       // Extension point for implementing support for content_filter with other drivers
       $driver_info = array(
         'driver' => 'mysql', 

@@ -106,6 +106,17 @@ Class Lattice_Cms_Associator {
           $objects->where('objecttype_id', '=', $t->id);
         }
 
+
+				// TODO: need better docs on what is allowed to be sent to this functions
+				// currently, this func can be used to override everything above
+        if (isset($filter['function']) AND $filter['function'])
+        {
+          $callback = explode('::', $filter['function']);
+
+          $options = NULL;
+          $objects = call_user_func($callback, $objects, $parent_id, $options);
+        }
+
         if (isset($filter['match']) AND $filter['match'])
         {
           $match_fields = explode(',',$filter['match_fields']);
@@ -117,22 +128,15 @@ Class Lattice_Cms_Associator {
           $objects->content_filter($wheres);
 
         }
-
-        if (isset($filter['function']) AND $filter['function'])
-        {
-          $callback = explode('::', $filter['function']);
-
-          $options = NULL;
-          $objects = call_user_func($callback, $objects, $parent_id, $options);
-        }
-
+				
         $objects->where('objects.language_id', '=', Graph::default_language());
         $objects->published_filter();
-
 				$objects->order_by('slug');
 
         // just return an array of id's then load the pool object
-        $results = $objects->find_all()->as_array(NULL, 'id');
+				$results = $objects->find_all();
+
+				$results = $results->as_array(NULL, 'id');
         // check our filtered objects are correct
         // compact the array to remove redundant keys
         $res = array();

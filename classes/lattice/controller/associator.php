@@ -21,9 +21,6 @@ Class Lattice_Controller_Associator extends Core_Controller_Lattice {
 
   public function action_filter_pool_by_word($parent_id, $name, $page_num=0,$word="")
   {
-
-    Kohana::$log->add( Kohana_Log::INFO,"++ action_filter_pool_by_word: " . $parent_id . ", name: " . $name . ", " . $page_num . ", " . $word  )->write();
-
     $parent = Graph::object($parent_id);
 
     if ( ! $parent->loaded())
@@ -39,14 +36,14 @@ Class Lattice_Controller_Associator extends Core_Controller_Lattice {
       $filter['match'] = $word;
       $filter['match_fields']  = 'title';
 
-			// Setting page for every filter is actually wrong, and represents a problem in the filter combination logic
+			// Setting page for every filter is actually wrong, and reflects a problem in the filter combination logic
 			$filter['page'] = $page_num;
 
       $modified_filters[] = $filter;
     }
 
-    // paginate here
     $a = new CMS_Associator($parent_id, $element->getAttribute('lattice'), $modified_filters);
+		// TODO: it may be better to paginate right here
     $this->response->body($a->render_pool_items());
     $this->response->data(array("num_pages"=>$a->num_pages));
 
