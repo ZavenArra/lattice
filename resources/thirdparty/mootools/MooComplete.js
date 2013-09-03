@@ -32,6 +32,10 @@ function MooComplete(element, options) {
 
 
   var list = options.list || [];
+
+	if(list.length == 0){
+		return;
+	}
   
   this.setList = function(l) {
     list = l;
@@ -99,6 +103,8 @@ function MooComplete(element, options) {
   
   // Reposition on a resize.
   window.addEvent('resize', position);
+
+
 
 	list.every(function(o) {
 		var li = suggestions++;

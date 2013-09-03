@@ -1039,11 +1039,12 @@ lattice.modules.LatticeAssociator = new Class({
 		});
 
 		var searchWord = this.searchInput.get("value");
-		if( searchWord == ""){
-			// Do nothing
+		if( searchWord == ""
+		  || searchWord == " "){
+			this.searchInput.set("value", "");
 			return;
 		}
-		url = this.getAutocompleteOptionsURL( this.getObjectId(), this.element.get('data-lattice'), searchWord );
+		url = this.getAutocompleteOptionsURL( this.getObjectId(), this.element.get('data-lattice'), encodeURIComponent(searchWord) );
 		jsonRequest = new Request.JSON({
 			url: url,
 			onSuccess: function( json ){ this.onAutocompleteOptionsReceived(json); }.bind( this )
