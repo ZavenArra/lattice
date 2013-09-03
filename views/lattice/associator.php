@@ -10,9 +10,10 @@
 	<div class="actuator clearFix">
 		<h4><?=$pool_label;?></h4>		
 		<label for="<?=$lattice;?>SearchBox<?=$parent_id;?>" class="filter" >
-			Filter results
+			Filter
 			<input class="roundedInput" type="text" size="100" name="filter" value="" placeholder="Search Text" id="<?=$lattice;?>SearchBox<?=$parent_id;?>" />
-			<a href="#" class="filterButton button">Filter</a>
+			<a href="#" class="filterButton button">Apply</a>
+			<a href="#" class="resetButton button">Clear</a>
 		</label>
 		
 		<?if( $num_pages > 1 ):?>
