@@ -38,10 +38,12 @@ Class Lattice_Controller_Associator extends Core_Controller_Lattice {
     {
       $filter['match'] = $word;
       $filter['match_fields']  = 'title';
+
+			// Setting page for every filter is actually wrong, and represents a problem in the filter combination logic
+			$filter['page'] = $page_num;
+
       $modified_filters[] = $filter;
     }
-
-    Kohana::$log->add( Kohana_Log::INFO,"\tmodified Filters: " . print_r( $modified_filters, TRUE ) )->write();
 
     // paginate here
     $a = new CMS_Associator($parent_id, $element->getAttribute('lattice'), $modified_filters);

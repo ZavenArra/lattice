@@ -126,9 +126,11 @@ Class Lattice_Cms_Associator {
           $objects = call_user_func($callback, $objects, $parent_id, $options);
         }
 
-
         $objects->where('objects.language_id', '=', Graph::default_language());
         $objects->published_filter();
+
+				$objects->order_by('slug');
+
         // just return an array of id's then load the pool object
         $results = $objects->find_all()->as_array(NULL, 'id');
         // check our filtered objects are correct
@@ -142,25 +144,24 @@ Class Lattice_Cms_Associator {
             $res[$id] = $id;
           }
         }
+
         $results = $res;
-        $this->num_pages = ceil(count($results)/$this->page_length);
-        // get slice the first page, then load the objects from their id's
-        $params = explode("/",$_SERVER["REQUEST_URI"]);
-        // print_r($params);
-        // @TODO this is a kludge.  Oh well.
-        if (isset($params[7]) AND $params[6]=="posting_videos_associator")
-        {
-          // we're passing a page number - so slice the object ids
-          $results = array_slice($results,($params[7]-1)*16,16);
-        } else {
-          $results = array_slice($results,0,$this->page_length);
-        }
+
+				$this->num_pages = ceil(count($results)/$this->page_length);
+
+				$offset = 0;
+				if (isset($filter['page'])){
+					$offset = $filter['page'] * $this->page_length;
+				}
+				// And slice the results
+				$results = array_slice($results, $offset, $this->page_length);
 
         foreach ($results as $id)
         {
           $object = Graph::object($id);
           $this->pool[$id] =$object;  
         }
+
       }	
 
 		} 
