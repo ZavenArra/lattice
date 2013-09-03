@@ -3,20 +3,23 @@
 $config['resources']['librarycss'] = array(
 	'modules/lattice/resources/thirdparty/960Grid/reset.css',
 	'modules/lattice/resources/thirdparty/960Grid/960.css',
-	'modules/lattice/resources/thirdparty/arian/datepicker/Source/datepicker.css'
+	'modules/lattice/resources/thirdparty/arian/datepicker/Source/datepicker.css',
+
+	// for autocomplete
+	'modules/lattice/resources/thirdparty/mootools/MooComplete.css'
 );
 $config['resources']['libraryjs'] = array(
 
 	'modules/lattice/resources/thirdparty/mootools/mootools.js',
 	'modules/lattice/resources/thirdparty/mootools/mootools-more.js',
 	
-	//for live search of objects
+	// for live search of objects
 	'modules/lattice/resources/thirdparty/live_list_search.js',
-	'modules/lattice/resources/thirdparty/mootools-fxsort-1.4.0.1.js',
-	'modules/lattice/resources/thirdparty/mootools-array-sortby.js',
-	'modules/lattice/resources/thirdparty/tools.js',
+
+	// for autocomplete
+	'modules/lattice/resources/thirdparty/mootools/MooComplete.js',
 	
-	//these are required by LatticeUI
+	// these are required by LatticeUI
 	'modules/lattice/resources/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
 	'modules/lattice/resources/thirdparty/arian/datepicker/Source/Locale.en-US.DatePicker.js',
 	'modules/lattice/resources/thirdparty/arian/datepicker/Source/Picker.js',
@@ -38,7 +41,7 @@ $config['resources']['js'] = array(
 
 
 $config['defaultsettings']['editable_title'] = true;
-//- - if set all titles editable
+// - - if set all titles editable
 
 $config['new_object_placement'] = 'bottom';
 

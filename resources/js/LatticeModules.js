@@ -930,6 +930,7 @@ lattice.modules.LatticeAssociator = new Class({
 	scroller: null,
 	submitDelay: null,
 	oldSort: null,
+	autocomplete: null,
 
   /* Section: Getters & Setters */
 
@@ -944,6 +945,10 @@ lattice.modules.LatticeAssociator = new Class({
 
 	getFilterPoolByWordsURL: function(){
 		throw "Abstract function getFilterPoolByWordsURL must be overriden in" + this.toString();
+	},
+
+	getAutocompleteOptionsURL: function(){
+		throw "Abstract function getAutocompleteOptionsURL must be overriden in" + this.toString();
 	},
 	
 	getSubmitSortOrderURL: function(){ 
@@ -965,7 +970,27 @@ lattice.modules.LatticeAssociator = new Class({
 		this.searchInput = this.element.getElement( ".actuator input[name~='filter']" );
 		if( this.searchInput ){
 			this.searchInput.addEvent( 'click', function(e){ e.stop(); this.searchInput.select(); }.bindWithEvent( this ) );
+			this.searchInput.addEvent( 'keyup', function(e){
+			 if (e.code >= 37 && e.code <= 40 ){
+				 return true;
+			 }
+			 if(e.code == 13){
+				 return true;
+			 }
+				e.stop(); 
+				this.refreshAutocomplete(); 
+			}.bindWithEvent( this ) );
+			this.searchInput.addEvent('keydown:keys(enter)', function(e){
+				e.stop();
+				this.filterPoolByWord(e);
+			}.bindWithEvent(this)
+			);
 		}
+		autocomplete = new MooComplete(this.searchInput, {
+			list: [], // elements to use to suggest.
+			mode: 'text', // suggestion mode (tag | text)
+			size: 20 // number of elements to suggest
+		});
 	},
 	
 	filterPoolByWord: function( e ){
@@ -987,8 +1012,8 @@ lattice.modules.LatticeAssociator = new Class({
 		this.poolList.set( "html",  json.response.html );
 
 		// set number of pages
-		data = json.response.data;
-		total_pages = data.total_pages;
+		var data = json.response.data;
+		var total_pages = data.total_pages;
 
 		// adjust the number of visal pages here
 		// alert(total_pages);
@@ -1004,6 +1029,40 @@ lattice.modules.LatticeAssociator = new Class({
 		});
 
 		this.initItems();
+	},
+
+	refreshAutocomplete: function (e) {
+		delete autocomplete;
+		autocomplete = null;
+		$$(".moocomplete").each(function(element){
+			element.destroy();
+		});
+
+		var searchWord = this.searchInput.get("value");
+		if( searchWord == ""){
+			// Do nothing
+			return;
+		}
+		url = this.getAutocompleteOptionsURL( this.getObjectId(), this.element.get('data-lattice'), searchWord );
+		jsonRequest = new Request.JSON({
+			url: url,
+			onSuccess: function( json ){ this.onAutocompleteOptionsReceived(json); }.bind( this )
+		}).send();
+		return jsonRequest;
+	},
+
+	onAutocompleteOptionsReceived: function( json ){
+		console.log(json.response);
+		var search_keys = json.response.data.search_keys;
+		console.log(search_keys);
+
+		// Just re-init this every time
+		autocomplete = new MooComplete(this.searchInput, {
+			list: search_keys, // elements to use to suggest.
+			mode: 'text', // suggestion mode (tag | text)
+			size: 20 // number of elements to suggest
+		});
+
 	},
 	
 	build: function(){
