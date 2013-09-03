@@ -1006,6 +1006,19 @@ lattice.modules.LatticeAssociator = new Class({
 		return jsonRequest;
 	},
 
+	clearFilter: function( e ){
+		e.preventDefault();
+		this.poolList.spin();
+		var url, jsonRequest;
+		this.searchInput.set("value", "");
+		url = this.getFilterPoolByWordsURL( this.getObjectId(), this.element.get('data-lattice'), "" );
+		jsonRequest = new Request.JSON({
+			url: url,
+			onSuccess: function( json ){ this.onFilteredPoolReceived(json); }.bind( this )
+		}).send();
+		return jsonRequest;
+	},
+
 	onFilteredPoolReceived: function( json ){
 		this.poolList.unspin();
 		this.poolList.empty();
@@ -1158,11 +1171,10 @@ lattice.modules.LatticeAssociator = new Class({
 				item.addEvent("click", this.associateRequest.bindWithEvent( this, item ) )
 			}, this );
 		}, this );
-		console.log( "element", this.element );
-		console.log( "filterbutton", this.element.getElement('.filterButton' ) );
 		this.filterSubmitButton = this.element.getElement(".filterButton");
 		if( this.filterSubmitButton )	this.filterSubmitButton.addEvent('click', this.filterPoolByWord.bindWithEvent( this ) );
-		console.log( this.filterSubmitButton );
+		this.filterClearButton = this.element.getElement(".resetButton");
+		if( this.filterClearButton )	this.filterClearButton.addEvent('click', this.clearFilter.bindWithEvent( this ) );
 	},
    
   getClassFromClassPath: function( classPath, delimiter ){
