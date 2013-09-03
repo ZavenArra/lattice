@@ -1,0 +1,721 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>Lattice</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<style>
+body { font:80% Verdana,Tahoma,Arial,sans-serif; }
+h1, h2, h3, h4 {  font-family: "Trebuchet MS",Georgia,"Times New Roman",serif; }
+ul.toc { padding: 4px; margin-left: 0; }
+ul.toc li { list-style-type:none; }
+ul.toc li.heading2 { margin-left: 1em; }
+ul.toc li.heading3 { margin-left: 2em; }
+a.wiki-anchor { display: none; margin-left: 6px; text-decoration: none; }
+a.wiki-anchor:hover { color: #aaa !important; text-decoration: none; }
+h1:hover a.wiki-anchor, h2:hover a.wiki-anchor, h3:hover a.wiki-anchor { display: inline; color: #ddd; }
+</style>
+</head>
+<body>
+
+<strong>Index by title</strong>
+<ul>
+
+    <li><a href="#Associator">Associator</a></li>
+
+    <li><a href="#Associator_Setup">Associator Setup</a></li>
+
+    <li><a href="#CI">CI</a></li>
+
+    <li><a href="#CMS">CMS</a></li>
+
+    <li><a href="#CMS_Root_Node">CMS Root Node</a></li>
+
+    <li><a href="#Custom_CMS_Views_for_Object_Types">Custom CMS Views for Object Types</a></li>
+
+    <li><a href="#Defining_Object_Types">Defining Object Types</a></li>
+
+    <li><a href="#Dev_Docs">Dev Docs</a></li>
+
+    <li><a href="#ExportImport">ExportImport</a></li>
+
+    <li><a href="#Frontend">Frontend</a></li>
+
+    <li><a href="#Frontend_access_to_objects">Frontend access to objects</a></li>
+
+    <li><a href="#Installation">Installation</a></li>
+
+    <li><a href="#Misc">Misc</a></li>
+
+    <li><a href="#Move_Feature">Move Feature</a></li>
+
+    <li><a href="#PHP_Memory_Issues">PHP Memory Issues</a></li>
+
+    <li><a href="#RootGraph">RootGraph</a></li>
+
+    <li><a href="#Screen_Shots">Screen Shots</a></li>
+
+    <li><a href="#Wiki">Wiki</a></li>
+
+    <li><a href="#Workflow">Workflow</a></li>
+
+    <li><a href="#_Accessing_objects_in_frontend_templates"> Accessing objects in frontend templates</a></li>
+
+    <li><a href="#_Lattice_Config_File"> Lattice Config File</a></li>
+
+    <li><a href="#_Lost_Paswords_"> Lost Paswords </a></li>
+
+</ul>
+
+
+<hr />
+<a name="Associator" />
+<a name="Associator"></a>
+<h1 >Associator<a href="#Associator" class="wiki-anchor">&para;</a></h1>
+
+
+	<a name="API"></a>
+<h2 >API<a href="#API" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>The associator has 2 fundamental API calls, one to create an association and one to remove association.  The parentId is the id of the master document, the objectId is the object id of the object being associated to the master document, and the $lattice argument is the name of the association itself (congruous with the notion of the associator's 'name').</p>
+
+
+	<ul>
+	<li>associate($parentId, $objectId, $lattice) - associator/associate/{$parentId}/{$objectId}/$lattice<br />Returns html of the meta object view.</li>
+	</ul>
+
+
+	<ul>
+	<li>disassociate($parentId, $objectId, $lattice) - associator/dissociate/{$parentId}/{$objectId}/$lattice</li>
+	</ul>
+
+
+	<ul>
+	<li>filterPoolByWord($parentId, $lattice, $word) - associator/filterPoolByWord/$parentId/$lattice/$word</li>
+	</ul>
+
+<hr />
+<a name="Associator_Setup" />
+<a name="Associator-Setup"></a>
+<h1 >Associator Setup<a href="#Associator-Setup" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>views/lattice/associator/specianame.php<br />and views/lattice/associator/specianame/item.php</p>
+
+<hr />
+<a name="CI" />
+<a name="CI"></a>
+<h1 >CI<a href="#CI" class="wiki-anchor">&para;</a></h1>
+
+
+	<p><a class="external" href="http://www.labelmedia.co.uk/blog/posts/setting-up-selenium-server-on-a-headless-jenkins-ci-build-machine.html">http://www.labelmedia.co.uk/blog/posts/setting-up-selenium-server-on-a-headless-jenkins-ci-build-machine.html</a></p>
+
+<hr />
+<a name="CMS" />
+<a name="CMS"></a>
+<h1 >CMS<a href="#CMS" class="wiki-anchor">&para;</a></h1>
+
+
+	<p><a href="#" class="wiki-page">Defining Object Types</a></p>
+
+
+	<p><a href="#" class="wiki-page">CMS Root Node</a></p>
+
+
+	<p><a href="#" class="wiki-page">Custom CMS Views for Object Types</a></p>
+
+
+	<p><a href="#" class="wiki-page">Associator Setup</a></p>
+
+
+	<p><a href="#" class="wiki-page new">CMS Modules</a></p>
+
+<hr />
+<a name="CMS_Root_Node" />
+<a name="CMS-Root-Node"></a>
+<h1 >CMS Root Node<a href="#CMS-Root-Node" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>Configuring the objectType in object.xml cmsRootNode allows you to determine what happens at the top level of the CMS nav.<br />(Root node addableObjects, components, and elements.</p>
+
+
+<pre>
+&lt;objectType name="cmsRootNode" allowChildSort="true"&gt;
+    &lt;addableObject objectTypeName="anAddableObjectType"  addText="Add a Page"/&gt;
+&lt;/objectType&gt;
+</pre>
+
+<hr />
+<a name="Custom_CMS_Views_for_Object_Types" />
+<a name="Custom-CMS-Views-for-Object-Types"></a>
+<h1 >Custom CMS Views for Object Types<a href="#Custom-CMS-Views-for-Object-Types" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>Custom views for object types can be created to change the order of display for object elements or customize the view.</p>
+
+
+	<a name="File-Placement"></a>
+<h2 >File Placement<a href="#File-Placement" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>The custom views should be placed in views/lattice/objectTypes/{objectTypeName}.php .  Kohana's cascading file system will find them there.</p>
+
+
+	<a name="Echoing-CMS-UI-elements-in-custom-views"></a>
+<h2 >Echoing CMS UI elements in custom views<a href="#Echoing-CMS-UI-elements-in-custom-views" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Use the syntax<br /><pre>
+&lt;?=${elementType}_{fieldName};?&gt;
+</pre></p>
+
+
+	<h3>Lists<br />Use the syntax<br /><pre>
+&lt;?=${listName};?&gt;
+</pre></h3>
+
+
+	<a name="Other-data-provided-to-custom-views"></a>
+<h2 >Other data provided to custom views<a href="#Other-data-provided-to-custom-views" class="wiki-anchor">&para;</a></h2>
+
+
+By default, custom views always have access to the follow variables
+	<ul>
+	<li>$object - the object being displayed</li>
+		<li>$objectId - the id of the object being displayed</li>
+	</ul>
+
+<hr />
+<a name="Defining_Object_Types" />
+<ul class="toc"><li><a href="#Defining-Object-Types">Defining Object Types</a><ul><li><a href="#objectsxml">objects.xml</a></li><li><a href="#tags-for-each-object-type">tags for each object type</a><ul><li><a href="#Default-Fields">Default Fields</a></li><li><a href="#Associator">Associator</a></li></ul></li></ul></li></ul>
+
+
+	<a name="Defining-Object-Types"></a>
+<h2 >Defining Object Types<a href="#Defining-Object-Types" class="wiki-anchor">&para;</a></h2>
+
+
+	<a name="objectsxml"></a>
+<h3 >objects.xml<a href="#objectsxml" class="wiki-anchor">&para;</a></h3>
+
+
+	<p>{description of objects.xml}</p>
+
+
+	<a name="tags-for-each-object-type"></a>
+<h3 >tags for each object type<a href="#tags-for-each-object-type" class="wiki-anchor">&para;</a></h3>
+
+
+	<a name="Default-Fields"></a>
+<h4 >Default Fields<a href="#Default-Fields" class="wiki-anchor">&para;</a></h4>
+
+
+	<p>All object types share a common set of fields, unless otherwise noted</p>
+
+
+	<h5>DTD:</h5>
+
+
+<pre>
+&lt;!ENTITY % uiattrs
+  "name       CDATA #REQUIRED
+   label        CDATA #IMPLIED
+   className      CDATA #IMPLIED"    //unused
+&gt;
+</pre>
+
+	<h5>XML:</h5>
+
+
+<pre>
+&lt;ELEMENTNAME name="NAME" label="LABEL"/&gt;
+</pre>
+
+	<a name="Associator"></a>
+<h4 >Associator<a href="#Associator" class="wiki-anchor">&para;</a></h4>
+
+
+	<h5>DTD:</h5>
+
+
+<pre>
+&lt;!ELEMENT associator (filter*)&gt;
+&lt;!ATTLIST associator
+  name         CDATA #REQUIRED                     //The Name of the associator
+  label         CDATA #IMPLIED                     //A label to display for the association
+  poolLabel    CDATA #IMPLIED                      //An option name for the pool being drawn from
+  lattice       CDATA #REQUIRED                    //The Lattice name relevant, usually the same as 'name'
+  metaObjectTypeName  CDATA #IMPLIED               //An optional object type to store meta data about the association
+&gt;
+</pre>
+
+	<h5>XML:</h5>
+
+
+<pre>
+&lt;associator name="NAME" lattice="LATTICE" label="LABEL" metaObjectTypeName="TYPENAME"/&gt;
+</pre>
+
+	<h5>DTD for Filters:</h5>
+
+
+<pre>
+&lt;!ELEMENT filter EMPTY &gt;
+&lt;!ATTLIST filter
+  from           CDATA #IMPLIED
+  objectTypeName   CDATA #IMPLIED
+  tagged         CDATA #IMPLIED
+&gt;
+</pre>
+
+	<h5>XML with Filters:</h5>
+
+
+<pre>
+&lt;associator name="NAME" lattice="LATTICE" label="LABEL" metaObjectTypeName="TYPENAME"&gt;
+    &lt;filter/&gt;
+&lt;/associator&gt;
+</pre>
+
+<hr />
+<a name="Dev_Docs" />
+<a name="Dev-Docs"></a>
+<h1 >Dev Docs<a href="#Dev-Docs" class="wiki-anchor">&para;</a></h1>
+
+
+	<p><a href="#" class="wiki-page">Associator</a></p>
+
+
+	<p><a href="#" class="wiki-page">Move Feature</a></p>
+
+<hr />
+<a name="ExportImport" />
+<ul class="toc"><li><a href="#ExportImport">Export/Import</a><ul><li><a href="#Exporting">Exporting</a></li><li><a href="#Importing">Importing</a></li><li><a href="#CSV-ExportImport">CSV Export/Import</a></li></ul></li></ul>
+
+
+	<a name="ExportImport"></a>
+<h1 >Export/Import<a href="#ExportImport" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>Lattice supports a robust mechanism for exporting and importing all data in the cms.  This allows for an entire site architecture to be dumped and archived, and then re-imported at a later date.</p>
+
+
+	<a name="Exporting"></a>
+<h2 >Exporting<a href="#Exporting" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Export in lattice import format (to be used to share data between lattice installs or back up):</p>
+
+
+<pre>
+export/lattice/{exportName}
+</pre>
+
+	<p>Export in standard xml format (for importing into other applications)</p>
+
+
+<pre>
+export/xml/{exportName}
+</pre>
+
+	<p>Exports are stored in application/export/{exportName} including all media from the site.</p>
+
+
+	<a name="Importing"></a>
+<h2 >Importing<a href="#Importing" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Using the exportName above, run the import route.  This assumes that the corresponding export is present in the application/export/ directory<br /><pre>
+builder/initializeSite/{exportName}
+</pre></p>
+
+
+	<p>WARNING: running this route will wipe the database of all lattice data - so run an export beforehand if you have anything valuable currently in lattice.</p>
+
+
+	<p>ALSO: if your import is very large (ie: if there are a lot of images) you may need to import via. the command line. Here is the command<br /><pre>
+php index.php --uri=builder/initializeSite/march_3
+</pre></p>
+
+
+	<p>There is a fragmentation issue with php so you may also need to increate the memory limit(memory_limit) in php.ini</p>
+
+
+	<a name="CSV-ExportImport"></a>
+<h2 >CSV Export/Import<a href="#CSV-ExportImport" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Lattice also support exporting and importing of a CSV file.</p>
+
+
+	<p>The data in lattice can be exported using the following Kohana route:<br /><pre>
+csv/export
+</pre></p>
+
+
+	<p>Data can be imported using the following Kohana route:<br /><pre>
+csv/import
+</pre></p>
+
+<hr />
+<a name="Frontend" />
+<ul class="toc"><li><a href="#Frontend">Frontend</a><ul><li><a href="#Generating-Views">Generating Views</a></li><li><a href="#Writing-frontendxml-to-provide-custom-data-to-default-views">Writing frontend.xml to provide custom data to default views</a></li><li><a href="#Setting-the-default-route-which-view-to-load-on-your-frontend-site-root">Setting the default route (which view to load on your frontend site root)</a></li></ul></li></ul>
+
+
+	<a name="Frontend"></a>
+<h1 >Frontend<a href="#Frontend" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>Lattice contains a useful utility for configuring and auto-generating frontend views that can be styled and manipulated by designers.  The basic idea is to provide a syntax for providing objects or sets of objects, and creating php views that echo that information.  The frontend.xml implements a set of parameters allowing for filtering of data provided and echoed in frontend views.</p>
+
+
+	<a name="Generating-Views"></a>
+<h2 >Generating Views<a href="#Generating-Views" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>By default, running the view builder will generate the necessary php view files to display data for each objectType declared in objects.xml.  You run the view builder using the following Kohana route:<br /><pre>
+builder/frontend
+</pre><br />This generates views and places the files in <br /><pre>
+application/views/generated/
+</pre><br />These files are overwritten every time the views are re-generated, and are not meant to be edited.  To edit and create custom views, copy these files into<br /><pre>
+application/views/frontend/
+</pre><br />which takes precedence in the search path over application/views/generated/</p>
+
+
+	<a name="Writing-frontendxml-to-provide-custom-data-to-default-views"></a>
+<h2 >Writing frontend.xml to provide custom data to default views<a href="#Writing-frontendxml-to-provide-custom-data-to-default-views" class="wiki-anchor">&para;</a></h2>
+
+
+	<ol>
+	<li>Each view is named to match the object type name defined in objects.xml:<br />  <pre>
+  &lt;view name="NAME"&gt; 
+  &lt;/view&gt;
+  </pre></li>
+		<li>Custom data is added using the include data tag.   The 'label' here is used to name the variable that contains this data in the generated view.<br />  <pre>
+  &lt;view name="NAME"&gt; 
+     &lt;includeData label="INCLUDE_DATA_NAME"/&gt;
+  &lt;/view&gt;
+  </pre></li>
+		<li>and then apply a few filters to indicate which data should be loaded
+	<ul>
+	<li>objectTypeFilter="" can be used to select objects by their type</li>
+		<li>from="" can be used to select objects that are only children of a certain other object
+	<ul>
+	<li>from can be either the text "parent," describing a match against the slug that corresponds to the loading page</li>
+		<li>or from can be set to an existing slug in the current lattice database</li>
+		<li>a third option is to set from to "all" to grab all of the elements of that type in the whole site<br />***COMMON GOTCHA: make sure to set each label to a unique name, or none of the frontend definitions will be found</li>
+	</ol></li>
+	</ul></li>
+	</ul>
+
+
+	<p>Examples:</p>
+
+
+<pre>
+  &lt;view name="NAME"&gt; 
+     &lt;includeData label="INCLUDE_DATA_NAME" objectTypeFilter="OBJECT_TYPE_NAME"/&gt;
+  &lt;/view&gt;
+</pre>
+
+	<p>or :</p>
+
+
+<pre>
+  &lt;view name="NAME"&gt; 
+     &lt;includeData label="INCLUDE_DATA_NAME" from="parent"/&gt;
+  &lt;/view&gt;
+</pre>
+
+	<p>or (for example when a page with slug 'home' exists):</p>
+
+
+<pre>
+  &lt;view name="NAME"&gt; 
+     &lt;includeData label="INCLUDE_DATA_NAME" from="home"/&gt;
+  &lt;/view&gt;
+</pre>
+
+	<a name="Setting-the-default-route-which-view-to-load-on-your-frontend-site-root"></a>
+<h2 >Setting the default route (which view to load on your frontend site root)<a href="#Setting-the-default-route-which-view-to-load-on-your-frontend-site-root" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Is currently done by editing application/boostrap.php or by naming your index objecttype 'homepage' (default value)<br /><pre>
+Route::set('defaultLatticeFrontend', '(&lt;controller&gt;)', array( 'controller'=&gt;'', ) )-&gt;defaults(array(
+    'controller' =&gt; 'homepage',
+    'action' =&gt; 'index',
+));
+</pre></p>
+
+<hr />
+<a name="Frontend_access_to_objects" />
+<a name="Frontend-access-to-objects"></a>
+<h1 >Frontend access to objects<a href="#Frontend-access-to-objects" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>( please rename is it still latticeViews )</p>
+
+<hr />
+<a name="Installation" />
+<a name="Installation"></a>
+<h1 >Installation<a href="#Installation" class="wiki-anchor">&para;</a></h1>
+
+
+	<h2>Dependencies: <br />You must have a basic Apache and PHP environment <br /><pre>
+sudo apt-get install apache2 php5 libapache2-mod-php5 php5-curl
+</pre></h2>
+
+
+	<p>If you don't already have Kohana, follow these instructions:</p>
+
+
+	<p>1. Clone Lattice-development into the root of your server or sub-folder in the root of your server if need be.<br /><pre>
+git clone https://github.com/codebase/Lattice-Development.git
+</pre></p>
+
+
+	<p>2. Then run ant checkout<br /><pre>
+cd Lattice-Development
+ant checkout
+</pre><br />OR<br /><pre>
+cd sub-folder/Lattice-Development
+ant checkout
+</pre></p>
+
+
+	<p>3. run ant init<br /><pre>
+ant init
+</pre></p>
+
+
+	<p>4. edit the database settings in application/config/database.php (to match the database you'll be using)</p>
+
+
+	<p>5. Check Lattice-Development/modules/lattice and if resources are missing, navigate to modules/lattice and run git submodule init and git submodule update to pull in all related resources<br /><pre>
+cd modules/lattice
+git submodule init
+git submodule update
+</pre></p>
+
+
+	<p>6. access the cms at {WebRoot}/cms or <a class="external" href="http://localhost/cms">http://localhost/cms</a></p>
+
+
+	<p>7. Lattice will report that it is not installed. Click install and keep track of the generated admin password.</p>
+
+
+	<p>You can now start using Lattice!</p>
+
+
+	<p><strong>-------- Old installation instructions below --------------</strong></p>
+
+
+	<p>Lattice auto-configures itself one it finds the database, so there is no sql to import manually.</p>
+
+
+	<p>1. Place a copy of a lattice site at your deployment or development location.  For development you would probably git clone the Lattice-Development repository and then run the ant checkout script, while for deployment you would probably want to simply copy an existing build (stripped of all non-deployment files) into place at your development location.</p>
+
+
+	<p>2. Ensure that the database settings in application/config/database.php are correct for your installation location, and then access the cms at {WebRoot}/cms</p>
+
+
+	<p>3. Lattice will report that it is not installed, and offer a link for installation.  Click this link, and make a note of the admin password.  Lattice is now installed (unless you see errors).</p>
+
+
+	<p>4. Start using lattice, unless you have an existing data export that you would like to use.  In this case, use the importing details documented in the <a href="#" class="wiki-page">Export/Import</a> page to do so.</p>
+
+
+	<a name="Re-initialization"></a>
+<h3 >Re-initialization<a href="#Re-initialization" class="wiki-anchor">&para;</a></h3>
+
+
+	<p>The initializers can be re-run by deleting rows from the 'initialized_modules' table.  If all else fails, deleting all lattice related tables (the whole database structure if nothing else is installed) will cause complete re-installation.</p>
+
+<hr />
+<a name="Misc" />
+<a name="Misc"></a>
+<h1 >Misc<a href="#Misc" class="wiki-anchor">&para;</a></h1>
+
+
+	<p><a href="#" class="wiki-page">PHP Memory Issues</a></p>
+
+<hr />
+<a name="Move_Feature" />
+<a name="Move-Feature"></a>
+<h1 >Move Feature<a href="#Move-Feature" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>public function action_move($objectId, $newParentId, $lattice='lattice', $oldParentId=NULL)</p>
+
+
+	<p>The API is as such:<br />cms/move/$objectId/$newParentId</p>
+
+
+	<p>the 3rd and 4th arguments are optional, and only become meaningful when dealing with associator lattices or multiple parents within the same lattice.</p>
+
+<hr />
+<a name="PHP_Memory_Issues" />
+<a name="PHP-Memory-Issues"></a>
+<h1 >PHP Memory Issues<a href="#PHP-Memory-Issues" class="wiki-anchor">&para;</a></h1>
+
+
+<pre>
+echo "&lt;?phpinfo();?&gt;" | php -d memory_limit=500M | grep memory_limit
+</pre>
+
+	<a name="Dreamhost"></a>
+<h2 >Dreamhost<a href="#Dreamhost" class="wiki-anchor">&para;</a></h2>
+
+
+	<p>Dreamhost has PHP5.3 installed at /usr/local/php53/bin/php .  This is much much better.</p>
+
+
+<pre>
+/usr/local/php53/bin/php -d memory_limit=500M -d max_execution_time=2000  index.php --uri=builder/initializeSite/3-14-12-FromCSV 2&gt; error.log
+</pre>
+
+	<p>alias 'php=/usr/local/php53/bin/php'</p>
+
+<hr />
+<a name="RootGraph" />
+<p>hi</p>
+
+<hr />
+<a name="Screen_Shots" />
+<a name="Screen-Shots"></a>
+<h1 >Screen Shots<a href="#Screen-Shots" class="wiki-anchor">&para;</a></h1>
+
+<hr />
+<a name="Wiki" />
+<ul class="toc"><li><a href="#Workflow">Workflow</a></li><li><a href="#Using-Lattice">Using Lattice</a></li><li><a href="#Development-Workflow-and-Infrastructure">Development Workflow and Infrastructure</a></li></ul>
+
+
+	<a name="Workflow"></a>
+<h2 ><a href="#" class="wiki-page">Workflow</a><a href="#Workflow" class="wiki-anchor">&para;</a></h2>
+
+
+	<a name="Using-Lattice"></a>
+<h2 >Using Lattice<a href="#Using-Lattice" class="wiki-anchor">&para;</a></h2>
+
+
+	<p><a href="#" class="wiki-page">Installation</a></p>
+
+
+	<p><a href="#" class="wiki-page">CMS</a></p>
+
+
+	<p><a href="#" class="wiki-page">Frontend</a></p>
+
+
+	<p><a href="#" class="wiki-page">Export/Import</a></p>
+
+
+	<p><a href="#" class="wiki-page"> Accessing objects in frontend templates</a></p>
+
+
+	<p><a href="#" class="wiki-page"> Lost Paswords </a></p>
+
+
+	<p><a href="#" class="wiki-page"> Lattice Config File</a></p>
+
+
+	<a name="Development-Workflow-and-Infrastructure"></a>
+<h2 >Development Workflow and Infrastructure<a href="#Development-Workflow-and-Infrastructure" class="wiki-anchor">&para;</a></h2>
+
+
+	<p><a href="#" class="wiki-page">Dev Docs</a></p>
+
+
+	<p><a href="#" class="wiki-page new">Custom Controllers</a></p>
+
+
+	<p><a href="#" class="wiki-page">Screen Shots</a></p>
+
+
+	<p><a href="#" class="wiki-page">CI</a> (Continuous integration)</p>
+
+
+	<p><a href="#" class="wiki-page">Misc</a></p>
+
+<hr />
+<a name="Workflow" />
+<a name="Workflow"></a>
+<h1 >Workflow<a href="#Workflow" class="wiki-anchor">&para;</a></h1>
+
+
+	<a name="Exporting-Lattice-Data"></a>
+<h2 >Exporting Lattice Data<a href="#Exporting-Lattice-Data" class="wiki-anchor">&para;</a></h2>
+
+
+	<a name="API-Commands"></a>
+<h3 >API Commands<a href="#API-Commands" class="wiki-anchor">&para;</a></h3>
+
+
+	<a name="Lattice-30-Beta"></a>
+<h4 >Lattice 3.0 Beta:<a href="#Lattice-30-Beta" class="wiki-anchor">&para;</a></h4>
+
+
+	<p>Export in lattice import format (to be used to share data between lattice installs or back up):</p>
+
+
+	<ul>
+	<li>export/lattice/{exportName}</li>
+	</ul>
+
+
+	<p>Export in standard xml format:</p>
+
+
+	<ul>
+	<li>export/xml/{exportName}</li>
+	</ul>
+
+
+	<a name="Lattice-30-Alpha"></a>
+<h4 >Lattice 3.0 Alpha:<a href="#Lattice-30-Alpha" class="wiki-anchor">&para;</a></h4>
+
+
+	<p>Export in lattice import format (to be used to share data between lattice installs or back up):</p>
+
+
+	<ul>
+	<li>exportxml/exportMOPFormat/{exportName}</li>
+	</ul>
+
+<hr />
+<a name="_Accessing_objects_in_frontend_templates" />
+<a name="Accessing-objects-in-frontend-templates"></a>
+<h1 > Accessing objects in frontend templates<a href="#Accessing-objects-in-frontend-templates" class="wiki-anchor">&para;</a></h1>
+
+<hr />
+<a name="_Lattice_Config_File" />
+<a name="Lattice-Config-File"></a>
+<h1 > Lattice Config File<a href="#Lattice-Config-File" class="wiki-anchor">&para;</a></h1>
+
+
+latticeviews.php
+
+<pre>
+$config = array();
+$config['layoutsForObjectType']['recentMedia'] = 'nothing';
+$config['layoutsForObjectType']['designItem'] = 'nothing';
+$config['layoutsForObjectType']['designsForArtist'] = 'nothing';
+$config['layoutsForObjectType']['releasesForArtist'] = 'nothing';
+$config['layoutsForObjectType']['release'] = 'nothing';
+
+return $config;
+</pre>
+
+<hr />
+<a name="_Lost_Paswords_" />
+<a name="Lost-Paswords"></a>
+<h1 > Lost Paswords<a href="#Lost-Paswords" class="wiki-anchor">&para;</a></h1>
+
+
+	<p>If you've forgotten your password, and an email for recovery has not been set, follow these steps:</p>
+
+
+	<p>1. open the Database <br />2. open initializedmodules<br />3. delete the latticeauth entry<br />4. navigate to {webroot}/setup and a new admin password will be generated!</p>
+
+
+</body>
+</html>
