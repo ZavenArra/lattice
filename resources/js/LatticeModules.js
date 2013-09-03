@@ -998,7 +998,7 @@ lattice.modules.LatticeAssociator = new Class({
 		this.poolList.spin();
 		var url, jsonRequest;
 		this.filterWord = this.searchInput.get("value");
-		url = this.getFilterPoolByWordsURL( this.getObjectId(), this.element.get('data-lattice'), this.filterWord );
+		url = this.getFilterPoolByWordsURL( this.getObjectId(), this.element.get('data-lattice'), encodeURI(this.filterWord) );
 		jsonRequest = new Request.JSON({
 			url: url,
 			onSuccess: function( json ){ this.onFilteredPoolReceived(json); }.bind( this )

@@ -87,7 +87,7 @@ Route::set('graph', 'graph/<action>(/<param1>(/<param2>))', array( ))
 Route::set('ajax', 'ajax/(<action>)/(<uri>)', array(
 			'controller' => 'ajax',
 			'action' => '[A-z]+',
-			'uri' => '[A-z\/0-9\- \pL]++',
+			'uri' => '[A-z\/0-9\-!@\#$%^&*()<>,.;:" \pL]++',
 				)
 		)
 		->defaults(
