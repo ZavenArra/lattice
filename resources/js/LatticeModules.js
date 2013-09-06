@@ -931,6 +931,7 @@ lattice.modules.LatticeAssociator = new Class({
 	submitDelay: null,
 	oldSort: null,
 	autocomplete: null,
+  filterJsonRequest: null,
 
   /* Section: Getters & Setters */
 
@@ -999,11 +1000,14 @@ lattice.modules.LatticeAssociator = new Class({
 		var url, jsonRequest;
 		this.filterWord = this.searchInput.get("value");
 		url = this.getFilterPoolByWordsURL( this.getObjectId(), this.element.get('data-lattice'), encodeURI(this.filterWord) );
-		jsonRequest = new Request.JSON({
+		if(this.filterJsonRequest != null){
+			this.filterJsonRequest.cancel();
+		}
+		this.filterJsonRequest = new Request.JSON({
 			url: url,
 			onSuccess: function( json ){ this.onFilteredPoolReceived(json); }.bind( this )
 		}).send();
-		return jsonRequest;
+		return this.filterJsonRequest;
 	},
 
 	clearFilter: function( e ){
