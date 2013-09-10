@@ -3,7 +3,7 @@
 $config = array(
 'default'=>array(),
 );
-$config['layout'] = 'LayoutLogin';
+$config['layout'] = 'template/LayoutLogin';
 $config['layout_actions'] = array('index', 'create', 'confirmed');
 
 

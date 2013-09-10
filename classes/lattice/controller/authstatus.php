@@ -11,7 +11,7 @@ class Lattice_Controller_Authstatus extends Controller {
    */
   public function action_index()
   {
-    $view = new View('logged_in_as');
+    $view = new View('auth/logged_in_as');
     if (Auth::instance()->get_user())
     {
       $view->username = Auth::instance()->get_user()->username;

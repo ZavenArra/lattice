@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 class Lattice_Controller_Footer extends Controller {
-  protected $view_prefix = 'footer';
+  protected $view_prefix = 'template/footer';
 
   public function action_build($view_suffix)
   {

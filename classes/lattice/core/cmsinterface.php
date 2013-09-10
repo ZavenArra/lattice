@@ -268,7 +268,7 @@ abstract class Lattice_Core_CMSInterface extends Core_Controller_Layout {
     $object = Graph::object($id);
     $object->deactivate($id);
 
-    $view = new View('lattice_cms_undelete');
+    $view = new View('lattice/lattice_cms_undelete');
     $view->id = $id;
     $this->response->body($view->render());
     $this->response->data(array('deleted' => TRUE));
