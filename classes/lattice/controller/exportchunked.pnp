@@ -213,10 +213,10 @@ class Lattice_Controller_Export extends Controller {
 
 	} 
 
-	public function action_legacy($outputfilename='export')
+	public function action_singlefile($outputfilename='export')
 	{
 
-		$this->legacy('Lattice_format', $outputfilename);
+		$this->singlefile('Lattice_format', $outputfilename);
 
 	} 
 	public function action_xml($outputfilename='export')
@@ -384,7 +384,7 @@ class Lattice_Controller_Export extends Controller {
 
 	}
 
-	public function legacy($format, $outputfilename){
+	public function singlefile($format, $outputfilename){
 
 
 		$this->output_dir = 'application/export/' . $outputfilename . '/';
