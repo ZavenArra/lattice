@@ -274,6 +274,13 @@ lattice.modules.navigation.Navigation = new Class({
 		var newNode = json.response.html.toElement();
 		tierInstance.adoptNode( newNode );
 		tierInstance.onObjectAdded( newNode );
+
+		nodeId = this.getNodeIdFromElement( newNode );
+		slug = this.getSlugFromId( nodeId );
+		tierInstance.setActiveNode( newNode );
+		lattice.historyManager.changeState( "slug", slug );
+		this.onNodeClicked(nodeId, tierInstance);
+		tierInstance.element.getFirst('.nodes').scrollTop = tierInstance.element.getFirst('.nodes').scrollHeight;
 		
 	},
 
@@ -386,13 +393,16 @@ lattice.modules.navigation.Tier = new Class({
 	},
 		
 	adoptNode: function( newNode ){
+
+		var spacer = this.nodeElement.getFirst('.spacer');
+
 		if( this.options.addPosition == "top" ){
-			this.nodeElement.grab( newNode, 'top' );			
+			spacer.grab( newNode, 'top' );			
 		}else{
 			if( this.nodeElement.getElement( ".module" ) ){
 				this.nodeElement.getElement( ".module" ).grab( newNode, 'before' );
 			}else{
-				this.nodeElement.grab( newNode, 'bottom' );				
+				spacer.grab( newNode, 'before' );				
 			}
 		}
 		this.html = this.element.get( "html" );
@@ -500,7 +510,6 @@ lattice.modules.navigation.Tier = new Class({
 	onObjectAdded: function( aNode ){
 		console.log( "onObjectAdded", aNode );
 		if( this.options.allowChildSort && this.sortableList ){
-//			console.log( "onObjectAdded", this.options.allowChildSort, this.sortableList, this.sortableListElement, aNode )
 			this.sortableList.addItems( aNode ); 
 		}
 		this.spinner.hide(); 
