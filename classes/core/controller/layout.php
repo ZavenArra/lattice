@@ -35,6 +35,12 @@ class Core_Controller_Layout extends Core_Controller_Lattice {
     {
       // set layout - read from config file
       $layout = Kohana::config(strtolower($this->request->controller()) . '.layout');
+      
+    //  print_r($layout);
+      
+     // exit;
+      
+      
       if ( ! $layout)
       {
         throw new Kohana_Exception("Layout controller subclass :controller configured to layout action :action, but no layout set in configuration",

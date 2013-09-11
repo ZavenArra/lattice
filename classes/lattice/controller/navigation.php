@@ -21,7 +21,7 @@ class Lattice_Controller_Navigation extends Core_Controller_Lattice{
 
     // $this->view = new View(strtolower($this->controllername));
     // //this should check and extend
-    $this->view = new View('navigation');
+    $this->view = new View('tier/navigation');
     
      //search view
     $search_view = cms_ui::search('live-search');
@@ -184,17 +184,17 @@ class Lattice_Controller_Navigation extends Core_Controller_Lattice{
 
   private function render_tier_view($parent, $nodes)
   {
-    $tier_view = new View('navigation_tier');
+    $tier_view = new View('tier/navigation_tier');
     $nodes_html = array();
     foreach ($nodes as $node)
     {
-      $node_view = new View('navigation_node');
+      $node_view = new View('tier/navigation_node');
       $node_view->content = $node; 
       $nodes_html[] = $node_view->render();
     }
     $tier_view->nodes = $nodes_html;
 
-    $tier_methods_drawer = new View('tier_methods_drawer');
+    $tier_methods_drawer = new View('tier/tier_methods_drawer');
     $addable_objects = $parent->objecttype->addable_objects;
 
     if (cms_util::check_access('superuser'))

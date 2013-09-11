@@ -1,5 +1,5 @@
 <?
 
-$config['layout'] = 'LayoutLogin';
+$config['layout'] = 'template/LayoutLogin';
 
 return $config;

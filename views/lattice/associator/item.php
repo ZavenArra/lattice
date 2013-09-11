@@ -1,3 +1,4 @@
+asdsadadsads
 <li data-objectid="<?=$object->id;?>">
   <div class="itemControls">
     <a class="associate" href="#">Associate This!</a>
