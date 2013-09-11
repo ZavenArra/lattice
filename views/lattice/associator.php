@@ -7,16 +7,6 @@
 <?endforeach;?>
 </ul>
 <?php if ($num_pages > 1):?>
-<<<<<<< HEAD
-<div class="actuator clearFix">
-<h4><?=$pool_label;?></h4>
-<label for="<?=$lattice;?>SearchBox<?=$parent_id;?>" class="filter" >
-Filter results
-<input class="roundedInput" type="text" name="filter" value="" placeholder="Search Text" id="<?=$lattice;?>SearchBox<?=$parent_id;?>" />
-<a href="#" class="filterButton button">Filter</a>
-</label>
-<?if( $num_pages > 1 ):?>
-=======
 	<div class="actuator clearFix">
 		<h4><?=$pool_label;?></h4>		
 		<label for="<?=$lattice;?>SearchBox<?=$parent_id;?>" class="filter" >
@@ -27,7 +17,6 @@ Filter results
 		</label>
 		
 		<?if( $num_pages > 1 ):?>
->>>>>>> d56f3d2067cb20a77eb0b6c22f97b05a6e69adb3
     <div class="paginator" data-num_pages="<?=$num_pages;?>" >
       <ul class="pages">
           <?php
