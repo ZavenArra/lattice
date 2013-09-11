@@ -86,21 +86,21 @@ class Lattice_Model_Objecttype extends ORM {
       $value_from_config=NULL;
       if ($column == 'addable_objects')
       {
-        $x_query .= '/addable_object';
+        $x_query .= '/addableObject';
         $nodes = core_lattice::config('objects', $x_query);
         $value_from_config = array();
         foreach ($nodes as $node)
         {
           $entry = array();
           $entry['object_type_id'] = $node->getAttribute('objectTypeName');
-          $entry['object_type_add_text'] = $node->getAttribute('add_text');
+          $entry['object_type_add_text'] = $node->getAttribute('addText');
           $t_config = core_lattice::config('objects', sprintf('//objectType[@name="%s"]', $entry['object_type_id'] ))->item(0);
           if ( ! count($t_config))
           {
             throw new Kohana_Exception('No object type definition by name: '.$entry['object_type_id']);
           }
-          $entry['nodeType'] = $t_config->getAttribute('node_type');
-          $entry['contentType'] = $t_config->getAttribute('content_type');
+          $entry['nodeType'] = $t_config->getAttribute('nodeType');
+          $entry['contentType'] = $t_config->getAttribute('contentType');
           $value_from_config[] = $entry;
         }
       } else {
