@@ -1,11 +1,11 @@
 <div id="<?=$lattice;?><?=$parent_id;?>" data-objectid="<?=$parent_id;?>" data-lattice="<?=$lattice;?>" class="module associator classPath-lattice_modules_Associator clearfix">
-	
-	<h4><?=$label;?></h4>
-	<ul class="associated clearfix ">
-	<?foreach($associated as $view):?>
-	  <?=$view->render();?>
-	<?endforeach;?>
-	</ul>
+
+<h4><?=$label;?></h4>
+<ul class="associated clearfix ">
+<?foreach($associated as $view):?>
+<?=$view->render();?>
+<?endforeach;?>
+</ul>
 <?php if ($num_pages > 1):?>
 	<div class="actuator clearFix">
 		<h4><?=$pool_label;?></h4>		
@@ -22,25 +22,24 @@
           <?php
           if (!isset($search_term) ) $search_term =null;
           ?>
-          <?php for ($i = 0; $i < $num_pages; $i++):?>
+<?php for ($i = 0; $i < $num_pages; $i++):?>
           <li class="paginator_page_option">
-						<a href="<?php echo url::site("/ajax/compound/associator/get_page/$parent_id/$lattice/$i"); ?> " <?=($i==0)?'class="active"':''?>>
-							<?=($i+1)?>
-						</a>
-					</li>
-					<?php endfor;?>
-      </ul>
-    </div>
-		<?endif;?>
+<a href="<?php echo url::site("/ajax/compound/associator/get_page/$parent_id/$lattice/$i"); ?> " <?=($i==0)?'class="active"':''?>>
+<?=($i+1)?>
+</a>
+</li>
+<?php endfor;?>
+</ul>
+</div>
+<?endif;?>
 
-	</div>
+</div>
 <?php endif;?>
 
-	<ul class="pool clearfix">
-	<?foreach($pool as $view):?>
-	  <?=$view->render();?>
-	<?endforeach;?>
-	</ul>
+<ul class="pool clearfix">
+<?foreach($pool as $view):?>
+<?=$view->render();?>
+<?endforeach;?>
+</ul>
 
-	
 </div>

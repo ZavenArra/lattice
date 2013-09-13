@@ -3,6 +3,11 @@
 class Lattice_Controller_Export extends Controller {
 
 	public $output_dir;
+	private $dtd;
+	private $implementation;
+	private $doc;
+	private $doc_work;
+	private $document_number = 1;
 
 	public function __construct()
 	{
@@ -186,13 +191,15 @@ class Lattice_Controller_Export extends Controller {
 				$item->appendChild($field);
 			}
 
+			$nodes[] = $item;
+
 			// and get the children
 			$child_objects = $object->get_lattice_children();
 			foreach ($this->export_tier_lattice_format($child_objects) as $child_item)
 			{
-				$item->appendChild($child_item);
+				// create a completely flat export array
+				$nodes[] = $child_item;
 			}
-			$nodes[] = $item;
 		}
 
 		return $nodes;
@@ -206,6 +213,12 @@ class Lattice_Controller_Export extends Controller {
 
 	} 
 
+	public function action_singlefile($outputfilename='export')
+	{
+
+		$this->singlefile('Lattice_format', $outputfilename);
+
+	} 
 	public function action_xml($outputfilename='export')
 	{
 
@@ -213,8 +226,166 @@ class Lattice_Controller_Export extends Controller {
 
 	} 
 
+	public function create_document(){
+		$implementation = new DOMImplementation();
+		$dtd = $implementation->createDocumentType('data',
+			'-//WINTERROOT//DTD Data//EN',
+			'../../../modules/lattice/lattice/data.dtd');
+		$doc = $implementation->createDocument('', '', $dtd);
+		return $doc;
+	}
+
+	public function write_document($doc){
+
+		$doc->xml_version="1.0";
+		$doc->encoding="UTF-8";
+		$doc->formatOutput = true;
+		$file_path = $this->output_dir . '/' . $this->document_number++ . '.xml';
+		$doc->save($file_path);
+
+	}
+
+
 	public function export($format, $outputfilename)
 	{
+
+		$this->output_dir = 'application/export/' . $outputfilename . '/';
+
+		try 
+		{
+			mkdir($this->output_dir, 777);
+		} 
+		catch ( Exception $e)
+		{
+			// if the folder already exists, just continue
+		}
+
+		//give permission to application/
+		chmod(getcwd() . '/' . $this->output_dir, 0777);
+		$files = glob($this->output_dir.'*.xml'); // get all xml file names
+		foreach($files as $file){ // iterate files
+			if(is_file($file))
+				unlink($file); // delete file
+		}
+
+		//now copy object.xml to export
+		$source_xml = APPPATH.'lattice/objects.xml';
+		$destination_xml = $this->output_dir.'objects.xml';
+
+		if (copy($source_xml, $destination_xml)) 
+		{
+			echo "copied $source_xml to $destination_xml <br />";
+		}
+		else
+		{
+			echo "failed to copy $source_xml to $destination_xml  <br />";
+		}
+
+		$XML = new DOMDocument();
+		$this->implementation = new DOMImplementation();
+
+		$this->dtd = $this->implementation->createDocumentType('data',
+			'-//WINTERROOT//DTD Data//EN',
+			'../../../modules/lattice/lattice/data.dtd');
+		$object = Graph::get_root_node('cms_root_node');
+		$objects = $object->get_lattice_children();
+
+		$export_function = NULL;
+		// XML Format Export is not now supported by this controller
+		$export_function = 'export_tier_lattice_format';
+
+		$this->doc = $this->create_document();
+		$all_nodes = $this->$export_function($objects);
+
+		$max_entries_per_document = 50;
+		$count = count($all_nodes);
+		$document_begun = false;
+		$data = null;
+		$nodes = null;
+		$doc = null;
+		for($i=0; $i<$count; $i++){
+			if($i % $max_entries_per_document == 0){
+				// start a new nodes document
+				$doc = $this->create_document();
+				$data = $doc->createElement('data');
+				$nodes = $doc->createElement('nodes');
+				$document_begun = true;
+			}
+
+			$node = $doc->importNode($all_nodes[$i], true);
+			$nodes->appendChild($node);
+
+			if($i % $max_entries_per_document == $max_entries_per_document - 1){
+				// end the document and output
+
+				$data->appendChild($nodes);
+				$doc->appendChild($data);
+				$this->write_document($doc);
+				$document_begun = false;
+			}
+		}
+
+		if($document_begun){
+			// last document has not been closed / written
+			$data->appendChild($nodes);
+			$doc->appendChild($data);
+			$this->write_document($doc);
+			$document_begun = false;
+		}
+
+		// For now we will handles lattices as each a separate file
+		// if this doesn't scale well, we can switch to chunking by lattice rather than by item count
+		$lattices = Graph::lattices();
+		foreach ($lattices as $lattice)
+		{
+			$doc = $this->create_document();
+			$data = $doc->createElement('data');
+			$relationships = $doc->createElement('relationships');
+
+			$l = $doc->createElement('lattice');
+			$name_attr = $doc->createAttribute('name');
+			$name_value = $doc->createTextNode($lattice->name);
+			$name_attr->appendChild($name_value);
+			$l->appendChild($name_attr);
+
+			if(count($lattice->get_relationships()) < 1){
+				continue;
+			}
+
+			foreach ($lattice->get_relationships() as $relationship)
+			{
+				$r = $doc->createElement('relationship');
+				$parent_slug = $doc->createTextNode(Graph::object($relationship->object_id)->slug);
+				$parent = $doc->createAttribute('parent');
+				$parent->appendChild($parent_slug);
+				$child_slug = $doc->createTextNode(Graph::object($relationship->connectedobject_id)->slug);
+				$child = $doc->createAttribute('child');
+				$child->appendChild($child_slug);
+				$r->appendChild($parent);
+				$r->appendChild($child);
+				$l->appendChild($r);
+			}
+
+			$relationships->appendChild($l);
+			$data->appendChild($relationships);
+			$doc->appendChild($data);
+			$this->write_document($doc);
+		}
+
+
+		// Copy media last to avoid mysql timeout
+		system('cp -Rp application/media/* ' . $this->output_dir);
+
+		flush();
+		ob_flush();
+
+		//format file
+		echo 'done with export..';
+
+	}
+
+	public function singlefile($format, $outputfilename){
+
 
 		$this->output_dir = 'application/export/' . $outputfilename . '/';
 
@@ -322,163 +493,15 @@ class Lattice_Controller_Export extends Controller {
 
 		//format file
 		$this->doc->formatOutput = true;
-		
+
 		//file_path
 		$arena = $this->output_dir . '/' . $outputfilename . '.xml';
-		
+
 		$this->doc->save($arena);
-		
+
 		echo 'done';
-		$this->create_xml_chunks($arena, $outputfilename);
-	}
-	
-	/**
-	 * Function to break an xml file into several smaller files 
-	 * If the orig xml file is smaller than max size then it will be maintained
-	 * @param string $boundary_tag for product boundary tag name
-	 * @param int $start_at file number to start at 
-	 * @param int max_items how many occurences of the item to break the file at
-	 * @param string $raw_data the raw data from the original xml file
-	 * @param string $fixed_footer if not null then footer will be this string and not computed
-	 * @returns $arrFiles array of filenames created
-	 **/
-	public function create_xml_chunks($arena, $outputfilename)
-	{
-		$footer_filename = 'application/export/' . $outputfilename . '/footer.xml';
-			
-		//load file TODO:: use core_lattice::config();
-		$xml = new SimpleXMLElement($arena, LIBXML_COMPACT, TRUE);
-			
-		$raw_data = $xml->asXML();
-		
-		$start_at = 1;
-		
-		$max_items = 10;
-		
-		//split the data into two part
-		$data = $this->generate_footer($raw_data); 
-		
-		$fixed_footer = $data["footer"]; 
-		$top_data = $data["data"]; 
 
-		$file = fopen($footer_filename, 'w');
-		
-		fwrite($file, $fixed_footer); 
-		
-		fclose($file);
-		
-		$arr = explode("\n", $top_data);
-		
-		// no.of items done in loop. resets to zero everytime a file is created
-		$items = 0; 
-		
-		// count of files created
-		$files = $start_at; 
-		
-		$length = count($arr); 
-		
-		// header block for xml file
-		$header = "";
-		
-		// footer block for xml file
-		$footer = ""; 
-		
-		// chunk of xml data to be written into file
-		$chunk = "";  
-		
-		// array of files created
-		$arr_files = array(); 
-		
-		// true when first boundary tag is found
-		$boundary_is_found = false; 
-		
-		$boundary_tag = "item";
-			
-		// false if some data has not been written to file
-		$file_written = false;	 
 
-		// get footer data
-		$footer_break = "</" . trim($boundary_tag). ">";		
-
-		for ($i = $length-1; $i>= 0; $i--)
-		{
-			$line = $arr[$i];
-			if (strpos($line, $footer_break) == false) 
-			{
-				$footer = $line . "\r\n" . $footer;
-			}
-			else
-			{
-				break;
-			}
-		}
-		
-		// process main data		
-		for ($i = 0;$i < $length; $i++)
-		{
-			$line  = $arr[$i];
-			if (strpos($line, "<". trim($boundary_tag) . ">") !== false || strpos($line, "<" . trim($boundary_tag) ." ") !== false) 
-			{
-				$items ++;
-				$boundary_is_found = true;
-			}
-			if (!$boundary_is_found)
-			{
-				$header .= $line . "\r\n";
-			}
-	
-			if ($items >= $max_items) 
-			{
-				$items = 0;
-				$files++;
-				$filename = 'application/export/' . $outputfilename .'/'. $files . ".xml";
-				$f = fopen($filename, "w");
-				fwrite($f,$header);
-				fwrite($f, $chunk);
-				if ($fixed_footer == null || $fixed_footer == '')
-				{
-					fwrite($f, $footer);
-				}	
-				else
-				{
-					fwrite($f, $fixed_footer);
-				}	
-				fclose($f);
-				$arr_files[] = $filename;
-				$chunk = $line . "\r\n";
-				$file_written = true;
-			}
-			else 
-			{
-				$file_is_written = false;
-				if ($boundary_is_found)
-				{
-					$chunk .= $line . "\r\n";
-				}
-			}
-		}
-
-		if (!$file_is_written ) 
-		{
-			$files++;
-			$filename = 'application/export/' . $outputfilename .'/'. $files . ".xml"; 
-			$f = fopen($filename, "w");
-			fwrite($f,$header);
-			fwrite($f, $chunk);
-			fclose($f);
-			$arr_files[] = $filename;		
-		}
-
-		return $arr_files;
-	}	
-			
-	
-	public function generate_footer($raw_data)
-	{
-		$string = explode('</nodes>', $raw_data);
-		
-		//NB: the footer string has </data> and the end 
-		return array("data"=>$string[0], "footer"=>$string[1]);
 	}
 
 }

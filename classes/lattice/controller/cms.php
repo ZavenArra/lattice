@@ -32,7 +32,7 @@ class Lattice_Controller_CMS extends Lattice_CMS {
 
     // Dial up associated navi and ask for details
     $item = Cms_Navigation::get_node_info_by_id($id);
-    $node_view = new View('navigation_node');
+    $node_view = new View('tier/navigation_node');
     $node_view->content = $item;
     return $node_view->render();
 

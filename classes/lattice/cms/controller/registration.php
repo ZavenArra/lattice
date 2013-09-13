@@ -55,7 +55,7 @@ Class Lattice_Cms_Controller_Registration extends Core_Controller_Layout {
       );
       $confirmation->send();
 
-      $view = new View('confirmation_required');
+      $view = new View('auth/confirmation_required');
       $this->response->body($view->render());
     }
   } 
@@ -71,13 +71,13 @@ Class Lattice_Cms_Controller_Registration extends Core_Controller_Layout {
     $user->status = 'ACTIVE';
     $user->save();
 
-    $view = new View('registration_confirmed');
+    $view = new View('auth/registration_confirmed');
     $this->response->body($view->render());
   }
 
   protected function registration_view($errors=NULL)
   {
-    $view = new View('registration');
+    $view = new View('auth/registration');
     $view->errors = $this->errors;
     isset(    $_POST['username'] ) ? $view->username = $_POST['username'] : $view->username = '';
     isset(    $_POST['password'] ) ? $view->password = $_POST['password'] : $view->password = '';

@@ -16,7 +16,7 @@ Class Lattice_Controller_Setup extends Controller {
 
     if ($initialized)
     {
-      $view = new View('lattice_installed');
+      $view = new View('setup/lattice_installed');
       $this->response->body($view->render());
     } else {
       echo 'A problem occurred';
