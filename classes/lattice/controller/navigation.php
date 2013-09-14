@@ -159,7 +159,7 @@ class Lattice_Controller_Navigation extends Core_Controller_Lattice{
       {
         $object = Graph::object($object_id);
         $deeplink_path[] = $object->id;
-        $parent = $object->get_lattice_parent();
+        $parent = $object->get_lattice_ancestor();
         if ($parent)
         {
           $object_id = $parent->id;

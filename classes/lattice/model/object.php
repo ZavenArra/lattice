@@ -276,7 +276,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
     } elseif ($column == 'parent')
     {
-      return $this->get_lattice_parent(); 
+      return $this->get_lattice_ancestor(); 
 
     } elseif ($column == 'objecttype' OR $column == 'object_type')
     {
@@ -884,7 +884,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
     public function get_next_published_peer()
     {
       $next = Graph::object()
-        ->lattice_children_filter($this->get_lattice_parent()->id)
+        ->lattice_children_filter($this->get_lattice_ancestor()->id)
         ->where('published', '=', 1)
         ->where('activity', 'IS', NULL)
         ->order_by('objectrelationships.sortorder', 'ASC')
@@ -902,7 +902,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
     public function get_prev_published_peer()
     {
       $next = Graph::object()
-        ->lattice_children_filter($this->get_lattice_parent()->id)
+        ->lattice_children_filter($this->get_lattice_ancestor()->id)
         ->where('published', '=', 1)
         ->where('activity', 'IS', NULL)
         ->order_by('objectrelationships.sortorder',  'DESC')
@@ -920,7 +920,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
     public function get_first_published_peer()
     {
       $first = Graph::object()
-        ->lattice_children_filter($this->get_lattice_parent()->id)
+        ->lattice_children_filter($this->get_lattice_ancestor()->id)
         ->where('published', '=', 1)
         ->where('activity', 'IS', NULL)
         ->order_by('objectrelationships.sortorder', 'ASC')
@@ -937,7 +937,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
     public function get_last_published_peer()
     {
       $last = Graph::object()
-        ->lattice_children_filter($this->get_lattice_parent()->id)
+        ->lattice_children_filter($this->get_lattice_ancestor()->id)
         ->where('published', '=', 1)
         ->where('activity', 'IS', NULL)
         ->order_by('objectrelationships.sortorder', 'DESC')
@@ -1495,7 +1495,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
       }
     }
 
-    public function get_lattice_parent($lattice='lattice')
+    public function get_lattice_ancestor($lattice='lattice')
     {
       return $this->get_lattice_ancestors($lattice, TRUE);
     }
@@ -1545,7 +1545,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
         {
           return TRUE;
         }
-      } while($object = $object->get_lattice_parent($lattice) );
+      } while($object = $object->get_lattice_ancestor($lattice) );
 
       return FALSE;
     }
@@ -1988,7 +1988,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
     public function move($new_lattice_parent, $lattice='lattice', $old_lattice_parent=NULL)
     {
-      $old_lattice_parent == NULL ? $old_lattice_parent = $this->get_lattice_parent() : $old_lattice_parent = Graph::object($old_lattice_parent);
+      $old_lattice_parent == NULL ? $old_lattice_parent = $this->get_lattice_ancestor() : $old_lattice_parent = Graph::object($old_lattice_parent);
       $new_lattice_parent = Graph::object($new_lattice_parent);
       $old_lattice_parent->remove_lattice_relationship('lattice',$this);
       $new_lattice_parent->add_lattice_relationship('lattice',$this);
