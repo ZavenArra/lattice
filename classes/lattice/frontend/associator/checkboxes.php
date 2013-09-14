@@ -53,7 +53,7 @@ Class Lattice_Cms_Associator_Checkboxes {
     $this->lattice = $lattice;
     $this->filters = $filters; 
 
-    foreach ($this->parent->get_lattice_children($this->lattice) as $child)
+    foreach ($this->parent->get_lattice_descendents($this->lattice) as $child)
     {
       $this->associated[] = $child;
     }

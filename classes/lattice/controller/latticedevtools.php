@@ -72,7 +72,7 @@ class Lattice_Controller_Latticedevtools extends Core_Controller_Lattice
 		foreach($lattices as $lattice)
 		{
 			//get lattice children
-			$children = $object->get_lattice_children($lattice->name);
+			$children = $object->get_lattice_descendents($lattice->name);
 
 			if(!is_object($children) )
 			{
