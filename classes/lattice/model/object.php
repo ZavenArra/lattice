@@ -1472,7 +1472,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
    }
      */
 
-    public function lattice_children_query($lattice='lattice')
+    public function lattice_descendents_query($lattice='lattice')
     {
       return Graph::instance()->lattice_children_filter($this->id, $lattice);
 
@@ -1481,7 +1481,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
     public function get_lattice_ancestors($lattice='lattice', $just_one = FALSE)
     {
 
-      $lattice_parents = $this->lattice_parents_query($lattice)->find_all();
+      $lattice_parents = $this->lattice_ancestors_query($lattice)->find_all();
       if ($just_one)
       {
         if (count($lattice_parents))
@@ -1511,7 +1511,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
     }
 
-    public function lattice_parents_query($lattice='lattice')
+    public function lattice_ancestors_query($lattice='lattice')
     {
       return Graph::instance()->lattice_parents_filter($this->id, $lattice);
 

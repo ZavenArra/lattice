@@ -83,7 +83,7 @@ Class Lattice_Cms_Associator {
         {
           $from = Graph::object($filter['from']);
           ($filter['lattice']) ? $lattice = $filter['lattice'] : ( $lattice = 'lattice' );
-          $objects = $from->lattice_children_query($lattice);
+          $objects = $from->lattice_descendents_query($lattice);
         }
 
         if (isset($filter['tagged']) AND $filter['tagged'])
