@@ -1518,9 +1518,10 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
     }
 
 
-    public function get_published_parents($lattice='lattice')
+    public function get_published_ancestors($lattice='lattice')
     {
-      $this->get_lattice_ancestors($lattice, TRUE);
+      $lattice_parents = $this->lattice_ancestors_query($lattice)->published_filter()->find_all();
+			return $lattice_parents;
     }
 
 
