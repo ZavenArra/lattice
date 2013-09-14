@@ -533,9 +533,7 @@ initList: function(){
       var ref;			
       delimiter = ( !delimiter )? "_" : delimiter;
       classPath = classPath.split( delimiter );
-//			console.log( "\t\tinitModule classPath",  classPath );
       classPath.each( function( node ){
-//				console.log( 'node', node, ref );
          ref = ( !ref )? this[node] : ref[node]; 
       });
 			//log( 'getClassFromClassPath', ref );
@@ -543,14 +541,12 @@ initList: function(){
    },
 	
 	addObjectRequest: function( e, path ){
-//		console.log( 'addObjectRequest', path );
 		e.preventDefault();
 		this.listing.spin();
 		return new Request.JSON( {url: this.getAddObjectURL( path ), onSuccess: this.onAddObjectResponse.bind( this )} ).send();
 	},
     
 	onAddObjectResponse: function( json ){
-//		console.log( "onAddObjectResponse", json );
 		this.listing.unspin();
 		var element, listItem, addItemText, classPath, ref;
 		element = json.response.html.toElement();
@@ -579,7 +575,6 @@ initList: function(){
 	insertItem: function( anItem ){
 		var where, listItemInstance, coords;
 		where = ( this.options.sortDirection == "DESC" )? "top" : "bottom";
-//		console.log( "\t", this.options.sortDirection, where );
 		this.listing.grab( anItem.element, where );
 		if( this.allowChildSort && this.sortableList ) this.sortableList.addItems( anItem.element );
 		Object.each( anItem.UIFields, function( aUIField ){
@@ -669,7 +664,6 @@ lattice.modules.ListItem = new Class({
   /* Section: Getters & Setters */
 	getSaveFieldURL: function(){
 		var url =  this.marshal.getSaveFieldURL( this.getObjectId() );
-//		console.log( "listItem.getSaveFieldURL", url );
 		return url;
 	},
 
@@ -766,7 +760,6 @@ lattice.modules.LatticeRadioAssociator = new Class({
 			oldel.erase( "checked" );
 		}
 		this.activeItem = el;			
-		console.log( 'associateRequest', el, 	this.activeItem.get("data-objectid") );
 		return new Request.JSON({
 			url: this.getAssociateURL( this.getObjectId(), this.activeItem.get('data-objectid'), this.element.get('data-lattice')  ), 
 			onSuccess: function( json ){ this.onAssociateResponse( json ); }.bind( this )
@@ -778,7 +771,6 @@ lattice.modules.LatticeRadioAssociator = new Class({
 	},
 
 	dissociateRequest: function( objid ){
-		console.log( 'dissociateRequest', objid );
 		lattice.util.EventManager.broadcastMessage( "resize" );          
 		var jsonRequest = new Request.JSON({
 			url: this.getDissociateURL( this.getObjectId(), objid, this.element.get('data-lattice') ),
@@ -1192,7 +1184,6 @@ lattice.modules.LatticeAssociator = new Class({
  },
 	
 	associateRequest: function( item ){
-//		console.log( 'addObjectRequest', item, this.toString() );
 		var el = item.element;
 		this.associated.grab( el );
 		el.spin();
@@ -1202,7 +1193,6 @@ lattice.modules.LatticeAssociator = new Class({
 	},
     
 	onAssociateResponse: function( json, item ){
-//		console.log( "onAssociateResponse", json );
 		item.element.unspin();
 		var element, listItem, addItemText, classPath, ref;
 		associateText = this.controls.getElement( ".associate" ).get( "text" );
@@ -1227,7 +1217,6 @@ lattice.modules.LatticeAssociator = new Class({
 	},
 	
 	makeSortable: function(){
-		// console.log( "makeSortable", this.sortableList );
 		if( !this.sortableList ){
 			this.sortableList = new lattice.ui.Sortable( this.associated, this, $( document.body ) );
 		}else{
@@ -1303,7 +1292,6 @@ lattice.modules.AssociatorItem = new Class({
   /* Section: Getters & Setters */
 	getSaveFieldURL: function(){
 		var url =  this.marshal.getSaveFieldURL( this.getObjectId() );
-//		console.log( "AssociatorItem.getSaveFieldURL", url );
 		return url;
 	},
 
@@ -1323,7 +1311,6 @@ lattice.modules.AssociatorItem = new Class({
 		this.marshal = aMarshal;
 		this.instanceName = this.element.get( "id" );
 		this.objectId = this.element.get("data-objectid");
-//		console.log( "ASSOCIATORITEM", this.objectId );
 		this.build();
 	},
 
