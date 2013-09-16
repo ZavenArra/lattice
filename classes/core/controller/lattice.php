@@ -101,7 +101,7 @@ class Core_Controller_Lattice extends Controller {
 
     if ( ! $access_granted)
     {
-      $redirect = 'accessdenied';
+      $redirect = 'access_denied';
       Request::current()->redirect(url::site($redirect,Request::current()->protocol(),FALSE));
       exit;
     }
