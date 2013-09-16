@@ -5,7 +5,7 @@ Class Lattice_Controller_Publicmenu extends Core_Controller_Lattice {
 
   public function action_index()
   {
-    $this->view = new View('publicnav');
+    $this->view = new View('public_nav');
 
     $top_level = Graph::get_root_node('cms_root_node')
       ->lattice_children_query('public_site') 
