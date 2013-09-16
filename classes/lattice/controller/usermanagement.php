@@ -326,7 +326,7 @@ Class Lattice_Controller_Usermanagement extends Core_Controller_Layout {
 
           if ($_POST['field'] == 'password')
           {
-            $body = new View('auth/usermanagement_passwordchangeemail');
+            $body = new View('auth/usermanagement_password_change_email');
             $body->username = $user->username;
             $body->password = $_POST['value'];
 

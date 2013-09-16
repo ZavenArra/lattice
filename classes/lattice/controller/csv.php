@@ -103,7 +103,7 @@ Class Lattice_Controller_CSV extends Controller {
 
   public function action_import()
   {
-    $view = new View('csv/uploadform');
+    $view = new View('csv/upload_form');
     $this->response->body($view->render());
   }
 
