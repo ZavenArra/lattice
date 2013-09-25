@@ -16,4 +16,3 @@ class Controller_List extends Lattice_Controller_List {
 
 }
 
-?>

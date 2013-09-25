@@ -276,7 +276,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
     } elseif ($column == 'parent')
     {
-      return $this->get_lattice_parent(); 
+      return $this->get_lattice_ancestor(); 
 
     } elseif ($column == 'objecttype' OR $column == 'object_type')
     {
@@ -566,7 +566,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
       $this->content_driver()->undelete();
       $this->_save();
 
-      $children = $object->get_lattice_children();
+      $children = $object->get_lattice_descendents();
       foreach ($children as $child)
       {
         $child->cascade_undelete();
@@ -580,7 +580,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
       $this->slug = DB::expr('NULL');
       $this->_save();
 
-      $children = $this->get_lattice_children();
+      $children = $this->get_lattice_descendents();
       foreach ($children as $child)
       {
         $child->cascade_delete($permanent);
@@ -796,7 +796,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
       foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/associator', $this->objecttype->objecttypename)) as $list)
       {
         $name = $list->getAttribute('name');
-        $content[$name] = $this->get_lattice_children($list->getAttribute('name'));;
+        $content[$name] = $this->get_lattice_descendents($list->getAttribute('name'));;
       }
       return $content;
     }
@@ -858,7 +858,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
       return $children;
     }
 
-    public function get_lattice_children($lattice = 'lattice')
+    public function get_lattice_descendents($lattice = 'lattice')
     {
       $children = Graph::object()
         ->lattice_children_filter($this->id, $lattice)
@@ -869,7 +869,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
     }
 
-    public function get_lattice_children_paged($lattice = 'lattice')
+    public function get_lattice_descendents_paged($lattice = 'lattice')
     {
       $children = Graph::object()
         ->lattice_children_filter_paged($this->id, $lattice)
@@ -884,7 +884,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
     public function get_next_published_peer()
     {
       $next = Graph::object()
-        ->lattice_children_filter($this->get_lattice_parent()->id)
+        ->lattice_children_filter($this->get_lattice_ancestor()->id)
         ->where('published', '=', 1)
         ->where('activity', 'IS', NULL)
         ->order_by('objectrelationships.sortorder', 'ASC')
@@ -902,7 +902,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
     public function get_prev_published_peer()
     {
       $next = Graph::object()
-        ->lattice_children_filter($this->get_lattice_parent()->id)
+        ->lattice_children_filter($this->get_lattice_ancestor()->id)
         ->where('published', '=', 1)
         ->where('activity', 'IS', NULL)
         ->order_by('objectrelationships.sortorder',  'DESC')
@@ -920,7 +920,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
     public function get_first_published_peer()
     {
       $first = Graph::object()
-        ->lattice_children_filter($this->get_lattice_parent()->id)
+        ->lattice_children_filter($this->get_lattice_ancestor()->id)
         ->where('published', '=', 1)
         ->where('activity', 'IS', NULL)
         ->order_by('objectrelationships.sortorder', 'ASC')
@@ -937,7 +937,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
     public function get_last_published_peer()
     {
       $last = Graph::object()
-        ->lattice_children_filter($this->get_lattice_parent()->id)
+        ->lattice_children_filter($this->get_lattice_ancestor()->id)
         ->where('published', '=', 1)
         ->where('activity', 'IS', NULL)
         ->order_by('objectrelationships.sortorder', 'DESC')
@@ -1472,16 +1472,16 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
    }
      */
 
-    public function lattice_children_query($lattice='lattice')
+    public function lattice_descendents_query($lattice='lattice')
     {
       return Graph::instance()->lattice_children_filter($this->id, $lattice);
 
     }
 
-    public function get_lattice_parents($lattice='lattice', $just_one = FALSE)
+    public function get_lattice_ancestors($lattice='lattice', $just_one = FALSE)
     {
 
-      $lattice_parents = $this->lattice_parents_query($lattice)->find_all();
+      $lattice_parents = $this->lattice_ancestors_query($lattice)->find_all();
       if ($just_one)
       {
         if (count($lattice_parents))
@@ -1495,9 +1495,9 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
       }
     }
 
-    public function get_lattice_parent($lattice='lattice')
+    public function get_lattice_ancestor($lattice='lattice')
     {
-      return $this->get_lattice_parents($lattice, TRUE);
+      return $this->get_lattice_ancestors($lattice, TRUE);
     }
 
     public function lattice_parents_filter($child_id, $lattice="lattice")
@@ -1511,16 +1511,17 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
     }
 
-    public function lattice_parents_query($lattice='lattice')
+    public function lattice_ancestors_query($lattice='lattice')
     {
       return Graph::instance()->lattice_parents_filter($this->id, $lattice);
 
     }
 
 
-    public function get_published_parents($lattice='lattice')
+    public function get_published_ancestors($lattice='lattice')
     {
-      $this->get_lattice_parents($lattice, TRUE);
+      $lattice_parents = $this->lattice_ancestors_query($lattice)->published_filter()->find_all();
+			return $lattice_parents;
     }
 
 
@@ -1545,7 +1546,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
         {
           return TRUE;
         }
-      } while($object = $object->get_lattice_parent($lattice) );
+      } while($object = $object->get_lattice_ancestor($lattice) );
 
       return FALSE;
     }
@@ -1988,7 +1989,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
     public function move($new_lattice_parent, $lattice='lattice', $old_lattice_parent=NULL)
     {
-      $old_lattice_parent == NULL ? $old_lattice_parent = $this->get_lattice_parent() : $old_lattice_parent = Graph::object($old_lattice_parent);
+      $old_lattice_parent == NULL ? $old_lattice_parent = $this->get_lattice_ancestor() : $old_lattice_parent = Graph::object($old_lattice_parent);
       $new_lattice_parent = Graph::object($new_lattice_parent);
       $old_lattice_parent->remove_lattice_relationship('lattice',$this);
       $new_lattice_parent->add_lattice_relationship('lattice',$this);

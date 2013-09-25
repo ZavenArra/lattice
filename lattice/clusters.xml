@@ -27,24 +27,8 @@
 			</elements>
 		</objectType>
 		
-		<objectType name="plant">
-			<elements>
-			<plantType name="plantType" label="Type of Plant"/>
-			<seasons name="seasonsEdible" label="All Seasons this Plant is Edible"/>
-			<seasons name="primarySeasonsEdible" label="Primary Seasons this Plant is Edible"/>
-							
-			<foodUses name="foodUses" label="Food Uses"/>
-			<edibleParts name="edibleParts" label="Parts to Use"/>
-							
-			<habitats name="habitats" label="Habitats"/>
-			<habitats name="primaryHabitats" label="Primary Habitats"/>
-			</elements>
-		</objectType>
-		
-		
-		
 
-<!-- @Todo, create an image cluster so that it's not necessary to define it via the ojbecttype, although that gives you more control over the markup, still some defaults are nice -->
+<!-- @Todo, create an image cluster so that it's not necessary to define it via the obecttype, although that gives you more control over the markup, still some defaults are nice -->
 	</clusters>
 
 </configuration>

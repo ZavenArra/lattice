@@ -53,7 +53,7 @@ Class Lattice_Cms_Associator_Checkboxes {
     $this->lattice = $lattice;
     $this->filters = $filters; 
 
-    foreach ($this->parent->get_lattice_children($this->lattice) as $child)
+    foreach ($this->parent->get_lattice_descendents($this->lattice) as $child)
     {
       $this->associated[] = $child;
     }
@@ -74,7 +74,7 @@ Class Lattice_Cms_Associator_Checkboxes {
         {
           $from = Graph::object($filter['from']);
           ($filter['lattice']) ? $lattice = $filter['lattice'] : $lattice = 'lattice';
-          $objects = $from->lattice_children_query($lattice);
+          $objects = $from->lattice_descendents_query($lattice);
         }
 
         if (isset($filter['tagged']) AND $filter['tagged'])

@@ -157,7 +157,7 @@ class Lattice_Controller_Export extends Controller {
 			}
 
 			// and get the children
-			$child_objects = $object->get_lattice_children();
+			$child_objects = $object->get_lattice_descendents();
 
 			foreach ($this->export_tier($child_objects) as $child_item)
 			{
@@ -187,7 +187,7 @@ class Lattice_Controller_Export extends Controller {
 			}
 
 			// and get the children
-			$child_objects = $object->get_lattice_children();
+			$child_objects = $object->get_lattice_descendents();
 			foreach ($this->export_tier_lattice_format($child_objects) as $child_item)
 			{
 				$item->appendChild($child_item);
@@ -259,7 +259,7 @@ class Lattice_Controller_Export extends Controller {
 		$nodes = $this->doc->createElement('nodes');
 
 		$object = Graph::get_root_node('cms_root_node');
-		$objects = $object->get_lattice_children();
+		$objects = $object->get_lattice_descendents();
 
 		$export_function = NULL;
 		switch($format)

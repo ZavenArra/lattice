@@ -58,7 +58,7 @@ Class Lattice_Controller_CSV extends Controller {
 
   private function csv_walk_tree($parent, $example = FALSE)
   {
-    $objects = $parent->get_lattice_children();
+    $objects = $parent->get_lattice_descendents();
 
     if ($example OR ($this->level > 0 AND count($objects)))
     {
