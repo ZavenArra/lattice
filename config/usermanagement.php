@@ -17,7 +17,7 @@ $config['resources']['libraryjs'] = array(
 	'modules/lattice/resources/js/usermanagement.js',
 );
 
-$config['layout'] = 'template/LayoutAdmin';
+$config['layout'] = 'template/layout_admin';
 //$config['authrole'] = 'admin';
 
 /*

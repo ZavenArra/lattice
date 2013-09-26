@@ -21,7 +21,7 @@ Class Lattice_Controller_Usermanagement extends Core_Controller_Layout {
    * Variable: view_name 
    * Name of the main view to load, also used for javascript class and instance.
    */
-  protected $view_name = 'auth/usermanagement';
+  protected $view_name = 'auth/user_management';
 
   /*
    * Variable: managed_roles
@@ -326,7 +326,7 @@ Class Lattice_Controller_Usermanagement extends Core_Controller_Layout {
 
           if ($_POST['field'] == 'password')
           {
-            $body = new View('auth/usermanagement_passwordchangeemail');
+            $body = new View('auth/user_management_password_change_email');
             $body->username = $user->username;
             $body->password = $_POST['value'];
 
