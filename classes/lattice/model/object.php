@@ -842,10 +842,10 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
         ->where('activity', 'IS', NULL)
         ->find();
 
-      return $container->get_published_children();
+      return $container->get_published_descendents();
     }
 
-    public function get_published_children($lattice = 'lattice')
+    public function get_published_descendents($lattice = 'lattice')
     {
 
       $children = Graph::object()->lattice_children_filter($this->id, $lattice)
