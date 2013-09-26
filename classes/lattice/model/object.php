@@ -789,7 +789,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
       foreach (core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/list', $this->objecttype->objecttypename)) as $list)
       {
         $name = $list->getAttribute('name');
-        $content[$name] = $this->get_list_content_as_array($name);
+        $content[$name] = $this->get_list_collection_as_array($name);
       }
 
       // find any associators
@@ -821,9 +821,9 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
     }
 
-    public function get_list_content_as_array($family)
+    public function get_list_collection_as_array($family)
     {
-      $iter = $this->get_list_content($family);
+      $iter = $this->get_list_collection($family);
       $content = array();
       foreach ($iter as $item)
       {
@@ -832,7 +832,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
       return $content;
     }
 
-    public function get_list_content($family)
+    public function get_list_collection($family)
     {
       // get container
       $c_template = ORM::Factory('objecttype', $family);
