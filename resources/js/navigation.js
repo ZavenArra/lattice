@@ -10,6 +10,7 @@ lattice.modules.navigation.Navigation = new Class({
 	breadCrumbs: null,
 	tiers: [],
 	numberOfVisiblePanes: 3,
+	currentNodeId: null,
 	options: {
 		addObjectPosition: 'bottom'
 	},
@@ -56,12 +57,17 @@ lattice.modules.navigation.Navigation = new Class({
 	},
 
 	onNodeClicked: function( nodeId, tier ){ 
+		if(nodeId == this.currentNodeId){
+			return;
+		}
+
+		this.currentNodeId = nodeId;
 		var paneIndex, node;
 		this.clearPendingTierRequest();
 		node = this.nodeData[ nodeId ];
 		paneIndex = ( this.getVisibleTiers().indexOf( tier ) > 0 )? this.getVisibleTiers().indexOf( tier ) : 0;		
 
-		console.log( "onNodeClicked ", nodeId, tier );
+		console.log( "paneIndex: " + paneIndex );
 		this.detachTiers( paneIndex + 1 );
 		this.removeCrumbs( paneIndex + 1 );
 		this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
@@ -233,13 +239,19 @@ lattice.modules.navigation.Navigation = new Class({
 		this.slideToCurrentTier( newPane );
 	},
 	
-	slideToCurrentTier: function( target ){
+	slideToCurrentTier: function( target ){ 
+		var container =  this.element.getElement( ".container" );
+		var panes = this.element.getElement( ".panes" );
 		if( !target || this.getPanes().indexOf( target ) < this.numberOfVisiblePanes ){
-			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).toLeft();
+			navSlideFx = new Fx.Scroll( container ).toLeft();
 		}else{
-			var coords = this.element.getElement('.container').getCoordinates();
-			var targetCoords = target.getCoordinates();
-			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).start( targetCoords.left - targetCoords.width - coords.left , 0 );//toRight( target );
+			var coords = container.getCoordinates();
+			var targetCoords = target.getCoordinates( panes );
+			console.log("targetCoords.left: " + targetCoords.left + " targetCoords.width: " + targetCoords.width + " coords.left: " + coords.left);
+			var leftCoord = targetCoords.left - 2 * targetCoords.width; //- coords.left;
+			//leftCoord = 400;
+			console.log("left: " + leftCoord );
+			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).start( leftCoord , 0 );
 		}		
 	},
 	
