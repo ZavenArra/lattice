@@ -168,7 +168,7 @@ lattice.ui.UIField = new Class({
 			this.validationSticky.setMessage( "<p>Error: " + errorMessage + "</p>" );
 		}
 		this.validationSticky.show();
-		console.log('showValidationError', this.validationSticky );
+
 	},
 	
 	destroyValidationSticky: function(){
@@ -196,12 +196,12 @@ lattice.ui.UIField = new Class({
 		var controller = ( this.element.getData( 'controller' ) )? this.element.getData( 'controller' ) : 'cms';
 		var action = ( this.element.getData( 'action' ) )? this.element.getData( 'action' ) : 'save_field';
 		
-		console.log( 'submit', this.fieldName, controller, action );
+
 		this.marshal.saveField( { field: this.fieldName, value: val }, this.onResponse.bind( this ), controller, action );
 	},	
 
 	destroy: function(){
-//		console.log( ">>>> ", this.fieldName, "destroy!" );
+
 		this.fieldName = null;	
 		this.parent();
 	}
@@ -368,14 +368,14 @@ lattice.ui.Tabs = new Class({
 	},
 
 	onTabClicked: function( e, tab ){
-		console.log( 'onTabClicked', tab, tab.get( 'data-targetselector' ) );
+
 		if( e ) e.preventDefault();
 		var target = this.element.getElement( '.tab-contents .' + tab.get( 'data-targetselector' ) );
 		this.activeTab.removeClass( 'active' );
 		this.activeTab = tab;
 		this.activePanel.addClass('hidden');
 		tab.addClass('active');
-		console.log( target, tab );
+
 		target.removeClass('hidden');
 		this.activePanel = target;
 	}
@@ -407,7 +407,7 @@ lattice.ui.navigation.BreadCrumbTrail = new Class({
 	initialize: function( anElement, onCrumbClickedCallback ){
 		this.element = anElement;
 		this.onCrumbClickedCallback = onCrumbClickedCallback;
-		//console.log( "BreadCrumbTrail", this, this.element );
+
 	},
 	
 	toString: function(){
@@ -435,7 +435,7 @@ lattice.ui.navigation.BreadCrumbTrail = new Class({
 	
 	onCrumbClicked: function( e, obj ){
 		lattice.util.stopEvent( e );
-		console.log( "::::: \t onBreadCrumbClicked", obj );
+
 		this.onCrumbClickedCallback( obj );
 	},
 	
@@ -448,7 +448,7 @@ lattice.ui.navigation.BreadCrumbTrail = new Class({
 	removeCrumbByLabel: function( label ){
 		this.getCrumbs().each( function( aCrumb ){
 			if( label == aCrumb.retrieve( 'data' ).label ){
-//				console.log('!', label, aCrumb.retrieve( 'data' ).label, aCrumb );
+
 				aCrumb.destroy();
 			}
 		});			
@@ -471,7 +471,7 @@ lattice.ui.ModalManager = new Class({
 	initialize: function(){},
 	
 	addListener: function( aListener ){
-//		console.log( this.toString(), "addListener", aListener );
+
 		this.parent( aListener );
 	},
 	
@@ -502,7 +502,7 @@ lattice.ui.ModalManager = new Class({
 	
 	getScroll: function(){
 		var returnVal =  ( this.activeModal )? this.activeModal.element.getScroll() : window.getScroll();
-//		console.log( this.toString(), "getScroll", returnVal );
+
 		return returnVal;
 	},
 
@@ -556,7 +556,7 @@ lattice.ui.Sortable = new Class({
 		constrain: false,
 		onComplete: function( droppedItem, ghostItem ){
 
-		console.log( "::::", arguments );
+
 			this.isSorting = false; 
 			this.scroller.stop();
 			droppedItem.removeClass('ghost');
@@ -573,7 +573,7 @@ lattice.ui.Sortable = new Class({
 		}
 	},
 	initialize: function( anElement, marshal, scrollerTarget ){
-//	   console.log( ":: lattice.ui.Sortable", anElement, marshal, scrollerTarget );
+
 		this.marshal = marshal;
 		this.element = anElement;
 		this.parent( anElement, this.options );
@@ -683,7 +683,7 @@ lattice.ui.Modal = new Class({
 		toString: function(){ return "[ object, lattice.ui.Modal ]"; },
 		
 		show: function(){
-			console.log( this.modalAnchor, 'show', this.boundOnKeyPress );
+
 			$(window).addEvent( 'keydown', this.boundOnKeyPress );
 			this.element.setStyle( "opacity", 0 );
 			this.element.removeClass("hidden");
@@ -691,7 +691,7 @@ lattice.ui.Modal = new Class({
 		},
 
 		onKeyPress: function( e ){
-			console.log( "onKeyPress", e.key );
+
 			if( e.key == 'esc'){
 				this.cancel();
 			}
@@ -766,7 +766,7 @@ lattice.ui.ModuleModal = new Class({
 
 	cancel: function( e ){
 		lattice.util.stopEvent( e );
-		console.log("!", this.onKeyPress );
+
 		$( window ).removeEvent( 'keydown', this.boundOnKeyPress );
 		if( this.options.onCancel ) this.options.onCancel();
 		// put element back where it belongs
@@ -1124,7 +1124,7 @@ lattice.ui.DatePicker = new Class({
 		
 	initialize: function( anElement, options ){
 		this.parent( anElement, options );
-//		console.log( 'datepicker', anElement, options );
+
 		this.format = ( this.element.getData('format') )? this.element.getData('format') : this.options.format;
 		this.allowEmpty = ( this.element.getData('allowempty') )? this.element.getData('allowempty') : this.options.allowEmpty;
 		this.dateField = this.element.getElement("input");
@@ -1152,7 +1152,7 @@ lattice.ui.DatePicker = new Class({
 	
 	onShow: function(){
 		var scrollData = ( this.scrollContext == "modal" )? lattice.ModalManager.getActiveModal().getScrollOffset() : $( window ).getScroll();
-		console.log( 'onShow', scrollData );
+
 	//	this.reposition( scrollData );
 	},
 
@@ -1295,7 +1295,7 @@ lattice.ui.DateRange = new Class({
 	getDates: function(){
 		Picker.Data.Range.getStartEndDate( this.dateField );
 		var dates = { startDate: startDate, endDate: endDate };
-		console.log( 'daterange.getDates', dates );
+
 		return dates;
 	},
 	
@@ -1304,7 +1304,7 @@ lattice.ui.DateRange = new Class({
 		var returnVal = {};
 		returnVal[ this.fieldName + "_startDate" ] = vals[0];
 		returnVal[ this.fieldName + "_endDate" ] = vals[1];
-		console.log( 'daterange.getKeyValuePair', returnVal );
+
 		return returnVal;
 	}
 	
@@ -1405,7 +1405,7 @@ lattice.ui.FileElement = new Class({
 
 	clearFile: function( e ){
 		e.preventDefault();
-		//console.log( 'clearField' );
+
 		if( this.previewElement ){
 			this.imageFadeOut = new Fx.Morph( this.imagePreview, {
 				'duration': 300,
@@ -1479,7 +1479,7 @@ lattice.ui.FileElement = new Class({
 	},
 
 	validate: function() {
-//		console.log( this.toString(), 'validate' );
+
 		var options = this.uploader.options;
 		if (options.fileListMax && this.uploader.fileList.length >= options.fileListMax) {
 			this.validationError = 'fileListMax';
@@ -1494,14 +1494,14 @@ lattice.ui.FileElement = new Class({
 	},
 
 	invalidate: function() {
-//		console.log( this.toString(), "invalidate" );
+
 		this.invalid = true;
 		this.uploader.fireEvent( 'fileInvalid', this, 10 );
 		return this.fireEvent( 'invalid', this, 10 );
 	},
 
 	render: function() {
-//		console.log( this.toString(), 'render' );
+
 		this.addEvents({
 			'start': this.onStart,
 			'progress': this.onProgress,
@@ -1513,35 +1513,35 @@ lattice.ui.FileElement = new Class({
 	},
 
 	showProgress: function( data ) {
-//		console.log( this.toString(), "onProgress", $A( arguments ) );
+
 		this.progressBar.setStyle( "background-position", ( 100 - data.percentLoaded )+"% 0%" );
 		if( this.imagePreview ) this.imagePreview.setStyle( "opacity", ( 1 - data.percentLoaded * .01 ) );
 
 	},	
 	
 	showStatus: function(){
-//		console.log( this.toString(), "showStatus", $A( arguments ) );
+
 		lattice.eventManager.broadcastMessage("resize");
  		this.statusShow.start( { "opacity": [0,1] } );
 		this.statusElement.removeClass("hidden");
 	},
 	
 	revertToReadyState: function(){
-//		console.log( this.toString(), "revertToReadyState" );
+
 		this.statusElement.addClass('hidden');
 //		this.statusHide.start( { "opacity":[1,0] });
 	},
 	
 	onFileComplete: function( json ){
 		json = JSON.decode( json.response.text );
-    console.log(json);
+
 		this.clearButton.fade( "in" );
 		if( this.filename ) this.filename.set( "text",  json.response.filename );
 		this.clearButton.removeClass("hidden");
 		this.downloadButton.removeClass("hidden");
 		this.downloadButton.set( 'title', 'download ' + json.response.filename );
 		this.downloadButton.set( "href", lattice.util.getBaseURL() + json.response.src );
-		console.log( this.toString(), "onFileComplete", lattice.util.getBaseURL() + json.response.thumb_src );
+
 		this.element.removeClass('empty');
 		this.downloadButton.removeClass("hidden");
 		if( this.previewElement ){
@@ -1887,11 +1887,11 @@ lattice.util.Uploader = new Class({
 	},
 
 	render: function() {
-		console.log( this.toString(), "render", this.invalid, $A( arguments ) );
+
 	},
 	
 	destroy: function(){
-		//console.log( "UPLOADER DESTROY ", this.currentFileElementInstance );
+
 		this.removeEvents();
 		this.box.destroy();
 
@@ -2063,7 +2063,7 @@ lattice.ui.CheckBox = new Class({
 		var controller = ( this.element.getData( 'controller' ) )? this.element.getData( 'controller' ) : 'cms';
 		var action = ( this.element.getData( 'action' ) )? this.element.getData( 'action' ) : 'save_field';
 
-		console.log( 'submit', this.fieldName, controller, action );
+
 		this.marshal.saveField( { field: this.fieldName, value: val }, this.onResponse.bind( this ), controller, action );
 	},
 	
@@ -2205,7 +2205,7 @@ lattice.ui.Input = new Class({
 
 	checkFormaxLength: function( e ){
 		var len = e.target.get("value").length;
-		console.log( 'length', len );
+
 		if( len > this.maxLength
 			 && e.code != 46
 			 && e.key != 'enter'
@@ -2506,7 +2506,7 @@ lattice.ui.Text = new Class({
 	},
 
 	showSaving: function(){
-//	console.log('showSaving');
+
 		this.mode = 'saving';
 		this.ipeElement.addClass( 'saving' );
 		this.ipeElement.setStyle( 'opacity', .2 );
@@ -2934,7 +2934,7 @@ lattice.ui.Tags = new Class({
 		this.parent( anElement, aMarshal, options );
 		this.field = this.element.getElement('.tagInput');
 		this.tokenList = this.element.getElement( 'ul.tokens' ); 
-//		console.log( ":::", this.tokenList, this.tokenList.getChildren(), this.marshal.getElement() );
+
 		this.tokenTemplate = this.tokenList.getElement( '.token.template' ).dispose();
 		this.tokenTemplate.removeClass('template');
 		this.ogBg = this.tokenTemplate.getStyle( 'background-color' );
@@ -3040,7 +3040,7 @@ lattice.ui.Tags = new Class({
 	
 	addToken: function( aString ){
 		var token = this.tokenTemplate.clone();
-		console.log( this.marshal, this.marshal.addTag );
+
 		this.marshal.addTag( aString );
 		token.getElement( '.icon.close' ).addEvent( 'click', this.removeToken.bindWithEvent( this, [ token, aString ] ) )
 		token.getElement( 'span' ).set( 'html', aString );

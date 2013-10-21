@@ -437,6 +437,7 @@ ul.listing li{
 .associatorImage,
 .listItem {
 	position: relative;
+	margin-bottom: 60px;
 }
 
 .associatorImage{
@@ -451,20 +452,13 @@ ul.listing li{
 
 .associatorImage>.itemControls,
 .listItem>.itemControls{
-	margin: 0 auto;
+	/* margin: 0 auto; */
 	position: absolute;
 	background: #fafafa;
 	box-shadow: 1px 1px 2px rgba( 0,0,0,.7 );
 	padding: .125em .25em .125em .25em;
-	z-index: -1;
-	opacity: 0;
 }
 
-.associatorImage:hover>.itemControls,
-.listItem:hover>.itemControls{
-	z-index: 500;
-	opacity: 1;
-}
 
 /*
 -----------------------------------------------

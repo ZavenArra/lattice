@@ -225,7 +225,7 @@ Class Lattice_Builder_Frontend {
 				$parent_objects = Graph::object()->objecttype_filter($parent_template)->published_filter()->find_all();
 				foreach ($parent_objects as $parent)
 				{
-					$children = $parent->get_published_children();
+					$children = $parent->get_published_descendents();
 					foreach ($children as $child)
 					{
 						$objectTypeName = $child->objecttype->objecttypename;
@@ -332,7 +332,7 @@ Class Lattice_Builder_Frontend {
 				$object_types[$objectTypeName] = $objectTypeName;
 			}
 			// and follow up with any existing data
-			$children = $object->get_published_children();
+			$children = $object->get_published_descendents();
 			foreach ($children as $child)
 			{
 				$objectTypeName = $child->objecttype->objecttypename;

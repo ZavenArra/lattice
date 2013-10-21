@@ -118,79 +118,79 @@ class Lattice_Core_View {
     return $this->data;
   }
 
-    /*
-     * Function: view()
-     * Returns the rendered view for the current view model
-     */
-    public function view($set_view = null){
-      if($set_view){
-        $this->view = new View($set_view);
-      }
+	/*
+	 * Function: view()
+	 * Returns the rendered view for the current view model
+	 */
+	public function view($set_view = null){
+		if($set_view){
+			$this->view = new View($set_view);
+		}
 
-      foreach ($this->data as $key => $value) {
-        $this->view->$key = $value;
-      }
+		foreach ($this->data as $key => $value) {
+			$this->view->$key = $value;
+		}
 
-      return $this->view;
-    }
+		return $this->view;
+	}
 
-    private static function get_graph_object($object_id_or_slug)
-    {
-      if ( ! is_object($object_id_or_slug))
-      {
-        $object = Graph::object($object_id_or_slug);
-      } else {
-        $object = $object_id_or_slug;
-      }
-      if ( ! $object->loaded())
-      {
-        throw new Kohana_Exception("Trying to create view, but object is not loaded: $object_id_or_slug ".$object->slug);
-      }
-      return $object;
+	private static function get_graph_object($object_id_or_slug)
+	{
+		if ( ! is_object($object_id_or_slug))
+		{
+			$object = Graph::object($object_id_or_slug);
+		} else {
+			$object = $object_id_or_slug;
+		}
+		if ( ! $object->loaded())
+		{
+			throw new Kohana_Exception("Trying to create view, but object is not loaded: $object_id_or_slug ".$object->slug);
+		}
+		return $object;
 
-    }
+	}
 
-    public function set_var($name, $value)
-    {
-      if ( ! $this->view)
-      {
-        throw new Kohana_Exception('set_var called but no local variable view has not been set');
-      }
+	public function set_var($name, $value)
+	{
+		if ( ! $this->view)
+		{
+			throw new Kohana_Exception('set_var called but no local variable view has not been set');
+		}
 
-      $this->view->$name = $value;
-      $this->data[$name] = $value;
-    }
+		$this->view->$name = $value;
+		$this->data[$name] = $value;
+	}
 
-    public function create_view($object_id_or_slug = NULL)
-    {
+	public function create_view($object_id_or_slug = NULL)
+	{
 
-      if ($object_id_or_slug)
-      {
-        $this->object = $this->get_graph_object($object_id_or_slug);
-      }
+		if ($object_id_or_slug)
+		{
+			$this->object = $this->get_graph_object($object_id_or_slug);
+		}
 
-      if ( ! self::$initial_object)
-      {
-        self::$initial_object = $this->object;
-      }
+		if ( ! self::$initial_object)
+		{
+			self::$initial_object = $this->object;
+		}
 
-      // some access control
-      $view_name = NULL;
-      $view = NULL;
+		// some access control
+		$view_name = NULL;
+		$view = NULL;
 
-      /*
-       * This logic needs to be cleaned up.  Does it really make sense to be calling
-       * lattice view model for views that have no object?  Virtual views - these items can also
-       * have view content, and could have view models, but no object
-       */
-      if ($this->object->loaded())
-      {
-        if ($this->object->activity != NULL)
-        {
-          throw new Kohana_User_Exception('Page not availabled', 'The object with identifier ' . $id . ' is does not exist or is not available');
-        }
-        // look for the object_type, if it's not there just print out all the data raw
-        $view_name = $this->object->objecttype->objecttypename;
+		/*
+		 * This logic needs to be cleaned up.  Does it really make sense to be calling
+		 * lattice view model for views that have no object?  Virtual views - these items can also
+		 * have view content, and could have view models, but no object
+		 */
+		if ($this->object->loaded())
+		{
+			if ($this->object->activity != NULL)
+			{
+				throw new Kohana_User_Exception('Page not availabled', 'The object with identifier ' . $id . ' is does not exist or is not available');
+			}
+			// look for the object_type, if it's not there just print out all the data raw
+			$view_name = $this->object->objecttype->objecttypename;
         if (file_exists('application/views/frontend/' . $view_name . '.php'))
         {
           $view_path = 'frontend/'.$view_name;

@@ -6,7 +6,7 @@ Class Lattice_Controller_Accessdenied extends Core_Controller_Layout {
 
   public function action_index()
   {
-    $view = new View('accessdenied');
+    $view = new View('access_denied');
     $this->response->body($view->render());
   }
 

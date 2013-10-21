@@ -5,10 +5,10 @@ Class Lattice_Controller_Publicmenu extends Core_Controller_Lattice {
 
   public function action_index()
   {
-    $this->view = new View('publicnav');
+    $this->view = new View('public_nav');
 
     $top_level = Graph::get_root_node('cms_root_node')
-      ->lattice_children_query('public_site') 
+      ->lattice_descendents_query('public_site') 
       ->published_filter()
       ->no_container_objects()
       ->find_all();
@@ -30,7 +30,7 @@ Class Lattice_Controller_Publicmenu extends Core_Controller_Lattice {
     {
 
       $children = Graph::object($slug)
-        ->lattice_children_query($object->id)
+        ->lattice_descendents_query($object->id)
         ->published_filter()
         ->no_container_objects()
         ->find_all();

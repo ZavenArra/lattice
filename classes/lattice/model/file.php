@@ -53,7 +53,11 @@ class Lattice_Model_File extends ORM {
       return rawurlencode(parent::__get('filename'));
     } elseif ($column == 'fullpath')
     {
-      return Graph::mediapath().parent::__get('filename');
+			if(parent::__get('filename') != ""){
+				return Graph::mediapath().parent::__get('filename');
+			} else {
+				return "";
+			}
     } elseif ($column == 'ext')
     {
       $chunks = explode('.', parent::__get('filename'));

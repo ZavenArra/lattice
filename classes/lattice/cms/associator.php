@@ -58,7 +58,7 @@ Class Lattice_Cms_Associator {
     $this->page_length = Kohana::config('cms.associator_page_length');
 
 
-    foreach ($this->parent->get_lattice_children_paged($this->lattice) as $child)
+    foreach ($this->parent->get_lattice_descendents_paged($this->lattice) as $child)
     {
       $this->associated[] = $child;
 		}
@@ -83,7 +83,7 @@ Class Lattice_Cms_Associator {
         {
           $from = Graph::object($filter['from']);
           ($filter['lattice']) ? $lattice = $filter['lattice'] : ( $lattice = 'lattice' );
-          $objects = $from->lattice_children_query($lattice);
+          $objects = $from->lattice_descendents_query($lattice);
         }
 
         if (isset($filter['tagged']) AND $filter['tagged'])

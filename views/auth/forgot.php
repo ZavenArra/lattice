@@ -24,7 +24,7 @@
 			<div class="footer">
 				<div class="controls clearFix">
 					<button type="submit" class="submit" name="submit">Submit</button>
-					<a href="<?=URL::base();?>cms">CLick here to Login</a> 
+					<a href="<?=URL::base();?>cms">Click here to Login</a> 
 				</div>
 			</div>
 		</form>

@@ -80,7 +80,7 @@ Class Lattice_Core_Initializer {
       echo $view->render();
     } elseif (count(self::$problems) OR count(self::$messages))
     {
-      $view = new View('setup/initializationproblems');
+      $view = new View('setup/initialization_problems');
       $view->problems = self::$problems;
       $view->messages = self::$messages;
       echo $view->render();
@@ -104,7 +104,7 @@ Class Lattice_Core_Initializer {
 
     if (count($all_problems) OR count(self::$messages))
     {
-      $view = new View('setup/initializationproblems');
+      $view = new View('setup/initialization_problems');
       $view->problems = $all_problems;
       $view->messages = self::$messages;
       echo $view->render();

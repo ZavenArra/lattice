@@ -4,18 +4,13 @@ class Lattice_Controller_File extends Controller{
   public function __construct($request, $response)
   {
     parent::__construct($request, $response);
-    /*
-    if (Kohana::config('lattice.staging'))
-{
-      $this->mediapath = Kohana::config('lattice.stagingmediapath');
-    } else {
-      $this->mediapath = Kohana::config('lattice.mediapath');
-    }
-     */
   }
 
-  public function action_download($file_id)
+  public function action_download($file_id = null)
   {
+		if($file_id == null){
+			return;
+		}
     $file = Graph::file($file_id);
 
     // check access

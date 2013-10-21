@@ -169,7 +169,7 @@ abstract class Lattice_Core_CMSInterface extends Core_Controller_Layout {
   {
     $object = Graph::object($object_id);
     $object->move($new_parent_id, $lattice, $old_parent_id);
-    $this->response->data(array('new_parent_id', $object->get_lattice_parent($lattice)->id));
+    $this->response->data(array('new_parent_id', $object->get_lattice_ancestor($lattice)->id));
   }
 
 
