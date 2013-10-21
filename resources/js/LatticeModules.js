@@ -709,8 +709,6 @@ lattice.modules.ListItem = new Class({
 		this.marshal.clearField( fieldName );
 	},
 	
-	hideControls: function(){this.controls.addClass( 'hidden' );},
-	showControls: function(){this.controls.removeClass('hidden')},
 	resumeSort: function(){if( this.marshal.sortableList ) this.marshal.resumeSort();},
 	suspendSort: function(){if( this.marshal.sortableList ) this.marshal.suspendSort();},
 	
@@ -1355,9 +1353,6 @@ lattice.modules.AssociatorItem = new Class({
 	clearField: function( fieldName ){
 		this.marshal.clearField( fieldName );
 	},
-	
-	// hideControls: function(){this.controls.addClass( 'hidden' );},
-	// showControls: function(){this.controls.removeClass('hidden')},
 	
 	resumeSort: function(){if( this.marshal.sortableList ) this.marshal.resumeSort();},
 	suspendSort: function(){if( this.marshal.sortableList ) this.marshal.suspendSort();},
