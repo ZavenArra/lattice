@@ -83,11 +83,14 @@ class Lattice_Controller_Latticedevtools extends Core_Controller_Lattice
 			{
 				
 				echo "<h2> Lattice: $lattice->name </h2>";
-				
+				echo "<h3>Children: </h3>";	
 				foreach($children as $child)
 				{
 					echo "$child->title &raquo; <a href=\"".url::site('latticedevtools/graph/'.$child->slug)."\">$child->slug</a> <br /> ";
 				}
+				echo "<h3>Parent: </h3>";	
+				$parent = $object->get_lattice_parent();
+				echo "$parent->title &raquo; <a href=\"".url::site('latticedevtools/graph/'.$parent->slug)."\">$parent->slug</a> <br /> ";
 				
 				echo "<hr />";
 			}
