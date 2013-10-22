@@ -55,6 +55,7 @@ class Lattice_Controller_Ajax extends Core_Controller_Lattice {
 
       $ajax_response = array(
         'return_value' => FALSE,
+				'success' => FALSE,
         'response' => $this->handle_exception($e),
         'arguments'=>$arguments
 
@@ -65,6 +66,7 @@ class Lattice_Controller_Ajax extends Core_Controller_Lattice {
     }
     $ajax_response = array(
       'return_value' => TRUE,
+			'success' => TRUE,
       'response'=>$data,
       'arguments'=>$arguments
     );

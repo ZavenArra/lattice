@@ -1360,19 +1360,22 @@ lattice.ui.FileElement = new Class({
 		var extensions = lattice.util.getValueFromClassName( 'extensions', anElement.get("class") );
 
 		var url = this.marshal.getSaveFileSubmitURL();
-		console.log(url);
-		console.log(anElement.getAttribute('data-field') );
 
-		var uploader = new qq.FineUploader({
+		var fileElement = this;	
+		this.uploader = new qq.FineUploader({
 			element: element,
 			request: {
 				endpoint: url + anElement.getAttribute('data-field')
 			},
 			validation : {
-			//	allowedExtensions: extensions
+				//	allowedExtensions: extensions
+			},
+			callbacks : {
+				onComplete :  function(id, name, response){
+					fileElement.onFileComplete(response);
+				}
 			}
 		});
-
 
 		this.downloadButton = anElement.getElement( ".downloadLink" );
 		if(this.downloadButton){
@@ -1547,13 +1550,6 @@ lattice.ui.FileElement = new Class({
 		return this;
 	},
 
-	showProgress: function( data ) {
-
-		this.progressBar.setStyle( "background-position", ( 100 - data.percentLoaded )+"% 0%" );
-		if( this.imagePreview ) this.imagePreview.setStyle( "opacity", ( 1 - data.percentLoaded * .01 ) );
-
-	},	
-	
 	showStatus: function(){
 
 		lattice.eventManager.broadcastMessage("resize");
@@ -1561,14 +1557,7 @@ lattice.ui.FileElement = new Class({
 		this.statusElement.removeClass("hidden");
 	},
 	
-	revertToReadyState: function(){
-
-		this.statusElement.addClass('hidden');
-//		this.statusHide.start( { "opacity":[1,0] });
-	},
-	
 	onFileComplete: function( json ){
-		json = JSON.decode( json.response.text );
 
 		this.clearButton.fade( "in" );
 		if( this.filename ) this.filename.set( "text",  json.response.filename );
@@ -1600,11 +1589,6 @@ lattice.ui.FileElement = new Class({
 		this.imagePreview = this.previewElement.getElement( 'img' );
 		this.revertToReadyState();
 		lattice.eventManager.broadcastMessage('resize');
-		// this.imageFadeIn = new Fx.Morph( this.imagePreview, {
-		// 	'duration': 300,
-		// 	'onComplete': lattice.eventManager.broadcastMessage.bind( lattice.eventManager, "resize" )
-		// }).start( { 'opacity' : [ 0, 1 ], 'width': imageData.width, 'height': imageData.height } );
-
 	},
 
 	destroy: function(){

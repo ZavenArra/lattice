@@ -280,9 +280,7 @@ lattice.modules.Module = new Class({
 		var moduleUIFields, field; 
 		moduleUIFields = this.getModuleUIFields( anElement );
 		moduleUIFields.each( function( anElement, i ){
-			console.log(anElement);
 			field = this.initUIField( anElement );
-			console.log(field);
 
 			this.UIFields[ anElement.get('data-field') ] = field; 
 		}, this );
