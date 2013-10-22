@@ -31,12 +31,12 @@ abstract class Lattice_Core_CMSInterface extends Core_Controller_Layout {
    );
    */
 
-  public function action_save_file($object_id)
+  public function action_save_file($object_id, $field)
   {
 
     try {
 
-      $this->save_file($object_id);
+      $this->save_file($object_id, $field);
 
     } catch (Exception $e)
     {
@@ -48,12 +48,10 @@ abstract class Lattice_Core_CMSInterface extends Core_Controller_Layout {
     }
   }
 
-  public function save_file($object_id)
+  public function save_file($object_id, $field)
   {
 
-    $field = strtok($_POST['field'], '_');
-
-    $file = cms_core::save_http_post_file($object_id, $field, $_FILES['Filedata']);
+    $file = cms_core::save_http_post_file($object_id, $field, $_FILES['qqfile']);
     $result = array(
       'id' => $file->id,
       'src' => $file->original->fullpath,

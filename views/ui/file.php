@@ -10,9 +10,10 @@ Consider adding 'populated' or '' to $class variable
 
 	<label><?=isset($label)?$label:'File';?></label>
 
+	<div class="fineuploader-lattice"></div>
+
 	<div class="wrapper">
 
-		<input type="file" class="hidden" />
 		
 		<p class="<?=str_replace(',',' ',$extensions);?> fileName"><?if ($value['filename']):?><?=$value['filename'];?><?else:?>No file uploaded yet&hellip;<?endif;?></p>
 		

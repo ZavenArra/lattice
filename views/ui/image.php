@@ -8,7 +8,11 @@ Consider adding 'populated' or '' to $class variable
 ?>
 <div class="ui-FileElement <?=$class;?> image <?=($value['filename'])?'':'empty'?>"  data-field="<?=$name;?>" data-extensions="<?=$extensions;?>" data-maxlength="<?=$maxlength;?>">
 	<label><?=(isset($label))?$label:"Image File";?></label>
+
+	<div class="fineuploader-lattice"></div>
+
 	<div class="wrapper">
+
 		<input type="file" class="hidden" />
 
 		<?if (isset($value['id'])):?>

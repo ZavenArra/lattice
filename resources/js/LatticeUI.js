@@ -1354,6 +1354,40 @@ lattice.ui.FileElement = new Class({
 	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
+
+		element = anElement.getChildren('.fineuploader-lattice')[0];
+
+		var extensions = lattice.util.getValueFromClassName( 'extensions', anElement.get("class") );
+
+		var url = this.marshal.getSaveFileSubmitURL();
+		console.log(url);
+		console.log(anElement.getAttribute('data-field') );
+
+		var uploader = new qq.FineUploader({
+			element: element,
+			request: {
+				endpoint: url + anElement.getAttribute('data-field')
+			},
+			validation : {
+			//	allowedExtensions: extensions
+			}
+		});
+
+
+		this.downloadButton = anElement.getElement( ".downloadLink" );
+		if(this.downloadButton){
+			this.downloadButton.store( "Class", this );
+		}
+
+		this.clearButton = anElement.getElement( ".clearImageLink" );
+		this.clearButton.store( "Class", this );
+		this.clearButton.addEvent( "click", this.clearFile.bindWithEvent( this ) );
+		
+		this.previewElement = anElement.getElement(".preview");
+		if( this.previewElement ) this.imagePreview = this.previewElement.getElement( "img" );
+		this.filename = anElement.getElement( ".fileName" );
+	/*
+		this.parent( anElement, aMarshal, options );
 		this.extensions = ( this.element.getData('extensions') )? this.element.getData('extensions') : this.options.extensions;		
 		this.maxLength = ( this.element.getData('maxlength') )? this.element.getData('maxlength') : this.options.maxLength;		
 		this.ogInput = this.element.getElement( "input[type='file']" );
@@ -1401,6 +1435,7 @@ lattice.ui.FileElement = new Class({
 		if( lattice.util.getValueFromClassName( 'extensions', this.element.get("class") ) ) this.extensions = this.buildExtensionsObject()
 		this.uploader.setTarget( this, this.uploadLink, this.getOptions() );
 		this.reposition();
+		*/
 	},	
 
 	clearFile: function( e ){

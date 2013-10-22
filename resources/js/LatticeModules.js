@@ -80,11 +80,6 @@ lattice.modules.Module = new Class({
    throw "Abstract function getSaveFileSubmit must be overriden in" + this.toString();
   },
 
-
-  getUploaderSWFUrl : function(){
-      return "modules/lattice/resources/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf";
-  },
-	
 	getClearFieldURL: function(){
 		throw "Abstract function getClearFieldURL must be overriden in" + this.toString();		
 	},
@@ -285,7 +280,9 @@ lattice.modules.Module = new Class({
 		var moduleUIFields, field; 
 		moduleUIFields = this.getModuleUIFields( anElement );
 		moduleUIFields.each( function( anElement, i ){
+			console.log(anElement);
 			field = this.initUIField( anElement );
+			console.log(field);
 
 			this.UIFields[ anElement.get('data-field') ] = field; 
 		}, this );
