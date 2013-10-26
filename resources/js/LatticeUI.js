@@ -2318,9 +2318,13 @@ lattice.ui.Text = new Class({
 		w = this.ipeElement.getSize().x - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width' ) ) + 2 * parseInt( this.ipeElement.getStyle('padding-left' ) ) );
 		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') ) +  2 * parseInt( this.field.getComputedStyle('padding-bottom' ) ) ); 
 		this.ipeElement.setStyle( 'width', w );
+		if( h < 64 ){
+			h = 64;
+		}
 		this.field.setStyles({
 			'overflow': 'hidden',
-			'width': w
+			'width': w,
+			"height": h
 		});
 		if( this.isMultiline ){
 			this.field.addEvent( 'keyup', this.fitToContent.bind( this ) );
