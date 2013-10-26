@@ -316,7 +316,8 @@ class Lattice_Cms_Core {
 
 	public static function save_http_post_file($objectid, $field, $post_file_vars)
 	{
-		Kohana::$log->add(Log::ERROR, 'save uploaded');
+		Kohana::$log->add(Log::INFO, var_export($post_file_vars, true));
+		Kohana::$log->add(Log::INFO, 'save uploaded file');
 		$object = Graph::object($objectid);
 		// check the file extension
 		$filename = $post_file_vars['name'];
@@ -335,12 +336,14 @@ class Lattice_Cms_Core {
 			case 'tiff':
 			case 'TIF':
 			case 'TIFF':
-				Kohana::$log->add(Log::ERROR, 'save uploaded');
+				Kohana::$log->add(Log::INFO, 'save image');
 				$uiresizes = Kohana::config('lattice_cms.uiresizes');
 				return $object->save_uploaded_image($field, $post_file_vars['name'], $post_file_vars['type'], $post_file_vars['tmp_name'], $uiresizes);
 				break;
 			default:
-			return $object->save_uploaded_file($field, $post_file_vars['name'], $post_file_vars['type'], $post_file_vars['tmp_name']);
+				Kohana::$log->add(Log::INFO, 'save generic file');
+				return $object->save_uploaded_file($field, $post_file_vars['name'], $post_file_vars['type'], $post_file_vars['tmp_name']);
+				break;
 		}
 	}
 
