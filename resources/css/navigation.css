@@ -213,6 +213,12 @@ header .slideToggle {
 	background: url(../images/icon_published_hover.png) 0 .5em no-repeat;	
 }
 
+#navigation .spacer{
+	height:2em;
+	border:0;
+}
+
+
 .tierMethodsDrawer{
 	position: absolute;
 	width: 300px;

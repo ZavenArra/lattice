@@ -1,18 +1,10 @@
-<?
-/*
-@todo, logic should live in controller/model
-str_replace in extensions, 
-Conditional for when title is set or not
-Consider adding 'populated' or '' to $class variable
-*/
-?>
 <div class="ui-FileElement <?=$class;?> <?=($value['filename'])?'':'empty'?>" data-field="<?=$name;?>" data-extensions="<?=$extensions;?>" data-maxlength="<?=$maxlength;?>">
 
 	<label><?=isset($label)?$label:'File';?></label>
 
-	<div class="wrapper">
+	<div class="fineuploader-lattice" id="fineuploader-lattice-<?=$name;?>"></div>
 
-		<input type="file" class="hidden" />
+	<div class="wrapper">
 		
 		<p class="<?=str_replace(',',' ',$extensions);?> fileName"><?if ($value['filename']):?><?=$value['filename'];?><?else:?>No file uploaded yet&hellip;<?endif;?></p>
 		
@@ -22,7 +14,6 @@ Consider adding 'populated' or '' to $class variable
 		</div>
 
 		<div class="controls clearFix">
-			<div class='uploadButton command'><a title="upload a file" class="uploadLink" href="#">&uarr;</a></div>
 			<?if ($value):?>
 				<a title="download <?=$value['filename'];?>"  class="command downloadLink" href="<?=url::site("file/download/{$value['id']}");?>">&darr;</a>
 				<a title="clear this file" class="command clearImageLink" href="#">&times;</a>

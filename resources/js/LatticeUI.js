@@ -1354,53 +1354,41 @@ lattice.ui.FileElement = new Class({
 	
 	initialize: function( anElement, aMarshal, options ){
 		this.parent( anElement, aMarshal, options );
-		this.extensions = ( this.element.getData('extensions') )? this.element.getData('extensions') : this.options.extensions;		
-		this.maxLength = ( this.element.getData('maxlength') )? this.element.getData('maxlength') : this.options.maxLength;		
-		this.ogInput = this.element.getElement( "input[type='file']" );
-		this.ogInput.addClass('away');
-		this.uploadButton = this.element.getElement( ".uploadButton" );
-		this.uploadButton.addEvent('mouseover',this.onMouseOver.bindWithEvent(this));
-		this.uploadButton.addEvent('mouseout',this.onMouseOut.bindWithEvent(this));
-		this.uploadLink = this.element.getElement( ".uploadLink" );
-		this.uploadLink.addEvent( 'click', function( e ){ lattice.util.stopEvent( e ) } );
-		this.uploadLink.store( "Class", this );
-		this.downloadButton = this.element.getElement( ".downloadLink" );
-		this.downloadButton.store( "Class", this );
 
-		this.clearButton = this.element.getElement( ".clearImageLink" );
+		element = anElement.getChildren('.fineuploader-lattice')[0];
+
+		var extensions = lattice.util.getValueFromClassName( 'extensions', anElement.get("class") );
+
+		var url = this.marshal.getSaveFileSubmitURL();
+
+		var fileElement = this;	
+		this.uploader = new qq.FineUploader({
+			element: element,
+			request: {
+				endpoint: url + anElement.getAttribute('data-field')
+			},
+			validation : {
+				//	allowedExtensions: extensions
+			},
+			callbacks : {
+				onComplete :  function(id, name, response){
+					fileElement.onFileComplete(response);
+				}
+			}
+		});
+
+		this.downloadButton = anElement.getElement( ".downloadLink" );
+		if(this.downloadButton){
+			this.downloadButton.store( "Class", this );
+		}
+
+		this.clearButton = anElement.getElement( ".clearImageLink" );
 		this.clearButton.store( "Class", this );
 		this.clearButton.addEvent( "click", this.clearFile.bindWithEvent( this ) );
-
-		this.uploader = new lattice.util.Uploader({
-			path: lattice.util.getBaseURL() + aMarshal.getUploaderSWFUrl(),
-			container: this.uploadLink,
-			target: this.uploadButton,
-			cookie: Cookie.read( 'session' )
-		});
-		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );
-		this.baseURL = lattice.util.getBaseURL();
-		this.statusElement = this.element.getElement( 'div.status' );
-		this.progressBar = this.statusElement.getElement( "img" );
-		this.statusMessage = this.statusElement.getElement( "span.message" );
-		this.statusShow = new Fx.Morph( this.statusElement, { 
-			'duration': 500,
-			'onComplete': function(){
-				lattice.eventManager.broadcastMessage("resize");
-			}.bind( this )
-		});
-		this.statusHide = new Fx.Morph( this.statusElement, { 
-			'duration': 500,
-			"onComplete": function(){
-				this.statusElement.addClass( "hidden" );
-				lattice.eventManager.broadcastMessage("resize");
-			}.bind( this )
-		});
-		this.previewElement = this.element.getElement(".preview");
+		
+		this.previewElement = anElement.getElement(".preview");
 		if( this.previewElement ) this.imagePreview = this.previewElement.getElement( "img" );
-		this.filename = this.element.getElement( ".fileName" );
-		if( lattice.util.getValueFromClassName( 'extensions', this.element.get("class") ) ) this.extensions = this.buildExtensionsObject()
-		this.uploader.setTarget( this, this.uploadLink, this.getOptions() );
-		this.reposition();
+		this.filename = anElement.getElement( ".fileName" );
 	},	
 
 	clearFile: function( e ){
@@ -1512,13 +1500,6 @@ lattice.ui.FileElement = new Class({
 		return this;
 	},
 
-	showProgress: function( data ) {
-
-		this.progressBar.setStyle( "background-position", ( 100 - data.percentLoaded )+"% 0%" );
-		if( this.imagePreview ) this.imagePreview.setStyle( "opacity", ( 1 - data.percentLoaded * .01 ) );
-
-	},	
-	
 	showStatus: function(){
 
 		lattice.eventManager.broadcastMessage("resize");
@@ -1526,14 +1507,7 @@ lattice.ui.FileElement = new Class({
 		this.statusElement.removeClass("hidden");
 	},
 	
-	revertToReadyState: function(){
-
-		this.statusElement.addClass('hidden');
-//		this.statusHide.start( { "opacity":[1,0] });
-	},
-	
 	onFileComplete: function( json ){
-		json = JSON.decode( json.response.text );
 
 		this.clearButton.fade( "in" );
 		if( this.filename ) this.filename.set( "text",  json.response.filename );
@@ -1565,17 +1539,11 @@ lattice.ui.FileElement = new Class({
 		this.imagePreview = this.previewElement.getElement( 'img' );
 		this.revertToReadyState();
 		lattice.eventManager.broadcastMessage('resize');
-		// this.imageFadeIn = new Fx.Morph( this.imagePreview, {
-		// 	'duration': 300,
-		// 	'onComplete': lattice.eventManager.broadcastMessage.bind( lattice.eventManager, "resize" )
-		// }).start( { 'opacity' : [ 0, 1 ], 'width': imageData.width, 'height': imageData.height } );
-
 	},
 
 	destroy: function(){
 		lattice.eventManager.removeListener( this );
-		this.uploader.destroy();
-		this.statusElement.destroy();
+		delete this.uploader;
 		this.element.destroy();
 		this.uploadLink = this.baseURL = this.extensions = this.filename = this.imagePreview = this.imageFadeIn = this.imageFadeOut = this.imgAsset = this.ogInput = this.previewElement = this.progressBar = this.sizeLimitMin = this.statusElement = this.statusHide = this.statusMessage = this.statusShow = this.uploadButton = this.uploader = this.validationError = this.invalid = null,
 		this.parent();

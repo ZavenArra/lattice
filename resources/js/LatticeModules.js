@@ -80,11 +80,6 @@ lattice.modules.Module = new Class({
    throw "Abstract function getSaveFileSubmit must be overriden in" + this.toString();
   },
 
-
-  getUploaderSWFUrl : function(){
-      return "modules/lattice/resources/thirdparty/digitarald/fancyupload/Swiff.Uploader3.swf";
-  },
-	
 	getClearFieldURL: function(){
 		throw "Abstract function getClearFieldURL must be overriden in" + this.toString();		
 	},
@@ -709,8 +704,6 @@ lattice.modules.ListItem = new Class({
 		this.marshal.clearField( fieldName );
 	},
 	
-	hideControls: function(){this.controls.addClass( 'hidden' );},
-	showControls: function(){this.controls.removeClass('hidden')},
 	resumeSort: function(){if( this.marshal.sortableList ) this.marshal.resumeSort();},
 	suspendSort: function(){if( this.marshal.sortableList ) this.marshal.suspendSort();},
 	
@@ -1355,9 +1348,6 @@ lattice.modules.AssociatorItem = new Class({
 	clearField: function( fieldName ){
 		this.marshal.clearField( fieldName );
 	},
-	
-	// hideControls: function(){this.controls.addClass( 'hidden' );},
-	// showControls: function(){this.controls.removeClass('hidden')},
 	
 	resumeSort: function(){if( this.marshal.sortableList ) this.marshal.resumeSort();},
 	suspendSort: function(){if( this.marshal.sortableList ) this.marshal.suspendSort();},

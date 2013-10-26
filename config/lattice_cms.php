@@ -6,7 +6,9 @@ $config['resources']['librarycss'] = array(
 	'modules/lattice/resources/thirdparty/arian/datepicker/Source/datepicker.css',
 
 	// for autocomplete
-	'modules/lattice/resources/thirdparty/mootools/MooComplete.css'
+	'modules/lattice/resources/thirdparty/mootools/MooComplete.css',
+
+	'modules/lattice/resources/thirdparty/fineuploader/fineuploader-3.9.1.min.css',
 );
 $config['resources']['libraryjs'] = array(
 
@@ -20,7 +22,7 @@ $config['resources']['libraryjs'] = array(
 	'modules/lattice/resources/thirdparty/mootools/MooComplete.js',
 	
 	// these are required by LatticeUI
-	'modules/lattice/resources/thirdparty/digitarald/fancyupload/Swiff.Uploader.js',
+	'modules/lattice/resources/thirdparty/fineuploader/fineuploader-3.9.1.js',
 	'modules/lattice/resources/thirdparty/arian/datepicker/Source/Locale.en-US.DatePicker.js',
 	'modules/lattice/resources/thirdparty/arian/datepicker/Source/Picker.js',
 	'modules/lattice/resources/thirdparty/arian/datepicker/Source/Picker.Attach.js',

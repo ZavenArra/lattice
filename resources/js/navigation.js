@@ -67,7 +67,6 @@ lattice.modules.navigation.Navigation = new Class({
 		node = this.nodeData[ nodeId ];
 		paneIndex = ( this.getVisibleTiers().indexOf( tier ) > 0 )? this.getVisibleTiers().indexOf( tier ) : 0;		
 
-		console.log( "paneIndex: " + paneIndex );
 		this.detachTiers( paneIndex + 1 );
 		this.removeCrumbs( paneIndex + 1 );
 		this.breadCrumbs.addCrumb( { label: node.title, tier: tier, nodeData: node } );
@@ -101,7 +100,7 @@ lattice.modules.navigation.Navigation = new Class({
 			this.getVisibleTiers().each( function( pane ){
 				pane.setActiveNode( null );
 			});
-			this.marshal.clearPage();
+			//this.marshal.clearPage();
 		}
 	},
 	
@@ -247,10 +246,7 @@ lattice.modules.navigation.Navigation = new Class({
 		}else{
 			var coords = container.getCoordinates();
 			var targetCoords = target.getCoordinates( panes );
-			console.log("targetCoords.left: " + targetCoords.left + " targetCoords.width: " + targetCoords.width + " coords.left: " + coords.left);
 			var leftCoord = targetCoords.left - 2 * targetCoords.width; //- coords.left;
-			//leftCoord = 400;
-			console.log("left: " + leftCoord );
 			navSlideFx = new Fx.Scroll( this.element.getElement( ".container" ) ).start( leftCoord , 0 );
 		}		
 	},
