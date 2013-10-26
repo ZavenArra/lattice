@@ -1544,6 +1544,7 @@ lattice.ui.FileElement = new Class({
 	destroy: function(){
 		lattice.eventManager.removeListener( this );
 		delete this.uploader;
+		this.statusElement.destroy();
 		this.element.destroy();
 		this.uploadLink = this.baseURL = this.extensions = this.filename = this.imagePreview = this.imageFadeIn = this.imageFadeOut = this.imgAsset = this.ogInput = this.previewElement = this.progressBar = this.sizeLimitMin = this.statusElement = this.statusHide = this.statusMessage = this.statusShow = this.uploadButton = this.uploader = this.validationError = this.invalid = null,
 		this.parent();
