@@ -45,12 +45,6 @@ class Lattice_Cms_Navigation {
       $node_info['title'] = $node_info['slug'];
     }
 
-    if (strlen($node_info['title']) > 25)
-    {
-      $node_info['title'] = substr($node_info['title'], 0, 23);
-      $node_info['title'] .= '...';
-    }
-
     return $node_info;
   }
 

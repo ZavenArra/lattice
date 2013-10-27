@@ -1,7 +1,15 @@
 <?php $keys = array_keys($content); ?>
 
+<?
+	$fitTitle = $content['title'];
+	if(strlen($fitTitle) > 25){
+		$fitTitle = substr($content['title'], 0, 25) ."&hellip;"; 	
+	}
+
+?>
+
 <li title="<?php echo $content['title']; ?>" class="node <?php echo $content['nodeType'];?> <?php echo $content['contentType'];?>" id="node_<?php echo $content['id'];?>" >
- <span class="search_term"> <h5><?php echo substr($content['title'], 0, 20);?></h5></span>
+ <span class="search_term"> <h5><?php echo $fitTitle;?></h5></span>
   <?php if ( ( isset($content['allowTogglePublish']) && $content['allowTogglePublish']=='true' ) 
     || ( isset( $content['allowDelete'] ) && $content['allowDelete']=='true' ) ):?>
   <div class="methods">
