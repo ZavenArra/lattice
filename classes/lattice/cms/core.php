@@ -137,7 +137,6 @@ class Lattice_Cms_Core {
 				}
 			}
 		}
-		// print_r($html_chunks);
 		return $html_chunks;
 	}
 

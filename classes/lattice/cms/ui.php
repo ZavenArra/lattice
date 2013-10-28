@@ -16,7 +16,7 @@ Class Lattice_Cms_Ui{
    * Builds a UI element from the cms_ui views directory
    * $element -  array of key value pairs passed to the object_type, including 'type' key which indicates the object_type to use
    * $fieldvalue - the value to display
-   * Example: build_text_element(array('type'=>'text', 'name'=>'fieldname', 'class'=>'class_name'), {Value})
+   * Example: build_ui_element(array('type'=>'text', 'name'=>'fieldname', 'class'=>'class_name'), {Value})
    */
   public static function build_ui_element($element, $fieldvalue=NULL)
   {

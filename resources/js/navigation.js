@@ -111,7 +111,7 @@ lattice.modules.navigation.Navigation = new Class({
 		}
 		this.marshal.clearPendingTierRequest();
 	},
-	
+
 	requestTier: function( nodeId, parentTier, deepLink ){
 
 		cached = ( this.tiers[ nodeId ] && !deepLink )? true : false;
@@ -125,23 +125,23 @@ lattice.modules.navigation.Navigation = new Class({
 			}.bind( this ) );
 		}
 	},
-	
+
 	initialize: function( element, marshal, options ){
 		this.setOptions( options );
 		this.parent( element, marshal, options );
 		lattice.historyManager.addListener( this );
-		
+
 		this.addEvent( 'appstatechanged', function( appState ){
 			this.onAppStateChanged( appState );
 		}.bind( this ) );
-		
+
 		this.dataSource = ( !this.options.dataSource )? this.marshal : this.options.dataSource;
 		this.dataSource.addListener( this );
 		this.addEvent( 'objectnamechanged', this.onObjectNameChanged.bind( this ) );
-		
+
 		this.navPaneTemplate = this.element.getElement( ".pane" ).dispose();
 		this.container = this.element.getElement( ".panes" );
-		
+
 		this.container.empty();
 		this.instanceName = this.element.get("id");
 		this.breadCrumbs =  new lattice.ui.navigation.BreadCrumbTrail( this.element.getElement( ".breadCrumb" ), this.onCrumbClicked.bind( this ) );
@@ -160,29 +160,29 @@ lattice.modules.navigation.Navigation = new Class({
 			this.slideToggle.addEvent( 'click', function( e ){ e.preventDefault() } );	
 		}
 
-					/* scrollspy instance */
+		/* scrollspy instance */
 
-			var navelement = this.element;
-			navelementheight = this.element.getSize().y;
-			lattice.ss = new ScrollSpy({
-				min: navelementheight,
-				onEnter: function(position,enters) {
+		var navelement = this.element;
+		navelementheight = this.element.getSize().y;
+		lattice.ss = new ScrollSpy({
+			min: navelementheight,
+			onEnter: function(position,enters) {
 
-					//navelement.addClass('fixednav');
-					lattice.CMS.element.addClass('fixednav');
-					//setStyle('padding-top', navelementheight + 'px' );
-				},
-				onLeave: function(position,leaves) {
-					if( position.y < navelementheight){
-						lattice.CMS.element.removeClass('fixednav');						
-					}
+				//navelement.addClass('fixednav');
+				lattice.CMS.element.addClass('fixednav');
+				//setStyle('padding-top', navelementheight + 'px' );
+			},
+			onLeave: function(position,leaves) {
+				if( position.y < navelementheight){
+					lattice.CMS.element.removeClass('fixednav');						
+				}
 
-				},
-				onTick: function(position,state,enters,leaves) {
+			},
+			onTick: function(position,state,enters,leaves) {
 
-				},
-				container: window
-			});
+			},
+			container: window
+		});
 
 
 	},
