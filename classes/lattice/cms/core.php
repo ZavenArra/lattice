@@ -350,6 +350,7 @@ class Lattice_Cms_Core {
 	public static function move_node_html($object)
 	{
 		$objectTypeName = $object->objecttypename;
+		// only allow move to parents that accept this type of object
 		$x_path = sprintf('//objectType[addableObject[@objectTypeName="%s"]]', $objectTypeName);
 		$object_types_result = core_lattice::config('objects', $x_path);
 

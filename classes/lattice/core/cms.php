@@ -224,10 +224,9 @@ class Lattice_Core_Cms extends Lattice_CMSInterface {
       $view->object_id = $object->id;
       $html .= $view->render();
     } else {
-      $html = $nodetitlehtml . implode($html_chunks); 
-      $nodetitlehtml . $move_node_html . implode($html_chunks);
+      $html = $nodetitlehtml . $move_node_html . implode($html_chunks); 
     }
-    //  $html .= $users_list_html;
+
     $this->response->data($object->get_page_content()); 
     $this->response->body($html);
 
