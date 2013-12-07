@@ -1513,7 +1513,6 @@ lattice.ui.FileElement = new Class({
 	},
 	
 	reposition: function(){
-		this.uploader.reposition( this.scrollContext );
 	},
 
 	validate: function() {
