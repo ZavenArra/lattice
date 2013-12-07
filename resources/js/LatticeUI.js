@@ -1357,7 +1357,8 @@ lattice.ui.FileElement = new Class({
 
 		element = anElement.getChildren('.fineuploader-lattice')[0];
 
-		var extensions = lattice.util.getValueFromClassName( 'extensions', anElement.get("class") );
+		var extensions = anElement.get("data-extensions");
+    extensions = extensions.split(',');
 
 		var url = this.marshal.getSaveFileSubmitURL();
 
@@ -1368,7 +1369,7 @@ lattice.ui.FileElement = new Class({
 				endpoint: url + anElement.getAttribute('data-field')
 			},
 			validation : {
-				//	allowedExtensions: extensions
+					allowedExtensions: extensions
 			},
 			callbacks : {
 				onComplete :  function(id, name, response){
