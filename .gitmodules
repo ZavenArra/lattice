@@ -1,3 +1,0 @@
-[submodule "resources/thirdparty/fine-uploader"]
-	path = resources/thirdparty/fine-uploader
-	url = git@github.com:Widen/fine-uploader.git
