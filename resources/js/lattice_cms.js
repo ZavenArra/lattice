@@ -380,19 +380,25 @@ lattice.modules.CMS = new Class({
 
 	searchTiers:function(){
 
-		this.inputName = $('search_node');
+		var inputName = $('search_node');
+    this.inputName = inputName;
 
-		searchTags = new LLSearch({
-			'inputID' : this.inputName,
-			'listID' : 'search_tag',
-			'searchTermLi' : 'search_term',
-			'onEnter' : function(e, term){
-				//nothing
-			},
-			'onClick' : function(e, term){
-				//nothing
-			}
-		});
+    var tiers = $$('.search_tag');
+    tiers.each(function(tier){
+
+      searchTags = new LLSearch({
+          'inputID' : inputName,
+          'listID' : tier.get('id'),
+          'searchTermLi' : '',
+          'onEnter' : function(e, term){
+          //nothing
+          },
+          'onClick' : function(e, term){
+          //nothing
+          }
+          });
+
+    });
 
 	},
 

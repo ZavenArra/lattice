@@ -1,7 +1,7 @@
 <script>
 	window.addEvent('domready', function(){			
 	var dataArray = [];
-	$('search_tag').getElements('li').each(function(el,i){
+  $('<?=$id;?>').getElements('li').each(function(el,i){
 			var dataArray_new =[{name:el.get('text'),row:i}];
 			dataArray.append(dataArray_new);
 	}); var ArrSort1 = dataArray.sortBy('name').map(function(item){return item.row});
@@ -20,7 +20,7 @@
 	});
 	});
 </script>
-	<ul class="nodes" id="search_tag">
+  <ul class="nodes search_tag" id="<?=$id;?>" >
 		<?php if(Kohana::config('lattice.tier_sort_enabled')): ?>
 		Sort by: <span id="sort1" onclick="
 lattice.CMS.doAjax(this.get('rel'));" rel="desc">down</span> 

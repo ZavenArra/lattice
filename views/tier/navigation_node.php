@@ -9,7 +9,7 @@
 ?>
 
 <li title="<?php echo $content['title']; ?>" class="node <?php echo $content['nodeType'];?> <?php echo $content['contentType'];?>" id="node_<?php echo $content['id'];?>" >
- <span class="search_term"> <h5><?php echo $fitTitle;?></h5></span>
+  <h5><?php echo $fitTitle;?></h5>
   <?php if ( ( isset($content['allowTogglePublish']) && $content['allowTogglePublish']=='true' ) 
     || ( isset( $content['allowDelete'] ) && $content['allowDelete']=='true' ) ):?>
   <div class="methods">

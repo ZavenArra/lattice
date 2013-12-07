@@ -10,6 +10,8 @@ class Lattice_Controller_Navigation extends Core_Controller_Lattice{
   private $default_add_category_text = '';
   private $default_add_leaf_text = '';
 
+  private $id_pool = 0;
+
   public function __construct($request, $response)
   {
     parent::__construct($request, $response);
@@ -185,6 +187,7 @@ class Lattice_Controller_Navigation extends Core_Controller_Lattice{
   private function render_tier_view($parent, $nodes)
   {
     $tier_view = new View('tier/navigation_tier');
+    $tier_view->id = 'tier'.$this->id_pool++;
     $nodes_html = array();
     foreach ($nodes as $node)
     {
