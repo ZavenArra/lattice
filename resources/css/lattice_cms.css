@@ -250,7 +250,7 @@ input, textarea{
 .ui-Text textarea{
 	word-wrap: break-word;
 	display: block;
-	resize: none;
+	resize: vertical;
 	position: relative;
 }
 
@@ -532,6 +532,7 @@ ul.listing li{
 	margin: .5em;
 	background:#fff;
 	border-radius: 5px;
+	height:3.5em;
 }
 
 .associator .associated li{

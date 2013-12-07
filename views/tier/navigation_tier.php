@@ -29,7 +29,7 @@ lattice.CMS.doAjax(this.get('rel'));" rel="desc">down</span>
 	<?php foreach($nodes as $node):?>
 		<?php echo $node; ?>
 	<?php endforeach;?>
-	<li class="node object spacer" id="node" style="opacity: 1;"></li> 
+	<li class="node object spacer" id="node" style="opacity: 0;"></li> 
 	</ul>
 	
 	<?php echo $tier_methods_drawer; ?>

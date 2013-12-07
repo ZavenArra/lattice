@@ -1026,8 +1026,14 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
     public function save_uploaded_file($field, $filename, $type, $tmp_name)
     {
+				
+			Kohana::$log->add(Log::INFO, $field . " " . $filename . " " .$type . " " . $tmp_name);
       $tmp_name = $this->move_uploaded_file_to_tmp_media($tmp_name);
-      return $this->save_file($field, $filename, $type, $tmp_name);
+			if($tmp_name == false){
+				return false;
+			} else {
+				return $this->save_file($field, $filename, $type, $tmp_name);
+			}
     }
 
     /*
@@ -1049,11 +1055,8 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
       if ( ! move_uploaded_file($tmp_name, Graph::mediapath() . $save_name))
       {
-        $result = array(
-          'result' => 'failed',
-          'error' => 'internal error, contact system administrator',
-        );
-        return $result;
+				Kohana::$log->add(Log::ERROR, 'Failed to move uploaded file');
+        return false;
       }
       // Kohana::$log->add(Log::INFO, 'tmp moved file to ' . Graph::mediapath() . $save_name);
 

@@ -8,11 +8,11 @@ $config['login_timeout'] = 1800; //in seconds
 $config['default_language'] = 'en';
 $config['live'] = false;
 
-//live search
+// live search
 $config['search_enabled'] = FALSE;
-//object sorting
+// object sorting
 $config['tier_sort_enabled'] = FALSE;
-//drag and drop sorting of objects
+// moving of objects between ancestors
 $config['object_move_enabled'] = FALSE;
 
 return $config;

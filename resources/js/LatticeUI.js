@@ -1357,7 +1357,8 @@ lattice.ui.FileElement = new Class({
 
 		element = anElement.getChildren('.fineuploader-lattice')[0];
 
-		var extensions = lattice.util.getValueFromClassName( 'extensions', anElement.get("class") );
+		var extensions = anElement.get("data-extensions");
+    extensions = extensions.split(',');
 
 		var url = this.marshal.getSaveFileSubmitURL();
 
@@ -1368,7 +1369,7 @@ lattice.ui.FileElement = new Class({
 				endpoint: url + anElement.getAttribute('data-field')
 			},
 			validation : {
-				//	allowedExtensions: extensions
+					allowedExtensions: extensions
 			},
 			callbacks : {
 				onComplete :  function(id, name, response){
@@ -1389,56 +1390,6 @@ lattice.ui.FileElement = new Class({
 		this.previewElement = anElement.getElement(".preview");
 		if( this.previewElement ) this.imagePreview = this.previewElement.getElement( "img" );
 		this.filename = anElement.getElement( ".fileName" );
-	/*
-		this.parent( anElement, aMarshal, options );
-		this.extensions = ( this.element.getData('extensions') )? this.element.getData('extensions') : this.options.extensions;		
-		this.maxLength = ( this.element.getData('maxlength') )? this.element.getData('maxlength') : this.options.maxLength;		
-		this.ogInput = this.element.getElement( "input[type='file']" );
-		this.ogInput.addClass('away');
-		this.uploadButton = this.element.getElement( ".uploadButton" );
-		this.uploadButton.addEvent('mouseover',this.onMouseOver.bindWithEvent(this));
-		this.uploadButton.addEvent('mouseout',this.onMouseOut.bindWithEvent(this));
-		this.uploadLink = this.element.getElement( ".uploadLink" );
-		this.uploadLink.addEvent( 'click', function( e ){ lattice.util.stopEvent( e ) } );
-		this.uploadLink.store( "Class", this );
-		this.downloadButton = this.element.getElement( ".downloadLink" );
-		this.downloadButton.store( "Class", this );
-
-		this.clearButton = this.element.getElement( ".clearImageLink" );
-		this.clearButton.store( "Class", this );
-		this.clearButton.addEvent( "click", this.clearFile.bindWithEvent( this ) );
-
-		this.uploader = new lattice.util.Uploader({
-			path: lattice.util.getBaseURL() + aMarshal.getUploaderSWFUrl(),
-			container: this.uploadLink,
-			target: this.uploadButton,
-			cookie: Cookie.read( 'session' )
-		});
-		this.ogInput.addEvent( "focus", this.onFocus.bindWithEvent( this ) );
-		this.baseURL = lattice.util.getBaseURL();
-		this.statusElement = this.element.getElement( 'div.status' );
-		this.progressBar = this.statusElement.getElement( "img" );
-		this.statusMessage = this.statusElement.getElement( "span.message" );
-		this.statusShow = new Fx.Morph( this.statusElement, { 
-			'duration': 500,
-			'onComplete': function(){
-				lattice.eventManager.broadcastMessage("resize");
-			}.bind( this )
-		});
-		this.statusHide = new Fx.Morph( this.statusElement, { 
-			'duration': 500,
-			"onComplete": function(){
-				this.statusElement.addClass( "hidden" );
-				lattice.eventManager.broadcastMessage("resize");
-			}.bind( this )
-		});
-		this.previewElement = this.element.getElement(".preview");
-		if( this.previewElement ) this.imagePreview = this.previewElement.getElement( "img" );
-		this.filename = this.element.getElement( ".fileName" );
-		if( lattice.util.getValueFromClassName( 'extensions', this.element.get("class") ) ) this.extensions = this.buildExtensionsObject()
-		this.uploader.setTarget( this, this.uploadLink, this.getOptions() );
-		this.reposition();
-		*/
 	},	
 
 	clearFile: function( e ){
@@ -1592,6 +1543,7 @@ lattice.ui.FileElement = new Class({
 
 	destroy: function(){
 		lattice.eventManager.removeListener( this );
+		delete this.uploader;
 		this.element.destroy();
 		this.uploadLink = this.baseURL = this.extensions = this.filename = this.imagePreview = this.imageFadeIn = this.imageFadeOut = this.imgAsset = this.ogInput = this.previewElement = this.progressBar = this.sizeLimitMin = this.statusElement = this.statusHide = this.statusMessage = this.statusShow = this.uploadButton = this.uploader = this.validationError = this.invalid = null,
 		this.parent();
@@ -2366,9 +2318,13 @@ lattice.ui.Text = new Class({
 		w = this.ipeElement.getSize().x - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width' ) ) + 2 * parseInt( this.ipeElement.getStyle('padding-left' ) ) );
 		h = this.ipeElement.getComputedSize().height - ( 2 * parseInt( this.field.getComputedStyle( 'border-bottom-width') ) +  2 * parseInt( this.field.getComputedStyle('padding-bottom' ) ) ); 
 		this.ipeElement.setStyle( 'width', w );
+		if( h < 64 ){
+			h = 64;
+		}
 		this.field.setStyles({
 			'overflow': 'hidden',
-			'width': w
+			'width': w,
+			"height": h
 		});
 		if( this.isMultiline ){
 			this.field.addEvent( 'keyup', this.fitToContent.bind( this ) );

@@ -1058,6 +1058,11 @@ lattice.modules.LatticeAssociator = new Class({
 
 		var search_keys = json.response.data.search_keys;
 
+		delete autocomplete;
+		autocomplete = null;
+		$$(".moocomplete").each(function(element){
+			element.destroy();
+		});
 
 		// Just re-init this every time
 		autocomplete = new MooComplete(this.searchInput, {
