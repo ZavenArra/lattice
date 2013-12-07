@@ -59,7 +59,7 @@ Class Core_Lattice {
 
 	private static $config;
 
-	public static function config($arena, $xpath, $context_node=NULL)
+	public static function config($configuration, $xpath, $context_node=NULL)
 	{
     
 		// var_dump(Kohana::config('lattice.active_configuration')); exit;
@@ -69,26 +69,26 @@ Class Core_Lattice {
 			self::$config = array();
 		}
 
-		if ( ! isset(self::$config[$arena]))
+		if ( ! isset(self::$config[$configuration]))
 		{
 			$dom = new DOMDocument();
 			$dom->preserve_white_space = FALSE;
 			$dom = new MyDOMDocument($dom);
 
-			// check for arena mappings
-			if ($custom_path = Kohana::config('lattice.paths.'.$arena))
+			// check for configuration mappings
+			if ($custom_path = Kohana::config('lattice.paths.'.$configuration))
 			{
-				$arena_path = $custom_path;
+				$configuration_path = $custom_path;
 			} 
 			else 
 			{
-				$arena_path = $arena;
+				$configuration_path = $configuration;
 			}
 			$request = NULL;
 			$response = NULL;
 			try
 			{
-				$request = Request::Factory($arena_path);
+				$request = Request::Factory($configuration_path);
 				$response = $request->execute();
 			} 
 			catch(Exception $e)
@@ -108,32 +108,32 @@ Class Core_Lattice {
 			} 
 			else 
 			{
-				if (file_exists($arena_path))
+				if (file_exists($configuration_path))
 				{
 					// if the argument is actually a path to a file
-					$arena_path = getcwd() . '/' . $arena_path;
+					$configuration_path = getcwd() . '/' . $configuration_path;
 				} 
 				else 
 				{
-					$arena_file_path = Kohana::find_file('lattice', $arena_path, 'xml', TRUE);
-					if ( ! count($arena_file_path))
+					$configuration_file_path = Kohana::find_file('lattice', $configuration_path, 'xml', TRUE);
+					if ( ! count($configuration_file_path))
 					{
-						throw new Kohana_Exception('Could not locate xml :file', array(':file' => $arena_path));
+						throw new Kohana_Exception('Could not locate xml :file', array(':file' => $configuration_path));
 					}
-					$arena_path = $arena_file_path[count($arena_file_path) - 1];
+					$configuration_path = $configuration_file_path[count($configuration_file_path) - 1];
 				}
-				$dom->load($arena_path);
+				$dom->load($configuration_path);
 			}
 			
 			if ( ! $dom->validate())
 			{
-				throw new Kohana_Exception("Validation failed on :arena_path \n :xml_error_trace", array(
-					':arena_path' => $arena_path,
+				throw new Kohana_Exception("Validation failed on :configuration_path \n :xml_error_trace", array(
+					':configuration_path' => $configuration_path,
 					':xml_error_trace' =>  var_export($dom->errors, TRUE)
 				));
 			}
 
-			if ($arena == 'objects')
+			if ($configuration == 'objects')
 			{
 				$clusters = new DOMDocument();
 				$clusters = new MYDOMDocument($clusters);
@@ -163,15 +163,15 @@ Class Core_Lattice {
 
 			$xpath_object = new DOMXPath($dom->_delegate);
 
-			self::$config[$arena] = $xpath_object;
+			self::$config[$configuration] = $xpath_object;
 		}
 		if ($context_node)
 		{
-			$xml_nodes = self::$config[$arena]->evaluate($xpath, $context_node);
+			$xml_nodes = self::$config[$configuration]->evaluate($xpath, $context_node);
 		}
 		else 
 		{
-			$xml_nodes = self::$config[$arena]->evaluate($xpath);
+			$xml_nodes = self::$config[$configuration]->evaluate($xpath);
 		}
 		
 		return $xml_nodes;
