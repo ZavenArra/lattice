@@ -55,7 +55,7 @@ class MyDOMDocument {
 }
 
 
-Class Core_Lattice {
+Class Lattice_Core_Lattice {
 
 	private static $config;
 
