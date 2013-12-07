@@ -55,8 +55,8 @@ class Lattice_Controller_Navigation extends Core_Controller_Lattice{
 
     if ($items)
     {
-      $send_item_containers = array(); // these will go first
-      $send_item_objects = array();
+      $tier_item_containers = array(); // these will go first
+      $tier_item_objects = array();
       foreach ($items as $child)
       {
 
@@ -103,13 +103,18 @@ class Lattice_Controller_Navigation extends Core_Controller_Lattice{
 
         if (strtolower($child->objecttype->nodeType)=='container')
         {
-          $send_item_containers[] = $send_item;
+          $tier_item_containers[] = $send_item;
         } else {
-          $send_item_objects[] = $send_item;
+          $tier_item_objects[] = $send_item;
         }
       }
+
+      // Decorator allows for custom sort enforcements
+      $sorted_item_objects = $this->sort_item_objects($tier_item_objects);
+
+
       // this puts the folders first
-      $send_item_objects = array_merge($send_item_containers, $send_item_objects);
+      $tier_item_objects = array_merge($tier_item_containers, $sorted_item_objects);
 
 
       // add in any modules
@@ -133,12 +138,12 @@ class Lattice_Controller_Navigation extends Core_Controller_Lattice{
           $entry['contentType'] = 'module';
           $entry['title'] = $m->getAttribute('label');
           $entry['page_length'] = Kohana::config('cms.associator_page_length');;
-          $send_item_objects[] = $entry;
+          $tier_item_objects[] = $entry;
         }
       }
-      $html = $this->render_tier_view($parent, $send_item_objects);
+      $html = $this->render_tier_view($parent, $tier_item_objects);
       $tier = array(
-        'nodes' => $send_item_objects,
+        'nodes' => $tier_item_objects,
         'html' => $html
       );
       return $tier;
@@ -233,6 +238,12 @@ class Lattice_Controller_Navigation extends Core_Controller_Lattice{
       $object_types[] = $entry;
     }
     return $object_types;
+  }
+
+
+  public function sort_item_objects($tier_item_objects){
+    // This method can be overridden, by default apply no sort
+    return $tier_item_objects;
   }
 
 }
