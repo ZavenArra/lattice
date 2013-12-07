@@ -44,7 +44,8 @@ class Lattice_Controller_Import extends Controller {
 
 		unset($mtime);
 		
-		echo "Starting import - if you don't see the word Done at the end of the output, it means PHP killed the script before it completed";
+    echo "Starting import\n";
+    echo "NOTE: If you don't see the word Done at the end of the output, it means PHP killed the script before it completed\n";
 		if (Kohana::config('lattice.live'))
 		{
 			die('import is disabled on sites marked live');
@@ -87,7 +88,7 @@ class Lattice_Controller_Import extends Controller {
 			// then we are loading an export
 			$xml_file = 'application/export/'.$xml_file.'/'.$xml_file.'.xml';
 		}
-		echo "\n_inserting Data\n";
+		echo "\nReading Data\n";
 		$this->insert_data($xml_file, NULL, core_lattice::config($xml_file, 'nodes')->item(0) );
 
 		Cms_Core::regenerate_images();
@@ -108,8 +109,10 @@ class Lattice_Controller_Import extends Controller {
 		$mtime = $mtime[1] + $mtime[0];
 		$endtime = $mtime;
 		$totaltime = ($endtime - $starttime);
-		echo '<! -- initialize_site took ' .$totaltime. ' seconds, and completed with memory usage of '.$memory_use_following_action;
+		echo 'Import took ' .$totaltime. ' seconds, and completed with memory usage of '.$memory_use_following_action;
+    echo "\n";
 		echo 'Initialize Site Complete';
+    echo "\n";
 	}
 
 	public function insert_relationships($xml_file)
@@ -210,7 +213,7 @@ class Lattice_Controller_Import extends Controller {
 		}
 	}	
 
-	private function load_data_for_content($xml_file, $content, $item,  &$data, &$clusters_date)
+	private function read_field_content($xml_file, $content, $item,  &$data, &$clusters_data)
 	{
 
 		$field = $content->getAttribute('name');
@@ -298,9 +301,9 @@ class Lattice_Controller_Import extends Controller {
 		$data = array();
 		$clusters_data = array();
 		$fields = core_lattice::config($xml_file, 'field', $item );
-		foreach ($fields as $content)
+		foreach ($fields as $field_content)
 		{
-			$this->load_data_for_content($xml_file, $content, $item, $data, $clusters_data);
+			$this->read_field_content($xml_file, $field_content, $item, $data, $clusters_data);
 		}
 
 		// now we check for a title collision
