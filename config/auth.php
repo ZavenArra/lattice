@@ -9,7 +9,7 @@ $config = array(
 	'session_key'  => 'auth_user',
 );
 
-$config['layout'] = 'layout_login';
+$config['layout'] = 'template/layout_login';
 
 $config['resources']['librarycss'] = array(
 	'modules/lattice/resources/thirdparty/960Grid/reset.css',
