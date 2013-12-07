@@ -98,8 +98,8 @@ class Lattice_Controller_Import extends Controller {
 		unset($xml_file);
 		
 		// and run frontend
-		echo "\n Regenerating Frontend";
-		$this->action_frontend();
+		//echo "\n Regenerating Frontend";
+		//$this->action_frontend();
 
 		$memory_use_following_action = memory_get_usage(TRUE);
 
@@ -144,12 +144,6 @@ class Lattice_Controller_Import extends Controller {
 		$parent_slug = $relationship->getAttribute('parent');  
 		$child_slug = $relationship->getAttribute('child');  
 		Graph::object($parent_slug)->add_lattice_relationship($lattice, $child_slug);
-	}
-
-	public function action_frontend()
-	{
-		$frontend = new Builder_Frontend();
-		$frontend->index();
 	}
 
 	public function action_add_data($xml_file, $secondary_root_node_object_type=NULL)
@@ -395,19 +389,11 @@ class Lattice_Controller_Import extends Controller {
 		return $component;
 	}
 
-	public function action_regenerate_images()
-	{
-		try 
-		{
-			Cms_Core::regenerate_images();
-		} 
-		catch(Exception $e)
-		{
-			print_r($e->get_message() . $e->get_trace());
-		}
-		echo 'Done';
-		flush();
-		ob_flush();
-	}
-  
+  public function action_frontend(){
+    echo "This action has been moved to tools/frontend";
+  }
+
+  public function action_regenerate_images(){
+    echo "This action has been moved to tools/regenerate_images";
+  }
 }
