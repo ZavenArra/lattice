@@ -38,7 +38,7 @@ class Lattice_Model_Objectmap extends ORM {
     switch ($ui_type)
     {
     case 'text':
-    case 'radio_group':
+    case 'radioGroup':
     case 'pulldown':
     case 'time':
     case 'date':
