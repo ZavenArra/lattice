@@ -219,7 +219,7 @@ class Lattice_Cms_Core {
 				}
 				$entry['extensions'] = implode(',', $ext);
 				break;
-			case 'radio_group':
+			case 'radioGroup':
 				$children = core_lattice::config('objects', 'radio', $element);
 				$radios = array();
 				foreach ($children as $child)
