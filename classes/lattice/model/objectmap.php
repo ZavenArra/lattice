@@ -59,7 +59,6 @@ class Lattice_Model_Objectmap extends ORM {
       {
         $object_types[] = $object_type->getAttribute('name');
       }
-      // print_r($object_types);
       if (in_array($ui_type, $object_types))
       {
         $index = 'object';

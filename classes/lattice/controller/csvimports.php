@@ -12,7 +12,6 @@ Class Lattice_Controller_Csvimports extends Controller {
 
     $outputCSV = fopen('application/media/'.$view.'.csv', 'w');
 
-    // print_r($data);
     // safely compute fields
     $columns = array();
     foreach ($data['content']['csv'] as $item)
@@ -24,8 +23,6 @@ Class Lattice_Controller_Csvimports extends Controller {
       }	
     }
     fputcsv($outputCSV, $columns);
-
-    // 		print_r($columns);
 
     // output the file
     foreach ($data['content']['csv'] as $item)
@@ -40,7 +37,6 @@ Class Lattice_Controller_Csvimports extends Controller {
           $output[] = '';
         }
       }
-      // 			print_r($output);
       fputcsv($outputCSV, $output);
     }
 
