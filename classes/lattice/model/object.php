@@ -1854,7 +1854,6 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
         }
       }
 
-
       if ( ! count($data))
       {
         return $this;
@@ -1865,8 +1864,6 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
         $this->published = $data['published'];
         unset($data['published']);
       }
-
-
 
       $lookup_templates = core_lattice::config('objects', '//objectType');
       $object_types = array();

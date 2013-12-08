@@ -335,6 +335,7 @@ class Lattice_Controller_Import extends Controller {
 			// actually add the object
 			// echo 'Adding Object '.$item->getAttribute('objectTypeName')."\n";
 			$object_id = $parent_object->add_object($item->getAttribute('objectTypeName'), $data);
+      $object = Graph::object($object_id);
 
 			if($object_id != NULL) 
 			{

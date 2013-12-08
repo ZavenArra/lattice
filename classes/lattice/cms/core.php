@@ -142,6 +142,7 @@ class Lattice_Cms_Core {
 
 	private static function build_ui_element($element, $ui_arguments, $value)
 	{
+
 		$html = NULL;
 		if ( ! isset($element['name']))
 		{
