@@ -234,7 +234,7 @@ class Lattice_Cms_Core {
 
 			//  Begin pulldown change
 			case 'pulldown':
-				$children = core_lattice::config('objects', 'option', $element); // $element['type']);
+				$children = core_lattice::config('objects', 'option', $element); 
 				$options  = array();
 				foreach ($children as $child)
 				{
