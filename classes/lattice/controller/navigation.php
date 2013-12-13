@@ -214,8 +214,10 @@ class Lattice_Controller_Navigation extends Core_Controller_Lattice{
         $addable_object['object_type_add_text'] = "Add a ".$object_type['objectTypeName'];
         $addable_object['nodeType'] = $object_type['nodeType'];
         $addable_object['contentType'] = $object_type['contentType'];
-        $addable_objects[] = $addable_object;
+        $superuser_addable_objects[] = $addable_object;
       }
+			sort($superuser_addable_objects);
+			$addable_objects = array_merge($addable_objects, $superuser_addable_objects);
     }
     $tier_methods_drawer->addable_objects = $addable_objects;
 
