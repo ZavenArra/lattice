@@ -2129,8 +2129,6 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
         if ( ! $object_type->id)
         {
-
-
           // check objects.xml for configuration
           $x_path =  sprintf('//objectType[@name="%s"]', $objectTypeName);
           $x_path_list =  sprintf('//list[@name="%s"]', $objectTypeName);

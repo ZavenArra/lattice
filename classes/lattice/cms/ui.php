@@ -116,7 +116,7 @@ Class Lattice_Cms_Ui{
       $fieldvalue = ($fieldvalue)? date('m/d/Y', strtotime($fieldvalue)) : date('m/d/Y', time());
       break;
 
-    case 'radio_group':
+    case 'radioGroup':
       $element['radioname'] = $id; 
       break;
 
@@ -194,7 +194,7 @@ Class Lattice_Cms_Ui{
   {
     $microtime = str_replace(array(' ', '.'), '', microtime());
     $name =$field.lattice_cms_ui::$unique++.$microtime;
-    $element_array = array( 'type'=>'radio_group', 'radioname'=>$name, 'class'=>$class, 'grouplabel'=>$label, 'name'=>$field, 'radios'=> $radios, "label_class"=>$label_class );
+    $element_array = array( 'type'=>'radioGroup', 'radioname'=>$name, 'class'=>$class, 'grouplabel'=>$label, 'name'=>$field, 'radios'=> $radios, "label_class"=>$label_class );
     return cms_ui::build_ui_element( $element_array, $field_value );
   }
 
