@@ -1619,7 +1619,6 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
         // assume the default lattice
         //   $query->join('objectrelationships')->on('objects.id', '=', 'objectrelationships.
         // get current sort order
-        //  get it! 
         // $query->join //join objectrelationships
         // this assumes we've already joined objectrelatinpshios
         $sort_value = $this->get_sort_order($lattice, $current->id);  // implement this function
@@ -1666,12 +1665,12 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
       return $this->adjacent_record($sort_field, 'prev', $current_id, $lattice);
     }
 
-    public function add_object($objectTypeName, $data = array(), $lattice = NULL, $rosetta_id = NULL, $language_id = NULL)
+    public function add_object($object_type_name, $data = array(), $lattice = NULL, $rosetta_id = NULL, $language_id = NULL)
     {
 
-      $new_object_type = ORM::Factory('objecttype', $objectTypeName);
+      $new_object_type = ORM::Factory('objecttype', $object_type_name);
 
-      $new_object = $this->add_lattice_object($objectTypeName, $lattice, $rosetta_id, $language_id);
+      $new_object = $this->add_lattice_object($object_type_name, $lattice, $rosetta_id, $language_id);
 
 
       /*
