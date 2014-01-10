@@ -251,7 +251,9 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
       }
       if ( ! $this->content_driver)
       {
-        throw new Kohana_Exception('Content Driver did not load for '.$this->id);
+				$this->content_driver = NULL;
+				// It's preferable to set to null so deletes and other operations can still succeed
+        // throw new Kohana_Exception('Content Driver did not load for '.$this->id);
       }
     }
   }
