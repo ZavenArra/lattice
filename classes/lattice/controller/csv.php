@@ -251,8 +251,9 @@ Class Lattice_Controller_CSV extends Controller {
         $field_info = $field_info->item(0);
         if ( ! $field_info)
         {
-          throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $object->objecttype->objecttypename, $field));
-        }
+					echo "Skipping Field: " . $content->getAttribute('name') . " not found in objects.xml " .  sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName');;
+					return;
+				}
 
 
         // special setup based on field type
