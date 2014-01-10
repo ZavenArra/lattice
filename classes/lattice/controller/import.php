@@ -240,7 +240,7 @@ class Lattice_Controller_Import extends Controller {
 		$field_info = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
 		if ( ! $field_info)
 		{
-			echo "Skipping Field: " . $content->getAttribute('name') . " not found in objects.xml " .  sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName');;
+			echo "Skipping Field: " . $content->getAttribute('name') . " not found in objects.xml " .  sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'));
 			return;
 		}
 
