@@ -251,7 +251,7 @@ Class Lattice_Controller_CSV extends Controller {
         $field_info = $field_info->item(0);
         if ( ! $field_info)
         {
-					echo "Skipping Field: " . $content->getAttribute('name') . " not found in objects.xml " .  sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'));
+					echo "Skipping Field: " . $content->getAttribute('name') . " not found in objects.xml " .  sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name') );
 					return;
 				}
 

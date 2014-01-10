@@ -1667,7 +1667,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
     public function add_object($object_type_name, $data = array(), $lattice = NULL, $rosetta_id = NULL, $language_id = NULL)
     {
-
+			
       $new_object_type = ORM::Factory('objecttype', $object_type_name);
 
       $new_object = $this->add_lattice_object($object_type_name, $lattice, $rosetta_id, $language_id);
@@ -1730,6 +1730,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
         {
           $this->objecttype->configure_element($c);
         }
+				
         $this->add_object($c->getAttribute('name'), $arguments);
       }
 
@@ -2071,10 +2072,10 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
     }
 
 
-    private function add_lattice_object($objectTypeName, $lattice = NULL, $rosetta_id = NULL, $language_id = NULL)
+    private function add_lattice_object($object_type_name, $lattice = NULL, $rosetta_id = NULL, $language_id = NULL)
     {
 
-      $new_object = $this->_create_object($objectTypeName, $rosetta_id, $language_id);
+      $new_object = $this->_create_object($object_type_name, $rosetta_id, $language_id);
 
       // The objet has been built, now set it's lattice point
       $lattice = Graph::lattice();
@@ -2249,7 +2250,6 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
       $x_path = sprintf('//objectType[@name="%s"]/elements/associator[@lattice="%s"]', 
         $this->objecttype->objecttypename,
         $lattice);
-      // echo $x_path;
 
       $config = core_lattice::config('objects', $x_path); 
       if ( ! $config->item(0))
