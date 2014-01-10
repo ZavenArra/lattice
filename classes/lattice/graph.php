@@ -202,14 +202,6 @@ class Lattice_Graph {
 			$t_record->nodeType = 'object';
 			$t_record->save();
 		}
-		/*
-		* This can just happen on the fly - lazy configure
-		foreach ( core_lattice::config('objects', '//objectType[@name="'.$objectTypeName.'"]/elements/*') as $item)
-		{
-			$t_record->configure_element($item);
-		}
-		Model_Object::reinit_dbmap($t_record->id); //  Rethink this.
-       */
 	}
 
 	public static function add_root_node($root_node_object_type)
@@ -220,7 +212,6 @@ class Lattice_Graph {
 
 	public static function get_root_node($root_node_object_type)
 	{
-		// $this->driver->get_object_type_object($roo_node_object_type)
 		$object_type = ORM::Factory('objecttype')->where('objecttypename', '=', $root_node_object_type)->find();
 		$object =  Graph::object()->object_type_filter($object_type->objecttypename)->find();
 		if ( ! $object->loaded())
