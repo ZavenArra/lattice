@@ -100,8 +100,6 @@ class Lattice_Cms_Core {
 						$element['elementname'] = $element['name'];
 						$element['controllertype'] = 'list';
 
-						/* HERE! */
-	
 						$requestURI = 'list/get_list/' . $object->id . '/' . $element['name'];
 						$html_chunks[$element['name']] = Request::factory($requestURI)->execute()->body();
 						break;

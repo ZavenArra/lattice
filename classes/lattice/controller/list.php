@@ -145,9 +145,9 @@ class Lattice_Controller_List extends Lattice_CMSInterface {
     $list_config = $this->_list_object->get_config();
     $view->name = $list_config->getAttribute('name');
     $view->label = $list_config->getAttribute('label');
-    $view->class = $list_config->getAttribute('css_classes');
-    $view->class .= ' allow_child_sort-' . $list_config->getAttribute('allow_child_sort');
-    $view->class .= ' sort_direction-' . $this->_list_object->get_sort_direction();
+    $view->class = $list_config->getAttribute('cssClasses');
+    $view->class .= ' allowChildSort-' . $list_config->getAttribute('allowChildSort');
+    $view->class .= ' sortDirection-' . $this->_list_object->get_sort_direction();
     $view->items = $html;
     $view->instance = $this->_list_object->objecttype->templatname;
     $view->addable_objects = $this->_list_object->objecttype->addable_objects;
