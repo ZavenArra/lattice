@@ -4,13 +4,6 @@ class Lattice_Controller_Export extends Controller {
 
 	public $output_dir;
 
-	public function __construct()
-	{
-		if ( ! is_writable('application/views/xmldumps/'))
-		{
-			// 	die('application/views/xmldumps/ must be writable');
-		}
-	}
 	// all this logic should be moved to the export MODEL
 	private function get_object_fields($object)
 	{
@@ -39,7 +32,8 @@ class Lattice_Controller_Export extends Controller {
 					if ($value->filename)
 					{
 						$target_path = $this->output_dir . $value->filename;
-						if (file_exists($target_path))
+						$current_path = 'application/media/' . $value->filename;
+						if (file_exists($current_path))
 						{
 							$node->appendChild($this->doc->createTextNode($target_path));
 						}
@@ -104,7 +98,8 @@ class Lattice_Controller_Export extends Controller {
 					if ($value->filename)
 					{
 						$target_path = $this->output_dir . $value->filename;
-						if (file_exists($target_path))
+						$current_path = 'application/media/' . $value->filename;
+						if (file_exists($current_path))
 						{
 							$node->appendChild($this->doc->createTextNode($target_path));
 						}
