@@ -674,14 +674,18 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
     public function get_content_as_array()
     {
+      $fields = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*', $this->objecttype->objecttypename));
 
-      $fields = ORM::Factory('objectmap')
-        ->where('objecttype_id', '=', $this->objecttype->id)
-        ->find_all();
-      foreach ($fields as $map)
+      foreach ($fields as $field_info)
       {
-        $content[$map->column] = $this->__get($map->column);
+				if($field_info->tagName == 'associator'){
+					continue;
+				}
+
+        $field = $field_info->getAttribute('name');
+        $content[$field] = $this->__get($field);
       }
+			
       return $content;
     }
 
@@ -783,6 +787,10 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
       foreach ($fields as $field_info)
       {
+				if($field_info->tagName == 'associator'){
+					continue;
+				}
+
         $field = $field_info->getAttribute('name');
         $content[$field] = $this->__get($field);
       }

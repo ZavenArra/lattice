@@ -285,7 +285,6 @@ class Lattice_Controller_Import extends Controller {
 				$data[$field] = $content->nodeValue;
 				break;
 		}
-
       // $data array as modified by reference
 	}
 
