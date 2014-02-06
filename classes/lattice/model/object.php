@@ -380,6 +380,8 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
     }
     if ( ! $this->content_driver)
     {
+			//Just load an empty content driver to avoid errors
+			//$this->content_driver = new Model_Lattice_Object();
       throw new Kohana_Exception('Content Driver did not load for object id '.$this->id);
     }
 
