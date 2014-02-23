@@ -220,6 +220,7 @@ class Lattice_Model_Lattice_Object extends Model_Lattice_Contentdriver {
     }
     if ($mapped_column AND ! strstr($mapped_column, 'object'))
     {
+
       $this->contenttable->$mapped_column = $value;
       $this->contenttable->save();
       return;
