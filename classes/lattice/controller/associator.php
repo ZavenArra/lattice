@@ -15,7 +15,7 @@ Class Lattice_Controller_Associator extends Core_Controller_Lattice {
   public function action_get_page($parent_id, $name, $page_num=0, $word="")
   {
 
-$this->action_filter_pool_by_word($parend_id, $name, $page_num, $word);
+		$this->action_filter_pool_by_word($parend_id, $name, $page_num, $word);
 
   }
 

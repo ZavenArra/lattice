@@ -1358,7 +1358,11 @@ lattice.ui.FileElement = new Class({
 		element = anElement.getChildren('.fineuploader-lattice')[0];
 
 		var extensions = anElement.get("data-extensions");
-    extensions = extensions.split(',');
+		if(extensions != ""){
+			extensions = extensions.split(',');
+		} else {
+		 extenions = null;
+		 }
 
 		var url = this.marshal.getSaveFileSubmitURL();
 

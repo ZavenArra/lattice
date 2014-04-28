@@ -202,6 +202,7 @@ class Lattice_Controller_Import extends Controller {
 
 	private function check_for_component($parent_object, $title)
 	{
+		$component = FALSE;
 		$preexisting_object = Graph::object()
 							  ->lattice_children_filter($parent_object->id)
 							  ->join('contents', 'LEFT')->on('objects.id',  '=', 'contents.object_id')
@@ -211,6 +212,7 @@ class Lattice_Controller_Import extends Controller {
 		{
 			$component = $preexisting_object;
 		}
+		return $component;
 	}	
 
 	private function read_field_content($xml_file, $content, $item,  &$data, &$clusters_data)
@@ -240,7 +242,7 @@ class Lattice_Controller_Import extends Controller {
 		$field_info = core_lattice::config('objects', sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')))->item(0);
 		if ( ! $field_info)
 		{
-			throw new Kohana_Exception("Bad field in data/objects! \n" . sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $item->getAttribute('objectTypeName'), $content->getAttribute('name')));
+			return;
 		}
 
 		// if an element is actually an object, prepare it for insert/update
@@ -283,7 +285,6 @@ class Lattice_Controller_Import extends Controller {
 				$data[$field] = $content->nodeValue;
 				break;
 		}
-
       // $data array as modified by reference
 	}
 
@@ -326,14 +327,12 @@ class Lattice_Controller_Import extends Controller {
 		// If we found an existing object, update that one, otherwise go ahead and instert a new object
 		if ($component)
 		{
-			// echo 'Updating Object '.$component->objecttype->objecttypename."\n";
 			$component->update_with_array($data);
 			$object_id = $component->id;
 		} 
 		else 
 		{
 			// actually add the object
-			// echo 'Adding Object '.$item->getAttribute('objectTypeName')."\n";
 			$object_id = $parent_object->add_object($item->getAttribute('objectTypeName'), $data);
       $object = Graph::object($object_id);
 
@@ -347,7 +346,6 @@ class Lattice_Controller_Import extends Controller {
 		if (count($clusters_data))
 		{
 			$object = Graph::object($object_id);
-			// echo "Updating clusters\n";
 			$object->update_with_array($clusters_data);
 		}
 

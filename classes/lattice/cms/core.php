@@ -100,8 +100,6 @@ class Lattice_Cms_Core {
 						$element['elementname'] = $element['name'];
 						$element['controllertype'] = 'list';
 
-						/* HERE! */
-	
 						$requestURI = 'list/get_list/' . $object->id . '/' . $element['name'];
 						$html_chunks[$element['name']] = Request::factory($requestURI)->execute()->body();
 						break;
@@ -234,7 +232,7 @@ class Lattice_Cms_Core {
 
 			//  Begin pulldown change
 			case 'pulldown':
-				$children = core_lattice::config('objects', 'option', $element); // $element['type']);
+				$children = core_lattice::config('objects', 'option', $element); 
 				$options  = array();
 				foreach ($children as $child)
 				{
