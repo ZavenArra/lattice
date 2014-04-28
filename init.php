@@ -131,10 +131,11 @@ if (isset($_SERVER['REQUEST_URI'])
     ORM::Factory('object')->find_all();
     Graph::get_root_node('cmsRootNode');
   } catch(Exception $e){
-    $view = new View('setup/lattice_not_installed');
-    echo $view->render();
-    die();
-  }
+		print_r($e);
+		$view = new View('setup/lattice_not_installed');
+		echo $view->render();
+		die();
+	}
 }
 
 class FrontendRouting {
