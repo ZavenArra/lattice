@@ -1996,7 +1996,7 @@ self::set_sort_order($order, $lattice='lattice');
 
 		public function move($new_lattice_parent, $lattice='lattice', $old_lattice_parent=NULL)
 		{
-			$old_lattice_parent == NULL ? $old_lattice_parent = $this->get_lattice_ancestor() : $old_lattice_parent = Graph::object($old_lattice_parent);
+			$old_lattice_parent == NULL ? $old_lattice_parent = $this->get_lattice_ancestor($lattice) : $old_lattice_parent = Graph::object($old_lattice_parent);
 			$new_lattice_parent = Graph::object($new_lattice_parent);
 			$old_lattice_parent->remove_lattice_relationship('lattice',$this);
 			$new_lattice_parent->add_lattice_relationship('lattice',$this);
@@ -2093,16 +2093,6 @@ self::set_sort_order($order, $lattice='lattice');
 
 			return $new_object;
 
-		}
-
-		public function clear_lattice_connections($lattice)
-		{
-			if ( ! is_object($lattice))
-			{
-				$lattice = Graph::lattice($lattice);
-			}
-
-			die('Not yet implemented');
 		}
 
 		public function get_translated_object($language_id)

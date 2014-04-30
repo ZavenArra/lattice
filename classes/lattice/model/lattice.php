@@ -24,6 +24,16 @@ class Lattice_Model_Lattice extends ORM {
 
 		return $relationships;
 	}
+
+	public function clear_relationships(){
+		if ( ! $this->loaded())
+		{
+			throw new Kohana_Exception('Model is not loaded');
+		}
+
+		DB::delete('objectrelationships')->where('lattice_id', '=', $this->id)->execute();
+
+	}
   
 	/**
 	 * Return all lattice
