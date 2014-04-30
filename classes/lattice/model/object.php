@@ -1000,11 +1000,11 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 			$contents = Model_Content::sort_content_by_title($order);
 
 			$order = array();
-			foreach($contents as $content):
+			foreach($contents as $content){
 				array_push($order, $content->object_id);
-endforeach;
+			}
 
-self::set_sort_order($order, $lattice='lattice');
+			self::set_sort_order($order, $lattice='lattice');
 		}
 
 		//sort object by title (alphabetically)
@@ -1013,11 +1013,11 @@ self::set_sort_order($order, $lattice='lattice');
 			$objects = ORM::factory('object')->where('id', 'IN', $order)->order_by('dateadded', 'DESC')->find_all();
 
 			$order = array();
-			foreach($objects as $object):
+			foreach($objects as $object){
 				array_push($order, $object->id);
-endforeach;
+			}
 
-self::set_sort_order($order, $lattice='lattice');
+			self::set_sort_order($order, $lattice='lattice');
 		}
 
 		//sort object by title (alphabetically)

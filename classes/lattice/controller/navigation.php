@@ -116,7 +116,6 @@ class Lattice_Controller_Navigation extends Core_Controller_Lattice{
       // this puts the folders first
       $tier_item_objects = array_merge($tier_item_containers, $sorted_item_objects);
 
-
       // add in any modules
       if ($parent->id == Graph::get_root_node(Kohana::config('cms.graph_root_node'))->id )
       {
@@ -181,10 +180,7 @@ class Lattice_Controller_Navigation extends Core_Controller_Lattice{
     // this database call happens twice, should be a class variable?
     $parent = Graph::object($parent_id);
 
-
     $tier = $this->get_tier($parent_id, $deeplink_path);
-
-
     $this->response->data(array('tier' => $tier));
 
   }
