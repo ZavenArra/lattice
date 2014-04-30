@@ -74,6 +74,7 @@ Class Lattice_Cms_Associator {
     if ($filters)
     {
 
+			$all_matching_objects = array();
       $objects = Graph::object();
 
       foreach ($filters as $filter)
@@ -137,36 +138,34 @@ Class Lattice_Cms_Associator {
 				$results = $objects->find_all();
 
 				$results = $results->as_array(NULL, 'id');
-        // check our filtered objects are correct
+
         // compact the array to remove redundant keys
-        $res = array();
+				// and remove objects that are already associated
         foreach ($results as $id)
         {
           $object = Graph::object($id);
           if ( ! $this->parent->check_lattice_relationship($lattice, $object))
           {
-            $res[$id] = $id;
+            $all_matching_objects[$id] = $id;
           }
         }
+			}
 
-        $results = $res;
+			$this->num_pages = ceil(count($all_matching_objects)/$this->page_length);
 
-				$this->num_pages = ceil(count($results)/$this->page_length);
+			$offset = 0;
+			if (isset($filter['page'])){
+				$offset = $filter['page'] * $this->page_length;
+			}
+			// And slice the results
+			$all_matching_objects = array_slice($all_matching_objects, $offset, $this->page_length);
 
-				$offset = 0;
-				if (isset($filter['page'])){
-					$offset = $filter['page'] * $this->page_length;
-				}
-				// And slice the results
-				$results = array_slice($results, $offset, $this->page_length);
+			foreach ($all_matching_objects as $id)
+			{
+				$object = Graph::object($id);
+				$this->pool[$id] =$object;  
+			}
 
-        foreach ($results as $id)
-        {
-          $object = Graph::object($id);
-          $this->pool[$id] =$object;  
-        }
-
-      }	
 
 		} 
 		elseif ( ! $load_pool )
