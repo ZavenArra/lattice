@@ -141,7 +141,7 @@ Class Lattice_Cms_Associator {
 
         // compact the array to remove redundant keys
 				// and remove objects that are already associated
-				//
+				/*
         foreach ($results as $id)
         {
           $object = Graph::object($id);
@@ -150,6 +150,22 @@ Class Lattice_Cms_Associator {
             $all_matching_objects[$id] = $id;
           }
         }
+				 */
+
+				// SELECT `objectrelationships`.* FROM `objectrelationships` WHERE `lattice_id` = '10' AND `object_id` = '487' AND `connectedobject_id` = '2052' LIMIT 1
+				//$result = DB::query(Database::SELECT, "Select count(id) as mycount from objectrelationships where objecttypename = '$object_type'")->execute()->current();
+				$lattice_obj = Graph::lattice($lattice);
+        foreach ($results as $id)
+        {
+					$query = DB::select()->from('objectrelationships');		
+					$query->where('lattice_id', '=', $lattice_obj->id);
+					$query->where('object_id', '=', $parent_id);
+					$query->where('connectedobject_id', '=', $id);
+					$count = $query->select('COUNT("*") AS mycount')->execute()->get('mycount');
+					if($count == 0){
+            $all_matching_objects[$id] = $id;
+					}
+				}
 
 			}
 
