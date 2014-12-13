@@ -8,6 +8,9 @@ class Lattice_Model_Objecttype extends ORM {
   protected $_has_many = array('object'=>array());
   protected $_belongs_to = array('object'=>array());
 
+
+	private static $object_type_cache = array();
+
   /*
    * Variable: nonmappedfield
    * Array of fields to not pass through to the content field mapping logic
@@ -19,7 +22,7 @@ class Lattice_Model_Objecttype extends ORM {
 
     if ( ! empty($id) AND is_string($id) AND ! ctype_digit($id))
     {
-      // it's the tmeplate identified, look up the integer primary key
+      // look up the integer primary key
       $result = DB::select('id')->from('objecttypes')->where('objecttypename', '=', $id)->execute()->current();
       $id = $result['id'];
     }
@@ -56,6 +59,32 @@ class Lattice_Model_Objecttype extends ORM {
   {
     throw new Kohana_Expection("Not Implemented");
   }
+
+	// Implement a quick and dirty caching
+	// This should be changed to folloing a more typical ORM caching protocal
+	public static function lookup_object_type( $object_type_name_or_id) {
+
+		if($object_type_name_or_id == NULL){
+			return NULL;
+		}
+
+		if(isset(Lattice_Model_ObjectType::$object_type_cache[$object_type_name_or_id])) {
+			$lookup = Lattice_Model_ObjectType::$object_type_cache[$object_type_name_or_id];
+			if($lookup != NULL){
+				return $lookup;
+			}
+		}
+
+		$object_type = ORM::Factory('objecttype', $object_type_name_or_id); 
+		if ( ! $object_type->loaded())
+		{
+			return NULL;
+		}
+		Lattice_Model_ObjectType::$object_type_cache[$object_type->name] = $object_type;
+		Lattice_Model_ObjectType::$object_type_cache[$object_type->id] = $object_type;
+		return $object_type;
+
+	}
 
   /*
    * Function: __get($column)

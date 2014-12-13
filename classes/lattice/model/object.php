@@ -282,6 +282,10 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
 		} elseif ($column == 'objecttype' OR $column == 'object_type')
 		{
+			$cached = $object_type = Model_ObjectType::lookup_object_type( $this->objecttype_id );
+			if($cached != NULL) {
+				return $cached;
+			}
 			$return = parent::__get('objecttype');
 			return $return;
 
@@ -1344,11 +1348,10 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 			{
 				foreach ($map as $object_type_config)
 				{
-					$object_type = ORM::Factory('objecttype', $object_type_config->getAttribute('name')); 
-					if ( ! $object_type->loaded())
-					{
-						continue;
+					$object_type = Model_ObjectType::lookup_object_type( $object_type_config->getAttribute('name') );
+					if($object_type == NULL ){
 						// Continue here because the object type might not be lazy-configured yet 
+						continue;
 					}
 					$mapped_column = Model_Lattice_Object::dbmap($object_type->id, $column);
 					$map_query[] = 'select object_id, '.$mapped_column.' as '.$column
@@ -1678,8 +1681,6 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 		public function add_object($object_type_name, $data = array(), $lattice = NULL, $rosetta_id = NULL, $language_id = NULL)
 		{
 
-			$new_object_type = ORM::Factory('objecttype', $object_type_name);
-
 			$new_object = $this->add_lattice_object($object_type_name, $lattice, $rosetta_id, $language_id);
 
 
@@ -1733,7 +1734,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 			foreach ($containers as $c)
 			{
 				$arguments['title'] = $c->getAttribute('label');
-				if ( ! ORM::Factory('objecttype', $c->getAttribute('name'))->loaded())
+				if ( ! Model_ObjectType::lookup_object_type($c->getAttribute('name'))->loaded())
 				{
 					$this->objecttype->configure_element($c);
 				}
@@ -1940,7 +1941,6 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
 		public function add_element_object($objectTypeName, $element_name, $data=array(), $rosetta_id = NULL, $language_id = NULL)
 		{
-			$new_object_type = ORM::Factory('objecttype', $objectTypeName);
 
 			$new_object = $this->_create_object($objectTypeName, $rosetta_id, $language_id);
 
@@ -2122,7 +2122,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
 				$objectTypeName = $object_type_class_or_name;
 
-				$object_type = ORM::Factory('objecttype', $objectTypeName);
+				$object_type =  ORM::Factory('objecttype', $objectTypeName);
 
 				if ( ! $object_type->id)
 				{
@@ -2134,11 +2134,11 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 						// there's a config for this object_type
 						// go ahead and configure it
 						Graph::configure_object_type($objectTypeName);
-						$object_type = ORM::Factory('objecttype', $objectTypeName);
+						$object_type = Model_ObjectType::lookup_object_type($objectTypeName);
 					} elseif ($object_type_config = core_lattice::config('objects', $x_path_list)->item(0))
 					{ 
 						Graph::configure_object_type($objectTypeName);
-						$object_type = ORM::Factory('objecttype', $objectTypeName);
+						$object_type = Model_ObjectType::lookup_object_type($objectTypeName);
 					} else {
 						//throw new Kohana_Exception('No config for object_type ' . $objectTypeName .' '.$x_path);
 						//object type doesn't exit in xml --- should skip save in DB now
