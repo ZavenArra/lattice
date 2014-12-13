@@ -75,26 +75,21 @@ Class Lattice_Cms_Associator {
     {
 
 			$all_matching_objects = array();
+      $objects = Graph::object();
 
       foreach ($filters as $filter)
       {
-				$objects = DB::select()->from('objects'); 
 
         if (isset($filter['from']) AND $filter['from'])
         {
           $from = Graph::object($filter['from']);
           ($filter['lattice']) ? $lattice = $filter['lattice'] : ( $lattice = 'lattice' );
-
-					$objects->join('objectrelationships', 'LEFT')->on('objects.id', '=', 'objectrelationships.connectedobject_id');
-					$objects->where('objectrelationships.lattice_id', '=', $lattice->id);
-					$objects->where('objectrelationships.object_id', '=', $from->id);
-
+          $objects = $from->lattice_descendents_query($lattice);
         }
 
         if (isset($filter['tagged']) AND $filter['tagged'])
         {
-					throw new KohanaException('Tagged filter not supported in associator');
-          //$objects->tagged_filter($filter['tagged']); 
+          $objects->tagged_filter($filter['tagged']); 
         }
 
         if (isset($filter['objectTypeName']) AND $filter['objectTypeName'])
@@ -117,14 +112,10 @@ Class Lattice_Cms_Associator {
 				// currently, this func can be used to override everything above
         if (isset($filter['function']) AND $filter['function'])
         {
-
-					throw new KohanaException('User function filter not supported in associator');
-					/*
           $callback = explode('::', $filter['function']);
 
           $options = NULL;
           $objects = call_user_func($callback, $objects, $parent_id, $options);
-					 */
         }
 
         if (isset($filter['match']) AND $filter['match'])
@@ -133,50 +124,50 @@ Class Lattice_Cms_Associator {
           $wheres = array();
           foreach ($match_fields as $match_field)
           {
-						if($match_field != 'title'){
-							throw new KohanaException('Title is only supported match filter in associator');
-						}
-            $where = array($match_field, 'LIKE', '%'.$filter['match'].'%'); 
-						$objects->join('contents')->on('objects.id', '=', 'contents.object_id');
-						$objects->where('contents.title', 'LIKE', "%{$filter['match']}%");
-						break;
+            $wheres[] = array($match_field, 'LIKE', '%'.$filter['match'].'%'); 
           }
+          $objects->content_filter($wheres);
 
         }
 				
         $objects->where('objects.language_id', '=', Graph::default_language());
-        $objects->where('published', '=', 1);
+        $objects->published_filter();
 				$objects->order_by('slug');
 
-				Kohana::$log->add(Log::INFO, 'halho');
         // just return an array of id's then load the pool object
-				$results = $objects->execute()->as_array("id", "id");
-				$object_ids = array_keys($results);
+				$results = $objects->find_all();
 
-				if(count($object_ids)){
-					$lattice_obj = Graph::lattice($lattice);
+				$results = $results->as_array(NULL, 'id');
 
+        // compact the array to remove redundant keys
+				// and remove objects that are already associated
+				/*
+        foreach ($results as $id)
+        {
+          $object = Graph::object($id);
+          if ( ! $this->parent->check_lattice_relationship($lattice, $object))
+          {
+            $all_matching_objects[$id] = $id;
+          }
+        }
+				 */
+
+				// SELECT `objectrelationships`.* FROM `objectrelationships` WHERE `lattice_id` = '10' AND `object_id` = '487' AND `connectedobject_id` = '2052' LIMIT 1
+				//$result = DB::query(Database::SELECT, "Select count(id) as mycount from objectrelationships where objecttypename = '$object_type'")->execute()->current();
+				$lattice_obj = Graph::lattice($lattice);
+        foreach ($results as $id)
+        {
 					$query = DB::select()->from('objectrelationships');		
 					$query->where('lattice_id', '=', $lattice_obj->id);
 					$query->where('object_id', '=', $parent_id);
-					$query->where('connectedobject_id', 'IN', $object_ids);
-					$connected_objects = $query->select('connectedobject_id')->execute()->as_array();
-					$connected_object_ids = array();
-					foreach($connected_objects as $object){
-						$connected_object_ids[] = $object['connectedobject_id'];	
+					$query->where('connectedobject_id', '=', $id);
+					$count = $query->select('COUNT("*") AS mycount')->execute()->get('mycount');
+					if($count == 0){
+            $all_matching_objects[$id] = $id;
 					}
-
-					foreach($results as $id){
-						if(! in_array($id, $connected_object_ids) ){
-							$all_matching_objects[$id] = $id;
-						}
-					}
-
 				}
 
 			}
-
-			Kohana::$log->add(Log::INFO, 'alho');
 
 			$this->num_pages = ceil(count($all_matching_objects)/$this->page_length);
 
