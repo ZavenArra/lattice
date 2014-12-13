@@ -70,6 +70,25 @@ class Lattice_Model_Objectmap extends ORM {
     return $index;
   }
 
+
+	public function __get($column)
+	{
+
+		if ($column == 'objecttype')
+		{
+			$cached = $object_type = Model_ObjectType::lookup_object_type( $this->objecttype_id );
+			if($cached != NULL) {
+				return $cached;
+			}
+
+			Kohana::$log->add(Log::INFO, 'right here');
+			$return = parent::__get('objecttype');
+			return $return;
+		} else {
+			return parent::__get($column);
+		}
+	}
+
 }
 
 ?>

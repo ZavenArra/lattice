@@ -45,8 +45,15 @@ class Lattice_Graph {
 		return Graph::object($object_id);
 	}
 
+
+	public static $cached_lattices = array();
 	public static function lattice($lattice_id = 'lattice')
 	{
+
+		if(isset(self::$cached_lattices[$lattice_id])){
+			return self::$cached_lattices[$lattice_id];
+		}
+
 		if (is_numeric($lattice_id))
 		{
 			return ORM::Factory('lattice', $lattice_id);
@@ -61,6 +68,8 @@ class Lattice_Graph {
 			$lattice->name = $lattice_id;
 			$lattice->save();
 		}
+		self::$cached_lattices[$lattice->id] = $lattice;
+		self::$cached_lattices[$lattice->name] = $lattice;
 		return $lattice;
 	}
 

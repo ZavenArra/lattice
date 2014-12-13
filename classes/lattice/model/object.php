@@ -286,6 +286,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 			if($cached != NULL) {
 				return $cached;
 			}
+
 			$return = parent::__get('objecttype');
 			return $return;
 
@@ -326,11 +327,11 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 			// look up the object type
 			$family = $column;
 
-			$list_object_type = ORM::Factory('objecttype', $family);
+			$list_object_type =  Model_ObjectType::lookup_object_type( $family );
 			if ( ! $list_object_type->id)
 			{
 				$this->objecttype->configure_element($list_config->item(0));
-				$list_object_type = ORM::Factory('objecttype', $family);
+				$list_object_type =  Model_ObjectType::lookup_object_type( $family );
 			}
 
 			$list_container_object = ORM::Factory('listcontainer')
@@ -527,7 +528,10 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 				$o = $this->_object;
 				$objecttype_id = $o['objecttype_id'];
 
-				$object_type = ORM::Factory('objecttype', $objecttype_id);
+				$object_type =  Model_ObjectType::lookup_object_type( $objecttype_id );
+				if($object_type == NULL){
+					throw new Kohana_Exception('Invalid field for objecttype');
+				}
 
 				$xpath = sprintf('//objectType[@name="%s"]/elements/*[@name="%s"]', $object_type->objecttypename, $column);
 				$field_info = core_lattice::config('objects', $xpath)->item(0);
@@ -849,7 +853,7 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 		public function get_list_collection($family)
 		{
 			// get container
-			$c_template = ORM::Factory('objecttype', $family);
+			$c_template =  Model_ObjectType::lookup_object_type($family);
 			$container = Graph::object()
 				->lattice_children_filter($this->id)
 				->where('objecttype_id', '=', $c_template->id)
@@ -2122,9 +2126,9 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 
 				$objectTypeName = $object_type_class_or_name;
 
-				$object_type =  ORM::Factory('objecttype', $objectTypeName);
+				$object_type = Model_ObjectType::lookup_object_type($objectTypeName);
 
-				if ( ! $object_type->id)
+				if ( $object_type == NULL )
 				{
 					// check objects.xml for configuration
 					$x_path =  sprintf('//objectType[@name="%s"]', $objectTypeName);

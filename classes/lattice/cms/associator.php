@@ -141,6 +141,7 @@ Class Lattice_Cms_Associator {
 
         // compact the array to remove redundant keys
 				// and remove objects that are already associated
+				//
         foreach ($results as $id)
         {
           $object = Graph::object($id);
@@ -149,6 +150,7 @@ Class Lattice_Cms_Associator {
             $all_matching_objects[$id] = $id;
           }
         }
+
 			}
 
 			$this->num_pages = ceil(count($all_matching_objects)/$this->page_length);

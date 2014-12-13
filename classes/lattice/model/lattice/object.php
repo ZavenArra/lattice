@@ -24,7 +24,7 @@ class Lattice_Model_Lattice_Object extends Model_Lattice_Contentdriver {
 
   public static function dbmap($objecttype_id, $column=NULL)
   {
-    $objecttype = ORM::Factory('objecttype', $objecttype_id);
+		$objecttype = Model_ObjectType::lookup_object_type( $objecttype_id );
     $objecttype_id = $objecttype->id;
 
     if ( ! isset(self::$dbmaps[$objecttype_id]))
