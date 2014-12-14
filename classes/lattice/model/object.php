@@ -1286,20 +1286,20 @@ class Lattice_Model_Object extends ORM implements arrayaccess {
 			if (is_numeric($object_types))
 			{
 				$this->where('objecttype_id', '=', $object_types);
-			} elseif (strpos(',', $object_types))
+			} elseif (strpos($object_types, ','))
 			{
 				$t_names = explode(',', $object_types);
 				$t_ids = array();
 				foreach ($t_names as $tname)
 				{
-					$result = DB::query("Select id from objecttypes where objecttypename = '$object_types'")->execute();
-					if ( ! $result->current->id AND !Model_Objecttype::get_config($tname))
+					$result = DB::query(Database::SELECT, "Select id from objecttypes where objecttypename = '$tname'")->execute();
+					if ( ! $result[0] AND !Model_Objecttype::get_config($tname))
 					{
 						throw new Kohana_Exception('Invalid object type requested in object_type_filter '.$object_types);
 					}
-					$t_ids[] = $result->current()->id;
+					$t_ids[] = $result[0];
 				}
-				$this->in('objecttype_id', $t_ids);
+				$this->where('objecttype_id', 'IN',  $t_ids);
 			} elseif ($object_types == 'all')
 			{
 				// set no filter
