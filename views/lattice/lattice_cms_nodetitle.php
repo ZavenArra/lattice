@@ -24,6 +24,8 @@
 
 	<a class='icon preview' title='Preview this page' href="<?=core_url::site($slug)?>">Preview this Page</a>
 
+
 	<div class="clear"></div>
+	Object ID: <?=$id;?>
 
 </div>
